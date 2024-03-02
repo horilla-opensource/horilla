@@ -1,309 +1,324 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
 <div
-  class="oh-modal"
-  id="hxContractExport"
-  role="dialog"
-  aria-labelledby="hxContractExport"
-  aria-hidden="true"
+    class="oh-modal"
+    id="hxContractExport"
+    role="dialog"
+    aria-labelledby="hxContractExport"
+    aria-hidden="true"
 >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="hxContractExportLavel">
-        {% trans "Export Contracts" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-      <div
-        class="oh-modal__dialog-body p-0 pt-2"
-        id="hxContractExportModalBody"
-      >
-        <form
-          action="{%url 'contract-export' %}"
-          method="get"
-          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-          id="hxContractExportForm"
-        >
-          {% csrf_token %} {% include
-          'payroll/contract/contract_export_filter.html' %}
-          <div class="oh-dropdown__filter-footer">
-            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
-              {% trans "Export" %}
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="hxContractExportLavel">
+                {% trans "Export Contracts" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
             </button>
-          </div>
-        </form>
-      </div>
+            <div
+                class="oh-modal__dialog-body p-0 pt-2"
+                id="hxContractExportModalBody"
+            >
+                <form
+                    action="{%url 'contract-export' %}"
+                    method="get"
+                    onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+                    id="hxContractExportForm"
+                >
+                    {% csrf_token %} 
+					{% include 'payroll/contract/contract_export_filter.html' %}
+                    <div class="oh-dropdown__filter-footer">
+                        <button
+                            class="oh-btn oh-btn--secondary oh-btn--small w-100"
+                        >
+                            {% trans "Export" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-  <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-    <div class="oh-main__titlebar oh-main__titlebar--left">
-      <h1 class="oh-main__titlebar-title fw-bold">{% trans "Contracts" %}</h1>
-      <a
-        class="oh-main__titlebar-search-toggle"
-        role="button"
-        aria-label="Toggle Search"
-        @click="searchShow = !searchShow"
-      >
-        <ion-icon
-          name="search-outline"
-          class="oh-main__titlebar-serach-icon"
-        ></ion-icon>
-      </a>
-    </div>
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-      <form
-        hx-get="{% url 'contract-filter' %}"
-        id="filterForm"
-        hx-swap="innerHTML"
-        hx-target="#payroll-contract-container"
-        class="d-flex"
-      >
-        <div
-          class="oh-input-group oh-input__search-group"
-          :class="searchShow ? 'oh-input__search-group--show' : ''"
-        >
-          <ion-icon
-            name="search-outline"
-            class="oh-input-group__icon oh-input-group__icon--left"
-          ></ion-icon>
-          <input
-            type="text"
-            class="oh-input oh-input__icon"
-            aria-label="Search Input"
-            id="contract-filter"
-            name="search"
-            placeholder="{% trans 'Search' %}"
-            onkeyup="$('.filterButton')[0].click()"
-          />
-        </div>
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            class="oh-btn ml-2"
-            @click="open = !open"
-            onclick="event.preventDefault()"
-          >
-            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-            <div id="filterCount"></div>
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-            x-show="open"
-            @click.outside="open = false"
-            style="display: none"
-          >
-            {% include 'payroll/contract/filter_contract.html' %}
-          </div>
-        </div>
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            class="oh-btn ml-2"
-            @click="open = !open"
-            onclick="event.preventDefault()"
-          >
-            <ion-icon name="library-outline" class="mr-1"></ion-icon>
-            {% trans "Group By" %}
-            <div id="filterCount"></div>
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-            x-show="open"
-            @click.outside="open = false"
-            style="display: none"
-          >
-            <div class="oh-accordion">
-              <label>{% trans "Group By" %}</label>
-              <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-6">
-                  <div class="oh-input-group">
-                    <label class="oh-label">{% trans "Field" %}</label>
-                  </div>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-6">
-                  <div class="oh-input-group">
-                    <select
-                      class="oh-select mt-1 w-100"
-                      id="id_field"
-                      name="field"
-                      class="select2-selection select2-selection--single"
-                    >
-                      {% for field in gp_fields %}
-                      <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-      {% if perms.payroll.add_payslip %}
-      <div class="oh-btn-group ml-2">
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            class="oh-btn oh-btn--dropdown"
-            @click="open = !open"
-            @click.outside="open = false"
-          >
-            {% trans "Actions" %}
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right"
-            x-show="open"
-            style="display: none; cursor: pointer"
-          >
-            <ul class="oh-dropdown__items">
-              {% if perms.contract.add_contract %}
-              <li class="oh-dropdown__item">
-                <a
-                  href="#"
-                  class="oh-dropdown__link"
-                  id="employee-contract-export"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#hxContractExport"
-                  >{% trans "Export" %}</a
-                >
-              </li>
-              {% endif %} {% if perms.contract.delete_contract %}
-              <li class="oh-dropdown__item">
-                <a
-                  class="oh-dropdown__link oh-dropdown__link--danger"
-                  id="DeleteContractBulk"
-                  >{% trans "Delete" %}</a
-                >
-              </li>
-              {% endif %}
-            </ul>
-          </div>
-        </div>
-      </div>
-      {% endif %}
-
-      <div class="oh-main__titlebar-button-container">
-        <div class="oh-btn-group ml-2">
-          <div>
+    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold">
+                {% trans "Contracts" %}
+            </h1>
             <a
-              class="oh-btn oh-btn--secondary oh-btn--shadow"
-              href="{% url 'contract-create' %}"
+                class="oh-main__titlebar-search-toggle"
+                role="button"
+                aria-label="Toggle Search"
+                @click="searchShow = !searchShow"
             >
-              <ion-icon name="add-outline"></ion-icon>
-              {% trans "Create" %}
+                <ion-icon
+                    name="search-outline"
+                    class="oh-main__titlebar-serach-icon"
+                ></ion-icon>
             </a>
-          </div>
         </div>
-      </div>
-    </div>
-  </section>
-  <div
-    class="oh-checkpoint-badge mb-2"
-    id="selectedInstances"
-    data-ids="[]"
-    data-clicked=""
-    style="display: none"
-  >
-    {% trans "Selected Employees" %}
-  </div>
-  <div class="d-flex flex-row-reverse oh-wrapper mb-2">
-    <span
-      class="me-3"
-      onclick="$('[name=contract_status]').val('terminated'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
-      style="cursor: pointer"
-    >
-      <span
-        class="oh-dot oh-dot--small me-1"
-        style="background-color: black"
-      ></span>
-      {% trans "Terminated" %}
-    </span>
-    <span
-      class="me-3"
-      onclick="$('[name=contract_status]').val('expired'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
-      style="cursor: pointer"
-    >
-      <span
-        class="oh-dot oh-dot--small me-1"
-        style="background-color: red"
-      ></span>
-      {% trans "Expired" %}
-    </span>
-    <span
-      class="me-3"
-      onclick="$('[name=contract_status]').val('draft'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
-      style="cursor: pointer"
-    >
-      <span
-        class="oh-dot oh-dot--small me-1"
-        style="background-color: rgba(128, 128, 128, 0.482)"
-      ></span>
-      {% trans "Draft" %}
-    </span>
-    <span
-      class="me-3"
-      onclick="$('[name=contract_status]').val('active'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
-      style="cursor: pointer"
-    >
-      <span
-        class="oh-dot oh-dot--small me-1"
-        style="background-color: yellowgreen"
-      ></span>
-      {% trans "Active" %}
-    </span>
-  </div>
-  <div class="oh-wrapper oh-tabs">
-    <div class="oh-tabs__content oh-tabs__content--active">
-      <div
-        class="oh-checkpoint-badge text-success mb-2"
-        id="selectAllContracts"
-        style="cursor: pointer"
-      >
-        {% trans "Select All Contracts" %}
-      </div>
-      <div
-        class="oh-checkpoint-badge text-secondary mb-2"
-        id="unselectAllContracts"
-        style="cursor: pointer; display: none"
-      >
-        {% trans "Unselect All Contracts" %}
-      </div>
-      <div
-        class="oh-checkpoint-badge text-info mb-2"
-        id="exportContracts"
-        style="cursor: pointer"
-      >
-        {% trans "Export Contracts" %}
-      </div>
-      <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow"></div>
-      <div class="oh-tabs__contents">
-        <div id="payroll-contract-container">
-          <!-- including contract list -->
-          {% include 'payroll/contract/contract_list.html' %}
-        </div>
-      </div>
-    </div>
-  </div>
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            <form
+                hx-get="{% url 'contract-filter' %}"
+                id="filterForm"
+                hx-swap="innerHTML"
+                hx-target="#payroll-contract-container"
+                class="d-flex"
+            >
+                <div
+                    class="oh-input-group oh-input__search-group"
+                    :class="searchShow ? 'oh-input__search-group--show' : ''"
+                >
+                    <ion-icon
+                        name="search-outline"
+                        class="oh-input-group__icon oh-input-group__icon--left"
+                    ></ion-icon>
+                    <input
+                        type="text"
+                        class="oh-input oh-input__icon"
+                        aria-label="Search Input"
+                        id="contract-filter"
+                        name="search"
+                        placeholder="{% trans 'Search' %}"
+                        onkeyup="$('.filterButton')[0].click()"
+                    />
+                </div>
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button
+                        class="oh-btn ml-2"
+                        @click="open = !open"
+                        onclick="event.preventDefault()"
+                    >
+                        <ion-icon name="filter" class="mr-1"></ion-icon>
+						{% trans "Filter" %}
+                        <div id="filterCount"></div>
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                        x-show="open"
+                        @click.outside="open = false"
+                        style="display: none"
+                    >
+                        {% include 'payroll/contract/filter_contract.html' %}
+                    </div>
+                </div>
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button
+                        class="oh-btn ml-2"
+                        @click="open = !open"
+                        onclick="event.preventDefault()"
+                    >
+                        <ion-icon
+                            name="library-outline"
+                            class="mr-1"
+                        ></ion-icon>
+                        {% trans "Group By" %}
+                        <div id="filterCount"></div>
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                        x-show="open"
+                        @click.outside="open = false"
+                        style="display: none"
+                    >
+                        <div class="oh-accordion">
+                            <label>{% trans "Group By" %}</label>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="oh-input-group">
+                                        <label class="oh-label"
+                                            >{% trans "Field" %}</label
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="oh-input-group">
+                                        <select
+                                            class="oh-select mt-1 w-100"
+                                            id="id_field"
+                                            name="field"
+                                            class="select2-selection select2-selection--single"
+                                        >
+                                            {% for field in gp_fields %}
+                                            <option value="{{ field.0 }}">
+                                                {% trans field.1 %}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            {% if perms.payroll.add_payslip %}
+            <div class="oh-btn-group ml-2">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button
+                        class="oh-btn oh-btn--dropdown"
+                        @click="open = !open"
+                        @click.outside="open = false"
+                    >
+                        {% trans "Actions" %}
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right"
+                        x-show="open"
+                        style="display: none; cursor: pointer"
+                    >
+                        <ul class="oh-dropdown__items">
+                            {% if perms.contract.add_contract %}
+                            <li class="oh-dropdown__item">
+                                <a
+                                    href="#"
+                                    class="oh-dropdown__link"
+                                    id="employee-contract-export"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#hxContractExport"
+                                    >{% trans "Export" %}</a
+                                >
+                            </li>
+                            {% endif %} {% if perms.contract.delete_contract %}
+                            <li class="oh-dropdown__item">
+                                <a
+                                    class="oh-dropdown__link oh-dropdown__link--danger"
+                                    id="DeleteContractBulk"
+                                    >{% trans "Delete" %}</a
+                                >
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
-  <div
-    class="oh-modal"
-    id="ContractModal"
-    role="dialog"
-    aria-labelledby="ContractModal"
-    aria-hidden="true"
-  >
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-btn-group ml-2">
+                    <div>
+                        <a
+                            class="oh-btn oh-btn--secondary oh-btn--shadow"
+                            href="{% url 'contract-create' %}"
+                        >
+                            <ion-icon name="add-outline"></ion-icon>
+                            {% trans "Create" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     <div
-      class="oh-modal__dialog oh-modal__dialog-relative"
-      style="max-width: 550px"
-      id="OneContractTarget"
-    ></div>
-  </div>
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+        {% trans "Selected Employees" %}
+    </div>
+    <div class="d-flex flex-row-reverse oh-wrapper mb-2">
+        <span
+            class="me-3"
+            onclick="$('[name=contract_status]').val('terminated'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
+            style="cursor: pointer"
+        >
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: black"
+            ></span>
+            {% trans "Terminated" %}
+        </span>
+        <span
+            class="me-3"
+            onclick="$('[name=contract_status]').val('expired'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
+            style="cursor: pointer"
+        >
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: red"
+            ></span>
+            {% trans "Expired" %}
+        </span>
+        <span
+            class="me-3"
+            onclick="$('[name=contract_status]').val('draft'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
+            style="cursor: pointer"
+        >
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: rgba(128, 128, 128, 0.482)"
+            ></span>
+            {% trans "Draft" %}
+        </span>
+        <span
+            class="me-3"
+            onclick="$('[name=contract_status]').val('active'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
+            style="cursor: pointer"
+        >
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: yellowgreen"
+            ></span>
+            {% trans "Active" %}
+        </span>
+    </div>
+    <div class="oh-wrapper oh-tabs">
+        <div class="oh-tabs__content oh-tabs__content--active">
+            <div
+                class="oh-checkpoint-badge text-success mb-2"
+                id="selectAllContracts"
+                style="cursor: pointer"
+            >
+                {% trans "Select All Contracts" %}
+            </div>
+            <div
+                class="oh-checkpoint-badge text-secondary mb-2"
+                id="unselectAllContracts"
+                style="cursor: pointer; display: none"
+            >
+                {% trans "Unselect All Contracts" %}
+            </div>
+            <div
+                class="oh-checkpoint-badge text-info mb-2"
+                id="exportContracts"
+                style="cursor: pointer"
+            >
+                {% trans "Export Contracts" %}
+            </div>
+            <div
+                class="oh-checkpoint-badge text-danger mb-2"
+                id="selectedShow"
+            ></div>
+            <div class="oh-tabs__contents">
+                <div id="payroll-contract-container">
+                    <!-- including contract list -->
+                    {% include 'payroll/contract/contract_list.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="oh-modal"
+        id="ContractModal"
+        role="dialog"
+        aria-labelledby="ContractModal"
+        aria-hidden="true"
+    >
+        <div
+            class="oh-modal__dialog oh-modal__dialog-relative"
+            style="max-width: 550px"
+            id="OneContractTarget"
+        ></div>
+    </div>
 </main>
 <script>
-  $(document).ready(function () {
-    $("#id_field").on("change", function () {
-      $(".filterButton")[0].click();
+    $(document).ready(function () {
+        $("#id_field").on("change", function () {
+            $(".filterButton")[0].click();
+        });
     });
-  });
 </script>
 <script src="{% static 'payroll/action.js' %}"></script>
 {% endblock content %}

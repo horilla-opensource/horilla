@@ -29,10 +29,10 @@
     <div class="oh-modal__dialog-body" id="individualPayslipModal">
       <form action="{% url 'create-payslip' %}" class="" method="post">
         {% csrf_token %} {{individual_form}}
-        <div class="oh-modal__dialog-footer mt-4">
+        <div class="oh-modal__dialog-footer pe-0 mt-4">
           <input
             type="submit"
-            value="Create Payslip"
+            value="Save"
             class="oh-btn oh-btn--secondary oh-btn--shadow"
           />
         </div>
