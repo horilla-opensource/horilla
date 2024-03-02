@@ -21,9 +21,9 @@
       {{asset_return_form.return_images}}
     </div>
   </div>
-  <div class="oh-modal__dialog-footer justify-content-between mt-3">
+  <div class="oh-btn-group">
     <button 
-      class=" oh-btn oh-btn--info oh-btn--shadow mt-3"
+      class=" oh-btn oh-btn--info oh-btn--shadow mt-3 w-100"
       onclick="event.preventDefault();event.stopPropagation()"
       hx-get="{% url "add-asset-report" asset_id %}"
       hx-target="#addAssetReportForm"
@@ -34,7 +34,7 @@
     </button>  
     {% if perms.payroll.add_loanaccount %}
     <button 
-    class="oh-btn oh-btn--primary oh-btn--shadow mt-3"
+    class="oh-btn oh-btn--primary oh-btn--shadow mt-3 w-100"
     type="button"
     hx-get="{% url "asset-fine" %}?employee_id={{asset_alocation.assigned_to_employee_id.id}}&asset_id={{asset_id}}"
     hx-target="#assetFineModalBody"
@@ -44,7 +44,7 @@
     {% trans "Add Fine" %}
     </button>  
     {% endif %}
-    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow mt-3">
+    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow mt-3 w-100">
       {% trans "Save" %}
     </button>
   </div>

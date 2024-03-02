@@ -65,7 +65,7 @@
                         <a href="#" class="oh-dropdown__link " data-toggle="oh-modal-toggle"
                         onclick="event.stopPropagation()"
                         data-target="#AssetCategoryModal" hx-get="{% url 'asset-category-update' cat_id=asset_category.id %}?{{pg}}"
-                        hx-target="#AssetModal">{% trans "Update" %}</a>
+                        hx-target="#AssetModal">{% trans "Edit" %}</a>
                       </li>
                     {% endif %}
                     {% if perms.asset.delete_assetcategory %}
