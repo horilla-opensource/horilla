@@ -209,9 +209,9 @@
         <div
           class="oh-sticky-table__tr"
           data-toggle="oh-modal-toggle"
-          data-target="#userRequestDetailModal"
+          data-target="#objectDetailsModalW25"
           hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{leave_request_ids}}"
-          hx-target="#userRequestDetailTarget"
+          hx-target="#objectDetailsModalW25Target"
         >
           <div class="oh-sticky-table__sd 
             {% if leave_request.status == "requested" %}row-status--orange 
@@ -329,15 +329,7 @@
   </div>
 </div>
 {% endif %}
-<div
-  class="oh-modal"
-  id="userRequestDetailModal"
-  role="dialog"
-  aria-labelledby="userRequestDetailModalLabel"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog w-25" id="userRequestDetailTarget"></div>
-</div>
+
 <div
 	class="oh-modal"
 	id="rejectModal"
