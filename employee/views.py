@@ -315,8 +315,12 @@ def profile_asset_tab(request, emp_id):
 
     """
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
+    assets_ids = json.dumps(
+        [instance.id for instance in assets]
+    )
     context = {
         "assets": assets,
+        "assets_ids":assets_ids,
     }
     return render(request, "tabs/profile-asset-tab.html", context=context)
 
@@ -2293,6 +2297,8 @@ def convert_nan(field, dicts):
         return field_value
 
 
+@login_required
+@permission_required("employee.add_employee")
 def work_info_import(request):
     """
     This method is used to import Employee instances and creates related objects
