@@ -98,7 +98,7 @@
         <h2 class="oh-modal__dialog-title" id="editTitle">
           {% trans "Create Ticket Type" %}
         </h2>
-        <button class="oh-modal__close" aria-label="Close">
+        <button class="oh-modal__close--custom" onclick="$('#createTicketTypeModal').removeClass('oh-modal--show')" aria-label="Close">
           <ion-icon name="close-outline"></ion-icon>
         </button>
       </div>
@@ -115,13 +115,13 @@
                 {{ t_type_form.type }}
             <label class="oh-label">{% trans "Prefix" %}</label>
                 {{ t_type_form.prefix }}
-                <input type="checkbox" name="is_active" class="oh-switch__checkbox" id="id_ticket_type_is_active" checked style="display: none;">
-          <button
-            type="submit"
-            class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-          >
-            {% trans "Save" %}
-          </button>
+            <input type="checkbox" name="is_active" class="oh-switch__checkbox" id="id_ticket_type_is_active" checked style="display: none;">
+          
+            <div class="d-flex flex-row-reverse">
+              <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
+                {% trans "Save" %}
+              </button>
+            </div>
         </form>
       </div>
     </div>
