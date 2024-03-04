@@ -385,11 +385,10 @@
                           hx-target="#objectDetailsModalW25Target"
                           hx-get="{% url 'user-request-one-view' attendance.id %}?validate=true&instances_ids={{validate_attendances_ids}}"
                           >
-                            <div class="oh-sticky-table__sd">
+                            <div class="oh-sticky-table__sd" onclick="event.stopPropagation()">
                               <input
                                 type="checkbox"
                                 id="{{attendance.id}}"
-                                onclick="event.stopPropagation()"
                                 class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 validate-row"
                                 onchange="highlightRow($(this))"
                               />
@@ -655,8 +654,8 @@
                         <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
                     </div>
                 </div>
-                {% for attendance in overtime_attendances %}
-                    <div class="oh-sticky-table__tbody">
+                <div class="oh-sticky-table__tbody">
+                    {% for attendance in overtime_attendances %}
                         <div
                           class="oh-sticky-table__tr"
                           draggable="false"
@@ -765,8 +764,8 @@
                                 {% endif %}
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
         <!-- end of sticky table -->

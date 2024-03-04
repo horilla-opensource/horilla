@@ -124,9 +124,14 @@ $(".validate").change(function (e) {
 });
 
 $(".validate-row").change(function () {
-  var allChecked =
-    $(".validate-row").length === $(".validate-row:checked").length;
-  $(".validate").prop("checked", allChecked);
+  var parentTable = $(this).closest(".oh-sticky-table");
+  var body = parentTable.find(".oh-sticky-table__tbody");
+  var parentCheckbox = parentTable.find(".validate");
+  parentCheckbox.prop(
+    "checked",
+    body.find(".validate-row:checked").length ===
+      body.find(".validate-row").length
+  );
 });
 
 $(".all-hour-account").change(function (e) {
@@ -415,9 +420,14 @@ $(".all-attendances").change(function (e) {
 });
 
 $(".all-attendance-row").change(function () {
-  var allChecked =
-    $(".all-attendance-row").length === $(".all-attendance-row:checked").length;
-  $(".all-attendances").prop("checked", allChecked);
+  var parentTable = $(this).closest(".oh-sticky-table");
+  var body = parentTable.find(".oh-sticky-table__tbody");
+  var parentCheckbox = parentTable.find(".all-attendances");
+  parentCheckbox.prop(
+    "checked",
+    body.find(".all-attendance-row:checked").length ===
+      body.find(".all-attendance-row").length
+  );
 });
 
 $(".ot-attendances").change(function (e) {
@@ -443,9 +453,14 @@ $(".ot-attendances").change(function (e) {
 });
 
 $(".ot-attendance-row").change(function () {
-  var allChecked =
-    $(".ot-attendance-row").length === $(".ot-attendance-row:checked").length;
-  $(".ot-attendances").prop("checked", allChecked);
+  var parentTable = $(this).closest(".oh-sticky-table");
+  var body = parentTable.find(".oh-sticky-table__tbody");
+  var parentCheckbox = parentTable.find(".ot-attendances");
+  parentCheckbox.prop(
+    "checked",
+    body.find(".ot-attendance-row:checked").length ===
+      body.find(".ot-attendance-row").length
+  );
 });
 
 function getCookie(name) {
