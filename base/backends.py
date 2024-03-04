@@ -27,11 +27,11 @@ class ConfiguredEmailBackend(EmailBackend):
         from base.models import DynamicEmailConfiguration
 
         request = getattr(_thread_locals, "request", None)
-        compay = None
-        if request:
-            compay = request.user.employee_get.get_company()
+        company = None
+        if request and not request.user.is_anonymous:
+            company = request.user.employee_get.get_company()
         configuration = DynamicEmailConfiguration.objects.filter(
-            company_id=compay
+            company_id=company
         ).first()
         if configuration is None:
             configuration = DynamicEmailConfiguration.objects.filter(
