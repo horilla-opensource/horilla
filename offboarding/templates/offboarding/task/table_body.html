@@ -29,7 +29,7 @@
         </div>
     </div>
     <div class="oh-sticky-table__td">
-        {% if employee.notice_period_ends == today %} {% trans "today" %}{% elif employee.notice_period_ends < today %} {% trans "Notice period ended" %} {% else %}{% trans 'In' %} {{employee.notice_period_ends|sub:today}}{% endif %}
+        {% if employee.notice_period_ends == today %} {% trans "today" %}{% elif employee.notice_period_ends < today %} {% trans "Notice period ended" %} {% else %} {% if employee.notice_period_ends|sub:today %} {% trans 'In' %} {{employee.notice_period_ends|sub:today}}{% endif %}{% endif %}
     </div>
     <div class="oh-sticky-table__td dateformat_changer">{{ employee.notice_period_starts }}</div>
     <div class="oh-sticky-table__td dateformat_changer">{{ employee.notice_period_ends }}</div>

@@ -551,9 +551,6 @@ def task_assign(request):
     task_id = request.GET["task_id"]
     employees = OffboardingEmployee.objects.filter(id__in=employee_ids)
     task = OffboardingTask.objects.get(id=task_id)
-    print("==============================")
-    print(employees)
-    print("==============================")
     for employee in employees:
         try:
             assinged_task = EmployeeTask()
