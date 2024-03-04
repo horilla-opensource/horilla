@@ -7,15 +7,20 @@
     </div>
 <script>
     setTimeout(() => {
-        $(".oh-modal__close").click();
+        $(".oh-modal__close--custom").click();
     }, 1000);
 </script>
 {% endif %}
 <div class="oh-modal__dialog-header">
-  <button type="button" class="oh-modal__close" aria-label="Close"
-    hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
-    hx-target="#report-container"
-    hx-swap="innerHTML"
+  <button type="button" class="oh-modal__close--custom" aria-label="Close" onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+    {% if late_in_early_out_ids %}
+      hx-get="{% url 'late-in-early-out-single-view' instance.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}"
+      hx-target="#objectDetailsModalTarget"
+    {% else %}
+      hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
+      hx-target="#report-container"
+      hx-swap="innerHTML"
+    {% endif %}
     >
     <ion-icon name="close-outline"></ion-icon>
   </button>
@@ -35,7 +40,7 @@
     </div>
   </div>
 </div>
-<form hx-post="{% url 'cut-penalty' instance.id %}?{{pd}}" hx-target="#penaltyModalBody">
+<form hx-post="{% url 'cut-penalty' instance.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}" hx-target="#penaltyModalBody">
   {{ form.as_p }}
 
   <div class="oh-sticky-table__table oh-table--sortable">

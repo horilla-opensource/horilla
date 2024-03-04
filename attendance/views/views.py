@@ -777,20 +777,27 @@ def attendance_activity_view(request):
 
 @login_required
 def activity_single_view(request, obj_id):
-    activity = AttendanceActivity.objects.get(id=obj_id)
-    attendance = Attendance.objects.filter(
-        attendance_date=activity.attendance_date
-    ).first()
+    request_copy = request.GET.copy()
+    request_copy.pop("instances_ids", None)
+    previous_data = request_copy.urlencode()
+    activity = AttendanceActivity.objects.filter(id=obj_id).first()
+
     instance_ids_json = request.GET["instances_ids"]
     instance_ids = json.loads(instance_ids_json) if instance_ids_json else []
     previous_instance, next_instance = closest_numbers(instance_ids, obj_id)
     context = {
+        "pd": previous_data,
         "activity": activity,
-        "attendance": attendance,
         "previous_instance": previous_instance,
         "next_instance": next_instance,
         "instance_ids_json": instance_ids_json,
     }
+    if activity:
+        attendance = Attendance.objects.filter(
+            attendance_date=activity.attendance_date
+        ).first()
+        context["attendance"] = attendance
+
     return render(
         request,
         "attendance/attendance_activity/single_attendance_activity.html",
@@ -807,7 +814,9 @@ def attendance_activity_delete(request, obj_id):
     args:
         obj_id : attendance activity id
     """
-    pd = request.GET.urlencode()
+    request_copy = request.GET.copy()
+    request_copy.pop("instances_ids", None)
+    previous_data = request_copy.urlencode()
     try:
         AttendanceActivity.objects.get(id=obj_id).delete()
         messages.success(request, _("Attendance activity deleted"))
@@ -816,7 +825,7 @@ def attendance_activity_delete(request, obj_id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this activity"))
     if not request.GET.get("instances_ids"):
-        return redirect(f"/attendance/attendance-activity-search?{pd}")
+        return redirect(f"/attendance/attendance-activity-search?{previous_data}")
     else:
         instances_ids = request.GET.get("instances_ids")
         instances_list = json.loads(instances_ids)
@@ -826,7 +835,7 @@ def attendance_activity_delete(request, obj_id):
             json.loads(instances_ids), obj_id
         )
         return redirect(
-            f"/attendance/attendance-activity-single-view/{next_instance}/?instances_ids={instances_list}"
+            f"/attendance/attendance-activity-single-view/{next_instance}/?{previous_data}&instances_ids={instances_list}"
         )
 
 
@@ -848,7 +857,7 @@ def attendance_activity_bulk_delete(request):
                 _("{employee} activity deleted.").format(employee=activity.employee_id),
             )
 
-        except (AttendanceActivity.DoesNotExist,OverflowError,ValueError):
+        except (AttendanceActivity.DoesNotExist, OverflowError, ValueError):
             messages.error(request, _("Attendance not found."))
     return JsonResponse({"message": "Success"})
 
@@ -1001,7 +1010,9 @@ def late_come_early_out_view(request):
 
 
 def late_in_early_out_single_view(request, obj_id):
-    previous_data = request.GET.urlencode()
+    request_copy = request.GET.copy()
+    request_copy.pop("instances_ids", None)
+    previous_data = request_copy.urlencode()
     late_in_early_out = AttendanceLateComeEarlyOut.objects.filter(id=obj_id).first()
     instance_ids_json = request.GET["instances_ids"]
     instance_ids = json.loads(instance_ids_json) if instance_ids_json else []
@@ -1027,7 +1038,9 @@ def late_come_early_out_delete(request, obj_id):
     args:
         obj_id : late come early out instance id
     """
-    pd = request.GET.urlencode()
+    request_copy = request.GET.copy()
+    request_copy.pop("instances_ids", None)
+    previous_data = request_copy.urlencode()
     try:
         AttendanceLateComeEarlyOut.objects.get(id=obj_id).delete()
         messages.success(request, _("Late-in early-out deleted"))
@@ -1036,7 +1049,7 @@ def late_come_early_out_delete(request, obj_id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this Late-in early-out"))
     if not request.GET.get("instances_ids"):
-        return redirect(f"/attendance/late-come-early-out-search?{pd}")
+        return redirect(f"/attendance/late-come-early-out-search?{previous_data}")
     else:
         instances_ids = request.GET.get("instances_ids")
         instances_list = json.loads(instances_ids)
@@ -1046,7 +1059,7 @@ def late_come_early_out_delete(request, obj_id):
             json.loads(instances_ids), obj_id
         )
         return redirect(
-            f"/attendance/late-in-early-out-single-view/{next_instance}/?{pd}&instances_ids={instances_list}"
+            f"/attendance/late-in-early-out-single-view/{next_instance}/?{previous_data}&instances_ids={instances_list}"
         )
 
 
@@ -1069,7 +1082,7 @@ def late_come_early_out_bulk_delete(request):
                     employee=late_come.employee_id
                 ),
             )
-        except (AttendanceLateComeEarlyOut.DoesNotExist,OverflowError,ValueError):
+        except (AttendanceLateComeEarlyOut.DoesNotExist, OverflowError, ValueError):
             messages.error(request, _("Attendance not found."))
     return JsonResponse({"message": "Success"})
 

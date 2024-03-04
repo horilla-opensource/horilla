@@ -56,8 +56,8 @@
             <div class="oh-sticky-table__tbody">
               {% for late_in_early_out in attendance_list.list %}
               <div class="oh-sticky-table__tr" draggable="false"
-                data-toggle="oh-modal-toggle" data-target="#attendanceModal"
-                hx-target="#attendanceModalTarget"
+                data-toggle="oh-modal-toggle" data-target="#objectDetailsModal"
+                hx-target="#objectDetailsModalTarget"
                 hx-get="{% url 'late-in-early-out-single-view' late_in_early_out.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}">
                 <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                   <div class="centered-div">
@@ -92,12 +92,12 @@
                 <div class='oh-sticky-table__td dateformat_changer'>{{late_in_early_out.attendance_id.attendance_clock_out_date}}</div>
                 <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.minimum_hour}}</div>
                 <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_worked_hour}}</div>
-                <div class='oh-sticky-table__td'>
+                <div class='oh-sticky-table__td' onclick="event.stopPropagation();">
                   {% if late_in_early_out.get_penalties_count %}
                   <div class="" data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?late_early_id={{late_in_early_out.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">Penalties :{{late_in_early_out.get_penalties_count}}</div>
                   {% endif %}
                 </div>
-                <div class="oh-sticky-table__td oh-sticky-table__right">
+                <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation();">
                   <div class="oh-btn-group">
                     {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount %}
                       <button 

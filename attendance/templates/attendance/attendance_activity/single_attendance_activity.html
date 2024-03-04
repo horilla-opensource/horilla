@@ -1,4 +1,4 @@
-{% load i18n %} {% load basefilters %}
+{% load static %} {% load i18n %} {% load basefilters %}
 {% if messages %}
 <div class="oh-wrapper">
   {% for message in messages %}
@@ -10,6 +10,7 @@
   {% endfor %}
 </div>
 {% endif %}
+{% if activity %}
 <div class="oh-modal__dialog-header">
   <h2
     class="oh-modal__dialog-title"
@@ -18,7 +19,7 @@
   >
     {% trans "Details" %}
   </h2>
-  <button class="oh-modal__close" aria-label="Close" hx-get="{% url 'attendance-activity-search' %}" hx-target="#activity-table">
+  <button class="oh-modal__close" aria-label="Close" hx-get="{% url 'attendance-activity-search' %}?{{pd}}" hx-target="#activity-table">
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
@@ -26,7 +27,7 @@
   <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button
       hx-get="{% url 'attendance-activity-single-view' previous_instance %}?instances_ids={{instance_ids_json}}"
-      hx-target="#attendanceActivityModalTarget"
+      hx-target="#objectDetailsModalW25Target"
       class="oh-modal__diaglog-nav oh-modal__nav-prev"
     >
       <ion-icon
@@ -39,7 +40,7 @@
 
     <button
       hx-get="{% url 'attendance-activity-single-view' next_instance %}?instances_ids={{instance_ids_json}}"
-      hx-target="#attendanceActivityModalTarget"
+      hx-target="#objectDetailsModalW25Target"
       class="oh-modal__diaglog-nav oh-modal__nav-next"
     >
       <ion-icon
@@ -151,8 +152,8 @@
         <div class="oh-btn-group">
           {% if perms.attendance.delete_attendancelatecomeearlyout %}
             <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
-                hx-post="{% url 'attendance-activity-delete' activity.id  %}?instances_ids={{instance_ids_json}}"
-                hx-target="#attendanceActivityModalTarget"
+                hx-post="{% url 'attendance-activity-delete' activity.id  %}?{{pd}}&instances_ids={{instance_ids_json}}"
+                hx-target="#objectDetailsModalW25Target"
                 onclick="event.stopPropagation()"  
                 class="w-100"
               >
@@ -171,3 +172,22 @@
       {% endif %}
   </div>
 </div>
+{% else %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" style="margin-left: 30px"></span>
+  <button class="oh-modal__close" aria-label="Close" hx-get="{% url 'attendance-activity-search' %}?{{pd}}" hx-target="#activity-table">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body oh-modal__dialog-relative">
+    <img
+      style="margin-left: 33%; width: 150px; height: 150px"
+      src="{% static 'images/ui/present.png' %}"
+      class="oh-404__image mb-2"
+      alt="Page not found. 404."
+    />
+    <h5 class="oh-404__subtitle">
+      {% trans "There are no attendance records to display." %}
+    </h5>
+</div>
+{% endif %}

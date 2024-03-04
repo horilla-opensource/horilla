@@ -28,7 +28,7 @@
   <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button
       hx-get="{% url 'late-in-early-out-single-view' previous_instance %}?{{pd}}&instances_ids={{instance_ids_json}}"
-      hx-target="#attendanceModalTarget"
+      hx-target="#objectDetailsModalTarget"
       class="oh-modal__diaglog-nav oh-modal__nav-prev"
     >
       <ion-icon
@@ -41,7 +41,7 @@
 
     <button
       hx-get="{% url 'late-in-early-out-single-view' next_instance %}?{{pd}}&instances_ids={{instance_ids_json}}"
-      hx-target="#attendanceModalTarget"
+      hx-target="#objectDetailsModalTarget"
       class="oh-modal__diaglog-nav oh-modal__nav-next"
     >
       <ion-icon
@@ -207,7 +207,7 @@
                   {% if perms.attendance.delete_attendancelatecomeearlyout %}
                       <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
                           hx-post="{% url 'late-come-early-out-delete' late_in_early_out.id  %}?{{pd}}&instances_ids={{instance_ids_json}}"
-                          hx-target="#attendanceModalTarget"
+                          hx-target="#objectDetailsModalTarget"
                           onclick="event.stopPropagation()"  
                           class="w-50"
                       >

@@ -3,6 +3,7 @@ attendance/views/penalty.py
 
 This module is used to write late come early out penatly methods
 """
+
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -21,7 +22,14 @@ def cut_available_leave(request, instance_id):
     """
     This method is used to create the penalties
     """
-    previous_data = request.GET.urlencode()
+    late_in_early_out_ids = (
+        request.GET.get("instances_ids", None)
+        if request.GET.get("instances_ids") != "None"
+        else None
+    )
+    request_copy = request.GET.copy()
+    request_copy.pop("instances_ids", None)
+    previous_data = request_copy.urlencode()
     instance = AttendanceLateComeEarlyOut.objects.get(id=instance_id)
     form = PenaltyAccountForm()
     available = AvailableLeave.objects.filter(employee_id=instance.employee_id)
@@ -47,6 +55,7 @@ def cut_available_leave(request, instance_id):
         "attendance/penalty/form.html",
         {
             "available": available,
+            "late_in_early_out_ids": late_in_early_out_ids,
             "form": form,
             "instance": instance,
             "pd": previous_data,
