@@ -175,38 +175,47 @@
 
 
 <script>
-	function hiding() {
-		$("#selectAllInstances").hide();
-		$("#unselectAllInstances").hide();
-		$("#exportAccounts").hide();
-		$("#selectedShow").hide();
-	}
+  function hiding() {
+    $("#selectAllInstances").hide();
+    $("#unselectAllInstances").hide();
+    $("#exportAccounts").hide();
+    $("#selectedShow").hide();
+  }
 
-	$(document).ready(function () {
-		$("#selectAllInstances").show();
-		$(".all-hour-account-row").change(function () {
-			if ($('.all-hour-account').is(":checked")) {
-				$(".all-hour-account").prop("checked", false);
-			  }
-			addingHourAccountsIds();
-		});
+  $(document).ready(function () {
+    $("#selectAllInstances").show();
 
-		$(".all-hour-account").change(function () {
-			addingHourAccountsIds();
-		});
+    $(".all-hour-account-row").change(function () {
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-hour-account");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-hour-account-row:checked").length ===
+          body.find(".all-hour-account-row").length
+      );
+      addingHourAccountsIds();
+    });
 
-		$("#selectAllInstances").click(function () {
-			selectAllHourAcconts();
-		});
+    $(".all-hour-account").change(function () {
+      addingHourAccountsIds();
+    });
 
-		$("#unselectAllInstances").click(function () {
-			unselectAllHourAcconts();
-		});
-	});
+    $("#selectAllInstances").click(function () {
+      selectAllHourAcconts();
+    });
+
+    $("#unselectAllInstances").click(function () {
+      unselectAllHourAcconts();
+    });
+  });
 </script>
 <script>
-	toggleColumns("overtime-table","fieldContainerTable")
-	if (!localStorage.getItem("attendance_account_table")) {
-		$("#fieldContainerTable").find("[type=checkbox]").prop("checked",true).change()
-	}
+  toggleColumns("overtime-table", "fieldContainerTable");
+  if (!localStorage.getItem("attendance_account_table")) {
+    $("#fieldContainerTable")
+      .find("[type=checkbox]")
+      .prop("checked", true)
+      .change();
+  }
 </script>
