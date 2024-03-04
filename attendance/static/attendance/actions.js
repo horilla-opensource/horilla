@@ -691,9 +691,14 @@ $("#attendance-info-import").click(function (e) {
 });
 
 $(".all-latecome-row").change(function () {
-  if ($(".all-latecome").is(":checked")) {
-    $(".all-latecome").prop("checked", false);
-  }
+  var parentTable = $(this).closest(".oh-sticky-table");
+  var body = parentTable.find(".oh-sticky-table__tbody");
+  var parentCheckbox = parentTable.find(".all-latecome");
+  parentCheckbox.prop(
+    "checked",
+    body.find(".all-latecome-row:checked").length ===
+      body.find(".all-latecome-row").length
+  );
   addinglatecomeIds();
 });
 
@@ -820,16 +825,25 @@ $("#select-all-fields").change(function () {
   $('[name="selected_fields"]').prop("checked", isChecked);
 });
 
-$(".all-latecome").change(function () {
-  $(".all-latecome-row")
-    .prop("checked", false)
-    .closest(".oh-sticky-table__tr")
-    .removeClass("highlight-selected");
-  if ($(this).is(":checked")) {
-    $(".all-latecome-row")
+$(".all-latecome").change(function (e) {
+  var is_checked = $(this).is(":checked");
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
+  if (is_checked) {
+    $(closest)
+      .children()
+      .find(".all-latecome-row")
       .prop("checked", true)
       .closest(".oh-sticky-table__tr")
       .addClass("highlight-selected");
+  } else {
+    $(closest)
+      .children()
+      .find(".all-latecome-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
 });
 
