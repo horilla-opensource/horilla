@@ -15,42 +15,41 @@
     </div>
     <div class="oh-modal__dialog-body" id="">
         {% if form.errors %}
-<!-- form errors  -->
-    <div class="oh-wrapper">
-        <div class="oh-alert-container">
-            {% for error in form.non_field_errors %}
-            <div class="oh-alert oh-alert--animated oh-alert--danger">
-                {{ error }}
+        <!-- form errors  -->
+            <div class="oh-wrapper">
+                <div class="oh-alert-container">
+                    {% for error in form.non_field_errors %}
+                    <div class="oh-alert oh-alert--animated oh-alert--danger">
+                        {{ error }}
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-            {% endfor %}
-        </div>
-    </div>
-{% endif %}
-<form  
-    {% if grace_id %}
-        {% comment %} {% if is_default %} {% endcomment %}
-            hx-post="{% url 'update-grace-time' grace_id %}"
-        {% comment %} {% else %}
-            hx-post="{% url 'update-grace-time' grace_id %}"
-        {% endif %} {% endcomment %}
-    {% else	%}
-        {% if is_default %}
-            hx-post="{% url 'create-grace-time' %}?default=True"
-        {% else %}
-            hx-post="{% url 'create-grace-time' %}?default=False"
         {% endif %}
-    {% endif %}
-    hx-target="#graceTimeModalTarget"
-    method="post" 
-    hx-encoding="multipart/form-data">
-    {% csrf_token %}
-    {{form.as_p}}
-    <button
-		type="submit"
-		class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-	>
-		{% trans "Save" %}
-	</button>
-</form>
+        <form  
+            {% if grace_id %}
+                {% comment %} {% if is_default %} {% endcomment %}
+                    hx-post="{% url 'update-grace-time' grace_id %}"
+                {% comment %} {% else %}
+                    hx-post="{% url 'update-grace-time' grace_id %}"
+                {% endif %} {% endcomment %}
+            {% else	%}
+                {% if is_default %}
+                    hx-post="{% url 'create-grace-time' %}?default=True"
+                {% else %}
+                    hx-post="{% url 'create-grace-time' %}?default=False"
+                {% endif %}
+            {% endif %}
+            hx-target="#graceTimeModalTarget"
+            method="post" 
+            hx-encoding="multipart/form-data">
+            {% csrf_token %}
+            {{form.as_p}}
+            <div class="d-flex flex-row-reverse mt-3">
+                <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
+                {% trans "Save" %}
+                </button>
+            </div>
+        </form>
     </div>
 </div>
