@@ -115,7 +115,7 @@ def add_asset_report(request, asset_id=None):
             ).assigned_to_employee_id or request.user.has_perm("asset.change_asset"):
                 pass
             else:
-                return redirect(asset_request_alloaction_view)
+                return redirect(asset_request_allocation_view)
 
     if request.method == "POST":
         asset_report_form = AssetReportForm(request.POST, request.FILES)
@@ -959,7 +959,7 @@ def filter_pagination_asset_request_allocation(request):
 
 
 @login_required
-def asset_request_alloaction_view(request):
+def asset_request_allocation_view(request):
     """
     This view is used to display a paginated list of asset allocation requests.
     Args:

@@ -69,7 +69,7 @@ urlpatterns = [
     ),
     path(
         "asset-request-allocation-view/",
-        views.asset_request_alloaction_view,
+        views.asset_request_allocation_view,
         name="asset-request-allocation-view",
     ),
     path(

@@ -66,7 +66,6 @@ function emptyAssetAvialabeChart(assetAvailableChartChart,args,options){
     for (let i = 0; i < assetAvailableChartChart.data.datasets.length; i++) {
       flag = flag + assetAvailableChartChart.data.datasets[i].data.some(Boolean);
     }
-    console.log(flag)
     if (!flag) {
       const { ctx, canvas } = assetAvailableChartChart;
       assetAvailableChartChart.clear();

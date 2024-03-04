@@ -27,36 +27,26 @@
                                 <div class="oh-sticky-table__tr">
                                     <div
                                         class="oh-sticky-table__th"
-                                        hx-get=""
-                                        hx-target="#historyTable"
                                     >
                                         {% trans "Asset" %}
                                     </div>
                                     <div
-                                        class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_to_employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'assigned_to_employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get=""
-                                        hx-target="#historyTable"
+                                        class="oh-sticky-table__th"
                                     >
                                         {% trans "Employee" %}
                                     </div>
                                     <div
                                         class="oh-sticky-table__th"
-                                        hx-get=""
-                                        hx-target="#historyTable"
                                     >
                                         {% trans "Assigned Date" %}
                                     </div>
                                     <div
                                         class="oh-sticky-table__th"
-                                        hx-get=""
-                                        hx-target="#historyTable"
                                     >
                                         {% trans "Returned Date" %}
                                     </div>
                                     <div
                                         class="oh-sticky-table__th"
-                                        hx-get=""
-                                        hx-target="#historyTable"
                                     >
                                         {% trans "Return Status" %}
                                     </div>
@@ -66,10 +56,9 @@
                                 {% for asset_assignement in asset_history_list.list %}
                                 <div
                                     class="oh-sticky-table__tr"
-                                    hx-get='{% url "asset-history-single-view" asset_assignement.id %}'
+                                    hx-get='{% url "asset-history-single-view" asset_assignement.id %}?requests_ids={{requests_ids}}'
                                     hx-target="#historySingleModalBody"
                                     data-toggle="oh-modal-toggle"
-                                    ,
                                     data-target="#historySingleModal"
                                 >
                                     <div class="oh-sticky-table__sd">
