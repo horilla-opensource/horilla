@@ -208,7 +208,7 @@
 </div>
 
 <script>
-     $('.oh-table__sticky-collaspable-sort').click(function (e) { 
+  $(".oh-table__sticky-collaspable-sort").click(function (e) {
     e.preventDefault();
     let clickedEl = $(e.target).closest(".oh-table__toggle-parent");
     let targetSelector = clickedEl.data("target");
@@ -222,9 +222,14 @@
   });
   $(document).ready(function () {
     $(".all-attendance-activity-row").change(function () {
-      if ($('.all-attendance-activity').is(":checked")) {
-        $(".all-attendance-activity").prop("checked", false);
-      }
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-attendance-activity");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-attendance-activity-row:checked").length ===
+          body.find(".all-attendance-activity-row").length
+      );
       addingActivityIds();
     });
 

@@ -156,9 +156,14 @@
   $(document).ready(function () {
     tickactivityCheckboxes();
     $(".all-attendance-activity-row").change(function () {
-      if ($('.all-attendance-activity').is(":checked")) {
-        $(".all-attendance-activity").prop("checked", false);
-      }
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-attendance-activity");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-attendance-activity-row:checked").length ===
+          body.find(".all-attendance-activity-row").length
+      );
       addingActivityIds();
     });
 
@@ -175,10 +180,12 @@
     });
   });
   // toggle columns //
-  toggleColumns("attendance-activity-table","AttendanceActivityCells")
-  localStorageAttendanceActivityCells = localStorage.getItem("attendance_activity_tab")
+  toggleColumns("attendance-activity-table", "AttendanceActivityCells");
+  localStorageAttendanceActivityCells = localStorage.getItem(
+    "attendance_activity_tab"
+  );
   if (!localStorageAttendanceActivityCells) {
-    $("#AttendanceActivityCells").find("[type=checkbox]").prop("checked",true)
+    $("#AttendanceActivityCells").find("[type=checkbox]").prop("checked", true);
   }
-  $("[type=checkbox]").change()  
+  $("[type=checkbox]").change();
 </script>
