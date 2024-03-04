@@ -1,22 +1,32 @@
 {% load i18n %}
-{% if request.GET.instances_ids %}
-<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button 
-        hx-get="{% url 'one-request-view' previous %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" hx-target="{% if dashboard == 'true' %}#bigModalTarget {% else %}#requestView{% endif %}"
-        class="oh-modal__diaglog-nav oh-modal__nav-prev">
-        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
-        aria-label="chevron back outline"></ion-icon>
-    </button>
-
-    <button  
-        hx-get="{% url 'one-request-view' next %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" hx-target="{% if dashboard == 'true' %}#bigModalTarget {% else %}#requestView{% endif %}"
-        class="oh-modal__diaglog-nav oh-modal__nav-next">
-        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
-        aria-label="chevron forward outline"></ion-icon>
+<div class="oh-modal__dialog-header">
+    <span
+      class="oh-modal__dialog-title"
+      id="rotatingWorkTypeDetailModalLabel"
+        >
+      {% trans "Details" %}
+    </span>
+    <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
-{% endif %}
-<div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-2">
+<div class="oh-modal__dialog-body  oh-modal__dialog-relative">
+    <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+        <button 
+            hx-get="{% url 'one-request-view' previous %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" hx-target="#objectDetailsModalW25Target"
+            class="oh-modal__diaglog-nav oh-modal__nav-prev">
+            <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+            aria-label="chevron back outline"></ion-icon>
+        </button>
+    
+        <button  
+            hx-get="{% url 'one-request-view' next %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" hx-target="#objectDetailsModalW25Target"
+            class="oh-modal__diaglog-nav oh-modal__nav-next">
+            <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+            aria-label="chevron forward outline"></ion-icon>
+        </button>
+    </div>
+
     <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
         href ="{% url 'employee-view-individual' leave_request.employee_id.id %}">
         <div class="oh-profile">

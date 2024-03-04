@@ -48,8 +48,8 @@
         <div class="oh-sticky-table__tbody">
         {% for available_leave in available_leaves %}
         <div class="oh-sticky-table__tr" draggable="false"
-            data-toggle="oh-modal-toggle" data-target="#leaveAssignModal"
-            hx-target="#leaveAssignModalTarget"
+            data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25"
+            hx-target="#objectDetailsModalW25Target"
             hx-get="{% url 'available-leave-single-view' available_leave.id %}?{{pd}}&instances_ids={{available_leave_ids}}">
             <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                 <div class="centered-div">

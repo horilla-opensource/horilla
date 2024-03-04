@@ -95,8 +95,8 @@
                         <div class="oh-card-dashboard__body">
                             <ul class="oh-card-dashboard__user-list" style="height: 380px;overflow-y:auto">
                                 {% for leave_today_employee in leave_today_employees %}
-                                    <li class="oh-card-dashboard__user-item pointer" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
-                                    hx-get="{% url 'one-request-view' leave_today_employee.id %}" hx-target="#requestView">
+                                    <li class="oh-card-dashboard__user-item pointer" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25"
+                                    hx-get="{% url 'one-request-view' leave_today_employee.id %}" hx-target="#objectDetailsModalW25Target">
                                         <div class="oh-profile oh-profile--md">
                                             <div class="oh-profile__avatar mr-1">
                                                 <img src="https://ui-avatars.com/api/?name={{leave_today_employee.employee_id}}&background=random"

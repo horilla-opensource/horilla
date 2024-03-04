@@ -27,7 +27,7 @@
   <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button
       hx-get="{% url 'available-leave-single-view' previous_instance %}?instances_ids={{instance_ids_json}}"
-      hx-target="#leaveAssignModalTarget"
+      hx-target="#objectDetailsModalW25Target"
       class="oh-modal__diaglog-nav oh-modal__nav-prev"
     >
       <ion-icon
@@ -40,7 +40,7 @@
 
     <button
       hx-get="{% url 'available-leave-single-view' next_instance %}?instances_ids={{instance_ids_json}}"
-      hx-target="#leaveAssignModalTarget"
+      hx-target="#objectDetailsModalW25Target"
       class="oh-modal__diaglog-nav oh-modal__nav-next"
     >
       <ion-icon
@@ -141,7 +141,7 @@
               </a>
             {% endif %}
             <form hx-confirm="{% trans 'Are you sure you want to delete this work type request?' %}" 
-                  hx-post="{% url 'assign-delete' available_leave.id %}?instances_ids={{instance_ids_json}}" hx-target="#leaveAssignModalTarget" style="width: 50%">
+                  hx-post="{% url 'assign-delete' available_leave.id %}?instances_ids={{instance_ids_json}}" hx-target="#objectDetailsModalW25Target" style="width: 50%">
               {% csrf_token %}
               <button type='submit' class="oh-btn oh-btn--secondary w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
             </form>
