@@ -294,9 +294,13 @@ def asset_tab(request, emp_id):
         requested_employee_id=emp_id, asset_request_status="Requested"
     )
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
+    assets_ids = json.dumps(
+        [instance.id for instance in assets]
+    )
     context = {
         "assets": assets,
         "requests": assets_requests,
+        "assets_ids":assets_ids,
         "employee": emp_id,
     }
     return render(request, "tabs/asset-tab.html", context=context)
