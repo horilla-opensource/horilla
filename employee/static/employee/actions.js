@@ -91,12 +91,15 @@ $(".all-employee").change(function (e) {
 });
 
 $(".all-employee-row").change(function () {
-  if ($(".all-employee").is(":checked")) {
-    $(".all-employee").prop("checked", false);
-    $("#selectedInstances").attr("data-clicked", 0);
-  }
-
-  addingIds();
+  var parentTable = $(this).closest(".oh-sticky-table");
+  var body = parentTable.find(".oh-sticky-table__tbody");
+  var parentCheckbox = parentTable.find(".all-employee");
+  parentCheckbox.prop(
+    "checked",
+    body.find(".all-employee-row:checked").length ===
+      body.find(".all-employee-row").length
+  );
+  addingIds()
 });
 
 function addingIds() {

@@ -314,9 +314,14 @@ style="cursor: pointer; display: none;"
 
   $(document).ready(function () {
     $(".all-work-type-requests-row").change(function () {
-      if ($('.all-work-type-requests').is(":checked")) {
-        $(".all-work-type-requests").prop("checked", false);
-      }
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-work-type-requests");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-work-type-requests-row:checked").length ===
+          body.find(".all-work-type-requests-row").length
+      );
       addingWorktypeIds();
     });
 
@@ -403,7 +408,9 @@ style="cursor: pointer; display: none;"
             $("#" + empId).prop("checked", false);
             $(".all-work-type-requests").prop("checked", false);
           }
-          var ids = JSON.parse($("#selectedWorktypes").attr("data-ids") || "[]");
+          var ids = JSON.parse(
+            $("#selectedWorktypes").attr("data-ids") || "[]"
+          );
           var uniqueIds = makeListUnique(ids);
           toggleHighlight(uniqueIds);
           $("#selectedWorktypes").attr("data-ids", JSON.stringify([]));
@@ -421,11 +428,11 @@ style="cursor: pointer; display: none;"
     });
   });
   // toggle columns //
-  toggleColumns("work-type-request-table","workTypeRequestCells")
-  localStorageWorkTypeReqCells = localStorage.getItem("work_type_request_tab")
-  console.log('localStorageWorkTypeReqCells==',localStorageWorkTypeReqCells)
+  toggleColumns("work-type-request-table", "workTypeRequestCells");
+  localStorageWorkTypeReqCells = localStorage.getItem("work_type_request_tab");
+  console.log("localStorageWorkTypeReqCells==", localStorageWorkTypeReqCells);
   if (!localStorageWorkTypeReqCells) {
-    $("#workTypeRequestCells").find("[type=checkbox]").prop("checked",true)
+    $("#workTypeRequestCells").find("[type=checkbox]").prop("checked", true);
   }
-  $("[type=checkbox]").change()
+  $("[type=checkbox]").change();
 </script>

@@ -676,7 +676,6 @@
         $("#selectedShowShifts").css("display", "none");
         $("#exportShifts").css("display", "none");
         $("#unselectAllShifts").css("display", "none");
-		
       } else {
         $("#exportShifts").css("display", "inline-flex");
         $("#unselectAllShifts").css("display", "inline-flex");
@@ -688,12 +687,16 @@
 
   $(document).ready(function () {
     $(".all-shift-requests-row").change(function () {
-	if ($('.all-shift-requests').is(":checked")) {
-	  	$(".all-shift-requests").prop("checked", false);
-	}
-	addingShiftIds();
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-shift-requests");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-shift-requests-row:checked").length ===
+          body.find(".all-shift-requests-row").length
+      );
+      addingShiftIds();
     });
-
     $(".all-shift-requests").change(function () {
       addingShiftIds();
     });
@@ -792,5 +795,3 @@
     });
   });
 </script>
-
-

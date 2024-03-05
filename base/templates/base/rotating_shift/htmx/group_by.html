@@ -329,138 +329,145 @@
 </div>
 <script>
   function addingRShiftIds() {
-		var ids = JSON.parse($("#selectedRShifts").attr("data-ids") || "[]");
-		var selectedCount = 0;
-		
-		$(".all-rshift-row").each(function () {
-			if ($(this).is(":checked")) {
-			ids.push(this.id);
-			} else {
-			var index = ids.indexOf(this.id);
-			if (index > -1) {
-				ids.splice(index, 1);
-			}
-			}
-		});
-		
-		ids = makeRShiftListUnique(ids);
-		selectedCount = ids.length;
-		
-		getCurrentLanguageCode(function (code) {
-			languageCode = code;
-			var message = rowMessages[languageCode];
-			$("#selectedRShifts").attr("data-ids", JSON.stringify(ids));
-			if (selectedCount === 0) {
-			$("#selectedShowRShifts").css("display", "none");
-			$("#exportRShifts").css("display", "none");
-			$("#unselectAllRShifts").css("display", "none");
-			} else {
-			$("#exportRShifts").css("display", "inline-flex");
-			$("#unselectAllRShifts").css("display", "inline-flex");
-			$("#selectedShowRShifts").css("display", "inline-flex");
-			$("#selectedShowRShifts").text(selectedCount + " - " + message);
-			}
-		});
-	}
+    var ids = JSON.parse($("#selectedRShifts").attr("data-ids") || "[]");
+    var selectedCount = 0;
 
-	$(document).ready(function() {
-		
-		$(".all-rshift-row").change(function () {
-      if ($('.all-rshift').is(":checked")) {
-        $(".all-rshift").prop("checked", false);
+    $(".all-rshift-row").each(function () {
+      if ($(this).is(":checked")) {
+        ids.push(this.id);
+      } else {
+        var index = ids.indexOf(this.id);
+        if (index > -1) {
+          ids.splice(index, 1);
+        }
       }
-			addingRShiftIds();
-		});
+    });
 
-		$(".all-rshift").change(function () {
-			addingRShiftIds();
-		});
+    ids = makeRShiftListUnique(ids);
+    selectedCount = ids.length;
 
-		tickRShiftCheckboxes();
+    getCurrentLanguageCode(function (code) {
+      languageCode = code;
+      var message = rowMessages[languageCode];
+      $("#selectedRShifts").attr("data-ids", JSON.stringify(ids));
+      if (selectedCount === 0) {
+        $("#selectedShowRShifts").css("display", "none");
+        $("#exportRShifts").css("display", "none");
+        $("#unselectAllRShifts").css("display", "none");
+      } else {
+        $("#exportRShifts").css("display", "inline-flex");
+        $("#unselectAllRShifts").css("display", "inline-flex");
+        $("#selectedShowRShifts").css("display", "inline-flex");
+        $("#selectedShowRShifts").text(selectedCount + " - " + message);
+      }
+    });
+  }
 
-		$('#selectAllRShifts').click(function() {
-			$("#selectedRShifts").attr("data-clicked", 1);
-			$('#selectedShowRShifts').removeAttr('style');
-			var savedFilters = JSON.parse(localStorage.getItem('savedFilters'));
+  $(document).ready(function () {
+    $(".all-rshift-row").change(function () {
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-rshift");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-rshift-row:checked").length ===
+          body.find(".all-rshift-row").length
+      );
+      addingRShiftIds();
+    });
 
-			if (savedFilters && savedFilters['filterData'] !== null) 
-			{
-				var filter = savedFilters['filterData'];
-				$.ajax({
-					url: '{% url "r-shift-select-filter" %}',
-					data: { page: 'all', 'filter':JSON.stringify(filter) },
-					type: 'GET',
-					dataType: 'json',
-					success: function(response) {
-					var employeeIds = response.employee_ids;
-						var selectedCount = employeeIds.length;	
-						for (var i = 0; i < employeeIds.length; i++) {
+    $(".all-rshift").change(function () {
+      addingRShiftIds();
+    });
+
+    tickRShiftCheckboxes();
+
+    $("#selectAllRShifts").click(function () {
+      $("#selectedRShifts").attr("data-clicked", 1);
+      $("#selectedShowRShifts").removeAttr("style");
+      var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+
+      if (savedFilters && savedFilters["filterData"] !== null) {
+        var filter = savedFilters["filterData"];
+        $.ajax({
+          url: '{% url "r-shift-select-filter" %}',
+          data: { page: "all", filter: JSON.stringify(filter) },
+          type: "GET",
+          dataType: "json",
+          success: function (response) {
+            var employeeIds = response.employee_ids;
+            var selectedCount = employeeIds.length;
+            for (var i = 0; i < employeeIds.length; i++) {
               var empId = employeeIds[i];
-              $('#' + empId).prop('checked', true);
-						}
-						$("#selectedRShifts").attr("data-ids", JSON.stringify(employeeIds));
+              $("#" + empId).prop("checked", true);
+            }
+            $("#selectedRShifts").attr("data-ids", JSON.stringify(employeeIds));
 
-						count = makeRShiftListUnique(employeeIds)
-						tickRShiftCheckboxes(count)
-					},
-					error: function(xhr, status, error) {
-						console.error('Error:', error);
-					}
-				});
-			} 
-			else {
+            count = makeRShiftListUnique(employeeIds);
+            tickRShiftCheckboxes(count);
+          },
+          error: function (xhr, status, error) {
+            console.error("Error:", error);
+          },
+        });
+      } else {
+        $.ajax({
+          url: '{% url "r-shift-select" %}',
+          data: { page: "all" },
+          type: "GET",
+          dataType: "json",
+          success: function (response) {
+            var employeeIds = response.employee_ids;
+            var selectedCount = employeeIds.length;
+            for (var i = 0; i < employeeIds.length; i++) {
+              var empId = employeeIds[i];
+              $("#" + empId).prop("checked", true);
+            }
+            var previousIds = $("#selectedRShifts").attr("data-ids");
+            $("#selectedRShifts").attr(
+              "data-ids",
+              JSON.stringify(
+                Array.from(
+                  new Set([...employeeIds, ...JSON.parse(previousIds)])
+                )
+              )
+            );
+            count = makeRShiftListUnique(employeeIds);
+            tickRShiftCheckboxes(count);
+          },
+          error: function (xhr, status, error) {
+            console.error("Error:", error);
+          },
+        });
+      }
+    });
 
-				$.ajax({
-				url: '{% url "r-shift-select" %}',
-				data: { page: 'all'},
-				type: 'GET',
-				dataType: 'json',
-				success: function(response) {
-					var employeeIds = response.employee_ids;					
-					var selectedCount = employeeIds.length;
-					for (var i = 0; i < employeeIds.length; i++) {
-						var empId = employeeIds[i];
-						$('#' + empId).prop('checked', true);
-					}
-					var previousIds = $("#selectedRShifts").attr("data-ids")
-        	$("#selectedRShifts").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds,...JSON.parse(previousIds)]))));
-					count = makeRShiftListUnique(employeeIds)
-					tickRShiftCheckboxes(count)
-				},
-				error: function(xhr, status, error) {
-					console.error('Error:', error);
-				}
-				});
-			}
-		});
-
-		$('#unselectAllRShifts').click(function(){
-			$("#selectedRShifts").attr("data-clicked", 0);
-			$.ajax({
-				url: '{% url "r-shift-select" %}',
-				data: { page: 'unselect', 'filter': '{}' },
-				type: 'GET',
-				dataType: 'json',
-				success: function(response) {
-					var employeeIds = response.employee_ids;
-					for (var i = 0; i < employeeIds.length; i++) {
+    $("#unselectAllRShifts").click(function () {
+      $("#selectedRShifts").attr("data-clicked", 0);
+      $.ajax({
+        url: '{% url "r-shift-select" %}',
+        data: { page: "unselect", filter: "{}" },
+        type: "GET",
+        dataType: "json",
+        success: function (response) {
+          var employeeIds = response.employee_ids;
+          for (var i = 0; i < employeeIds.length; i++) {
             var empId = employeeIds[i];
-            $('#' + empId).prop('checked', false);
-            $(".all-rshift").prop('checked', false);
-					}
+            $("#" + empId).prop("checked", false);
+            $(".all-rshift").prop("checked", false);
+          }
           var ids = JSON.parse($("#selectedRShifts").attr("data-ids") || "[]");
           var uniqueIds = makeListUnique(ids);
           toggleHighlight(uniqueIds);
-					$("#selectedRShifts").attr("data-ids", JSON.stringify([]));
+          $("#selectedRShifts").attr("data-ids", JSON.stringify([]));
 
-					count = [];
-					tickRShiftCheckboxes(count)
-				},
-				error: function(xhr, status, error) {
-					console.error('Error:', error);
-				}
-			});
-		});
-	});
-
+          count = [];
+          tickRShiftCheckboxes(count);
+        },
+        error: function (xhr, status, error) {
+          console.error("Error:", error);
+        },
+      });
+    });
+  });
 </script>
