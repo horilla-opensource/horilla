@@ -36,7 +36,12 @@ def recruitment_search(request):
     """
     This method is used to search recruitment
     """
-    filter_obj = RecruitmentFilter(request.GET)
+    if not request.GET:
+        request.GET.copy().update({"is_active": "on"})
+    queryset = Recruitment.objects.all()
+    if not request.GET.get('is_active'):
+        queryset = Recruitment.objects.filter(is_active=True)
+    filter_obj = RecruitmentFilter(request.GET,queryset)
     previous_data = request.GET.urlencode()
     recruitment_obj = sortby(request, filter_obj.qs, "orderby")
     data_dict = parse_qs(previous_data)
@@ -59,8 +64,8 @@ def stage_search(request):
     """
     This method is used to search stage
     """
-
-    stages = StageFilter(request.GET).qs
+    queryset=Stage.objects.filter(recruitment_id__is_active=True)
+    stages = StageFilter(request.GET,queryset).qs
     previous_data = request.GET.urlencode()
     stages = sortby(request, stages, "orderby")
     data_dict = parse_qs(previous_data)

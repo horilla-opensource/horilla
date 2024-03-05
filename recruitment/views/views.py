@@ -846,6 +846,7 @@ def stage_view(request):
     This method is used to render all stages to a template
     """
     stages = Stage.objects.all()
+    stages = stages.filter(recruitment_id__is_active=True)
     recruitments = group_by_queryset(
         stages,
         "recruitment_id",
