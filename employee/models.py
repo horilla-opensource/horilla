@@ -406,12 +406,17 @@ class Employee(models.Model):
         # your custom code here
         # ...
         # call the parent class's save method to save the object
+        prev_employee = Employee.objects.filter(id=self.id).first()
         super().save(*args, **kwargs)
         request = getattr(thread_local_middleware._thread_locals,"request",None)
         if request and not self.is_active and self.get_archive_condition() is not False:
             self.is_active = True
             super().save(*args, **kwargs)
         employee = self
+        if prev_employee and prev_employee.email != employee.email:
+            employee.employee_user_id.username = employee.email
+            employee.employee_user_id.save()
+          
         if employee.employee_user_id is None:
             # Create user if no corresponding user exists
             username = self.email
@@ -676,7 +681,7 @@ class Policy(models.Model):
     """
 
     title = models.CharField(max_length=50)
-    body = models.TextField(max_length=255)
+    body = models.TextField()
     is_visible_to_all = models.BooleanField(default=True)
     specific_employees = models.ManyToManyField(Employee, blank=True, editable=False)
     attachments = models.ManyToManyField(PolicyMultipleFile, blank=True)

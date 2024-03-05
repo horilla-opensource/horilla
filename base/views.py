@@ -269,7 +269,7 @@ def send_link(employee, request, id, user):
             from_email=EMAIL_HOST_USER,
             recipient_list=recipient,
         )
-        response_success = _("Link sended to {recipient}").format(recipient=recipient)
+        response_success = _("Password reset link sent successfully to {recipient}.").format(recipient=recipient[0])
         messages.success(request, response_success)
     except Exception as e:
         messages.error(request, e)
