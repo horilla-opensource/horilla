@@ -5137,9 +5137,16 @@ def action_type_update(request, act_id):
     """
     action = Actiontype.objects.get(id=act_id)
     form = ActiontypeForm(instance=action)
+
+    if action.action_type == "warning":
+        form.fields['block_option'].widget = forms.HiddenInput()
+
     if request.method == "POST":
         form = ActiontypeForm(request.POST, instance=action)
         if form.is_valid():
+            act_type = form.cleaned_data["action_type"]
+            if act_type == "warning":
+                form.instance.block_option = False
             form.save()
             form = ActiontypeForm()
             messages.success(request, _("Action has been updated successfully!"))

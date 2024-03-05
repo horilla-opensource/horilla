@@ -5,6 +5,7 @@
 			<div class="oh-sticky-table__tr">
 				<div class="oh-sticky-table__th">{% trans "Title" %}</div>
 				<div class="oh-sticky-table__th">{% trans "Type" %}</div>
+				<div class="oh-sticky-table__th">{% trans "Login block" %}</div>
 				{% if perms.employee.change_actiontype or perms.employee.delete_actiontype %} 
 					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 				{% endif %}
@@ -15,6 +16,10 @@
 			<div class="oh-sticky-table__tr" draggable="true">
 				<div class="oh-sticky-table__td">{{act.title}}</div>
 				<div class="oh-sticky-table__td">{{act.get_action_type_display}}</div>
+				<div class="oh-sticky-table__td">
+					{% if act.block_option %} {% trans "Yes" %}
+					{% else %}{% trans "No" %}{% endif %}				
+				</div>
 				{% if perms.employee.change_actiontype or perms.employee.delete_actiontype %} 
 					<div class="oh-sticky-table__td">
 						<div class="oh-btn-group">
@@ -55,3 +60,30 @@
 		</div>
 	</div>
 </div>
+
+<script>
+	function actionChange(selectElement) {
+		var selectedActiontype = selectElement.val();
+		var parentForm = selectElement.parents().closest("form");
+		$.ajax({
+			type: "post",
+			url: "{% url 'action-type-name' %}",
+			data: {
+				csrfmiddlewaretoken: getCookie("csrftoken"),
+				"action_type": selectedActiontype,
+			},
+			success: function (response) {
+
+				// Check if the response.action_type is "warning"
+				if (response.action_type === "warning") {
+					// Hide the 'block_option' field
+					parentForm.find('[id=id_block_option]').parent().hide();
+				} else {
+					// Show the 'block_option' field
+					parentForm.find('[id=id_block_option]').parent().show();
+				}
+				
+			},
+		});
+	  }
+</script>

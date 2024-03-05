@@ -55,4 +55,31 @@
 </div>
 <!-- end of edit modal -->
 <!-- end of modals -->
+
+<script>
+	function actionChange(selectElement) {
+		var selectedActiontype = selectElement.val();
+		var parentForm = selectElement.parents().closest("form");
+		$.ajax({
+			type: "post",
+			url: "{% url 'action-type-name' %}",
+			data: {
+				csrfmiddlewaretoken: getCookie("csrftoken"),
+				"action_type": selectedActiontype,
+			},
+			success: function (response) {
+
+				// Check if the response.action_type is "warning"
+				if (response.action_type === "warning") {
+					// Hide the 'block_option' field
+					parentForm.find('[id=id_block_option]').parent().hide();
+				} else {
+					// Show the 'block_option' field
+					parentForm.find('[id=id_block_option]').parent().show();
+				}
+				
+			},
+		});
+	  }
+</script>
 {% endblock settings %}
