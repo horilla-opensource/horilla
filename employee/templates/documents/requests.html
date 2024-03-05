@@ -203,21 +203,9 @@
 							</div>
 							<div class="oh-btn-group">
                                     {% if perms.horilla_document.change_documentrequest %} 
-                                        {% if document.status == "approved" %}
+                                        {% if document.status == "approved" or not document.document %}
                                         <a class="oh-btn oh-btn--success w-100 oh-btn--disabled"  onclick="event.stopPropagation()">
                                             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                        </a>
-                                        <a
-                                            type="submit"
-                                            hx-get="{% url 'document-reject' document.id %}"
-                                            hx-target="#rejectFileForm"  
-											data-toggle="oh-modal-toggle"
-											data-target="#rejectFileModal" 
-                                            title="{% trans 'Reject' %}"
-                                            class="oh-btn oh-btn--danger w-100"
-											onclick="event.stopPropagation()"
-                                        >
-                                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
                                         </a>
                                         {% else %}
                                         <a
@@ -230,7 +218,8 @@
                                         >
                                             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                         </a>
-										{% if document.status == 'rejected' %}
+                                        {% endif %}
+										{% if document.status == 'rejected' or not document.document %}
 										<a class="oh-btn oh-btn--danger w-100 oh-btn--disabled"  onclick="event.stopPropagation()">
                                             <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
                                         </a>
@@ -248,7 +237,6 @@
                                             <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
                                         </a>
 										{% endif %}
-                                        {% endif %}
                                     {% endif %} 
 								<form action="{% url 'document-delete' document.id %}" 
 									class="" 
