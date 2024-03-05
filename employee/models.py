@@ -766,6 +766,8 @@ class Actiontype(models.Model):
 
     title = models.CharField(max_length=50)
     action_type = models.CharField(max_length=30, choices=choice_actions)
+    block_option = models.BooleanField(default = False, verbose_name=_("Enable login block :"), 
+                                       help_text="If is enabled, employees log in will be blocked based on period of suspension or dismissal.")
 
     def __str__(self) -> str:
         return f"{self.title}"

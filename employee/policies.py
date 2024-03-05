@@ -26,6 +26,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
 from base.methods import (
+    filtersubordinates,
     get_key_instances,
 )
 
@@ -165,10 +166,17 @@ def disciplinary_actions(request):
     """
     This method is used to view all Disciplinaryaction
     """
-    form = DisciplinaryActionFilter()
-    queryset = DisciplinaryAction.objects.all()
+    employee = Employee.objects.filter(employee_user_id=request.user).first()
+    dis_actions = filtersubordinates(
+        request, DisciplinaryAction.objects.all(), "base.add_disciplinaryaction"
+    ).distinct()
+    dis_actions = dis_actions | DisciplinaryAction.objects.filter(
+        employee_id=employee
+    ).distinct()
+
+    form = DisciplinaryActionFilter(request.GET, queryset=dis_actions)
     page_number = request.GET.get("page")
-    page_obj = paginator_qry(queryset, page_number)
+    page_obj = paginator_qry(form.qs, page_number)
     previous_data = request.GET.urlencode()
 
     return render(
@@ -198,27 +206,6 @@ def get_action_type_delete(action_id):
     return action.action_type
 
 
-def employee_account_block_unblock(emp_id):
-    employee = get_object_or_404(Employee, id=emp_id)
-    if not employee:
-        # messages.info(request, _("Employee not found"))
-        return redirect(disciplinary_actions)
-    user = get_object_or_404(User, id=employee.employee_user_id.id)
-    if not user:
-        # messages.info(request, _("Employee not found"))
-        return redirect(disciplinary_actions)
-    user.is_active = not user.is_active
-    action_message = _("blocked") if not user.is_active else _("unblocked")
-    user.save()
-    # messages.success(
-    #     request,
-    #     _("{employee}'s account {action_message} successfully!").format(
-    #         employee=employee, action_message=action_message
-    #     ),
-    # )
-    return HttpResponse("<script>window.location.reload()</script>")
-
-
 def get_action_type(action_id):
     """
     This function is used to get the action type by the selection of title in the form.
@@ -235,24 +222,16 @@ def get_action_type_delete(action_id):
     return action.action_type
 
 
-def employee_account_block_unblock(emp_id):
+def employee_account_block_unblock(emp_id, result):
+
     employee = get_object_or_404(Employee, id=emp_id)
     if not employee:
-        # messages.info(request, _("Employee not found"))
         return redirect(disciplinary_actions)
     user = get_object_or_404(User, id=employee.employee_user_id.id)
     if not user:
-        # messages.info(request, _("Employee not found"))
         return redirect(disciplinary_actions)
-    user.is_active = not user.is_active
-    action_message = _("blocked") if not user.is_active else _("unblocked")
+    user.is_active = result
     user.save()
-    # messages.success(
-    #     request,
-    #     _("{employee}'s account {action_message} successfully!").format(
-    #         employee=employee, action_message=action_message
-    #     ),
-    # )
     return HttpResponse("<script>window.location.reload()</script>")
 
 
@@ -274,34 +253,11 @@ def create_actions(request):
         form = DisciplinaryActionForm(request.POST, request.FILES)
         if form.is_valid():
             employee_ids = form.cleaned_data["employee_id"]
-            start_date = form.cleaned_data["start_date"]
-            day = form.cleaned_data["days"]
-            action_id = form.cleaned_data
-            action_type = get_action_type(action_id)
 
             for employee in employee_ids:
                 user = employee.employee_user_id
-                if action_type == "suspension":
-
-                    end_date = start_date + timedelta(days=day)
-
-                    if (
-                        datetime.date.today() >= start_date
-                        or datetime.date.today() >= end_date
-                    ):
-                        employee_account_block_unblock(emp_id=employee.id)
-                        messages.warning(
-                            request, "Employees login credentials will be bloked."
-                        )
-
-                if action_type == "dismissal":
-                    if datetime.date.today() >= start_date:
-                        employee_account_block_unblock(emp_id=employee.id)
-                        messages.warning(
-                            request, "Employees login credentials will be bloked."
-                        )
-
                 employees.append(user)
+
             form.save()
             messages.success(request, _("Disciplinary action taken."))
             notify.send(
@@ -335,35 +291,10 @@ def update_actions(request, action_id):
         form = DisciplinaryActionForm(request.POST, request.FILES, instance=action)
 
         if form.is_valid():
-            emp = form.cleaned_data["employee_id"]
+            employee_ids = form.cleaned_data["employee_id"]
 
-            start_date = form.cleaned_data["start_date"]
-            day = form.cleaned_data["days"]
-            action_id = form.cleaned_data
-            action_type = get_action_type(action_id)
-
-            for i in emp:
-                name = i.employee_user_id
-                if action_type == "suspension":
-
-                    end_date = start_date + timedelta(days=day)
-
-                    if (
-                        datetime.date.today() >= start_date
-                        or datetime.date.today() >= end_date
-                    ):
-                        employee_account_block_unblock(emp_id=i.id)
-                        messages.warning(
-                            request, "Employees login credentials will be bloked."
-                        )
-
-                if action_type == "dismissal":
-                    if datetime.date.today() >= start_date:
-                        employee_account_block_unblock(emp_id=i.id)
-                        messages.warning(
-                            request, "Employees login credentials will be bloked."
-                        )
-
+            for employee in employee_ids:
+                name = employee.employee_user_id
                 employees.append(name)
 
             form.save()
@@ -394,16 +325,16 @@ def delete_actions(request, action_id):
 
     action_type = get_action_type_delete(dis.action)
 
-    for i in dis.employee_id.all():
+    for dis_emp in dis.employee_id.all():
 
         if action_type == "dismissal" or action_type == "suspension":
-            employee = get_object_or_404(Employee, id=i.id)
+            employee = get_object_or_404(Employee, id=dis_emp.id)
             user = get_object_or_404(User, id=employee.employee_user_id.id)
             if user.is_active:
                 pass
             else:
                 messages.warning(
-                    request, "Employees login credentials will be unbloked."
+                    request, "Employees login credentials will be unblocked."
                 )
                 user.is_active = True
                 user.save()
@@ -423,6 +354,14 @@ def action_type_details(request):
     action_type = action.action_type
     return JsonResponse({"action_type": action_type})
 
+
+@login_required
+def action_type_name(request):
+    """
+    This method is used to get the action type name by the selection of type in the form.
+    """
+    action_type = request.POST["action_type"]
+    return JsonResponse({"action_type": action_type})
 
 @login_required
 def disciplinary_filter_view(request):

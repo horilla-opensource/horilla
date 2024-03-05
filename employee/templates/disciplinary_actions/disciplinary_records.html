@@ -40,6 +40,7 @@
                     {% trans "Employee" %}
                 </div>
                 <div data-cell-index="1" data-cell-title='{% trans "Action Taken" %}' class="oh-sticky-table__th">{% trans "Action Taken" %}</div>
+                <div data-cell-index="5" data-cell-title='{% trans "Login Block" %}' class="oh-sticky-table__th">{% trans "Login Block" %}</div>
                 <div data-cell-index="2" data-cell-title='{% trans "Action Date" %}' class="oh-sticky-table__th">{% trans "Action Date" %}</div>
                 <div data-cell-index="3" data-cell-title='{% trans "Attachments" %}' class="oh-sticky-table__th">{% trans "Attachments" %}</div>
                 <div data-cell-index="4" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
@@ -76,12 +77,11 @@
                       />
                     </div>
                     <span class="oh-profile__name oh-text--dark" title="{{emp}}"
-                    >{{emp.employee_first_name|truncatechars:8}}</span
-                    >
+                    >{{emp.get_full_name}}</span>
                   </div>
-                  <a title="{% trans "Remove" %}" hx-target="#recruitment-container"class="oh-user-panel__remove">
+                  {% comment %} <a title="{% trans "Remove" %}" hx-target="#recruitment-container"class="oh-user-panel__remove">
                     <ion-icon name="close-outline"></ion-icon>
-                  </a>
+                  </a> {% endcomment %}
                 </span>
               {% endfor %}
             </div>
@@ -98,6 +98,10 @@
                 {% else %}
                     <div data-cell-index="1" class="oh-sticky-table__td">{{ i.action }}</div>
                 {% endif %}
+                <div data-cell-index="5" class="oh-sticky-table__td">
+                  {% if i.action.block_option %} {% trans "Yes" %}
+					        {% else %}{% trans "No" %}{% endif %}
+                </div>
                 {% if i.action.action_type == 'suspension' and i.unit_in == "days" %}
                   <div data-cell-index="2" class="oh-sticky-table__td">
                     <span class="dateformat_changer">{{ i.start_date }}</span>

@@ -357,6 +357,11 @@ urlpatterns = [
         name="action-type-details",
     ),
     path(
+        "action-type-name",
+        policies.action_type_name,
+        name="action-type-name",
+    ),
+    path(
         "disciplinary-filter-view",
         policies.disciplinary_filter_view,
         name="disciplinary-filter-view",

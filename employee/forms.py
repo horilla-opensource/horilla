@@ -154,6 +154,9 @@ class EmployeeForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs['autocomplete'] = 'email'
+        self.fields['phone'].widget.attrs['autocomplete'] = 'phone'
+        self.fields['address'].widget.attrs['autocomplete'] = 'address'
         if instance := kwargs.get("instance"):
             # ----
             # django forms not showing value inside the date, time html element.
@@ -255,6 +258,7 @@ class EmployeeWorkInformationForm(ModelForm):
 
     def __init__(self, *args, disable=False, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs['autocomplete'] = 'email'
         for field in self.fields:
             self.fields[field].widget.attrs["placeholder"] = self.fields[field].label
             if disable:
@@ -349,6 +353,7 @@ class EmployeeBankDetailsForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['address'].widget.attrs['autocomplete'] = 'address'
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "oh-input w-100"
 
@@ -606,3 +611,12 @@ class ActiontypeForm(ModelForm):
     class Meta:
         model = Actiontype
         fields = "__all__"
+
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["action_type"].widget.attrs.update(
+            {
+                "onchange": "actionChange($(this))",
+            }
+        )
