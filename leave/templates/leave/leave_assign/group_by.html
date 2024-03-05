@@ -47,11 +47,13 @@
               <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
                   <div class="oh-sticky-table__th" style="width: 10px">
+                    <div class="centered-div">
                     <input
                       type="checkbox"
                       title="{% trans 'Select All' %}"
-                      class="oh-input oh-input__checkbox mr-2 all-assigned-leaves"
+                      class="oh-input oh-input__checkbox all-assigned-leaves"
                     />
+                    </div>
                   </div>
                   <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
                   <div class="oh-sticky-table__th">
@@ -294,10 +296,14 @@
   $(document).ready(function () {
     tickLeaveCheckboxes();
     $(".all-assigned-leaves-row").change(function () {
-      var allChecked =
-        $(".all-assigned-leaves-row").length ===
-        $(".all-assigned-leaves-row:checked").length;
-      $(".all-assigned-leaves").prop("checked", allChecked);
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-assigned-leaves");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-assigned-leaves-row:checked").length ===
+          body.find(".all-assigned-leaves-row").length
+      );
       addingAssignedLeaveIds();
     });
 

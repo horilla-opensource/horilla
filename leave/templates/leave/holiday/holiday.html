@@ -194,17 +194,29 @@
   $(".all-holidays").change(function (e) {
     var is_checked = $(this).is(":checked");
     if (is_checked) {
-      $(".all-holidays-row").prop("checked", true).closest(".oh-sticky-table__tr")
-      .addClass("highlight-selected");;
+      $(".all-holidays-row")
+        .prop("checked", true)
+        .closest(".oh-sticky-table__tr")
+        .addClass("highlight-selected");
     } else {
-      $(".all-holidays-row").prop("checked", false).closest(".oh-sticky-table__tr")
-      .removeClass("highlight-selected");;
+      $(".all-holidays-row")
+        .prop("checked", false)
+        .closest(".oh-sticky-table__tr")
+        .removeClass("highlight-selected");
     }
   });
 
   $(document).ready(function () {
     tickHolidayCheckboxes();
     $(".all-holidays-row").change(function () {
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-holidays");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-holidays-row:checked").length ===
+          body.find(".all-holidays-row").length
+      );
       addingHolidayIds();
     });
 

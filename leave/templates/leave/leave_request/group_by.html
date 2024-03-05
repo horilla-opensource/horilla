@@ -375,43 +375,55 @@
 
 
 <script>
-    $(document).ready(function () {
-        var pd = $(".oh-pagination").attr('data-pd');
-        var hxVals = JSON.stringify(pd)
-        $("#requestCreateButton").attr('hx-vals',`{"pd":${hxVals}}`);
-        $(".oh-accordion-meta__header").on("click",function (){
-            $(this).siblings(".oh-accordion-meta__body").toggleClass("d-none")
-        })
-        tickLeaverequestsCheckboxes();
-        $(".all-leave-requests-row").change(function () {
-          if ($('.all-leave-requests').is(":checked")) {
-              $(".all-leave-requests").prop("checked", false);
-          }
-          addingLeaverequestsIds();
-        });
-
-        $(".all-leave-requests").change(function () {
-          addingLeaverequestsIds();
-        });
-        $("#selectAllLeaverequests").click(function () {
-          selectAllLeaverequests();
-        });
-        $("#unselectAllLeaverequests").click(function () {
-          unselectAllLeaverequests();
-        });
-        $("#exportLeaverequests").click(function (e) {
-          exportLeaverequests();
-        });
-    })
-    $(".all-leave-requests").change(function (e) {
-        var is_checked = $(this).is(":checked");
-        var closest = $(this)
-          .closest(".oh-sticky-table__thead")
-          .siblings(".oh-sticky-table__tbody");
-        if (is_checked) {
-          $(closest).children().find(".all-leave-requests-row").prop("checked", true);
-        } else {
-          $(closest).children().find(".all-leave-requests-row").prop("checked", false);
-        }
+  $(document).ready(function () {
+    var pd = $(".oh-pagination").attr("data-pd");
+    var hxVals = JSON.stringify(pd);
+    $("#requestCreateButton").attr("hx-vals", `{"pd":${hxVals}}`);
+    $(".oh-accordion-meta__header").on("click", function () {
+      $(this).siblings(".oh-accordion-meta__body").toggleClass("d-none");
     });
+    tickLeaverequestsCheckboxes();
+
+    $(".all-leave-requests-row").change(function () {
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-leave-requests");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-leave-requests-row:checked").length ===
+          body.find(".all-leave-requests-row").length
+      );
+      addingLeaverequestsIds();
+    });
+
+    $(".all-leave-requests").change(function () {
+      addingLeaverequestsIds();
+    });
+    $("#selectAllLeaverequests").click(function () {
+      selectAllLeaverequests();
+    });
+    $("#unselectAllLeaverequests").click(function () {
+      unselectAllLeaverequests();
+    });
+    $("#exportLeaverequests").click(function (e) {
+      exportLeaverequests();
+    });
+  });
+  $(".all-leave-requests").change(function (e) {
+    var is_checked = $(this).is(":checked");
+    var closest = $(this)
+      .closest(".oh-sticky-table__thead")
+      .siblings(".oh-sticky-table__tbody");
+    if (is_checked) {
+      $(closest)
+        .children()
+        .find(".all-leave-requests-row")
+        .prop("checked", true);
+    } else {
+      $(closest)
+        .children()
+        .find(".all-leave-requests-row")
+        .prop("checked", false);
+    }
+  });
 </script>

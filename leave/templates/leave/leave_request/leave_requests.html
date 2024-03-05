@@ -322,40 +322,49 @@
 </div>
 
 <script>
-    $(".all-leave-requests").change(function (e) {
-      var is_checked = $(this).is(":checked");
-      if (is_checked) {
-        $(".all-leave-requests-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
-      } else {
-        $(".all-leave-requests-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
-      }
+  $(".all-leave-requests").change(function (e) {
+    var is_checked = $(this).is(":checked");
+    if (is_checked) {
+      $(".all-leave-requests-row")
+        .prop("checked", true)
+        .closest(".oh-sticky-table__tr")
+        .addClass("highlight-selected");
+    } else {
+      $(".all-leave-requests-row")
+        .prop("checked", false)
+        .closest(".oh-sticky-table__tr")
+        .removeClass("highlight-selected");
+    }
+  });
+
+  $(document).ready(function () {
+    var pd = $(".oh-pagination").attr("data-pd");
+    var hxVals = JSON.stringify(pd);
+    $("#requestCreateButton").attr("hx-vals", `{"pd":${hxVals}}`);
+    tickLeaverequestsCheckboxes();
+    $(".all-leave-requests-row").change(function () {
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-leave-requests");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-leave-requests-row:checked").length ===
+          body.find(".all-leave-requests-row").length
+      );
+      addingLeaverequestsIds();
     });
-  
-    $(document).ready(function () {
-      var pd = $(".oh-pagination").attr('data-pd');
-      var hxVals = JSON.stringify(pd)
-      $("#requestCreateButton").attr('hx-vals',`{"pd":${hxVals}}`);
-      tickLeaverequestsCheckboxes();
-      $(".all-leave-requests-row").change(function () {
-        var allChecked =
-          $(".all-leave-requests-row").length ===
-          $(".all-leave-requests-row:checked").length;
-        $(".all-leave-requests").prop("checked", allChecked);
-        addingLeaverequestsIds();
-      });
-  
-      $(".all-leave-requests").change(function () {
-        addingLeaverequestsIds();
-      });
-      $("#selectAllLeaverequests").click(function () {
-        selectAllLeaverequests();
-      });
-      $("#unselectAllLeaverequests").click(function () {
-        unselectAllLeaverequests();
-      });
-      $("#exportLeaverequests").click(function (e) {
-        exportLeaverequests();
-      });
+
+    $(".all-leave-requests").change(function () {
+      addingLeaverequestsIds();
     });
-  </script>
-  
+    $("#selectAllLeaverequests").click(function () {
+      selectAllLeaverequests();
+    });
+    $("#unselectAllLeaverequests").click(function () {
+      unselectAllLeaverequests();
+    });
+    $("#exportLeaverequests").click(function (e) {
+      exportLeaverequests();
+    });
+  });
+</script>

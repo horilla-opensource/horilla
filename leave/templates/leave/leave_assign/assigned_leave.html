@@ -135,26 +135,37 @@
 </div>
 
 <script>
-$(document).ready(function () {
+  $(document).ready(function () {
+    
     tickLeaveCheckboxes();
-	toggleColumns("overtime-table","fieldContainerTable")
+    toggleColumns("overtime-table", "fieldContainerTable");
 
     $(".all-assigned-leaves-row").change(function () {
-        var allChecked =
-          $(".all-assigned-leaves-row").length ===
-          $(".all-assigned-leaves-row:checked").length;
-        $(".all-assigned-leaves").prop("checked", allChecked);
-        addingAssignedLeaveIds();
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-assigned-leaves");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-assigned-leaves-row:checked").length ===
+          body.find(".all-assigned-leaves-row").length
+      );
+      addingAssignedLeaveIds();
     });
 
     $(".all-assigned-leaves").change(function () {
-    var is_checked = $(this).is(":checked");
-    if (is_checked) {
-        $(".all-assigned-leaves-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
-    } else {
-        $(".all-assigned-leaves-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
-    }
-    addingAssignedLeaveIds();
+      var is_checked = $(this).is(":checked");
+      if (is_checked) {
+        $(".all-assigned-leaves-row")
+          .prop("checked", true)
+          .closest(".oh-sticky-table__tr")
+          .addClass("highlight-selected");
+      } else {
+        $(".all-assigned-leaves-row")
+          .prop("checked", false)
+          .closest(".oh-sticky-table__tr")
+          .removeClass("highlight-selected");
+      }
+      addingAssignedLeaveIds();
     });
-});
+  });
 </script>

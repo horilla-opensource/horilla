@@ -263,42 +263,51 @@
 
 
 <script>
-    $(".all-user-requests").change(function (e) {
-      var is_checked = $(this).is(":checked");
-      if (is_checked) {
-        $(".all-user-requests-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
-      } else {
-        $(".all-user-requests-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
-      }
-    });
-  
-    $(document).ready(function () {
-      var pd = $(".oh-pagination").attr('data-pd');
-      var hxVals = JSON.stringify(pd)
-      $("#requestCreateCard").attr('hx-vals',`{"pd":${hxVals}}`);
-      $("#requestCreateButton").attr('hx-vals',`{"pd":${hxVals}}`);
-      
-      tickUserrequestsCheckboxes();
-      $(".all-user-requests-row").change(function () {
-        var allChecked =
-          $(".all-user-requests-row").length ===
-          $(".all-user-requests-row:checked").length;
-        $(".all-user-requests").prop("checked", allChecked);
-        addingUserrequestsIds();
-      });
-  
-      $(".all-user-requests").change(function () {
-        addingUserrequestsIds();
-      });
-      $("#selectAllUserrequests").click(function () {
-        selectAllUserrequests();
-      });
-      $("#unselectAllUserrequests").click(function () {
-        unselectAllUserrequests();
-      });
-      $("#exportUserrequests").click(function (e) {
-        exportUserrequests();
-      });
-    });
-  </script>
+  $(".all-user-requests").change(function (e) {
+    var is_checked = $(this).is(":checked");
+    if (is_checked) {
+      $(".all-user-requests-row")
+        .prop("checked", true)
+        .closest(".oh-sticky-table__tr")
+        .addClass("highlight-selected");
+    } else {
+      $(".all-user-requests-row")
+        .prop("checked", false)
+        .closest(".oh-sticky-table__tr")
+        .removeClass("highlight-selected");
+    }
+  });
 
+  $(document).ready(function () {
+    var pd = $(".oh-pagination").attr("data-pd");
+    var hxVals = JSON.stringify(pd);
+    $("#requestCreateCard").attr("hx-vals", `{"pd":${hxVals}}`);
+    $("#requestCreateButton").attr("hx-vals", `{"pd":${hxVals}}`);
+
+    tickUserrequestsCheckboxes();
+    $(".all-user-requests-row").change(function () {
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-user-requests");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-user-requests-row:checked").length ===
+          body.find(".all-user-requests-row").length
+      );
+      addingUserrequestsIds();
+    });
+
+    $(".all-user-requests").change(function () {
+      addingUserrequestsIds();
+    });
+    $("#selectAllUserrequests").click(function () {
+      selectAllUserrequests();
+    });
+    $("#unselectAllUserrequests").click(function () {
+      unselectAllUserrequests();
+    });
+    $("#exportUserrequests").click(function (e) {
+      exportUserrequests();
+    });
+  });
+</script>
