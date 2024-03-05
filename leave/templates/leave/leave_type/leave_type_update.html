@@ -318,6 +318,15 @@
         reset_day.val("");
       }
     });
+    if (carryforward_max.val() == "")  {
+      $('#carry_max_help').hide()
+    }
+    if (carryforward_expire_period.val() == "")  {
+      $('#expire_period_help').hide()
+    }
+    if (carryforward_expire_in.val() == "")  {
+      $('#expire_in_help').hide()
+    }
 
     carryforward_type.change(function () {
       this.value == "carryforward" || this.value == "carryforward expire"
@@ -389,9 +398,7 @@
       $('#id_exclude_public_leave').prop('checked', true);
     }
   });
-  function checkYesOrNoFields(){ 
-    console.log(' yes or no')
-    console.log($('#id_approval').is(":checked"))
+  function checkYesOrNoFields(){
 
     if ($('#id_approval').is(":checked")) { 
         $('#id_require_approval').val('yes');
@@ -417,7 +424,6 @@
     else{
         $('#id_exclude_holiday').val('no');
     }
-    console.log($('#id_require_approval').val())
 
 }
 
