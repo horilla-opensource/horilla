@@ -269,7 +269,7 @@
                      {% endif %}
                   </div>
                   <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                     <button class="oh-checkpoint-badge text-success" data-toggle="oh-modal-toggle" data-target="#sendMailModal" hx-get="{% url 'send-mail' candidate.candidate_id.id %}" hx-target="#sendMailModalBody">
+                     <button class="oh-checkpoint-badge text-success" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-get="{% url 'send-mail' candidate.candidate_id.id %}" hx-target="#objectDetailsModalTarget">
                      {% trans "Send mail" %}
                      </button>
                   </div>
