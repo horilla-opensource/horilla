@@ -112,9 +112,7 @@ class CandidateStage(models.Model):
 
     def task_completion_ratio(self):
         # function that used for getting the numbers between task completed v/s tasks assigned
-        cans_tasks = CandidateTask.objects.filter(
-            candidate_id=self.candidate_id, stage_id=self.onboarding_stage_id
-        )
+        cans_tasks = self.candidate_id.candidate_task
         completed_tasks = cans_tasks.filter(status="done")
         return f"{completed_tasks.count()}/{cans_tasks.count()}"
 
