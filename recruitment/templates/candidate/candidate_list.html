@@ -165,11 +165,10 @@
                 type="button"
                 hx-get='{% url "send-mail" cand.id %}'
                 title="{% trans "Send Mail" %}"
-                hx-target="#mail-content"
-                hx-swap="innerHTML"
+                hx-target="#objectDetailsModalTarget"
                 class="oh-btn oh-btn--light-bkg w-100"
                 data-toggle="oh-modal-toggle"
-                data-target="#sendMailModal"
+                data-target="#objectDetailsModal"
                 style="padding:0.8rem 1rem"
               >
                 <ion-icon name="mail-open-outline"></ion-icon>
@@ -264,7 +263,7 @@
       </nav>
     </div>
     <!-- end of pagination -->
-  <div>
+  </div>
 
 {% else %}
   <!-- start of empty page -->

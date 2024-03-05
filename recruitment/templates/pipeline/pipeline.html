@@ -403,11 +403,11 @@
                           type="button"
                           hx-get='{% url "send-mail" cand.id %}'
                           title="{% trans "Send Mail" %}"
-                          hx-target="#mail-content"
+                          hx-target="#objectDetailsModalTarget"
                           hx-swap="innerHTML"
                           class="oh-btn oh-btn--light"
                           data-toggle="oh-modal-toggle"
-                          data-target="#sendMailModal"
+                          data-target="#objectDetailsModal"
                           style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
                         >
                           <ion-icon name="mail-open-outline"></ion-icon>

@@ -1,6 +1,11 @@
 {% load i18n %}
 <div id="ack-message-{{cand.id}}">
 </div>
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="sendMailModalLabel"><h5>{% trans 'Send Mail' %}</h5></span>
+  <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+</div>
+<div class="oh-modal__dialog-body">
 <form hx-post='{% url "send-acknowledgement" %} ' class="oh-general__tab-target oh-profile-section"
   id='ack-form-{{cand.id}}' hx-target="#ack-message-{{cand.id}}" hx-encoding="multipart/form-data">
   <input type="hidden" value="{{cand.id}}" name="id">
@@ -72,7 +77,7 @@
         name="submit" id="submit" onclick="sendMail()" value="{% trans 'Send Mail' %}">
     </div>
 </form>
-
+</div>
 
 
 
