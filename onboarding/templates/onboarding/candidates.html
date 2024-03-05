@@ -94,7 +94,7 @@
               name="joining_date" data-candidate-id="{{candidate.id}}">
           </a>
           <a data-cell-index="3" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
-            <input type="date" class="oh-input" style="width: 150px;" value={{candidate.probation_end|date:"Y-m-d"}}
+            <input type="date" class="oh-input" style="width: 150px;" value="{{candidate.probation_end|date:'Y-m-d'}}"
               name="probation_end" onchange="probotionEnd($(this))" data-candidate-id="{{candidate.id}}">
           </a>
           <a data-cell-index="4" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.job_position_id}}</a>
@@ -113,14 +113,14 @@
                 href="{% url 'rec-candidate-update' candidate.id %}?onboarding=True"><ion-icon
                   name="create-outline"></ion-icon></a>
               {% if perms.recruitment.change_candidate %}
-              <button type="button" hx-get="{% url 'send-mail' candidate.id %}" title="{% trans "Send Mail" %}" hx-target="#mail-content" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#sendMailModal" >
+              <button type="button" hx-get="{% url 'send-mail' candidate.id %}" title="{% trans "Send Mail" %}" hx-target="#objectDetailsModalTarget" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" >
                 <ion-icon name="mail-open-outline" role="img" class="md hydrated" aria-label="mail open outline"></ion-icon>
               </button>
               {% endif %}
               {% if perms.recruitment.change_candidate %}
               <button {% if candidate.is_offer_rejected %} style="background: #ff4500a3;
               color: white;" {% endif %} type="button" hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{candidate.id}}" {% if candidate.is_offer_rejected %} title="{% trans "Added In Rejected Candidates" %}" {% else %} title="{% trans "Add To Rejected Candidates" %}" {% endif %} hx-target="#rejectReasonModalBody" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#rejectReasonModal" >
-                <ion-icon name="thumbs-down-outline"></ion-icon>            </button>
+                <ion-icon name="thumbs-down-outline"></ion-icon></button>
               {% endif %}
               {% if candidate.onboarding_portal %}
               <a href="#" class="oh-btn w-100" style="background-color: yellowgreen;color: white;"
