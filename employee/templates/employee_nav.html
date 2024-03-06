@@ -213,46 +213,71 @@
           placeholder="{% trans 'Search' %}"
           name="search"
           id="employee-search"
-          onkeyup="$('.filterButton')[0].click();"
           class="oh-input oh-input__icon"
           aria-label="Search Input"
+          onkeyup="$('.filterButton')[0].click();if(this.value) {
+            $('.search_text').html(this.value)
+            $(this).parent().find('#dropdown').show()
+          }else{
+            $(this).parent().find('#dropdown').hide()
+          }"
+          onfocus="
+          if (this.value) {
+            $(this).parent().find('#dropdown').show()
+          }"
+          onfocusout="
+          setTimeout(function() {
+            $('#dropdown').hide()
+          }, 300);
+          "
         />
-        <div id="searchFieldDiv" style="display: none">
-          <select
-            name="search_field"
-            class="oh-input__icon"
-            style="
-              border: none;
-              display: flex;
-              position: absolute;
-              z-index: 999;
-              margin-left: 8%;
-            "
-            size="3"
-            onclick="$('.filterButton')[0].click();"
-          >
-            <option style="margin-left: -10px" value="reporting_manager">
-              {% trans "Search in : Reporting Manager" %}
-            </option>
-            <option style="margin-left: -10px" value="department">
-              {% trans "Search in : Department" %}
-            </option>
-            <option style="margin-left: -10px" value="job_position">
-              {% trans "Search in : Job Position" %}
-            </option>
-            <option style="margin-left: -10px" value="job_role">
-              {% trans "Search in : Job Role" %}
-            </option>
-            <option style="margin-left: -10px" value="shift">
-              {% trans "Search in : Shift" %}
-            </option>
-            <option style="margin-left: -10px" value="work_type">
-              {% trans "Search in : Work Type" %}
-            </option>
-            <option style="margin-left: -10px" value="company">
-              {% trans "Search in : Company" %}
-            </option>
-          </select>
+        <input type="text" hidden name="search_field">
+        <div class="custom-dropdown" id="dropdown">
+          <ul class="search_content">
+            <li>
+              <a href="#" onclick="$('[name=search_field]').val('reporting_manager'); $('.filterButton')[0].click()">
+                {% trans "Search" %} <b>{% trans "Reporting Manager" %}</b> {% trans "for:" %}
+                <b class="search_text"></b>
+              </a>
+            </li>
+            <li>
+              <a href="#" onclick="$('[name=search_field]').val('department'); $('.filterButton')[0].click()">
+                {% trans "Search" %} <b>{% trans "Department" %}</b> {% trans "for:" %}
+                <b class="search_text"></b>
+              </a>
+            </li>
+            <li>
+              <a href="#" onclick="$('[name=search_field]').val('job_position'); $('.filterButton')[0].click()">
+                {% trans "Search" %} <b>{% trans "Job Position" %}</b> {% trans "for:" %}
+                <b class="search_text"></b>
+              </a>
+            </li>
+            <li>
+              <a href="#" onclick="$('[name=search_field]').val('job_role'); $('.filterButton')[0].click()">
+                {% trans "Search" %} <b>{% trans "Job Role" %}</b> {% trans "for:" %}
+                <b class="search_text"></b>
+              </a>
+            </li>
+            <li>
+              <a href="#" onclick="$('[name=search_field]').val('shift'); $('.filterButton')[0].click()">
+                {% trans "Search" %} <b>{% trans "Shift" %}</b> {% trans "for:" %}
+                <b class="search_text"></b>
+              </a>
+            </li>
+            <li>
+              <a href="#" onclick="$('[name=search_field]').val('work_type'); $('.filterButton')[0].click()">
+                {% trans "Search" %} <b>{% trans "Work Type" %}</b> {% trans "for:" %}
+                <b class="search_text"></b>
+              </a>
+            </li>
+            <li>
+              <a href="#" onclick="$('[name=search_field]').val('company'); $('.filterButton')[0].click()">
+                {% trans "Search" %} <b>{% trans "Company" %}</b> {% trans "for:" %}
+                <b class="search_text"></b>
+              </a>
+            </li>
+            
+          </ul>
         </div>
       </div>
       {% endif %}
