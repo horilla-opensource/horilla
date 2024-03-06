@@ -60,14 +60,54 @@ decorator_with_arguments = (
 @decorator_with_arguments
 def delete_permission(function):
     def _function(request, *args, **kwargs):
-        if request.user.has_perm(
-            kwargs["model"]._meta.app_label
-            + ".delete_"
-            + kwargs["model"]._meta.model_name
+        user = request.user
+        employee = user.employee_get
+        is_manager = EmployeeWorkInformation.objects.filter(
+            reporting_manager_id=employee
+        ).exists()
+        if (
+            request.user.has_perm(
+                kwargs["model"]._meta.app_label
+                + ".delete_"
+                + kwargs["model"]._meta.model_name
+            )
+            or is_manager
         ):
             return function(request, *args, **kwargs)
         else:
             messages.info(request, "You dont have permission for delete.")
+            previous_url = request.META.get("HTTP_REFERER", "/")
+            key = "HTTP_HX_REQUEST"
+            if key in request.META.keys():
+                return render(request, "decorator_404.html")
+            script = f'<script>window.location.href = "{previous_url}"</script>'
+            return HttpResponse(script)
+
+    return _function
+
+
+decorator_with_arguments = (
+    lambda decorator: lambda *args, **kwargs: lambda func: decorator(
+        func, *args, **kwargs
+    )
+)
+
+
+@decorator_with_arguments
+def duplicate_permission(function):
+    def _function(request, *args, **kwargs):
+        user = request.user
+        employee = user.employee_get
+        is_manager = EmployeeWorkInformation.objects.filter(
+            reporting_manager_id=employee
+        ).exists()
+        app_label = kwargs["model"]._meta.app_label
+        modal_name = kwargs["model"]._meta.model_name
+        permission = f"{app_label}.add_{modal_name}"
+        if request.user.has_perm(permission) or is_manager:
+            return function(request, *args, **kwargs)
+        else:
+            messages.info(request, "You dont have permission for duplicate action.")
             previous_url = request.META.get("HTTP_REFERER", "/")
             key = "HTTP_HX_REQUEST"
             if key in request.META.keys():
