@@ -3,6 +3,7 @@ models.py
 
 This module is used to register django models
 """
+
 from collections.abc import Iterable
 from typing import Any
 import django
@@ -33,10 +34,12 @@ def validate_time_format(value):
     except ValueError as e:
         raise ValidationError(_("Invalid format,  excepted HH:MM")) from e
 
+
 def clear_messages(request):
     storage = messages.get_messages(request)
     for message in storage:
         pass
+
 
 class Company(models.Model):
     """
@@ -717,14 +720,16 @@ class WorkTypeRequest(models.Model):
         ordering = [
             "-id",
         ]
-    def delete(self,*args, **kwargs):
-        request = getattr(_thread_locals,"request",None)
+
+    def delete(self, *args, **kwargs):
+        request = getattr(_thread_locals, "request", None)
         if not self.approved:
             super().delete(*args, **kwargs)
         else:
             if request:
                 clear_messages(request)
-                messages.warning(request,"The request entry cannot be deleted.")
+                messages.warning(request, "The request entry cannot be deleted.")
+
     def is_any_work_type_request_exists(self):
         approved_work_type_requests_range = WorkTypeRequest.objects.filter(
             employee_id=self.employee_id,
@@ -777,9 +782,7 @@ class WorkTypeRequest(models.Model):
             )
         if not self.is_permanent_work_type:
             if not self.requested_till:
-                raise ValidationError(
-                    _("Requested till field is required.")
-                )
+                raise ValidationError(_("Requested till field is required."))
 
     def __str__(self) -> str:
         return f"{self.employee_id.employee_first_name} \
@@ -796,7 +799,7 @@ class WorktyperequestComment(models.Model):
     request_id = models.ForeignKey(WorkTypeRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
-    files = models.ManyToManyField(BaserequestFile,blank=True)
+    files = models.ManyToManyField(BaserequestFile, blank=True)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),
@@ -894,9 +897,7 @@ class ShiftRequest(models.Model):
             )
         if not self.is_permanent_shift:
             if not self.requested_till:
-                raise ValidationError(
-                    _("Requested till field is required.")
-                )
+                raise ValidationError(_("Requested till field is required."))
 
     def is_any_request_exists(self):
         approved_shift_requests_range = ShiftRequest.objects.filter(
@@ -940,19 +941,18 @@ class ShiftRequest(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-    def delete(self,*args, **kwargs):
-        request = getattr(_thread_locals,"request",None)
+    def delete(self, *args, **kwargs):
+        request = getattr(_thread_locals, "request", None)
         if not self.approved:
             super().delete(*args, **kwargs)
         else:
             if request:
                 clear_messages(request)
-                messages.warning(request,"The request entry cannot be deleted.")
-                
+                messages.warning(request, "The request entry cannot be deleted.")
+
     def __str__(self) -> str:
         return f"{self.employee_id.employee_first_name} \
             {self.employee_id.employee_last_name} - {self.requested_date}"
-
 
 
 class ShiftrequestComment(models.Model):
@@ -964,7 +964,7 @@ class ShiftrequestComment(models.Model):
 
     request_id = models.ForeignKey(ShiftRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    files = models.ManyToManyField(BaserequestFile,blank=True)
+    files = models.ManyToManyField(BaserequestFile, blank=True)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -994,6 +994,9 @@ class DynamicEmailConfiguration(models.Model):
     SingletoneModel to keep the mail server configurations
     """
 
+    is_primary = models.BooleanField(
+        default=False, verbose_name=_("Primary Mail Server")
+    )
     host = models.CharField(
         blank=True, null=True, max_length=256, verbose_name=_("Email Host")
     )
@@ -1040,16 +1043,16 @@ class DynamicEmailConfiguration(models.Model):
                 )
             )
         if not self.company_id:
-            servers_same_company = DynamicEmailConfiguration.objects.filter(
-                company_id__isnull=True
-            ).exclude(id=self.id)
-            if servers_same_company.exists():
-                raise ValidationError({"company_id": _("This field is required")})
+            raise ValidationError({"company_id": _("This field is required")})
 
     def __str__(self):
         return self.username
 
     def save(self, *args, **kwargs) -> None:
+        if self.is_primary:
+            DynamicEmailConfiguration.objects.filter(is_primary=True).update(
+                is_primary=False
+            )
         super().save(*args, **kwargs)
         servers_same_company = DynamicEmailConfiguration.objects.filter(
             company_id=self.company_id
@@ -1267,20 +1270,22 @@ class AnnouncementExpire(models.Model):
 
 
 class Announcement(models.Model):
-
     """
     Anonuncement Model for stroing all announcements.
     """
+
     from employee.models import Employee
 
     title = models.CharField(max_length=30)
-    description = models.TextField(null=True,max_length=255)
+    description = models.TextField(null=True, max_length=255)
     attachments = models.ManyToManyField(
         Attachment, related_name="announcement_attachments", blank=True
     )
     created_on = models.DateTimeField(auto_now_add=True)
     expire_date = models.DateField(null=True, blank=True)
-    employees = models.ManyToManyField(Employee, related_name="announcement_employees", blank=True)
+    employees = models.ManyToManyField(
+        Employee, related_name="announcement_employees", blank=True
+    )
     department = models.ManyToManyField(Department, blank=True)
     job_position = models.ManyToManyField(JobPosition, blank=True)
     disable_comments = models.BooleanField(default=False)
@@ -1290,6 +1295,7 @@ class Announcement(models.Model):
         This method is used to get the view count of the announcement
         """
         return self.announcementview_set.filter(viewed=True)
+
     def __str__(self):
         return self.title
 
@@ -1303,7 +1309,7 @@ class AnnouncementComment(models.Model):
 
     announcement_id = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    comment = models.TextField(null=True, verbose_name=_("Comment"),max_length=255)
+    comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),
@@ -1315,10 +1321,11 @@ class AnnouncementView(models.Model):
     """
     Announcemnt View Model
     """
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     viewed = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
 
 class EmailLog(models.Model):
