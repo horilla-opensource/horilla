@@ -3114,8 +3114,8 @@ def bonus_points_tab(request, emp_id):
     """
     employee_obj = Employee.objects.get(id=emp_id)
     points = BonusPoint.objects.get(employee_id=emp_id)
+    requested_bonus_points = Reimbursement.objects.filter(employee_id=emp_id,type = "bonus_encashment", status="requested")
     trackings = points.tracking()
-
     activity_list = []
     for history in trackings:
         activity_list.append(
@@ -3131,6 +3131,17 @@ def bonus_points_tab(request, emp_id):
                 "reason": history["pair"][0].reason,
             }
         )
+    for requested in requested_bonus_points:
+        activity_list.append(
+            {
+            "type":"requested",
+            "date": requested.created_at,
+            "points": requested.bonus_to_encash,
+            "user": employee_obj.employee_user_id,
+            "reason":"Redeemed points",
+            }
+        )
+    activity_list = sorted(activity_list, key=lambda x: x['date'], reverse=True)
     context = {
         "employee": employee_obj,
         "points": points,

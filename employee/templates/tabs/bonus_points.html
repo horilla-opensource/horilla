@@ -1,112 +1,76 @@
 {% load i18n %} {% load basefilters %}
 <div class="oh-wrapper d-flex justify-content-between mt-4">
-    <div class="oh-faq-cards">
-
-        <div class="oh-faq-card">
-            <div class="d-flex justify-content-between align-items-center">
-                <h3 class="oh-faq-card__title">{% trans "Bonus Points" %}</h3>
-                {% if perms.employee.add_bonuspoint or request.user|check_manager:employee %}
-                <div class="oh-dropdown">
-                    <button
-                        class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
-                        title="Add points"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#addPointsModal"
-                        hx-get="{% url 'add-bonus-points' employee.id %}"
-                        hx-target="#addPointTarget"
-                    >
-                        <ion-icon
-                            name="add-outline"
-                            role="img"
-                            class="md hydrated"
-                            aria-label="ellipsis vertical"
-                        ></ion-icon>
-                    </button>                    
-                </div>
-                {% endif %}
-                
+    <div class="oh-faq-card">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3 class="oh-faq-card__title">{% trans "Bonus Points" %}</h3>
+            {% if perms.employee.add_bonuspoint or request.user|check_manager:employee %}
+            <div class="oh-dropdown">
+                <button
+                    class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
+                    title="Add points"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectDetailsModal"
+                    hx-get="{% url 'add-bonus-points' employee.id %}"
+                    hx-target="#objectDetailsModalTarget"
+                >
+                    <ion-icon
+                        name="add-outline"
+                        role="img"
+                        class="md hydrated"
+                        aria-label="ellipsis vertical"
+                    ></ion-icon>
+                </button>                    
             </div>
-            <div class="oh-timeoff-modal__profile-content">
-                <div class="oh-profile mb-2">
-                <div class="oh-profile__avatar">
-                    <img src="{{employee.get_avatar}}" class="oh-profile__image me-2" />
-                </div>
-                <div class="oh-timeoff-modal__profile-info">
-                    <span class="oh-timeoff-modal__user m-0 fw-bold">{{employee}}</span>
-                    <span class="oh-timeoff-modal__user m-0" style="font-size: 12px; color: #4d4a4a">
-                    {{employee.get_department}} / {{employee.get_job_position}}</span>
-                </div>
-                </div>
-            </div>
-            <div class="card-body d-flex justify-content-between align-items-center p-3" style="height: 100px;">
-            <h4 style="font-size: 16px; color: #4f5153; width: 60%;"> {% trans "Balance points to redeem:" %} </h4>
-            <h4 class="float-end fw-bold">{{points.points}}</h4>
-            </div>
-            <a
-                hx-get="{% url 'redeem-points' employee.id %}"
-                hx-target="#redeemModalTarget"
-                data-toggle="oh-modal-toggle"
-                data-target="#redeemModal"
-                class="oh-btn oh-btn--secondary oh-btn--block"
-                >{% trans "Redeem Now" %}</a
-            >
+            {% endif %}
+            
         </div>
+        <div class="oh-timeoff-modal__profile-content">
+            <div class="oh-profile mb-2">
+            <div class="oh-profile__avatar">
+                <img src="{{employee.get_avatar}}" class="oh-profile__image me-2" />
+            </div>
+            <div class="oh-timeoff-modal__profile-info">
+                <span class="oh-timeoff-modal__user m-0 fw-bold">{{employee}}</span>
+                <span class="oh-timeoff-modal__user m-0" style="font-size: 12px; color: #4d4a4a">
+                {{employee.get_department}} / {{employee.get_job_position}}</span>
+            </div>
+            </div>
+        </div>
+        <div class="card-body d-flex justify-content-between align-items-center p-3" style="height: 100px;">
+        <h4 style="font-size: 16px; color: #4f5153; width: 60%;"> {% trans "Balance points to redeem:" %} </h4>
+        <h4 class="float-end fw-bold">{{points.points}}</h4>
+        </div>
+        <a
+            hx-get="{% url 'redeem-points' employee.id %}"
+            hx-target="#objectDetailsModalW25Target"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectDetailsModalW25"
+            class="oh-btn oh-btn--secondary oh-btn--block"
+            >{% trans "Redeem Now" %}</a
+        >
     </div>
     <div class="oh-faq-card" style="width: 60%; max-height:320px; overflow-y:auto">
-        {% for activity in activity_list %}
-            <div class="oh-helpdesk__chat-update pb-0">
-                {% if activity.type == 'Bonus point created' %}
-                    <span> <strong>--></strong> {% trans "Bonus Account created" %} </span>
-                    <span class="dateformat_changer">{{ activity.date|date:"d N Y"}}</span>
-                {% else %}                
-                <span
-                    >{% if activity.reason == 'bonus points has been redeemed.' %} <strong> --> {{activity.points|abs_value}} </strong> {% else %}<strong>--> {{activity.user}}</strong> {% trans "Added " %}
-                    <strong>{{activity.points}} </strong> {% trans "bonus points for " %}{% endif %} <a title="{{activity.reason}}">{{activity.reason|truncatechars:40}}</a> </span
-                >
-                <span class="dateformat_changer">{{ activity.date|date:"d N Y"}}</span>
-                {% endif %}
-            </div>
-        {% endfor %} 
-    </div>
-</div>
-
-<div
-    class="oh-modal"
-    id="addPointsModal"
-    role="dialog"
-    aria-labelledby="addPointsModal"
-    aria-hidden="true"
->
-    <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="addPointsModalLabel">
-                <h5>{% trans "Add Bonus Points" %}</h5>
-            </span>
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
+        <div>
+            {% for activity in activity_list %}
+                <div class="oh-helpdesk__chat-update pb-0">
+                    {% if activity.type == 'Bonus point created' %}
+                        <span> <strong>--></strong> {% trans "Bonus Account created" %} </span>
+                        <span class="dateformat_changer">{{ activity.date|date:"d N. Y"}}</span>
+                    {% elif activity.type == "requested" %}
+                    <span
+                        ><strong> --> </strong> {% trans "Redeem request created for" %}
+                        <strong>{{activity.points}} </strong> {% trans "points" %}</span
+                    >
+                    <span class="dateformat_changer">{{ activity.date|date:"d N. Y"}}</span>
+                    {% else %}                
+                    <span
+                        >{% if activity.reason == 'bonus points has been redeemed.' %} <strong> --> {{activity.points|abs_value}} </strong> {% else %}<strong>--> {{activity.user}}</strong> {% trans "Added " %}
+                        <strong>{{activity.points}} </strong> {% trans "bonus points for " %}{% endif %} <span title="{{activity.reason}}">{{activity.reason|truncatechars:40}}</span> </span
+                    >
+                    <span class="dateformat_changer">{{ activity.date|date:"d N. Y"}}</span>
+                    {% endif %}
+                </div>
+            {% endfor %} 
         </div>
-        <div class="oh-modal__dialog-body" id="addPointTarget"></div>
-    </div>
-</div>
-
-<div
-    class="oh-modal"
-    id="redeemModal"
-    role="dialog"
-    aria-labelledby="redeemModal"
-    aria-hidden="true"
->
-    <div class="oh-modal__dialog oh-modal__dialog--timeoff oh-timeoff-modal">
-        <div class="oh-modal__dialog-header">
-            <h2 class="oh-modal__dialog-title" id="">{% trans "Redeem bonus points" %}</h2>
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-        <div
-            class="oh-modal__dialog-body oh-modal__dialog-relative oh-timeoff-modal__body"
-            id="redeemModalTarget"
-        ></div>
     </div>
 </div>
