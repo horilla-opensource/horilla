@@ -299,26 +299,12 @@
 						{% include "tabs/contract-tab.html" %}
 						{% endif %}
 						{% if perms.leave.view_contract %}
-						<div
-							class="oh-modal"
-							id="ContractModal"
-							role="dialog"
-							aria-labelledby="ContractModal"
-							aria-hidden="true"
-						>
-							<div
-								class="oh-modal__dialog"
-								style="max-width: 550px"
-								id="OneContractTarget"
-							></div>
-						</div>
 					</div>
 					{% endif %}
 				</div>
 			</div>
 		</div>
 		
-		{% if perms.employee.view_employee or perms.employee.view_employeebankdetails %}
 		<div class="oh-card oh-card--margin">
 			<div class="oh-card__header">
 				<span class="oh-card__title oh-card__title--sm fw-bold me-2"
@@ -401,7 +387,6 @@
 				</div>
 			</div>
 		</div>
-		{% endif %}
 
 	</div>
 </div>
