@@ -65,6 +65,7 @@ class CompanyMiddleware:
                 "base",
                 "helpdesk",
                 "offboarding",
+                "horilla_documents",
             ]
             app_models = [
                 model

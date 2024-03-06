@@ -30,11 +30,11 @@
   <div class="oh-sticky-table__tbody" id="assetPaginatorTarget">
     {% for asset in assets %}
     <div class="oh-sticky-table__tr oh-multiple-table-sort__movable" 
-    id="assetDelete{{asset.id}}"
-    data-toggle="oh-modal-toggle" 
-    data-target="#assetInfoModal"
-    hx-get="{% url 'asset-information' asset_id=asset.id %}?requests_ids={{requests_ids}}" 
-    hx-target="#assetInfomation">
+        id="assetDelete{{asset.id}}"
+        data-toggle="oh-modal-toggle" 
+        data-target="#objectDetailsModal"
+        hx-get="{% url 'asset-information' asset_id=asset.id %}?requests_ids={{requests_ids}}" 
+        hx-target="#objectDetailsModalTarget">
       <div class="oh-sticky-table__sd">
         <div class="oh-profile oh-profile--md">
           <div class="oh-profile__avatar mr-1">
@@ -56,10 +56,10 @@
             <a 
               class="oh-btn oh-btn--light-bkg w-100" 
               data-toggle="oh-modal-toggle" 
-              data-target="#AssetCategoryModal"
+              data-target="#assetUpdate"
               hx-get="{% url 'asset-update'  asset_id=asset.id %}?asset_under=asset_filter&{{pg}}" 
               title="{% trans 'Update' %}"
-              hx-target="#AssetModal" 
+              hx-target="#assetUpdateBody" 
               onclick="event.stopPropagation()"
               id="oh-btn-asset-update-modal"> 
               <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
@@ -85,16 +85,16 @@
             {% else %}
              {% if perms.asset.change_asset %}
               <a 
-              class="oh-btn oh-btn--light-bkg w-100 " 
-              data-toggle="oh-modal-toggle" 
-              data-target="#AssetCategoryModal"
-              hx-get="{% url 'asset-update'  asset_id=asset.id %}?{{pg}}" 
-              title="{% trans 'Update' %}" 
-              hx-target="#AssetModal"
-              onclick="event.stopPropagation()"
-              id="oh-btn-asset-update-modal"> 
-              <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
-            </a>
+                class="oh-btn oh-btn--light-bkg w-100 " 
+                data-toggle="oh-modal-toggle" 
+                data-target="#assetUpdate"
+                hx-get="{% url 'asset-update'  asset_id=asset.id %}?{{pg}}" 
+                title="{% trans 'Update' %}" 
+                hx-target="#assetUpdateBody"
+                onclick="event.stopPropagation()"
+                id="oh-btn-asset-update-modal"> 
+                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+              </a>
             <a 
               class="oh-btn oh-btn--light-bkg w-100" 
               data-toggle="oh-modal-toggle"

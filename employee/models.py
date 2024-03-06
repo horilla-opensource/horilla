@@ -652,7 +652,7 @@ class EmployeeNote(models.Model):
         related_name="employee_name",
     )
     title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
-    description = models.TextField(verbose_name=_("Description"), max_length=255)
+    description = models.TextField(verbose_name=_("Description"), max_length=255, null=True,blank = True)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),

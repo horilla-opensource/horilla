@@ -5,6 +5,7 @@ Asset Management Forms
 This module contains Django ModelForms for handling various aspects of asset management,
 including asset creation, allocation, return, category assignment, and batch handling.
 """
+
 from datetime import date
 import uuid
 from django import forms
@@ -13,7 +14,15 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from employee.forms import MultipleFileField
 from employee.models import Employee
-from asset.models import Asset, AssetDocuments, AssetReport, AssetRequest, AssetAssignment, AssetCategory, AssetLot
+from asset.models import (
+    Asset,
+    AssetDocuments,
+    AssetReport,
+    AssetRequest,
+    AssetAssignment,
+    AssetCategory,
+    AssetLot,
+)
 from base.methods import reload_queryset
 from django.template.loader import render_to_string
 
@@ -100,11 +109,13 @@ class AssetForm(ModelForm):
 
     def clean(self):
         instance = self.instance
+        prev_instance = Asset.objects.filter(id=instance.pk).first()
         if instance.pk:
-            if asset_in_use := instance.assetassignment_set.filter(
-                return_status__isnull=True
-            ):
-                raise ValidationError('Asset in use you can"t change the status')
+            if self.cleaned_data.get("asset_status",None) and self.cleaned_data.get("asset_status",None) != prev_instance.asset_status:
+                if asset_in_use := instance.assetassignment_set.filter(return_status__isnull=True):
+                    raise ValidationError(
+                        {"asset_status": 'Asset in use you can"t change the status'}
+                    )
             if (
                 Asset.objects.filter(asset_tracking_id=self.data["asset_tracking_id"])
                 .exclude(id=instance.pk)
@@ -116,22 +127,32 @@ class AssetForm(ModelForm):
 
 
 class DocumentForm(forms.ModelForm):
-    file = forms.FileField(widget = forms.TextInput(attrs={
-            "name": "file",
-            "type": "File",
-            "class": "form-control",
-            "multiple": "True",
-        }))
+    file = forms.FileField(
+        widget=forms.TextInput(
+            attrs={
+                "name": "file",
+                "type": "File",
+                "class": "form-control",
+                "multiple": "True",
+            }
+        )
+    )
+
     class Meta:
         model = AssetDocuments
-        fields = ['file',]
+        fields = [
+            "file",
+        ]
 
 
 class AssetReportForm(ModelForm):
 
     class Meta:
         model = AssetReport
-        fields = ['title', 'asset_id',]
+        fields = [
+            "title",
+            "asset_id",
+        ]
 
     # def __init__(self, *args, **kwargs):
     #     super(AssetReportForm, self).__init__(*args, **kwargs)
@@ -144,7 +165,6 @@ class AssetReportForm(ModelForm):
     #     context = {"form": self}
     #     table_html = render_to_string("attendance_form.html", context)
     #     return table_html
-
 
 
 class AssetCategoryForm(ModelForm):
@@ -256,7 +276,7 @@ class AssetAllocationForm(ModelForm):
         self.fields["asset_id"].queryset = Asset.objects.filter(
             asset_status="Available"
         )
-        
+
         self.fields["assign_images"] = MultipleFileField()
         self.fields["assign_images"].required = True
 
@@ -323,7 +343,7 @@ class AssetReturnForm(ModelForm):
                 attrs={"class": "oh-select oh-select-2", "required": "true"},
             ),
         }
-        
+
     def __init__(self, *args, **kwargs):
         super(AssetReturnForm, self).__init__(*args, **kwargs)
         self.fields["return_date"].initial = date.today()

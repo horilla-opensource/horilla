@@ -44,7 +44,7 @@ class DocumentRequest(models.Model):
     format = models.CharField(choices=FORMATS, max_length=10)
     max_size = models.IntegerField(blank=True, null=True)
     description = models.TextField(blank=True, null=True,max_length=255)
-    objects = HorillaCompanyManager()
+    objects = HorillaCompanyManager(related_company_field="employee_id__employee_work_info__company_id")
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -66,7 +66,7 @@ def your_model_m2m_changed(sender, instance, action, **kwargs):
 
 
 class Document(models.Model):
-    title = models.CharField(max_length=25)
+    title = models.CharField(max_length=250)
     employee_id = models.ForeignKey(Employee, on_delete=models.PROTECT)
     document_request_id = models.ForeignKey(
         DocumentRequest, on_delete=models.PROTECT, null=True
