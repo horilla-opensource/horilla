@@ -56,7 +56,6 @@
 }
 
 </script>
-<div id="managerIn"></div>
 <div id="messages" class="oh-alert-container"></div>
 <div class="oh-wrapper">
   <div class="oh-tabs" onclick="switchTab(event)">
@@ -79,7 +78,7 @@
                   <ul class="oh-dropdown__items">
                     {% if perms.offboarding.change_offboarding or request.user.employee_get|is_offboarding_manager %}
                     <li class="oh-dropdown__item">
-                      <a hx-get="{% url "create-offboarding" %}?instance_id={{offboarding.offboarding.id}}" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
+                      <a hx-get="{% url "create-offboarding" %}?instance_id={{offboarding.offboarding.id}}" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
                     </li>
                     {% endif %}
                     {% if perms.offboarding.delete_offboarding %}
@@ -105,7 +104,7 @@
         {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding %}
           <div class="oh-tabs__content" id="Offboarding{{ offboarding.offboarding.id }}">
               {% if perms.offboarding.add_offboardingstage or request.user.employee_get|any_manager %}
-                <a hx-get="{% url 'create-offboarding-stage' %}?offboarding_id={{offboarding.offboarding.id}}" style="width: 100px;" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal" class="mb-3 oh-btn oh-btn--secondary">
+                <a hx-get="{% url 'create-offboarding-stage' %}?offboarding_id={{offboarding.offboarding.id}}" style="width: 100px;" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" class="mb-3 oh-btn oh-btn--secondary">
                   <ion-icon name="add-outline"></ion-icon>
                   {% trans 'Stage' %}
                 </a>
@@ -116,24 +115,6 @@
       {% endfor %}
     </div>
   </div>
-</div>
-
-<div class="oh-modal" id="singleModal" role="dialog" aria-labelledby="singleModalModal" aria-hidden="true">
-    <div class="oh-modal__dialog ">
-        <div class="oh-modal__dialog-header">
-            <h2 class="oh-modal__dialog-title" id="">
-              {% trans "Details" %}
-            </h2>
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-
-        <div class="oh-modal__dialog-relative" id="singleView">
-
-        </div>
-        
-    </div>
 </div>
 
 <script>

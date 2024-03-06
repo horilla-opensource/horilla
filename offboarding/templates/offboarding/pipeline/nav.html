@@ -14,7 +14,7 @@
     {% if perms.offboarding.add_offboarding %}
       <div class="oh-main__titlebar-button-container">
         <div class="oh-main__titlebar-button-container">
-          <a hx-get="{% url 'create-offboarding' %}" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal" class="oh-btn oh-btn--secondary">
+          <a hx-get="{% url 'create-offboarding' %}" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" class="oh-btn oh-btn--secondary">
             <ion-icon name="add-outline"></ion-icon>
             {% trans 'Create' %}
           </a>

@@ -1,4 +1,9 @@
 {% load i18n offboarding_filter %}
+<style>
+  .oh-dropdown__menu {
+    z-index:20
+  }
+</style>
 {% for stage in offboarding.offboarding.stages %}
 <div class="oh-accordion-meta" id="accordion{{stage.id}}">
     <div class="oh-accordion-meta__item">
@@ -23,8 +28,8 @@
               <ul class="oh-dropdown__items">
                 {% if perms.offboarding.add_offboardingemployee or request.user.employee_get|any_manager %}
                 <li class="oh-dropdown__item">
-                  <a hx-get="{% url "add-employee" %}?stage_id={{stage.grouper.id}}" data-target="#offboardingModal"
-                  data-toggle="oh-modal-toggle" hx-target="#offboardingModalBody" class="oh-dropdown__link">
+                  <a hx-get="{% url "add-employee" %}?stage_id={{stage.grouper.id}}" data-target="#objectDetailsModal"
+                  data-toggle="oh-modal-toggle" hx-target="#objectDetailsModalTarget" class="oh-dropdown__link">
                   {% trans "Add Employee" %}</a>
                 </li>
                 {% endif %}
@@ -32,8 +37,8 @@
                   <li class="oh-dropdown__item">
                     <a 
                       hx-get="{% url "create-offboarding-stage" %}?offboarding_id={{offboarding.offboarding.id}}&instance_id={{stage.grouper.id}}"
-                      data-target="#offboardingModal"
-                      data-toggle="oh-modal-toggle" hx-target="#offboardingModalBody" class="oh-dropdown__link">{% trans "Edit" %}</a>
+                      data-target="#objectDetailsModal"
+                      data-toggle="oh-modal-toggle" hx-target="#objectDetailsModalTarget" class="oh-dropdown__link">{% trans "Edit" %}</a>
                   </li>
                 {% endif %}
                 {% if perms.offboarding.delete_offboarding %}
@@ -76,7 +81,7 @@
                       <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="text-align: left !important; display: none;">
                          <ul class="oh-dropdown__items">
                             <li class="oh-dropdown__item">
-                               <a class="oh-dropdown__link" hx-get="{% url "offboarding-add-task" %}?stage_id={{stage.grouper.id}}&instance_id={{task.id}}" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal">{% trans "Edit" %}
+                               <a class="oh-dropdown__link" hx-get="{% url "offboarding-add-task" %}?stage_id={{stage.grouper.id}}&instance_id={{task.id}}" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal">{% trans "Edit" %}
                                </a>
                             </li> <li class="oh-dropdown__item">
                                <a class="oh-dropdown__link oh-dropdown__link--danger" href="{% url 'delete-offboarding-task' %}?task_ids={{task.id}}" title="{% trans "Delete" %}" onclick="event.stopPropagation();return confirm('Do you want to delete task?')">Delete</a>
@@ -90,7 +95,7 @@
                 {% endfor %}
                 <div class="oh-sticky-table__th" style="width: 120px;">
                   {% if perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}
-                    <button class="oh-checkpoint-badge text-success" data-toggle="oh-modal-toggle" data-target="#offboardingModal" hx-get="{% url "offboarding-add-task" %}?stage_id={{stage.grouper.id}}" hx-target="#offboardingModalBody">
+                    <button class="oh-checkpoint-badge text-success" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-get="{% url "offboarding-add-task" %}?stage_id={{stage.grouper.id}}" hx-target="#objectDetailsModalTarget">
                       {% trans "Add Task" %}
                     </button>
                   {% endif %}
