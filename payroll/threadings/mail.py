@@ -3,18 +3,17 @@ mail.py
 
 This module is used handle mail sent in thread
 """
+
 import logging
 from threading import Thread
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from employee.models import EmployeeWorkInformation
-from horilla.settings import EMAIL_HOST_USER
 from payroll.views.views import payslip_pdf
 from payroll.models.models import Payslip
+from base.backends import ConfiguredEmailBackend
 
 logger = logging.getLogger(__name__)
-
-
 
 
 class MailSendThread(Thread):
@@ -51,10 +50,11 @@ class MailSendThread(Thread):
                         "application/pdf",
                     )
                 )
+            email_backend = ConfiguredEmailBackend()
             email = EmailMessage(
                 f"Hello, {record['instances'][0].get_name()} Your Payslips is Ready!",
                 html_message,
-                EMAIL_HOST_USER,
+                email_backend.dynamic_username,
                 list(
                     EmployeeWorkInformation.objects.filter(
                         employee_id=record["instances"][0].employee_id

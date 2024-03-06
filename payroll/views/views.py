@@ -33,12 +33,6 @@ from payroll.models.models import (
     WorkRecord,
     Contract,
 )
-from payroll.forms.forms import (
-    ContractForm,
-    DashboardExport,
-    ReimbursementrequestCommentForm,
-    WorkRecordForm,
-)
 from payroll.models.tax_models import PayrollSettings
 from payroll.forms.component_forms import ContractExportFieldForm, PayrollSettingsForm
 from payroll.methods.methods import save_payslip
@@ -69,6 +63,10 @@ def contract_create(request):
     """
     Contract create view
     """
+    from payroll.forms.forms import (
+        ContractForm,
+    )
+
     form = ContractForm()
     if request.method == "POST":
         form = ContractForm(request.POST, request.FILES)
@@ -94,6 +92,10 @@ def contract_update(request, contract_id, **kwargs):
         Otherwise, renders the contract update form.
 
     """
+    from payroll.forms.forms import (
+        ContractForm,
+    )
+
     contract = Contract.objects.filter(id=contract_id).first()
     if not contract:
         messages.info(request, _("The contract could not be found."))
@@ -117,6 +119,10 @@ def contract_update(request, contract_id, **kwargs):
 @login_required
 @permission_required("payroll.change_contract")
 def contract_status_update(request, contract_id):
+    from payroll.forms.forms import (
+        ContractForm,
+    )
+
     if request.method == "POST":
         contract = Contract.objects.get(id=contract_id)
         if request.POST.get("view"):
@@ -323,6 +329,10 @@ def work_record_create(request):
     """
     Work record create view
     """
+    from payroll.forms.forms import (
+        WorkRecordForm,
+    )
+
     form = WorkRecordForm()
 
     context = {"form": form}
@@ -399,7 +409,6 @@ def settings(request):
             messages.success(request, _("Payroll settings updated."))
     # return render(request, "payroll/settings/payroll_settings.html", {"currency_form": currency_form})
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
 
 
 @login_required
@@ -571,6 +580,7 @@ def view_payroll_dashboard(request):
     """
     Dashboard rendering views
     """
+    from payroll.forms.forms import DashboardExport
 
     paid = Payslip.objects.filter(status="paid")
     posted = Payslip.objects.filter(status="confirmed")
@@ -582,7 +592,7 @@ def view_payroll_dashboard(request):
         "posted": posted,
         "review_ongoing": review_ongoing,
         "draft": draft,
-        "export_form":export_form,
+        "export_form": export_form,
     }
     return render(request, "payroll/dashboard.html", context=context)
 
@@ -803,12 +813,18 @@ def payslip_export(request):
     end_date = request.POST.get("end_date")
     employee = request.POST.getlist("employees")
     status = request.POST.get("status")
-    contributions = request.POST.getlist("contributions") if request.POST.getlist("contributions") else get_active_employees(None)["get_active_employees"].values_list("id",flat=True)
-    print(start_date,"start_date")
-    print(end_date,"end_date")
-    print(contributions,"contributions")
-    print(employee,"employee")
-    print(status,"status")
+    contributions = (
+        request.POST.getlist("contributions")
+        if request.POST.getlist("contributions")
+        else get_active_employees(None)["get_active_employees"].values_list(
+            "id", flat=True
+        )
+    )
+    print(start_date, "start_date")
+    print(end_date, "end_date")
+    print(contributions, "contributions")
+    print(employee, "employee")
+    print(status, "status")
     department = []
     total_amount = 0
 
@@ -833,18 +849,20 @@ def payslip_export(request):
         employee_payslip_list = employee_payslip_list.filter(status=status)
 
     emp = request.user.employee_get
-    
+
     for employ in contributions:
         payslips = Payslip.objects.filter(employee_id__id=employ)
         if end_date:
-            payslips = Payslip.objects.filter(employee_id__id=employ,end_date__lte=end_date)
+            payslips = Payslip.objects.filter(
+                employee_id__id=employ, end_date__lte=end_date
+            )
         if start_date:
-            payslips = Payslip.objects.filter(employee_id__id=employ,start_date__gte=start_date)
+            payslips = Payslip.objects.filter(
+                employee_id__id=employ, start_date__gte=start_date
+            )
             if end_date:
-                payslips=payslips.filter(end_date__lte=end_date)
-        pay_heads = payslips.values_list(
-        "pay_head_data", flat=True
-        )
+                payslips = payslips.filter(end_date__lte=end_date)
+        pay_heads = payslips.values_list("pay_head_data", flat=True)
         contribution_deductions = []
         deductions = []
         for head in pay_heads:
@@ -891,9 +909,9 @@ def payslip_export(request):
                 )
                 table5_data.append(
                     {
-                        "Employee" : Employee.objects.get(id=emp),
-                        "Employer Contribution" : employer_contribution,
-                        "Employee Contribution" : employee_contribution,
+                        "Employee": Employee.objects.get(id=emp),
+                        "Employer Contribution": employer_contribution,
+                        "Employee Contribution": employee_contribution,
                     }
                 )
 
@@ -905,7 +923,11 @@ def payslip_export(request):
             if info:
                 employee_company = info.company_id
                 company_name = Company.objects.filter(company=employee_company).first()
-                date_format = company_name.date_format if company_name and company_name.date_format else "MMM. D, YYYY"
+                date_format = (
+                    company_name.date_format
+                    if company_name and company_name.date_format
+                    else "MMM. D, YYYY"
+                )
             else:
                 date_format = "MMM. D, YYYY"
 
@@ -1027,7 +1049,7 @@ def payslip_export(request):
     df_table2 = pd.DataFrame(table2_data)
     df_table3 = pd.DataFrame(table3_data)
     df_table4 = pd.DataFrame(table4_data)
-    df_table5 = pd.DataFrame(table5_data)    
+    df_table5 = pd.DataFrame(table5_data)
 
     df_table1 = df_table1.rename(
         columns={
@@ -1058,7 +1080,7 @@ def payslip_export(request):
             "total_amount": "Total Amount",
         }
     )
-    
+
     df_table5 = df_table5.rename(
         columns={
             "contract_ending": (
@@ -1100,7 +1122,12 @@ def payslip_export(request):
         writer,
         sheet_name="Payroll Dashboard details",
         index=False,
-        startrow=len(df_table1) + 3 + len(df_table2) + len(df_table3) + len(df_table5) + 12,
+        startrow=len(df_table1)
+        + 3
+        + len(df_table2)
+        + len(df_table3)
+        + len(df_table5)
+        + 12,
     )
 
     workbook = writer.book
@@ -1173,7 +1200,7 @@ def payslip_export(request):
             header_format,
         )
         col_letter = chr(65 + col_num)
-        
+
     for col_num, value in enumerate(df_table4.columns.values):
         worksheet.write(
             len(df_table1) + 3 + len(df_table2) + len(df_table3) + len(df_table5) + 12,
@@ -1427,6 +1454,10 @@ def create_payrollrequest_comment(request, payroll_id):
     """
     This method renders form and template to create Reimbursement request comments
     """
+    from payroll.forms.forms import (
+        ReimbursementrequestCommentForm,
+    )
+
     payroll = Reimbursement.objects.filter(id=payroll_id).first()
     emp = request.user.employee_get
     form = ReimbursementrequestCommentForm(

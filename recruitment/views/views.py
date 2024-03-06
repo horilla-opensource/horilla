@@ -35,6 +35,7 @@ from django.utils.translation import gettext_lazy as _
 from employee.models import Employee, EmployeeWorkInformation
 from notifications.signals import notify
 from horilla import settings
+from base.backends import ConfiguredEmailBackend
 from horilla.decorators import (
     permission_required,
     login_required,
@@ -1285,7 +1286,8 @@ def send_acknowledgement(request):
     attachments = [
         (file.name, file.read(), file.content_type) for file in other_attachments
     ]
-    host = settings.EMAIL_HOST_USER
+    email_backend = ConfiguredEmailBackend()
+    host = email_backend.dynamic_username
     candidate_obj = Candidate.objects.get(id=candidate_id)
     template_attachment_ids = request.POST.getlist("template_attachments")
     bodys = list(

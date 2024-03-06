@@ -104,7 +104,6 @@ from employee.models import (
     EmployeeBankDetails,
 )
 from onboarding.models import OnboardingStage, OnboardingTask
-from payroll.forms.forms import EncashmentGeneralSettingsForm
 from payroll.methods.payslip_calc import dynamic_attr
 from payroll.models.models import (
     Allowance,
@@ -3039,7 +3038,7 @@ def add_note(request, emp_id=None):
         form = EmployeeNoteForm(
             request.POST,
         )
-        
+
         if form.is_valid():
             note = form.save(commit=False)
             note.updated_by = request.user.employee_get
@@ -3114,7 +3113,9 @@ def bonus_points_tab(request, emp_id):
     """
     employee_obj = Employee.objects.get(id=emp_id)
     points = BonusPoint.objects.get(employee_id=emp_id)
-    requested_bonus_points = Reimbursement.objects.filter(employee_id=emp_id,type = "bonus_encashment", status="requested")
+    requested_bonus_points = Reimbursement.objects.filter(
+        employee_id=emp_id, type="bonus_encashment", status="requested"
+    )
     trackings = points.tracking()
     activity_list = []
     for history in trackings:
@@ -3134,14 +3135,14 @@ def bonus_points_tab(request, emp_id):
     for requested in requested_bonus_points:
         activity_list.append(
             {
-            "type":"requested",
-            "date": requested.created_at,
-            "points": requested.bonus_to_encash,
-            "user": employee_obj.employee_user_id,
-            "reason":"Redeemed points",
+                "type": "requested",
+                "date": requested.created_at,
+                "points": requested.bonus_to_encash,
+                "user": employee_obj.employee_user_id,
+                "reason": "Redeemed points",
             }
         )
-    activity_list = sorted(activity_list, key=lambda x: x['date'], reverse=True)
+    activity_list = sorted(activity_list, key=lambda x: x["date"], reverse=True)
     context = {
         "employee": employee_obj,
         "points": points,
@@ -3332,6 +3333,8 @@ def organisation_chart(request):
 
 @login_required
 def encashment_condition_create(request):
+    from payroll.forms.forms import EncashmentGeneralSettingsForm
+
     instance = EncashmentGeneralSettings.objects.first()
     encashment_form = EncashmentGeneralSettingsForm(instance=instance)
     if request.method == "POST":

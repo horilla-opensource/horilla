@@ -21,7 +21,7 @@ import pandas as pd
 from asset.models import Asset
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required, owner_can_enter, permission_required
-from horilla.settings import EMAIL_HOST_USER
+from base.backends import ConfiguredEmailBackend
 from base.models import Company
 from base.methods import filter_own_records, get_key_instances, closest_numbers, sortby
 from leave.models import AvailableLeave
@@ -902,7 +902,8 @@ def send_slip(request):
     """
     Send payslip method
     """
-    if not len(EMAIL_HOST_USER):
+    email_backend = ConfiguredEmailBackend()
+    if not len(email_backend.dynamic_username):
         messages.error(request, "Email server is not configured")
         return redirect(view_payslip)
     payslip_ids = request.GET.getlist("id")
@@ -1059,12 +1060,8 @@ def view_loans(request):
         {
             "records": paginator_qry(records, request.GET.get("page")),
             "loan": paginator_qry(loan, request.GET.get("lpage")),
-            "adv_salary": paginator_qry(
-                adv_salary, request.GET.get("apage")
-            ),
-            "fine": paginator_qry(
-                fine, request.GET.get("fpage")
-            ),
+            "adv_salary": paginator_qry(adv_salary, request.GET.get("apage")),
+            "fine": paginator_qry(fine, request.GET.get("fpage")),
             "f": filter_instance,
         },
     )
@@ -1132,11 +1129,11 @@ def search_loan(request):
     loan = records.filter(type="loan")
     adv_salary = records.filter(type="advanced_salary")
     fine = records.filter(type="fine")
-    
+
     loan = sortby(request, loan, "sortby")
     adv_salary = sortby(request, adv_salary, "sortby")
     fine = sortby(request, fine, "sortby")
-    
+
     data_dict = parse_qs(request.GET.urlencode())
     get_key_instances(LoanAccount, data_dict)
     view = request.GET.get("view")
@@ -1149,12 +1146,8 @@ def search_loan(request):
         {
             "records": paginator_qry(records, request.GET.get("page")),
             "loan": paginator_qry(loan, request.GET.get("lpage")),
-            "adv_salary": paginator_qry(
-                adv_salary, request.GET.get("apage")
-            ),
-            "fine": paginator_qry(
-                fine, request.GET.get("fpage")
-            ),
+            "adv_salary": paginator_qry(adv_salary, request.GET.get("apage")),
+            "fine": paginator_qry(fine, request.GET.get("fpage")),
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
         },

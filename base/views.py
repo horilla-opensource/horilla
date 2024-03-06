@@ -39,7 +39,7 @@ from horilla.decorators import (
     login_required,
     manager_can_enter,
 )
-from horilla.settings import EMAIL_HOST_USER
+from base.backends import ConfiguredEmailBackend
 from employee.models import Actiontype, Employee, EmployeeTag, EmployeeWorkInformation
 from base.decorators import (
     shift_request_change_permission,
@@ -128,7 +128,6 @@ from base.methods import (
     get_key_instances,
     sortby,
 )
-from payroll.forms.forms import EncashmentGeneralSettingsForm
 from payroll.forms.component_forms import PayrollSettingsForm
 from payroll.models.models import EncashmentGeneralSettings
 from payroll.models.tax_models import PayrollSettings
@@ -262,12 +261,13 @@ def send_link(employee, request, id, user):
     subject = "Link To Rest Your Password!"
     url = request.build_absolute_uri("/") + "reset-password/" + id
     message = f"Reset Your Password {url}."
+    email_backend = ConfiguredEmailBackend()
     reset_ids.append({"uuid": id, "user": user})
     try:
         send_mail(
             subject=subject,
             message=message,
-            from_email=EMAIL_HOST_USER,
+            from_email=email_backend.dynamic_username,
             recipient_list=recipient,
         )
         response_success = _(
@@ -2808,7 +2808,6 @@ def work_type_request_delete(request, obj_id):
         return HttpResponse("<script>window.location.reload()</script>")
 
 
-
 @login_required
 def work_type_request_single_view(request, work_type_request_id):
     """
@@ -3882,6 +3881,8 @@ def general_settings(request):
     """
     This method is used to render settings template
     """
+    from payroll.forms.forms import EncashmentGeneralSettingsForm
+
     instance = AnnouncementExpire.objects.first()
     form = AnnouncementExpireForm(instance=instance)
     encashment_instance = EncashmentGeneralSettings.objects.first()
