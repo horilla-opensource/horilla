@@ -357,7 +357,7 @@ def calculate_tax_deduction(*_args, **kwargs):
         deductions_amt.append(amount)
     for deduction, amount in zip(deductions, deductions_amt):
         employer_contribution_amount = calculate_employer_contribution(
-            deduction, amount
+            deduction, kwargs[deduction.based_on]
         )
         serialized_deduction = {
             "deduction_id": deduction.id,
@@ -466,7 +466,7 @@ def calculate_pre_tax_deduction(*_args, **kwargs):
             pre_tax_deductions_amt.append(if_condition_on(**kwargs))
     for deduction, amount in zip(pre_tax_deductions, pre_tax_deductions_amt):
         employer_contribution_amount = calculate_employer_contribution(
-            deduction, amount
+            deduction, kwargs[deduction.based_on]
         )
         serialized_deduction = {
             "deduction_id": deduction.id,
@@ -547,7 +547,7 @@ def calculate_post_tax_deduction(*_args, **kwargs):
         else:
             if deduction.based_on != "net_pay":
                 calculation_function = calculation_mapping.get(deduction.based_on)
-                amount = calculation_function(
+                amount, taxable_gross_pay = calculation_function(
                     **{
                         "employee": employee,
                         "start_date": start_date,
@@ -557,6 +557,7 @@ def calculate_post_tax_deduction(*_args, **kwargs):
                         "total_allowance": total_allowance,
                         "basic_pay": basic_pay,
                         "day_dict": day_dict,
+                        "taxable_deduction":True,
                     }
                 )
                 kwargs["amount"] = amount
@@ -566,7 +567,7 @@ def calculate_post_tax_deduction(*_args, **kwargs):
 
     for deduction, amount in zip(post_tax_deductions, post_tax_deductions_amt):
         employer_contribution_amount = calculate_employer_contribution(
-            deduction, amount
+            deduction, taxable_gross_pay
         )
         serialized_deduction = {
             "deduction_id": deduction.id,
@@ -613,7 +614,7 @@ def calculate_net_pay_deduction(net_pay, net_pay_deductions, **kwargs):
     net_deduction = 0
     for deduction, amount in zip(deductions, deduction_amt):
         employer_contribution_amount = calculate_employer_contribution(
-            deduction, amount
+            deduction, net_pay
         )
         serialized_deduction = {
             "deduction_id": deduction.id,
@@ -732,7 +733,10 @@ def calculate_based_on_taxable_gross_pay(*_args, **kwargs):
     taxable_gross_pay = taxable_gross_pay["taxable_gross_pay"]
     rate = component.rate
     amount = taxable_gross_pay * rate / 100
-    return amount
+    if kwargs["taxable_deduction"]:
+        return amount, taxable_gross_pay
+    else:
+        return amount
 
 
 def calculate_based_on_net_pay(component, net_pay, day_dict):

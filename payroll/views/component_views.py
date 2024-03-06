@@ -136,6 +136,7 @@ def payroll_calculation(employee, start_date, end_date):
     gross_pay = updated_gross_pay_data["compensation_amount"]
     gross_pay_deductions = updated_gross_pay_data["deductions"]
 
+    kwargs["gross_pay"] = gross_pay
     pretax_deductions = calculate_pre_tax_deduction(**kwargs)
     post_tax_deductions = calculate_post_tax_deduction(**kwargs)
 
@@ -1414,7 +1415,6 @@ def get_contribution_report(request):
     This method is used to get the contribution report
     """
     employee_id = request.GET["employee_id"]
-    deudction_id = request.GET.get("deduction_id")
     pay_heads = Payslip.objects.filter(employee_id__id=employee_id).values_list(
         "pay_head_data", flat=True
     )

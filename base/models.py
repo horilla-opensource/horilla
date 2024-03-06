@@ -691,7 +691,7 @@ class WorkTypeRequest(models.Model):
     )
     description = models.TextField(null=True, verbose_name=_("Description"))
     is_permanent_work_type = models.BooleanField(
-        default=True, verbose_name=_("Permanent Request")
+        default=False, verbose_name=_("Permanent Request")
     )
     approved = models.BooleanField(default=False, verbose_name=_("Approved"))
     canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
@@ -854,7 +854,7 @@ class ShiftRequest(models.Model):
     )
     description = models.TextField(null=True, verbose_name=_("Description"))
     is_permanent_shift = models.BooleanField(
-        default=True, verbose_name=_("Permanent Request")
+        default=False, verbose_name=_("Permanent Request")
     )
     approved = models.BooleanField(default=False, verbose_name=_("Approved"))
     canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))

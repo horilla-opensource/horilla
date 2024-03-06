@@ -182,6 +182,35 @@
   <!-- end of empty page -->
 {% endif %}
 <script>
+
+  $(document).ready(function () {
+    ticklatecomeCheckboxes();
+    $(".all-latecome-row").change(function () {
+      var parentTable = $(this).closest(".oh-sticky-table");
+      var body = parentTable.find(".oh-sticky-table__tbody");
+      var parentCheckbox = parentTable.find(".all-latecome");
+      parentCheckbox.prop(
+        "checked",
+        body.find(".all-latecome-row:checked").length ===
+          body.find(".all-latecome-row").length
+      );
+      addinglatecomeIds();
+    });
+
+    $(".all-latecome").change(function () {
+      addinglatecomeIds();
+    });
+
+    $("#selectAllLatecome").click(function () {
+      selectAllLatecome();
+    });
+
+    $("#unselectAllLatecome").click(function () {
+      unselectAllLatecome();
+    });
+  });
+
+
 	toggleColumns("late-early-table","LateComeCells")
   localStorageLateComeCells = localStorage.getItem("late_early_table")
   if (!localStorageLateComeCells) {

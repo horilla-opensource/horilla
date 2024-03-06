@@ -77,51 +77,54 @@
                           @click.outside="open = false"
                           style="display: none;"
                           >
-                          
-                          <div class="row">
-                            <div class="col-sm-12 col-md-12 col-lg-6">
-                              <div class="oh-input-group">
-                                <label class="oh-label">{% trans "Start Date From" %}</label>
-                                <input class="mb-3 oh-select p-3" type="date" name="start_date" id="start_date">
-                              </div>
-                            </div>
-                            <div class="col-sm-12 col-md-12 col-lg-6">
-                              <div class="oh-input-group" >
-                                <label class="oh-label">{% trans "End Date" %}</label>
-                                <input class="mb-3 oh-select p-3" type="date" name="end_date" id="end_date">
-                              </div>
-                            </div>
-                            <div class="col-sm-12 col-md-12 col-lg-6 ">
-                                <div class="oh-input-group">
-                                  <label class="oh-label">{% trans "Employee" %}</label>
-                                  <select class="mb-3 select2-selection select2-selection--single p-3" type="text" name="employee" id="select_employee"><select>
+                            <form method = "post" action="{% url 'dashboard-export' %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label d-block">{% trans "Start Date" %}</label>
+                                            {{export_form.start_date}}
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group" >
+                                            <label class="oh-label d-block">{% trans "End Date" %}</label>
+                                            {{export_form.end_date}}
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-6 ">
+                                        <div class="oh-input-group">
+                                        <label class="oh-label">{% trans "Employee" %}</label>
+                                            {{export_form.employees}}
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-6 ">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label d-block">{% trans "Status" %}</label>
+                                            {{export_form.status}}
+                                        </div>
+                                    </div>                            
+                                    <div class="col-sm-12 col-md-12 col-lg-12 mb-3">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label d-block">{% trans "Contributions" %}</label>
+                                            {{export_form.contributions}}
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-row-reverse" >
+                                        <button
+                                        class="oh-btn oh-btn--secondary oh-btn--shadow" type="submit" id="export"
+                                        >
+                                            <ion-icon
+                                                class="me-2 md hydrated"
+                                                name="download-outline"
+                                                role="img"
+                                                aria-label="download-outline"
+                                            ></ion-icon
+                                            >{% trans "Export" %}</button
+                                        >
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-sm-12 col-md-12 col-lg-6 ">
-                                <div class="oh-input-group">
-                                    <label class="oh-label">{% trans "Status" %}</label>
-                                    <select class="mb-3 select2-selection select2-selection--single p-3" type="text" name="employee" id="select_status">
-                                        <option value=""></option>
-                                        <option value="review_ongoing">{% trans "Review Ongoing" %}</option>
-                                        <option value="confirmed">{% trans "Confirmed" %}</option>
-                                        <option value="paid">{% trans "Paid" %}</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="" >
-                                <a
-                                  class="oh-btn oh-btn--secondary oh-btn--shadow" id="export"
-                                >
-                                  <ion-icon
-                                    class="me-2 md hydrated"
-                                    name="download-outline"
-                                    role="img"
-                                    aria-label="download-outline"
-                                  ></ion-icon
-                                  >{% trans "Export" %}</a
-                                >
-                              </div>
-                          </div>
+                            </form>
                           </div>
                         </div>
                     </div>

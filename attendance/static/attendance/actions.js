@@ -553,7 +553,7 @@ function addinglatecomeIds() {
   });
 }
 function selectAllActivity() {
-  $("#selectedActivity").attr("data-clicked", 1);
+  $("#selectedActivity").attr("data-clicked", 0);
   $("#selectedShowActivity").removeAttr("style");
   var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
 
@@ -590,6 +590,9 @@ function selectAllActivity() {
       },
     });
   } else {
+
+    $("#selectedActivity").attr("data-clicked", 1);
+
     $.ajax({
       url: "/attendance/activity-attendance-select",
       data: { page: "all" },
@@ -705,65 +708,96 @@ $("#attendance-info-import").click(function (e) {
   });
 });
 
-$(".all-latecome-row").change(function () {
-  var parentTable = $(this).closest(".oh-sticky-table");
-  var body = parentTable.find(".oh-sticky-table__tbody");
-  var parentCheckbox = parentTable.find(".all-latecome");
-  parentCheckbox.prop(
-    "checked",
-    body.find(".all-latecome-row:checked").length ===
-      body.find(".all-latecome-row").length
-  );
-  addinglatecomeIds();
-});
 
-$(".all-latecome").change(function () {
-  setTimeout(() => {
-    addinglatecomeIds();
-  }, 100);
-});
+function selectAllLatecome() {
+  // $("#selectAllLatecome").click(function () {
 
-$("#selectAllLatecome").click(function () {
-  $("#selectedLatecome").attr("data-clicked", 1);
-  $("#selectedShowLatecome").removeAttr("style");
-  var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+    $("#selectedLatecome").attr("data-clicked", 0);
+    $("#selectedShowLatecome").removeAttr("style");
+    var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
 
-  if (savedFilters && savedFilters["filterData"] !== null) {
-    var filter = savedFilters["filterData"];
+    if (savedFilters && savedFilters["filterData"] !== null) {
+      var filter = savedFilters["filterData"];
 
-    $.ajax({
-      url: "/attendance/latecome-attendance-select-filter",
-      data: { page: "all", filter: JSON.stringify(filter) },
-      type: "GET",
-      dataType: "json",
-      success: function (response) {
-        var employeeIds = response.employee_ids;
+      $.ajax({
+        url: "/attendance/latecome-attendance-select-filter",
+        data: { page: "all", filter: JSON.stringify(filter) },
+        type: "GET",
+        dataType: "json",
+        success: function (response) {
+          var employeeIds = response.employee_ids;
 
-        if (Array.isArray(employeeIds)) {
-          // Continue
-        } else {
-          console.error("employee_ids is not an array:", employeeIds);
-        }
+          if (Array.isArray(employeeIds)) {
+            // Continue
+          } else {
+            console.error("employee_ids is not an array:", employeeIds);
+          }
 
-        var selectedCount = employeeIds.length;
+          var selectedCount = employeeIds.length;
 
-        for (var i = 0; i < employeeIds.length; i++) {
-          var empId = employeeIds[i];
-          $("#" + empId).prop("checked", true);
-        }
-        $("#selectedLatecome").attr("data-ids", JSON.stringify(employeeIds));
+          for (var i = 0; i < employeeIds.length; i++) {
+            var empId = employeeIds[i];
+            $("#" + empId).prop("checked", true);
+          }
+          $("#selectedLatecome").attr("data-ids", JSON.stringify(employeeIds));
 
-        count = makelatecomeListUnique(employeeIds);
-        ticklatecomeCheckboxes(count);
-      },
-      error: function (xhr, status, error) {
-        console.error("Error:", error);
-      },
-    });
-  } else {
+          count = makelatecomeListUnique(employeeIds);
+          ticklatecomeCheckboxes(count);
+        },
+        error: function (xhr, status, error) {
+          console.error("Error:", error);
+        },
+      });
+    } else {
+
+      $("#selectedLatecome").attr("data-clicked", 1);
+
+      $.ajax({
+        url: "/attendance/latecome-attendance-select",
+        data: { page: "all" },
+        type: "GET",
+        dataType: "json",
+        success: function (response) {
+          var employeeIds = response.employee_ids;
+
+          if (Array.isArray(employeeIds)) {
+            // Continue
+          } else {
+            console.error("employee_ids is not an array:", employeeIds);
+          }
+
+          var selectedCount = employeeIds.length;
+
+          for (var i = 0; i < employeeIds.length; i++) {
+            var empId = employeeIds[i];
+            $("#" + empId).prop("checked", true);
+          }
+          var previousIds = $("#selectedLatecome").attr("data-ids");
+          $("#selectedLatecome").attr(
+            "data-ids",
+            JSON.stringify(
+              Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))
+            )
+          );
+
+          count = makelatecomeListUnique(employeeIds);
+          ticklatecomeCheckboxes(count);
+        },
+        error: function (xhr, status, error) {
+          console.error("Error:", error);
+        },
+      });
+    }
+  // });
+}
+
+function unselectAllLatecome() {
+  // $("#unselectAllLatecome").click(function () {
+    $("#selectedLatecome").attr("data-clicked", 0);
+
     $.ajax({
       url: "/attendance/latecome-attendance-select",
-      data: { page: "all" },
+      data: { page: "all", filter: "{}" },
       type: "GET",
       dataType: "json",
       success: function (response) {
@@ -775,65 +809,25 @@ $("#selectAllLatecome").click(function () {
           console.error("employee_ids is not an array:", employeeIds);
         }
 
-        var selectedCount = employeeIds.length;
-
         for (var i = 0; i < employeeIds.length; i++) {
           var empId = employeeIds[i];
-          $("#" + empId).prop("checked", true);
+          $("#" + empId).prop("checked", false);
+          $(".all-latecome").prop("checked", false);
         }
-        var previousIds = $("#selectedLatecome").attr("data-ids");
-        $("#selectedLatecome").attr(
-          "data-ids",
-          JSON.stringify(
-            Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))
-          )
-        );
+        var ids = JSON.parse($("#selectedLatecome").attr("data-ids") || "[]");
+        var uniqueIds = makeListUnique(ids);
+        toggleHighlight(uniqueIds);
+        $("#selectedLatecome").attr("data-ids", JSON.stringify([]));
 
-        count = makelatecomeListUnique(employeeIds);
+        count = [];
         ticklatecomeCheckboxes(count);
       },
       error: function (xhr, status, error) {
         console.error("Error:", error);
       },
     });
-  }
-});
-
-$("#unselectAllLatecome").click(function () {
-  $("#selectedLatecome").attr("data-clicked", 0);
-
-  $.ajax({
-    url: "/attendance/latecome-attendance-select",
-    data: { page: "all", filter: "{}" },
-    type: "GET",
-    dataType: "json",
-    success: function (response) {
-      var employeeIds = response.employee_ids;
-
-      if (Array.isArray(employeeIds)) {
-        // Continue
-      } else {
-        console.error("employee_ids is not an array:", employeeIds);
-      }
-
-      for (var i = 0; i < employeeIds.length; i++) {
-        var empId = employeeIds[i];
-        $("#" + empId).prop("checked", false);
-        $(".all-latecome").prop("checked", false);
-      }
-      var ids = JSON.parse($("#selectedLatecome").attr("data-ids") || "[]");
-      var uniqueIds = makeListUnique(ids);
-      toggleHighlight(uniqueIds);
-      $("#selectedLatecome").attr("data-ids", JSON.stringify([]));
-
-      count = [];
-      ticklatecomeCheckboxes(count);
-    },
-    error: function (xhr, status, error) {
-      console.error("Error:", error);
-    },
-  });
-});
+  // });
+}
 
 $("#select-all-fields").change(function () {
   const isChecked = $(this).prop("checked");
@@ -853,6 +847,7 @@ $(".all-latecome").change(function (e) {
       .closest(".oh-sticky-table__tr")
       .addClass("highlight-selected");
   } else {
+    $("#selectedLatecome").attr("data-clicked", 0);
     $(closest)
       .children()
       .find(".all-latecome-row")
@@ -875,6 +870,7 @@ $(".all-attendance-activity").change(function (e) {
       .closest(".oh-sticky-table__tr")
       .addClass("highlight-selected");
   } else {
+    $("#selectedActivity").attr("data-clicked", 0);
     $(closest)
       .children()
       .find(".all-attendance-activity-row")

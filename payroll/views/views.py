@@ -5,6 +5,7 @@ This module is used to define the method for the path in the urls
 """
 
 from collections import defaultdict
+from itertools import groupby
 from urllib.parse import parse_qs
 import pandas as pd
 import json
@@ -22,6 +23,7 @@ from base.methods import export_data, generate_colors, get_key_instances, sortby
 from employee.models import Employee, EmployeeWorkInformation
 from base.methods import closest_numbers
 from base.methods import generate_pdf
+from payroll.context_processors import get_active_employees
 from payroll.models.models import (
     FilingStatus,
     PayrollGeneralSetting,
@@ -33,6 +35,7 @@ from payroll.models.models import (
 )
 from payroll.forms.forms import (
     ContractForm,
+    DashboardExport,
     ReimbursementrequestCommentForm,
     WorkRecordForm,
 )
@@ -573,11 +576,13 @@ def view_payroll_dashboard(request):
     posted = Payslip.objects.filter(status="confirmed")
     review_ongoing = Payslip.objects.filter(status="review_ongoing")
     draft = Payslip.objects.filter(status="draft")
+    export_form = DashboardExport()
     context = {
         "paid": paid,
         "posted": posted,
         "review_ongoing": review_ongoing,
         "draft": draft,
+        "export_form":export_form,
     }
     return render(request, "payroll/dashboard.html", context=context)
 
@@ -794,10 +799,16 @@ def payslip_export(request):
 
     """
 
-    start_date = request.GET.get("start_date")
-    end_date = request.GET.get("end_date")
-    employee = request.GET.get("employee")
-    status = request.GET.get("status")
+    start_date = request.POST.get("start_date")
+    end_date = request.POST.get("end_date")
+    employee = request.POST.getlist("employees")
+    status = request.POST.get("status")
+    contributions = request.POST.getlist("contributions") if request.POST.getlist("contributions") else get_active_employees(None)["get_active_employees"].values_list("id",flat=True)
+    print(start_date,"start_date")
+    print(end_date,"end_date")
+    print(contributions,"contributions")
+    print(employee,"employee")
+    print(status,"status")
     department = []
     total_amount = 0
 
@@ -805,6 +816,7 @@ def payslip_export(request):
     table2_data = []
     table3_data = []
     table4_data = []
+    table5_data = []
 
     employee_payslip_list = Payslip.objects.all()
 
@@ -815,72 +827,132 @@ def payslip_export(request):
         employee_payslip_list = employee_payslip_list.filter(end_date__lte=end_date)
 
     if employee:
-        employee_payslip_list = employee_payslip_list.filter(employee_id=employee)
+        employee_payslip_list = employee_payslip_list.filter(employee_id__in=employee)
 
     if status:
         employee_payslip_list = employee_payslip_list.filter(status=status)
-    user = request.user
-    emp = user.employee_get
-    for payslip in employee_payslip_list:
-        # Taking the company_name of the user
-        info = EmployeeWorkInformation.objects.filter(employee_id=emp)
-        if info.exists():
-            for data in info:
-                employee_company = data.company_id
-            company_name = Company.objects.filter(company=employee_company)
-            emp_company = company_name.first()
 
-            # Access the date_format attribute directly
-            date_format = emp_company.date_format if emp_company else "MMM. D, YYYY"
-        else:
-            date_format = "MMM. D, YYYY"
-        # Define date formats
-        date_formats = {
-            "DD-MM-YYYY": "%d-%m-%Y",
-            "DD.MM.YYYY": "%d.%m.%Y",
-            "DD/MM/YYYY": "%d/%m/%Y",
-            "MM/DD/YYYY": "%m/%d/%Y",
-            "YYYY-MM-DD": "%Y-%m-%d",
-            "YYYY/MM/DD": "%Y/%m/%d",
-            "MMMM D, YYYY": "%B %d, %Y",
-            "DD MMMM, YYYY": "%d %B, %Y",
-            "MMM. D, YYYY": "%b. %d, %Y",
-            "D MMM. YYYY": "%d %b. %Y",
-            "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
-        }
-        start_date_str = str(payslip.start_date)
-        end_date_str = str(payslip.end_date)
-
-        # Convert the string to a datetime.date object
-        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
-        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
-
-        # Print the formatted date for each format
-        for format_name, format_string in date_formats.items():
-            if format_name == date_format:
-                formatted_start_date = start_date.strftime(format_string)
-
-        for format_name, format_string in date_formats.items():
-            if format_name == date_format:
-                formatted_end_date = end_date.strftime(format_string)
-
-        table1_data.append(
-            {
-                "employee": payslip.employee_id.employee_first_name
-                + " "
-                + payslip.employee_id.employee_last_name,
-                "start_date": formatted_start_date,
-                "end_date": formatted_end_date,
-                "basic_pay": round(payslip.basic_pay, 2),
-                "deduction": round(payslip.deduction, 2),
-                "allowance": round(payslip.gross_pay - payslip.basic_pay, 2),
-                "gross_pay": round(payslip.gross_pay, 2),
-                "net_pay": round(payslip.net_pay, 2),
-                "status": status_choices.get(payslip.status),
-            },
+    emp = request.user.employee_get
+    
+    for employ in contributions:
+        payslips = Payslip.objects.filter(employee_id__id=employ)
+        if end_date:
+            payslips = Payslip.objects.filter(employee_id__id=employ,end_date__lte=end_date)
+        if start_date:
+            payslips = Payslip.objects.filter(employee_id__id=employ,start_date__gte=start_date)
+            if end_date:
+                payslips=payslips.filter(end_date__lte=end_date)
+        pay_heads = payslips.values_list(
+        "pay_head_data", flat=True
         )
+        contribution_deductions = []
+        deductions = []
+        for head in pay_heads:
+            for deduction in head["gross_pay_deductions"]:
+                if deduction.get("deduction_id"):
+                    deductions.append(deduction)
+            for deduction in head["basic_pay_deductions"]:
+                if deduction.get("deduction_id"):
+                    deductions.append(deduction)
+            for deduction in head["pretax_deductions"]:
+                if deduction.get("deduction_id"):
+                    deductions.append(deduction)
+            for deduction in head["post_tax_deductions"]:
+                if deduction.get("deduction_id"):
+                    deductions.append(deduction)
+            for deduction in head["tax_deductions"]:
+                if deduction.get("deduction_id"):
+                    deductions.append(deduction)
+            for deduction in head["net_deductions"]:
+                deductions.append(deduction)
 
-    if not employee_payslip_list:
+        deductions.sort(key=lambda x: x["deduction_id"])
+        grouped_deductions = {
+            key: list(group)
+            for key, group in groupby(deductions, key=lambda x: x["deduction_id"])
+        }
+
+        for deduction_id, group in grouped_deductions.items():
+            title = group[0]["title"]
+            employee_contribution = sum(item["amount"] for item in group)
+            employer_contribution = sum(
+                item["employer_contribution_amount"] for item in group
+            )
+            total_contribution = employee_contribution + employer_contribution
+            if employer_contribution > 0:
+                contribution_deductions.append(
+                    {
+                        "deduction_id": deduction_id,
+                        "title": title,
+                        "employee_contribution": employee_contribution,
+                        "employer_contribution": employer_contribution,
+                        "total_contribution": total_contribution,
+                    }
+                )
+                table5_data.append(
+                    {
+                        "Employee" : Employee.objects.get(id=emp),
+                        "Employer Contribution" : employer_contribution,
+                        "Employee Contribution" : employee_contribution,
+                    }
+                )
+
+    if employee_payslip_list:
+        for payslip in employee_payslip_list:
+            # Taking the company_name of the user
+            info = EmployeeWorkInformation.objects.filter(employee_id=emp).first()
+
+            if info:
+                employee_company = info.company_id
+                company_name = Company.objects.filter(company=employee_company).first()
+                date_format = company_name.date_format if company_name and company_name.date_format else "MMM. D, YYYY"
+            else:
+                date_format = "MMM. D, YYYY"
+
+            # Define date formats
+            date_formats = {
+                "DD-MM-YYYY": "%d-%m-%Y",
+                "DD.MM.YYYY": "%d.%m.%Y",
+                "DD/MM/YYYY": "%d/%m/%Y",
+                "MM/DD/YYYY": "%m/%d/%Y",
+                "YYYY-MM-DD": "%Y-%m-%d",
+                "YYYY/MM/DD": "%Y/%m/%d",
+                "MMMM D, YYYY": "%B %d, %Y",
+                "DD MMMM, YYYY": "%d %B, %Y",
+                "MMM. D, YYYY": "%b. %d, %Y",
+                "D MMM. YYYY": "%d %b. %Y",
+                "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
+            }
+            start_date_str = str(payslip.start_date)
+            end_date_str = str(payslip.end_date)
+
+            # Convert the string to a datetime.date object
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+
+            # Print the formatted date for each format
+            for format_name, format_string in date_formats.items():
+                if format_name == date_format:
+                    formatted_start_date = start_date.strftime(format_string)
+
+            for format_name, format_string in date_formats.items():
+                if format_name == date_format:
+                    formatted_end_date = end_date.strftime(format_string)
+
+            table1_data.append(
+                {
+                    "employee": f"{payslip.employee_id.employee_first_name} {payslip.employee_id.employee_last_name}",
+                    "start_date": formatted_start_date,
+                    "end_date": formatted_end_date,
+                    "basic_pay": round(payslip.basic_pay, 2),
+                    "deduction": round(payslip.deduction, 2),
+                    "allowance": round(payslip.gross_pay - payslip.basic_pay, 2),
+                    "gross_pay": round(payslip.gross_pay, 2),
+                    "net_pay": round(payslip.net_pay, 2),
+                    "status": status_choices.get(payslip.status),
+                },
+            )
+    else:
         table1_data.append(
             {
                 "employee": "None",
@@ -955,6 +1027,7 @@ def payslip_export(request):
     df_table2 = pd.DataFrame(table2_data)
     df_table3 = pd.DataFrame(table3_data)
     df_table4 = pd.DataFrame(table4_data)
+    df_table5 = pd.DataFrame(table5_data)    
 
     df_table1 = df_table1.rename(
         columns={
@@ -985,6 +1058,16 @@ def payslip_export(request):
             "total_amount": "Total Amount",
         }
     )
+    
+    df_table5 = df_table5.rename(
+        columns={
+            "contract_ending": (
+                f"Employee - Employer Contributions {start_date} to {end_date}"
+                if start_date and end_date
+                else f"Contract Ending"
+            ),
+        }
+    )
 
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -1007,11 +1090,17 @@ def payslip_export(request):
         index=False,
         startrow=len(df_table1) + 3 + len(df_table2) + 6,
     )
-    df_table4.to_excel(
+    df_table5.to_excel(
         writer,
         sheet_name="Payroll Dashboard details",
         index=False,
         startrow=len(df_table1) + 3 + len(df_table2) + len(df_table3) + 9,
+    )
+    df_table4.to_excel(
+        writer,
+        sheet_name="Payroll Dashboard details",
+        index=False,
+        startrow=len(df_table1) + 3 + len(df_table2) + len(df_table3) + len(df_table5) + 12,
     )
 
     workbook = writer.book
@@ -1021,6 +1110,7 @@ def payslip_export(request):
         len(df_table2.columns),
         len(df_table3.columns),
         len(df_table4.columns),
+        len(df_table5.columns),
     )
 
     heading_format = workbook.add_format(
@@ -1029,7 +1119,7 @@ def payslip_export(request):
             "font_size": 14,
             "align": "center",
             "valign": "vcenter",
-            "bg_color": "#B2ED67",
+            "bg_color": "#eb7968",
             "font_size": 20,
         }
     )
@@ -1049,7 +1139,7 @@ def payslip_export(request):
     )
 
     header_format = workbook.add_format(
-        {"bg_color": "#B2ED67", "bold": True, "text_wrap": True}
+        {"bg_color": "#eb7968", "bold": True, "text_wrap": True}
     )
 
     for col_num, value in enumerate(df_table1.columns.values):
@@ -1075,9 +1165,18 @@ def payslip_export(request):
         header_width = max(len(value) + 2, len(df_table3[value].astype(str).max()) + 2)
         worksheet.set_column(f"{col_letter}:{col_letter}", header_width)
 
-    for col_num, value in enumerate(df_table4.columns.values):
+    for col_num, value in enumerate(df_table5.columns.values):
         worksheet.write(
             len(df_table1) + 3 + len(df_table2) + len(df_table3) + 9,
+            col_num,
+            value,
+            header_format,
+        )
+        col_letter = chr(65 + col_num)
+        
+    for col_num, value in enumerate(df_table4.columns.values):
+        worksheet.write(
+            len(df_table1) + 3 + len(df_table2) + len(df_table3) + len(df_table5) + 12,
             col_num,
             value,
             header_format,
