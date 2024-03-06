@@ -56,7 +56,7 @@
           </div>
         </div>
         {% for allowance in allowances %}
-        <div class="oh-sticky-table__tbody ui-sortable" draggable="true" data-toggle="oh-modal-toggle" data-target = "#AllowanceModal" hx-get="{% url 'single-allowance-view' allowance.id %}?instances_ids={{allowance_ids}}" hx-target = "#OneAllowanceTarget">
+        <div class="oh-sticky-table__tbody ui-sortable" draggable="true" data-toggle="oh-modal-toggle" data-target = "#objectDetailsModal" hx-get="{% url 'single-allowance-view' allowance.id %}?instances_ids={{allowance_ids}}" hx-target = "#objectDetailsModalTarget">
           <div class="oh-sticky-table__tr ui-sortable-handle">
             <div class="oh-sticky-table__sd">{{allowance.title}}</div>
             <div data-cell-index="1" class="oh-sticky-table__td">

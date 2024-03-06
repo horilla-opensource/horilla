@@ -5,7 +5,7 @@
   <div class="oh-layout--grid-3">
     {% for deduction in deductions %}
       <div class="oh-kanban-card {% if deduction.is_fixed == True %} row-status--orange {% elif deduction.is_fixed == False %} row-status--yellow {% endif %}" 
-          data-toggle="oh-modal-toggle" data-target="#DeductionModal" hx-get="{% url 'single-deduction-view' deduction.id %}?instances_ids={{deduction_ids}}" hx-target = "#OneDeductionTarget" >
+          data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-get="{% url 'single-deduction-view' deduction.id %}?instances_ids={{deduction_ids}}" hx-target = "#objectDetailsModalTarget" >
         <div class="oh-kanban-card__avatar">
         <div class="oh-kanban-card__profile-container">
             <img
@@ -21,22 +21,22 @@
         <div class="oh-timeoff-modal__stats-container mb-1">
           <div class="oh-timeoff-modal__stat mt-2">
               <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Taxable" %}</span>
-              <span class="oh-timeoff-modal__stat-title fw-bold">{{deduction.is_tax|yesno|capfirst}}</span>
+              <span class="oh-timeoff-modal__stat-title">{{deduction.is_tax|yesno|capfirst}}</span>
           </div>
           <div class="oh-timeoff-modal__stat mt-2" style="margin-left: 20px;">
             <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Amount" %}</span>
                 {% if deduction.update_compensation %}
                     {% if deduction.is_fixed %}
-                        <span class="oh-timeoff-modal__stat-title fw-bold">{{deduction.amount}}{{currency}} Deduct From {{deduction.get_update_compensation_display}}</span>
+                        <span class="oh-timeoff-modal__stat-title">{{deduction.amount}}{{currency}} Deduct From {{deduction.get_update_compensation_display}}</span>
                     {% else %}
-                        <span class="oh-timeoff-modal__stat-title fw-bold">{{deduction.rate}}% {% trans "of" %} {{deduction.get_update_compensation_display}}</span>
+                        <span class="oh-timeoff-modal__stat-title">{{deduction.rate}}% {% trans "of" %} {{deduction.get_update_compensation_display}}</span>
                     {% endif %}
                 {% else %}
                     {% if deduction.is_fixed %}
-                        <span class="oh-timeoff-modal__stat-title fw-bold">{{deduction.amount}}{{currency}}</span>
+                        <span class="oh-timeoff-modal__stat-title ">{{deduction.amount}}{{currency}}</span>
                     {% else %}
-                        <span class="oh-timeoff-modal__stat-title fw-bold">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>    
-                        <span class="oh-timeoff-modal__stat-title fw-bold">{% trans "Employee Rate :" %} {{deduction.rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>    
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Employee Rate :" %} {{deduction.rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
                     {% endif %}
                 {% endif %}
           </div>
@@ -44,9 +44,9 @@
 
         <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "One Time Allowance" %}</span>
         {% if allowance.one_time_date %}
-          <span class="oh-timeoff-modal__stat-title fw-bold">{% trans "On" %}</span> <span class="oh-timeoff-modal__stat-count dateformat_changer"> {{allowance.one_time_date}}</span>
+          <span class="oh-timeoff-modal__stat-title">{% trans "On" %}</span> <span class="oh-timeoff-modal__stat-count dateformat_changer"> {{allowance.one_time_date}}</span>
         {% else %}
-          <span class="oh-timeoff-modal__stat-title fw-bold">{% trans "No" %}</span>
+          <span class="oh-timeoff-modal__stat-title">{% trans "No" %}</span>
         {% endif %}
 
         </div>

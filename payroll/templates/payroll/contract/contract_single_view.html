@@ -1,12 +1,12 @@
 {% load i18n %} {% load yes_no %}
 {% if request.GET.instances_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button hx-get="{% url 'single-contract-view' previous %}?instances_ids={{contract_ids}}" hx-target = "#OneContractTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+    <button hx-get="{% url 'single-contract-view' previous %}?instances_ids={{contract_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
         aria-label="chevron back outline"></ion-icon>
     </button>
 
-    <button hx-get="{% url 'single-contract-view' next  %}?instances_ids={{contract_ids}}" hx-target = "#OneContractTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
+    <button hx-get="{% url 'single-contract-view' next  %}?instances_ids={{contract_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
         aria-label="chevron forward outline"></ion-icon>
     </button>
@@ -22,7 +22,6 @@
     data-dismiss="oh-modal"
     aria-label="Close"
     data-toggle="oh-modal-toggle"
-    hx-target="#OneContractTarget"
   >
     <ion-icon name="close-outline"></ion-icon>
   </button>
