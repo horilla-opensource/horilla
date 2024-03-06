@@ -142,3 +142,6 @@ node_modules/
 
 #whoosh folder
 whoosh_index/
+
+#VSCode
+.vscode/

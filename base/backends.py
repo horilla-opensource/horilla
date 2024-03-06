@@ -3,6 +3,7 @@ email_backend.py
 
 This module is used to write email backends
 """
+
 from django.core.mail.backends.smtp import EmailBackend
 from base.models import EmailLog
 from horilla import settings
@@ -35,7 +36,7 @@ class ConfiguredEmailBackend(EmailBackend):
         ).first()
         if configuration is None:
             configuration = DynamicEmailConfiguration.objects.filter(
-                company_id__isnull=True
+                is_primary=True
             ).first()
         # Use default settings if configuration is not available
         host = configuration.host if configuration else host or settings.EMAIL_HOST
