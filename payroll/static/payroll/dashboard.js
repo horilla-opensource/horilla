@@ -423,25 +423,6 @@ $(document).ready(function () {
     });
   });
 
-  $("#export").on("click", function () {
-    var period = $("#monthYearField").val();
-    var start_date = $("#start_date").val();
-    var end_date = $("#end_date").val();
-    var employee = $("#select_employee").val();
-    var status = $("#select_status").val();
-
-    let url =
-      "/payroll/dashboard-export/" +
-      "?start_date=" +
-      start_date +
-      "&end_date=" +
-      end_date +
-      "&employee=" +
-      employee +
-      "&status=" +
-      status;
-    window.location.href = url;
-  });
 
   $(".filter").on("click", function () {
     $("#back_button").removeClass("d-none");

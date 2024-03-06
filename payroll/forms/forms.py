@@ -8,6 +8,9 @@ from django.forms import widgets
 from django.utils.translation import gettext_lazy as trans
 from django.template.loader import render_to_string
 from base import thread_local_middleware
+from base.forms import Form
+from employee.models import Employee
+from payroll.context_processors import get_active_employees
 from payroll.models.models import (
     EncashmentGeneralSettings,
     PayrollGeneralSetting,
@@ -176,3 +179,18 @@ class EncashmentGeneralSettingsForm(ModelForm):
     class Meta:
         model = EncashmentGeneralSettings
         fields = "__all__"
+
+
+class DashboardExport(Form):
+    status_choices = [
+        ("",""),
+        ("draft", "Draft"),
+        ("review_ongoing", "Review Ongoing"),
+        ("confirmed", "Confirmed"),
+        ("paid", "Paid"),
+    ]
+    start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date',"class":"oh-input w-100"}))
+    end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date',"class":"oh-input w-100"}))
+    employees = forms.ChoiceField(required=False, choices=[(emp.id, emp.get_full_name()) for emp in Employee.objects.all()],widget=forms.SelectMultiple)
+    status = forms.ChoiceField(required=False, choices=status_choices)
+    contributions = forms.ChoiceField(required=False, choices=[(emp.id, emp.get_full_name()) for emp in get_active_employees(None)["get_active_employees"]],widget=forms.SelectMultiple)
