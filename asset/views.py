@@ -169,18 +169,26 @@ def asset_update(request, asset_id):
     instance = Asset.objects.get(id=asset_id)
     asset_form = AssetForm(instance=instance)
     previous_data = request.GET.urlencode()
-    context = {
-        "asset_form": asset_form,
-        "asset_under": asset_under,
-        "pg": previous_data,
-    }
+    
     if request.method == "POST":
         asset_form = AssetForm(request.POST, instance=instance)
         if asset_form.is_valid():
             asset_form.save()
             messages.success(request, _("Asset Updated"))
-        context["asset_form"] = asset_form
-    return render(request, "asset/asset_update.html", context)
+    context = {
+        "asset_form": asset_form,
+        "asset_under": asset_under,
+        "pg": previous_data,
+    }
+    requests_ids_json = request.GET.get("requests_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        request_copy = request.GET.copy()
+        request_copy.pop("requests_ids", None)
+        previous_data = request_copy.urlencode()
+        context["requests_ids"] = requests_ids
+        context["pd"] = previous_data
+    return render(request, "asset/asset_update.html", context=context)
 
 
 @login_required
@@ -321,9 +329,7 @@ def asset_list(request, cat_id):
     paginator = Paginator(asset_list, 20)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    requests_ids = json.dumps(
-        [instance.id for instance in page_obj.object_list]
-    )
+    requests_ids = json.dumps([instance.id for instance in page_obj.object_list])
     data_dict = parse_qs(previous_data)
     get_key_instances(Asset, data_dict)
     context = {
@@ -333,7 +339,7 @@ def asset_list(request, cat_id):
         "asset_under": asset_under,
         "asset_count": len(assets_in_category) or None,
         "filter_dict": data_dict,
-        "requests_ids":requests_ids,
+        "requests_ids": requests_ids,
     }
     return render(request, "asset/asset_list.html", context)
 
@@ -913,12 +919,8 @@ def filter_pagination_asset_request_allocation(request):
             [instance.id for instance in asset_allocation_filtered.object_list]
         )
 
-    assets_ids = paginator_qry(
-        assets_filtered.qs, request.GET.get("page")
-    )
-    assets_id = json.dumps(
-        [instance.id for instance in assets_ids.object_list]
-    )
+    assets_ids = paginator_qry(assets_filtered.qs, request.GET.get("page"))
+    assets_id = json.dumps([instance.id for instance in assets_ids.object_list])
     asset_paginator = Paginator(assets_filtered.qs, get_pagination())
     asset_request_paginator = Paginator(asset_request_filtered, get_pagination())
     asset_allocation_paginator = Paginator(asset_allocation_filtered, get_pagination())
@@ -954,7 +956,7 @@ def filter_pagination_asset_request_allocation(request):
         "allocation_field": allocation_field,
         "requests_ids": requests_ids,
         "allocations_ids": allocations_ids,
-        "asset_ids":assets_id,
+        "asset_ids": assets_id,
     }
 
 
@@ -1004,7 +1006,7 @@ def asset_request_alloaction_view_search_filter(request):
 
 
 @login_required
-def own_asset_individual_view(request,id):
+def own_asset_individual_view(request, id):
     """
     This function is responsible for view the individual own asset
 
@@ -1542,7 +1544,7 @@ def asset_history(request):
         "filter_dict": data_dict,
         "gp_fields": AssetHistoryReGroup().fields,
         "pd": previous_data,
-        "requests_ids":requests_ids,
+        "requests_ids": requests_ids,
     }
     return render(request, "asset_history/asset_history_view.html", context)
 
@@ -1607,7 +1609,7 @@ def asset_history_search(request):
         requests_ids = json.dumps(list(id_list))
     else:
         asset_assignments = paginator_qry(asset_assignments, request.GET.get("page"))
-        
+
         requests_ids = json.dumps(
             [instance.id for instance in asset_assignments.object_list]
         )
@@ -1622,6 +1624,6 @@ def asset_history_search(request):
             "filter_dict": data_dict,
             "field": field,
             "pd": previous_data,
-            "requests_ids":requests_ids,
+            "requests_ids": requests_ids,
         },
     )

@@ -1,28 +1,33 @@
 {% load i18n %}
-
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="assetModalLabel">{{asset.asset_name}}</span>
+  <button class="oh-modal__close" aria-label="Close" style="top:17px" >
+      <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body oh-modal__dialog-relative">
 {% if request.GET.requests_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button hx-get="{% url 'asset-information' previous %}?requests_ids={{requests_ids}}&asset_info=true" hx-target = "#assetInfomation" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+    <button hx-get="{% url 'asset-information' previous %}?requests_ids={{requests_ids}}&asset_info=true" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
         aria-label="chevron back outline"></ion-icon>
     </button>
 
-    <button hx-get="{% url 'asset-information' next %}?requests_ids={{requests_ids}}&asset_info=true" hx-target = "#assetInfomation" class="oh-modal__diaglog-nav oh-modal__nav-next">
+    <button hx-get="{% url 'asset-information' next %}?requests_ids={{requests_ids}}&asset_info=true" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
         aria-label="chevron forward outline"></ion-icon>
     </button>
 </div>
 {% endif %}
 
-<div class="oh-modal__section-head fw-bold">{% trans "Asset Information" %}</div>
 <div class="row">
-  <div class="col-12 col-md-12 col-lg-12">
+  {% comment %} <div class="col-12 col-md-12 col-lg-12">
     <div class="oh-modal__group mt-2">
       <label class="oh-timeoff-modal__stat-title">{% trans "Asset Name" %}</label>
       <label class="oh-timeoff-modal__stat-count">{{asset.asset_name}}</label>
     </div>
-  </div>
-
+  </div> {% endcomment %}
+  {% if asset.asset_description %}
   <div class="col-12 col-md-12 col-lg-12 mt-3">
     <div class="oh-modal__group">
       <label class="oh-timeoff-modal__stat-title">{% trans "Description" %}</label>
@@ -31,6 +36,7 @@
       </div>
     </div>
   </div>
+  {% endif %}
 
   <div class="col-12 col-md-12 col-lg-6 mt-3">
     <div class="oh-modal__group">
@@ -96,7 +102,7 @@
   <div class="oh-modal__button-container text-center mt-3">
        
     <div class="oh-btn-group">
-      <a hx-get="{% url 'asset-update' asset_id=asset.id %}?asset_under=info&{{pg}}" 
+      <a hx-get="{% url 'asset-update' asset_id=asset.id %}?{{pg}}&requests_ids={{requests_ids}}" 
         data-toggle="oh-modal-toggle" 
         data-target="#assetUpdate"
         hx-target="#assetUpdateBody" 
@@ -110,4 +116,5 @@
         </a>
     </div>
   </div>
+</div>
 </div>
