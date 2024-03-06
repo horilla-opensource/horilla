@@ -117,29 +117,6 @@
 	</div>
 </div>
 
-<div
-	class="oh-modal"
-	id="singleModal"
-	role="dialog"
-	aria-labelledby="editDialogModal"
-	aria-hidden="true"
-	style="z-index: 999"
->
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="editDialogDialog">
-				{% trans "Leave Type Details" %}
-			</h2>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div
-			class="oh-modal__dialog-body oh-modal__dialog-relative"
-			id="singleView"
-		></div>
-	</div>
-</div>
 <script>
 	$(document).on('htmx:load', '#leaveForm', function () {
 	  {% include 'select2.js' %}
