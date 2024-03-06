@@ -3,6 +3,17 @@
 {% load static %}
 {% load i18n %}
 {% include 'filter_tags.html' %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 <div
 class="oh-checkpoint-badge text-success mb-2"
 id="selectAllWorktypes"
@@ -146,7 +157,7 @@ style="cursor: pointer; display: none;"
                   <ion-icon name="copy-outline"></ion-icon>
                 </a>
               {% if work_type_request.approved == False and work_type_request.canceled == False %}
-                <form action="{% url 'work-type-request-delete' work_type_request.id  %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this work type request?" %}');" method='post' style="width: 87.01px; height: 40.78px;">
+                <form hx-confirm="{% trans 'Are you sure you want to delete this work type request?' %}" hx-post="{% url 'work-type-request-delete' work_type_request.id  %}?{{pd}}" hx-target="#view-container" style="width: 87.01px; height: 40.78px;">
                   {% csrf_token %}
                   <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
                 </form>

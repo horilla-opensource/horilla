@@ -123,7 +123,7 @@
                 <ion-icon name="create-outline">
                 </ion-icon>{% trans "Edit" %} 
             </a>
-            <form  class="oh-btn oh-btn--primary" style="width: 50%;" onsubmit="return confirm('Do you Want to archive this rotating Shift assign?')"  action="{% url "rotating-shift-assign-archive" instance.id %}">
+            <form  class="oh-btn oh-btn--primary" style="width: 50%;" onsubmit="return confirm('Do you want to archive this rotating shift assign?')"  action="{% url "rotating-shift-assign-archive" instance.id %}">
                 <input type="hidden" name="is_active" value="False" id="">
                 <button style="background: none;
                     color: inherit;
@@ -141,7 +141,7 @@
                     {% endif %}
                 </button>
             </form>
-            <form  class="oh-btn oh-btn--secondary" method="post" style="width: 50%;" onsubmit="return confirm('Do you Want to archive this rotating Shift assign?')"  action="{% url "rotating-shift-assign-delete" instance.id %}">
+            <form  class="oh-btn oh-btn--secondary" method="post" style="width: 50%;" onsubmit="return confirm('Do you want to archive this rotating shift assign?')"  action="{% url "rotating-shift-assign-delete" instance.id %}">
                 {% csrf_token %}
                 <button style="background: none;
                     color: inherit;

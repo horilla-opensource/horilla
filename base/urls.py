@@ -481,7 +481,7 @@ urlpatterns = [
         name="work-type-request-update",
     ),
     path(
-        "work-type-request-delete/<int:id>/",
+        "work-type-request-delete/<int:obj_id>/",
         views.work_type_request_delete,
         name="work-type-request-delete",
     ),

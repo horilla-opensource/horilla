@@ -150,7 +150,7 @@
                 {% endif %} 
                 {% if perms.base.change_rotatingshiftassign  or request.user|is_reportingmanager %}
                 {% if rshift.is_active %}
-                <form onsubmit="return confirm('{% trans "Do you Want to archive this rotating shift assign?" %}')" action="{% url 'rotating-shift-assign-archive' rshift.id %}?is_active=False" 
+                <form onsubmit="return confirm('{% trans "Do you want to archive this rotating shift assign?" %}')" action="{% url 'rotating-shift-assign-archive' rshift.id %}?is_active=False" 
                   style="width:100%"
                 >
                   <input type="hidden" name="is_active" value="{% trans 'False' %}" id="">

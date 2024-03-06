@@ -34,6 +34,7 @@ from notifications.base.models import AbstractNotification
 from notifications.signals import notify
 from horilla.decorators import (
     delete_permission,
+    duplicate_permission,
     permission_required,
     login_required,
     manager_can_enter,
@@ -269,7 +270,9 @@ def send_link(employee, request, id, user):
             from_email=EMAIL_HOST_USER,
             recipient_list=recipient,
         )
-        response_success = _("Password reset link sent successfully to {recipient}.").format(recipient=recipient[0])
+        response_success = _(
+            "Password reset link sent successfully to {recipient}."
+        ).format(recipient=recipient[0])
         messages.success(request, response_success)
     except Exception as e:
         messages.error(request, e)
@@ -795,7 +798,7 @@ def object_delete(request, id, **kwargs):
 
 
 @login_required
-@delete_permission()
+@duplicate_permission()
 def object_duplicate(request, obj_id, **kwargs):
     model = kwargs["model"]
     form_class = kwargs["form"]
@@ -2144,7 +2147,7 @@ def rotating_shift_assign_bulk_archive(request):
 
 
 @login_required
-@permission_required("base.delete_rotatingshiftassign")
+@manager_can_enter("base.delete_rotatingshiftassign")
 def rotating_shift_assign_bulk_delete(request):
     """
     This method is used to bulk delete for rotating shift assign
@@ -2174,7 +2177,7 @@ def rotating_shift_assign_bulk_delete(request):
 
 
 @login_required
-@permission_required("base.delete_rotatingshiftassign")
+@manager_can_enter("base.delete_rotatingshiftassign")
 @require_http_methods(["POST"])
 def rotating_shift_assign_delete(request, id):
     """
@@ -2757,7 +2760,7 @@ def work_type_request_update(request, work_type_request_id):
 
 @login_required
 @require_http_methods(["POST"])
-def work_type_request_delete(request, id):
+def work_type_request_delete(request, obj_id):
     """
     This method is used to delete work type request
     args:
@@ -2765,7 +2768,7 @@ def work_type_request_delete(request, id):
 
     """
     try:
-        work_type_request = WorkTypeRequest.objects.get(id=id)
+        work_type_request = WorkTypeRequest.objects.get(id=obj_id)
         employee = work_type_request.employee_id.employee_user_id
         messages.success(request, _("Work type request deleted."))
         work_type_request.delete()
@@ -2784,7 +2787,26 @@ def work_type_request_delete(request, id):
         messages.error(request, _("Work type request not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this work type request."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    hx_target = request.META.get("HTTP_HX_TARGET", None)
+    if hx_target and hx_target == "objectDetailsModalTarget":
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if obj_id in instances_list:
+            instances_list.remove(obj_id)
+        previous_instance, next_instance = closest_numbers(
+            json.loads(instances_ids), obj_id
+        )
+        return redirect(
+            f"/work-type-request-single-view/{next_instance}/?instances_ids={instances_list}"
+        )
+    elif hx_target and hx_target == "view-container":
+        previous_data = request.GET.urlencode()
+        return redirect(f"/work-type-request-search?{previous_data}")
+    elif hx_target and hx_target == "shift_target":
+        return redirect(f"/employee/shift-tab/{employee.id}")
+    else:
+        return HttpResponse("<script>window.location.reload()</script>")
+
 
 
 @login_required
@@ -2792,7 +2814,7 @@ def work_type_request_single_view(request, work_type_request_id):
     """
     This method is used to view details of an work type request
     """
-    work_type_request = WorkTypeRequest.objects.get(id=work_type_request_id)
+    work_type_request = WorkTypeRequest.objects.filter(id=work_type_request_id).first()
     context = {
         "work_type_request": work_type_request,
         "dashboard": request.GET.get("dashboard"),
@@ -5139,7 +5161,7 @@ def action_type_update(request, act_id):
     form = ActiontypeForm(instance=action)
 
     if action.action_type == "warning":
-        form.fields['block_option'].widget = forms.HiddenInput()
+        form.fields["block_option"].widget = forms.HiddenInput()
 
     if request.method == "POST":
         form = ActiontypeForm(request.POST, instance=action)

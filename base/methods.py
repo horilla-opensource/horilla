@@ -301,12 +301,6 @@ def get_key_instances(model, data_dict):
             if nested_instance is not None:
                 data_dict[key] = nested_instance
 
-    if "csrfmiddlewaretoken" in data_dict:
-        del data_dict["csrfmiddlewaretoken"]
-
-    if "vpage" in data_dict:
-        del data_dict["vpage"]
-
     if "id" in data_dict:
         id = data_dict["id"][0]
         object = model.objects.filter(id=id).first()
@@ -314,20 +308,20 @@ def get_key_instances(model, data_dict):
         del data_dict["id"]
         data_dict["Object"] = [object]
 
-    if "sortby" in data_dict:
-        del data_dict["sortby"]
 
     keys_to_remove = [
         key
         for key, value in data_dict.items()
         if value == ["unknown"]
-        or key in ["sortby", "orderby", "view", "page", "group_by", "target",'rpage',"instances_ids","asset_list"]
+        or key in ["sortby", "orderby", "view", "page", "group_by", "target",'rpage',"instances_ids","asset_list","vpage","csrfmiddlewaretoken"]
         or "dynamic_page" in key
     ]
-          
+    if not 'search' in data_dict:
+        if 'search_field' in data_dict:
+            del data_dict["search_field"]
+            
     for key in keys_to_remove:
         del data_dict[key]
-
     return data_dict
 
 
