@@ -189,7 +189,7 @@ urlpatterns = [
         "candidate-view/<int:cand_id>/",
         views.candidate_view_individual,
         name="candidate-view-individual",
-        # kwargs={"model": Candidate},
+        kwargs={"model": Candidate},
     ),
     path(
         "candidate-update/<int:cand_id>/",

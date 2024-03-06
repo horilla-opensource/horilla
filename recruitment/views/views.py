@@ -1106,7 +1106,7 @@ def candidate_view_card(request):
 
 @login_required
 @manager_can_enter(perm="recruitment.view_candidate")
-def candidate_view_individual(request, cand_id):
+def candidate_view_individual(request, cand_id, **kwargs):
     """
     This method is used to view profile of candidate.
     """
