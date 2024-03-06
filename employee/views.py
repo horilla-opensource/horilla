@@ -294,13 +294,11 @@ def asset_tab(request, emp_id):
         requested_employee_id=emp_id, asset_request_status="Requested"
     )
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
-    assets_ids = json.dumps(
-        [instance.id for instance in assets]
-    )
+    assets_ids = json.dumps([instance.id for instance in assets])
     context = {
         "assets": assets,
         "requests": assets_requests,
-        "assets_ids":assets_ids,
+        "assets_ids": assets_ids,
         "employee": emp_id,
     }
     return render(request, "tabs/asset-tab.html", context=context)
@@ -319,12 +317,10 @@ def profile_asset_tab(request, emp_id):
 
     """
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
-    assets_ids = json.dumps(
-        [instance.id for instance in assets]
-    )
+    assets_ids = json.dumps([instance.id for instance in assets])
     context = {
         "assets": assets,
-        "assets_ids":assets_ids,
+        "assets_ids": assets_ids,
     }
     return render(request, "tabs/profile-asset-tab.html", context=context)
 
@@ -414,7 +410,9 @@ def attendance_tab(request, emp_id):
     validate_attendances = Attendance.objects.filter(
         attendance_validated=False, employee_id=emp_id
     )
-    validate_attendances_ids = json.dumps([instance.id for instance in validate_attendances])
+    validate_attendances_ids = json.dumps(
+        [instance.id for instance in validate_attendances]
+    )
     accounts = AttendanceOverTime.objects.filter(employee_id=emp_id)
     accounts_ids = json.dumps([instance.id for instance in accounts])
 
@@ -778,11 +776,14 @@ def update_document_title(request, id):
 @login_required
 def document_delete(request, id):
     try:
-        document = get_object_or_404(Document, id=id)
-        document.delete()
-        messages.success(
-            request, _("Document {} deleted successfully").format(document)
-        )
+        document = Document.objects.filter(id=id).first()
+        if document:
+            document.delete()
+            messages.success(
+                request, _("Document {} deleted successfully").format(document)
+            )
+        else:
+            messages.error(request, _("Document not found"))
 
     except ProtectedError:
         messages.error(request, _("You cannot delete this document."))
@@ -808,17 +809,20 @@ def file_upload(request, id):
         form = DocumentUpdateForm(request.POST, request.FILES, instance=document_item)
         if form.is_valid():
             form.save()
-            notify.send(
-                request.user.employee_get,
-                recipient=request.user.employee_get.get_reporting_manager().employee_user_id,
-                verb=f"{request.user.employee_get} uploaded a document",
-                verb_ar=f"قام {request.user.employee_get} بتحميل مستند",
-                verb_de=f"{request.user.employee_get} hat ein Dokument hochgeladen",
-                verb_es=f"{request.user.employee_get} subió un documento",
-                verb_fr=f"{request.user.employee_get} a téléchargé un document",
-                redirect=f"/employee/employee-view/{request.user.employee_get.id}/",
-                icon="chatbox-ellipses",
-            )
+            try:
+                notify.send(
+                    request.user.employee_get,
+                    recipient=request.user.employee_get.get_reporting_manager().employee_user_id,
+                    verb=f"{request.user.employee_get} uploaded a document",
+                    verb_ar=f"قام {request.user.employee_get} بتحميل مستند",
+                    verb_de=f"{request.user.employee_get} hat ein Dokument hochgeladen",
+                    verb_es=f"{request.user.employee_get} subió un documento",
+                    verb_fr=f"{request.user.employee_get} a téléchargé un document",
+                    redirect=f"/employee/employee-view/{request.user.employee_get.id}/",
+                    icon="chatbox-ellipses",
+                )
+            except:
+                pass
             return HttpResponse("<script>window.location.reload();</script>")
 
     context = {"form": form, "document": document_item}
@@ -837,7 +841,7 @@ def view_file(request, id):
     Returns: return view_file template
     """
 
-    document_obj = get_object_or_404(Document, id=id)
+    document_obj = Document.objects.filter(id=id).first()
     context = {
         "document": document_obj,
     }
@@ -2493,7 +2497,7 @@ def work_info_import(request):
                     salary_hour = convert_nan("Salary Hour", work_info)
                     gender = work_info.get("Gender")
 
-                    if User.objects.filter(username=email).first() :
+                    if User.objects.filter(username=email).first():
                         continue
 
                     user = User.objects.create_user(
@@ -2544,7 +2548,9 @@ def work_info_import(request):
                         work_type_obj = WorkType()
                         work_type_obj.work_type = work_type
 
-                    shift_obj = EmployeeShift.objects.filter(employee_shift=shift).first()
+                    shift_obj = EmployeeShift.objects.filter(
+                        employee_shift=shift
+                    ).first()
                     if shift_obj is None and shift is not None:
                         shift_obj = EmployeeShift()
                         shift_obj.employee_shift = shift
@@ -2596,14 +2602,17 @@ def work_info_import(request):
                     employee_work_info.save()
 
                     total_count += 1
-                
+
             except Exception as e:
                 error_occured = True
                 logger.error(e)
-        
+
         if error_occured:
             messages.error(request, "something went wrong....")
-            data_frame = pd.DataFrame(["The provided titles don't match the default titles."], columns=["Title Error"])
+            data_frame = pd.DataFrame(
+                ["The provided titles don't match the default titles."],
+                columns=["Title Error"],
+            )
 
             error_count = len(error_lists)
             # Create an HTTP response object with the Excel file
@@ -3030,22 +3039,14 @@ def add_note(request, emp_id=None):
         form = EmployeeNoteForm(
             request.POST,
         )
+        
         if form.is_valid():
             note = form.save(commit=False)
             note.updated_by = request.user.employee_get
             note.save()
             messages.success(request, _("Note added successfully.."))
             response = render(request, "tabs/add_note.html", {"form": form})
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
-    return render(
-        request,
-        "tabs/add_note.html",
-        {
-            "note_form": form,
-        },
-    )
+            return redirect(f"/employee/note-tab/{emp_id}")
 
 
 @login_required
@@ -3092,9 +3093,10 @@ def employee_note_delete(request, note_id):
     """
 
     note = EmployeeNote.objects.get(id=note_id)
+    employee_id = note.employee_id.id
     note.delete()
     messages.success(request, _("Note deleted successfully..."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return redirect(f"/employee/note-tab/{employee_id}")
 
 
 @login_required
