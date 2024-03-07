@@ -61,3 +61,7 @@ webencodings==0.5.1
 Whoosh==2.7.4
 xhtml2pdf==0.2.13
 XlsxWriter==3.1.9
+gunicorn
+psycopg2-binary==2.9.9
+whitenoise==6.6.0
+

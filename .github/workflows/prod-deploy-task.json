@@ -1,0 +1,105 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:ap-south-1:732163342771:task-definition/EMS-Prod:47",
+    "containerDefinitions": [
+        {
+            "name": "HRMS",
+            "image": "732163342771.dkr.ecr.ap-south-1.amazonaws.com/ems-horilla-prod:d67723699f7ec03e48621578222c4533ba55a655",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "primary-port",
+                    "containerPort": 8000,
+                    "hostPort": 8000,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::ems-env-prod/.env",
+                    "type": "s3"
+                }
+            ],
+            "mountPoints": [
+                {
+                    "sourceVolume": "ems-media",
+                    "containerPath": "/ems/media",
+                    "readOnly": false
+                }
+            ],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/EMS-Prod",
+                    "awslogs-region": "ap-south-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            }
+        }
+    ],
+    "family": "EMS-Prod",
+    "executionRoleArn": "arn:aws:iam::732163342771:role/ecsTaskExecutionRole",
+    "networkMode": "bridge",
+    "revision": 47,
+    "volumes": [
+        {
+            "name": "ems-media",
+            "dockerVolumeConfiguration": {
+                "scope": "shared",
+                "autoprovision": false,
+                "driver": "local"
+            }
+        }
+    ],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "ecs.capability.env-files.s3"
+        },
+        {
+            "name": "ecs.capability.docker-plugin.local"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.25"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2"
+    ],
+    "requiresCompatibilities": [
+        "EC2"
+    ],
+    "cpu": "256",
+    "memory": "256",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2024-02-27T05:13:10.313Z",
+    "registeredBy": "arn:aws:iam::732163342771:root",
+    "tags": []
+}

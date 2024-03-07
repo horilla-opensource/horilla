@@ -8,22 +8,398 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{% trans "Horilla - Open Recruitments" %}</title>
+        <title>{% trans "Oxlac - Open Recruitments" %}</title>
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static "images/ui/apple-touch-icon.png" %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static "images/ui/favicon-32x32.png" %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static "images/ui/favicon-16x16.png" %}">
+        <link rel="manifest" href="{% static "images/ui/site.webmanifest" %}">
         <link rel="stylesheet" href="{% static "/build/css/style.min.css" %}" />
+        <script src="https://kit.fontawesome.com/928fde7a55.js" crossorigin="anonymous"></script>
     </head>
 
     <body>
+        <style>
+            .oh-joblist_card {
+                border-radius: 15px;
+            }
+
+            .oh-apply_btn{
+                border-radius: 10px;
+            }
+
+            .oh-job-selected_detail {
+                border-radius: 20px 0 0 20px;
+            }
+
+            .job-content{}
+
+            .home-features1 {
+                display: flex;
+                flex-wrap: wrap;
+                margin-top: var(--dl-space-space-doubleunit);
+                align-items: center;
+                flex-direction: row;
+                justify-content: center;
+                gap: 2rem;
+            }
+
+            .feature-card-container {
+                width: 300px!important;
+                height: 240px;
+                margin: var(--dl-space-space-halfunit);
+                display: flex;
+                position: relative;
+                align-items: center;
+                flex-direction: column;
+                width: 250px;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                text-align: center;
+                border-radius: 15px;
+                padding: 2%;
+                padding-top: 2rem;
+            }
+
+            .feature-card-image {
+                width: var(--dl-size-size-doubleunit);
+                height: var(--dl-size-size-doubleunit);
+                object-fit: cover;
+            }
+            .feature-card-text {
+                margin-top: 3rem;
+                margin-bottom: var(--dl-space-space-unit);
+
+            }
+            .feature-card-text1 {
+                text-align: center;
+            }
+
+            .contain2 {
+                display: flex;
+                flex-direction: row;
+                gap: 2rem; 
+            }
+
+            .points {
+                font-size: 2rem;
+                text-decoration: solid;
+                display: flex;
+                align-items: center;
+            }
+
+            .points ul {
+                list-style: none;
+                padding: 2rem;
+                display: flex;
+                gap: 4rem;
+                flex-direction: column;
+            }
+
+            .points ul li:nth-child(2) {
+                padding-left: 2rem;
+            }   
+
+            .points ul li:nth-child(3) {
+                padding-left: 4rem;
+            }
+
+            .heropng {
+                width: 100vw;
+                height: auto;
+            }
+
+            .heropng_mobile {
+                display: none;
+            }
+
+            .summary_para {
+                font-size: 1.5rem;
+            }
+
+            .oh-job-selected_detail {
+                overflow-y: scroll;
+            }
+
+            @media (max-width: 768px) {
+                .points ul {
+                    flex-direction: column;
+                    gap: 1rem;
+                    font-size: 1.5rem;
+                }
+
+                .contain2 img {
+                    width: 100%;
+                }
+
+                .contain2 {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2rem; 
+                }
+
+                .points ul li:nth-child(2),
+                .points ul li:nth-child(3) {
+                    padding-left: 0;
+                }
+
+                .heropng {
+                    display: none;
+                }
+
+                .heropng_mobile{
+                    display: block;
+                    width: 100vw;
+                    height: auto;
+                }
+
+                .summary_para {
+                    font-size: 1rem;
+                }
+            }
+
+        </style>
+
         <div id="main">
-            <main class="oh-onboarding">
-                <div class=" oh-job__page-container">
-                    <div class="oh-joblisting__title-container">
-                        <h1 class="oh-onboarding-card__title oh-onboarding-card__title--h1 text-center mb-3">
-                            {% trans "Open Job Listings" %}
-                        </h1>
-                        <p class="oh-onboarding__content text-center w-50 m-auto">
-                            {% trans "We're hiring! Join our team and be part of a vibrant workplace where your talents make a difference. Here are the open Recruitments...." %}
-                        </p>
+            <!-- <img src="{% static "/images/ui/hero.png" %}" class="heropng" alt="">
+            <img src="{% static "images/ui/hero_mobile.png" %}" class="heropng_mobile" alt=""> -->
+            <div>
+                <img src="{% static "images/ui/hero.png" %}" class="heropng" alt="Image">
+                <div class="heropng_mobile text-white" style="background-color: black; height: 50px; font-size: 20px; text-align: center; padding-top: 10px;">Work At Oxlac</div>
+            </div>
+            
+            <style>
+                .sub-title {
+                    position: relative;
+                    display: inline-block;
+                    text-transform: uppercase;  
+                    color: hsl(8, 77%, 56%);
+                }   
+
+                .sub-title::before {
+                    content: "";
+                    width: 100px;
+                    position: absolute;
+                    top: 50%;
+                    right: 0;
+                    transform: translateY(-50%);
+                    margin-top: 8px;
+                    margin-right: -100px;
+                    border: 1px solid hsl(8, 77%, 56%) !important;
+                }
+
+                .sub-title::after {
+                    content: "";
+                    width: 50px;
+                    position: absolute;
+                    top: 50%;
+                    right: 0;
+                    transform: translateY(-50%);
+                    margin-bottom: 8px;
+                    margin-right: -50px;
+                    border: 1px solid hsl(8, 77%, 56%) !important;
+                }
+            </style>
+
+            <!--  Section -->
+            <div class="container-fluid about bg-light " id="hiring_model">
+                <div class="container" style="padding-top: 3rem; padding-top: 3rem;">
+                    <div class="row g-5 align-items-center">
+                        <div class="col-lg-5 wow fadeInLeft" data-wow-delay="0.2s">
+                            <div class="about-img pb-5 ps-5">
+                                <img src="{% static "images/ui/hiring_illustration.png" %}" class="img-fluid rounded w-100" style="object-fit: cover;" alt="Image">
+                            </div>
+                        </div>
+                        <div class="col-lg-7 wow fadeInRight" data-wow-delay="0.4s">
+                            <div class="section-title text-start mb-5" style="padding-top: 2rem;">
+                                <h4 class="sub-title pe-3 mb-0">Hiring Model</h4>
+                                <h1 class="display-3 mb-4">Introducing the Oxlac Hiring Model</h1>
+                                <p class="mb-4" style="font-size: 1rem;">Join us to unlock a world of opportunities and be part of something extraordinary. At Oxlac, developers can apply by
+                                submitting their resumes and get assigned to exciting projects where they can earn passive income without investing a
+                                penny. By becoming a part of Oxlac, developers have a direct stake in the success of the projects they work on, giving
+                                them the opportunity to earn not just for the duration of the project, but potentially for a lifetime. We handle all the
+                                legal issues, project deployment, and marketing, allowing developers to focus solely on what they do best – developing
+                                innovative projects. Our supportive ecosystem encourages collaboration and creativity, enabling developers to not only
+                                bring their ideas to life but also thrive financially. Join Oxlac today and experience the joy of having a true share in
+                                the success of your work. Welcome to the future of hiring – welcome to Oxlac.</p>
+                                <div class="mb-4">
+                                    <p class="text-secondary"><i class="fa fa-check text-secondary me-2"></i> You fix your own deadlines.</p>
+                                    <p class="text-secondary"><i class="fa fa-check text-secondary me-2"></i> Agile and nimble development model.</p>
+                                    <p class="text-secondary"><i class="fa fa-check text-secondary me-2"></i> Work in a diverse environment.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+            </div>
+
+
+            <style>
+                /*** Feature Start ***/
+                .feature .feature-item {
+                    position: relative;
+                    display: flex;
+                    border: 1px solid hsl(8, 77%, 56%);
+                    border-radius: 10px;
+                    background: var(--bs-light);
+                    transition: 0.5s;
+                }
+            
+                .feature .feature-item::before {
+                    width: 0;
+                    height: 100%;
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    border-radius: 10px;
+                    transition: 0.5s;
+                }
+            
+                .feature .feature-item:hover::before {
+                    width: 100%;
+                    background: hsl(8, 77%, 56%);
+                }
+            
+                .feature .feature-item .feature-icon {
+                    display: inline-flex;
+                    border-radius: 10px;
+                    transition: 0.5s;
+                }
+            
+                .feature .feature-item:hover .feature-icon {
+                    position: relative;
+                    z-index: 2;
+                }
+            
+                .feature .feature-item:hover .feature-content {
+                    position: relative;
+                    color: var(--bs-white);
+                    z-index: 2;
+                }
+            
+                .feature .feature-item:hover .feature-content h5 {
+                    color: var(--bs-white);
+                }
+
+                .feature .feature-item:hover h5{
+                    color: var(--bs-white);
+                }
+            
+                /*** Feature End ***/
+            </style>
+
+
+            <div class="container-fluid feature" style="padding-bottom: 1rem;" id="benefits">
+                <div class="container py-5">
+                    <div class="section-title mb-5 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="sub-style">
+                            <h4 class="sub-title px-3 mb-0">Benefits You Get</h4>
+                        </div>
+                        <h1 class="display-3 mb-4">Why Choose Us? Unlock a work-life balance that works for you.</h1>
+                    </div>
+                    <div class="row g-5 justify-content-center">
+                        <div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="row-cols-1 feature-item p-4">
+                                <div class="col-12">
+                                    <div class="feature-icon mb-4">
+                                        <div class="p-3 d-inline-flex bg-white rounded">
+                                            <i class="fas fa-solid fa-dollar-sign fa-4x" style="color: hsl(8, 77%, 56%);"></i>
+                                        </div>
+                                    </div>
+                                    <div class="feature-content d-flex flex-column">
+                                        <h5 class="mb-4">Cash reward.</h5>
+                                        <p class="mb-0">Get rewarded for your hard work and contributions.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="row-cols-1 feature-item p-4">
+                                <div class="col-12">
+                                    <div class="feature-icon mb-4">
+                                        <div class="p-3 d-inline-flex bg-white rounded">
+                                            <i class="fas fa-solid fa-certificate fa-4x" style="color: hsl(8, 77%, 56%);"></i>
+                                        </div>
+                                    </div>
+                                    <div class="feature-content d-flex flex-column">
+                                        <h5 class="mb-4">project completion certificate</h5>
+                                        <p class="mb-0">Showcase your accomplishment with a valuable certificate.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.5s">
+                            <div class="row-cols-1 feature-item p-4">
+                                <div class="col-12">
+                                    <div class="feature-icon mb-4">
+                                        <div class="p-3 d-inline-flex bg-white rounded">
+                                            <i class="fas fa-solid fa-envelope-open-text fa-4x" style="color: hsl(8, 77%, 56%);;"></i>
+                                        </div>
+                                    </div>
+                                    <div class="feature-content d-flex flex-column">
+                                        <h5 class="mb-4">Letter Of Recomendation</h5>
+                                        <p class="mb-0">Boost your resume with a strong recommendation from industry experts.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.7s">
+                            <div class="row-cols-1 feature-item p-4">
+                                <div class="col-12">
+                                    <div class="feature-icon mb-4">
+                                        <div class="p-3 d-inline-flex bg-white rounded">
+                                            <i class="fas fa-solid fa-industry fa-4x" style="color: hsl(8, 77%, 56%);;"></i>
+                                        </div>
+                                    </div>
+                                    <div class="feature-content d-flex flex-column">
+                                        <h5 class="mb-4">Industry exposure</h5>
+                                        <p class="mb-0">Network and learn from experienced professionals in your field.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="row-cols-1 feature-item p-4">
+                                <div class="col-12">
+                                    <div class="feature-icon mb-4">
+                                        <div class="p-3 d-inline-flex bg-white rounded">
+                                            <i class="fas fa-solid fa-arrow-up-right-dots fa-4x" style="color: hsl(8, 77%, 56%);;"></i>
+                                        </div>
+                                    </div>
+                                    <div class="feature-content d-flex flex-column">
+                                        <h5 class="mb-4">Generate passive income for lifetime</h5>
+                                        <p class="mb-0">Earn recurring income for the long term.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="row-cols-1 feature-item p-4">
+                                <div class="col-12">
+                                    <div class="feature-icon mb-4">
+                                        <div class="p-3 d-inline-flex bg-white rounded">
+                                            <i class="fas fa-solid fa-user-group fa-4x" style="color: hsl(8, 77%, 56%);;"></i>
+                                        </div>
+                                    </div>
+                                    <div class="feature-content d-flex flex-column">
+                                        <h5 class="mb-4">Networking and contacts</h5>
+                                        <p class="mb-0">Connect with like-minded individuals and expand your professional network.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <main class="oh-onboarding" id="positions">
+                <div class=" oh-job__page-container">
+                    <div class="section-title mb-5 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="sub-style">
+                            <h4 class="sub-title px-3 mb-0">Open Positions</h4>
+                        </div>
+                        <h1 class="display-3 mb-4">Shape the future with us.</h1>
+                    </div>
+                    <br>
                     <div class="oh-layout--grid-3 oh-jobs__container--list pt-3">
                         {% for recruitment in recruitments %}
                             <div class="oh-kanban-card oh-joblist_card">
@@ -38,7 +414,7 @@
                                             <span class="oh-job_post--posteddate">02 days ago</span>
                                         </div>
                                     </div>
-                                    <div class="oh-recuritment_tag" style="background:hsl(121deg 81.26% 91.23%)"><a class=" text-success text-decoration-none" href="{% url "application-form" %}?recruitmentId={{recruitment.id}}" rel="noopener noreferrer" target="_blank">{% trans "Apply Now" %}</a></div>
+                                    <div class="oh-recuritment_tag" style="background:hsl(8, 77%, 56%)"><a class=" text-white text-decoration-none" href="{% url "application-form" %}?recruitmentId={{recruitment.id}}" rel="noopener noreferrer" target="_blank">{% trans "Apply Now" %}</a></div>
                                 </div>
                                 <div class="d-flex mt-3 flex-wrap">                    
                                 {% for job_position in recruitment.open_positions.all %}
@@ -83,13 +459,57 @@
                             <ion-icon name="close-outline"></ion-icon>
                         </button>
             
-                    <div class="oh-job-selected__detail--container" id="detailTarget">
-                        
-
-                    </div>
-
+                    <div class="oh-job-selected__detail--container" id="detailTarget"></div>
                 </div>
             </div>
+
+            <!-- Footer Start -->
+        <div style="background-color: black;">
+            <div class="container py-5">
+                <div class="row g-5">
+                    <div class="col-md-6 col-lg-6 col-xl-3">
+                        <div class="footer-item d-flex flex-column">
+                            <a href="https://oxlac.com" style="color: hsl(8, 77%, 56%);"><h4 class="text-hsl(8, 77%, 56%) mb-4">Oxlac</h4></a>
+                            <p class="text-white">Digital Excellence</p>
+                            <div class="d-flex align-items-center">
+                                <a class="btn-square btn btn-primary text-white rounded-circle mx-1" href=""><i class="fab fa-twitter fa-2x"></i></a>
+                                <a class="btn-square btn btn-primary text-white rounded-circle mx-1" href=""><i class="fab fa-instagram fa-2x"></i></a>
+                                <a class="btn-square btn btn-primary text-white rounded-circle mx-1" href=""><i class="fab fa-linkedin-in fa-2x"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-6 col-xl-3">
+                        <div class="footer-item d-flex flex-column">
+                            <h4 class="mb-4 text-white">Quick Links</h4>
+                            <a href="#positions" class="text-white"><i class="fas fa-angle-right me-2"></i> Open positions</a>
+                            <a href="#hiring_model" class="text-white"><i class="fas fa-angle-right me-2"></i> Hiring Model</a>
+                            <a href="#benefits" class="text-white"><i class="fas fa-angle-right me-2"></i> Benefits</a>
+                            <a href="https://oxlac.com" target="_blank" class="text-white"><i class="fas fa-angle-right me-2"></i> About Us</a>
+                            <a href="mailto:work@oxlac.com" target="_blank" class="text-white"><i class="fas fa-angle-right me-2"></i> Contact Us</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-6 col-xl-3">
+                        <div class="footer-item d-flex flex-column">
+                            <h4 class="mb-4 text-white">Services</h4>
+                            <a href="https://oxlac.com" target="_blank" class="text-white"><i class="fas fa-angle-right me-2"></i> Software Development</a>
+                            <a href="https://oxlac.com" target="_blank" class="text-white"><i class="fas fa-angle-right me-2"></i> Mobile App Development</a>
+                            <a href="https://oxlac.com" target="_blank" class="text-white"><i class="fas fa-angle-right me-2"></i> Websites Building</a>
+                            <a href="https://oxlac.com" target="_blank" class="text-white"><i class="fas fa-angle-right me-2"></i> 3D visuals</a>
+                            <a href="https://oxlac.com" target="_blank" class="text-white"><i class="fas fa-angle-right me-2"></i> Designs & Animations</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-6 col-xl-3">
+                        <div class="footer-item d-flex flex-column">
+                            <h4 class="mb-4 text-white">Products</h4>
+                            <a href="https://igcops.oxlac.com" target="_blank" class="text-white"><i class="fas fa-angle-right me-2"></i> IgCops</a>
+                            <a href="https://quizon.oxlac.com" target="_blank" class="text-white"><i class="fas fa-angle-right me-2"></i> QuizOn AI</a>
+                            <a href="https://bookscout.oxlac.com" target="_blank" class="text-white"><i class="fas fa-angle-right me-2"></i> Book Scout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer End -->
 
         </div>
         <script src="{% static 'htmx/htmx.min.js' %}"></script>
