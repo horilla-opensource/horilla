@@ -54,7 +54,7 @@ class MailSendThread(Thread):
             email = EmailMessage(
                 f"Hello, {record['instances'][0].get_name()} Your Payslips is Ready!",
                 html_message,
-                email_backend.dynamic_username,
+                email_backend.dynamic_username_with_display_name,
                 list(
                     EmployeeWorkInformation.objects.filter(
                         employee_id=record["instances"][0].employee_id

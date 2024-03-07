@@ -684,7 +684,7 @@ def email_send(request):
         email = EmailMessage(
             f"Hello {candidate.name}, Congratulations on your selection!",
             html_message,
-            email_backend.dynamic_username,
+            email_backend.dynamic_username_with_display_name,
             [candidate.email],
         )
         email.content_subtype = "html"
@@ -1563,7 +1563,7 @@ def onboarding_send_mail(request, candidate_id):
             res = send_mail(
                 subject,
                 body,
-                email_backend.dynamic_username,
+                email_backend.dynamic_username_with_display_name,
                 [candidate_mail],
                 fail_silently=False,
             )
