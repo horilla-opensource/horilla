@@ -102,6 +102,7 @@ from employee.models import (
     EmployeeNote,
     EmployeeWorkInformation,
     EmployeeBankDetails,
+    NoteFiles,
 )
 from onboarding.models import OnboardingStage, OnboardingTask
 from payroll.methods.payslip_calc import dynamic_attr
@@ -3015,9 +3016,8 @@ def note_tab(request, emp_id):
     Returns: return note-tab template
 
     """
-    # employee = Employee.objects.get(id=emp_id)
     employee_obj = Employee.objects.get(id=emp_id)
-    notes = EmployeeNote.objects.filter(employee_id=emp_id)
+    notes = EmployeeNote.objects.filter(employee_id=emp_id).order_by("-id")
 
     return render(
         request,
@@ -3033,19 +3033,34 @@ def add_note(request, emp_id=None):
     """
     This method renders template component to add candidate remark
     """
+
     form = EmployeeNoteForm(initial={"employee_id": emp_id})
     if request.method == "POST":
         form = EmployeeNoteForm(
             request.POST,
+            request.FILES,
         )
 
         if form.is_valid():
-            note = form.save(commit=False)
+            note, attachment_ids = form.save(commit=False)
+            employee = Employee.objects.get(id=emp_id)
+            note.employee_id = employee
             note.updated_by = request.user.employee_get
             note.save()
+            note.note_files.set(attachment_ids)
             messages.success(request, _("Note added successfully.."))
             response = render(request, "tabs/add_note.html", {"form": form})
             return redirect(f"/employee/note-tab/{emp_id}")
+
+    employee_obj = Employee.objects.get(id=emp_id)
+    return render(
+        request,
+        "tabs/add_note.html",
+        {
+            "employee": employee_obj,
+            "form": form,
+        },
+    )
 
 
 @login_required
@@ -3095,6 +3110,41 @@ def employee_note_delete(request, note_id):
     employee_id = note.employee_id.id
     note.delete()
     messages.success(request, _("Note deleted successfully..."))
+    # return redirect(f"/employee/note-tab/{employee_id}")
+    return HttpResponse("<script>window.location.reload()</script>")
+
+
+@login_required
+@hx_request_required
+def add_more_employee_files(request, id):
+    """
+    This method is used to Add more files to the Employee note.
+    Args:
+        id : stage note instance id
+    """
+    note = EmployeeNote.objects.get(id=id)
+    employee_id = note.employee_id.id
+    if request.method == "POST":
+        files = request.FILES.getlist("files")
+        files_ids = []
+        for file in files:
+            instance = NoteFiles.objects.create(files=file)
+            files_ids.append(instance.id)
+
+            note.note_files.add(instance.id)
+    return redirect(f"/employee/note-tab/{employee_id}")
+
+
+@login_required
+def delete_employee_note_file(request, id):
+    """
+    This method is used to delete the stage note file
+    Args:
+        id : stage file instance id
+    """
+    file = NoteFiles.objects.get(id=id)
+    employee_id = file.employeenote_set.all().first().employee_id.id
+    file.delete()
     return redirect(f"/employee/note-tab/{employee_id}")
 
 

@@ -208,6 +208,16 @@ urlpatterns = [
         name="employee-note-update",
     ),
     path(
+        "add-more-files-employee/<int:id>/",
+        views.add_more_employee_files,
+        name="add-more-files-employee",
+    ),
+    path(
+        "delete-employee-note-file/<int:id>/",
+        views.delete_employee_note_file,
+        name="delete-employee-note-file",
+    ),
+    path(
         "employee-note-delete/<int:note_id>/",
         views.employee_note_delete,
         name="employee-note-delete",

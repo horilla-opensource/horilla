@@ -23,6 +23,7 @@ class YourForm(forms.Form):
 
 from datetime import date
 import re
+from typing import Any
 from django import forms
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -40,6 +41,7 @@ from employee.models import (
     EmployeeWorkInformation,
     EmployeeBankDetails,
     EmployeeNote,
+    NoteFiles,
     Policy,
     PolicyMultipleFile,
 )
@@ -486,13 +488,32 @@ class EmployeeNoteForm(ModelForm):
         """
 
         model = EmployeeNote
-        exclude = ("updated_by",)
-        fields = "__all__"
+        fields = ("description",)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        field = self.fields["employee_id"]
-        field.widget = field.hidden_widget()
+        self.fields["note_files"] = MultipleFileField(label="files")
+        self.fields["note_files"].required = False
+
+
+    def save(self, commit: bool = ...) -> Any:
+        attachement = []
+        multiple_attachment_ids = []
+        attachements = None
+        if self.files.getlist("note_files"):
+            attachements = self.files.getlist("note_files")
+            self.instance.attachement = attachements[0]
+            multiple_attachment_ids = []
+
+            for attachement in attachements:
+                file_instance = NoteFiles()
+                file_instance.files = attachement
+                file_instance.save()
+                multiple_attachment_ids.append(file_instance.pk)
+        instance = super().save(commit)
+        if commit:
+            instance.note_files.add(*multiple_attachment_ids)
+        return instance, multiple_attachment_ids
 
 
 class MultipleFileInput(forms.ClearableFileInput):

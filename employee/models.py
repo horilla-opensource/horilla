@@ -641,6 +641,13 @@ class EmployeeBankDetails(models.Model):
                 )
 
 
+class NoteFiles(models.Model):
+    files = models.FileField(upload_to="employee/NoteFiles", blank=True, null=True)
+
+    def __str__(self):
+        return self.files.name.split("/")[-1]
+
+
 class EmployeeNote(models.Model):
     """
     EmployeeNote model
@@ -651,13 +658,14 @@ class EmployeeNote(models.Model):
         on_delete=models.CASCADE,
         related_name="employee_name",
     )
-    title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
-    description = models.TextField(verbose_name=_("Description"), max_length=255, null=True,blank = True)
+    # title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
+    description = models.TextField(verbose_name=_("Description"), max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),
         null=True,
     )
+    note_files = models.ManyToManyField(NoteFiles, blank=True)
     updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
