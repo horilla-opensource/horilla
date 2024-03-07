@@ -425,7 +425,7 @@ urlpatterns = [
         name="rotating-shift-assign-bulk-delete",
     ),
     path(
-        "rotating-shift-assign-delete/<int:id>/",
+        "rotating-shift-assign-delete/<int:obj_id>/",
         views.rotating_shift_assign_delete,
         name="rotating-shift-assign-delete",
     ),

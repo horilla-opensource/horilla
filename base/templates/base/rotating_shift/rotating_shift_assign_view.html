@@ -1,6 +1,17 @@
 {% load static %}
 {% load i18n %}
 {% load basefilters %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 <div class="oh-wrapper">
   <div
     class="oh-checkpoint-badge text-success mb-2"
@@ -171,9 +182,9 @@
                 {% if perms.base.delete_rotatingshiftassign or request.user|is_reportingmanager %}
                 <form
                   style="width:100%"
-                  action="{% url 'rotating-shift-assign-delete' rshift.id %}"
-                  onsubmit="return confirm('{% trans "Are you sure you want to delete this rotating shift assign?" %}');"
-                  method="post"
+                  hx-confirm="{% trans 'Are you sure you want to delete this rotating shift assign?' %}"
+                  hx-post="{% url 'rotating-shift-assign-delete' rshift.id %}?{{pd}}"
+                  hx-target="#view-container"
                 >
                   {% csrf_token %}
                   <button
