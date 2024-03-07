@@ -1,24 +1,38 @@
-{% load i18n %}
+{% load i18n %} {% load static %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 <div class="oh-modal__dialog-header">
-    <span
-      class="oh-modal__dialog-title"
-      id="objectDetailsModalLabel"
-        >
-      {% trans "Details" %}
-    </span>
-    <button class="oh-modal__close" aria-label="Close">
+    {% if instance %}
+        <span
+          class="oh-modal__dialog-title"
+          id="objectDetailsModalLabel"
+            >
+          {% trans "Details" %}
+        </span>
+    {% endif %}
+    <button class="oh-modal__close" aria-label="Close" hx-get="{{close_hx_url}}?{{pd}}" hx-target="{{close_hx_target}}">
       <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
+{% if instance %}
 <div class="oh-modal__dialog-body oh-modal__dialog-relative">
 {% if request.GET.instances_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button hx-get="{% url 'rwork-individual-view' previous %}?instances_ids={{assign_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+    <button hx-get="{% url 'rwork-individual-view' previous %}?{{pd}}&instances_ids={{assign_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
         aria-label="chevron back outline"></ion-icon>
     </button>
 
-    <button hx-get="{% url 'rwork-individual-view' next  %}?instances_ids={{assign_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
+    <button hx-get="{% url 'rwork-individual-view' next  %}?{{pd}}&instances_ids={{assign_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
         aria-label="chevron forward outline"></ion-icon>
     </button>
@@ -120,10 +134,9 @@
             
             <a class="oh-btn oh-btn--info" hx-get="{% url "rotating-work-type-assign-update" instance.id %}" hx-target="#rotatingWorkTypeAssignUpdateModalLabel" data-toggle="oh-modal-toggle" data-target="#rotating-work-type-update-modal" style="width: 50%;">
                 <ion-icon name="create-outline">
-                </ion-icon>Edit
+                </ion-icon>{% trans "Edit" %} 
             </a>
-            <form  class="oh-btn oh-btn--primary" style="width: 50%;" onsubmit="return confirm('Do you Want to archive this rotating work type assign?')"  action="{% url "rotating-work-type-assign-archive" instance.id %}">
-                <input type="hidden" name="is_active" value="False" id="">
+            <form  class="oh-btn oh-btn--primary" style="width: 50%;" hx-confirm="{% trans 'Do you want to archive this rotating work type assign?' %}" hx-get="{% url 'rotating-work-type-assign-archive' instance.id %}?{{pd}}&instances_ids={{assign_ids}}" hx-target="#objectDetailsModalTarget">
                 <button style="background: none;
                     color: inherit;
                     border: none;
@@ -134,13 +147,13 @@
                     <ion-icon name="archive-outline">
                     </ion-icon>
                     {% if instance.is_active %}
-                    {% trans "Archive" %}
+                        {% trans "Archive" %}
                     {% else %}
-                    {% trans "Un-archive" %}
+                        {% trans "Un-archive" %}
                     {% endif %}
                 </button>
             </form>
-            <form  class="oh-btn oh-btn--secondary" method="post" style="width: 50%;" onsubmit="return confirm('Do you Want to archive this rotating work type assign?')"  action="{% url "rotating-work-type-assign-delete" instance.id %}">
+            <form  class="oh-btn oh-btn--secondary" style="width: 50%;" hx-confirm="{% trans 'Are you sure you want to delete this rotating work type assign?' %}" hx-post="{% url 'rotating-work-type-assign-delete' instance.id %}?{{pd}}&instances_ids={{assign_ids}}" hx-target="#objectDetailsModalTarget">
                 {% csrf_token %}
                 <button style="background: none;
                     color: inherit;
@@ -157,3 +170,16 @@
     </div>
 </div>
 </div>
+{% else %}
+<div class="oh-modal__dialog-body oh-modal__dialog-relative">
+    <img
+      style="margin-left: 33%; width: 150px; height: 150px"
+      src="{% static 'images/ui/employee_shift.png' %}"
+      class="oh-404__image mb-2"
+      alt="Page not found. 404."
+    />
+    <h5 class="oh-404__subtitle">
+      {% trans "There are no rotating work type assigned to this employee." %}
+    </h5>
+</div>
+{% endif %}

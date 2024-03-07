@@ -12,7 +12,7 @@ from datetime import date, timedelta
 from django.contrib.auth import authenticate
 from django import forms
 from django.contrib.auth.models import Group, Permission, User
-from django.forms import DateInput, TextInput
+from django.forms import DateInput, HiddenInput, TextInput
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _trans
@@ -529,6 +529,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
         exclude = ("next_change_date", "current_work_type", "next_work_type")
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
+            "is_active":HiddenInput()
         }
         labels = {
             "is_active": _trans("Is Active"),

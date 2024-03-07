@@ -245,7 +245,7 @@ urlpatterns = [
         },
     ),
     path(
-        "rotating-work-type-assign-archive/<int:id>/",
+        "rotating-work-type-assign-archive/<int:obj_id>/",
         views.rotating_work_type_assign_archive,
         name="rotating-work-type-assign-archive",
     ),
@@ -260,7 +260,7 @@ urlpatterns = [
         name="rotating-shift-work-type-bulk-delete",
     ),
     path(
-        "rotating-work-type-assign-delete/<int:id>/",
+        "rotating-work-type-assign-delete/<int:obj_id>/",
         views.rotating_work_type_assign_delete,
         name="rotating-work-type-assign-delete",
     ),

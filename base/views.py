@@ -11,8 +11,8 @@ from urllib.parse import parse_qs, urlencode
 import uuid
 import json
 from django.db.models import ProtectedError
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, render, redirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
@@ -1367,7 +1367,11 @@ def rotating_work_type_assign_view(request):
     previous_data = request.GET.urlencode()
     rwork_type_assign = RotatingWorkTypeAssignFilter(request.GET).qs.order_by("-id")
     field = request.GET.get("field")
-    rwork_type_assign = rwork_type_assign.filter(is_active=True)
+    if not request.GET.get("is_active") or request.GET.get("is_active") in [
+        "true",
+        "unknown",
+    ]:
+        rwork_type_assign = rwork_type_assign.filter(is_active=True)
     if request.GET.get("is_active") == "false":
         rwork_type_assign = rwork_type_assign.filter(is_active=False)
     rwork_type_assign = filtersubordinates(
@@ -1417,8 +1421,11 @@ def rotating_work_individual_view(request, instance_id):
     """
     This view is used render detailed view of the rotating work type assign
     """
-    instance = RotatingWorkTypeAssign.objects.get(id=instance_id)
-    context = {"instance": instance}
+    request_copy = request.GET.copy()
+    request_copy.pop("instances_ids", None)
+    previous_data = request_copy.urlencode()
+    instance = RotatingWorkTypeAssign.objects.filter(id=instance_id).first()
+    context = {"instance": instance,"pd":previous_data}
     assign_ids_json = request.GET.get("instances_ids")
     if assign_ids_json:
         assign_ids = json.loads(assign_ids_json)
@@ -1426,6 +1433,20 @@ def rotating_work_individual_view(request, instance_id):
         context["previous"] = previous_id
         context["next"] = next_id
         context["assign_ids"] = assign_ids_json
+    HTTP_REFERER = request.META.get("HTTP_REFERER", None)
+    context["close_hx_url"] = ""
+    context["close_hx_target"] = ""
+    if HTTP_REFERER and HTTP_REFERER.endswith("rotating-work-type-assign/"):
+        context["close_hx_url"] = "/rotating-work-type-assign-view"
+        context["close_hx_target"] = "#view-container"
+    elif HTTP_REFERER:
+        HTTP_REFERERS = [part for part in HTTP_REFERER.split("/") if part]
+        try:
+            employee_id = int(HTTP_REFERERS[-1])
+            context["close_hx_url"] = f"/employee/shift-tab/{employee_id}"
+            context["close_hx_target"] = "#shift_target"
+        except ValueError:
+            pass
     return render(request, "base/rotating_work_type/individual_view.html", context)
 
 
@@ -1474,38 +1495,56 @@ def rotating_work_type_assign_export(request):
     )
 
 
+def rotating_work_type_assign_redirect(request, obj_id, employee_id):
+    request_copy = request.GET.copy()
+    request_copy.pop("instances_ids", None)
+    previous_data = request_copy.urlencode()
+    hx_target = request.META.get("HTTP_HX_TARGET", None)
+    if hx_target and hx_target == "view-container":
+        return redirect(f"/rotating-work-type-assign-view?{previous_data}")
+    elif hx_target and hx_target == "objectDetailsModalTarget":
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if obj_id in instances_list:
+            instances_list.remove(obj_id)
+        previous_instance, next_instance = closest_numbers(
+            json.loads(instances_ids), obj_id
+        )
+        
+        return redirect(
+            f"/rwork-individual-view/{next_instance}/?{previous_data}&instances_ids={instances_list}"
+        )
+    elif hx_target and hx_target == "shift_target" and employee_id:
+        return redirect(f"/employee/shift-tab/{employee_id}")
+    elif hx_target:
+        return HttpResponse("<script>window.location.reload()</script>")
+    else:
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
 @login_required
 @manager_can_enter("base.change_rotatingworktypeassign")
-def rotating_work_type_assign_archive(request, id):
+def rotating_work_type_assign_archive(request, obj_id):
     """
-    This method is used to archive or un-archive rotating work type assigns
+    Archive or un-archive rotating work type assigns
     """
     try:
-        rwork_type = RotatingWorkTypeAssign.objects.get(id=id)
+        rwork_type = get_object_or_404(RotatingWorkTypeAssign, id=obj_id)
+        employee_id = rwork_type.employee_id.id
         employees_rwork_types = RotatingWorkTypeAssign.objects.filter(
             is_active=True, employee_id=rwork_type.employee_id
         )
-        flag = False
-        if len(employees_rwork_types) < 1:
-            rwork_type.is_active = True
-            flag = True
-
-        message = _("un-archived")
-        if request.GET.get("is_active") == "False":
-            rwork_type.is_active = False
-            message = _("archived")
-            flag = True
-        rwork_type.save()
-        if flag:
-            messages.success(
-                request, _("Rotating shift assign is {message}").format(message=message)
-            )
-        else:
+        rwork_type.is_active = not rwork_type.is_active
+        if rwork_type.is_active and employees_rwork_types:
             messages.error(request, "Already on record is active")
-    except RotatingWorkTypeAssign.DoesNotExist:
+        else:
+            rwork_type.save()
+            message = _("un-archived") if rwork_type.is_active else _("archived")
+            messages.success(request, _("Rotating shift assign is {}").format(message))
+        return rotating_work_type_assign_redirect(request, obj_id, employee_id)
+    except Http404:
         messages.error(request, _("Rotating work type assign not found."))
-
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return rotating_work_type_assign_redirect(request, obj_id, employee_id)
 
 
 @login_required
@@ -1584,21 +1623,21 @@ def rotating_work_type_assign_bulk_delete(request):
 @login_required
 @permission_required("base.delete_rotatingworktypeassign")
 @require_http_methods(["POST"])
-def rotating_work_type_assign_delete(request, id):
+def rotating_work_type_assign_delete(request, obj_id):
     """
     This method is used to delete rotating work type
     """
     try:
-        rotating_work_type_assign_obj = RotatingWorkTypeAssign.objects.get(
-            id=id
-        ).delete()
+        rotating_work_type_assign_obj = RotatingWorkTypeAssign.objects.get(id=obj_id)
+        employee_id = rotating_work_type_assign_obj.employee_id.id
+        rotating_work_type_assign_obj.delete()
         messages.success(request, _("Rotating work type assign deleted."))
     except RotatingWorkTypeAssign.DoesNotExist:
         messages.error(request, _("Rotating work type assign not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this rotating work type."))
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return rotating_work_type_assign_redirect(request, obj_id, employee_id)
 
 
 @login_required
@@ -2009,9 +2048,23 @@ def rotating_shift_individual_view(request, instance_id):
     """
     This view is used render detailed view of the rotating shit assign
     """
-    instance = RotatingShiftAssign.objects.get(id=instance_id)
+    instance = RotatingShiftAssign.objects.filter(id=instance_id).first()
     context = {"instance": instance}
     assign_ids_json = request.GET.get("instances_ids")
+    HTTP_REFERER = request.META.get("HTTP_REFERER", None)
+    context["close_hx_url"] = ""
+    context["close_hx_target"] = ""
+    if HTTP_REFERER and HTTP_REFERER.endswith("rotating-shift-assign/"):
+        context["close_hx_url"] = "/rotating-shift-assign-view"
+        context["close_hx_target"] = "#view-container"
+    elif HTTP_REFERER:
+        HTTP_REFERERS = [part for part in HTTP_REFERER.split("/") if part]
+        try:
+            employee_id = int(HTTP_REFERERS[-1])
+            context["close_hx_url"] = f"/employee/shift-tab/{employee_id}"
+            context["close_hx_target"] = "#shift_target"
+        except ValueError:
+            pass
     if assign_ids_json:
         assign_ids = json.loads(assign_ids_json)
         previous_id, next_id = closest_numbers(assign_ids, instance_id)
@@ -2179,20 +2232,43 @@ def rotating_shift_assign_bulk_delete(request):
 @login_required
 @manager_can_enter("base.delete_rotatingshiftassign")
 @require_http_methods(["POST"])
-def rotating_shift_assign_delete(request, id):
+def rotating_shift_assign_delete(request, obj_id):
     """
     This method is used to delete rotating shift assign instance
     args:
         id : rotating shift assign instance id
     """
     try:
-        rotating_shift_assign_obj = RotatingShiftAssign.objects.get(id=id).delete()
+        rotating_shift_assign_obj = RotatingShiftAssign.objects.get(id=obj_id)
+        employee_id = rotating_shift_assign_obj.employee_id.id
+        rotating_shift_assign_obj.delete()
         messages.success(request, _("Rotating shift assign deleted."))
     except RotatingShiftAssign.DoesNotExist:
+        employee_id = None
         messages.error(request, _("Rotating shift assign not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this rotating shift assign."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    hx_target = request.META.get("HTTP_HX_TARGET", None)
+    if hx_target and hx_target == "view-container":
+        previous_data = request.GET.urlencode()
+        return redirect(f"/rotating-shift-assign-view?{previous_data}")
+    elif hx_target and hx_target == "objectDetailsModalTarget":
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if obj_id in instances_list:
+            instances_list.remove(obj_id)
+        previous_instance, next_instance = closest_numbers(
+            json.loads(instances_ids), obj_id
+        )
+        return redirect(
+            f"/rshit-individual-view/{next_instance}/?instances_ids={instances_list}"
+        )
+    elif hx_target and hx_target == "shift_target" and employee_id:
+        return redirect(f"/employee/shift-tab/{employee_id}")
+    elif hx_target:
+        return HttpResponse("<script>window.location.reload()</script>")
+    else:
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 def get_models_in_app(app_name):
@@ -2784,6 +2860,7 @@ def work_type_request_delete(request, obj_id):
             icon="trash",
         )
     except WorkTypeRequest.DoesNotExist:
+        employee = None
         messages.error(request, _("Work type request not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this work type request."))
@@ -2802,7 +2879,7 @@ def work_type_request_delete(request, obj_id):
     elif hx_target and hx_target == "view-container":
         previous_data = request.GET.urlencode()
         return redirect(f"/work-type-request-search?{previous_data}")
-    elif hx_target and hx_target == "shift_target":
+    elif hx_target and hx_target == "shift_target" and employee:
         return redirect(f"/employee/shift-tab/{employee.id}")
     else:
         return HttpResponse("<script>window.location.reload()</script>")
