@@ -11,7 +11,6 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
-
 import contextlib
 import json
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
@@ -27,6 +26,7 @@ from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import permission_required, login_required, hx_request_required
 from base.methods import sortby
+from base.backends import ConfiguredEmailBackend
 from employee.models import Employee
 from recruitment.models import Recruitment, Candidate, Stage, StageNote
 from recruitment.filters import CandidateFilter, RecruitmentFilter, StageFilter
@@ -1240,9 +1240,9 @@ def application_form(request):
             candidate_obj.save()
             messages.success(request, _("Application saved."))
             return render(request, "candidate/success.html")
-        form.fields[
-            "job_position_id"
-        ].queryset = form.instance.recruitment_id.open_positions.all()
+        form.fields["job_position_id"].queryset = (
+            form.instance.recruitment_id.open_positions.all()
+        )
     return render(request, "candidate/application_form.html", {"form": form})
 
 
@@ -1269,8 +1269,9 @@ def send_acknowledgement(request):
         send_to = request.POST.get("to")
         subject = request.POST.get("subject")
         bdy = request.POST.get("body")
+        email_backend = ConfiguredEmailBackend()
         res = send_mail(
-            subject, bdy, settings.EMAIL_HOST_USER, [send_to], fail_silently=False
+            subject, bdy, email_backend.dynamic_username, [send_to], fail_silently=False
         )
         if res == 1:
             return HttpResponse(
@@ -1340,10 +1341,12 @@ def dashboard_pipeline(_):
         data = [stage_type_candidate_count(rec, type[0]) for type in Stage.stage_types]
         data_set.append(
             {
-                "label": rec.title
-                if rec.title is not None
-                else f"""{rec.job_position_id}
-                 {rec.start_date}""",
+                "label": (
+                    rec.title
+                    if rec.title is not None
+                    else f"""{rec.job_position_id}
+                 {rec.start_date}"""
+                ),
                 "data": data,
             }
         )

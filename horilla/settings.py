@@ -24,43 +24,39 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j8op9)1q8$1&0^s&p*_0%d#pr@w9qj@1o=3#@d=a(^@9@zd@%j'
+SECRET_KEY = "django-insecure-j8op9)1q8$1&0^s&p*_0%d#pr@w9qj@1o=3#@d=a(^@9@zd@%j"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "*"
-]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'notifications',
-    'mathfilters',
-    'corsheaders',
-    'simple_history',
-    'django_filters',
-    'base',
-    'recruitment',
-    'employee',
-    'leave',
-    'pms',
-    'onboarding',
-    'asset',
-    'attendance',
-    'payroll',
-
-    'widget_tweaks',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "notifications",
+    "mathfilters",
+    "corsheaders",
+    "simple_history",
+    "django_filters",
+    "base",
+    "recruitment",
+    "employee",
+    "leave",
+    "pms",
+    "onboarding",
+    "asset",
+    "attendance",
+    "payroll",
+    "widget_tweaks",
     "django_apscheduler",
-
 ]
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
@@ -68,50 +64,48 @@ APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
 
-    'corsheaders.middleware.CorsMiddleware',
-    'simple_history.middleware.HistoryRequestMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    ]
-
-ROOT_URLCONF = 'horilla.urls'
+ROOT_URLCONF = "horilla.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-    BASE_DIR / 'templates',
-    ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            BASE_DIR / "templates",
+        ],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'horilla.wsgi.application'
+WSGI_APPLICATION = "horilla.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'TestDB_Horilla.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "TestDB_Horilla.sqlite3",
     }
 }
 
@@ -121,16 +115,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -138,9 +132,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'Asia/Kolkata'
+TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
 
@@ -150,78 +144,69 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = '/static/'
+STATIC_URL = "static/"
+STATIC_ROOT = "/static/"
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 MESSAGE_TAGS = {
-        messages.DEBUG: 'oh-alert--warning',
-        messages.INFO: 'oh-alert--info',
-        messages.SUCCESS: 'oh-alert--success',
-        messages.WARNING: 'oh-alert--warning',
-        messages.ERROR: 'oh-alert--danger',
- }
+    messages.DEBUG: "oh-alert--warning",
+    messages.INFO: "oh-alert--info",
+    messages.SUCCESS: "oh-alert--success",
+    messages.WARNING: "oh-alert--warning",
+    messages.ERROR: "oh-alert--danger",
+}
 
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
-
 ]
 
 
-LOGIN_URL = '/login'
+LOGIN_URL = "/login"
 
 
-EMAIL_USE_TLS = True  
-EMAIL_HOST = 'smtp.gmail.com'  
-EMAIL_PORT = 587  
-EMAIL_HOST_USER = '<email_address'  
-EMAIL_HOST_PASSWORD = '<password>'  
-SIMPLE_HISTORY_REVERT_DISABLED=True
+SIMPLE_HISTORY_REVERT_DISABLED = True
 
 
 DJANGO_NOTIFICATIONS_CONFIG = {
-    'USE_JSONFIELD': True,
-    'SOFT_DELETE': True,
-    'USE_WATCHED': True,
-    'NOTIFICATIONS_STORAGE': 'notifications.storage.DatabaseStorage',
-    'TEMPLATE': 'notifications.html', # Add this line
+    "USE_JSONFIELD": True,
+    "SOFT_DELETE": True,
+    "USE_WATCHED": True,
+    "NOTIFICATIONS_STORAGE": "notifications.storage.DatabaseStorage",
+    "TEMPLATE": "notifications.html",  # Add this line
 }
 
-X_FRAME_OPTIONS = 'SAMEORIGIN'
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
 LANGUAGES = (
-    ('en', 'English (US)'),
-    ('de', 'Deutsche'),
-    ('es','Español'),
-    ('fr','France'),
-    ('ar', 'عربى'),
-
+    ("en", "English (US)"),
+    ("de", "Deutsche"),
+    ("es", "Español"),
+    ("fr", "France"),
+    ("ar", "عربى"),
 )
 
 LOCALE_PATHS = [
-    join(BASE_DIR, 'horilla', 'locale'),
+    join(BASE_DIR, "horilla", "locale"),
 ]
 
-TIME_ZONE = 'Asia/Kolkata'
+TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = True
-

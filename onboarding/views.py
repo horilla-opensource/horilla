@@ -31,10 +31,17 @@ from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import login_required, hx_request_required, logger
 from horilla.decorators import permission_required
-from base.methods import closest_numbers, generate_pdf, get_key_instances, get_pagination, sortby
+from base.methods import (
+    closest_numbers,
+    generate_pdf,
+    get_key_instances,
+    get_pagination,
+    sortby,
+)
 from attendance.methods.group_by import group_by_queryset as general_group_by
 from onboarding.filters import OnboardingCandidateFilter, OnboardingStageFilter
 from recruitment.forms import RejectedCandidateForm
+from base.backends import ConfiguredEmailBackend
 from recruitment.models import (
     Candidate,
     Recruitment,
@@ -539,7 +546,7 @@ def candidates_view(request):
             "candidates": page_obj,
             "form": candidate_filter_obj.form,
             "pd": previous_data,
-            "gp_fields":CandidateReGroup.fields,
+            "gp_fields": CandidateReGroup.fields,
             "mail_templates": mail_templates,
             "hired_candidates": queryset,
         },
@@ -593,7 +600,9 @@ def candidate_filter(request):
     template = "onboarding/candidates.html"
     if field != "" and field is not None:
         template = "onboarding/group_by.html"
-        candidates = general_group_by(candidates,field,request.GET.get("page"),"page")
+        candidates = general_group_by(
+            candidates, field, request.GET.get("page"), "page"
+        )
     page_obj = paginator_qry(candidates, page_number)
     return render(
         request,
@@ -619,6 +628,7 @@ def email_send(request):
     candidates = request.POST.getlist("ids")
     other_attachments = request.FILES.getlist("other_attachments")
     template_attachment_ids = request.POST.getlist("template_attachment_ids")
+    email_backend = ConfiguredEmailBackend()
     if not candidates:
         messages.info(request, "Please choose chandidates")
         return HttpResponse("<script>window.location.reload()</script>")
@@ -674,7 +684,7 @@ def email_send(request):
         email = EmailMessage(
             f"Hello {candidate.name}, Congratulations on your selection!",
             html_message,
-            settings.EMAIL_HOST_USER,
+            email_backend.dynamic_username,
             [candidate.email],
         )
         email.content_subtype = "html"
@@ -1545,6 +1555,7 @@ def onboarding_send_mail(request, candidate_id):
     response = render(
         request, "onboarding/send_mail_form.html", {"candidate": candidate}
     )
+    email_backend = ConfiguredEmailBackend()
     if request.method == "POST":
         subject = request.POST["subject"]
         body = request.POST["body"]
@@ -1552,7 +1563,7 @@ def onboarding_send_mail(request, candidate_id):
             res = send_mail(
                 subject,
                 body,
-                settings.EMAIL_HOST_USER,
+                email_backend.dynamic_username,
                 [candidate_mail],
                 fail_silently=False,
             )
@@ -1690,12 +1701,11 @@ def candidate_select(request):
     """
     page_number = request.GET.get("page")
 
-    employees = queryset=Candidate.objects.filter(
-            hired=True,
-            recruitment_id__closed=False,
-            is_active=True,
-            
-        )
+    employees = queryset = Candidate.objects.filter(
+        hired=True,
+        recruitment_id__closed=False,
+        is_active=True,
+    )
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()

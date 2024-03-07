@@ -3,23 +3,26 @@ threading.py
 
 This module is used handle mail sent in thread
 """
+
 import logging
 from threading import Thread
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from employee.models import EmployeeWorkInformation
-from horilla.settings import EMAIL_HOST_USER
 from helpdesk.models import Ticket
 from django.contrib import messages
 from base.models import Department
+from base.backends import ConfiguredEmailBackend
 
 
 logger = logging.getLogger(__name__)
+
 
 class TicketSendThread(Thread):
     """
     MailSend
     """
+
     def __init__(self, request, ticket, type):
         Thread.__init__(self)
         self.ticket = ticket
@@ -29,7 +32,7 @@ class TicketSendThread(Thread):
         self.host = request.get_host()
         self.protocol = "https" if request.is_secure() else "http"
         raised_on = ticket.get_raised_on_object()
-        if isinstance(raised_on,Department):
+        if isinstance(raised_on, Department):
             if raised_on.dept_manager.all():
                 self.department_manager = raised_on.dept_manager.all().first().manager
             else:
@@ -39,7 +42,8 @@ class TicketSendThread(Thread):
         host = self.host
         protocol = self.protocol
         link = "#"
-        if ticket_id!= "#":
+        email_backend = ConfiguredEmailBackend()
+        if ticket_id != "#":
             link = f"{protocol}://{host}/helpdesk/ticket-detail/{ticket_id}/"
         for recipient in recipients:
             html_message = render_to_string(
@@ -54,12 +58,16 @@ class TicketSendThread(Thread):
                 },
             )
 
-            email = EmailMessage(subject, html_message, EMAIL_HOST_USER, [recipient.email])
+            email = EmailMessage(
+                subject, html_message, email_backend.dynamic_username, [recipient.email]
+            )
             email.content_subtype = "html"
             try:
                 email.send()
             except:
-                messages.error(self.request, f"Mail not sent to {recipient.get_full_name()}")
+                messages.error(
+                    self.request, f"Mail not sent to {recipient.get_full_name()}"
+                )
 
     def run(self) -> None:
         super().run()
@@ -70,7 +78,7 @@ class TicketSendThread(Thread):
 
             content_manager = f"This is to inform you that a ticket has been raised on your department. Take the necessary actions to address the issue or request outlined in the ticket. Should you have any additional information or updates, please feel free to communicate directly with the {owner}."
             subject_manager = "Ticket created raised on your department"
-            
+
             self.send_email(subject_manager, content_manager, [manager], self.ticket.id)
 
             content_owner = "This is to inform you that the ticket you created has been successfully logged into our system. The assigned team/individual will now take the necessary actions to address the issue or request outlined in the ticket. Should you have any additional information or updates, please feel free to communicate directly with the Support/Helpdesk team."
@@ -91,7 +99,9 @@ class TicketSendThread(Thread):
             subject = "The Status of the Ticket has been updated"
             content = f"This is to inform you that the status of the following ticket has been updated by {updated_by} from {old_status} to {new_status}. If you have any questions or require further information, feel free to reach out to the Support/Helpdesk team."
 
-            self.send_email(subject, content, set(assignees) | {owner} | {manager}, self.ticket.id)
+            self.send_email(
+                subject, content, set(assignees) | {owner} | {manager}, self.ticket.id
+            )
 
         elif self.type == "delete":
             assignees = self.assignees
@@ -102,13 +112,15 @@ class TicketSendThread(Thread):
             content = f'This is to inform you that the Ticket "{self.ticket.title}" has been deleted. If you have any questions or require further information, feel free to reach out to the Support/Helpdesk team.'
 
             self.send_email(subject, content, set(assignees) | {owner} | {manager})
-            
+
         return
+
 
 class AddAssigneeThread(Thread):
     """
     MailSend
     """
+
     def __init__(self, request, ticket, recipient):
         Thread.__init__(self)
         self.ticket = ticket
@@ -125,6 +137,7 @@ class AddAssigneeThread(Thread):
 
         host = self.host
         protocol = self.protocol
+        email_backend = ConfiguredEmailBackend()
         link = f"{protocol}://{host}/helpdesk/ticket-detail/{self.ticket.id}/"
         for recipient in self.recipients:
             html_message = render_to_string(
@@ -139,19 +152,23 @@ class AddAssigneeThread(Thread):
                 },
             )
 
-            email = EmailMessage(subject, html_message, EMAIL_HOST_USER, [recipient.email])
+            email = EmailMessage(
+                subject, html_message, email_backend.dynamic_username, [recipient.email]
+            )
             email.content_subtype = "html"
             try:
                 email.send()
             except:
-                messages.error(self.request, f"Mail not sent to {recipient.get_full_name()}")
-
+                messages.error(
+                    self.request, f"Mail not sent to {recipient.get_full_name()}"
+                )
 
 
 class RemoveAssigneeThread(Thread):
     """
     MailSend
     """
+
     def __init__(self, request, ticket, recipient):
         Thread.__init__(self)
         self.ticket = ticket
@@ -168,6 +185,7 @@ class RemoveAssigneeThread(Thread):
 
         host = self.host
         protocol = self.protocol
+        email_backend = ConfiguredEmailBackend()
         link = f"{protocol}://{host}/helpdesk/ticket-detail/{self.ticket.id}/"
         for recipient in self.recipients:
             html_message = render_to_string(
@@ -182,10 +200,13 @@ class RemoveAssigneeThread(Thread):
                 },
             )
 
-            email = EmailMessage(subject, html_message, EMAIL_HOST_USER, [recipient.email])
+            email = EmailMessage(
+                subject, html_message, email_backend.dynamic_username, [recipient.email]
+            )
             email.content_subtype = "html"
             try:
                 email.send()
             except:
-                messages.error(self.request, f"Mail not sent to {recipient.get_full_name()}")
-
+                messages.error(
+                    self.request, f"Mail not sent to {recipient.get_full_name()}"
+                )

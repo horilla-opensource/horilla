@@ -5,7 +5,7 @@ This module is used to write email backends
 """
 
 from django.core.mail.backends.smtp import EmailBackend
-from base.models import EmailLog
+from base.models import EmailLog, DynamicEmailConfiguration
 from horilla import settings
 from base.thread_local_middleware import _thread_locals
 
@@ -25,8 +25,35 @@ class ConfiguredEmailBackend(EmailBackend):
         ssl_certfile=None,
         **kwargs
     ):
-        from base.models import DynamicEmailConfiguration
+        self.configuration = self.get_dynamic_email_config()
 
+        ssl_keyfile = (
+            getattr(self.configuration, "ssl_keyfile", None)
+            if self.configuration
+            else ssl_keyfile or getattr(settings, "ssl_keyfile", None)
+        )
+        ssl_certfile = (
+            getattr(self.configuration, "ssl_certfile", None)
+            if self.configuration
+            else ssl_keyfile or getattr(settings, "ssl_certfile", None)
+        )
+        self.mail_sent_from = self.dynamic_username
+        super(ConfiguredEmailBackend, self).__init__(
+            host=self.dynamic_host,
+            port=self.dynamic_port,
+            username=self.dynamic_username,
+            password=self.dynamic_password,
+            use_tls=self.dynamic_use_tls,
+            fail_silently=self.dynamic_fail_silently,
+            use_ssl=self.dynamic_use_ssl,
+            timeout=self.dynamic_timeout,
+            ssl_keyfile=ssl_keyfile,
+            ssl_certfile=ssl_certfile,
+            **kwargs
+        )
+
+    @staticmethod
+    def get_dynamic_email_config():
         request = getattr(_thread_locals, "request", None)
         company = None
         if request and not request.user.is_anonymous:
@@ -38,62 +65,70 @@ class ConfiguredEmailBackend(EmailBackend):
             configuration = DynamicEmailConfiguration.objects.filter(
                 is_primary=True
             ).first()
-        # Use default settings if configuration is not available
-        host = configuration.host if configuration else host or settings.EMAIL_HOST
-        port = configuration.port if configuration else port or settings.EMAIL_PORT
-        username = (
-            configuration.username
-            if configuration
-            else username or settings.EMAIL_HOST_USER
+        return configuration
+
+    @property
+    def dynamic_host(self):
+        return (
+            self.configuration.host
+            if self.configuration
+            else getattr(settings, "EMAIL_HOST", None)
         )
-        password = (
-            configuration.password
-            if configuration
-            else password or settings.EMAIL_HOST_PASSWORD
+
+    @property
+    def dynamic_port(self):
+        return (
+            self.configuration.port
+            if self.configuration
+            else getattr(settings, "EMAIL_PORT", None)
         )
-        use_tls = (
-            configuration.use_tls
-            if configuration
-            else use_tls or settings.EMAIL_USE_TLS
+
+    @property
+    def dynamic_username(self):
+        return (
+            self.configuration.username
+            if self.configuration
+            else getattr(settings, "EMAIL_HOST_USER", None)
         )
-        fail_silently = (
-            configuration.fail_silently
-            if configuration
-            else fail_silently or getattr(settings, "EMAIL_FAIL_SILENTLY", True)
+
+    @property
+    def dynamic_password(self):
+        return (
+            self.configuration.password
+            if self.configuration
+            else getattr(settings, "EMAIL_HOST_PASSWORD", None)
         )
-        use_ssl = (
-            configuration.use_ssl
-            if configuration
-            else use_ssl or getattr(settings, "EMAIL_USE_SSL", None)
+
+    @property
+    def dynamic_use_tls(self):
+        return (
+            self.configuration.use_tls
+            if self.configuration
+            else getattr(settings, "EMAIL_USE_TLS", None)
         )
-        timeout = (
-            configuration.timeout
-            if configuration
-            else timeout or getattr(settings, "EMAIL_TIMEOUT", None)
+
+    @property
+    def dynamic_fail_silently(self):
+        return (
+            self.configuration.fail_silently
+            if self.configuration
+            else getattr(settings, "EMAIL_FAIL_SILENTLY", True)
         )
-        ssl_keyfile = (
-            getattr(configuration, "ssl_keyfile", None)
-            if configuration
-            else ssl_keyfile or getattr(settings, "ssl_keyfile", None)
+
+    @property
+    def dynamic_use_ssl(self):
+        return (
+            self.configuration.use_ssl
+            if self.configuration
+            else getattr(settings, "EMAIL_USE_SSL", None)
         )
-        ssl_certfile = (
-            getattr(configuration, "ssl_certfile", None)
-            if configuration
-            else ssl_keyfile or getattr(settings, "ssl_certfile", None)
-        )
-        self.mail_sent_from = username
-        super(ConfiguredEmailBackend, self).__init__(
-            host=host,
-            port=port,
-            username=username,
-            password=password,
-            use_tls=use_tls,
-            fail_silently=fail_silently,
-            use_ssl=use_ssl,
-            timeout=timeout,
-            ssl_keyfile=ssl_keyfile,
-            ssl_certfile=ssl_certfile,
-            **kwargs
+
+    @property
+    def dynamic_timeout(self):
+        return (
+            self.configuration.timeout
+            if self.configuration
+            else getattr(settings, "EMAIL_TIMEOUT", None)
         )
 
     def send_messages(self, email_messages):

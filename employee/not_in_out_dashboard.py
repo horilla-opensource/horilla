@@ -3,6 +3,7 @@ employee/context_processors.py
 
 This module is used to write context processor methods
 """
+
 from datetime import date
 from django import template
 from django.shortcuts import render
@@ -16,7 +17,7 @@ from horilla import settings
 from employee.filters import EmployeeFilter
 from recruitment.models import RecruitmentMailTemplate
 from django.core.paginator import Paginator
-
+from base.backends import ConfiguredEmailBackend
 
 
 def paginator_qry(qryset, page_number):
@@ -42,8 +43,15 @@ def not_in_yet(request):
         .qs.exclude(employee_work_info__isnull=True)
         .filter(is_active=True)
     )
-    
-    return render(request, "dashboard/not_in_yet.html", {"employees": paginator_qry(emps, page_number),"pd": previous_data,})
+
+    return render(
+        request,
+        "dashboard/not_in_yet.html",
+        {
+            "employees": paginator_qry(emps, page_number),
+            "pd": previous_data,
+        },
+    )
 
 
 @login_required
@@ -107,7 +115,8 @@ def send_mail_to_employee(request):
     attachments = [
         (file.name, file.read(), file.content_type) for file in other_attachments
     ]
-    host = settings.EMAIL_HOST_USER
+    email_backend = ConfiguredEmailBackend()
+    host = email_backend.dynamic_username
     employee = Employee.objects.get(id=employee_id)
     template_attachment_ids = request.POST.getlist("template_attachments")
     bodys = list(
