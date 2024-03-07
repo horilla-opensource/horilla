@@ -23,7 +23,7 @@ class ConfiguredEmailBackend(EmailBackend):
         timeout=None,
         ssl_keyfile=None,
         ssl_certfile=None,
-        **kwargs
+        **kwargs,
     ):
         self.configuration = self.get_dynamic_email_config()
 
@@ -49,7 +49,7 @@ class ConfiguredEmailBackend(EmailBackend):
             timeout=self.dynamic_timeout,
             ssl_keyfile=ssl_keyfile,
             ssl_certfile=ssl_certfile,
-            **kwargs
+            **kwargs,
         )
 
     @staticmethod
@@ -89,6 +89,18 @@ class ConfiguredEmailBackend(EmailBackend):
             self.configuration.username
             if self.configuration
             else getattr(settings, "EMAIL_HOST_USER", None)
+        )
+
+    @property
+    def dynamic_display_name(self):
+        return self.configuration.display_name if self.configuration else None
+
+    @property
+    def dynamic_username_with_display_name(self):
+        return (
+            f"{self.dynamic_display_name} <{self.dynamic_username}>"
+            if self.dynamic_display_name
+            else self.dynamic_username
         )
 
     @property

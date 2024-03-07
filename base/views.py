@@ -267,7 +267,7 @@ def send_link(employee, request, id, user):
         send_mail(
             subject=subject,
             message=message,
-            from_email=email_backend.dynamic_username,
+            from_email=email_backend.dynamic_username_with_display_name,
             recipient_list=recipient,
         )
         response_success = _(
@@ -1425,7 +1425,7 @@ def rotating_work_individual_view(request, instance_id):
     request_copy.pop("instances_ids", None)
     previous_data = request_copy.urlencode()
     instance = RotatingWorkTypeAssign.objects.filter(id=instance_id).first()
-    context = {"instance": instance,"pd":previous_data}
+    context = {"instance": instance, "pd": previous_data}
     assign_ids_json = request.GET.get("instances_ids")
     if assign_ids_json:
         assign_ids = json.loads(assign_ids_json)
@@ -1510,7 +1510,7 @@ def rotating_work_type_assign_redirect(request, obj_id, employee_id):
         previous_instance, next_instance = closest_numbers(
             json.loads(instances_ids), obj_id
         )
-        
+
         return redirect(
             f"/rwork-individual-view/{next_instance}/?{previous_data}&instances_ids={instances_list}"
         )

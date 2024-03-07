@@ -1271,7 +1271,11 @@ def send_acknowledgement(request):
         bdy = request.POST.get("body")
         email_backend = ConfiguredEmailBackend()
         res = send_mail(
-            subject, bdy, email_backend.dynamic_username, [send_to], fail_silently=False
+            subject,
+            bdy,
+            email_backend.dynamic_username_with_display_name,
+            [send_to],
+            fail_silently=False,
         )
         if res == 1:
             return HttpResponse(

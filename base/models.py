@@ -1015,6 +1015,13 @@ class DynamicEmailConfiguration(models.Model):
         verbose_name=_("Email Host Username"),
     )
 
+    display_name = models.CharField(
+        blank=True,
+        null=True,
+        max_length=256,
+        verbose_name=_("Display Name"),
+    )
+
     password = models.CharField(
         blank=True,
         null=True,

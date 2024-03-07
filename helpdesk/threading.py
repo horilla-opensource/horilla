@@ -59,7 +59,10 @@ class TicketSendThread(Thread):
             )
 
             email = EmailMessage(
-                subject, html_message, email_backend.dynamic_username, [recipient.email]
+                subject,
+                html_message,
+                email_backend.dynamic_username_with_display_name,
+                [recipient.email],
             )
             email.content_subtype = "html"
             try:
@@ -153,7 +156,10 @@ class AddAssigneeThread(Thread):
             )
 
             email = EmailMessage(
-                subject, html_message, email_backend.dynamic_username, [recipient.email]
+                subject,
+                html_message,
+                email_backend.dynamic_username_with_display_name,
+                [recipient.email],
             )
             email.content_subtype = "html"
             try:
@@ -201,7 +207,10 @@ class RemoveAssigneeThread(Thread):
             )
 
             email = EmailMessage(
-                subject, html_message, email_backend.dynamic_username, [recipient.email]
+                subject,
+                html_message,
+                email_backend.dynamic_username_with_display_name,
+                [recipient.email],
             )
             email.content_subtype = "html"
             try:
