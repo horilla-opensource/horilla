@@ -1,0 +1,166 @@
+{% load i18n %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="oh-modal__dialog-header">
+    <h2
+      class="oh-modal__dialog-title"
+      id=""
+    >
+      {% trans "Details" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close" >
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body oh-modal__dialog-relative" >
+{% if request.GET.instances_ids %}
+{% comment %} <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button hx-get="{% url 'rshift-individual-view' previous %}?instances_ids={{assign_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+        aria-label="chevron back outline"></ion-icon>
+    </button>
+
+    <button hx-get="{% url 'rshift-individual-view' next  %}?instances_ids={{assign_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
+        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+        aria-label="chevron forward outline"></ion-icon>
+    </button>
+</div> {% endcomment %}
+{% endif %}
+<div class="d-flex justify-content-between align-items-center">
+    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+        href ="{% url 'employee-view-individual' instance.employee_id.id %}">
+        <div class="oh-profile mb-2">
+            <div class="oh-profile__avatar">
+            <img
+                src="{{instance.employee_id.get_avatar}}"
+                class="oh-profile__image me-2"
+                alt="Mary Magdalene"
+            />
+            </div>
+            <div class="oh-timeoff-modal__profile-info">
+            <span class="oh-timeoff-modal__user fw-bold"
+                >{{instance.employee_id}}</span
+            >
+            <span
+                class="oh-timeoff-modal__user m-0"
+                style="font-size: 18px; color: #4d4a4a"
+            >
+                {{instance.employee_id.employee_work_info.department_id}} /
+                {{instance.employee_id.employee_work_info.job_position_id}}</span
+            >
+            </div>
+        </div>
+    </a>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title me-3">{% trans "Status" %}</span>
+                <select name="status" id="{{instance.id}}" class="oh-table__editable-input oh-select p-3"
+                    hx-trigger="change" hx-post="{% url 'change-employee-objective-status' instance.id %}" hx-target="#objectDetailsModalTarget"
+                >
+                    {% for status in objective_key_result_status %}
+                    <option value="{{status.0}}"  {% if status.0 == instance.status %} selected {% endif %}>
+                        <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span></option>
+                    {% endfor %}
+                </select> 
+        </div>
+</div>
+<div class="" style="padding-top: 5px;">
+    <div class="oh-timeoff-modal__stats-container">
+        <div class="oh-timeoff-modal__stat" >
+            <span class="oh-timeoff-modal__stat-title">{% trans "Title" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{instance.objective_id}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" >
+            <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
+            <span class="oh-timeoff-modal__stat-count">
+                {{instance.objective_id.description}}
+            </span>
+        </div>
+    </div>
+    {% comment %} <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title me-3">{% trans "Status" %}</span>
+                <select name="status" id="{{instance.id}}" class="oh-table__editable-input oh-select p-3"
+                    hx-trigger="change" hx-post="{% url 'change-employee-objective-status' instance.id %}" hx-target="#objectDetailsModalTarget"
+                >
+                    {% for status in objective_key_result_status %}
+                    <option value="{{status.0}}"  {% if status.0 == instance.status %} selected {% endif %}>
+                        <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span></option>
+                    {% endfor %}
+                </select> 
+        </div>
+    </div> {% endcomment %}
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Start Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count dateformat_changer">
+                {{instance.start_date}} 
+            </span>
+        </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "End Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count dateformat_changer">{{instance.end_date}}</span>
+        </div>
+    </div>
+    <div class="oh-modal__button-container text-center mt-3">
+        <div class="oh-btn-group">
+            
+            <a class="oh-btn oh-btn--info" hx-get='{% url "update-employee-objective" instance.id %}' hx-target="#objectivesTarget" data-toggle="oh-modal-toggle" data-target="#objectivesModal" style="width: 50%;">
+                <ion-icon name="create-outline">
+                </ion-icon>{% trans "Edit" %} 
+            </a>
+            {% if instance.archive %}
+                <form  class="oh-btn oh-btn--primary" style="width: 50%;" onsubmit="return confirm('Do you want to Unarchive this Employee objective?')"  action='{% url "archive-employee-objective" instance.id %}'>
+                    <input type="hidden" name="archive" value="False" id="">
+                    <button style="background: none;
+                        color: inherit;
+                        border: none;
+                        padding: 0;
+                        font: inherit;
+                        cursor: pointer;
+                        outline: inherit;">
+                        <ion-icon name="archive-outline"></ion-icon>
+                        {% trans "Unarchive" %} 
+                    </button>
+                 </form>
+            {% else %}
+                <form  class="oh-btn oh-btn--primary" style="width: 50%;" onsubmit="return confirm('Do you want to archive this Employee objective?')"  action='{% url "archive-employee-objective" instance.id %}'>
+                    <input type="hidden" name="archive" value="False" id="">
+                    <button style="background: none;
+                        color: inherit;
+                        border: none;
+                        padding: 0;
+                        font: inherit;
+                        cursor: pointer;
+                        outline: inherit;">
+                        <ion-icon name="archive-outline"></ion-icon>
+                        {% trans "Archive" %} 
+                    </button>
+                </form> 
+            {% endif %}
+            <form  class="oh-btn oh-btn--secondary" method="post" style="width: 50%;" onsubmit="return confirm('Do you Want to delete this employee objective?')"  action='{% url "delete-employee-objective" instance.id %}'>
+                {% csrf_token %}
+                <button style="background: none;
+                    color: inherit;
+                    border: none;
+                    padding: 0;
+                    font: inherit;
+                    cursor: pointer;
+                    outline: inherit;">
+                    <ion-icon name="trash-outline">
+                    </ion-icon>{% trans "Delete" %} 
+                </button>
+            </form>               
+        </div>
+    </div>
+</div>
+</div>

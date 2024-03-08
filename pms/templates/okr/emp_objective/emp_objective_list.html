@@ -1,0 +1,149 @@
+{% load static i18n %}
+{% load i18n %}
+{% load widget_tweaks %} {% load basefilters %}
+
+{% for emp_objective in objective.employee_objective.all %}
+    <div class="oh-accordion-meta">
+        <div class="oh-accordion-meta__item">
+            <div class="oh-accordion-meta__header oh-accordion-meta__header--custom " onclick='$(this).toggleClass("oh-accordion-meta__header--show");'
+                {% comment %} {% if perms.payroll.view_taxbracket %} {% endcomment %}
+                    data-target="#krBody{{emp_objective.id}}" 
+                    hx-get="{% url 'kr-table-view' emp_objective.id %}?{{request.GET.urlencode}}&objective_id={{objective.id}}"
+                    hx-target="#krData{{emp_objective.id}}"
+                {% comment %} {% endif %}  {% endcomment %}
+                >
+                <div class="oh-accordion-meta__title d-flex align-items-center justify-content-between w-100 ">
+                    <div class="d-flex align-items-center justify-content-between" style="width:60%">
+                        <div class="oh-tabs__input-badge-container">
+                            <span
+                                class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+                            >
+                                {{emp_objective.employee_key_result.all|length}}
+                            </span>
+                                {{emp_objective.employee_id}}
+                        </div>
+                        <div class="oh-progress-container progress_barmm"  style="width:50%">
+                            <div class="oh-progress" role="progressbar">
+                                    <div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc( {{ emp_objective.progress_percentage }}%)"></div>
+                            </div>
+                            <div class="oh-progress-container__percentage" style="width:50px" name= "key_result_percentage">{{emp_objective.progress_percentage}} %</div>
+                        </div>
+                    </div>
+                    <div>
+                        {% if request.user|is_reportingmanager or perms.pms.add_employeeobjective %}
+                        {% comment %} <div class="d-flex" onclick="event.stopPropagation()"> {% endcomment %}
+                            
+                            <div class="oh-btn-group">
+                                {% if request.user|is_reportingmanager or perms.pms.view_employeekeyresult %}
+                                    <a 
+                                        hx-get='{% url "view-employee-objective" emp_objective.id %}' 
+                                        hx-target="#objectDetailsModalTarget" 
+                                        data-toggle="oh-modal-toggle" 
+                                        data-target="#objectDetailsModal" 
+                                        type="button" title="{% trans 'View' %}" 
+                                        class="oh-btn oh-btn--light-bkg p-3 w-50"  onclick="event.stopPropagation()"
+                                    > 
+                                        <ion-icon name="eye-outline"></ion-icon>
+                                    </a>
+                                {% endif %}
+                                {% if request.user|is_reportingmanager or perms.pms.view_employeekeyresult %}
+                                    <a 
+                                        hx-get='{% url "objective-detailed-view-activity" emp_objective.id %}' 
+                                        hx-target="#activityContainer" 
+                                        data-target="#OKRactivitySidebar" 
+                                        type="button" title="{% trans 'Activites' %}" 
+                                        class="oh-btn oh-btn--light-bkg p-3 w-50 oh-activity-sidebar__open"  onclick="event.stopPropagation()"
+                                    > 
+                                    <ion-icon name="newspaper-outline"></ion-icon>                                                    </a>
+                                {% endif %}
+                                {% if request.user|is_reportingmanager or perms.pms.add_employeekeyresult %}
+                                    <button  style="border-right:1px solid hsl(8, 77%, 56%)" 
+                                        class="oh-btn oh-btn--secondary-outline float-end" 
+                                        hx-get='{% url "employee-key-result-creation" emp_objective.id %}'
+                                        hx-target="#objectDetailsModalTarget" 
+                                        data-toggle="oh-modal-toggle" 
+                                        data-target="#objectDetailsModal" 
+                                        title="Add Key Result"
+                                        onclick="event.stopPropagation()"
+                                    >
+                                        <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
+                                    </button>
+                                {% endif %}
+                                <div class="" onclick="event.stopPropagation()">
+                                    <div class="oh-dropdown" x-data="{show: false}">
+                                        <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" title={% trans "Actions" %}>
+                                            <ion-icon name="ellipsis-vertical-sharp" title="{% trans 'Options' %}" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
+                                        </button>
+                                        <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" @click.outside="show = false" style="display: none;">
+                                            <ul class="oh-dropdown__items">
+                                            {% if perms.pms.change_employeeobjective or request.user|is_reportingmanager %}
+                                                <li class="oh-dropdown__item">
+                                                    <a 
+                                                    class="fw-light"
+                                                    data-toggle="oh-modal-toggle"
+                                                    data-target="#objectivesModal"
+                                                    hx-get='{% url "update-employee-objective" emp_objective.id %}'
+                                                    hx-target="#objectivesTarget"
+                                                    >{% trans "Edit" %}</a>
+                                                </li>
+                                                {% if emp_objective.archive %}
+                                                    <li class="oh-dropdown__item">
+                                                        <a 
+                                                        class="fw-light"
+                                                        data-toggle="oh-modal-toggle"
+                                                        data-target="#objectivesModal"
+                                                        hx-confirm="{% trans 'Do you want to un-archive this employee objective?' %}"
+                                                        hx-get='{% url "archive-employee-objective" emp_objective.id %}?single_view="False"'
+                                                        hx-target="#objectivesTarget"
+                                                        >{% trans "Unarchive" %}</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="oh-dropdown__item">
+                                                        <a 
+                                                        class="fw-light"
+                                                        data-toggle="oh-modal-toggle"
+                                                        data-target="#objectivesModal"
+                                                        hx-confirm="{% trans 'Do you want to archive this employee objective?' %}"
+                                                        hx-get='{% url "archive-employee-objective" emp_objective.id %}?single_view="False"'
+                                                        hx-target="#objectivesTarget"
+                                                        >{% trans "Archive" %}</a>
+                                                    </li>
+                                                {% endif %}
+                                                
+                                            {% endif %}
+                                            {% if perms.pms.delete_employeeobjective or request.user|is_reportingmanager %}
+                                                <li class="oh-dropdown__item">
+                                                    <a 
+                                                    class="fw-light"
+                                                    data-toggle="oh-modal-toggle"
+                                                    data-target="#objectivesModal"
+                                                    hx-confirm="{% trans 'Do you want to delete this employee objective?' %}"
+                                                    hx-get='{% url "delete-employee-objective" emp_objective.id %}?single_view="False"'
+                                                    hx-target="#objectivesTarget"
+                                                    >{% trans "Delete" %}</a>
+                                                </li>
+                                            {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                    
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div> 
+            <div
+                class="oh-accordion-meta__body d-none"
+                id="krBody{{emp_objective.id}}"
+            >
+                <!-- htmx tax bracket loading here -->
+                <div
+                class="oh-sticky-table oh-sticky-table--no-overflow mb-5"
+                id="krData{{emp_objective.id}}"
+                ></div>
+            </div>
+        </div>
+
+    </div>
+{% endfor %}

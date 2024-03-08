@@ -1,13 +1,17 @@
+from django import forms
 from django.db import models
-from django.forms import ValidationError
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from base.models import Company, Department, JobPosition
 from base.horilla_company_manager import HorillaCompanyManager
+from horilla_audit.methods import get_diff
 
 # importing simple history
 from simple_history.models import HistoricalRecords
 from employee.models import Employee
 from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
+from django.core.validators import MinValueValidator
+from dateutil.relativedelta import relativedelta
 
 """Objectives and key result section"""
 
@@ -23,6 +27,63 @@ class Period(models.Model):
 
     def __str__(self):
         return self.period_name
+    
+class KeyResult(models.Model):
+    """model used to create key results"""
+    PROGRESS_CHOICES = (
+        ("%", _("Percentage")),
+        ("#", _("Number")),
+        ("Currency", (("$", "USD$"), ("₹", "INR"), ("€", "EUR"))),
+    )
+    title = models.CharField(max_length=60, null=True, blank=False,verbose_name="Title")
+    description = models.TextField(blank=False, null=False,max_length=255,verbose_name='Description')
+    progress_type = models.CharField(
+        max_length=60, null=True, blank=True, choices=PROGRESS_CHOICES
+    )
+    target_value = models.IntegerField(null=True, blank=True, default=0)
+    duration = models.IntegerField(null=True,blank=True)
+    history = HorillaAuditLog(bases=[HorillaAuditInfo])
+    objects = HorillaCompanyManager()
+    def __str__(self):
+        return f"{self.title}"
+
+class Objective(models.Model):
+    """Model used for creating objectives """
+    title = models.CharField(null=False, blank=False, max_length=100,verbose_name='Title')
+    description = models.TextField(blank=False, null=False,max_length=255,verbose_name='Description')
+    managers = models.ManyToManyField(
+        Employee,
+        related_name="objective",
+        blank=True,verbose_name='Managers'
+    )
+    assignees = models.ManyToManyField(
+        Employee,
+        related_name="assignees_objective",
+        blank=True,verbose_name='Assignees'
+    )
+    key_result_id = models.ManyToManyField(
+        KeyResult,
+        blank = True,
+        related_name = "objective",
+        verbose_name = "Key results",
+    ) 
+    duration = models.IntegerField(default=1,validators=[MinValueValidator(0)])
+    created_at = models.DateField(auto_now_add=True)
+    add_assignees = models.BooleanField(default = False)
+    archive = models.BooleanField(default=False, null=True, blank=True)
+    history = HorillaAuditLog(bases=[HorillaAuditInfo])
+    objects = HorillaCompanyManager()
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        ordering = [
+            "-id",
+        ]
+    def __str__(self):
+        return f"{self.title}"
 
 
 class EmployeeObjective(models.Model):
@@ -36,16 +97,32 @@ class EmployeeObjective(models.Model):
         ("At Risk", _("At Risk")),
         ("Not Started", _("Not Started")),
     )
-    objective = models.CharField(null=False, blank=False, max_length=100)
-    objective_description = models.TextField(blank=False, null=False,max_length=255)
+    objective = models.CharField(null=True, blank=True, max_length=100,verbose_name='Title',)
+    objective_description = models.TextField(blank=True, null=True,max_length=255,verbose_name='Description',)
     created_at = models.DateField(auto_now_add=True)
+    objective_id = models.ForeignKey(
+        Objective,
+        null =True,
+        blank = True,
+        related_name = "employee_objective",
+        verbose_name = "Objective",
+        on_delete=models.PROTECT,
+
+    )
     employee_id = models.ForeignKey(
         Employee,
-        on_delete=models.PROTECT,
+        null =True,
+        blank = True,
         related_name="employee_objective",
-        null=True,
-        blank=True,
+        on_delete=models.PROTECT,
+        verbose_name='Employee'
     )
+    key_result_id = models.ManyToManyField(
+        KeyResult,
+        blank=True,
+        related_name = "employee_objective",
+        verbose_name = "Key results",
+    ) 
     updated_at = models.DateField(auto_now=True)
     start_date = models.DateField(null=False, blank=False)
     end_date = models.DateField(null=False, blank=False)
@@ -56,13 +133,36 @@ class EmployeeObjective(models.Model):
         blank=False,
         default="Not Started",
     )
-    history = HorillaAuditLog(bases=[HorillaAuditInfo])
-    archive = models.BooleanField(default=False, null=True, blank=True)
+    progress_percentage = models.IntegerField(default=0)
+
+    history = HorillaAuditLog(bases=[HorillaAuditInfo], related_name="history_set")
+    archive = models.BooleanField(default=False)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
-    def __str__(self):
-        return f"{self.employee_id.employee_first_name} - {self.objective}"
+    def update_objective_progress(self):
+        """
+        used for updating progress percentage when current value of key result change
+        """
+        krs = self.employee_key_result.all()
+        if len(krs)>0:
+            current= 0
+            for kr in krs:
+                current += kr.progress_percentage
+            self.progress_percentage = int(current/len(krs))
+            self.save()
 
+    def __str__(self):
+        return f"{self.objective_id} | {self.employee_id}"
+    
+    def save(self, *args, **kwargs):
+        if not self.pk and self.objective_id and self.start_date:
+            duration = self.objective_id.duration
+            self.end_date = self.start_date + relativedelta(days=duration)       
+        super().save(*args, **kwargs)
+        
+    def tracking(self):
+            return get_diff(self)
+        
 
 class Comment(models.Model):
     """comments for objectives"""
@@ -89,7 +189,6 @@ class Comment(models.Model):
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.comment} "
 
-
 class EmployeeKeyResult(models.Model):
     """employee key result creation"""
 
@@ -106,17 +205,23 @@ class EmployeeKeyResult(models.Model):
         ("Not Started", _("Not Started")),
     )
 
-    key_result = models.CharField(max_length=60, null=True, blank=False)
-    key_result_description = models.TextField(blank=False, null=True,max_length=255)
-    employee_objective_id = models.ForeignKey(
-        EmployeeObjective, on_delete=models.CASCADE, related_name="emp_obj_id"
-    )
-    employee_id = models.ForeignKey(
-        Employee,
-        on_delete=models.DO_NOTHING,
-        related_name="emp_kpi",
-        null=True,
-        blank=True,
+    key_result = models.CharField(max_length=60, null=True, blank=True)
+    key_result_description = models.TextField(blank=True, null=True,max_length=255)
+    employee_objective_id =models.ForeignKey(
+        EmployeeObjective,
+        null =True,
+        blank = True,
+        related_name = "employee_key_result",
+        on_delete=models.CASCADE,
+
+    ) 
+    key_result_id = models.ForeignKey(
+        KeyResult,
+        null =True,
+        blank = True,
+        related_name = "employee_key_result",
+        verbose_name = "Key result",
+        on_delete=models.PROTECT,
     )
     progress_type = models.CharField(
         max_length=60, null=True, blank=True, choices=PROGRESS_CHOICES
@@ -137,21 +242,57 @@ class EmployeeKeyResult(models.Model):
     end_date = models.DateField(null=True, blank=True)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
-    progress_percentage = models.IntegerField(null=True, blank=True, default=0)
+    progress_percentage = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.key_result} "
+        return f"{self.key_result_id} | {self.employee_objective_id.employee_id} "
 
-    def save(self, *args, **kwargs):
-        if self.employee_id is None:
-            self.employee_id = self.employee_objective_id.employee_id
+    def update_kr_progress(self):
         if self.target_value != 0:
             self.progress_percentage = (
                 int(self.current_value) / int(self.target_value)
             ) * 100
 
+    def clean(self):
+        from pms.forms import validate_date
+        super().clean()
+        start_date = self.start_date
+        end_date = self.end_date
+        # Check that start date is before end date
+        validate_date(start_date, end_date)
+        start_value = self.start_value
+        current_value = self.current_value
+        target_value = self.target_value
+        if target_value == 0:
+            raise ValidationError({
+                    "target_value": _("The target value can't be zero.")
+                })
+        if start_value > current_value or start_value > target_value:
+            raise ValidationError("The start value can't be greater than current value or target value.")
+        if current_value > target_value:
+            raise ValidationError(
+                {
+                    "current_value": _("The current value can't be greater than target value.")
+                })  
+                 
+    
+    def save(self, *args, **kwargs):
+        # if self.employee_id is None:
+        #     self.employee_id = self.employee_objective_id.employee_id
+        # if self.target_value != 0:
+        if not self.pk:
+            self.current_value = self.start_value
+        self.update_kr_progress()
         super().save(*args, **kwargs)
+        self.employee_objective_id.update_objective_progress()
+    
+    # class meta:
+    #     """
+    #     Meta class to add some additional options
+    #     """
 
+    #     unique_together = ("key_result_id", "employee_objective_id")
+        
 
 """360degree feedback section"""
 
@@ -397,3 +538,51 @@ class KeyResultFeedback(models.Model):
         on_delete=models.DO_NOTHING,
     )
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+
+
+def manipulate_existing_data():
+ # correct the existing objectives and key results, run after all apps are loaded
+        from dateutil.relativedelta import relativedelta
+        from horilla.decorators import logger
+
+
+        #for existing employee objectives
+        try:
+            emp_objectives = EmployeeObjective.objects.all()
+            for emp_objective in emp_objectives:
+                if emp_objective.objective != None:
+                    objective,created = Objective.objects.get_or_create(title=emp_objective.objective)
+                    objective.save()
+                    objective.duration = 20
+                    objective.save()
+                    # emp = emp_objective.employee_id
+                    # emp_objective.employee_id = emp
+                    emp_objective.end_date = emp_objective.start_date+relativedelta(days=20)
+                    emp_objective.objective_id = objective
+                    emp_objective.objective=None
+                    emp_objective.objective_description=None
+                    emp_objective.save()
+
+        except Exception as e:
+            logger.error(e)
+
+        #for existing key results
+        try:
+            e_krs = EmployeeKeyResult.objects.all()
+            for e_kr in e_krs:
+                if e_kr.key_result != None:
+                    kr,created= KeyResult.objects.get_or_create(title=e_kr.key_result)
+                    kr.duration = 2
+                    kr.save()
+                    e_kr.end_date = e_kr.start_date+relativedelta(days=2)
+                    e_kr.key_result = None
+                    e_kr.key_result_description = None
+                    e_kr.key_result_id = kr
+                    e_kr.save()
+
+        except Exception as e:
+            logger.error(e)
+
+
+for r in range(1):
+    manipulate_existing_data() 

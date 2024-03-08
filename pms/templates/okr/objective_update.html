@@ -19,9 +19,11 @@
 </div>
 <form
   hx-post="{%url 'objective-update' obj_id=objective_form.instance.id %}"
-  hx-target="#ObjectiveModalFormTarget"
+  hx-target="#objectivesTarget"
 >
-  <div class="oh-modal__dialog-body">
+{% csrf_token %}
+{{objective_form.as_p}}
+  {% comment %} <div class="oh-modal__dialog-body">
     {% csrf_token %}
     <div class="oh-input__group">
       <label class="oh-input__label" for="{{objective_form.objective.id_for_label}}"
@@ -65,5 +67,5 @@
     <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
       {% trans "Save" %}
     </button>
-  </div>
+  </div> {% endcomment %}
 </form>

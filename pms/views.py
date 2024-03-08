@@ -2,7 +2,7 @@ import json
 import datetime
 from urllib.parse import parse_qs
 from itertools import tee
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.db.utils import IntegrityError
 from django.db.models import Q
 from django.forms import modelformset_factory
@@ -12,13 +12,14 @@ from django.core.paginator import Paginator
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404, render, redirect
 from attendance.methods.group_by import group_by_queryset
-from horilla.decorators import manager_can_enter
+from horilla.decorators import manager_can_enter, permission_required
 from horilla.decorators import login_required, hx_request_required
 from notifications.signals import notify
-from base.methods import get_key_instances, get_pagination
+from base.methods import get_key_instances, get_pagination, sortby
 from base.models import Department, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
 from pms.filters import (
+    ActualObjectiveFilter,
     KeyResultFilter,
     ObjectiveFilter,
     FeedbackFilter,
@@ -31,6 +32,8 @@ from pms.models import (
     EmployeeObjective,
     Comment,
     Feedback,
+    KeyResult,
+    Objective,
     QuestionTemplate,
     Question,
     Answer,
@@ -39,7 +42,11 @@ from pms.models import (
     KeyResultFeedback,
 )
 from .forms import (
+    AddAssigneesForm,
     AnonymousFeedbackForm,
+    EmployeeObjectiveForm,
+    EmployeekeyResultForm,
+    KRForm,
     QuestionForm,
     ObjectiveForm,
     KeyResultForm,
@@ -61,83 +68,34 @@ def objective_creation(request):
         POST:
             Objective created, and returnes to key result creation function
     """
-
-    employees = Employee.objects.all()
-    departments = Department.objects.all()
-    job_positions = JobPosition.objects.all()
-    periods = Period.objects.all()
     employee = request.user.employee_get
     objective_form = ObjectiveForm(employee=employee)
-    context = {
-        "employee": employees,
-        "department": departments,
-        "job_position": job_positions,
-        "period": periods,
-        "objective_form": objective_form,
-    }
-
     if request.method == "POST":
-        objective_type = request.POST.get("objective_type")
-        if objective_type == "individual":
-            # if the objective is for a individual
-            form_objectives = ObjectiveForm(request.POST)
-            if form_objectives.is_valid():
-                objective = form_objectives.save()
-                obj_id = objective.id
-                obj_type = "individual"
-                messages.success(request, _("Objective created"))
-                notify.send(
-                    request.user.employee_get,
-                    recipient=objective.employee_id.employee_user_id,
-                    verb="You got an OKR!.",
-                    verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
-                    verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
-                    verb_es="¡Has logrado un Resultado Clave de Objetivo!",
-                    verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
-                    redirect=f"/pms/objective-detailed-view/{obj_id}",
-                    icon="list-circle",
-                )
-                return redirect(key_result_creation, obj_id, obj_type)
-            else:
-                context["objective_form"] = form_objectives
-        elif objective_type == "job_position" or objective_type == "department":
-            # if the objective is based on particular job position or department
-            form_objectives = ObjectiveForm(request.POST)
-            obj_type = "multiple"
-            if form_objectives.is_valid():
-                objective_type = form_objectives.cleaned_data[objective_type]
-                # to get all employee workinformation
-                employee_work_informations = (
-                    objective_type.employeeworkinformation_set.all()
-                )
-                # getting all the employees in the job position or department and assigning then the objective to them
-                objective_ids = []
-                for employee in employee_work_informations:
-                    form_objectives = ObjectiveForm(request.POST)
-                    form = form_objectives.save(commit=False)
-                    if Employee.objects.get(id=employee.employee_id_id).is_active:
-                        form.employee_id = employee.employee_id
-                        form.save()
-                        notify.send(
-                            request.user.employee_get,
-                            recipient=form.employee_id.employee_user_id,
-                            verb="You got an OKR!.",
-                            verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
-                            verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
-                            verb_es="¡Has logrado un Resultado Clave de Objetivo!",
-                            verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
-                            redirect=f"/pms/objective-detailed-view/{form.id}",
-                            icon="list-circle",
-                        )
-                        objective_ids.append(form.id)
-                obj_id = str(objective_ids)
-                messages.success(request, _("Objectives created"))
-                return redirect(key_result_creation, obj_id, obj_type)
-            else:
-                context["objective_form"] = form_objectives
-        elif objective_type == "none":
-            form_objectives = ObjectiveForm(request.POST)
-            context["objective_form"] = form_objectives
+        objective_form = ObjectiveForm(request.POST)
+        if objective_form.is_valid():
+            objective = objective_form.save()
+            assignees = objective_form.cleaned_data["assignees"]
+            start_date = objective_form.cleaned_data["start_date"]
+
+            messages.success(request, _("Objective created"))
+            if assignees:
+                for emp in assignees:
+                    emp_objective = EmployeeObjective(
+                        objective_id=objective, employee_id=emp, start_date=start_date
+                    )
+                    emp_objective.save()
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=emp.employee_user_id,
+                        verb="You got an OKR!.",
+                        verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
+                        verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
+                        verb_es="¡Has logrado un Resultado Clave de Objetivo!",
+                        verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
+                        redirect=f"/pms/objective-detailed-view/{objective.id}",
+                    )
+            return HttpResponse("<script>window.location.reload()</script>")
+    context = {"objective_form": objective_form, "p_form": PeriodForm()}
     return render(request, "okr/objective_creation.html", context=context)
 
 
@@ -152,37 +110,61 @@ def objective_update(request, obj_id):
     Returns:
         A HttpResponse object with the content Form errors.
     """
-    instance = EmployeeObjective.objects.get(id=obj_id)
+    instance = Objective.objects.get(id=obj_id)
     objective_form = ObjectiveForm(instance=instance)
-    context = {"objective_form": objective_form}
+    context = {"objective_form": objective_form, "update": True}
     if request.method == "POST":
         objective_form = ObjectiveForm(request.POST, instance=instance)
         if objective_form.is_valid():
-            objective_form.save()
-            if not instance.employee_id.id == int(request.POST.get("employee_id")):
+            objective = objective_form.save()
+            assignees = objective_form.cleaned_data["assignees"]
+            start_date = objective_form.cleaned_data["start_date"]
+            new_emp = [assignee for assignee in assignees]
+
+            delete_list = []
+            if objective.employee_objective.exists():
+                emp_objectives = objective.employee_objective.all()
+                existing_emp = [emp.employee_id for emp in emp_objectives]
+                delete_list = [
+                    employee for employee in existing_emp if employee not in new_emp
+                ]
+            if len(delete_list) > 0:
+                for emp in delete_list:
+                    EmployeeObjective.objects.filter(
+                        employee_id=emp, objective_id=objective
+                    ).delete()
+            for emp in new_emp:
+                if EmployeeObjective.objects.filter(
+                    employee_id=emp, objective_id=objective
+                ).exists():
+                    emp_obj = EmployeeObjective.objects.filter(
+                        employee_id=emp, objective_id=objective
+                    ).first()
+                    emp_obj.start_date = start_date
+                else:
+                    emp_obj = EmployeeObjective(
+                        employee_id=emp, objective_id=objective, start_date=start_date
+                    )
+                emp_obj.save()
                 notify.send(
                     request.user.employee_get,
-                    recipient=instance.employee_id.employee_user_id,
+                    recipient=emp.employee_user_id,
                     verb="You got an OKR!.",
                     verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
                     verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
                     verb_es="¡Has logrado un Resultado Clave de Objetivo!",
                     verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
-                    redirect=f"/pms/objective-detailed-view/{instance.id}",
-                    icon="eye-outline",
+                    redirect=f"/pms/objective-detailed-view/{objective.id}",
                 )
-            messages.info(
+            messages.success(
                 request,
-                _("Objective %(objective)s Updated")
-                % {"objective": instance.objective},
+                _("Objective %(objective)s Updated") % {"objective": instance},
             )
-            response = render(request, "okr/objective_update.html", context)
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HttpResponse("<script>window.location.reload()</script>")
         else:
-            context["objective_form"] = objective_form
-    return render(request, "okr/objective_update.html", context)
+            context = {"objective_form": objective_form, "update": True}
+
+    return render(request, "okr/objective_creation.html", context)
 
 
 @login_required
@@ -196,23 +178,50 @@ def objective_delete(request, obj_id):
         Redirect to Objective_list_view".
     """
     try:
-        objective = EmployeeObjective.objects.get(id=obj_id)
-        if objective.status == "Not Started" or objective.status == "Closed":
+        objective = Objective.objects.get(id=obj_id)
+        if not objective.employee_objective.exists():
             objective.delete()
             messages.success(
                 request,
-                _("Objective %(objective)s deleted")
-                % {"objective": objective.objective},
+                _("Objective %(objective)s deleted") % {"objective": objective},
             )
         else:
             messages.warning(
                 request,
-                _("You can't delete objective %(objective)s with status %(status)s")
-                % {"objective": objective.objective, "status": objective.status},
+                _("You can't delete objective %(objective)s,related entries exists")
+                % {"objective": objective},
             )
     except EmployeeObjective.DoesNotExist:
         messages.error(request, _("Objective not found."))
     return redirect(objective_list_view)
+
+
+@login_required
+@permission_required("pms.change_objective")
+def objective_manager_remove(request, obj_id, manager_id):
+    objective = get_object_or_404(Objective, id=obj_id)
+    objective.managers.remove(manager_id)
+    return HttpResponse("")
+
+
+@login_required
+@permission_required("pms.delete_keyresult")
+def key_result_remove(request, obj_id, kr_id):
+    objective = get_object_or_404(EmployeeObjective, id=obj_id)
+    objective.key_result_id.remove(kr_id)
+    return HttpResponse("")
+
+
+@login_required
+@permission_required("pms.delete_keyresult")
+def assignees_remove(request, obj_id, emp_id):
+    objective = get_object_or_404(Objective, id=obj_id)
+    get_object_or_404(
+        EmployeeObjective, employee_id=emp_id, objective_id=obj_id
+    ).delete()
+    objective.assignees.remove(emp_id)
+
+    return HttpResponse("")
 
 
 def objective_filter_pagination(request, objective_own, objective_all):
@@ -234,31 +243,29 @@ def objective_filter_pagination(request, objective_own, objective_all):
         request.GET or initial_data, queryset=objective_own
     )
     objective_filer_form = objective_filter_own.form
-    objective_filter_own=objective_filter_own.qs
+    objective_filter_own = objective_filter_own.qs.order_by("-id")
     objective_filter_all = ObjectiveFilter(
         request.GET or initial_data, queryset=objective_all
     ).qs
-    if field != "" and field is not None:
-        objective_filter_own = group_by_queryset(
-            objective_filter_own, field, request.GET.get("page"), "page"
-        )
-        objective_filter_all = group_by_queryset(
-            objective_filter_all, field, request.GET.get("page"), "page"
-        )
-
+    objectives = ActualObjectiveFilter(request.GET, queryset=Objective.objects.all()).qs
+    objectives = Paginator(objectives, get_pagination())
     objective_paginator_own = Paginator(objective_filter_own, get_pagination())
     objective_paginator_all = Paginator(objective_filter_all, get_pagination())
-    page_number = request.GET.get("page")
-    objectives_own = objective_paginator_own.get_page(page_number)
-    objectives_all = objective_paginator_all.get_page(page_number)
+    own_page = request.GET.get("page")
+    all_page = request.GET.get("all_page")
+    objectives_own = objective_paginator_own.get_page(own_page)
+    objectives_all = objective_paginator_all.get_page(all_page)
+    objectives = objectives.get_page(all_page)
+
     now = datetime.datetime.now()
     data_dict = parse_qs(previous_data)
     get_key_instances(EmployeeObjective, data_dict)
     context = {
         "superuser": "true",
+        "objectives": objectives,
         "own_objectives": objectives_own,
         "all_objectives": objectives_all,
-        "objective_filer_form": objective_filer_form,
+        "objective_filer_form": ActualObjectiveFilter().form,
         "pg": previous_data,
         "current_date": now,
         "filter_dict": data_dict,
@@ -282,9 +289,7 @@ def objective_list_view(request):
     )
 
     if request.user.has_perm("pms.view_employeeobjective"):
-        objective_own = EmployeeObjective.objects.filter(
-            employee_id=employee
-        ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee)
+        objective_own = EmployeeObjective.objects.filter(employee_id=employee)
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.all()
         context = objective_filter_pagination(request, objective_own, objective_all)
@@ -292,25 +297,21 @@ def objective_list_view(request):
     elif is_manager:
         # if user is a manager
         employees_ids = [employee.id for employee in is_manager]
-        objective_own = EmployeeObjective.objects.filter(
-            employee_id=employee
-        ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee)
+        objective_own = EmployeeObjective.objects.filter(employee_id=employee)
         objective_own = objective_own.distinct()
-        objective_all = EmployeeObjective.objects.filter(
-            employee_id__in=employees_ids
-        ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id__in=employees_ids)
+        objective_all = EmployeeObjective.objects.filter(employee_id__in=employees_ids)
         objective_all = objective_all.distinct()
         context = objective_filter_pagination(request, objective_own, objective_all)
     else:
         # for normal user
-        objective_own = EmployeeObjective.objects.filter(
-            employee_id=employee
-        ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee)
+        objective_own = EmployeeObjective.objects.filter(employee_id=employee)
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.none()
         context = objective_filter_pagination(request, objective_own, objective_all)
     if objective_all.exists() or objective_own.exists():
-        template = "okr/objective_list_view.html"
+        # template = "okr/objective_list_view.html"
+        template = "okr/okr_view.html"
+
     else:
         template = "okr/objective_empty.html"
     return render(request, template, context)
@@ -336,12 +337,11 @@ def objective_list_search(request):
 
     if request.user.has_perm("pms.view_employeeobjective"):
         # based on permission
-        objective_own = EmployeeObjective.objects.filter(
-            employee_id=request.user.employee_get
-        ).filter(objective__icontains=search_val)
-        objective_all = EmployeeObjective.objects.filter(
-            objective__icontains=search_val
-        )
+        objective_own = EmployeeObjective.objects.filter(employee_id=employee)
+        objective_own = objective_own.distinct()
+        objective_all = EmployeeObjective.objects.all()
+        context = objective_filter_pagination(request, objective_own, objective_all)
+
         context = objective_filter_pagination(request, objective_own, objective_all)
 
     elif is_manager:
@@ -362,7 +362,7 @@ def objective_list_search(request):
         )
         objective_all = EmployeeObjective.objects.none()
         context = objective_filter_pagination(request, objective_own, objective_all)
-    template = "okr/objective_list.html"
+    template = "okr/okr_list.html"
     if request.GET.get("field") != "" and request.GET.get("field") is not None:
         template = "okr/group_by.html"
     return render(request, template, context)
@@ -396,7 +396,7 @@ def objective_history(emp_obj_id):
             history_user_id = delta.new_record.history_user
             history_change_date = delta.new_record.history_date
             employee = Employee.objects.filter(employee_user_id=history_user_id).first()
-            key_result = delta.new_record.key_result
+            key_result = delta.new_record.key_result_id
             changed_key_results.append(
                 {
                     "delta": delta,
@@ -419,44 +419,47 @@ def objective_history(emp_obj_id):
 
 
 @login_required
-def objective_detailed_view(request, emp_obj_id, **kwargs):
+def objective_detailed_view(request, obj_id, **kwargs):
     """
     this function is used to update the key result of objectives
         args:
-            emp_obj_id(int) : pimarykey of EmployeeObjective
+            obj_id(int) : pimarykey of EmployeeObjective
         return:
             objects to objective_detailed_view
     """
 
-    objective = EmployeeObjective.objects.get(id=emp_obj_id)
-    key_results = EmployeeKeyResult.objects.filter(employee_objective_id=objective)
-    comments = Comment.objects.filter(employee_objective_id=objective)
-    key_results_all = objective.emp_obj_id.all()
+    objective = Objective.objects.get(id=obj_id)
+    emp_objectives = EmployeeObjective.objects.filter(objective_id=objective)
+    # key_results = EmployeeKeyResult.objects.filter(employee_objective_id=objective)
+    # comments = Comment.objects.filter(employee_objective_id=emp_objectives)
+    # key_results_all = objective.obj_id.all()
     # progress of objective calculation
-    total_kr = key_results_all.count()
-    try:
-        progress = int(
-            sum(kr.progress_percentage for kr in key_results_all) / (total_kr)
-        )
-    except (ZeroDivisionError, TypeError):
-        progress = 0
+    # total_kr = key_results_all.count()
+    # try:
+    #     progress = int(
+    #         sum(kr.progress_percentage for kr in key_results_all) / (total_kr)
+    #     )
+    # except (ZeroDivisionError, TypeError):
+    #     progress = 0
 
-    objective_form = ObjectiveForm(instance=objective)
-    history = objective_history(emp_obj_id)
+    # objective_form = ObjectiveForm(instance=objective)
+    # history = objective_history(emp_obj_id)
     now = datetime.datetime.now()
     context = {
-        "employee_key_results": key_results,
-        "employee_objective": objective,
-        "comments": comments,
-        "historys": history,
-        "progress": progress,
-        "objective_form": objective_form,
+        "emp_objectives": emp_objectives,
+        # "employee_key_results": key_results,
+        "objective": objective,
+        # "comments": comments,
+        # "historys": history,
+        # "progress": progress,
+        # "objective_form": objective_form,
         "key_result_form": KeyResultForm,
         "objective_key_result_status": EmployeeKeyResult.STATUS_CHOICES,
         "comment_form": ObjectiveCommentForm,
         "current_date": now,
     }
-    return render(request, "okr/objective_detailed_view.html", context)
+    # return render(request, "okr/objective_detailed_view.html", context)
+    return render(request, "okr/okr_detailed_view.html", context)
 
 
 @login_required
@@ -470,12 +473,37 @@ def objective_detailed_view_activity(request, id):
         it will return history,comment object to objective_detailed_view_activity.
     """
 
-    history = objective_history(id)
     objective = EmployeeObjective.objects.get(id=id)
+    key_result_history = objective_history(id)
+    history = objective.tracking()
     comments = Comment.objects.filter(employee_objective_id=objective)
+    activity_list = []
+    for hist in history:
+        hist["date"] = hist["pair"][0].history_date
+        activity_list.append(hist)
+    for com in comments:
+        comment = {
+            "type": "comment",
+            "comment": com,
+            "date": com.created_at,
+        }
+        activity_list.append(comment)
+
+    for key in key_result_history:
+        key_result = {
+            "type": "key_result",
+            "key_result": key,
+            "date": key["changed_date"],
+        }
+        activity_list.append(key_result)
+
+    activity_list = sorted(activity_list, key=lambda x: x["date"], reverse=True)
+
     context = {
+        "objective": objective,
         "historys": history,
         "comments": comments,
+        "activity_list": activity_list,
     }
     return render(request, "okr/objective_detailed_view_activity.html", context)
 
@@ -500,6 +528,19 @@ def objective_detailed_view_comment(request, id):
 
         return redirect(objective_detailed_view_activity, id)
     return redirect(objective_detailed_view_activity, id)
+
+
+@login_required
+def kr_table_view(request, emp_objective_id):
+    objective_id = request.GET.get("objective_id")
+    emp_objectives = EmployeeObjective.objects.get(id=emp_objective_id)
+    krs = emp_objectives.employee_key_result.all()
+    context = {
+        "krs": krs,
+        "key_result_status": EmployeeKeyResult.STATUS_CHOICES,
+    }
+    template = "okr/kr_list.html"
+    return render(request, template, context)
 
 
 @login_required
@@ -612,7 +653,7 @@ def objective_archive(request, id):
         return:
             redirect to objective_list_view
     """
-    objective = EmployeeObjective.objects.get(id=id)
+    objective = Objective.objects.get(id=id)
     if objective.archive:
         objective.archive = False
         objective.save()
@@ -622,6 +663,191 @@ def objective_archive(request, id):
         objective.save()
         messages.info(request, _("Objective archived successfully!."))
     return redirect(f"/pms/objective-list-view?{request.environ['QUERY_STRING']}")
+
+
+@login_required
+def add_assignees(request, obj_id):
+    """
+    this function is used to add assigneesto the objective
+        args:
+            obj_id(int) : pimarykey of Objective
+        return:
+            redirect to add assignees form
+    """
+    objective = Objective.objects.get(id=obj_id)
+    form = AddAssigneesForm(instance=objective)
+    if request.method == "POST":
+        form = AddAssigneesForm(request.POST, objective)
+        if form.is_valid():
+            objective = form.save()
+            assignees = form.cleaned_data["assignees"]
+            start_date = form.cleaned_data["start_date"]
+            for emp in assignees:
+                if EmployeeObjective.objects.filter(
+                    employee_id=emp, objective_id=objective
+                ).exists():
+                    emp_obj = EmployeeObjective.objects.filter(
+                        employee_id=emp, objective_id=objective
+                    ).first()
+                    emp_obj.start_date = start_date
+                else:
+                    emp_obj = EmployeeObjective(
+                        employee_id=emp, objective_id=objective, start_date=start_date
+                    )
+                emp_obj.save()
+                notify.send(
+                    request.user.employee_get,
+                    recipient=emp.employee_user_id,
+                    verb="You got an OKR!.",
+                    verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
+                    verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
+                    verb_es="¡Has logrado un Resultado Clave de Objetivo!",
+                    verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
+                    redirect=f"/pms/objective-detailed-view/{objective.id}",
+                )
+            messages.info(
+                request,
+                _("Objective %(objective)s Updated") % {"objective": objective},
+            )
+            return HttpResponse("<script>window.location.reload()</script>")
+    context = {
+        "form": form,
+        "objective": objective,
+    }
+    return render(request, "okr/add_assignees.html", context)
+
+
+@login_required
+@manager_can_enter(perm="pms.view_employeeobjective")
+def view_employee_objective(request, emp_obj_id):
+    """
+    This function is used to render individual view of the employee objective
+        args:
+            emp_obj_id(int) : pimarykey of EmployeeObjective
+        return:
+            redirect to individual view of employee objective
+    """
+    emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
+    context = {
+        "instance": emp_objective,
+        "objective_key_result_status": EmployeeObjective.STATUS_CHOICES,
+    }
+    return render(request, "okr/emp_obj_single.html", context)
+
+
+@login_required
+@manager_can_enter(perm="pms.add_employeeobjective")
+def update_employee_objective(request, emp_obj_id):
+    """
+    This function is used to update the employee objective
+        args:
+            emp_obj_id(int) : pimarykey of EmployeeObjective
+        return:
+            redirect to form of employee objective
+    """
+    emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
+    form = EmployeeObjectiveForm(instance=emp_objective)
+    if request.method == "POST":
+        form = EmployeeObjectiveForm(request.POST, instance=emp_objective)
+        if form.is_valid:
+            emp_obj = form.save(commit=False)
+            krs = form.cleaned_data["key_result_id"]
+            if krs:
+                for kr in krs:
+                    emp_kr = EmployeeKeyResult(
+                        employee_objective_id=emp_objective, key_result_id=kr
+                    ).save()
+            emp_obj.save()
+            messages.success(request, _("Employee objective Updated successfully"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    context = {"form": form, "k_form": KRForm()}
+    return render(request, "okr/emp_objective_form.html", context=context)
+
+
+@login_required
+@manager_can_enter(perm="pms.delete_employeeobjective")
+def archive_employee_objective(request, emp_obj_id):
+    """
+    This function is used to archive or unarchive the employee objective
+        args:
+            emp_obj_id(int) : pimarykey of EmployeeObjective
+        return:
+            redirect to detailed of employee objective
+    """
+    emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
+    obj_id = emp_objective.objective_id.id
+    single_view = request.GET.get("single_view")
+    if emp_objective.archive:
+        emp_objective.archive = False
+        emp_objective.save()
+        messages.success(request, _("Objective un-archived successfully!."))
+    elif not emp_objective.archive:
+        emp_objective.archive = True
+        emp_objective.save()
+        messages.success(request, _("Objective archived successfully!."))
+    if not single_view:
+        return redirect(f"/pms/objective-detailed-view/{obj_id}")
+    else:
+        return HttpResponse("<script>window.location.reload()</script>")
+
+
+@login_required
+@manager_can_enter(perm="pms.delete_employeeobjective")
+def delete_employee_objective(request, emp_obj_id):
+    """
+    This function is used to delete the employee objective
+        args:
+            emp_obj_id(int) : pimarykey of EmployeeObjective
+        return:
+            redirect to detailed of employee objective
+    """
+    emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
+    employee = emp_objective.employee_id
+    objective = emp_objective.objective_id
+    single_view = request.GET.get("single_view")
+    emp_objective.delete()
+    objective.assignees.remove(employee)
+    messages.success(request, _("Objective deleted successfully!."))
+    if not single_view:
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    else:
+        return HttpResponse("<script>window.location.reload()</script>")
+
+
+@login_required
+@manager_can_enter(perm="pms.change_employeeobjective")
+def change_employee_objective_status(request, emp_obj):
+    """
+    This function is used to change status of the employee objective
+        args:
+            emp_obj_id(int) : pimarykey of EmployeeObjective
+        return:
+            a message
+    """
+    emp_objective = EmployeeObjective.objects.get(id=emp_obj)
+    status = request.POST.get("status")
+    if emp_objective.status != status:
+        emp_objective.status = status
+        emp_objective.save()
+        messages.success(
+            request, _("The employee objective status updated successfully.")
+        )
+        notify.send(
+            request.user.employee_get,
+            recipient=emp_objective.employee_id,
+            verb=f"The status of the objective '{emp_objective.objective_id}'has been changed to {emp_objective.status}.",
+            # verb_ar="تم تغيير حالة التذكرة.",
+            # verb_de="Der Status des Tickets wurde geändert.",
+            # verb_es="El estado del ticket ha sido cambiado.",
+            # verb_fr="Le statut du ticket a été modifié.",
+            redirect=f"/pms/objective-detailed-view/{emp_objective.objective_id.id}",
+        )
+    else:
+        messages.success(
+            request, _("The status of the objective is the same as selected.")
+        )
+
+    return redirect(f"/pms/view-employee-objective/{emp_objective.id}/")
 
 
 @login_required
@@ -882,7 +1108,9 @@ def feedback_creation(request):
         if form.is_valid():
             if key_result_ids := request.POST.getlist("employee_key_results_id"):
                 for key_result_id in key_result_ids:
-                    key_result = EmployeeKeyResult.objects.filter(id=key_result_id).first()
+                    key_result = EmployeeKeyResult.objects.filter(
+                        id=key_result_id
+                    ).first()
                     feedback_form = form.save()
                     feedback_form.employee_key_results_id.add(key_result)
             instance = form.save()
@@ -2270,3 +2498,173 @@ def delete_anonymous_feedback(request, id):
 def view_single_anonymous_feedback(request, id):
     feedback = AnonymousFeedback.objects.get(id=id)
     return render(request, "anonymous/single_view.html", {"feedback": feedback})
+
+
+@login_required
+@manager_can_enter(perm="pms.add_employeekeyresult")
+def employee_keyresult_creation(request, emp_obj_id):
+    """
+    This view is for employee keyresult creation , and returns a employee keyresult form.
+    Returns:
+        GET:
+            employee keyresult form
+        POST:
+            employee keyresult created, and returnes to employee objective details view
+    """
+    emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
+    employee = emp_objective.employee_id
+    emp_key_result = EmployeekeyResultForm(
+        initial={"employee_objective_id": emp_objective}
+    )
+    if request.method == "POST":
+        emp_key_result = EmployeekeyResultForm(request.POST)
+        if emp_key_result.is_valid():
+            emp_key_result.save()
+            emp_objective.update_objective_progress()
+            kr = emp_key_result.cleaned_data["key_result_id"]
+
+            emp_objective.key_result_id.add(kr)
+            # assignees = emp_key_result.cleaned_data['assignees']
+            # start_date =emp_key_result.cleaned_data['start_date']
+
+            messages.success(request, _("Key result assigned sucessfully."))
+
+            notify.send(
+                request.user.employee_get,
+                recipient=employee.employee_user_id,
+                verb="You got an Key Result!.",
+                verb_ar="لقد حصلت على نتيجة رئيسية!",
+                verb_de="Du hast ein Schlüsselergebnis erreicht!",
+                verb_es="¡Has conseguido un Resultado Clave!",
+                verb_fr="Vous avez obtenu un Résultat Clé!",
+                redirect=f"/pms/objective-detailed-view/{emp_objective.objective_id.id}",
+            )
+            return HttpResponse("<script>window.location.reload()</script>")
+    context = {
+        "form": emp_key_result,
+        "emp_objective": emp_objective,
+        "k_form": KRForm(),
+    }
+    return render(request, "okr/key_result/kr_form.html", context=context)
+
+
+@login_required
+@manager_can_enter(perm="pms.add_employeekeyresult")
+def employee_keyresult_update(request, kr_id):
+    """
+    This function is for update employee keyresult, and returns a employee keyresult form.
+    Returns:
+        GET:
+            employee keyresult form
+        POST:
+            employee keyresult updated, and returnes to employee objective details view
+    """
+    emp_kr = EmployeeKeyResult.objects.get(id=kr_id)
+    employee = emp_kr.employee_objective_id.employee_id
+    emp_key_result = EmployeekeyResultForm(instance=emp_kr)
+    if request.method == "POST":
+        emp_key_result = EmployeekeyResultForm(request.POST, instance=emp_kr)
+        if emp_key_result.is_valid():
+            emp_key_result.save()
+            emp_kr.employee_objective_id.update_objective_progress()
+
+            # assignees = emp_key_result.cleaned_data['assignees']
+            # start_date =emp_key_result.cleaned_data['start_date']
+
+            messages.success(request, _("Key result Updated sucessfully."))
+
+            notify.send(
+                request.user.employee_get,
+                recipient=employee.employee_user_id,
+                verb="Your Key Result updated.",
+                verb_ar="تم تحديث نتيجتك الرئيسية.",
+                verb_de="Ihr Schlüsselergebnis wurde aktualisiert.",
+                verb_es="Se ha actualizado su Resultado Clave.",
+                verb_fr="Votre Résultat Clé a été mis à jour.",
+                redirect=f"/pms/objective-detailed-view/{emp_kr.employee_objective_id.objective_id.id}",
+            )
+            return HttpResponse("<script>window.location.reload()</script>")
+
+    context = {
+        "form": emp_key_result,
+        "update": True,
+    }
+    return render(request, "okr/key_result/kr_form.html", context=context)
+
+
+@login_required
+@manager_can_enter(perm="pms.delete_employeekeyresult")
+def delete_employee_keyresult(request, kr_id):
+    """
+    This function is used to delete the employee key result
+        args:
+            kr_id(int) : pimarykey of EmployeeKeyResult
+        return:
+            redirect to detailed of employee objective
+    """
+    emp_kr = EmployeeKeyResult.objects.get(id=kr_id)
+    # employee = emp_kr.employee_id
+    objective = emp_kr.employee_objective_id.objective_id
+    emp_objective = emp_kr.employee_objective_id
+    emp_kr.delete()
+    emp_objective.update_objective_progress()
+    # objective.assignees.remove(employee)
+    messages.success(request, _("Objective deleted successfully!."))
+    return redirect(f"/pms/objective-detailed-view/{objective.id}")
+
+
+@login_required
+def employee_keyresult_update_status(request, kr_id):
+    """
+    This function is used to delete the employee key result
+        args:
+            kr_id(int) : pimarykey of EmployeeKeyResult
+        return:
+            redirect to detailed of employee objective
+    """
+    emp_kr = EmployeeKeyResult.objects.get(id=kr_id)
+    status = request.POST.get("key_result_status")
+    emp_kr.status = status
+    emp_kr.save()
+    messages.success(request, _("Key result sattus changed to {}.").format(status))
+    return redirect(
+        f"/pms/kr-table-view/{emp_kr.employee_objective_id.id}?&objective_id={emp_kr.employee_objective_id.objective_id.id}"
+    )
+
+
+@login_required
+def key_result_create(request):
+    """
+    This method renders form and template to create Ticket type
+    """
+    if request.method == "POST":
+        form = KRForm(request.POST)
+        if form.is_valid():
+            instance = form.save()
+            response = {
+                "errors": "no_error",
+                "kr_id": instance.id,
+                "title": instance.title,
+            }
+            return JsonResponse(response)
+
+        errors = form.errors.as_json()
+        return JsonResponse({"errors": errors})
+
+
+@login_required
+def key_result_current_value_update(request):
+    """
+    This method is used to update keyresult current value
+    """
+    try:
+        current_value = eval(request.POST.get("current_value"))
+        emp_kr_id = eval(request.POST.get("emp_key_result_id"))
+        emp_kr = EmployeeKeyResult.objects.get(id=emp_kr_id)
+        if current_value < emp_kr.target_value:
+            emp_kr.current_value = current_value
+            emp_kr.save()
+            emp_kr.employee_objective_id.update_objective_progress()
+            return JsonResponse({"type": "sucess"})
+    except:
+        return JsonResponse({"type": "error"})

@@ -13,6 +13,8 @@ from .models import (
     Answer,
     KeyResultFeedback,
     QuestionOptions,
+    Objective,
+    KeyResult
 )
 
 
@@ -24,5 +26,7 @@ admin.site.register(EmployeeObjective, SimpleHistoryAdmin)
 admin.site.register(EmployeeKeyResult, SimpleHistoryAdmin)
 admin.site.register(objective)
 admin.site.register(feedback)
+admin.site.register(KeyResult)
+admin.site.register(Objective)
 admin.site.register(KeyResultFeedback)
 admin.site.register(Comment, SimpleHistoryAdmin)

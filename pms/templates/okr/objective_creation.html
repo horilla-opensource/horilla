@@ -1,14 +1,8 @@
-{% extends 'index.html' %}
 {% load static i18n%}
 {% load i18n %}
-{% block styles %}
-<link rel="stylesheet" href="{% static 'css/pms.css' %}" />
-{% endblock styles %}
-
-{% block content %}
 
 
-{% if objective_form.errors %}
+{% if objective_form.non_field_errors %}
 <!-- form non field errors  -->
 <div class="oh-wrapper">
     <div class="oh-alert-container">
@@ -21,109 +15,102 @@
 </div>
 {% endif %} 
 
-<main class="oh-onboarding">
-  <div class="oh-onboarding-card">
-    <form action="{%url 'objective-creation' %}" method="post">
-      {% csrf_token %}
-      <div class="oh-onboarding-card__address-group">
-        <h2 class="oh-onboarding-card__section-title">{% trans "Objectives" %}</h2>
-        <div class="row">
-          <div class="col-sm-12 col-md-12 col-lg-12">
-            <div class="oh-input__group ">
-              <label class="oh-input__label" for="{{objective_form.objective.id_for_label}}">{% trans "Title" %}</label>
-              {{objective_form.objective}}
-              {{objective_form.objective.errors}}
-            </div>
-            <div class="oh-input__group">
-              <label class="oh-input__label" for="{{objective_form.objective_description.id_for_label}}">{% trans "Objective Description" %}</label>
-              {{objective_form.objective_description}}
-              {{objective_form.objective_description.errors}}
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-4">
-            <div class="oh-input__group">
-              <label class="oh-input__label" for="{{objective_form.period.id_for_label}}">{% trans "Period" %}</label>
-              {{objective_form.period}}
-              {{objective_form.period.errors}}
-            </div>
-          </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-            <div class="oh-input__group">
-              <label class="oh-input__label" for="{{objective_form.start_date.id_for_label}}">{% trans "Start Date" %}</label>
-              {{objective_form.start_date}}
-              {{objective_form.start_date.errors}}
-    
-            </div>
-          </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-            <div class="oh-input__group">
-              <label class="oh-input__label" for="{{objective_form.end_date.id_for_label}}">{% trans "End Date" %}</label>
-              {{objective_form.end_date}}
-              {{objective_form.end_date.errors}}
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-            <div class="oh-input__group " id="job_positionSelect">
-              <label class="oh-input__label" for="{{objective_form.objective_type.id_for_label}}">{% trans "Objective Type" %}</label>
-              {{objective_form.objective_type}}
-              {{objective_form.objective_type.errors}}
-            </div>
-          </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-6" >
-            <div class="oh-input__group oh-input-objective-type-choices" id="job_position" style="display: none;">
-              <label class="oh-input__label" for="{{objective_form.job_position.id_for_label}}">{% trans "Job Position" %}</label>
-              {{objective_form.job_position}}
-              {{objective_form.job_position.errors}}
-            </div>
-            <div class="oh-input__group objective_type oh-input-objective-type-choices" id="department"  style="display: none;">
-              <label class="oh-input__label" for="{{objective_form.department.id_for_label}}">{% trans "Department" %}</label>
-              {{objective_form.department}}
-              {{objective_form.department.errors}}
-            </div>
-            <div class="oh-input__group objective_type oh-input-objective-type-choices" id="individual"  style="display: none;">
-              <label class="oh-input__label" for="{{objective_form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
-              {{objective_form.employee_id}}
-              {{objective_form.employee_id.errors}}
-            </div>
-          </div>
-        </div>
-      </div>
-      <button type="submit" id="btnSubmit" class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4" 
-        role="button">
-        {% trans "Save" %} 
+<div class="oh-modal__dialog-header">
+  {% if update %}
+    <h2 class="oh-modal__dialog-title" >
+      {% trans "Update Objective" %}
+    </h2>
+  {% else %}
+    <h2 class="oh-modal__dialog-title" >
+      {% trans "Create Objective" %}
+    </h2>
+  {% endif %}
+  
+  <button type="button" class="oh-modal__close--custom" onclick="$('#objectivesModal').removeClass('oh-modal--show');">
+    <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  {% if update %}
+    <form 
+      hx-post="{%url 'objective-update' objective_form.instance.id %}"
+      hx-target="#objectivesTarget"
+      id="objectiveForm"
+    >
+  {% else %}
+    <form 
+      hx-post="{%url 'objective-creation' %}"
+      hx-target="#objectivesTarget"
+      id="objectiveForm"
+    >
+  {% endif %}
+  
+    {% csrf_token %}
+    {{objective_form.as_p}}
+  </form>
+</div>
+
+<!-- period modal -->
+<div class="oh-modal" id="PeriodModal" role="dialog" aria-labelledby="editKeyResultModal" aria-hidden="true">
+  <div class="oh-modal__dialog">
+    <!-- for creating period -->
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" >
+        {% trans "Create Period" %}
+      </h2>
+      <button type="button" class="oh-modal__close--custom" onclick="$('#PeriodModal').hide();">
+        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
       </button>
-    </form>
-  </div>
-
-    <!-- period modal -->
-    <div class="oh-modal" id="PeriodModal" role="dialog" aria-labelledby="editKeyResultModal" aria-hidden="true">
-      <div class="oh-modal__dialog">
-        <!-- for creating period -->
-        <div class="oh-modal__dialog-header">
-          <button type="button" class="oh-modal__close" aria-label="Close">
-            <ion-icon name="close-outline"></ion-icon>
-          </button>
-        </div>
-        <div class="oh-modal__dialog-body" id="periodModalTarget">
-           
-          </div>
-      </div>
     </div>
-    <!-- end of period modal -->
-
-</main>
+    <div class="oh-modal__dialog-body" id="periodModalTarget">
+       <form>
+          {% csrf_token %}
+          {{p_form.as_p}}
+        <button
+          type="submit"
+          class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+        >
+          {% trans "Save" %}
+        </button>
+      </div>
+  </div>
+</div>
+<!-- end of period modal -->
 
 <script src="{% static 'src/okr/objective_creation.js' %}"></script> 
 <script src="{% static 'src/period/period.js' %}"></script> 
 
 
-{% endblock%}
+<script>
+$(document).ready(function(){
+  {% comment %} $('#id_assignees').next('span').hide()  {% endcomment %}
+  $('[id="id_start_date"]').parent().hide();
+  {% comment %} $('label[for="id_assignees"]').hide();  {% endcomment %}
+  $('#id_assignees').closest('div.col-12').hide();
 
+  addAssignees()
+})
+$('#id_add_assignees').change(function(){
+  addAssignees()
+})
 
+function addAssignees(){
+  if ($('#id_add_assignees').is(":checked")){
+    $('[id="id_start_date"]').parent().show();
+    {% comment %} $('label[for="id_assignees"]').show(); 
+    $('#id_assignees').next('span').show();  {% endcomment %}
+    $('#id_assignees').closest('div.col-12').show();
+
+  }
+  else{
+    {% comment %} $('#id_assignees').next('span').css("display", "none");  {% endcomment %}
+    $('[id="id_start_date"]').parent().hide();
+    {% comment %} $('label[for="id_assignees"]').hide();  {% endcomment %}
+    $('#id_assignees').closest('div.col-12').hide();
+
+  } 
+}
+</script>
 
 
 

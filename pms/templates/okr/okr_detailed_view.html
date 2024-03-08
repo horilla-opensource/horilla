@@ -1,0 +1,448 @@
+{% extends 'index.html' %}
+{% load static i18n %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% block content %}
+{% load basefilters %}
+{% include 'filter_tags.html' %} 
+<style>
+    .avatars {
+      display: flex;
+      padding: 8px 10px 8px 10px;
+    }
+  
+    .avatars__item {
+      background-color: #596376;
+      border: 2px solid white;
+      border-radius: 100%;
+      color: #ffffff;
+      display: block;
+      font-family: sans-serif;
+      font-size: 12px;
+      font-weight: 100;
+      height: 26px;
+      width: 26px;
+      line-height: 17px;
+      text-align: center;
+      transition: margin 0.1s ease-in-out;
+      overflow: hidden;
+      margin-left: -10px;
+    }
+  
+    .avatars__item:first-child {
+      z-index: 5;
+    }
+  
+    .avatars__item:nth-child(2) {
+      z-index: 4;
+    }
+  
+    .avatars__item:nth-child(3) {
+      z-index: 3;
+    }
+  
+    .avatars__item:nth-child(4) {
+      z-index: 2;
+    }
+  
+    .avatars__item:nth-child(5) {
+      z-index: 1;
+    }
+  
+    .avatars__item:last-child {
+      z-index: 0;
+    }
+  
+    .avatars__item img {
+      width: 100%;
+    }
+  
+    .avatars:hover .avatars__item {
+      margin-right: 10px;
+    }
+    .select2-container .select2-selection.select2-selection--multiple{
+      padding: 5px !important;
+      max-height: 70px !important;
+      overflow: hidden;
+      overflow-y: scroll;
+    } 
+    .search-highlight{
+      background-color: rgba(255, 68, 0, 0.076);
+    }
+    #enlargeImageContainer {
+      position: absolute;
+      left: -300px;
+      top: 100px;
+      height: 200px;
+      width: 200px;
+    }
+</style>
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <div class="oh-wrapper" style="margin-top: 50px;">
+        <div class="oh-card">
+            
+            <div class="oh-helpdesk__header">
+                <div class = "d-flex justify-content-between align-items-center">
+                  <p class="oh-helpdesk__header-title">{{objective}}</p>
+                    <span class="helpdesk__card-value me-3">
+                        <div class="oh-btn-group">
+
+                            {% if perms.pms.change_objective %}
+                                <a 
+                                    onclick="event.preventDefault();event.stopPropagation()"
+                                    hx-get="{% url 'objective-update' objective.id %}" hx-target='#objectivesTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectivesModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"
+                                ><ion-icon name="create-outline"></ion-icon></a>
+                            {% endif %}
+                            {% if perms.pms.add_employeeobjective %}
+                                <a 
+                                    onclick="event.preventDefault();event.stopPropagation()"
+                                    hx-get="{% url 'add-assignees' objective.id %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="Add assignees"
+                                ><ion-icon name="add-outline"></ion-icon></a>
+                            {% endif %}
+                        </div>
+                        {% comment %} <select name="status_update" title='{% trans "Status" %}' class="oh-select" onchange="updateStatus()" 
+                            style="
+                            width:190px;
+                            align-items: center;
+                            border: 1px solid #aaa;
+                            border-radius: 2px;
+                            background-color: #fff;"
+                        >
+                            {% for status in objective_key_result_status %}
+                            <option value="{{status.0}}"  {% if status.0 == employee_objective.status %} selected {% endif %}>
+                                <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span></option>
+                            {% endfor %}
+                        </select> {% endcomment %}
+                    </span>
+                    
+                </div>
+                    {% comment %} Managers :
+                    {% for manager in employee_objective.employee_id.all %}
+                    {{manager}}
+                    {% endfor %} {% endcomment %}
+                <ul class="helpdesk__card-items">
+                    <li class="helpdesk__card-item">
+                        <span class="helpdesk__card-label">{% trans "Managers:" %}</span>
+                        <span class="helpdesk__card-value" name="" id="">
+                        <div class="d-flex justify-content-between custom-scroll">
+                            <div class="avatars" id="avatarsContainer">
+                            {% for manager in objective.managers.all %}
+                                <a href="#" class="avatars__item" title="{{manager}}"><img class="avatar" src="{{manager.get_avatar}}" alt=""></a>
+                            {% endfor %}
+                            </div>
+                        </div>
+                        </span>
+                    </li>
+                    <li class="helpdesk__card-item">
+                        <span class="helpdesk__card-label">{% trans "Duration:" %}</span>
+                        <span class="helpdesk__card-value" name="" id="">{{objective.duration}} {% trans "days" %}</span>
+                    </li>
+                    <li class="helpdesk__card-item">
+                        <span class="helpdesk__card-label">{% trans "Description:" %}</span>
+                        <span class="helpdesk__card-value" name="" id="">{{objective.description}}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+            
+        {% if objective.employee_objective.all %}
+            <div class="oh-card" id="emp_objective_card" >
+                {% include "okr/emp_objective/emp_objective_list.html" %}
+            </div>
+
+            {% comment %} <div class="oh-pagination">
+                <span
+                    class="oh-pagination__page"
+                    data-toggle="modal"
+                    data-target="#addEmployeeModal"
+                ></span>
+                <nav class="oh-pagination__nav">
+                    <div class="oh-pagination__input-container me-3">
+                        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                        <input
+                        type="number"
+                        name="page"
+                        class="oh-pagination__input"
+                        value="{{my_tickets.number }}"
+                        min="1"
+                        hx-get="{% url 'ticket-filter' %}?{{pd}}"
+                        hx-target="#view-container"
+                        />
+                        <span class="oh-pagination__label"
+                        >{% trans "of" %} {{ my_tickets.paginator.num_pages }}</span
+                        >
+                    </div>
+                    <ul class="oh-pagination__items">
+                        {% if my_tickets.has_previous %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page=1"
+                                class="oh-pagination__link"
+                                hx-target="#view-container"
+                                >{% trans "First" %}</a
+                            >
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page={{ my_tickets.previous_page_number }}"
+                                class="oh-pagination__link"
+                                hx-target="#view-container"
+                                >{% trans "Previous" %}</a
+                            >
+                        </li>
+                        {%endif %} {% if my_tickets.has_next %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page={{ my_tickets.next_page_number }}"
+                                class="btn btn-outline-secondary"
+                                hx-target="#view-container"
+                                >{% trans "Next" %}</a
+                            >
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page={{ my_tickets.paginator.num_pages }}"
+                                hx-target="#view-container"
+                                class="oh-pagination__link"
+                                >{% trans "Last" %}</a
+                            >
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div> {% endcomment %}
+        {% else %}
+            <!-- start of empty page-->  
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+                <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'static/images/ui/target.png' %}" class="" alt="Page not found. 404." />
+                <h5 class="oh-404__subtitle">{% trans "There are no assignees for this objective at the moment." %}</h5>
+            </div>
+            <!-- end of empty page--> 
+        {% endif %}
+
+        <!-- start of right side contents. -->
+        {% comment %} <div class="oh-helpdesk__right">
+            <div class="oh-helpdesk__right-header">{% trans "Activities" %}</div>
+            <div class="oh-helpdesk__right-body">
+              <!--Activities -->
+              <div class="oh-helpdesk__card">
+                <div class="oh-helpdesk__card-header d-flex justify-content-between align-items-center">
+                  <span class="oh-helpdesk__card-title">{% trans "Activites" %}</span>
+                </div>
+                <div class="oh-helpdesk__card-body">
+                  <!-- activity -->
+                        <div class="oh-card__body mt-2">
+                            <div id="objective_detailed_view_activity">
+                                <!-- this div will update the activity -->
+                                {% include 'okr/objective_detailed_view_activity.html' %}
+                            </div>
+                            
+                        </div>
+                <!-- end of activity -->
+                  <div class="helpdesk__card-footer">
+                    <div class="oh-input-group mt-4">
+                        <form hx-post="" id="commentForm"
+                            hx-target="#objective_detailed_view_activity" onsubmit="clearComment()">
+                            
+                            {{comment_form.comment}}
+                            <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary ms-auto" >
+                                <ion-icon name="chatbox-outline" class="me-2" ></ion-icon>{% trans "Comment" %}
+                            </button>
+                        </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End of Ticket Info. -->
+              
+              <!-- Document Card -->
+              <div class="oh-helpdesk__card">
+                <div class="oh-helpdesk__card-header">
+                  <span class="oh-helpdesk__card-title">{% trans "Documents" %}</span>
+                </div>
+                <div class="oh-helpdesk__card-body">
+                  <ul class="oh-helpdesk__documents">
+                    {% if attachments %}
+                      {% for attachment in attachments %}
+                        <li class="oh-helpdesk__document">
+                          <a href="{{attachment.file.url}}" target="_blank" >
+                            <div class="oh-helpdesk__icon">
+                              <span class="oh-file-icon {% if attachment.format == 'file' %} oh-file-icon--pdf
+                              {% elif attachment.format == 'image' %} oh-file-icon--image
+                              {% elif attachment.format == 'audio' %} oh-file-icon--audio 
+                              {% endif %}"
+                              ></span>
+                            </div>
+                          </a>
+                          <a href="{{attachment.file.url}}" target="_blank" >
+                            <span class="oh-helpdesk__filename"
+                              >{{attachment}}</span
+                            >
+                          </a>
+                        </li>
+                      {% endfor %} 
+                    {% endif %}  
+
+                  </ul>
+                </div>
+              </div>
+              <!-- End of Document Card -->
+            </div>
+        </div> {% endcomment %}
+        <!-- end of right side contents. -->
+    </div>
+
+    <!-- Modals -->
+
+    <div
+        class="oh-modal"
+        id="objectivesModal"
+        role="dialog"
+        aria-labelledby="objectivesModal"
+        aria-hidden="true"
+    >
+        <div class="oh-modal__dialog" id="objectivesTarget">
+
+        </div>
+    </div>
+
+    <div class="oh-activity-sidebar" id="OKRactivitySidebar">
+        <div class="oh-activity-sidebar__body" id="activityContainer">
+        </div>
+      </div>
+    <script>
+        
+        function enlargeImage(src) {
+            var enlargeImageContainer = $('#enlargeImageContainer');
+            enlargeImageContainer.empty();
+        style = "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white"
+            var enlargedImage = $('<iframe>').attr({'src': src,'style': style,});
+        var name =$('<span>').text(src.split('/').pop().replace(/_/g, " "))
+            enlargeImageContainer.append(enlargedImage);
+            enlargeImageContainer.append(name);
+            setTimeout(function() {
+            enlargeImageContainer.show();
+    
+        const iframe = document.querySelector("iframe").contentWindow; 
+        var iframe_document = iframe.document
+        iframe_image = iframe_document.getElementsByTagName('img')[0]
+        $(iframe_image).attr("style","width:100%; height:100%;")
+    
+            }, 100);
+        }
+        
+        function hideEnlargeImage() {
+                var enlargeImageContainer = $('#enlargeImageContainer');
+                enlargeImageContainer.empty();
+        }
+        function keyResultChange(element) {
+          
+            var kr = $(element).val();
+            if (kr == 'create_new_key_result'){
+              $('#kRModal').show()
+            }
+
+        }
+        function saveKeyResult(){
+          var title=$('#id_title').val()
+          var description = $("#id_description").val()
+          var progress_type = $("#id_progress_type").val()
+          var target_value = $("#id_target_value").val()
+          var duration =$('#id_duration').val()
+          $.ajax({
+            type: "post",
+            url: "{% url 'key-result-creation' %}",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              "title": title,
+              "description":description,
+              'progress_type':progress_type,
+              "target_value":target_value,
+			  'duration':duration
+            },
+            success: function (response) {
+              if (response.errors === "no_error") {
+              var newOption = $('<option selected></option>').val(response.kr_id).text(response.title)
+              $("#kRModal").hide();
+              $("#id_key_result_id option[value='create_new_key_result']").before(newOption);
+              $("#id_key_result_id option[value='create_new_key_result']").prop('selected',false)
+              }    
+            }
+            });
+        }
+
+		function progress (element) {
+			var currentValue = $(element).val()
+			keyResultTable = $(element).closest('.oh-sticky-table__tbody');
+			keyResultRow = $(element).closest('.oh-sticky-table__tr');
+      empKeyResultId = keyResultRow.attr("data-kr-id")
+			var targetValue = keyResultRow.find('[data-value]').attr("data-value")
+
+			// Extract only the numeric part using a regular expression
+			var numericValue = parseFloat(targetValue.replace(/[^\d.]/g, ''));
+			var prgressPercentage = parseInt( currentValue*100/numericValue )
+      // Ensure totalProgress doesn't exceed 100
+      if (prgressPercentage > 100) {
+        prgressPercentage = 100;
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Current Value cannot exceed target value!',
+            timer: 3000, // Display the alert for 3 seconds
+            timerProgressBar: true, // Show the progress bar
+            showConfirmButton: false // Hide the "OK" button
+        });
+      }
+      else{
+        $.ajax({
+          type: "post",
+          url: "{% url 'key-result-current-value-update' %}",
+          data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            "current_value":currentValue,
+            "emp_key_result_id":empKeyResultId
+    
+          },
+          success: function (response) {
+            if (response.type != 'error'){
+              keyResultRow.find('.p-percentage').text(prgressPercentage);
+    
+              // Iterate over each span and get its text content
+              var total_percentage = 0
+              var total_kr = 0
+              keyResultTable.find('.p-percentage').each(function() {
+                strPercentage =  $(this).text();
+                numPercentage = parseFloat(strPercentage.replace(/[^\d.]/g, ''));
+                total_percentage += numPercentage 
+                total_kr += 1  
+              }); 
+              totalProgress = parseInt( total_percentage/total_kr)
+              // Ensure totalProgress doesn't exceed 100
+              if (totalProgress > 100) {
+                totalProgress = 100;
+              }
+              objectiveProgressContainer = $(element).closest('.oh-accordion-meta__item').find('.progress_barmm');
+              objectiveProgressContainer.html(
+                '<div class="oh-progress" role="progressbar">'+
+                  '<div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc('+ totalProgress + '%)"></div>' +
+                  '</div>' +
+                  '<div class="oh-progress-container__percentage" style="width:50px" name= "key_result_percentage">'+ totalProgress +' %</div>'
+        
+              )  
+            }
+          }
+        });
+        
+      }
+        
+		}
+        
+        $(document).on('click', function(event){
+            if (!$(event.target).closest('#enlargeImageContainer').length) {
+                hideEnlargeImage();
+            }
+        });
+        
+        
+    </script>
+{% endblock %}

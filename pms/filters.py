@@ -4,12 +4,14 @@ Module: filters.py
 This module contains custom Django filters and filter sets for 
 the PMS (Performance Management System) app.
 """
+
 import datetime
 import django_filters
 from django import forms
 from django_filters import DateFilter
-from pms.models import EmployeeKeyResult, EmployeeObjective, Feedback
+from pms.models import EmployeeKeyResult, EmployeeObjective, Feedback, Objective
 from base.methods import reload_queryset
+from base.filters import FilterSet
 
 
 class DateRangeFilter(django_filters.Filter):
@@ -68,9 +70,7 @@ class CustomFilterSet(django_filters.FilterSet):
                     forms.CheckboxSelectMultiple,
                 ),
             ):
-                field.widget.attrs.update(
-                    {"class": "oh-switch__checkbox"}
-                )
+                field.widget.attrs.update({"class": "oh-switch__checkbox"})
             elif isinstance(widget, (forms.ModelChoiceField)):
                 field.widget.attrs.update(
                     {
@@ -81,6 +81,42 @@ class CustomFilterSet(django_filters.FilterSet):
                 field.lookup_expr = "icontains"
 
 
+class ActualObjectiveFilter(FilterSet):
+    """
+    ActualObjectiveFilter
+    """
+
+    search = django_filters.CharFilter(method="search_method")
+
+    class Meta:
+        model = Objective
+        fields = [
+            "managers",
+            "assignees",
+            "duration",
+            "employee_objective",
+            "employee_objective__key_result_id",
+            "employee_objective__progress_percentage",
+        ]
+
+    def search_method(self, queryset, _, value: str):
+        """
+        This method is used to search employees and objective
+        """
+        values = value.split(" ")
+        empty = queryset.model.objects.none()
+        for split in values:
+            empty = empty | (
+                queryset.filter(managers__employee_first_name__icontains=split)
+                | queryset.filter(managers__employee_last_name__icontains=split)
+                | queryset.filter(assignees__employee_first_name__icontains=split)
+                | queryset.filter(assignees__employee_last_name__icontains=split)
+                | queryset.filter(title__icontains=split)
+            )
+
+        return empty.distinct()
+
+
 class ObjectiveFilter(CustomFilterSet):
     """
     Custom filter set for EmployeeObjective records.
@@ -88,6 +124,17 @@ class ObjectiveFilter(CustomFilterSet):
     This filter set allows to filter EmployeeObjective records based on various criteria.
     """
 
+    employee_objective = django_filters.CharFilter(field_name="id")
+    employee_objective__key_result_id = django_filters.CharFilter(
+        field_name="key_result_id"
+    )
+    employee_objective__progress_percentage = django_filters.CharFilter(
+        field_name="progress_percentage"
+    )
+    managers = django_filters.CharFilter(
+        field_name="objective_id__managers"
+    )
+    search = django_filters.CharFilter(method="search_method")
     created_at_date_range = DateRangeFilter(field_name="created_at")
     created_at = DateFilter(
         widget=forms.DateInput(attrs={"type": "date", "class": "oh-input  w-100"}),
@@ -121,8 +168,26 @@ class ObjectiveFilter(CustomFilterSet):
             "updated_at",
             "end_date",
             "archive",
-            "emp_obj_id",
+            "objective_id",
         ]
+
+    def search_method(self, queryset, _, value: str):
+        """
+        This method is used to search in managers and objective
+        """
+        values = value.split(" ")
+        empty = queryset.model.objects.none()
+        for split in values:
+            empty = empty | (
+                queryset.filter(objective_id__title=split)
+                | queryset.filter(
+                    objective_id__managers__employee_first_name__icontains=split
+                )
+                | queryset.filter(
+                    objective_id__managers__employee_last_name__icontains=split
+                )
+            )
+        return empty
 
 
 class FeedbackFilter(CustomFilterSet):
@@ -156,8 +221,9 @@ class FeedbackFilter(CustomFilterSet):
             data=data, queryset=queryset, request=request, prefix=prefix
         )
 
+
 class KeyResultFilter(CustomFilterSet):
-    
+
     class Meta:
         model = EmployeeKeyResult
         fields = "__all__"
@@ -167,8 +233,9 @@ class ObjectiveReGroup:
     """
     Class to keep the field name for group by option
     """
+
     fields = [
-        ("","select"),
-        ("employee_id","Owner"),
-        ("status","Status"),
-        ]
+        ("", "select"),
+        ("employee_id", "Owner"),
+        ("status", "Status"),
+    ]

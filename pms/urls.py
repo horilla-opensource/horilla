@@ -21,7 +21,7 @@ urlpatterns = [
         "objective-archive/<int:id>", views.objective_archive, name="objective-archive"
     ),
     path(
-        "objective-detailed-view/<int:emp_obj_id>",
+        "objective-detailed-view/<int:obj_id>",
         views.objective_detailed_view,
         name="objective-detailed-view",
         kwargs={"model": models.EmployeeObjective},
@@ -47,9 +47,29 @@ urlpatterns = [
         name="objective-detailed-view-activity",
     ),
     path(
+        "objective-manager-remove/<int:obj_id>/<int:manager_id>",
+        views.objective_manager_remove,
+        name="objective-manager-remove",
+    ),
+    path(
+        "key-reult-remove/<int:obj_id>/<int:kr_id>",
+        views.key_result_remove,
+        name="key-result-remove",
+    ),
+    path(
+        "assignees-remove/<int:obj_id>/<int:emp_id>",
+        views.assignees_remove,
+        name="assignees-remove",
+    ),
+    path(
         "objective-detailed-view-comment/<int:id>",
         views.objective_detailed_view_comment,
         name="objective-detailed-view-comment",
+    ),
+    path(
+        'kr-table-view/<int:emp_objective_id>',
+        views.kr_table_view,
+        name="kr-table-view"
     ),
     path(
         "key-result-view",
@@ -234,5 +254,46 @@ urlpatterns = [
         "single-anonymous-feedback-view/<int:id>/",
         views.view_single_anonymous_feedback,
         name="single-anonymous-feedback-view",
+    ),
+
+    path(
+        'view-employee-objective/<int:emp_obj_id>/',views.view_employee_objective,name='view-employee-objective'
+    ),
+    path(
+        'update-employee-objective/<int:emp_obj_id>/',views.update_employee_objective,name='update-employee-objective'
+    ),
+    path(
+        'archive-employee-objective/<int:emp_obj_id>/',views.archive_employee_objective,name='archive-employee-objective'
+    ),
+    path(
+        'delete-employee-objective/<int:emp_obj_id>/',views.delete_employee_objective,name='delete-employee-objective'
+    ),
+    path(
+        'change-employee-objective-status/<int:emp_obj>',views.change_employee_objective_status,name='change-employee-objective-status'
+    ),
+    path(
+        'add-assignees/<int:obj_id>',views.add_assignees,name='add-assignees'
+    ),
+    path(
+        'employee-key-result-creation/<int:emp_obj_id>',views.employee_keyresult_creation,name='employee-key-result-creation'
+    ),
+    path(
+        'employee-key-result-update/<int:kr_id>',views.employee_keyresult_update,name='employee-key-result-update'
+    ),
+    path(
+        'delete-employee-keyresult/<int:kr_id>',views.delete_employee_keyresult,name='delete-employee-keyresult'
+    ),
+    path(
+        'employee-keyresult-update-status/<int:kr_id>',views.employee_keyresult_update_status,name='employee-keyresult-update-status'
+    ),
+     path(
+        'key-result-creation',
+        views.key_result_create,
+        name='key-result-creation'
+    ),
+    path(
+        'key-result-current-value-update',
+        views.key_result_current_value_update,
+        name='key-result-current-value-update'
     ),
 ]

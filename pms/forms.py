@@ -10,12 +10,18 @@ from django.core.exceptions import ValidationError
 from django.core.files.base import File
 from django.db.models.base import Model
 from django.forms.utils import ErrorList
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
+from employee.filters import EmployeeFilter
 from employee.models import Department, JobPosition
 from django.forms import ModelForm
 from base.forms import ModelForm as BaseForm
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from pms.models import (
     AnonymousFeedback,
+    KeyResult,
+    Objective,
     Question,
     EmployeeObjective,
     EmployeeKeyResult,
@@ -47,92 +53,253 @@ def set_date_field_initial(instance):
     return initial
 
 
-class ObjectiveForm(ModelForm):
+class ObjectiveForm(BaseForm):
     """
-    A form to create or update instances of the EmployeeObjective model.
+    A form to create or update instances of the Objective, model.
     """
 
-    OBJECTIVE_TYPES = (
-        ("none", "----------"),
-        ("individual", _("Individual")),
-        ("job_position", _("Job position")),
-        ("department", _("Department")),
+    # period = forms.ModelChoiceField(
+    #     queryset=Period.objects.all(),
+    #     widget=forms.Select(
+    #         attrs={
+    #             "onChange": "periodCheck(this)",
+    #         },
+    #     ),
+    #     required=False,
+    # )
+    # assignees = forms.ModelMultipleChoiceField(
+    #     queryset=Employee.objects.all(),
+    #     required=False,
+    #     widget=forms.SelectMultiple(attrs={'style': 'display:none;'})
+    # )
+    # assignees = HorillaMultiSelectField(
+    #     queryset=Employee.objects.all(),
+    #     widget=HorillaMultiSelectWidget(
+    #         filter_route_name="employee-widget-filter",
+    #         filter_class=EmployeeFilter,
+    #         filter_instance_contex_name="f",
+    #         filter_template_path="employee_filters.html",
+    #         required=True,
+    #     ),
+    #     label="Assignees",
+    # )
+    start_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={"class": "oh-input w-100", "type": "date"})
     )
+    add_assignees = forms.BooleanField(required=False)
+    # archive = forms.BooleanField()
 
-    objective_type = forms.ChoiceField(
-        choices=OBJECTIVE_TYPES,
-        widget=forms.Select(
-            attrs={
-                "class": " oh-input-objective-type-choices oh-input",
-                "style": "width:100%",
-            }
-        ),
-        required=False,
-    )
-    department = forms.ModelChoiceField(
-        queryset=Department.objects.all(),
-        widget=forms.Select(
-            attrs={
-                "class": "oh-select oh-select--lg oh-select-no-search w-100 oh-input-objective-type-choices",
-                "style": "width:100%; display:none;",
-            }
-        ),
-        required=False,
-    )
-    job_position = forms.ModelChoiceField(
-        queryset=JobPosition.objects.all(),
-        widget=forms.Select(
-            attrs={
-                "class": "oh-select oh-select--lg oh-select-no-search w-100 oh-input-objective-type-choices",
-                "style": "width:100%; display:none;",
-            }
-        ),
-        required=False,
-    )
-    period = forms.ModelChoiceField(
-        queryset=Period.objects.all(),
-        empty_label="",
-        widget=forms.Select(
-            attrs={
-                "class": " oh-select--period-change",
-                "style": "width:100%; display:none;",
-            }
-        ),
-        required=False,
-    )
-    employee_id = forms.ModelChoiceField(
-        queryset=Employee.objects.filter(is_active=True),
-        widget=forms.Select(
-            attrs={
-                "class": "oh-select oh-select-2 ",
-                "style": "width:100%; display:none;",
-            }
-        ),
-        required=False,
-    )
 
     class Meta:
         """
         A nested class that specifies the model,fields and style of fields for the form.
         """
 
+        model = Objective
+        fields=[
+            'title',
+            'managers',
+            'description',
+            'duration',
+            'add_assignees',
+            'assignees',
+            # 'period',
+            'start_date',
+            # 'end_date',
+            # 'archive',
+        ]
+        # widgets = {
+        #     "start_date": forms.DateInput(
+        #         attrs={"class": "oh-input w-100", "type": "date"}
+        #     ),
+        #     "end_date": forms.DateInput(
+        #         attrs={"class": "oh-input w-100", "type": "date"}
+        #     ),
+        # }
+
+    def __init__(self, *args, **kwargs):
+        """
+        Constructor for ObjectiveForm. If an instance is provided, set initial values for date fields
+        """
+        # if instance := kwargs.get("instance"):
+        #     kwargs["initial"] = set_date_field_initial(instance)
+
+        employee = kwargs.pop(
+            "employee", None
+        )  # access the logged-in user's information
+        super().__init__(*args, **kwargs)
+        if self.instance.pk is None:
+            self.fields["assignees"] = HorillaMultiSelectField(
+                queryset=Employee.objects.all(),
+                widget=HorillaMultiSelectWidget(
+                    filter_route_name="employee-widget-filter",
+                    filter_class=EmployeeFilter,
+                    filter_instance_contex_name="f",
+                    filter_template_path="employee_filters.html",
+                    required=True,
+                ),
+                label="Assignees",
+            )
+        reload_queryset(self.fields)
+        # self.fields['start_date'].widget.attrs.update({"style":"display:none;"})
+        # self.fields['assignees'].widget.attrs.update({"style":"display:none;"})
+
+        # self.fields["period"].choices = list(self.fields["period"].choices)
+        # self.fields["period"].choices.append(("create_new_period", "Create new period"))
+
+    def clean(self):
+        """
+        Validates form fields and raises a validation error if any fields are invalid
+        """
+        cleaned_data = super().clean()
+        add_assignees = cleaned_data.get("add_assignees")
+        for field_name, field_instance in self.fields.items():
+            if isinstance(field_instance, HorillaMultiSelectField):
+                self.errors.pop(field_name, None)
+                if len(self.data.getlist(field_name)) < 1 and add_assignees:
+                    raise forms.ValidationError({field_name: "This field is required"})
+                cleaned_data = super().clean()
+                data = self.fields[field_name].queryset.filter(
+                    id__in=self.data.getlist(field_name)
+                )
+                cleaned_data[field_name] = data
+        cleaned_data = super().clean()
+        add_assignees = cleaned_data.get("add_assignees")
+        assignees = cleaned_data.get("assignees")
+        start_date = cleaned_data.get("start_date")
+        managers = cleaned_data.get('managers')
+        if not managers or managers == None:
+            raise forms.ValidationError(
+                    "Managers is a required field"
+                )
+        if add_assignees :
+            if not assignees.exists() or start_date is None :
+                raise forms.ValidationError(
+                    "Assign employees and start date"
+                )
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+        # Check that start date is before end date
+        validate_date(start_date, end_date)
+        return cleaned_data
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+class AddAssigneesForm(BaseForm):
+    """
+    A form to create or update instances of the EmployeeObjective, model.
+    """
+    start_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={"class": "oh-input w-100", "type": "date"})
+    )
+    class Meta:
+        """
+        A nested class that specifies the model,fields and style of fields for the form.
+        """
+
+        model = Objective
+        fields=[
+            'assignees',
+        ]
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+    
+class EmployeeObjectiveForm(BaseForm):
+    """
+    A form to create or update instances of the EmployeeObjective, model.
+    """
+    key_result_id = forms.ModelChoiceField(
+        queryset=KeyResult.objects.all(),
+        label=_("Key result"),
+        widget=forms.Select(
+            attrs={
+                "class": "oh-select oh-select-2 select2-hidden-accessible",
+                "onchange": "keyResultChange($(this))",
+            }
+        ),
+    )
+    class Meta:
+        """
+        A nested class that specifies the model,fields and style of fields for the form.
+        """
+
         model = EmployeeObjective
-        exclude = ["status"]
+        fields=[
+            'objective_id',
+            'key_result_id',
+            'start_date',
+            'end_date',
+            'status',
+            'archive',
+        ]
         widgets = {
-            "objective": forms.TextInput(
-                attrs={
-                    "class": "oh-input oh-input--block",
-                    "placeholder": _("Objective"),
-                }
+            "objective_id": forms.HiddenInput(),
+            "start_date": forms.DateInput(
+                attrs={"class": "oh-input w-100", "type": "date"}
             ),
-            "objective_description": forms.Textarea(
-                attrs={
-                    "class": "oh-input oh-input--textarea oh-input--block",
-                    "placeholder": _("Objective description goes here."),
-                    "rows": 3,
-                    "cols": 40,
-                }
+            "end_date": forms.DateInput(
+                attrs={"class": "oh-input w-100", "type": "date"}
             ),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
+        self.fields["key_result_id"].choices = list(self.fields["key_result_id"].choices)
+        self.fields["key_result_id"].choices.append(("create_new_key_result", "Create new Key result"))
+    
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+class EmployeekeyResultForm(BaseForm):
+    """
+    A form to create or update instances of the EmployeeKeyResult, model.
+    """
+    key_result_id = forms.ModelChoiceField(
+        queryset=KeyResult.objects.all(),
+        label=_("Key result"),
+        widget=forms.Select(
+            attrs={
+                "class": "oh-select oh-select-2 select2-hidden-accessible",
+                "onchange": "keyResultChange($(this))",
+            }
+        ),
+    )
+    class Meta:
+        """
+        A nested class that specifies the model,fields and style of fields for the form.
+        """
+        model = EmployeeKeyResult
+        fields=[
+            'employee_objective_id',
+            'key_result_id',
+            'start_value',
+            'current_value',
+            'target_value',
+            'start_date',
+            'end_date',
+            # 'archive',
+        ]
+        widgets = {
+            'employee_objective_id':forms.HiddenInput(),
             "start_date": forms.DateInput(
                 attrs={"class": "oh-input w-100", "type": "date"}
             ),
@@ -141,79 +308,52 @@ class ObjectiveForm(ModelForm):
             ),
         }
 
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+    
     def __init__(self, *args, **kwargs):
-        """
-        Constructor for ObjectiveForm. If an instance is provided, set initial values for date fields
-        """
-        if instance := kwargs.get("instance"):
-            kwargs["initial"] = set_date_field_initial(instance)
-
-        employee = kwargs.pop(
-            "employee", None
-        )  # access the logged-in user's information
         super().__init__(*args, **kwargs)
+        if self.initial.get("employee_objective_id"):
+            if type(self.initial.get("employee_objective_id")) == int :
+                self.verbose_name = EmployeeObjective.objects.get(id=(self.initial.get("employee_objective_id"))).employee_id
+            else:
+                self.verbose_name = self.initial.get("employee_objective_id").employee_id
+
         reload_queryset(self.fields)
-        self.fields["period"].choices = list(self.fields["period"].choices)
-        self.fields["period"].choices.append(("create_new_period", "Create new period"))
+        self.fields["key_result_id"].choices = list(self.fields["key_result_id"].choices)
+        self.fields["key_result_id"].choices.append(("create_new_key_result", "Create new Key result"))
+    
+    
 
-        if employee and Employee.objects.filter(
-            is_active=True, employee_work_info__reporting_manager_id=employee
-        ):
-            # manager level access
-            department = employee.employee_work_info.department_id
-            employees = Employee.objects.filter(
-                is_active=True, employee_work_info__department_id=department
-            )
-            self.fields["employee_id"].queryset = employees
-            self.fields["department"].queryset = Department.objects.filter(
-                id=department.id
-            )
-            self.fields["job_position"].queryset = department.job_position.all()
+from base.forms import ModelForm as MF
+class KRForm(MF):
+    """
+    A form used for creating KeyResult object
+    """
 
-        # Set unique IDs for employee_id fields to prevent conflicts with other forms on the same page
-        self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
-
-    def clean(self):
+    class Meta:
         """
-        Validates form fields and raises a validation error if any fields are invalid
+        A nested class that specifies the model,fields and exclude fields for the form.
         """
-        cleaned_data = super().clean()
-        start_date = cleaned_data.get("start_date")
-        end_date = cleaned_data.get("end_date")
-        objective_type = cleaned_data.get("objective_type")
-        department = cleaned_data.get("department")
-        job_position = cleaned_data.get("job_position")
-        employee_id = cleaned_data.get("employee_id")
 
-        # Check that start date is before end date
-        validate_date(start_date, end_date)
-
-        # Check that employee ID is provided for individual objective type
-        if objective_type == "individual" and not employee_id:
-            self.add_error(
-                "employee_id",
-                "Employee field is required for individual objective type.",
-            )
-
-        # Check that job position is provided for job position objective type
-        if objective_type == "job_position" and not job_position:
-            self.add_error(
-                "job_position",
-                "Job position field is required for job position objective type.",
-            )
-
-        # Check that department is provided for department objective type
-        if objective_type == "department" and not department:
-            self.add_error(
-                "department",
-                "Department field is required for department objective type.",
-            )
-
-        # Check that an objective type is selected
-        if objective_type == "none":
-            self.add_error("objective_type", "Please fill the objective type.")
-
-        return cleaned_data
+        model = KeyResult
+        fields = "__all__"
+        exclude = [
+            "history",
+            "objects",
+        ]
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
 
 
 class KeyResultForm(ModelForm):

@@ -1,0 +1,46 @@
+{% load static i18n%}
+{% load i18n %}
+
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" >
+        {% trans "Update Employee Objective" %}
+    </h2>
+    <button type="button" class="oh-modal__close--custom" onclick="$('#objectivesModal').removeClass('oh-modal--show');">
+        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+      </button>
+    </div>
+<div class="oh-modal__dialog-body">
+    <form 
+      hx-post="{%url 'update-employee-objective' form.instance.id %}"
+      hx-target="#objectivesTarget"
+      id="empObjectiveForm"
+    >
+        {% csrf_token %}
+        {{form.as_p}}
+    </form>
+</div>
+
+<!-- key result modal -->
+<div class="oh-modal" id="kRModal" role="dialog" aria-labelledby="editKeyResultModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+      <!-- for creating key result -->
+      <div class="oh-modal__dialog-header">
+        <h2 class="oh-modal__dialog-title" >
+          {% trans "Create Key Result" %}
+        </h2>
+        <button type="button" class="oh-modal__close--custom" onclick="$('#kRModal').hide();">
+          <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+        </button>
+      </div>
+      <div class="oh-modal__dialog-body" id="kRModalTarget">
+         <form
+         onsubmit="saveKeyResult();event.preventDefault();"
+         >
+            {% csrf_token %}
+            {{k_form.as_p}}
+         </form>
+        </div>
+    </div>
+  </div>
+  <!-- end of key result modal -->
+  
