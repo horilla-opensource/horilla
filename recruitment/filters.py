@@ -479,6 +479,7 @@ class SkillZoneCandFilter(FilterSet):
 
         model = SkillZoneCandidate
         fields = [
+            "is_active",
             "candidate_id",
             "candidate_id__recruitment_id",
             "candidate_id__stage_id",

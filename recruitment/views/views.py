@@ -1287,7 +1287,7 @@ def send_acknowledgement(request):
         (file.name, file.read(), file.content_type) for file in other_attachments
     ]
     email_backend = ConfiguredEmailBackend()
-    host = email_backend.dynamic_username_with_display_name
+    host = email_backend.dynamic_username
     candidate_obj = Candidate.objects.get(id=candidate_id)
     template_attachment_ids = request.POST.getlist("template_attachments")
     bodys = list(
@@ -1446,7 +1446,7 @@ def skill_zone_view(request):
     for zone in skill_groups:
         all_zones.append(zone["grouper"])
 
-    skill_zone_filtered = SkillZoneFilter(request.GET).qs
+    skill_zone_filtered = SkillZoneFilter(request.GET).qs.filter(is_active=True)
     all_zone_objects = list(skill_zone_filtered)
     unused_skill_zones = list(set(all_zone_objects) - set(all_zones))
 
@@ -1561,10 +1561,18 @@ def skill_zone_archive(request, sz_id):
         is_active = skill_zone.is_active
         if is_active == True:
             skill_zone.is_active = False
+            skill_zone_candidates = SkillZoneCandidate.objects.filter(skill_zone_id = sz_id)
+            for i in skill_zone_candidates:
+                i.is_active = False
+                i.save()
             messages.success(request, _("Skill zone archived successfully.."))
 
         else:
             skill_zone.is_active = True
+            skill_zone_candidates = SkillZoneCandidate.objects.filter(skill_zone_id = sz_id)
+            for i in skill_zone_candidates:
+                i.is_active = True
+                i.save()
             messages.success(request, _("Skill zone unarchived successfully.."))
 
         skill_zone.save()
@@ -1588,10 +1596,14 @@ def skill_zone_filter(request):
     skill_zone_filtered = SkillZoneFilter(request.GET).qs
     if request.GET.get("is_active") == "false":
         skill_zone_filtered = SkillZoneFilter(request.GET).qs.filter(is_active=False)
-        candidates = candidates.filter(is_active=False)
+        candidates = SkillZoneCandFilter(request.GET).qs.filter(is_active=False)
+        print('============================')
+        print(candidates)
+        print('============================')
+
     else:
         skill_zone_filtered = SkillZoneFilter(request.GET).qs.filter(is_active=True)
-        candidates = candidates.filter(is_active=True)
+        candidates = SkillZoneCandFilter(request.GET).qs.filter(is_active=True)
     skill_groups = group_by_queryset(
         candidates,
         "skill_zone_id",

@@ -152,7 +152,7 @@
 					</div>
 
 
-					<div class="col-12 col-sm-12 col-md-6 col-lg-3  oh-card-dashboard--moveable me-4" style="background-color: white;">
+					{% comment %} <div class="col-12 col-sm-12 col-md-6 col-lg-3  oh-card-dashboard--moveable me-4" style="background-color: white;">
 						<div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent ">
 							<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
 								<span class="oh-card-dashboard__title">{% trans "Open Positions By Department" %}</span>
@@ -169,6 +169,33 @@
 									</div>
 								</div>
 								<h3 style="font-size:16px; margin-bottom:69px;" class="oh-404__subtitle">{% trans "No department-specific vacancies currently." %}</h3>
+								{% endif %}
+					
+							</div>
+						</div>
+					</div> {% endcomment %}
+
+
+					<div class="col-12 col-sm-12 col-md-6 col-lg-3 oh-card-dashboard--moveable me-4" style="background-color: white;">
+						<div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent ">
+							<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+								<span class="oh-card-dashboard__title">{% trans "Candidate Offer Letter Status" %}</span>
+
+							</div>
+							<div class="oh-card-dashboard__body" >
+								{% if total_candidates %}
+								<div >
+
+									<canvas id="candidateChart"></canvas>
+
+								</div>
+								{% else %}
+								<div style="display:flex;align-items: center;justify-content: center;">
+									<div style="height:282px; justify-content:center;align-items:center; margin-top: -59px;" class="d-flex">
+										<img style="height:125px;" src="{% static 'images/ui/no_vacancy.png' %}" class=""/>
+									</div>
+								</div>
+								<h3 style="font-size:16px; margin-bottom:69px;" class="oh-404__subtitle">{% trans "No Candidates available." %}</h3>
 								{% endif %}
 					
 							</div>
@@ -216,7 +243,7 @@
 				<div class="oh-dashboard__movable-cards row mt-4">
 					{% if request.user|is_in_task_managers %}
 					<div
-							class="col-12 col-sm-12 col-md-6 col-lg-7 oh-card-dashboard--moveable me-4 ms-1"
+							class="col-12 col-sm-12 col-md-6 col-lg-7 oh-card-dashboard--moveable"
 							style="height: 438px;
 							background-color: white;"
 							id="taskStatus"
@@ -226,7 +253,7 @@
 					</div>
 					{% endif %}
 					<div
-					class="col-12 col-sm-12 col-md-6 col-lg-4 oh-card-dashboard--moveable"
+					class="col-12 col-sm-12 col-md-6 col-lg-5 oh-card-dashboard--moveable"
 					>
 						<div
 							class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
@@ -239,7 +266,7 @@
 							</div>
 							<div class="oh-card-dashboard__body">
 							{% if stage_chart_count %}
-								<canvas id="recruitmentChart1" width="400" height="290"></canvas>
+								<canvas id="recruitmentChart1" width="385" height="228"></canvas>
 							{% else %}
 								<div style="height: 334px; display:flex;align-items: center;justify-content: center;" class="">
 									<div style="" class="">
@@ -282,104 +309,80 @@
 							</div>
 							{% endif %}
 						</div>
-
-
-						<div class="col-12 col-sm-12 col-md-6 col-lg-4 ms-3  oh-card-dashboard--moveable me-4" style="background-color: white;">
-							<div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent ">
-								<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-									<span class="oh-card-dashboard__title">{% trans "Candidate Offer Letter Status" %}</span>
-
+						
+						{% if ongoing_recruitments %}
+							<div class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable">
+								<div>
+									<div class="oh-card-dashboard__header">
+									<span class="oh-card-dashboard__title">{% trans "Current Hiring Pipeline" %}</span>
 								</div>
-								<div class="oh-card-dashboard__body" >
-									{% if total_candidates %}
-									<div >
-
-										<canvas id="candidateChart"></canvas>
-
-									</div>
-									{% else %}
-									<div style="display:flex;align-items: center;justify-content: center;">
-										<div style="height:282px; justify-content:center;align-items:center; margin-top: -59px;" class="d-flex">
-											<img style="height:125px;" src="{% static 'images/ui/no_vacancy.png' %}" class=""/>
+								<div class="oh-sticky-table float-start" style="height:500px">
+									<div class="oh-sticky-table__table">
+										<div class="oh-sticky-table__thead">
+											<div class="oh-sticky-table__tr">
+												<div class="oh-sticky-table__th">{% trans "Job Positions" %}</div>
+												<div class="oh-sticky-table__th">{% trans "Initial" %}</div>
+												<div class="oh-sticky-table__th">{% trans "Test" %}</div>
+												<div class="oh-sticky-table__th">{% trans "Interview" %}</div>
+												<div class="oh-sticky-table__th">{% trans "Hired" %}</div>
+												<div class="oh-sticky-table__th">{% trans "Cancelled" %}</div>
+											</div>
+										</div>
+										<div class="oh-sticky-table__tbody">
+		
+											{% for job_item in job_data %}
+											
+											<div class="oh-sticky-table__tr">
+											<div class="oh-sticky-table__sd">{{ job_item.0 }}</div>
+											<div class="oh-sticky-table__td">{{ job_item.1 }}</div>
+											<div class="oh-sticky-table__td">{{ job_item.2 }}</div>
+											<div class="oh-sticky-table__td">{{ job_item.3 }}</div>
+											<div class="oh-sticky-table__td">{{ job_item.4 }}</div>
+											<div class="oh-sticky-table__td">{{ job_item.5 }}</div>
+											</div>
+		
+											{% endfor %}
 										</div>
 									</div>
-									<h3 style="font-size:16px; margin-bottom:69px;" class="oh-404__subtitle">{% trans "No Candidates available." %}</h3>
-									{% endif %}
-						
 								</div>
 							</div>
-						</div>
+						{% endif %}
 					</div>
 
 				</div>
 
 
 				<div class="oh-dashboard__movable-cards row mt-4 mb-5">
-
-					<div class="col-12 col-sm-12 col-md-12 col-lg-7 oh-card-dashboard--moveable">
-						<div>
+					{% if ongoing_recruitments %}
+						<div class="col-12 col-sm-12 col-md-12 col-lg-6	 oh-card-dashboard--moveable">
 							<div class="oh-card-dashboard__header">
-							<span class="oh-card-dashboard__title">{% trans "Current Hiring Pipeline" %}</span>
-						</div>
-						<div class="oh-sticky-table float-start" style="height:500px">
-							<div class="oh-sticky-table__table">
-								<div class="oh-sticky-table__thead">
-									<div class="oh-sticky-table__tr">
-										<div class="oh-sticky-table__th">{% trans "Job Positions" %}</div>
-										<div class="oh-sticky-table__th">{% trans "Initial" %}</div>
-										<div class="oh-sticky-table__th">{% trans "Test" %}</div>
-										<div class="oh-sticky-table__th">{% trans "Interview" %}</div>
-										<div class="oh-sticky-table__th">{% trans "Hired" %}</div>
-										<div class="oh-sticky-table__th">{% trans "Cancelled" %}</div>
+								<span class="oh-card-dashboard__title">{% trans "Ongoing Recruitments & Hiring Managers" %}</span>
+							</div>
+							<div class="oh-sticky-table float-start" style="height:200px">
+								<div class="oh-sticky-table__table">
+									<div class="oh-sticky-table__thead">
+										<div class="oh-sticky-table__tr">
+											<div class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
+											<div class="oh-sticky-table__th">{% trans "Manager" %}</div>
+										</div>
+									</div>
+									<div class="oh-sticky-table__tbody">
+		
+										{% for recruitment_title, managers in recruitment_manager_mapping.items %}
+										
+										<div class="oh-sticky-table__tr">
+											<div class="oh-sticky-table__sd">{{ recruitment_title }}</div>
+											<div class="oh-sticky-table__td">{{ managers|join:",  " }}</div>
+										</div>
+		
+										{% endfor %}
 									</div>
 								</div>
-								<div class="oh-sticky-table__tbody">
-
-									{% for job_item in job_data %}
-									
-									<div class="oh-sticky-table__tr">
-									<div class="oh-sticky-table__sd">{{ job_item.0 }}</div>
-									<div class="oh-sticky-table__td">{{ job_item.1 }}</div>
-									<div class="oh-sticky-table__td">{{ job_item.2 }}</div>
-									<div class="oh-sticky-table__td">{{ job_item.3 }}</div>
-									<div class="oh-sticky-table__td">{{ job_item.4 }}</div>
-									<div class="oh-sticky-table__td">{{ job_item.5 }}</div>
-									</div>
-
-									{% endfor %}
-								</div>
 							</div>
 						</div>
-					</div>
+					{% endif %}
 				</div>
-					
-				<div class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable">
-					<div class="oh-card-dashboard__header">
-						<span class="oh-card-dashboard__title">{% trans "Ongoing Recruitments & Hiring Managers" %}</span>
-					</div>
-					<div class="oh-sticky-table float-start">
-						<div class="oh-sticky-table__table">
-							<div class="oh-sticky-table__thead">
-								<div class="oh-sticky-table__tr">
-									<div class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
-									<div class="oh-sticky-table__th">{% trans "Manager" %}</div>
-								</div>
-							</div>
-							<div class="oh-sticky-table__tbody">
-
-								{% for recruitment_title, managers in recruitment_manager_mapping.items %}
-								
-								<div class="oh-sticky-table__tr">
-									<div class="oh-sticky-table__sd">{{ recruitment_title }}</div>
-									<div class="oh-sticky-table__td">{{ managers|join:",  " }}</div>
-								</div>
-
-								{% endfor %}
-							</div>
-						</div>
-					</div>
-				</div>
-					
+										
 		</div>
 	</div>
 </div>

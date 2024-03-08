@@ -825,6 +825,7 @@ class SkillZoneCreateForm(ModelForm):
             "created_on",
             "objects",
             "company_id",
+            "is_active",
         ]
 
     def as_p(self, *args, **kwargs):
@@ -853,6 +854,7 @@ class SkillZoneCandidateForm(ModelForm):
         fields = "__all__"
         exclude = [
             "added_on",
+            "is_active",
         ]
 
     def as_p(self, *args, **kwargs):

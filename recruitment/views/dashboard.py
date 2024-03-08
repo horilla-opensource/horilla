@@ -97,8 +97,9 @@ def dashboard(request):
     for rec in recruitment_obj:
         data = [stage_type_candidate_count(rec, type[0]) for type in Stage.stage_types]
         for i in data:
-            i += stage_chart_count
-        if i > 1:
+            stage_chart_count += i
+
+        if stage_chart_count >= 1:
             stage_chart_count = 1
 
     onboarding_count = Candidate.objects.filter(start_onboard=True)
@@ -138,7 +139,7 @@ def dashboard(request):
     if total_hired_candidates != 0:
         acceptance_ratio = f"{((onboarding_count / total_hired_candidates) * 100):.1f}"
 
-    skill_zone = SkillZone.objects.all()
+    skill_zone = SkillZone.objects.filter(is_active = True)
     return render(
         request,
         "dashboard/dashboard.html",
