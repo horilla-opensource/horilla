@@ -221,7 +221,7 @@ $(document).ready(function(){
     $(".oh-tabs__tab:first").click()
   }
 </script>
-{% if "pipeline" not in request.user.driverviewed_set.first.user_viewed %}
+{% if not request.user.driverviewed_set.first or "pipeline" not in request.user.driverviewed_set.first.user_viewed %}
 <script>
   runDriver()
 </script>

@@ -5281,6 +5281,7 @@ def driver_viewed_status(request):
     """
     This method is used to update driver viewed status
     """
+    print("HEREEEEEEEEEEEEEEEEE")
     form = DriverForm(request.GET)
     if form.is_valid():
         form.save()
