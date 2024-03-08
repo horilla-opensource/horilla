@@ -531,9 +531,7 @@ def shift_tab(request, emp_id):
     work_type_requests_ids = json.dumps(
         [instance.id for instance in work_type_requests]
     )
-    rshift_assign = RotatingShiftAssign.objects.filter(
-        is_active=True, employee_id=emp_id
-    )
+    rshift_assign = RotatingShiftAssign.objects.filter(employee_id=emp_id)
     rshift_assign_ids = json.dumps([instance.id for instance in rshift_assign])
     rwork_type_assign = RotatingWorkTypeAssign.objects.filter(employee_id=emp_id)
     rwork_type_assign_ids = json.dumps([instance.id for instance in rwork_type_assign])

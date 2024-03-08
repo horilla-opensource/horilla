@@ -116,7 +116,7 @@ def send_mail_to_employee(request):
         (file.name, file.read(), file.content_type) for file in other_attachments
     ]
     email_backend = ConfiguredEmailBackend()
-    host = email_backend.dynamic_username_with_display_name
+    host = email_backend.dynamic_username
     employee = Employee.objects.get(id=employee_id)
     template_attachment_ids = request.POST.getlist("template_attachments")
     bodys = list(

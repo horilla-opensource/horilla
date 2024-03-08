@@ -408,7 +408,7 @@ class Employee(models.Model):
         # call the parent class's save method to save the object
         prev_employee = Employee.objects.filter(id=self.id).first()
         super().save(*args, **kwargs)
-        request = getattr(thread_local_middleware._thread_locals,"request",None)
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
         if request and not self.is_active and self.get_archive_condition() is not False:
             self.is_active = True
             super().save(*args, **kwargs)
@@ -416,7 +416,7 @@ class Employee(models.Model):
         if prev_employee and prev_employee.email != employee.email:
             employee.employee_user_id.username = employee.email
             employee.employee_user_id.save()
-          
+
         if employee.employee_user_id is None:
             # Create user if no corresponding user exists
             username = self.email
@@ -431,7 +431,7 @@ class Employee(models.Model):
             user.user_permissions.add(view_ownprofile)
             user.user_permissions.add(change_ownprofile)
             return self.save()
-        
+
         return self
 
 
@@ -659,7 +659,7 @@ class EmployeeNote(models.Model):
         related_name="employee_name",
     )
     # title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
-    description = models.TextField(verbose_name=_("Description"), max_length=255)
+    description = models.TextField(verbose_name=_("Description"), max_length=255,null=True)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),
@@ -774,8 +774,11 @@ class Actiontype(models.Model):
 
     title = models.CharField(max_length=50)
     action_type = models.CharField(max_length=30, choices=choice_actions)
-    block_option = models.BooleanField(default = False, verbose_name=_("Enable login block :"), 
-                                       help_text="If is enabled, employees log in will be blocked based on period of suspension or dismissal.")
+    block_option = models.BooleanField(
+        default=False,
+        verbose_name=_("Enable login block :"),
+        help_text="If is enabled, employees log in will be blocked based on period of suspension or dismissal.",
+    )
 
     def __str__(self) -> str:
         return f"{self.title}"

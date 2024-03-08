@@ -344,6 +344,7 @@
         	          {% trans "Next Switch" %}
         	        </div>
         	        <div class="oh-sticky-table__th">{% trans "Next Shift" %}</div>
+					<div class="oh-sticky-table__th">{% trans "Status" %}</div>
 					{% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingshiftassign or request.user|check_manager:rshift or request.user|is_reportingmanager  %}
 						<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
         	        {% endif %}
@@ -399,6 +400,13 @@
         	    			  {{rshift.next_change_date}}
         	    			</div>
         	    			<div class="oh-sticky-table__td">{{rshift.next_shift}}</div>
+							<div class="oh-sticky-table__td">
+								{% if rshift.is_active %}
+									{% trans "Is Active" %}
+								{% else %}
+									{% trans "Archived" %}
+								{% endif %}
+							</div>
         	    			{% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingshiftassign or request.user|check_manager:rshift or request.user|is_reportingmanager %}
         	    				<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
         	    				  <div class="oh-btn-group">
@@ -490,6 +498,9 @@
         	        <div class="oh-sticky-table__th">
         	          {% trans "Next Work Type" %}
         	        </div>
+					<div class="oh-sticky-table__th">
+						{% trans "Status" %}
+					</div>
 					{% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingworktypeassign or request.user|check_manager:rwork_type or request.user|is_reportingmanager   %}
 						<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
         	        {% endif %}
@@ -551,6 +562,13 @@
         	    			<div class="oh-sticky-table__td">
         	    			  {{rwork_type.next_work_type}}
         	    			</div>
+							<div class="oh-sticky-table__td">
+								{% if rwork_type.is_active %}
+									{% trans "Is Active" %}
+								{% else %}
+									{% trans "Archived" %}
+								{% endif %}
+							</div>
         	    			{% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingworktypeassign or request.user|check_manager:rwork_type  %}
         	    				<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
         	    					<div class="oh-btn-group">
