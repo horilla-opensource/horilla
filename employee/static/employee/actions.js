@@ -99,7 +99,7 @@ $(".all-employee-row").change(function () {
     body.find(".all-employee-row:checked").length ===
       body.find(".all-employee-row").length
   );
-  addingIds()
+  addingIds();
 });
 
 function addingIds() {
@@ -170,13 +170,11 @@ function selectAllEmployees() {
   $("#selectedInstances").attr("data-clicked", 1);
   $("#selectedShow").removeAttr("style");
   var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
-
+  var filterQuery = $("#selectAllEmployees").data("pd");
   if (savedFilters && savedFilters["filterData"] !== null) {
-    var filter = savedFilters["filterData"];
-
     $.ajax({
-      url: "/employee/employee-select-filter",
-      data: { page: "all", filter: JSON.stringify(filter) },
+      url: "/employee/employee-select-filter?" + filterQuery,
+      data: { page: "all" },
       type: "GET",
       dataType: "json",
       success: function (response) {

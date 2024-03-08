@@ -2983,11 +2983,8 @@ def employee_select_filter(request):
     This method is used to return all the ids of the filtered employees
     """
     page_number = request.GET.get("page")
-    filtered = request.GET.get("filter")
-    filters = json.loads(filtered) if filtered else {}
-
     if page_number == "all":
-        employee_filter = EmployeeFilter(filters, queryset=Employee.objects.all())
+        employee_filter = EmployeeFilter(request.GET, queryset=Employee.objects.all())
 
         # Get the filtered queryset
         filtered_employees = filtersubordinatesemployeemodel(
