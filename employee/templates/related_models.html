@@ -21,7 +21,7 @@
       method="post"
       id="replaceEmployeeForm"
       data-id="{{employee.id}}"
-    >
+      >
       {% csrf_token %}
       <div
         class="swal2-html-container"
@@ -101,20 +101,20 @@
         <div class="swal2-actions" style="display: flex">
           <div class="swal2-loader"></div>
           <button
-            type="button"
-            class="swal2-confirm swal2-styled oh-modal__cancel mb-4"
-            aria-label=""
-            style="display: inline-block"
-          >
-            {% trans "Cancel" %}
-          </button>
-          <button
             type="submit"
             class="swal2-deny swal2-styled mb-4"
             aria-label=""
-            style="display: inline-block"
+            style="display: inline-block;background-color:#008000;"
           >
             {% trans "Submit" %}
+          </button>
+          <button
+            type="button"
+            class="swal2-confirm swal2-styled oh-modal__cancel mb-4"
+            aria-label=""
+            style="display: inline-block;background-color:#d33;"
+          >
+            {% trans "Cancel" %}
           </button>
         </div>
       </div>

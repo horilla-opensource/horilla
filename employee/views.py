@@ -1900,7 +1900,7 @@ def employee_archive(request, obj_id):
         if key not in request.META.keys():
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         else:
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HttpResponse("<script>$('#filterEmployee').click();</script>")
     else:
         return render(
             request,

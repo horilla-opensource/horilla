@@ -7,7 +7,7 @@
   {% endfor %}
 </div>
 {% endif %} 
-
+<span name="" id="filterEmployee" style="display: none" hx-get="{% url 'employee-filter-view' %}?{{pd}}" hx-target="#view-container"></span>
 <div class="d-flex flex-row-reverse p-0 m-2">
   <span class="" onclick="$('[name=working_today]').val('false'); $('[name=working_today]').first().change(); $('.filterButton').click()" style="cursor: pointer;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
@@ -17,10 +17,10 @@
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
     {% trans "Online" %}
   </span>
-  <span class="me-3" style="cursor: pointer;">
+  {% comment %} <span class="me-3" style="cursor: pointer;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:black"></span>
     {{data.start_count}}-{{data.end_count}} / {{data.paginator.count}}
-  </span>
+  </span> {% endcomment %}
 </div>
 <div id="relatedModel"></div>
 {% if perms.employee.view_employee or request.user|is_reportingmanager %}
@@ -246,22 +246,22 @@
             {% endif %} 
             {% if perms.employee.delete_employee %} 
               {% if emp.is_active %}
-                <button hx-confirm="{% trans 'Do you want to archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}" 
+                <button hx-confirm="{% trans 'Do you want to archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}?{{pd}}" 
                         hx-target="#relatedModel" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100">
                   <ion-icon name="archive"></ion-icon>
                 </button>
               {% else %}
-                <form 
-                  action="{% url 'employee-archive' emp.id %}" 
-                  onsubmit="return confirm('{% trans "Do you want to un archive this employee?" %}')" method="post"
-                  style = "width:100%"
-                 > 
+                <form hx-confirm="return confirm('{% trans "Do you want to un-archive this employee?" %}')"
+                      hx-post="{% url 'employee-archive' emp.id %}" 
+                      hx-target="#relatedModel"
+                      style = "width:100%"
+                    > 
                   {% csrf_token %}
                   <button
                     type="submit"
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                     title="{% trans 'Un-Archive' %}"
-                  >
+                    >
                     <ion-icon name="archive"></ion-icon>
                   </button>
                 </form>

@@ -4,7 +4,7 @@
 {% load basefilters %}
 
 
-
+<span name="" id="filterEmployee" style="display: none" hx-get="{% url 'employee-filter-view' %}?{{pd}}" hx-target="#view-container"></span>
 <div class="d-flex flex-row-reverse m-2">
   <span class="" onclick="$('[name=working_today]').val('false'); $('[name=working_today]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
@@ -86,11 +86,11 @@
               {% if perms.employee.delete_employee %}
               <li class="oh-dropdown__item">
                 {% if emp.is_active %}
-                  <a hx-confirm="{% trans 'Do you want to archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}" hx-target="#relatedModel" class="oh-dropdown__link">
+                  <a hx-confirm="{% trans 'Do you want to archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}?{{pd}}" hx-target="#relatedModel" class="oh-dropdown__link">
                     {% trans "Archive" %}
                   </a>
                   {% else %}
-                  <a href="{% url 'employee-archive' emp.id %}" onclick="return confirm('{% trans "Do you want to un archive this employee?" %}')" class="oh-dropdown__link">
+                  <a hx-confirm="{% trans 'Do you want to un archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}" hx-target="#relatedModel" class="oh-dropdown__link">
                     {% trans "Un-Archive" %}
                   </a>
                   {% endif %}

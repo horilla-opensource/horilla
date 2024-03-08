@@ -1,5 +1,12 @@
 {% load attendancefilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %}
+{% if messages %}
+<div class="oh-alert-container">
+  {% for message in messages %}
+  <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %} 
 <div
   class="oh-checkpoint-badge text-success mb-2"
   id="selectAllEmployees"
@@ -21,6 +28,8 @@
 >
   {% trans "Export Employees" %}
 </div>
+<span name="" id="filterEmployee" style="display: none" hx-get="{% url 'employee-filter-view' %}?{{pd}}" hx-target="#view-container"></span>
+<div id="relatedModel"></div>
 <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow"></div>
 <div class="oh-card">
     {% for employee_list in data %}
@@ -183,23 +192,24 @@
                             ><ion-icon name="create-outline"></ion-icon
                           ></a>
                           {% endif %} {% if perms.employee.delete_employee %} {% if emp.is_active %}
-                          <form action="{% url 'employee-archive' emp.id %}" 
-                              style = "width:100%"
-                              onsubmit="return confirm('{% trans "Do you want to archive this employee?" %}')" method="post" > 
-                            {% csrf_token %}
-                            <button
-                              type="submit"
-                              class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                              title="{% trans 'Archive' %}"
-                            >
-                              <ion-icon name="archive"></ion-icon>
-                            </button>
-                          </form>
+                            <form hx-confirm="{% trans 'Do you want to archive this employee?' %}"
+                                  hx-post="{% url 'employee-archive' emp.id %}" 
+                                  hx-target="#relatedModel"
+                                  style = "width:100%"
+                              > 
+                              {% csrf_token %}
+                              <button
+                                type="submit"
+                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                title="{% trans 'Archive' %}"
+                                >
+                                <ion-icon name="archive"></ion-icon>
+                              </button>
+                            </form>
                           {% else %}
-                              
-                              <form 
-                                action="{% url 'employee-archive' emp.id %}" 
-                                onsubmit="return confirm('{% trans "Do you want to un archive this employee?" %}')" method="post"
+                            <form hx-confirm="{% trans 'Do you want to un-archive this employee?' %}"
+                                hx-post="{% url 'employee-archive' emp.id %}" 
+                                hx-target="#relatedModel"
                                 style = "width:100%"
                               > 
                               {% csrf_token %}
@@ -209,7 +219,7 @@
                                 title="{% trans 'Un-Archive' %}"
                               >
                                 <ion-icon name="archive"></ion-icon>
-                              </button>
+                            </button>
                             </form>
                           {% endif %} {% endif %} {% if perms.employee.delete_employee %}
                           <form 
