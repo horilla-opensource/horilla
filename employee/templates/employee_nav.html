@@ -87,6 +87,9 @@
           </div>
           <div class="modal-footer d-flex flex-row-reverse">
             <input
+            onclick="
+              validateFile($(this),'workInfoImportFile',true);
+              "
               type="submit"
               class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
               value="{% trans 'Upload' %}"

@@ -131,78 +131,80 @@ form.addEventListener("submit", function (event) {
         reader.readAsText(response);
         return;
       }
-
-      swal.fire({
-        text: `You have ${errorCount} errors. Do you want to download the error list?`,
-        icon: "error",
-        showCancelButton: true,
-        showDenyButton: true,
-        confirmButtonText: "Download error list & Skip Import",
-        denyButtonText: "Downlod error list & Continue Import",
-        cancelButtonText: "Cancel",
-        confirmButtonColor: "#d33",
-        denyButtonColor: "#008000",
-        customClass: {
-          container: 'custom-swal-container'
-        }
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          const file = new Blob([response], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          });
-          const url = URL.createObjectURL(file);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = "ImportError.xlsx";
-          document.body.appendChild(link);
-          link.click();
-          window.location.reload();
-        }                
-        else if (result.isDenied) {
-          formData.append("create_work_info", true);
-          $.ajax({
-            type: "POST",
-            url: "/employee/work-info-import",
-            dataType: "binary",
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-              "X-CSRFToken": getCookie("csrftoken"),
-            },
-            xhrFields: {
-              responseType: "blob",
-            },
-            success: function (response, textStatus, xhr) {
-              Swal.fire({
-                text: `Employees Imported Successfully`,
-                icon: "success",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-              }).then(function() {
-                const file = new Blob([response], {
-                  type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      if (!$(".file-xlsx-validation")) {
+        swal.fire({
+          text: `You have ${errorCount} errors. Do you want to download the error list?`,
+          icon: "error",
+          showCancelButton: true,
+          showDenyButton: true,
+          confirmButtonText: "Download error list & Skip Import",
+          denyButtonText: "Downlod error list & Continue Import",
+          cancelButtonText: "Cancel",
+          confirmButtonColor: "#d33",
+          denyButtonColor: "#008000",
+          customClass: {
+            container: 'custom-swal-container'
+          }
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            const file = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "ImportError.xlsx";
+            document.body.appendChild(link);
+            link.click();
+            window.location.reload();
+          }                
+          else if (result.isDenied) {
+            formData.append("create_work_info", true);
+            $.ajax({
+              type: "POST",
+              url: "/employee/work-info-import",
+              dataType: "binary",
+              data: formData,
+              processData: false,
+              contentType: false,
+              headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+              },
+              xhrFields: {
+                responseType: "blob",
+              },
+              success: function (response, textStatus, xhr) {
+                Swal.fire({
+                  text: `Employees Imported Successfully`,
+                  icon: "success",
+                  showConfirmButton: false,
+                  timer: 3000,
+                  timerProgressBar: true,
+                }).then(function() {
+                  const file = new Blob([response], {
+                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                  });
+                  const url = URL.createObjectURL(file);
+                  const link = document.createElement("a");
+                  link.href = url;
+                  link.download = "ImportError.xlsx";
+                  document.body.appendChild(link);
+                  link.click();
+                  window.location.reload();
                 });
-                const url = URL.createObjectURL(file);
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = "ImportError.xlsx";
-                document.body.appendChild(link);
-                link.click();
-                window.location.reload();
-              });
-              
-              return;
-            }
-          })
-        } 
-        else {
-          $(".oh-dropdown__import-form").css("display", "block");
-          $("#uploading").css("display", "none");
-        }
-      });
+                
+                return;
+              }
+            })
+          } 
+          else {
+            $(".oh-dropdown__import-form").css("display", "block");
+            $("#uploading").css("display", "none");
+          }
+        });
+      }
+      
     },
     error: function (xhr, textStatus, errorThrown) {
       console.error("Error downloading file:", errorThrown);

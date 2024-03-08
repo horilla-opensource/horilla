@@ -1140,4 +1140,31 @@
       }, 1);
     });
   }
+
+  function validateFile(element,fileTarget,reload=false) {
+    var fileInput = document.getElementById(fileTarget);
+    var filePath = fileInput.value;
+    var allowedExtensions = /(\.xlsx)$/i;
+
+    if (!allowedExtensions.exec(filePath)) {
+      Swal.fire({
+        icon: 'error',
+        title: '{% trans "Invalid File" %}',
+        text: '{% trans "Please upload a valid XLSX file." %}',
+        customClass: {
+          popup: 'file-xlsx-validation',
+        },
+      })
+      .then((result) => {
+        if (result.isConfirmed && reload) {
+          $(".oh-modal--show").removeClass("oh-modal--show");
+          window.location.reload()
+        }
+      })
+      ;
+      fileInput.value = '';
+      return false;
+    }
+    $(this).closest("form").submit();
+  }
 </script>
