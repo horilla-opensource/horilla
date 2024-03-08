@@ -123,6 +123,15 @@ For installing the python dependencies required for the project, run the followi
  ```bash
  pip install -r requirements.txt
  ```
+>If you face any issue with the installing the pycairo package in ubuntu or macos, please follow the following commands and try the requirements installation command after this command.
+>>**Ubuntu**
+>>```sudo apt-get install libcairo2-dev```
+>>
+>>**MacOS**
+>>```brew install py3cairo```
+
+>Run the requirement installation command again
+
 3. Set up the database by running the following commands:
 ```bash
 python manage.py makemigrations
