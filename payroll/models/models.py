@@ -155,9 +155,9 @@ class Contract(models.Model):
         related_name="contract_set",
         verbose_name=_("Employee"),
     )
-    contract_start_date = models.DateField(verbose_name=_("Start date"))
+    contract_start_date = models.DateField(verbose_name=_("Start Date"))
     contract_end_date = models.DateField(
-        null=True, blank=True, verbose_name=_("End date")
+        null=True, blank=True, verbose_name=_("End Date")
     )
     wage_type = models.CharField(
         choices=WAGE_CHOICES,
@@ -236,8 +236,9 @@ class Contract(models.Model):
     )
     notice_period_in_month = models.IntegerField(
         default=3,
-        help_text="Notice period in total months.",
+        help_text=_("Notice period in total months."),
         validators=[min_zero],
+        verbose_name = _("Notice Period")
     )
     calculate_daily_leave_amount = models.BooleanField(
         default=True,

@@ -2,6 +2,7 @@
 These forms provide a convenient way to handle data input, validation, and customization
 of form fields and widgets for the corresponding models in the payroll management system.
 """
+
 from typing import Any
 import uuid
 import datetime
@@ -351,7 +352,7 @@ class PayslipExportColumnForm(forms.Form):
     )
 
 
-exclude_fields = ["id", "contract_document", "is_active", "note", "note"]
+exclude_fields = ["id", "contract_document", "is_active", "note", "note", "created_at"]
 
 
 class ContractExportFieldForm(forms.Form):
@@ -623,7 +624,6 @@ class ReimbursementForm(ModelForm):
         for field in exclude_fields:
             if field in self.fields:
                 del self.fields[field]
-
 
     def as_p(self):
         """
