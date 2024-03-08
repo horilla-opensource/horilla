@@ -99,7 +99,8 @@ class ModelForm(forms.ModelForm):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
 
             try:            
-                self.fields["employee_id"].initial = request.user.employee_get 
+                if self._meta.model.__name__  not in ['DisciplinaryAction']:
+                    self.fields["employee_id"].initial = request.user.employee_get 
             except:
                 pass
 
