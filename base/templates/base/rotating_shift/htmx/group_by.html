@@ -82,7 +82,7 @@
                   </div>
                   <div class="oh-sticky-table__tbody">
                       {% for rshift in rshift_request_list.list %}
-                      <div class="oh-sticky-table__tr" draggable="true" hx-get="{% url "rshift-individual-view" rshift.id %}?instances_ids={{assign_ids}}" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal">
+                      <div class="oh-sticky-table__tr" draggable="true" hx-get="{% url "rshift-individual-view" rshift.id %}?{{pd}}&instances_ids={{assign_ids}}" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal">
                       <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                           <div class="centered-div">
                           <input
@@ -158,41 +158,40 @@
                           </a>
                           {% endif %} 
                           {% if perms.base.change_rotatingshiftassign  or request.user|is_reportingmanager %}
-                          {% if rshift.is_active %}
-                          <form onsubmit="return confirm('{% trans "Do you want to archive this rotating shift assign?" %}')" action="{% url 'rotating-shift-assign-archive' rshift.id %}?is_active=False" 
-                            style="width:100%"
-                          >
-                              <input type="hidden" name="is_active" value="{% trans 'False' %}" id="">
-                              <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
-                              <ion-icon name="archive"></ion-icon>
-                              </button>
-                          </form>
-                          {% else %}
-                          <form onsubmit="return confirm('{% trans "Do you Want to un-archive this rotating shift assign?" %}')" action="{% url 'rotating-shift-assign-archive' rshift.id %}" 
-                            style="width:100%"
-                          >
-                              <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Un-Archive' %}">
-                              <ion-icon name="archive"></ion-icon>
-                              </button>
-                          </form>
-                          {% endif %}
+                            {% if rshift.is_active %}
+                              <form hx-target="{% trans 'Do you want to archive this rotating shift assign?' %}" hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}" 
+                                    hx-target="#view-container" style="width:100%"
+                                >
+                                  <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
+                                  <ion-icon name="archive"></ion-icon>
+                                  </button>
+                              </form>
+                            {% else %}
+                              <form hx-confirm="{% trans 'Do you Want to un-archive this rotating shift assign?' %}" hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}" 
+                                    hx-target="#view-container" style="width:100%"
+                                >
+                                  <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Un-Archive' %}">
+                                  <ion-icon name="archive"></ion-icon>
+                                  </button>
+                              </form>
+                            {% endif %}
                           {% endif %}
                           {% if perms.base.delete_rotatingshiftassign or request.user|is_reportingmanager %}
-                          <form
-                              hx-confirm="{% trans 'Are you sure you want to delete this rotating shift assign?' %}"
-                              hx-post="{% url 'rotating-shift-assign-delete' rshift.id %}?{{pd}}"
-                              hx-target="#view-container"
-                              style="width:100%"
-                          >
-                              {% csrf_token %}
-                              <button
-                              type="submit"
-                              class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                              title="{% trans 'Remove' %}"
+                            <form
+                                hx-confirm="{% trans 'Are you sure you want to delete this rotating shift assign?' %}"
+                                hx-post="{% url 'rotating-shift-assign-delete' rshift.id %}?{{pd}}"
+                                hx-target="#view-container"
+                                style="width:100%"
                               >
-                              <ion-icon name="trash-outline"></ion-icon>
-                              </button>
-                          </form>
+                                {% csrf_token %}
+                                <button
+                                type="submit"
+                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                title="{% trans 'Remove' %}"
+                                >
+                                <ion-icon name="trash-outline"></ion-icon>
+                                </button>
+                            </form>
                           {% endif %}
                           </div>
                       </div>

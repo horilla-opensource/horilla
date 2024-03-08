@@ -71,7 +71,7 @@
         <div class="oh-timeoff-modal__stat" >
             <span class="oh-timeoff-modal__stat-title">{% trans "Based On" %}</span>
             <span class="oh-timeoff-modal__stat-count">
-                {{instance.based_on}}
+                {{instance.get_based_on_display}}
             </span>
         </div>
     </div>
@@ -124,9 +124,8 @@
             </span>
         </div>
         <div class="oh-timeoff-modal__stat" >
-            <span class="oh-timeoff-modal__stat-title"></span>
-            <span class="oh-timeoff-modal__stat-count">
-            </span>
+            <span class="oh-timeoff-modal__stat-title">{% trans "Status" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{% if instance.is_active %}{% trans "Is Active" %}{% else %}{% trans "Archived" %}{% endif %}</span>
         </div>
     </div>
     <div class="oh-modal__button-container text-center mt-3">

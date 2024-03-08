@@ -410,7 +410,7 @@ urlpatterns = [
         },
     ),
     path(
-        "rotating-shift-assign-archive/<int:id>/",
+        "rotating-shift-assign-archive/<int:obj_id>/",
         views.rotating_shift_assign_archive,
         name="rotating-shift-assign-archive",
     ),

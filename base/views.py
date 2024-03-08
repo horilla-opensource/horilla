@@ -1540,7 +1540,9 @@ def rotating_work_type_assign_archive(request, obj_id):
         else:
             rwork_type.save()
             message = _("un-archived") if rwork_type.is_active else _("archived")
-            messages.success(request, _("Rotating shift assign is {}").format(message))
+            messages.success(
+                request, _("Rotating work type assign is {}").format(message)
+            )
         return rotating_work_type_assign_redirect(request, obj_id, employee_id)
     except Http404:
         messages.error(request, _("Rotating work type assign not found."))
@@ -2048,8 +2050,11 @@ def rotating_shift_individual_view(request, instance_id):
     """
     This view is used render detailed view of the rotating shit assign
     """
+    request_copy = request.GET.copy()
+    request_copy.pop("instances_ids", None)
+    previous_data = request_copy.urlencode()
     instance = RotatingShiftAssign.objects.filter(id=instance_id).first()
-    context = {"instance": instance}
+    context = {"instance": instance, "pd": previous_data}
     assign_ids_json = request.GET.get("instances_ids")
     HTTP_REFERER = request.META.get("HTTP_REFERER", None)
     context["close_hx_url"] = ""
@@ -2125,33 +2130,55 @@ def rotating_shift_assign_export(request):
     )
 
 
+def rotating_shift_assign_redirect(request, obj_id, employee_id):
+    request_copy = request.GET.copy()
+    request_copy.pop("instances_ids", None)
+    previous_data = request_copy.urlencode()
+    hx_target = request.META.get("HTTP_HX_TARGET", None)
+    if hx_target and hx_target == "view-container":
+        return redirect(f"/rotating-shift-assign-view?{previous_data}")
+    elif hx_target and hx_target == "objectDetailsModalTarget":
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if obj_id in instances_list:
+            instances_list.remove(obj_id)
+        previous_instance, next_instance = closest_numbers(
+            json.loads(instances_ids), obj_id
+        )
+        return redirect(
+            f"/rshit-individual-view/{next_instance}/?{previous_data}&instances_ids={instances_list}"
+        )
+    elif hx_target and hx_target == "shift_target" and employee_id:
+        return redirect(f"/employee/shift-tab/{employee_id}")
+    elif hx_target:
+        return HttpResponse("<script>window.location.reload()</script>")
+    else:
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
 @login_required
 @manager_can_enter("base.change_rotatingshiftassign")
-def rotating_shift_assign_archive(request, id):
+def rotating_shift_assign_archive(request, obj_id):
     """
     This method is used to archive and unarchive rotating shift assign records
     """
-    rshift = RotatingShiftAssign.objects.get(id=id)
-    employees_rshift_assign = RotatingShiftAssign.objects.filter(
-        is_active=True, employee_id=rshift.employee_id
-    )
-    flag = False
-    if len(employees_rshift_assign) < 1:
-        rshift.is_active = True
-        flag = True
-    message = _("un-archived")
-    if request.GET.get("is_active") == "False":
-        rshift.is_active = False
-        flag = True
-        message = _("archived")
-    rshift.save()
-    if flag:
-        messages.success(
-            request, _("Rotating shift assign is {message}").format(message=message)
+    try:
+        rshift = get_object_or_404(RotatingShiftAssign, id=obj_id)
+        employee_id = rshift.employee_id.id
+        employees_rshift_assigns = RotatingShiftAssign.objects.filter(
+            is_active=True, employee_id=rshift.employee_id
         )
-    else:
-        messages.error(request, "Already on record is active")
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        rshift.is_active = not rshift.is_active
+        if rshift.is_active and employees_rshift_assigns:
+            messages.error(request, "Already on record is active")
+        else:
+            rshift.save()
+            message = _("un-archived") if rshift.is_active else _("archived")
+            messages.success(request, _("Rotating shift assign is {}").format(message))
+    except Http404:
+        messages.error(request, _("Rotating shift assign not found."))
+
+    return rotating_shift_assign_redirect(request, obj_id, employee_id)
 
 
 @login_required
@@ -2248,27 +2275,7 @@ def rotating_shift_assign_delete(request, obj_id):
         messages.error(request, _("Rotating shift assign not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this rotating shift assign."))
-    hx_target = request.META.get("HTTP_HX_TARGET", None)
-    if hx_target and hx_target == "view-container":
-        previous_data = request.GET.urlencode()
-        return redirect(f"/rotating-shift-assign-view?{previous_data}")
-    elif hx_target and hx_target == "objectDetailsModalTarget":
-        instances_ids = request.GET.get("instances_ids")
-        instances_list = json.loads(instances_ids)
-        if obj_id in instances_list:
-            instances_list.remove(obj_id)
-        previous_instance, next_instance = closest_numbers(
-            json.loads(instances_ids), obj_id
-        )
-        return redirect(
-            f"/rshit-individual-view/{next_instance}/?instances_ids={instances_list}"
-        )
-    elif hx_target and hx_target == "shift_target" and employee_id:
-        return redirect(f"/employee/shift-tab/{employee_id}")
-    elif hx_target:
-        return HttpResponse("<script>window.location.reload()</script>")
-    else:
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return rotating_shift_assign_redirect(request, obj_id, employee_id)
 
 
 def get_models_in_app(app_name):
