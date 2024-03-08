@@ -261,6 +261,9 @@
             <input type="file" name="holidays_import" id="importHoliday" required />
           </div>
           <button
+            onclick="
+              validateFile($(this),'importHoliday');
+            "
             type="submit"
             class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
           >

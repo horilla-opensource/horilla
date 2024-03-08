@@ -48,9 +48,12 @@
 								>{% trans "Drag and drop files here" %}</span
 							>
 						</label>
-						<input type="file" name="assign_leave_type_import" id="" required />
+						<input type="file" name="assign_leave_type_import" id="assignedLeaveFile" required />
 					</div>
 					<button
+					onclick="
+					validateFile($(this),'assignedLeaveFile');
+					"
 						type="submit"
 						class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
 					>
