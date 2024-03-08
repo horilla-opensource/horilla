@@ -17,6 +17,7 @@
   </script>
   <title class="time-runner stop-runner">Horilla</title>
   <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicons/apple-touch-icon.png' %}">
+  <link rel="stylesheet" href="{% static 'build/css/driver.min.css' %}"/>
   <meta name="theme-color" content="orangered">
   <link rel="manifest" href="{% static 'build/manifest.json' %}">
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicons/favicon-32x32.png' %}">
@@ -33,6 +34,7 @@
   <script src="{% static '/jquery/jqueryui.js' %}"></script>
   <script src="{% static '/base/toggleColumn.js' %}"></script>
   <script src="{% static '/build/js/orgChart.js' %}"></script>
+  <script src="{% static 'build/js/driver.js' %}"></script>
 
 
   <!-- Popper.JS -->
@@ -412,6 +414,7 @@
   </div> {% endcomment %}
 {% comment %} </div> {% endcomment %}
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <span class="logged-in" data-user-id="{{request.user.id}}"></span>
     {% if messages %}
     <div class="oh-alert-container">
         {% for message in messages %}
@@ -436,10 +439,12 @@
     <div id="sidebar" >
      {% include 'sidebar.html' %}
     </div>
+    
 
     <div id="main">
       <!-- Navigation -->
       <!-- Confirm Modal -->
+      
       <div
       class="oh-modal"
       id="confirmModal"
@@ -560,13 +565,13 @@
             </div>
             {% if request.user|any_permission:'base' or perms.attendance.view_attendancevalidationcondition %}
               <div class="oh-navbar__action-icons" title="Settings">
-                <a href="/settings/general-settings" class="oh-navbar__action-icons-link">
+                <a href="/settings/general-settings" id="settingsMenu" class="oh-navbar__action-icons-link">
                   <ion-icon name="settings-outline"  class="oh-navbar__icon"></ion-icon>
                 </a>
               </div>
             {% endif %}
             {% include 'notification/notification.html' %}
-            <div class="oh-dropdown" x-data="{open: false}" @click="open = !open">
+            <div class="oh-dropdown" id="multiLanguage" x-data="{open: false}" @click="open = !open">
               <div class="oh-navbar__action-icons">
                   <a href="#" class="oh-navbar__action-icons-link"  title="Languages">
                       <ion-icon name="globe-outline" class="oh-navbar__icon"></ion-icon>
@@ -598,7 +603,7 @@
               </div>
             </div>
             {% if perms.base.view_company %}       
-              <div class="oh-dropdown" x-data="{open: false}" @click="open = !open" title="Companies">
+              <div id="multCompany" class="oh-dropdown" x-data="{open: false}" @click="open = !open" title="Companies">
                 <div class="oh-navbar__action-icons">
                     <a href="#" class="oh-navbar__action-icons-link">
                       <ion-icon name="business"></ion-icon>
@@ -633,7 +638,7 @@
                 </div>
               </div> 
             {% endif %}    
-            <div class="oh-dropdown" x-data="{open: false}">
+            <div class="oh-dropdown" x-data="{open: false}" id="mainNavProfile">
               <div class="oh-navbar__user-info" @click="open = !open" @click.outside="open = false">
                 <div class="oh-navbar__user-photo">
                   <img src="{{request.user.employee_get.get_avatar}}" class="oh-navbar__user-image" loading="lazy" />
@@ -790,6 +795,7 @@
   <script>
     setTimeout(()=>{$("[name='search']").focus()},100)
   </script>
+
 </body>
 
 </html>

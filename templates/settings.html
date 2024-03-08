@@ -57,7 +57,7 @@
 										<div class="col-sm-12 col-md-12 col-lg-12">
 											<div class="oh-input-group">
 												<a
-													id="currency"
+													id="generalSettings"
 													href="{% url 'general-settings' %}"
 													class="oh-inner-sidebar__link oh-dropdown__link"
 													>{% trans "General Settings" %}
@@ -413,6 +413,10 @@
             localStorage.setItem("lastActiveTab", path);
         }
     });
+</script>
+<script src="{% static 'build/js/settingsDriver.js' %}"></script>
+<script>
+	runDriver()
 </script>
 
 {% endblock content %}

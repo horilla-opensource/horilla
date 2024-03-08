@@ -1351,3 +1351,23 @@ class EmailLog(models.Model):
     company_id = models.ForeignKey(
         Company, on_delete=models.CASCADE, null=True, editable=False
     )
+
+
+class DriverViewed(models.Model):
+    """
+    Model to store driver viewed status
+    """
+
+    choices = [
+        ("dashboard", "dashboard"),
+        ("pipeline", "pipeline"),
+        ("settings", "settings"),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    viewed = models.CharField(max_length=10, choices=choices)
+
+    def user_viewed(self):
+        """
+        This method is used to access all the viewd driver
+        """
+        return self.user.driverviewed_set.values_list("viewed", flat=True)

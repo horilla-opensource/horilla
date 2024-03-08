@@ -3,6 +3,7 @@ forms.py
 
 This module is used to register forms for base module
 """
+
 import calendar
 import os
 from typing import Any
@@ -28,6 +29,7 @@ from base.models import (
     BaserequestFile,
     Company,
     Department,
+    DriverViewed,
     DynamicEmailConfiguration,
     DynamicPagination,
     JobPosition,
@@ -171,7 +173,7 @@ class ModelForm(forms.ModelForm):
             widget = field.widget
             if isinstance(widget, (forms.DateInput)):
                 field.initial = date.today()
-                
+
             if isinstance(
                 widget,
                 (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
@@ -184,7 +186,7 @@ class ModelForm(forms.ModelForm):
                 )
             elif isinstance(widget, (forms.Select,)):
                 field.empty_label = None
-                if not isinstance(field,forms.ModelMultipleChoiceField):
+                if not isinstance(field, forms.ModelMultipleChoiceField):
                     label = ""
                     if field.label is not None:
                         label = _(field.label)
@@ -210,15 +212,18 @@ class ModelForm(forms.ModelForm):
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
 
-            try:            
-                self.fields["employee_id"].initial = request.user.employee_get 
+            try:
+                self.fields["employee_id"].initial = request.user.employee_get
             except:
                 pass
 
-            try:            
-                self.fields["company_id"].initial = request.user.employee_get.get_company
+            try:
+                self.fields["company_id"].initial = (
+                    request.user.employee_get.get_company
+                )
             except:
                 pass
+
 
 class Form(forms.Form):
     """
@@ -377,9 +382,9 @@ class AssignPermission(Form):
         """
         Save method to assign permission to employee
         """
-        user_ids = Employee.objects.filter(id__in=self.data.getlist("employee")).values_list(
-            "employee_user_id", flat=True
-        )
+        user_ids = Employee.objects.filter(
+            id__in=self.data.getlist("employee")
+        ).values_list("employee_user_id", flat=True)
         permissions = self.cleaned_data["permissions"]
         permissions = Permission.objects.filter(codename__in=permissions)
         users = User.objects.filter(id__in=user_ids)
@@ -529,7 +534,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
         exclude = ("next_change_date", "current_work_type", "next_work_type")
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
-            "is_active":HiddenInput()
+            "is_active": HiddenInput(),
         }
         labels = {
             "is_active": _trans("Is Active"),
@@ -1309,7 +1314,6 @@ class ShiftAllocationForm(ModelForm):
         return super().save(commit)
 
 
-
 class WorkTypeRequestForm(ModelForm):
     """
     WorkTypeRequest model's form
@@ -1855,3 +1859,13 @@ class AnnouncementExpireForm(ModelForm):
 
         model = AnnouncementExpire
         fields = ("days",)
+
+
+class DriverForm(forms.ModelForm):
+    """
+    DriverForm
+    """
+
+    class Meta:
+        model = DriverViewed
+        fields = "__all__"

@@ -662,7 +662,9 @@
               <span class="oh-card-dashboard__title">{% trans "Announcements" %}</span>
               {% if perms.base.add_announcement %}
                 <span>
-                    <button style="display: inline-block;padding: 0px;
+                    <button
+                        id="addAnnouncement"
+                        style="display: inline-block;padding: 0px;
                         border-radius: 6px;
                         display: flex;
                         align-items: center;
@@ -730,7 +732,7 @@
 
 
 
-        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3 mt-2">
+        <div id="quickActions" class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3 mt-2">
           <div class="oh-card-dashboard__title mt-4 mb-3">{% trans "Quick Actions" %}</div> <hr>  
 
           <div class="oh-card-dashboard__body">
@@ -1259,3 +1261,10 @@
       });
   });
 </script>
+<script src="{% static 'build/js/dashboardDriver.js' %}"></script>
+
+{% if "dashboard" not in request.user.driverviewed_set.first.user_viewed %}
+<script>
+  runDriver()
+</script>
+{% endif %}

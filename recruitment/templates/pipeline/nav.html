@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 <style>
   .note-modal-backdrop{
     z-index: 998 !important;
@@ -84,6 +85,7 @@ x-data="{searchShow: false}"
 		></ion-icon>
 		<input
 		type="text"
+    id="pipelineSearchInput"
 		placeholder="{% trans 'Search' %}" 
 		name='candidate_name'
     value="{{request.GET.candidate_name}}"
@@ -94,7 +96,7 @@ x-data="{searchShow: false}"
   	</div>
 
 
-	<ul class="oh-view-types ml-2" style="margin-bottom: 0;">
+	<ul id="viewTypes" class="oh-view-types ml-2" style="margin-bottom: 0;">
     <input type="hidden" name="view" value="list">
 		<li class="oh-view-type candidate-view-type" >
 		<div onclick="$(this).closest('ul').find('[name=view]').val('list');$(this).closest('form').submit()" class="oh-btn oh-btn--view {% if request.GET.view != 'card' %} oh-btn--view-active {% endif %}"
@@ -110,7 +112,7 @@ x-data="{searchShow: false}"
 
     <div class="oh-main__titlebar-button-container">
 
-        <div class="oh-dropdown" x-data="{open: false}">
+        <div id="pipelineFilterDrop" class="oh-dropdown" x-data="{open: false}">
           <button type="button" class="oh-btn ml-2" @click="open = !open">
             <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
           </button>
@@ -121,7 +123,7 @@ x-data="{searchShow: false}"
 	<div class="oh-main__titlebar-button-container">
 
 		{% if perms.recruitment.add_recruitment %}
-		<button class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#addRecruitmentModal" hx-target="#addRecruitmentModalBody" hx-get="{% url "recruitment-create" %}">
+		<button id="createNewRecruitment" class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#addRecruitmentModal" hx-target="#addRecruitmentModalBody" hx-get="{% url "recruitment-create" %}">
       <ion-icon class="me-1" name="add-outline"></ion-icon>
       {% trans 'Recruitment' %}
     </button>
@@ -202,7 +204,7 @@ $(document).ready(function(){
 	
 </script>
 {% include "filter_tags.html" %}
-<div class="d-flex flex-row-reverse oh-wrapper">
+<div class="d-flex flex-row-reverse oh-wrapper" id="quickFilters">
   <span  onclick="$('[name=closed]').val('true'); $('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;margin-right: 10px;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:orangered"></span>
     {% trans "Closed" %}
@@ -212,3 +214,15 @@ $(document).ready(function(){
     {% trans "Open" %}
   </span>
 </div>
+<script src="{% static 'build/js/pipelineDriver.js' %}"></script>
+<script>
+  initialAvtiveTab = $(".oh-tabs__content--active").length
+  if (!initialAvtiveTab) {
+    $(".oh-tabs__tab:first").click()
+  }
+</script>
+{% if "pipeline" not in request.user.driverviewed_set.first.user_viewed %}
+<script>
+  runDriver()
+</script>
+{% endif %}
