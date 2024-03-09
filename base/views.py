@@ -5287,3 +5287,14 @@ def action_type_delete(request, act_id):
     Actiontype.objects.filter(id=act_id).delete()
     messages.success(request, _("Action has been deleted successfully!"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def driver_viewed_status(request):
+    """
+    This method is used to update driver viewed status
+    """
+    form = DriverForm(request.GET)
+    if form.is_valid():
+        form.save()
+    return HttpResponse("")
