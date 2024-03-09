@@ -13,6 +13,6 @@ def paginator_qry(qryset, page_number):
     """
     This method is used to generate common paginator limit.
     """
-    paginator = Paginator(qryset,  get_pagination())
+    paginator = Paginator(qryset, get_pagination())
     qryset = paginator.get_page(page_number)
     return qryset

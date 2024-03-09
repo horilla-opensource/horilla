@@ -3,6 +3,7 @@ offerletter.py
 
 This module is related offerletter feature in Horilla
 """
+
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
@@ -47,7 +48,9 @@ def view_letter(request, obj_id):
             messages.success(request, "Template updated")
             return HttpResponse("<script>window.location.reload()</script>")
 
-    return render(request, "offerletter/htmx/form.html", {"form": form,"duplicate":False})
+    return render(
+        request, "offerletter/htmx/form.html", {"form": form, "duplicate": False}
+    )
 
 
 @login_required

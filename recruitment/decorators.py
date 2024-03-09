@@ -3,6 +3,7 @@ decorators.py
 
 Custom decorators for permission and manager checks in the application.
 """
+
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -95,7 +96,7 @@ def manager_can_enter(function, perm):
         script = f'<script>window.location.href = "{previous_url}"</script>'
         key = "HTTP_HX_REQUEST"
         if key in request.META.keys():
-            return render(request,"decorator_404.html")
+            return render(request, "decorator_404.html")
         return HttpResponse(script)
 
     return _function
@@ -140,7 +141,7 @@ def recruitment_manager_can_enter(function, perm):
         script = f'<script>window.location.href = "{previous_url}"</script>'
         key = "HTTP_HX_REQUEST"
         if key in request.META.keys():
-            return render(request,"decorator_404.html")
+            return render(request, "decorator_404.html")
         return HttpResponse(script)
 
     return _function

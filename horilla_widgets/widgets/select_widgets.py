@@ -3,11 +3,14 @@ select_widgets.py
 
 This module is used to write horilla form select widgets
 """
+
 import datetime
 from django import forms
 
 from base import thread_local_middleware
+
 ALL_INSTANCES = {}
+
 
 class HorillaMultiSelectWidget(forms.Widget):
     """
@@ -55,5 +58,4 @@ class HorillaMultiSelectWidget(forms.Widget):
         request = getattr(thread_local_middleware._thread_locals, "request", None)
         ALL_INSTANCES[str(request.user.id)] = self
 
-        
         return context

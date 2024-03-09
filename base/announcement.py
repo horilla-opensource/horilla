@@ -12,22 +12,20 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.models import User
 
 
-
 @login_required
 def announcement_view(request):
-
     """
     This method is used to render all announcemnts.
     """
 
-    announcement_list = Announcement.objects.all().order_by('-created_on')
+    announcement_list = Announcement.objects.all().order_by("-created_on")
 
     # Set the number of items per page
     items_per_page = 10
-    
+
     paginator = Paginator(announcement_list, items_per_page)
-    
-    page = request.GET.get('page')
+
+    page = request.GET.get("page")
     try:
         announcements = paginator.page(page)
     except PageNotAnInteger:
@@ -36,14 +34,14 @@ def announcement_view(request):
     except EmptyPage:
         # If the page is out of range (e.g., 9999), deliver the last page of results.
         announcements = paginator.page(paginator.num_pages)
-    
-    return render(request, "announcement/announcement.html", {'announcements': announcements})
 
+    return render(
+        request, "announcement/announcement.html", {"announcements": announcements}
+    )
 
 
 @login_required
 def create_announcement(request):
-        
     """
     This method renders form and template to update Announcement
     """
@@ -52,7 +50,7 @@ def create_announcement(request):
     if request.method == "POST":
         form = AnnouncementForm(request.POST, request.FILES)
         if form.is_valid():
-            anou,attachment_ids = form.save(commit=False)
+            anou, attachment_ids = form.save(commit=False)
             anou.save()
             anou.attachments.set(attachment_ids)
             employees = form.cleaned_data["employees"]
@@ -62,10 +60,18 @@ def create_announcement(request):
             anou.job_position.set(job_positions)
             messages.success(request, _("Announcement created successfully."))
 
-            emp_dep = User.objects.filter(employee_get__employee_work_info__department_id__in = departments)
-            emp_jobs = User.objects.filter(employee_get__employee_work_info__job_position_id__in = job_positions)
-            employees = employees | Employee.objects.filter(employee_work_info__department_id__in = departments)
-            employees = employees | Employee.objects.filter(employee_work_info__job_position_id__in = job_positions)
+            emp_dep = User.objects.filter(
+                employee_get__employee_work_info__department_id__in=departments
+            )
+            emp_jobs = User.objects.filter(
+                employee_get__employee_work_info__job_position_id__in=job_positions
+            )
+            employees = employees | Employee.objects.filter(
+                employee_work_info__department_id__in=departments
+            )
+            employees = employees | Employee.objects.filter(
+                employee_work_info__job_position_id__in=job_positions
+            )
             anou.employees.add(*employees)
 
             notify.send(
@@ -103,11 +109,10 @@ def create_announcement(request):
 
 @login_required
 def delete_announcement(request, anoun_id):
-
     """
     This method is used to delete announcemnts.
     """
-    
+
     announcement = Announcement.objects.filter(id=anoun_id)
     announcement.delete()
     messages.success(request, _("Announcement deleted successfully."))
@@ -116,18 +121,17 @@ def delete_announcement(request, anoun_id):
 
 @login_required
 def update_announcement(request, anoun_id):
-
     """
     This method renders form and template to update Announcement
     """
 
     announcement = Announcement.objects.get(id=anoun_id)
-    form = AnnouncementForm(instance = announcement)
+    form = AnnouncementForm(instance=announcement)
 
     if request.method == "POST":
         form = AnnouncementForm(request.POST, request.FILES, instance=announcement)
         if form.is_valid():
-            anou,attachment_ids = form.save(commit=False)
+            anou, attachment_ids = form.save(commit=False)
             announcement = anou.save()
             anou.attachments.set(attachment_ids)
             employees = form.cleaned_data["employees"]
@@ -137,10 +141,18 @@ def update_announcement(request, anoun_id):
             anou.job_position.set(job_positions)
             messages.success(request, _("Announcement updated successfully."))
 
-            emp_dep = User.objects.filter(employee_get__employee_work_info__department_id__in = departments)
-            emp_jobs = User.objects.filter(employee_get__employee_work_info__job_position_id__in = job_positions)
-            employees = employees | Employee.objects.filter(employee_work_info__department_id__in = departments)
-            employees = employees | Employee.objects.filter(employee_work_info__job_position_id__in = job_positions)
+            emp_dep = User.objects.filter(
+                employee_get__employee_work_info__department_id__in=departments
+            )
+            emp_jobs = User.objects.filter(
+                employee_get__employee_work_info__job_position_id__in=job_positions
+            )
+            employees = employees | Employee.objects.filter(
+                employee_work_info__department_id__in=departments
+            )
+            employees = employees | Employee.objects.filter(
+                employee_work_info__job_position_id__in=job_positions
+            )
             anou.employees.add(*employees)
 
             notify.send(
@@ -186,7 +198,7 @@ def create_announcement_comment(request, anoun_id):
     form = AnnouncementcommentForm(
         initial={"employee_id": emp.id, "request_id": anoun_id}
     )
-    comments = AnnouncementComment.objects.filter(announcement_id = anoun_id)
+    comments = AnnouncementComment.objects.filter(announcement_id=anoun_id)
     commentators = []
     if comments:
         for i in comments:
@@ -230,9 +242,7 @@ def comment_view(request, anoun_id):
     comments = AnnouncementComment.objects.filter(announcement_id=anoun_id).order_by(
         "-created_at"
     )
-    comments = filter_own_records(
-        request, comments , "base.view_announcementcomment"
-    )
+    comments = filter_own_records(request, comments, "base.view_announcementcomment")
     no_comments = False
     if not comments.exists():
         no_comments = True
@@ -246,7 +256,6 @@ def comment_view(request, anoun_id):
 
 @login_required
 def announcement_single_view(request, anoun_id):
-
     """
     This method is used to render single announcemnts.
     """
@@ -258,14 +267,17 @@ def announcement_single_view(request, anoun_id):
         announcement_instance = get_object_or_404(Announcement, id=i.id)
 
         # Check if the user has viewed the announcement
-        announcement_view, created = AnnouncementView.objects.get_or_create(user=request.user, announcement=announcement_instance)
-        
+        announcement_view, created = AnnouncementView.objects.get_or_create(
+            user=request.user, announcement=announcement_instance
+        )
+
         # Update the viewed status
         announcement_view.viewed = True
         announcement_view.save()
-    
-    return render(request, "announcement/announcement_one.html", {'announcements': announcement})
 
+    return render(
+        request, "announcement/announcement_one.html", {"announcements": announcement}
+    )
 
 
 @login_required
@@ -275,5 +287,7 @@ def viewed_by(request):
     This method is used to view the employees
     """
     announcement_id = request.GET.get("announcement_id")
-    viewed_by = AnnouncementView.objects.filter(announcement_id__id = announcement_id,viewed=True)
-    return render(request,"announcement/viewed_by.html",{"viewed_by":viewed_by})
+    viewed_by = AnnouncementView.objects.filter(
+        announcement_id__id=announcement_id, viewed=True
+    )
+    return render(request, "announcement/viewed_by.html", {"viewed_by": viewed_by})

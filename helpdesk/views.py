@@ -728,9 +728,9 @@ def ticket_filter(request):
     )
     if request.GET.get("sortby"):
         all_tickets = sortby(request, all_tickets, "sortby")
-        my_tickets = sortby(request,my_tickets,"sortby")
+        my_tickets = sortby(request, my_tickets, "sortby")
         allocated_tickets = tickets_items1 | tickets_items2 | tickets_items3
-        allocated_tickets = sortby(request,allocated_tickets,"sortby")
+        allocated_tickets = sortby(request, allocated_tickets, "sortby")
 
     field = request.GET.get("field")
     if field != "" and field is not None:

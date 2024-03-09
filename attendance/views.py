@@ -11,7 +11,6 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
-
 import contextlib
 import json
 from datetime import date, datetime, timedelta

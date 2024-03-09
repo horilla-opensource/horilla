@@ -67,9 +67,9 @@ urlpatterns = [
         name="objective-detailed-view-comment",
     ),
     path(
-        'kr-table-view/<int:emp_objective_id>',
+        "kr-table-view/<int:emp_objective_id>",
         views.kr_table_view,
-        name="kr-table-view"
+        name="kr-table-view",
     ),
     path(
         "key-result-view",
@@ -244,7 +244,11 @@ urlpatterns = [
         views.edit_anonymous_feedback,
         name="edit-anonymous-feedback",
     ),
-    path("archive-anonymous-feedback/<int:id>/",views.archive_anonymous_feedback,name="archive-anonymous-feedback"),
+    path(
+        "archive-anonymous-feedback/<int:id>/",
+        views.archive_anonymous_feedback,
+        name="archive-anonymous-feedback",
+    ),
     path(
         "delete-anonymous-feedback/<int:id>/",
         views.delete_anonymous_feedback,
@@ -255,45 +259,56 @@ urlpatterns = [
         views.view_single_anonymous_feedback,
         name="single-anonymous-feedback-view",
     ),
-
     path(
-        'view-employee-objective/<int:emp_obj_id>/',views.view_employee_objective,name='view-employee-objective'
+        "view-employee-objective/<int:emp_obj_id>/",
+        views.view_employee_objective,
+        name="view-employee-objective",
     ),
     path(
-        'update-employee-objective/<int:emp_obj_id>/',views.update_employee_objective,name='update-employee-objective'
+        "update-employee-objective/<int:emp_obj_id>/",
+        views.update_employee_objective,
+        name="update-employee-objective",
     ),
     path(
-        'archive-employee-objective/<int:emp_obj_id>/',views.archive_employee_objective,name='archive-employee-objective'
+        "archive-employee-objective/<int:emp_obj_id>/",
+        views.archive_employee_objective,
+        name="archive-employee-objective",
     ),
     path(
-        'delete-employee-objective/<int:emp_obj_id>/',views.delete_employee_objective,name='delete-employee-objective'
+        "delete-employee-objective/<int:emp_obj_id>/",
+        views.delete_employee_objective,
+        name="delete-employee-objective",
     ),
     path(
-        'change-employee-objective-status/<int:emp_obj>',views.change_employee_objective_status,name='change-employee-objective-status'
+        "change-employee-objective-status/<int:emp_obj>",
+        views.change_employee_objective_status,
+        name="change-employee-objective-status",
+    ),
+    path("add-assignees/<int:obj_id>", views.add_assignees, name="add-assignees"),
+    path(
+        "employee-key-result-creation/<int:emp_obj_id>",
+        views.employee_keyresult_creation,
+        name="employee-key-result-creation",
     ),
     path(
-        'add-assignees/<int:obj_id>',views.add_assignees,name='add-assignees'
+        "employee-key-result-update/<int:kr_id>",
+        views.employee_keyresult_update,
+        name="employee-key-result-update",
     ),
     path(
-        'employee-key-result-creation/<int:emp_obj_id>',views.employee_keyresult_creation,name='employee-key-result-creation'
+        "delete-employee-keyresult/<int:kr_id>",
+        views.delete_employee_keyresult,
+        name="delete-employee-keyresult",
     ),
     path(
-        'employee-key-result-update/<int:kr_id>',views.employee_keyresult_update,name='employee-key-result-update'
+        "employee-keyresult-update-status/<int:kr_id>",
+        views.employee_keyresult_update_status,
+        name="employee-keyresult-update-status",
     ),
+    path("key-result-creation", views.key_result_create, name="key-result-creation"),
     path(
-        'delete-employee-keyresult/<int:kr_id>',views.delete_employee_keyresult,name='delete-employee-keyresult'
-    ),
-    path(
-        'employee-keyresult-update-status/<int:kr_id>',views.employee_keyresult_update_status,name='employee-keyresult-update-status'
-    ),
-     path(
-        'key-result-creation',
-        views.key_result_create,
-        name='key-result-creation'
-    ),
-    path(
-        'key-result-current-value-update',
+        "key-result-current-value-update",
         views.key_result_current_value_update,
-        name='key-result-current-value-update'
+        name="key-result-current-value-update",
     ),
 ]

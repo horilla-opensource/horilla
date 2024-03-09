@@ -170,9 +170,9 @@ def disciplinary_actions(request):
     dis_actions = filtersubordinates(
         request, DisciplinaryAction.objects.all(), "base.add_disciplinaryaction"
     ).distinct()
-    dis_actions = dis_actions | DisciplinaryAction.objects.filter(
-        employee_id=employee
-    ).distinct()
+    dis_actions = (
+        dis_actions | DisciplinaryAction.objects.filter(employee_id=employee).distinct()
+    )
 
     form = DisciplinaryActionFilter(request.GET, queryset=dis_actions)
     page_number = request.GET.get("page")
@@ -362,6 +362,7 @@ def action_type_name(request):
     """
     action_type = request.POST["action_type"]
     return JsonResponse({"action_type": action_type})
+
 
 @login_required
 def disciplinary_filter_view(request):

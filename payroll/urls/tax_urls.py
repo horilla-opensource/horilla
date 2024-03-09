@@ -3,6 +3,7 @@ tax_urls.py
 
 This module is used to bind url patterns with django views that related to federal taxes
 """
+
 from django.urls import path
 from payroll.views import tax_views
 

@@ -3,6 +3,7 @@ forms.py
 
 This module is used to register the forms for pms models
 """
+
 from typing import Any
 import uuid
 from django import forms
@@ -85,11 +86,10 @@ class ObjectiveForm(BaseForm):
     # )
     start_date = forms.DateField(
         required=False,
-        widget=forms.DateInput(attrs={"class": "oh-input w-100", "type": "date"})
+        widget=forms.DateInput(attrs={"class": "oh-input w-100", "type": "date"}),
     )
     add_assignees = forms.BooleanField(required=False)
     # archive = forms.BooleanField()
-
 
     class Meta:
         """
@@ -97,15 +97,15 @@ class ObjectiveForm(BaseForm):
         """
 
         model = Objective
-        fields=[
-            'title',
-            'managers',
-            'description',
-            'duration',
-            'add_assignees',
-            'assignees',
+        fields = [
+            "title",
+            "managers",
+            "description",
+            "duration",
+            "add_assignees",
+            "assignees",
             # 'period',
-            'start_date',
+            "start_date",
             # 'end_date',
             # 'archive',
         ]
@@ -168,21 +168,18 @@ class ObjectiveForm(BaseForm):
         add_assignees = cleaned_data.get("add_assignees")
         assignees = cleaned_data.get("assignees")
         start_date = cleaned_data.get("start_date")
-        managers = cleaned_data.get('managers')
+        managers = cleaned_data.get("managers")
         if not managers or managers == None:
-            raise forms.ValidationError(
-                    "Managers is a required field"
-                )
-        if add_assignees :
-            if not assignees.exists() or start_date is None :
-                raise forms.ValidationError(
-                    "Assign employees and start date"
-                )
+            raise forms.ValidationError("Managers is a required field")
+        if add_assignees:
+            if not assignees.exists() or start_date is None:
+                raise forms.ValidationError("Assign employees and start date")
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
         # Check that start date is before end date
         validate_date(start_date, end_date)
         return cleaned_data
+
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -191,23 +188,27 @@ class ObjectiveForm(BaseForm):
         table_html = render_to_string("common_form.html", context)
         return table_html
 
+
 class AddAssigneesForm(BaseForm):
     """
     A form to create or update instances of the EmployeeObjective, model.
     """
+
     start_date = forms.DateField(
         required=False,
-        widget=forms.DateInput(attrs={"class": "oh-input w-100", "type": "date"})
+        widget=forms.DateInput(attrs={"class": "oh-input w-100", "type": "date"}),
     )
+
     class Meta:
         """
         A nested class that specifies the model,fields and style of fields for the form.
         """
 
         model = Objective
-        fields=[
-            'assignees',
+        fields = [
+            "assignees",
         ]
+
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -215,11 +216,13 @@ class AddAssigneesForm(BaseForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
-    
+
+
 class EmployeeObjectiveForm(BaseForm):
     """
     A form to create or update instances of the EmployeeObjective, model.
     """
+
     key_result_id = forms.ModelChoiceField(
         queryset=KeyResult.objects.all(),
         label=_("Key result"),
@@ -230,19 +233,20 @@ class EmployeeObjectiveForm(BaseForm):
             }
         ),
     )
+
     class Meta:
         """
         A nested class that specifies the model,fields and style of fields for the form.
         """
 
         model = EmployeeObjective
-        fields=[
-            'objective_id',
-            'key_result_id',
-            'start_date',
-            'end_date',
-            'status',
-            'archive',
+        fields = [
+            "objective_id",
+            "key_result_id",
+            "start_date",
+            "end_date",
+            "status",
+            "archive",
         ]
         widgets = {
             "objective_id": forms.HiddenInput(),
@@ -253,13 +257,16 @@ class EmployeeObjectiveForm(BaseForm):
                 attrs={"class": "oh-input w-100", "type": "date"}
             ),
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
-        self.fields["key_result_id"].choices = list(self.fields["key_result_id"].choices)
-        self.fields["key_result_id"].choices.append(("create_new_key_result", "Create new Key result"))
-    
+        self.fields["key_result_id"].choices = list(
+            self.fields["key_result_id"].choices
+        )
+        self.fields["key_result_id"].choices.append(
+            ("create_new_key_result", "Create new Key result")
+        )
 
     def as_p(self):
         """
@@ -269,10 +276,12 @@ class EmployeeObjectiveForm(BaseForm):
         table_html = render_to_string("common_form.html", context)
         return table_html
 
+
 class EmployeekeyResultForm(BaseForm):
     """
     A form to create or update instances of the EmployeeKeyResult, model.
     """
+
     key_result_id = forms.ModelChoiceField(
         queryset=KeyResult.objects.all(),
         label=_("Key result"),
@@ -283,23 +292,25 @@ class EmployeekeyResultForm(BaseForm):
             }
         ),
     )
+
     class Meta:
         """
         A nested class that specifies the model,fields and style of fields for the form.
         """
+
         model = EmployeeKeyResult
-        fields=[
-            'employee_objective_id',
-            'key_result_id',
-            'start_value',
-            'current_value',
-            'target_value',
-            'start_date',
-            'end_date',
+        fields = [
+            "employee_objective_id",
+            "key_result_id",
+            "start_value",
+            "current_value",
+            "target_value",
+            "start_date",
+            "end_date",
             # 'archive',
         ]
         widgets = {
-            'employee_objective_id':forms.HiddenInput(),
+            "employee_objective_id": forms.HiddenInput(),
             "start_date": forms.DateInput(
                 attrs={"class": "oh-input w-100", "type": "date"}
             ),
@@ -315,22 +326,31 @@ class EmployeekeyResultForm(BaseForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.initial.get("employee_objective_id"):
-            if type(self.initial.get("employee_objective_id")) == int :
-                self.verbose_name = EmployeeObjective.objects.get(id=(self.initial.get("employee_objective_id"))).employee_id
+            if type(self.initial.get("employee_objective_id")) == int:
+                self.verbose_name = EmployeeObjective.objects.get(
+                    id=(self.initial.get("employee_objective_id"))
+                ).employee_id
             else:
-                self.verbose_name = self.initial.get("employee_objective_id").employee_id
+                self.verbose_name = self.initial.get(
+                    "employee_objective_id"
+                ).employee_id
 
         reload_queryset(self.fields)
-        self.fields["key_result_id"].choices = list(self.fields["key_result_id"].choices)
-        self.fields["key_result_id"].choices.append(("create_new_key_result", "Create new Key result"))
-    
-    
+        self.fields["key_result_id"].choices = list(
+            self.fields["key_result_id"].choices
+        )
+        self.fields["key_result_id"].choices.append(
+            ("create_new_key_result", "Create new Key result")
+        )
+
 
 from base.forms import ModelForm as MF
+
+
 class KRForm(MF):
     """
     A form used for creating KeyResult object
@@ -347,6 +367,7 @@ class KRForm(MF):
             "history",
             "objects",
         ]
+
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -737,18 +758,18 @@ class QuestionForm(ModelForm):
             and self.instance.question_type == "4"
             and self.instance.question_options.first()
         ):
-            self.fields[
-                "option_a"
-            ].initial = self.instance.question_options.first().option_a
-            self.fields[
-                "option_b"
-            ].initial = self.instance.question_options.first().option_b
-            self.fields[
-                "option_c"
-            ].initial = self.instance.question_options.first().option_c
-            self.fields[
-                "option_d"
-            ].initial = self.instance.question_options.first().option_d
+            self.fields["option_a"].initial = (
+                self.instance.question_options.first().option_a
+            )
+            self.fields["option_b"].initial = (
+                self.instance.question_options.first().option_b
+            )
+            self.fields["option_c"].initial = (
+                self.instance.question_options.first().option_c
+            )
+            self.fields["option_d"].initial = (
+                self.instance.question_options.first().option_d
+            )
 
 
 class ObjectiveCommentForm(ModelForm):

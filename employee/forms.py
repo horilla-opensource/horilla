@@ -61,7 +61,7 @@ class ModelForm(forms.ModelForm):
             widget = field.widget
             if isinstance(widget, (forms.DateInput)):
                 field.initial = date.today()
-                
+
             if isinstance(
                 widget,
                 (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
@@ -98,14 +98,16 @@ class ModelForm(forms.ModelForm):
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
 
-            try:            
-                if self._meta.model.__name__  not in ['DisciplinaryAction']:
-                    self.fields["employee_id"].initial = request.user.employee_get 
+            try:
+                if self._meta.model.__name__ not in ["DisciplinaryAction"]:
+                    self.fields["employee_id"].initial = request.user.employee_get
             except:
                 pass
 
-            try:            
-                self.fields["company_id"].initial = request.user.employee_get.get_company
+            try:
+                self.fields["company_id"].initial = (
+                    request.user.employee_get.get_company
+                )
             except:
                 pass
 
@@ -157,9 +159,9 @@ class EmployeeForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['email'].widget.attrs['autocomplete'] = 'email'
-        self.fields['phone'].widget.attrs['autocomplete'] = 'phone'
-        self.fields['address'].widget.attrs['autocomplete'] = 'address'
+        self.fields["email"].widget.attrs["autocomplete"] = "email"
+        self.fields["phone"].widget.attrs["autocomplete"] = "phone"
+        self.fields["address"].widget.attrs["autocomplete"] = "address"
         if instance := kwargs.get("instance"):
             # ----
             # django forms not showing value inside the date, time html element.
@@ -185,7 +187,9 @@ class EmployeeForm(ModelForm):
         try:
             for sublist in data:
                 for item in sublist:
-                    if isinstance(item, str) and item.lower().startswith(prefix.lower()):
+                    if isinstance(item, str) and item.lower().startswith(
+                        prefix.lower()
+                    ):
                         # Find the index of the item in the sublist
                         index = sublist.index(item)
                         # Check if there is a next item in the sublist
@@ -207,13 +211,13 @@ class EmployeeForm(ModelForm):
 
                     if total_zero_leads:
                         item = item[total_zero_leads:]
-                    if isinstance(item,list):
+                    if isinstance(item, list):
                         item = item[-1]
                     if not incremented and isinstance(eval(str(item)), int):
                         item = int(item) + 1
                         incremented = True
-                    if isinstance(item,int):
-                        item = "{:0{}d}".format(item,total_letters)
+                    if isinstance(item, int):
+                        item = "{:0{}d}".format(item, total_letters)
                     prefix.insert(0, str(item))
                 prefix = "".join(prefix)
         except Exception as e:
@@ -261,7 +265,7 @@ class EmployeeWorkInformationForm(ModelForm):
 
     def __init__(self, *args, disable=False, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['email'].widget.attrs['autocomplete'] = 'email'
+        self.fields["email"].widget.attrs["autocomplete"] = "email"
         for field in self.fields:
             self.fields[field].widget.attrs["placeholder"] = self.fields[field].label
             if disable:
@@ -356,7 +360,7 @@ class EmployeeBankDetailsForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['address'].widget.attrs['autocomplete'] = 'address'
+        self.fields["address"].widget.attrs["autocomplete"] = "address"
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "oh-input w-100"
 
@@ -496,7 +500,6 @@ class EmployeeNoteForm(ModelForm):
         self.fields["note_files"] = MultipleFileField(label="files")
         self.fields["note_files"].required = False
 
-
     def save(self, commit: bool = ...) -> Any:
         attachement = []
         multiple_attachment_ids = []
@@ -619,7 +622,7 @@ class DisciplinaryActionForm(ModelForm):
         self.fields["action"].choices = action_choices
         if self.instance.pk is None:
             self.fields["action"].choices += [("create", _("Create new action type "))]
-    
+
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -634,7 +637,6 @@ class ActiontypeForm(ModelForm):
         model = Actiontype
         fields = "__all__"
 
-        
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["action_type"].widget.attrs.update(

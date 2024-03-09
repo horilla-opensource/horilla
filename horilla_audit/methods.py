@@ -3,8 +3,10 @@ methods.py
 
 This module is used to write methods related to the history
 """
+
 from django.db import models
 from django.contrib.auth.models import User
+
 
 class Bot:
     def __init__(self) -> None:
@@ -53,20 +55,19 @@ def get_field_label(model_class, field_name):
     return None
 
 
-def filter_history(histories,track_fields):
+def filter_history(histories, track_fields):
     filtered_histories = []
     for history in histories:
         changes = history.get("changes", [])
         filtered_changes = [
-            change
-            for change in changes
-            if change.get("field_name", "") in track_fields
+            change for change in changes if change.get("field_name", "") in track_fields
         ]
         if filtered_changes:
             history["changes"] = filtered_changes
             filtered_histories.append(history)
     histories = filtered_histories
     return histories
+
 
 def get_diff(instance):
     """
@@ -89,7 +90,12 @@ def get_diff(instance):
             new = change.new
             field = instance._meta.get_field(change.field)
             is_fk = False
-            if isinstance(field, models.fields.CharField) and field.choices and old and new:
+            if (
+                isinstance(field, models.fields.CharField)
+                and field.choices
+                and old
+                and new
+            ):
                 choices = dict(field.choices)
                 old = choices[old]
                 new = choices[new]
@@ -132,9 +138,10 @@ def get_diff(instance):
             }
         )
     from .models import HistoryTrackingFields
+
     history_tracking_instance = HistoryTrackingFields.objects.first()
     if history_tracking_instance:
         track_fields = history_tracking_instance.tracking_fields["tracking_fields"]
         if track_fields:
-           delta_changes = filter_history(delta_changes,track_fields)
+            delta_changes = filter_history(delta_changes, track_fields)
     return delta_changes

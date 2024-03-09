@@ -43,8 +43,10 @@ class DocumentRequest(models.Model):
     employee_id = models.ManyToManyField(Employee)
     format = models.CharField(choices=FORMATS, max_length=10)
     max_size = models.IntegerField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True,max_length=255)
-    objects = HorillaCompanyManager(related_company_field="employee_id__employee_work_info__company_id")
+    description = models.TextField(blank=True, null=True, max_length=255)
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -73,10 +75,10 @@ class Document(models.Model):
     )
     document = models.FileField(upload_to="employee/documents", null=True)
     status = models.CharField(choices=STATUS, max_length=10, default="requested")
-    reject_reason = models.TextField(blank=True, null=True,max_length=255)
+    reject_reason = models.TextField(blank=True, null=True, max_length=255)
     is_active = models.BooleanField(default=True)
-    expiry_date = models.DateField(null=True,blank=True)
-    notify_before = models.IntegerField(default=1,null=True)
+    expiry_date = models.DateField(null=True, blank=True)
+    notify_before = models.IntegerField(default=1, null=True)
     is_digital_asset = models.BooleanField(default=False)
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
@@ -117,17 +119,15 @@ class Document(models.Model):
                 asset_category_id=asset_category[0],
                 asset_status="Not-Available",
                 asset_purchase_cost=0,
-                expiry_date = self.expiry_date,
-                notify_before = self.notify_before,
-                asset_tracking_id = f"DIG_ID0{self.pk}",
+                expiry_date=self.expiry_date,
+                notify_before=self.notify_before,
+                asset_tracking_id=f"DIG_ID0{self.pk}",
             )
-
 
     def upload_documents_count(self):
         total_requests = Document.objects.filter(
             document_request_id=self.document_request_id
         )
-        without_documents = total_requests.filter(document ='').count()
+        without_documents = total_requests.filter(document="").count()
         count = total_requests.count() - without_documents
         return count
- 

@@ -3,6 +3,7 @@ component_urls.py
 
 This module is used to bind the urls related to payslip and its pay-heads methods
 """
+
 from django.urls import path
 from payroll.views import component_views
 from payroll.models.models import Allowance, Deduction
@@ -77,7 +78,11 @@ urlpatterns = [
     ),
     path("send-slip", component_views.send_slip, name="send-slip"),
     path("add-bonus/", component_views.add_bonus, name="add-bonus"),
-    path("add-payslip-deduction/", component_views.add_deduction, name="add-payslip-deduction"),
+    path(
+        "add-payslip-deduction/",
+        component_views.add_deduction,
+        name="add-payslip-deduction",
+    ),
     path("view-loan/", component_views.view_loans, name="view-loan"),
     path("create-loan/", component_views.create_loan, name="create-loan"),
     path(
@@ -132,5 +137,9 @@ urlpatterns = [
         component_views.delete_attachments,
         name="delete-attachments",
     ),
-    path("get-contribution-report",component_views.get_contribution_report,name="get-contribution-report")
+    path(
+        "get-contribution-report",
+        component_views.get_contribution_report,
+        name="get-contribution-report",
+    ),
 ]

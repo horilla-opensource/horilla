@@ -129,6 +129,7 @@ class OffboardingEmployee(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+
     def __str__(self) -> str:
         return self.employee_id.get_full_name()
 
@@ -147,10 +148,7 @@ class ResignationLetter(models.Model):
         Employee, on_delete=models.CASCADE, verbose_name="Employee"
     )
     title = models.CharField(max_length=30, null=True)
-    description = models.TextField(
-        null=True,
-        max_length=255
-    )
+    description = models.TextField(null=True, max_length=255)
     planned_to_leave_on = models.DateField()
     status = models.CharField(max_length=10, choices=statuses, default="requested")
     offboarding_employee_id = models.ForeignKey(
@@ -253,7 +251,7 @@ class EmployeeTask(models.Model):
     )
     status = models.CharField(max_length=10, choices=statuses, default="todo")
     task_id = models.ForeignKey(OffboardingTask, on_delete=models.CASCADE)
-    description = models.TextField(null=True, editable=False,max_length=255)
+    description = models.TextField(null=True, editable=False, max_length=255)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -302,7 +300,7 @@ class OffboardingNote(models.Model):
     attachments = models.ManyToManyField(
         OffboardingStageMultipleFile, blank=True, editable=False
     )
-    description = models.TextField(null=True, blank=True,max_length=255)
+    description = models.TextField(null=True, blank=True, max_length=255)
     note_by = models.ForeignKey(
         Employee, on_delete=models.SET_NULL, null=True, editable=False
     )

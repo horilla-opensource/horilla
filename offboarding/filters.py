@@ -122,7 +122,6 @@ class PipelineEmployeeFilter(FilterSet):
             "employee_id__employee_work_info__work_type_id",
         ]
 
-
     def search_method(self, queryset, _, value):
         """
         This method is used to add custom search condition

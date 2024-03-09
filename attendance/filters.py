@@ -4,6 +4,7 @@ filters.py
 This page is used to register filter for attendance models
 
 """
+
 import uuid
 import django_filters
 from django.forms import DateTimeInput

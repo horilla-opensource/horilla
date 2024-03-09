@@ -3,6 +3,7 @@ offboarding/decorators.py
 
 This module is used to write custom authentication decorators for offboarding module
 """
+
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -34,7 +35,7 @@ def any_manager_can_enter(function, perm, offboarding_employee_can_enter=False):
             script = f'<script>window.location.href = "{previous_url}"</script>'
             key = "HTTP_HX_REQUEST"
             if key in request.META.keys():
-                return render(request,"decorator_404.html")
+                return render(request, "decorator_404.html")
             return HttpResponse(script)
 
     return _function
@@ -55,7 +56,7 @@ def offboarding_manager_can_enter(function, perm):
             script = f'<script>window.location.href = "{previous_url}"</script>'
             key = "HTTP_HX_REQUEST"
             if key in request.META.keys():
-                return render(request,"decorator_404.html")
+                return render(request, "decorator_404.html")
             return HttpResponse(script)
 
     return _function
@@ -76,7 +77,7 @@ def offboarding_or_stage_manager_can_enter(function, perm):
             previous_url = request.META.get("HTTP_REFERER", "/")
             key = "HTTP_HX_REQUEST"
             if key in request.META.keys():
-                return render(request,"decorator_404.html")
+                return render(request, "decorator_404.html")
             script = f'<script>window.location.href = "{previous_url}"</script>'
             return HttpResponse(script)
 
@@ -94,7 +95,7 @@ def check_feature_enabled(function, feature_name):
         previous_url = request.META.get("HTTP_REFERER", "/")
         key = "HTTP_HX_REQUEST"
         if key in request.META.keys():
-            return render(request,"decorator_404.html")
+            return render(request, "decorator_404.html")
         script = f'<script>window.location.href = "{previous_url}"</script>'
         return HttpResponse(script)
 

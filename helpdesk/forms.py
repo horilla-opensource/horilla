@@ -20,12 +20,21 @@ class YourForm(forms.Form):
         # Custom validation logic goes here
         pass
 """
+
 from typing import Any
 from base.forms import ModelForm
 from base.models import Department, JobPosition
 from employee.forms import MultipleFileField
 from employee.models import Employee
-from helpdesk.models import Attachment, DepartmentManager, TicketType, FAQ,Ticket, FAQCategory, Comment
+from helpdesk.models import (
+    Attachment,
+    DepartmentManager,
+    TicketType,
+    FAQ,
+    Ticket,
+    FAQCategory,
+    Comment,
+)
 from django import forms
 from django.template.loader import render_to_string
 
@@ -40,13 +49,15 @@ class TicketTypeForm(ModelForm):
 class FAQForm(ModelForm):
     class Meta:
         model = FAQ
-        fields = "__all__"  
-        widgets={
-            'category':forms.HiddenInput(),            
-            'tags': forms.SelectMultiple(attrs={
-                'class': 'oh-select oh-select-2 select2-hidden-accessible',
-                'onchange': 'updateTag()',
-            }),
+        fields = "__all__"
+        widgets = {
+            "category": forms.HiddenInput(),
+            "tags": forms.SelectMultiple(
+                attrs={
+                    "class": "oh-select oh-select-2 select2-hidden-accessible",
+                    "onchange": "updateTag()",
+                }
+            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -57,17 +68,32 @@ class FAQForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["tags"].choices = list(self.fields["tags"].choices)
         self.fields["tags"].choices.append(("create_new_tag", "Create new tag"))
-        
+
 
 class TicketForm(ModelForm):
     deadline = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
 
     class Meta:
         model = Ticket
-        fields = ["id","title", "employee_id","description", "ticket_type", "priority", "assigning_type" ,"raised_on", "deadline", "status", "tags",]
+        fields = [
+            "id",
+            "title",
+            "employee_id",
+            "description",
+            "ticket_type",
+            "priority",
+            "assigning_type",
+            "raised_on",
+            "deadline",
+            "status",
+            "tags",
+        ]
         widgets = {
-        'raised_on': forms.Select(attrs={"class": "oh-select oh-select-2", "required": "true"}),
+            "raised_on": forms.Select(
+                attrs={"class": "oh-select oh-select-2", "required": "true"}
+            ),
         }
+
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -75,6 +101,7 @@ class TicketForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["attachment"] = MultipleFileField(
@@ -83,17 +110,24 @@ class TicketForm(ModelForm):
         self.fields["tags"].choices = list(self.fields["tags"].choices)
         self.fields["tags"].choices.append(("create_new_tag", "Create new tag"))
         self.fields["ticket_type"].choices = list(self.fields["ticket_type"].choices)
-        self.fields["ticket_type"].choices.append(("create_new_ticket_type", "Create new ticket type"))
+        self.fields["ticket_type"].choices.append(
+            ("create_new_ticket_type", "Create new ticket type")
+        )
+
 
 class TicketTagForm(ModelForm):
     class Meta:
         model = Ticket
-        fields = ["tags",]
+        fields = [
+            "tags",
+        ]
         widgets = {
-            'tags': forms.SelectMultiple(attrs={
-                'class': 'oh-select oh-select-2 select2-hidden-accessible',
-                'onchange': 'updateTag()',
-            }),
+            "tags": forms.SelectMultiple(
+                attrs={
+                    "class": "oh-select oh-select-2 select2-hidden-accessible",
+                    "onchange": "updateTag()",
+                }
+            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -104,20 +138,18 @@ class TicketTagForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["tags"].choices = list(self.fields["tags"].choices)
         self.fields["tags"].choices.append(("create_new_tag", "Create new tag"))
-        
+
 
 class TicketRaisedOnForm(ModelForm):
     class Meta:
         model = Ticket
-        fields = [
-            "assigning_type",
-            'raised_on'
-        ]
+        fields = ["assigning_type", "raised_on"]
         widgets = {
-            "raised_on":forms.Select(
+            "raised_on": forms.Select(
                 attrs={"class": "oh-select oh-select-2", "required": "true"},
-            ),       
+            ),
         }
+
 
 class TicketAssigneesForm(ModelForm):
     class Meta:
@@ -130,29 +162,34 @@ class TicketAssigneesForm(ModelForm):
 class FAQCategoryForm(ModelForm):
     class Meta:
         model = FAQCategory
-        fields = "__all__"  
+        fields = "__all__"
+
 
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = [
-            'comment',
+            "comment",
         ]
-        widgets = {
-            "employee_id":forms.HiddenInput()
-            
-        }
+        widgets = {"employee_id": forms.HiddenInput()}
+
 
 class AttachmentForm(forms.ModelForm):
-    file = forms.FileField(widget = forms.TextInput(attrs={
-            "name": "file",
-            "type": "File",
-            "class": "form-control",
-            "multiple": "True",
-        }), label = "")
+    file = forms.FileField(
+        widget=forms.TextInput(
+            attrs={
+                "name": "file",
+                "type": "File",
+                "class": "form-control",
+                "multiple": "True",
+            }
+        ),
+        label="",
+    )
+
     class Meta:
         model = Attachment
-        fields = ['file','comment','ticket']
+        fields = ["file", "comment", "ticket"]
 
 
 class DepartmentManagerCreateForm(ModelForm):

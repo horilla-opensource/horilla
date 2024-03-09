@@ -146,8 +146,12 @@ urlpatterns = [
         views.add_to_rejected_candidates,
         name="add-to-rejected-candidates",
     ),
-    path("candidate-select-filter-onboarding", views.candidate_select_filter,name="candidate-select-filter-onboarding"),
-    path("candidate-select/", views.candidate_select, name="candidate-select-onboarding"),
-
-    
+    path(
+        "candidate-select-filter-onboarding",
+        views.candidate_select_filter,
+        name="candidate-select-filter-onboarding",
+    ),
+    path(
+        "candidate-select/", views.candidate_select, name="candidate-select-onboarding"
+    ),
 ]

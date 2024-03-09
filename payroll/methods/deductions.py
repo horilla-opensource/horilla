@@ -3,6 +3,7 @@ deductions.py
 
 This module is used to compute the deductions of employees
 """
+
 from payroll.models.models import Deduction
 
 

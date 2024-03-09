@@ -3,6 +3,7 @@ admin.py
 
 This page is used to register base models with admins site.
 """
+
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
@@ -59,8 +60,3 @@ admin.site.register(DynamicPagination)
 admin.site.register(Announcement)
 admin.site.register(Attachment)
 admin.site.register(EmailLog)
-
-
-
-
-

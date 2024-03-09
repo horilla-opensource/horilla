@@ -30,7 +30,9 @@ class OnboardingStageFilter(FilterSet):
     OnboardingStageFilter
     """
 
-    search_onboarding = filters.CharFilter(field_name="stage_title", method="pipeline_search")
+    search_onboarding = filters.CharFilter(
+        field_name="stage_title", method="pipeline_search"
+    )
 
     class Meta:
         model = OnboardingStage
@@ -40,9 +42,8 @@ class OnboardingStageFilter(FilterSet):
         """
         This method is used to search recruitment
         """
-        queryset = (
-             queryset.filter(stage_title__icontains=value)
-            | queryset.filter(candidate__candidate_id__name__icontains=value)
+        queryset = queryset.filter(stage_title__icontains=value) | queryset.filter(
+            candidate__candidate_id__name__icontains=value
         )
         return queryset.distinct()
 

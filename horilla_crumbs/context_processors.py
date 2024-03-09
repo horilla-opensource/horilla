@@ -190,7 +190,16 @@ urlpatterns.append(
     path("onboarding/", lambda request: redirect("view-onboarding-dashboard"))
 )
 urlpatterns.append(path("employee/", lambda request: redirect("employee-view")))
-urlpatterns.append(path("attendance/", lambda request: redirect("attendance-dashboard")))
-urlpatterns.append(path("leave/", lambda request: redirect(reverse("leave-employee-dashboard") + "?dashboard=true")))
+urlpatterns.append(
+    path("attendance/", lambda request: redirect("attendance-dashboard"))
+)
+urlpatterns.append(
+    path(
+        "leave/",
+        lambda request: redirect(
+            reverse("leave-employee-dashboard") + "?dashboard=true"
+        ),
+    )
+)
 urlpatterns.append(path("payroll/", lambda request: redirect("view-payroll-dashboard")))
 urlpatterns.append(path("pms/", lambda request: redirect("dashboard-view")))

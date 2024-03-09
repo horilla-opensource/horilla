@@ -111,8 +111,14 @@ class AssetForm(ModelForm):
         instance = self.instance
         prev_instance = Asset.objects.filter(id=instance.pk).first()
         if instance.pk:
-            if self.cleaned_data.get("asset_status",None) and self.cleaned_data.get("asset_status",None) != prev_instance.asset_status:
-                if asset_in_use := instance.assetassignment_set.filter(return_status__isnull=True):
+            if (
+                self.cleaned_data.get("asset_status", None)
+                and self.cleaned_data.get("asset_status", None)
+                != prev_instance.asset_status
+            ):
+                if asset_in_use := instance.assetassignment_set.filter(
+                    return_status__isnull=True
+                ):
                     raise ValidationError(
                         {"asset_status": 'Asset in use you can"t change the status'}
                     )

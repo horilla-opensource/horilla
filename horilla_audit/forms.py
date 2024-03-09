@@ -63,8 +63,10 @@ class HistoryTrackingFieldsForm(forms.Form):
         "additional_info",
         "experience",
     ]
+
     def __init__(self, *args, **kwargs):
         from employee.models import EmployeeWorkInformation as model
+
         super(HistoryTrackingFieldsForm, self).__init__(*args, **kwargs)
         field_choices = [
             (field.name, field.verbose_name)

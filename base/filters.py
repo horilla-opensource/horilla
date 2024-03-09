@@ -2,6 +2,7 @@
 This module contains custom Django filters for filtering querysets related to Shift Requests,
 Work Type Requests, Rotating Shift and Rotating Work Type Assign.
 """
+
 import uuid
 import django_filters
 from horilla.filters import FilterSet, filter_by_name
@@ -242,7 +243,6 @@ class WorkTypeRequestReGroup:
         ("employee_id__employee_work_info__department_id", "Department"),
         ("employee_id__employee_work_info__job_position_id", "Job Position"),
         ("employee_id__employee_work_info__reporting_manager_id", "Reporting Manager"),
-
     ]
 
 

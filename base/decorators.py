@@ -1,6 +1,7 @@
 """
 decorator functions for base
 """
+
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 

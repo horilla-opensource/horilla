@@ -169,7 +169,7 @@ def asset_update(request, asset_id):
     instance = Asset.objects.get(id=asset_id)
     asset_form = AssetForm(instance=instance)
     previous_data = request.GET.urlencode()
-    
+
     if request.method == "POST":
         asset_form = AssetForm(request.POST, instance=instance)
         if asset_form.is_valid():

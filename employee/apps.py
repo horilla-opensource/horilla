@@ -1,6 +1,7 @@
 """
 apps.py
 """
+
 from django.apps import AppConfig
 
 
@@ -15,5 +16,6 @@ class EmployeeConfig(AppConfig):
         default_auto_field (str): The default auto field to use for model field IDs.
         name (str): The name of the app.
     """
+
     default_auto_field = "django.db.models.BigAutoField"
     name = "employee"

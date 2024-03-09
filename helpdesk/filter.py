@@ -4,9 +4,10 @@ filters.py
 This page is used to register filter for employee models
 
 """
+
 from django import forms
-from django_filters import CharFilter,DateFilter
-from helpdesk.models import FAQ, FAQCategory,Ticket
+from django_filters import CharFilter, DateFilter
+from helpdesk.models import FAQ, FAQCategory, Ticket
 from horilla.filters import FilterSet
 
 
@@ -18,7 +19,7 @@ class FAQFilter(FilterSet):
         FilterSet (class): custom filter set class to apply styling
     """
 
-    search = CharFilter(field_name="question",lookup_expr="icontains")
+    search = CharFilter(field_name="question", lookup_expr="icontains")
 
     class Meta:
         """
@@ -26,8 +27,11 @@ class FAQFilter(FilterSet):
         """
 
         model = FAQ
-        fields = ["search","tags",]
- 
+        fields = [
+            "search",
+            "tags",
+        ]
+
 
 class FAQCategoryFilter(FilterSet):
     """
@@ -37,7 +41,7 @@ class FAQCategoryFilter(FilterSet):
         FilterSet (class): custom filter set class to apply styling
     """
 
-    search = CharFilter(field_name="title",lookup_expr="icontains")
+    search = CharFilter(field_name="title", lookup_expr="icontains")
 
     class Meta:
         """
@@ -45,7 +49,9 @@ class FAQCategoryFilter(FilterSet):
         """
 
         model = FAQCategory
-        fields = ["search",]       
+        fields = [
+            "search",
+        ]
 
 
 class TicketFilter(FilterSet):
@@ -56,7 +62,7 @@ class TicketFilter(FilterSet):
         FilterSet (class): custom filter set class to apply styling
     """
 
-    search = CharFilter(field_name="title",lookup_expr="icontains")
+    search = CharFilter(field_name="title", lookup_expr="icontains")
     from_date = DateFilter(
         field_name="deadline",
         lookup_expr="gte",
@@ -67,6 +73,7 @@ class TicketFilter(FilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+
     class Meta:
         """
         Meta class to add the additional info
@@ -76,14 +83,15 @@ class TicketFilter(FilterSet):
         fields = [
             "title",
             "tags",
-            'employee_id',
-            'ticket_type',
-            'priority',
-            'deadline',
-            'assigned_to',
-            'status',
-            'is_active'
+            "employee_id",
+            "ticket_type",
+            "priority",
+            "deadline",
+            "assigned_to",
+            "status",
+            "is_active",
         ]
+
 
 class TicketReGroup:
     """
@@ -96,7 +104,7 @@ class TicketReGroup:
         ("ticket_type", "Ticket Type"),
         ("status", "Status"),
         ("priority", "Priority"),
-        ('tags', "Tags"),
-        ('assigned_to','Assigner'),
+        ("tags", "Tags"),
+        ("assigned_to", "Assigner"),
         ("employee_id.employee_work_info.company_id", "Company"),
     ]

@@ -4,6 +4,7 @@ models.py
 This module is used to register models for recruitment app
 
 """
+
 from collections.abc import Iterable
 import json
 import contextlib
@@ -250,7 +251,7 @@ class Attendance(models.Model):
     is_validate_request_approved = models.BooleanField(
         default=False, verbose_name=_("Is validate request approved")
     )
-    request_description = models.TextField(null=True,max_length=255)
+    request_description = models.TextField(null=True, max_length=255)
     request_type = models.CharField(
         max_length=18, null=True, choices=status, default="update_request"
     )
@@ -265,6 +266,7 @@ class Attendance(models.Model):
             HorillaAuditInfo,
         ],
     )
+
     class Meta:
         """
         Meta class to add some additional options
@@ -592,7 +594,7 @@ class AttendancerequestComment(models.Model):
     request_id = models.ForeignKey(Attendance, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     files = models.ManyToManyField(AttendancerequestFile, blank=True)
-    comment = models.TextField(null=True, verbose_name=_("Comment"),max_length=255)
+    comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),
@@ -990,7 +992,6 @@ class GraceTime(models.Model):
         is_default = self.is_default
         exclude_default = not is_default
 
-
         if (
             GraceTime.objects.filter(allowed_time=allowed_time)
             .exclude(is_default=exclude_default)
@@ -1019,5 +1020,4 @@ class AttendanceGeneralSetting(models.Model):
     """
 
     time_runner = models.BooleanField(default=True)
-    company_id = models.ForeignKey(Company,on_delete=models.CASCADE,null=True)
-
+    company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)

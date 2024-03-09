@@ -1,6 +1,7 @@
 """
 URL configuration for asset-related views.
 """
+
 from django.urls import path
 from django import views
 from asset.forms import AssetCategoryForm, AssetForm

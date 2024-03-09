@@ -4,7 +4,6 @@ tax_models.py
 This module contains the models for the tax calculation of taxable income.
 """
 
-
 import math
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -20,7 +19,9 @@ class PayrollSettings(models.Model):
     Payroll settings model"""
 
     currency_symbol = models.CharField(null=True, default="$", max_length=5)
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
     objects = models.Manager()
 
     def __str__(self):
@@ -43,9 +44,13 @@ class TaxBracket(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_("Filing status"),
     )
-    min_income = models.FloatField(null=False, blank=False,verbose_name=_("Min. Income"))
-    max_income = models.FloatField(null=True, blank=True,verbose_name=_("Max. Income"))
-    tax_rate = models.FloatField(null=False, blank=False, default=0.0,verbose_name=_("Tax Rate"))
+    min_income = models.FloatField(
+        null=False, blank=False, verbose_name=_("Min. Income")
+    )
+    max_income = models.FloatField(null=True, blank=True, verbose_name=_("Max. Income"))
+    tax_rate = models.FloatField(
+        null=False, blank=False, default=0.0, verbose_name=_("Tax Rate")
+    )
     objects = models.Manager()
 
     def __str__(self):

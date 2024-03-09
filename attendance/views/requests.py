@@ -3,6 +3,7 @@ requests.py
 
 This module is used to register the endpoints to the attendance requests
 """
+
 import json
 import copy
 from urllib.parse import parse_qs
@@ -86,7 +87,7 @@ def request_attendance_view(request):
     attendances = attendances.filter(
         employee_id__is_active=True,
     )
-    attendances = AttendanceFilters(request.GET,attendances).qs
+    attendances = AttendanceFilters(request.GET, attendances).qs
     filter_obj = AttendanceFilters()
     check_attendance = Attendance.objects.all()
     if check_attendance.exists():
@@ -422,11 +423,10 @@ def cancel_attendance_request(request, attendance_id):
                 verb_de=f"Ihre Anwesenheitsanfrage für {attendance.attendance_date} wurde abgelehnt",
                 verb_es=f"Tu solicitud de asistencia para el {attendance.attendance_date} ha sido rechazada",
                 verb_fr=f"Votre demande de présence pour le {attendance.attendance_date} est rejetée",
-
                 icon="close-circle-outline",
             )
-    except (Attendance.DoesNotExist,OverflowError):
-        messages.error(request,_("Attendance request not found"))
+    except (Attendance.DoesNotExist, OverflowError):
+        messages.error(request, _("Attendance request not found"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 

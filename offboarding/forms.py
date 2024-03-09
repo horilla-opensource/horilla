@@ -78,7 +78,7 @@ class OffboardingEmployeeForm(ModelForm):
     class Meta:
         model = OffboardingEmployee
         fields = "__all__"
-        exclude= ["notice_period", "unit"]
+        exclude = ["notice_period", "unit"]
         widgets = {
             "notice_period_starts": forms.DateInput(attrs={"type": "date"}),
             "notice_period_ends": forms.DateInput(attrs={"type": "date"}),
@@ -102,13 +102,13 @@ class OffboardingEmployeeForm(ModelForm):
         self.fields["notice_period_starts"].widget.attrs.update(attrs)
         if self.instance.pk:
             if self.instance.notice_period_starts:
-                self.initial[
-                    "notice_period_starts"
-                ] = self.instance.notice_period_starts.strftime("%Y-%m-%d")
+                self.initial["notice_period_starts"] = (
+                    self.instance.notice_period_starts.strftime("%Y-%m-%d")
+                )
             if self.instance.notice_period_ends:
-                self.initial[
-                    "notice_period_ends"
-                ] = self.instance.notice_period_ends.strftime("%Y-%m-%d")
+                self.initial["notice_period_ends"] = (
+                    self.instance.notice_period_ends.strftime("%Y-%m-%d")
+                )
 
 
 class StageSelectForm(ModelForm):
