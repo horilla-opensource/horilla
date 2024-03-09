@@ -51,7 +51,6 @@ from base.forms import (
     AuditTagForm,
     CompanyForm,
     DepartmentForm,
-    DriverForm,
     DynamicMailConfForm,
     DynamicPaginationForm,
     EmployeeTagForm,
@@ -2602,6 +2601,24 @@ def work_type_request(request):
     form = include_employee_instance(request, form)
 
     f = WorkTypeRequestFilter()
+    context = {"f": f}
+    HTTP_REFERER = request.META.get("HTTP_REFERER", None)
+    context["close_hx_url"] = ""
+    context["close_hx_target"] = ""
+    if HTTP_REFERER and HTTP_REFERER.endswith("work-type-request-view/"):
+        context["close_hx_url"] = "/work-type-request-search"
+        context["close_hx_target"] = "#view-container"
+    elif HTTP_REFERER and HTTP_REFERER.endswith("employee-profile/"):
+        context["close_hx_url"] = "/employee/shift-tab/1?profile=true"
+        context["close_hx_target"] = "#shift_target"
+    elif HTTP_REFERER:
+        HTTP_REFERERS = [part for part in HTTP_REFERER.split("/") if part]
+        try:
+            employee_id = int(HTTP_REFERERS[-1])
+            context["close_hx_url"] = f"/employee/shift-tab/{employee_id}"
+            context["close_hx_target"] = "#shift_target"
+        except ValueError:
+            pass
     if request.method == "POST":
         form = WorkTypeRequestForm(request.POST)
         form = choosesubordinates(
@@ -2637,13 +2654,9 @@ def work_type_request(request):
             except Exception as error:
                 pass
             messages.success(request, _("Work type request added."))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
-
-    return render(
-        request, "work_type_request/request_form.html", {"form": form, "f": f}
-    )
+            form = WorkTypeRequestForm()
+    context["form"] = form
+    return render(request, "work_type_request/request_form.html", context=context)
 
 
 @login_required
@@ -5274,15 +5287,3 @@ def action_type_delete(request, act_id):
     Actiontype.objects.filter(id=act_id).delete()
     messages.success(request, _("Action has been deleted successfully!"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
-
-@login_required
-def driver_viewed_status(request):
-    """
-    This method is used to update driver viewed status
-    """
-    print("HEREEEEEEEEEEEEEEEEE")
-    form = DriverForm(request.GET)
-    if form.is_valid():
-        form.save()
-    return HttpResponse("")
