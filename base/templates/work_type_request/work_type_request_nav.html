@@ -259,9 +259,9 @@ x-data="{searchShow: false}"
         <button
           class='oh-btn oh-btn--secondary'
           data-toggle='oh-modal-toggle'
-          data-target='#workTypeRequestModal'
+          data-target='#objectCreateModal'
           hx-get="{% url 'work-type-request' %}"
-          hx-target='#formBody'
+          hx-target='#objectCreateModalTarget'
         >
           <ion-icon name='add-sharp'></ion-icon> {% trans "Create" %}
         </button>
@@ -272,27 +272,6 @@ x-data="{searchShow: false}"
 </form>
 </section>
 
-<div
-  class="oh-modal"
-  id="workTypeRequestModal"
-  role="dialog"
-  aria-labelledby="workTypeRequestModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h5 class="oh-modal__dialog-title" id="workTypeRequestModalLabel"
-        >{% trans "Work Type Request" %}</span
-      >
-      <button class="oh-modal__close" aria-label="Close" >
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-   <div class="oh-modal__dialog-body" id='formBody'>
-    </div>
-    </div>
-  </div>
-</div>
 <div
   class="oh-modal"
   id="workTypeRequestsExport"

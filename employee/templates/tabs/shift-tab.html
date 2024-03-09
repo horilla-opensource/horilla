@@ -42,8 +42,8 @@
           class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
           title="Add"
           hx-get="{% url 'work-type-request' %}?emp_id={{emp_id}}"
-          hx-target="#formBody"
-          data-target="#workTypeRequestModal"
+          hx-target="#objectCreateModalTarget"
+          data-target="#objectCreateModal"
           data-toggle="oh-modal-toggle"
         >
           <ion-icon
@@ -911,27 +911,6 @@
       class="oh-modal__dialog-body"
       id="rotatingShiftAssignUpdateModalBody"
     ></div>
-  </div>
-</div>
-
-<div
-  class="oh-modal"
-  id="workTypeRequestModal"
-  role="dialog"
-  aria-labelledby="workTypeRequestModal"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h5 class="oh-modal__dialog-title" id="workTypeRequestModalLabel">
-        {% trans "Work Type Request" %}
-      </h5>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-
-    <div class="oh-modal__dialog-body" id="formBody"></div>
   </div>
 </div>
 

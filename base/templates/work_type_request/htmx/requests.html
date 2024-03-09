@@ -148,10 +148,10 @@ style="cursor: pointer; display: none;"
               <a 
                   class="oh-btn oh-btn--light-bkg w-100" 
                   data-toggle="oh-modal-toggle"
-                  data-target="#workTypeRequestModal"
+                  data-target="#objectCreateModal"
                   hx-get="{% url 'work-type-request-duplicate' work_type_request.id %}?{{pg}}"
                   title="{% trans 'Duplicate' %}"
-                  hx-target="#formBody"
+                  hx-target="#objectCreateModalTarget"
                   style= "cursor: pointer;"
                 >
                   <ion-icon name="copy-outline"></ion-icon>
