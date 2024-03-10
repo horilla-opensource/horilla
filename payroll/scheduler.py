@@ -3,6 +3,7 @@ scheduler.py
 
 This module is used to register scheduled tasks
 """
+
 from datetime import date
 from apscheduler.schedulers.background import BackgroundScheduler
 from .models.models import Contract
@@ -17,7 +18,7 @@ def generate_work_entry():
 
 def expire_contract():
     """
-    Finds all active contracts whose end date is earlier than the current date 
+    Finds all active contracts whose end date is earlier than the current date
     and updates their status to "expired".
     """
     Contract.objects.filter(

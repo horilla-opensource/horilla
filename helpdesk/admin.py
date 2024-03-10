@@ -1,6 +1,14 @@
 from django.contrib import admin
 
-from helpdesk.models import Ticket, TicketType, Comment, FAQ, FAQCategory,Attachment, DepartmentManager
+from helpdesk.models import (
+    Ticket,
+    TicketType,
+    Comment,
+    FAQ,
+    FAQCategory,
+    Attachment,
+    DepartmentManager,
+)
 
 # Register your models here.
 admin.site.register(Ticket)

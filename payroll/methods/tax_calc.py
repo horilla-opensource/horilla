@@ -4,6 +4,7 @@ Module: payroll.tax_calc
 This module contains a function for calculating the taxable amount for an employee 
 based on their contract details and income information.
 """
+
 import datetime
 from payroll.methods.payslip_calc import (
     calculate_taxable_gross_pay,
@@ -32,7 +33,9 @@ def calculate_taxable_amount(**kwargs):
     start_date = kwargs["start_date"]
     end_date = kwargs["end_date"]
     basic_pay = kwargs["basic_pay"]
-    contract = Contract.objects.filter(employee_id=employee,contract_status='active').first()
+    contract = Contract.objects.filter(
+        employee_id=employee, contract_status="active"
+    ).first()
     filing = contract.filing_status
     federal_tax_for_period = 0
     if filing is not None:

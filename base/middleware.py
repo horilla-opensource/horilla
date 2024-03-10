@@ -1,6 +1,7 @@
 """
 middleware.py
 """
+
 from django.apps import apps
 from django.db.models import Q
 from base.horilla_company_manager import HorillaCompanyManager
@@ -21,7 +22,7 @@ class CompanyMiddleware:
         if getattr(request, "user", False) and not request.user.is_anonymous:
             company_id = None
             try:
-                    
+
                 company_id = getattr(
                     request.user.employee_get.employee_work_info, "company_id", None
                 )

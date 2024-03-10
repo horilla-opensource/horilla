@@ -7,6 +7,7 @@ register = template.Library()
 def yesno(value):
     return "Yes" if value else "No"
 
+
 @register.filter(name="on_off")
 def on_off(value):
     if value == "on":

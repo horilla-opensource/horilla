@@ -131,9 +131,7 @@ class ObjectiveFilter(CustomFilterSet):
     employee_objective__progress_percentage = django_filters.CharFilter(
         field_name="progress_percentage"
     )
-    managers = django_filters.CharFilter(
-        field_name="objective_id__managers"
-    )
+    managers = django_filters.CharFilter(field_name="objective_id__managers")
     search = django_filters.CharFilter(method="search_method")
     created_at_date_range = DateRangeFilter(field_name="created_at")
     created_at = DateFilter(

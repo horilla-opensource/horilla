@@ -14,6 +14,7 @@ def current_month_record(queryset):
         start_datetime__lt=next_month_start_date,
     ).order_by("start_datetime")
 
+
 @register.filter
 def get_item(list, i):
     try:

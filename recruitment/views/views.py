@@ -1561,7 +1561,9 @@ def skill_zone_archive(request, sz_id):
         is_active = skill_zone.is_active
         if is_active == True:
             skill_zone.is_active = False
-            skill_zone_candidates = SkillZoneCandidate.objects.filter(skill_zone_id = sz_id)
+            skill_zone_candidates = SkillZoneCandidate.objects.filter(
+                skill_zone_id=sz_id
+            )
             for i in skill_zone_candidates:
                 i.is_active = False
                 i.save()
@@ -1569,7 +1571,9 @@ def skill_zone_archive(request, sz_id):
 
         else:
             skill_zone.is_active = True
-            skill_zone_candidates = SkillZoneCandidate.objects.filter(skill_zone_id = sz_id)
+            skill_zone_candidates = SkillZoneCandidate.objects.filter(
+                skill_zone_id=sz_id
+            )
             for i in skill_zone_candidates:
                 i.is_active = True
                 i.save()
@@ -1597,9 +1601,9 @@ def skill_zone_filter(request):
     if request.GET.get("is_active") == "false":
         skill_zone_filtered = SkillZoneFilter(request.GET).qs.filter(is_active=False)
         candidates = SkillZoneCandFilter(request.GET).qs.filter(is_active=False)
-        print('============================')
+        print("============================")
         print(candidates)
-        print('============================')
+        print("============================")
 
     else:
         skill_zone_filtered = SkillZoneFilter(request.GET).qs.filter(is_active=True)

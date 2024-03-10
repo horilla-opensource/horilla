@@ -3,6 +3,7 @@ admin.py
 
 This page is used to register attendance models with admins site.
 """
+
 from django.contrib import admin
 from .models import (
     Attendance,
@@ -12,7 +13,7 @@ from .models import (
     AttendanceValidationCondition,
     GraceTime,
     PenaltyAccount,
-    AttendancerequestComment
+    AttendancerequestComment,
 )
 
 # Register your models here.

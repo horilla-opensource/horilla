@@ -4,6 +4,7 @@ Models for Asset Management System
 This module defines Django models to manage assets, their categories, assigning, and requests
 within an Asset Management System.
 """
+
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -20,7 +21,7 @@ class AssetCategory(models.Model):
     asset_category_name = models.CharField(max_length=255, unique=True)
     asset_category_description = models.TextField(max_length=255)
     objects = models.Manager()
-    company_id = models.ManyToManyField(Company,blank=True, verbose_name=_("Company"))
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     def __str__(self):
         return f"{self.asset_category_name}"
@@ -32,8 +33,8 @@ class AssetLot(models.Model):
     """
 
     lot_number = models.CharField(max_length=30, null=False, blank=False, unique=True)
-    lot_description = models.TextField(null=True, blank=True,max_length=255)
-    company_id = models.ManyToManyField(Company,blank=True, verbose_name=_("Company"))
+    lot_description = models.TextField(null=True, blank=True, max_length=255)
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
 
     def __str__(self):
@@ -51,8 +52,8 @@ class Asset(models.Model):
         ("Not-Available", _("Not-Available")),
     ]
     asset_name = models.CharField(max_length=255)
-    owner = models.ForeignKey(Employee,on_delete=models.PROTECT,null=True,blank=True)
-    asset_description = models.TextField(null=True, blank=True,max_length=255)
+    owner = models.ForeignKey(Employee, on_delete=models.PROTECT, null=True, blank=True)
+    asset_description = models.TextField(null=True, blank=True, max_length=255)
     asset_tracking_id = models.CharField(max_length=30, null=False, unique=True)
     asset_purchase_date = models.DateField()
     asset_purchase_cost = models.DecimalField(max_digits=10, decimal_places=2)
@@ -64,7 +65,7 @@ class Asset(models.Model):
         AssetLot, on_delete=models.PROTECT, null=True, blank=True
     )
     expiry_date = models.DateField(null=True, blank=True)
-    notify_before = models.IntegerField(default=1,null=True)
+    notify_before = models.IntegerField(default=1, null=True)
     objects = HorillaCompanyManager("asset_category_id__company_id")
 
     def __str__(self):
@@ -89,22 +90,33 @@ class Asset(models.Model):
 
 class AssetReport(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
-    asset_id = models.ForeignKey(Asset, related_name="asset_report",on_delete = models.CASCADE)
+    asset_id = models.ForeignKey(
+        Asset, related_name="asset_report", on_delete=models.CASCADE
+    )
 
     def __str__(self):
-        return f'{self.asset_id} - {self.title}' if self.title else f'report for {self.asset_id}'
+        return (
+            f"{self.asset_id} - {self.title}"
+            if self.title
+            else f"report for {self.asset_id}"
+        )
 
 
 class AssetDocuments(models.Model):
-    asset_report = models.ForeignKey('AssetReport', related_name='documents', on_delete=models.CASCADE)
-    file = models.FileField(upload_to="asset/asset_report/documents/", blank=True, null=True)
+    asset_report = models.ForeignKey(
+        "AssetReport", related_name="documents", on_delete=models.CASCADE
+    )
+    file = models.FileField(
+        upload_to="asset/asset_report/documents/", blank=True, null=True
+    )
 
     def __str__(self):
-        return f'document for {self.asset_report}'
-    
+        return f"document for {self.asset_report}"
+
 
 class ReturnImages(models.Model):
     image = models.FileField(upload_to="asset/return_images/", blank=True, null=True)
+
 
 class AssetAssignment(models.Model):
     """
@@ -117,7 +129,7 @@ class AssetAssignment(models.Model):
         ("Healthy", _("Healthy")),
     ]
     asset_id = models.ForeignKey(
-        Asset, on_delete=models.PROTECT,verbose_name=_("asset")
+        Asset, on_delete=models.PROTECT, verbose_name=_("asset")
     )
     assigned_to_employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, related_name="allocated_employeee"
@@ -127,14 +139,18 @@ class AssetAssignment(models.Model):
         Employee, on_delete=models.PROTECT, related_name="assigned_by"
     )
     return_date = models.DateField(null=True, blank=True)
-    return_condition = models.TextField(null=True, blank=True,max_length=255)
+    return_condition = models.TextField(null=True, blank=True, max_length=255)
     return_status = models.CharField(
         choices=STATUS, max_length=30, null=True, blank=True
     )
-    return_request = models.BooleanField(default = False)
+    return_request = models.BooleanField(default=False)
     objects = HorillaCompanyManager("asset_id__asset_lot_number_id__company_id")
-    return_images = models.ManyToManyField(ReturnImages,blank=True,related_name="return_images")
-    assign_images = models.ManyToManyField(ReturnImages,blank=True,related_name="assign_images")
+    return_images = models.ManyToManyField(
+        ReturnImages, blank=True, related_name="return_images"
+    )
+    assign_images = models.ManyToManyField(
+        ReturnImages, blank=True, related_name="assign_images"
+    )
 
     def __str__(self):
         return f"{self.assigned_to_employee_id} --- {self.asset_id} --- {self.return_status}"
@@ -159,8 +175,10 @@ class AssetRequest(models.Model):
     )
     asset_category_id = models.ForeignKey(AssetCategory, on_delete=models.PROTECT)
     asset_request_date = models.DateField(auto_now_add=True)
-    description = models.TextField(null=True, blank=True,max_length=255)
+    description = models.TextField(null=True, blank=True, max_length=255)
     asset_request_status = models.CharField(
         max_length=30, choices=STATUS, default="Requested", null=True, blank=True
     )
-    objects = HorillaCompanyManager("requested_employee_id__employee_work_info__company_id")
+    objects = HorillaCompanyManager(
+        "requested_employee_id__employee_work_info__company_id"
+    )

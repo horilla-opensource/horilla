@@ -4,6 +4,7 @@ various models in the Leave Management System app.
 The filters are designed to provide flexible search and filtering 
 capabilities for LeaveType, LeaveRequest,AvailableLeave, Holiday, and CompanyLeave models.
 """
+
 from datetime import datetime, timedelta
 import uuid
 from django import forms

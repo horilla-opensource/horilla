@@ -136,11 +136,10 @@ def is_any_stage_manager(employee):
         | Offboarding.objects.filter(managers=employee).exists()
     )
 
+
 @register.filter("completed_tasks")
 def completed_tasks(tasks):
     """
     This method is used to to check any stage manager
     """
-    return (
-        tasks.filter(status='completed').count()
-    )
+    return tasks.filter(status="completed").count()

@@ -3,6 +3,7 @@ methods.py
 
 Payroll related module to write custom calculation methods
 """
+
 import calendar
 from datetime import timedelta, datetime, date
 from django.db.models import F, Q
@@ -530,8 +531,8 @@ def monthly_computation(employee, wage, start_date, end_date):
         "basic_pay": basic_pay,
         "loss_of_pay": loss_of_pay,
         "month_data": month_data,
-        "unpaid_days":unpaid_leaves,
-        "paid_days":paid_days,
+        "unpaid_days": unpaid_leaves,
+        "paid_days": paid_days,
     }
 
 

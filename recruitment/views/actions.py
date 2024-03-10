@@ -4,7 +4,6 @@ actions.py
 This module is used to register methods to delete/archive/un-archive instances
 """
 
-
 import json
 from django.contrib import messages
 from django.db.models import ProtectedError
@@ -126,12 +125,11 @@ def note_delete_individual(request, note_id):
     """
     This method is used to delete the stage note
     """
-    note = StageNote.objects.get(id = note_id)
+    note = StageNote.objects.get(id=note_id)
     cand_id = note.candidate_id
     note.delete()
     messages.success(request, _("Note deleted."))
     return HttpResponse("<script>window.location.reload()</script>")
-
 
 
 @login_required

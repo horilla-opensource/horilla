@@ -119,7 +119,6 @@ def pipeline(request):
     for offboarding in offboardings:
         stage_forms[str(offboarding.id)] = StageSelectForm(offboarding=offboarding)
 
-
     filter_dict = parse_qs(request.GET.urlencode())
 
     return render(
@@ -132,7 +131,7 @@ def pipeline(request):
             "stage_filter": PipelineStageFilter(),
             "stage_forms": stage_forms,
             "filter_dict": filter_dict,
-            "today" : datetime.today().date(),
+            "today": datetime.today().date(),
         },
     )
 
@@ -244,7 +243,9 @@ def add_employee(request):
     if instance_id and isinstance(instance_id, int):
         instance = OffboardingEmployee.objects.get(id=instance_id)
     stage = OffboardingStage.objects.get(id=stage_id)
-    form = OffboardingEmployeeForm(initial={"stage_id": stage,"notice_period_ends":end_date}, instance=instance)
+    form = OffboardingEmployeeForm(
+        initial={"stage_id": stage, "notice_period_ends": end_date}, instance=instance
+    )
     form.instance.stage_id = stage
     if request.method == "POST":
         form = OffboardingEmployeeForm(request.POST, instance=instance)
@@ -353,7 +354,7 @@ def change_stage(request):
             "offboarding": groups[0],
             "stage_forms": stage_forms,
             "response_message": _("stage changed successfully."),
-            "today":datetime.today().date()
+            "today": datetime.today().date(),
         },
     )
 
@@ -572,7 +573,7 @@ def task_assign(request):
             "offboarding": groups[0],
             "stage_forms": stage_forms,
             "response_message": _("Task Assigned"),
-            "today":datetime.today().date(),
+            "today": datetime.today().date(),
         },
     )
 
@@ -857,9 +858,9 @@ def get_notice_period(request):
 
 def get_notice_period_end_date(request):
     start_date = request.GET.get("start_date")
-    start_date = datetime.strptime(start_date,"%Y-%m-%d").date()
+    start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
     notice_period = intial_notice_period(request)["get_initial_notice_period"]
-    end_date = start_date + timedelta(days = notice_period * 30)
+    end_date = start_date + timedelta(days=notice_period * 30)
     response = {
         "end_date": end_date,
     }

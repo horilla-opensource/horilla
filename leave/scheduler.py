@@ -38,6 +38,7 @@ def leave_reset():
 
 def recurring_holiday():
     from leave.models import Holiday
+
     recurring_holidays = Holiday.objects.filter(recurring=True)
     # Looping through all recurring holiday
     for recurring_holiday in recurring_holidays:

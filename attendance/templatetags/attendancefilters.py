@@ -4,6 +4,7 @@ attendancefilters.py
 This module is used to write custom template filters.
 
 """
+
 import base64
 from itertools import groupby
 from django import template
@@ -214,6 +215,6 @@ def is_text_area(widget):
 @register.filter
 def base64_encode(value):
     try:
-        return base64.b64encode(value).decode('utf-8')
+        return base64.b64encode(value).decode("utf-8")
     except:
         pass

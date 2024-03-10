@@ -1,6 +1,7 @@
 """
 filters.py
 """
+
 import uuid
 import django_filters
 from django import forms
@@ -10,7 +11,10 @@ from django.core.paginator import Page, Paginator
 from django_filters.filterset import FILTER_FOR_DBFIELD_DEFAULTS
 
 
-FILTER_FOR_DBFIELD_DEFAULTS[models.ForeignKey]["filter_class"]=django_filters.ModelMultipleChoiceFilter
+FILTER_FOR_DBFIELD_DEFAULTS[models.ForeignKey][
+    "filter_class"
+] = django_filters.ModelMultipleChoiceFilter
+
 
 def filter_by_name(queryset, name, value):
     """
@@ -19,17 +23,23 @@ def filter_by_name(queryset, name, value):
     # Split the search value into first name and last name
     parts = value.split()
     first_name = parts[0]
-    last_name = ' '.join(parts[1:]) if len(parts) > 1 else ''
+    last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
 
     # Filter the queryset by first name and last name
     if first_name and last_name:
-        queryset = queryset.filter(employee_id__employee_first_name__icontains=first_name, employee_id__employee_last_name__icontains=last_name)
+        queryset = queryset.filter(
+            employee_id__employee_first_name__icontains=first_name,
+            employee_id__employee_last_name__icontains=last_name,
+        )
     elif first_name:
-        queryset = queryset.filter(employee_id__employee_first_name__icontains=first_name)
+        queryset = queryset.filter(
+            employee_id__employee_first_name__icontains=first_name
+        )
     elif last_name:
         queryset = queryset.filter(employee_id__employee_last_name__icontains=last_name)
 
     return queryset
+
 
 class FilterSet(django_filters.FilterSet):
     def __init__(self, *args, **kwargs):

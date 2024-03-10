@@ -139,7 +139,7 @@ def dashboard(request):
     if total_hired_candidates != 0:
         acceptance_ratio = f"{((onboarding_count / total_hired_candidates) * 100):.1f}"
 
-    skill_zone = SkillZone.objects.filter(is_active = True)
+    skill_zone = SkillZone.objects.filter(is_active=True)
     return render(
         request,
         "dashboard/dashboard.html",

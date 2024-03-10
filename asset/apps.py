@@ -2,6 +2,7 @@
 Module: apps.py
 Description: Configuration for the 'asset' app.
 """
+
 from django.apps import AppConfig
 
 

@@ -303,7 +303,9 @@ class Candidate(models.Model):
         related_name="candidate_referral",
         verbose_name=_("Referral"),
     )
-    address = models.TextField(null=True, blank=True, verbose_name=_("Address"),max_length=255)
+    address = models.TextField(
+        null=True, blank=True, verbose_name=_("Address"), max_length=255
+    )
     country = models.CharField(
         max_length=30, null=True, blank=True, verbose_name=_("Country")
     )
@@ -318,7 +320,11 @@ class Candidate(models.Model):
         max_length=30, null=True, blank=True, verbose_name=_("Zip Code")
     )
     gender = models.CharField(
-        max_length=15, choices=choices, null=True,default="male", verbose_name=_("Gender")
+        max_length=15,
+        choices=choices,
+        null=True,
+        default="male",
+        verbose_name=_("Gender"),
     )
     source = models.CharField(
         max_length=20,
@@ -476,7 +482,7 @@ class RejectReason(models.Model):
     title = models.CharField(
         max_length=20,
     )
-    description = models.TextField(null=True, blank=True,max_length=255)
+    description = models.TextField(null=True, blank=True, max_length=255)
     company_id = models.ForeignKey(
         Company, on_delete=models.CASCADE, null=True, blank=True
     )
@@ -526,7 +532,7 @@ class StageNote(models.Model):
     """
 
     candidate_id = models.ForeignKey(Candidate, on_delete=models.CASCADE)
-    description = models.TextField(verbose_name=_("Description"),max_length=255)
+    description = models.TextField(verbose_name=_("Description"), max_length=255)
     stage_id = models.ForeignKey(Stage, on_delete=models.CASCADE)
     updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
     stage_files = models.ManyToManyField(StageFiles, blank=True)
@@ -544,7 +550,7 @@ class SurveyTemplate(models.Model):
     SurveyTemplate Model
     """
 
-    title = models.CharField(max_length=30,unique=True)
+    title = models.CharField(max_length=30, unique=True)
     description = models.TextField(null=True, blank=True)
     is_general_template = models.BooleanField(default=False, editable=False)
     company_id = models.ForeignKey(
@@ -553,8 +559,6 @@ class SurveyTemplate(models.Model):
 
     def __str__(self) -> str:
         return self.title
-
-
 
 
 class RecruitmentSurvey(models.Model):
@@ -574,7 +578,7 @@ class RecruitmentSurvey(models.Model):
         ("file", _("File Upload")),
         ("rating", _("Rating")),
     ]
-    question = models.TextField(null=False,max_length=255)
+    question = models.TextField(null=False, max_length=255)
     template_id = models.ManyToManyField(
         SurveyTemplate, verbose_name="Template", blank=True
     )
@@ -592,7 +596,7 @@ class RecruitmentSurvey(models.Model):
         choices=question_types,
     )
     options = models.TextField(
-        null=True, default="", help_text=_("Separate choices by ',  '"),max_length=255
+        null=True, default="", help_text=_("Separate choices by ',  '"), max_length=255
     )
     is_mandatory = models.BooleanField(default=False)
     objects = HorillaCompanyManager(related_company_field="recruitment_ids__company_id")
@@ -615,9 +619,11 @@ class RecruitmentSurvey(models.Model):
             if general_template:
                 self.template_id.add(general_template)
                 super().save(*args, **kwargs)
-                
+
     class Meta:
-        ordering = ["sequence",]
+        ordering = [
+            "sequence",
+        ]
 
 
 class QuestionOrdering(models.Model):
@@ -684,7 +690,7 @@ class SkillZone(models.Model):
     """
 
     title = models.CharField(max_length=50, verbose_name="Skill Zone")
-    description = models.TextField(verbose_name=_("Description"),max_length=255)
+    description = models.TextField(verbose_name=_("Description"), max_length=255)
     created_on = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
@@ -739,8 +745,8 @@ class SkillZoneCandidate(models.Model):
         )
 
     def __str__(self) -> str:
-        return str(self.candidate_id.get_full_name()
-)
+        return str(self.candidate_id.get_full_name())
+
 
 class CandidateRating(models.Model):
     employee_id = models.ForeignKey(

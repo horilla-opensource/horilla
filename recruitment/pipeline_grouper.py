@@ -3,6 +3,7 @@ pipeline_grouper.py
 
 This module is used to make queryset by groups
 """
+
 from datetime import datetime
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 from django.core.paginator import Paginator

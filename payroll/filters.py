@@ -366,7 +366,10 @@ class ContractReGroup:
         ("employee_id__employee_work_info__shift_id", _("Shift")),
         ("employee_id__employee_work_info__work_type_id", _("Work Type")),
         ("employee_id__employee_work_info__job_role_id", _("Job Role")),
-        ("employee_id__employee_work_info__reporting_manager_id", _("Reporting Manager")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
         ("employee_id__employee_work_info__company_id", _("Company")),
     ]
 

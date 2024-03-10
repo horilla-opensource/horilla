@@ -21,7 +21,11 @@ urlpatterns = [
     path(
         "offboarding-change-stage", views.change_stage, name="offboarding-change-stage"
     ),
-    path("view-offboarding-note/<int:employee_id>/", views.view_notes, name="view-offboarding-note"),
+    path(
+        "view-offboarding-note/<int:employee_id>/",
+        views.view_notes,
+        name="view-offboarding-note",
+    ),
     path("add-offboarding-note", views.add_note, name="add-offboarding-note"),
     path(
         "delete-note-attachment", views.delete_attachment, name="delete-note-attachment"
@@ -77,6 +81,14 @@ urlpatterns = [
         name="enable-resignation-request",
     ),
     path("get-notice-period", views.get_notice_period, name="get-notice-period"),
-    path("get-notice-period-end-date", views.get_notice_period_end_date, name="get-notice-period-end-date"),
-    path("offboarding-pipeline-filter",views.filter_pipeline,name="offboarding-pipeline-filter")
+    path(
+        "get-notice-period-end-date",
+        views.get_notice_period_end_date,
+        name="get-notice-period-end-date",
+    ),
+    path(
+        "offboarding-pipeline-filter",
+        views.filter_pipeline,
+        name="offboarding-pipeline-filter",
+    ),
 ]

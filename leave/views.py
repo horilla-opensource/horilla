@@ -3110,19 +3110,20 @@ def leave_allocation_request_delete(request, req_id):
 
         if leave_allocation_request.status != "approved":
             leave_allocation_request.delete()
-            messages.success(request, _("Leave allocation request deleted successfully.."))
+            messages.success(
+                request, _("Leave allocation request deleted successfully..")
+            )
         else:
             messages.error(request, _("Approved request can't be deleted."))
     except LeaveAllocationRequest.DoesNotExist:
         messages.error(request, _("Leave allocation request not found."))
     except OverflowError:
         messages.error(request, _("Leave allocation request not found."))
-        
+
     except ProtectedError:
         messages.error(request, _("Related entries exist"))
 
     return redirect(leave_allocation_request_view)
-
 
 
 @login_required

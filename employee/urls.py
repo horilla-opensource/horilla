@@ -326,7 +326,10 @@ urlpatterns = [
         "document-request-delete/<int:id>/",
         object_delete,
         name="document-request-delete",
-        kwargs={"model": DocumentRequest, "redirect_path": "/employee/document-request-view/"},
+        kwargs={
+            "model": DocumentRequest,
+            "redirect_path": "/employee/document-request-view/",
+        },
     ),
     path(
         "document-delete/<int:id>/",

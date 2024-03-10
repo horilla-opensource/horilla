@@ -3,6 +3,7 @@ context_processor.py
 
 This module is used to register context processor`
 """
+
 from employee.models import Employee
 from payroll.models import tax_models as models
 from payroll.models.models import Deduction
@@ -42,5 +43,7 @@ def get_active_employees(request):
     """
     This method used to return the deduction
     """
-    employees = Employee.objects.filter(is_active=True,contract_set__isnull=False,payslip__isnull=False).distinct()
+    employees = Employee.objects.filter(
+        is_active=True, contract_set__isnull=False, payslip__isnull=False
+    ).distinct()
     return {"get_active_employees": employees}

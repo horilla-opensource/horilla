@@ -3,6 +3,7 @@ context_processor.py
 
 This module is used to register context processor`
 """
+
 from django.urls import path, include
 from django.http import JsonResponse
 from horilla_audit.forms import HistoryForm

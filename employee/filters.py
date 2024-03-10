@@ -4,6 +4,7 @@ filters.py
 This page is used to register filter for employee models
 
 """
+
 import datetime
 
 import django
@@ -142,7 +143,7 @@ class EmployeeFilter(FilterSet):
         data = self.form.cleaned_data
         not_set_dict = {}
         for key, value in data.items():
-            if isinstance(value,(list,django.db.models.query.QuerySet)):
+            if isinstance(value, (list, django.db.models.query.QuerySet)):
                 if value and "not_set" in value:
                     not_set_dict[key] = value
 
@@ -229,9 +230,9 @@ class EmployeeFilter(FilterSet):
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
         self.form.fields["is_active"].initial = True
-        self.form.fields['email'].widget.attrs['autocomplete'] = 'email'
-        self.form.fields['phone'].widget.attrs['autocomplete'] = 'phone'
-        self.form.fields['country'].widget.attrs['autocomplete'] = 'country'
+        self.form.fields["email"].widget.attrs["autocomplete"] = "email"
+        self.form.fields["phone"].widget.attrs["autocomplete"] = "phone"
+        self.form.fields["country"].widget.attrs["autocomplete"] = "country"
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
         self.model_choice_filters = [
@@ -250,17 +251,17 @@ class EmployeeFilter(FilterSet):
             ]
             choices.extend([(obj.id, str(obj)) for obj in queryset])
 
-            self.form.fields[
-                model_choice_filter.field_name
-            ] = forms.MultipleChoiceField(
-                choices=choices,
-                required=False,
-                widget=forms.SelectMultiple(
-                    attrs={
-                        "class": "oh-select oh-select-2 select2-hidden-accessible",
-                        "id": uuid.uuid4(),
-                    }
-                ),
+            self.form.fields[model_choice_filter.field_name] = (
+                forms.MultipleChoiceField(
+                    choices=choices,
+                    required=False,
+                    widget=forms.SelectMultiple(
+                        attrs={
+                            "class": "oh-select oh-select-2 select2-hidden-accessible",
+                            "id": uuid.uuid4(),
+                        }
+                    ),
+                )
             )
 
 
@@ -326,7 +327,6 @@ class DocumentRequestFilter(FilterSet):
 
 
 class DisciplinaryActionFilter(FilterSet):
-
     """
     Custom filter for Disciplinary Action.
 

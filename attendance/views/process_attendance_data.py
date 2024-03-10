@@ -4,6 +4,7 @@ process_attendance_data.py
 This module contains a function for processing attendance data 
 from Excel files and saving it to a database.
 """
+
 from datetime import datetime
 import pandas as pd
 from employee.models import Employee
@@ -50,22 +51,22 @@ def process_attendance_data(attendance_dicts):
                     attendance_date=attendance_data["Attendance date"],
                 ).first()
                 if existing_attendance:
-                    attendance_data[
-                        "Error6"
-                    ] = "Attendance for this date already exists"
+                    attendance_data["Error6"] = (
+                        "Attendance for this date already exists"
+                    )
                     save = False
             except Exception as exception:
-                attendance_data[
-                    "Error14"
-                ] = "The attendance date format is invalid. Please use the format YYYY-MM-DD"
+                attendance_data["Error14"] = (
+                    "The attendance date format is invalid. Please use the format YYYY-MM-DD"
+                )
                 save = False
 
             try:
                 check_in_date = pd.to_datetime(attendance_data["Check-in date"]).date()
             except Exception as exception:
-                attendance_data[
-                    "Error15"
-                ] = "The Check-in date format is invalid. Please use the format YYYY-MM-DD"
+                attendance_data["Error15"] = (
+                    "The Check-in date format is invalid. Please use the format YYYY-MM-DD"
+                )
                 save = False
 
             try:
@@ -73,9 +74,9 @@ def process_attendance_data(attendance_dicts):
                     attendance_data["Check-out date"]
                 ).date()
             except Exception as exception:
-                attendance_data[
-                    "Error16"
-                ] = "The Check-out date format is invalid. Please use the format YYYY-MM-DD"
+                attendance_data["Error16"] = (
+                    "The Check-out date format is invalid. Please use the format YYYY-MM-DD"
+                )
                 save = False
 
             try:
@@ -124,16 +125,16 @@ def process_attendance_data(attendance_dicts):
 
             if check_in_date is not None and attendance_date is not None:
                 if check_in_date < attendance_date:
-                    attendance_data[
-                        "Error4"
-                    ] = "Attendance check-in date cannot be smaller than attendance date"
+                    attendance_data["Error4"] = (
+                        "Attendance check-in date cannot be smaller than attendance date"
+                    )
                     save = False
 
             if check_in_date is not None and check_out_date is not None:
                 if check_out_date < check_in_date:
-                    attendance_data[
-                        "Error5"
-                    ] = "Attendance check-out date never smaller than attendance check-in date"
+                    attendance_data["Error5"] = (
+                        "Attendance check-out date never smaller than attendance check-in date"
+                    )
                     save = False
 
             if attendance_date is not None:

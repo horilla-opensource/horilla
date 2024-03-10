@@ -4,6 +4,7 @@ models.py
 This module is used to register models for onboarding app
 
 """
+
 from datetime import datetime
 import time
 from typing import Any
@@ -56,7 +57,7 @@ def create_initial_stage(sender, instance, created, **kwargs):
         initial_stage = OnboardingStage()
         initial_stage.sequence = 0
         initial_stage.stage_title = "Initial"
-        initial_stage.recruitment_id =  instance
+        initial_stage.recruitment_id = instance
         initial_stage.save()
 
 
@@ -79,7 +80,9 @@ class OnboardingTask(models.Model):
         blank=True,
         related_name="cand_onboarding_task",
     )
-    employee_id = models.ManyToManyField(Employee, related_name="onboarding_task",verbose_name="Task Assignee")
+    employee_id = models.ManyToManyField(
+        Employee, related_name="onboarding_task", verbose_name="Task Assignee"
+    )
 
     objects = HorillaCompanyManager("recruitment_id__company_id")
 
@@ -186,4 +189,3 @@ class OnboardingPortal(models.Model):
 
     def __str__(self):
         return f"{self.candidate_id} | {self.token}"
-

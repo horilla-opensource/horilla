@@ -238,7 +238,7 @@ class Contract(models.Model):
         default=3,
         help_text=_("Notice period in total months."),
         validators=[min_zero],
-        verbose_name = _("Notice Period")
+        verbose_name=_("Notice Period"),
     )
     calculate_daily_leave_amount = models.BooleanField(
         default=True,
@@ -503,7 +503,7 @@ class OverrideAttendance(Attendance):
                 1.00 if at_work_second > min_hour_second / 2 else 0.50
             )
         work_record.save()
-        
+
         if status == "HDP" and work_record.is_leave_record:
             message = _("Half day leave")
 
@@ -1296,7 +1296,9 @@ class Payslip(models.Model):
         ("confirmed", _("Confirmed")),
         ("paid", _("Paid")),
     ]
-    group_name = models.CharField(max_length=50, null=True, blank=True,verbose_name=_("Batch name"))
+    group_name = models.CharField(
+        max_length=50, null=True, blank=True, verbose_name=_("Batch name")
+    )
     reference = models.CharField(max_length=255, unique=False)
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, verbose_name=_("Employee")

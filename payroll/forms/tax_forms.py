@@ -8,6 +8,7 @@ The forms in this module inherit from the Django `forms.ModelForm` class and cus
 the widget attributes to enhance the user interface and provide a better user experience.
 
 """
+
 from datetime import date
 import uuid
 from django import forms
@@ -28,7 +29,7 @@ class ModelForm(forms.ModelForm):
         reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             input_widget = field.widget
-            
+
             if isinstance(input_widget, (forms.DateInput)):
                 field.initial = date.today()
 
@@ -70,15 +71,18 @@ class ModelForm(forms.ModelForm):
             ):
                 input_widget.attrs.update({"class": "oh-switch__checkbox"})
 
-            try:            
-                self.fields["employee_id"].initial = request.user.employee_get 
+            try:
+                self.fields["employee_id"].initial = request.user.employee_get
             except:
                 pass
 
-            try:            
-                self.fields["company_id"].initial = request.user.employee_get.get_company
+            try:
+                self.fields["company_id"].initial = (
+                    request.user.employee_get.get_company
+                )
             except:
                 pass
+
 
 class FilingStatusForm(ModelForm):
     """Form for creating and updating filing status."""
@@ -103,4 +107,3 @@ class TaxBracketForm(ModelForm):
                 attrs={"class": "oh-select  oh-select-2 select2-hidden-accessible"}
             ),
         }
-

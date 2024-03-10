@@ -168,7 +168,7 @@ class LeaveType(models.Model):
         max_length=30, choices=TIME_PERIOD, null=True, blank=True
     )
     require_approval = models.CharField(
-        max_length=30, choices=CHOICES, null=True, blank=True,default="yes"
+        max_length=30, choices=CHOICES, null=True, blank=True, default="yes"
     )
     require_attachment = models.CharField(
         max_length=30,
@@ -178,8 +178,10 @@ class LeaveType(models.Model):
         blank=True,
         verbose_name=_("Require Attachment"),
     )
-    exclude_company_leave = models.CharField(max_length=30, choices=CHOICES,default="no")
-    exclude_holiday = models.CharField(max_length=30, choices=CHOICES,default="no")
+    exclude_company_leave = models.CharField(
+        max_length=30, choices=CHOICES, default="no"
+    )
+    exclude_holiday = models.CharField(max_length=30, choices=CHOICES, default="no")
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
@@ -311,7 +313,7 @@ class AvailableLeave(models.Model):
         self.available_days = self.leave_type_id.total_days
 
     # Setting the reset date for carryforward leaves
-    
+
     def set_reset_date(self, assigned_date, available_leave):
         if available_leave.leave_type_id.reset_based == "monthly":
             reset_day = available_leave.leave_type_id.reset_day
@@ -428,7 +430,7 @@ class LeaveRequest(models.Model):
     requested_days = models.FloatField(
         blank=True, null=True, verbose_name=_("Requested Days")
     )
-    description = models.TextField(verbose_name=_("Description"),max_length=255)
+    description = models.TextField(verbose_name=_("Description"), max_length=255)
     attachment = models.FileField(
         null=True,
         blank=True,
@@ -455,7 +457,9 @@ class LeaveRequest(models.Model):
     approved_available_days = models.FloatField(default=0)
     approved_carryforward_days = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add="True")
-    reject_reason = models.TextField(blank=True, verbose_name=_("Reject Reason"),max_length=255)
+    reject_reason = models.TextField(
+        blank=True, verbose_name=_("Reject Reason"), max_length=255
+    )
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -677,15 +681,15 @@ class LeaveRequest(models.Model):
                 return not condition_approval.is_approved
             else:
                 return True
-    def delete(self,*args, **kwargs):
-        request = getattr(thread_local_middleware._thread_locals,"request",None)
-        if self.status== 'requested':
+
+    def delete(self, *args, **kwargs):
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        if self.status == "requested":
             super().delete(*args, **kwargs)
         else:
             if request:
                 clear_messages(request)
-                messages.warning(request,"The leave request cannot be deleted.")
-
+                messages.warning(request, "The leave request cannot be deleted.")
 
 
 class LeaverequestFile(models.Model):
@@ -700,7 +704,7 @@ class LeaverequestComment(models.Model):
     request_id = models.ForeignKey(LeaveRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     files = models.ManyToManyField(LeaverequestFile, blank=True)
-    comment = models.TextField(null=True, verbose_name=_("Comment"),max_length=255)
+    comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),
@@ -735,7 +739,7 @@ class LeaveAllocationRequest(models.Model):
         max_length=30, choices=LEAVE_ALLOCATION_STATUS, default="requested"
     )
     created_at = models.DateTimeField(auto_now="True")
-    reject_reason = models.TextField(blank=True,max_length=255)
+    reject_reason = models.TextField(blank=True, max_length=255)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -783,7 +787,7 @@ class LeaveallocationrequestComment(models.Model):
     request_id = models.ForeignKey(LeaveAllocationRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     files = models.ManyToManyField(LeaverequestFile, blank=True)
-    comment = models.TextField(null=True, verbose_name=_("Comment"),max_length=255)
+    comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),

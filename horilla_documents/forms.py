@@ -9,12 +9,13 @@ from django.template.loader import render_to_string
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
+
 class DocumentRequestForm(ModelForm):
-    """ form to create a new Document Request """
+    """form to create a new Document Request"""
 
     class Meta:
         model = DocumentRequest
-        fields = '__all__'
+        fields = "__all__"
 
     def clean(self):
         for field_name, field_instance in self.fields.items():
@@ -30,7 +31,7 @@ class DocumentRequestForm(ModelForm):
         cleaned_data = super().clean()
         return cleaned_data
 
-    def __init__(self,*args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance.pk is None:
             self.fields["employee_id"] = HorillaMultiSelectField(
@@ -45,24 +46,26 @@ class DocumentRequestForm(ModelForm):
                 label="Employee",
             )
         reload_queryset(self.fields)
-        
-    
 
 
 class DocumentForm(ModelForm):
-    """ form to create a new Document"""
-    expiry_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}),required=False,)
+    """form to create a new Document"""
+
+    expiry_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"}),
+        required=False,
+    )
 
     verbose_name = "Document"
-    
+
     class Meta:
         model = Document
         fields = "__all__"
-        exclude = ["document_request_id","status","reject_reason","is_active"]
+        exclude = ["document_request_id", "status", "reject_reason", "is_active"]
         widgets = {
             "employee_id": forms.HiddenInput(),
         }
-        
+
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -71,17 +74,23 @@ class DocumentForm(ModelForm):
         table_html = render_to_string("common_form.html", context)
         return table_html
 
+
 class DocumentUpdateForm(ModelForm):
-    """ form to Update a Document"""
+    """form to Update a Document"""
+
     verbose_name = "Document"
-    expiry_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}),required=False,)
+    expiry_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"}),
+        required=False,
+    )
 
     class Meta:
         model = Document
         fields = "__all__"
 
+
 class DocumentRejectForm(ModelForm):
-    """ form to add rejection reason while rejecting a Document"""
+    """form to add rejection reason while rejecting a Document"""
 
     class Meta:
         model = Document

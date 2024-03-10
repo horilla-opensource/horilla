@@ -3,6 +3,7 @@ clock_in_out.py
 
 This module is used register endpoints to the check-in check-out functionalities
 """
+
 from datetime import date, datetime, timedelta
 from django.db.models import Q
 from django.http import HttpResponse

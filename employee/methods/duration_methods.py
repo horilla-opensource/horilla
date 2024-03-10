@@ -1,6 +1,8 @@
 """
 employee/methods/duration_methods.py
 """
+
+
 def strtime_seconds(time):
     """
     this method is used to reconvert time in H:M formate string back to seconds and return it

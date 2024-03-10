@@ -3,6 +3,7 @@ admin.py
 
 Used to register models on admin site
 """
+
 from django.contrib import admin
 from payroll.models.models import (
     Allowance,
@@ -13,7 +14,7 @@ from payroll.models.models import (
     LoanAccount,
     Reimbursement,
     ReimbursementrequestComment,
-    MultipleCondition
+    MultipleCondition,
 )
 from payroll.models.tax_models import (
     PayrollSettings,

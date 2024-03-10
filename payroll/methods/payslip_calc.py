@@ -4,6 +4,7 @@ It includes functions for calculating gross pay, taxable gross pay, allowances, 
 pre-tax deductions, and post-tax deductions.
 
 """
+
 import operator
 import contextlib
 from attendance.models import Attendance
@@ -557,7 +558,7 @@ def calculate_post_tax_deduction(*_args, **kwargs):
                         "total_allowance": total_allowance,
                         "basic_pay": basic_pay,
                         "day_dict": day_dict,
-                        "taxable_deduction":True,
+                        "taxable_deduction": True,
                     }
                 )
                 kwargs["amount"] = amount

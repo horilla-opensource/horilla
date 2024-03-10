@@ -58,7 +58,11 @@ urlpatterns = [
     path("assign", views.leave_assign, name="assign"),
     path("assign-one/<int:id>", views.leave_assign_one, name="assign-one"),
     path("assign-view/", views.leave_assign_view, name="assign-view"),
-    path("available-leave-single-view/<int:obj_id>/", views.available_leave_single_view, name="available-leave-single-view"),
+    path(
+        "available-leave-single-view/<int:obj_id>/",
+        views.available_leave_single_view,
+        name="available-leave-single-view",
+    ),
     path(
         "available-leave-update/<int:id>",
         views.available_leave_update,
@@ -307,10 +311,15 @@ urlpatterns = [
         name="employee-leave-details",
     ),
     path(
-        "cut-penalty/<int:instance_id>/", views.cut_available_leave, name="leave-cut-penalty"
+        "cut-penalty/<int:instance_id>/",
+        views.cut_available_leave,
+        name="leave-cut-penalty",
     ),
-    path("view-penalty/<int:instance_id>/", views.view_penalties, name="leave-view-penalty"),
-    
+    path(
+        "view-penalty/<int:instance_id>/",
+        views.view_penalties,
+        name="leave-view-penalty",
+    ),
     path(
         "leave-request-add-comment/<int:leave_id>/",
         views.create_leaverequest_comment,
@@ -351,5 +360,4 @@ urlpatterns = [
         views.delete_allocation_comment_file,
         name="delete-allocation-comment-file",
     ),
-
 ]

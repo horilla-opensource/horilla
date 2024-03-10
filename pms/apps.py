@@ -1,6 +1,7 @@
 """
 Django application configuration for the PMS (Performance Management System) app.
 """
+
 from django.apps import AppConfig
 
 

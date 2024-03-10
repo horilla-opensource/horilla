@@ -68,15 +68,18 @@ class ModelForm(forms.ModelForm):
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
 
-            try:            
-                self.fields["employee_id"].initial = request.user.employee_get 
+            try:
+                self.fields["employee_id"].initial = request.user.employee_get
             except:
                 pass
 
-            try:            
-                self.fields["company_id"].initial = request.user.employee_get.get_company
+            try:
+                self.fields["company_id"].initial = (
+                    request.user.employee_get.get_company
+                )
             except:
                 pass
+
 
 class ContractForm(ModelForm):
     """
@@ -183,14 +186,31 @@ class EncashmentGeneralSettingsForm(ModelForm):
 
 class DashboardExport(Form):
     status_choices = [
-        ("",""),
+        ("", ""),
         ("draft", "Draft"),
         ("review_ongoing", "Review Ongoing"),
         ("confirmed", "Confirmed"),
         ("paid", "Paid"),
     ]
-    start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date',"class":"oh-input w-100"}))
-    end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date',"class":"oh-input w-100"}))
-    employees = forms.ChoiceField(required=False, choices=[(emp.id, emp.get_full_name()) for emp in Employee.objects.all()],widget=forms.SelectMultiple)
+    start_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input w-100"}),
+    )
+    end_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input w-100"}),
+    )
+    employees = forms.ChoiceField(
+        required=False,
+        choices=[(emp.id, emp.get_full_name()) for emp in Employee.objects.all()],
+        widget=forms.SelectMultiple,
+    )
     status = forms.ChoiceField(required=False, choices=status_choices)
-    contributions = forms.ChoiceField(required=False, choices=[(emp.id, emp.get_full_name()) for emp in get_active_employees(None)["get_active_employees"]],widget=forms.SelectMultiple)
+    contributions = forms.ChoiceField(
+        required=False,
+        choices=[
+            (emp.id, emp.get_full_name())
+            for emp in get_active_employees(None)["get_active_employees"]
+        ],
+        widget=forms.SelectMultiple,
+    )

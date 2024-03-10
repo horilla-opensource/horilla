@@ -308,18 +308,30 @@ def get_key_instances(model, data_dict):
         del data_dict["id"]
         data_dict["Object"] = [object]
 
-
     keys_to_remove = [
         key
         for key, value in data_dict.items()
         if value == ["unknown"]
-        or key in ["sortby", "orderby", "view", "page", "group_by", "target",'rpage',"instances_ids","asset_list","vpage","csrfmiddlewaretoken"]
+        or key
+        in [
+            "sortby",
+            "orderby",
+            "view",
+            "page",
+            "group_by",
+            "target",
+            "rpage",
+            "instances_ids",
+            "asset_list",
+            "vpage",
+            "csrfmiddlewaretoken",
+        ]
         or "dynamic_page" in key
     ]
-    if not 'search' in data_dict:
-        if 'search_field' in data_dict:
+    if not "search" in data_dict:
+        if "search_field" in data_dict:
             del data_dict["search_field"]
-            
+
     for key in keys_to_remove:
         del data_dict[key]
     return data_dict

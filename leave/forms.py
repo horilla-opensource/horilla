@@ -270,7 +270,7 @@ class LeaveRequestCreationForm(ModelForm):
         ).exists():
             raise forms.ValidationError(_("Employee has no leave type.."))
 
-        if overlapping_requests.exclude(status__in=['cancelled', 'rejected']).exists():
+        if overlapping_requests.exclude(status__in=["cancelled", "rejected"]).exists():
             raise forms.ValidationError(
                 _("Employee has already a leave request for this date range..")
             )
@@ -725,7 +725,7 @@ class UserLeaveRequestCreationForm(ModelForm):
         ).exists():
             raise forms.ValidationError(_("Employee has no leave type.."))
 
-        if overlapping_requests.exclude(status__in=['cancelled', 'rejected']).exists():
+        if overlapping_requests.exclude(status__in=["cancelled", "rejected"]).exists():
             raise forms.ValidationError(
                 _("Employee has already a leave request for this date range..")
             )

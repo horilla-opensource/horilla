@@ -3,6 +3,7 @@ context_processor.py
 
 This module is used to register context processor`
 """
+
 from django.urls import path
 from django.http import HttpResponse
 from attendance.models import AttendanceGeneralSetting
@@ -152,7 +153,6 @@ def check_candidate_self_tracking_rating(request):
     return {"check_candidate_self_tracking_rating": rating_option}
 
 
-
 def get_intial_prefix(request):
     """
     This method is used to get the initial prefexi
@@ -163,4 +163,4 @@ def get_intial_prefix(request):
     if settings:
         instance_id = settings.id
         prefix = settings.badge_id_prefix
-    return {"get_intial_prefix":prefix,"prefix_instance_id":instance_id}
+    return {"get_intial_prefix": prefix, "prefix_instance_id": instance_id}
