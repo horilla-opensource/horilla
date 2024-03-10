@@ -137,7 +137,7 @@ class ObjectiveForm(BaseForm):
                     filter_class=EmployeeFilter,
                     filter_instance_contex_name="f",
                     filter_template_path="employee_filters.html",
-                    required=True,
+                    required=False,
                 ),
                 label="Assignees",
             )
@@ -157,7 +157,7 @@ class ObjectiveForm(BaseForm):
         for field_name, field_instance in self.fields.items():
             if isinstance(field_instance, HorillaMultiSelectField):
                 self.errors.pop(field_name, None)
-                if len(self.data.getlist(field_name)) < 1 and add_assignees:
+                if add_assignees and len(self.data.getlist(field_name)) < 1 and add_assignees:
                     raise forms.ValidationError({field_name: "This field is required"})
                 cleaned_data = super().clean()
                 data = self.fields[field_name].queryset.filter(
