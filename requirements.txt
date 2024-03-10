@@ -11,6 +11,7 @@ cssselect2==0.7.0
 Django==4.2.10
 django-apscheduler==0.6.2
 django-cors-headers==4.3.1
+django-environ==0.11.2
 django-filter==23.4
 django-haystack==3.2.1
 django-jsonfield==1.4.1
@@ -45,7 +46,6 @@ qrcode==7.4.2
 reportlab==4.0.7
 requests==2.31.0
 rlPyCairo==0.3.0
-setuptools==69.0.2
 six==1.16.0
 sqlparse==0.4.4
 svglib==1.5.1
