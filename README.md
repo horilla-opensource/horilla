@@ -133,11 +133,12 @@ For installing the python dependencies required for the project, run the followi
 >Run the requirement installation command again
 
 3. Set up the database by running the following commands:
+   _By default the test database will be loaded which will have demo data inside it. If you wish to start with a fresh database, you can either remove the TestDB_Horilla.sqlite3 from the project directory or change the name of the database inside the horilla/settings.py file. (You can configure different database based on your choice, of which configurations settings is given below in the documentation._
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
-4. Create an admin employee account:
+4. Create an admin employee account (use this command if you are starting with a fresh database, for the demo database there is already a Horilla admin user created with credentials _admin_ and _admin_ as username and password respectively).
 ```bash
 python manage.py createhorillauser
 ```
