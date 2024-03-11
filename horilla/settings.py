@@ -29,11 +29,10 @@ env = environ.Env(
         "django-insecure-j8op9)1q8$1&0^s&p*_0%d#pr@w9qj@1o=3#@d=a(^@9@zd@%j",
     ),
     ALLOWED_HOSTS=(list, ["*"]),
-    DATABASE_URL=(str, f"sqlite:///{BASE_DIR}/TestDB_Horilla.sqlite3"),
     CSRF_TRUSTED_ORIGINS=(list, ["http://localhost:8000"]),
 )
 
-env.read_env(os.path.join(BASE_DIR, ".env.dist"), overwrite=True)
+env.read_env(os.path.join(BASE_DIR, ".env"), overwrite=True)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
@@ -113,9 +112,27 @@ WSGI_APPLICATION = "horilla.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    "default": env.db(),
-}
+if env("DATABASE_URL"):
+    DATABASES = {
+        "default": env.db(),
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": env("DB_ENGINE", default="django.db.backends.sqlite3"),
+            "NAME": env(
+                "DB_NAME",
+                default=os.path.join(
+                    BASE_DIR,
+                    "TestDB_Horilla.sqlite3",
+                ),
+            ),
+            "USER": env("DB_USER", default=""),
+            "PASSWORD": env("DB_PASSWORD", default=""),
+            "HOST": env("DB_HOST", default=""),
+            "PORT": env("DB_PORT", default=""),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
