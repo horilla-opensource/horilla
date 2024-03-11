@@ -157,7 +157,11 @@ class ObjectiveForm(BaseForm):
         for field_name, field_instance in self.fields.items():
             if isinstance(field_instance, HorillaMultiSelectField):
                 self.errors.pop(field_name, None)
-                if add_assignees and len(self.data.getlist(field_name)) < 1 and add_assignees:
+                if (
+                    add_assignees
+                    and len(self.data.getlist(field_name)) < 1
+                    and add_assignees
+                ):
                     raise forms.ValidationError({field_name: "This field is required"})
                 cleaned_data = super().clean()
                 data = self.fields[field_name].queryset.filter(
@@ -217,6 +221,13 @@ class AddAssigneesForm(BaseForm):
         table_html = render_to_string("common_form.html", context)
         return table_html
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance:
+            self.fields["assignees"].queryset = self.fields[
+                "assignees"
+            ].queryset.exclude(id__in=self.instance.assignees.all())
+
 
 class EmployeeObjectiveForm(BaseForm):
     """
@@ -242,7 +253,6 @@ class EmployeeObjectiveForm(BaseForm):
         model = EmployeeObjective
         fields = [
             "objective_id",
-            "key_result_id",
             "start_date",
             "end_date",
             "status",
@@ -261,12 +271,11 @@ class EmployeeObjectiveForm(BaseForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
-        self.fields["key_result_id"].choices = list(
-            self.fields["key_result_id"].choices
-        )
-        self.fields["key_result_id"].choices.append(
-            ("create_new_key_result", "Create new Key result")
-        )
+        try:
+            del self.fields["key_result_id"]
+        except Exception as _err:
+            pass
+        
 
     def as_p(self):
         """

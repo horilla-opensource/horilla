@@ -229,7 +229,7 @@
                                                                     {% if perms.pms.add_employeeobjective %}
                                                                         <a 
                                                                             onclick="event.preventDefault();event.stopPropagation()"
-                                                                            hx-get="{% url 'add-assignees' objective.id %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="Add assignees"
+                                                                            hx-get="{% url 'add-assignees' objective.pk %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="Add assignees"
                                                                         ><ion-icon name="add-outline"></ion-icon></a>
                                                                     {% endif %}
                                                                     {% if perms.pms.change_objective %}
@@ -571,7 +571,6 @@
         })
         activeTab = $(".oh-tabs__tab.oh-tabs__tab--active");
         if (!activeTab.length) {
-            console.log("++++++++");
             $('[data-target="#self_objective"]').click()
         }
     });

@@ -672,7 +672,7 @@ def add_assignees(request, obj_id):
     objective = Objective.objects.get(id=obj_id)
     form = AddAssigneesForm(instance=objective)
     if request.method == "POST":
-        form = AddAssigneesForm(request.POST, objective)
+        form = AddAssigneesForm(request.POST, instance=objective)
         if form.is_valid():
             objective = form.save()
             assignees = form.cleaned_data["assignees"]
@@ -746,12 +746,6 @@ def update_employee_objective(request, emp_obj_id):
         form = EmployeeObjectiveForm(request.POST, instance=emp_objective)
         if form.is_valid:
             emp_obj = form.save(commit=False)
-            krs = form.cleaned_data["key_result_id"]
-            if krs:
-                for kr in krs:
-                    emp_kr = EmployeeKeyResult(
-                        employee_objective_id=emp_objective, key_result_id=kr
-                    ).save()
             emp_obj.save()
             messages.success(request, _("Employee objective Updated successfully"))
             return HttpResponse("<script>window.location.reload()</script>")
