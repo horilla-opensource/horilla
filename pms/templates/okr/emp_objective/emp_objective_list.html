@@ -22,12 +22,14 @@
                             </span>
                                 {{emp_objective.employee_id}}
                         </div>
+                        {% if emp_objective.employee_key_result.first %}
                         <div class="oh-progress-container progress_barmm"  style="width:50%">
                             <div class="oh-progress" role="progressbar">
                                     <div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc( {{ emp_objective.progress_percentage }}%)"></div>
                             </div>
                             <div class="oh-progress-container__percentage" style="width:50px" name= "key_result_percentage">{{emp_objective.progress_percentage}} %</div>
                         </div>
+                        {% endif %}
                     </div>
                     <div>
                         {% if request.user|is_reportingmanager or perms.pms.add_employeeobjective %}

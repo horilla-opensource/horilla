@@ -479,7 +479,7 @@ def export_data(request, model, form_class, filter_class, file_name):
                     }
 
                     # Convert the string to a datetime.time object
-                    check_in_time = datetime.strptime(str(value), "%H:%M:%S").time()
+                    check_in_time = datetime.strptime(str(value).split('.')[0], "%H:%M:%S").time()
 
                     # Print the formatted time for each format
                     for format_name, format_string in time_formats.items():

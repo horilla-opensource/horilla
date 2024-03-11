@@ -655,6 +655,7 @@ class RotatingShiftAssign(models.Model):
 
 class BaserequestFile(models.Model):
     file = models.FileField(upload_to="base/request_files")
+    objects = models.Manager()
 
 
 class WorkTypeRequest(models.Model):
@@ -805,6 +806,7 @@ class WorktyperequestComment(models.Model):
         verbose_name=_("Created At"),
         null=True,
     )
+    objects = models.Manager()
 
     def __str__(self) -> str:
         return f"{self.comment}"
@@ -971,6 +973,7 @@ class ShiftrequestComment(models.Model):
         verbose_name=_("Created At"),
         null=True,
     )
+    objects = models.Manager()
 
     def __str__(self) -> str:
         return f"{self.comment}"
@@ -1116,6 +1119,7 @@ class MultipleApprovalCondition(models.Model):
         blank=True,
         verbose_name=_("Ending Value"),
     )
+    objects = models.Manager()
 
     def __str__(self) -> str:
         return f"{self.condition_field} {self.condition_operator}"
@@ -1228,6 +1232,7 @@ class MultipleApprovalManagers(models.Model):
     )
     sequence = models.IntegerField(null=False, blank=False)
     employee_id = models.IntegerField(null=False, blank=False)
+    objects = models.Manager()
 
 
 class DynamicPagination(models.Model):
@@ -1247,6 +1252,7 @@ class DynamicPagination(models.Model):
         verbose_name=_("User"),
     )
     pagination = models.IntegerField(default=50, validators=[MinValueValidator(1)])
+    objects = models.Manager()
 
     def save(self, *args, **kwargs):
         request = getattr(_thread_locals, "request", None)
@@ -1275,6 +1281,7 @@ class AnnouncementExpire(models.Model):
     """
 
     days = models.IntegerField(null=True, blank=True, default=30)
+    objects = models.Manager()
 
 
 class Announcement(models.Model):

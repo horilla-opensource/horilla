@@ -567,13 +567,18 @@ def asset_request_approve(request, req_id):
         # Add additional fields to the dictionary
         post_data["assigned_to_employee_id"] = asset_request.requested_employee_id
         post_data["assigned_by_employee_id"] = request.user.employee_get
-        form = AssetAllocationForm(post_data)
+        form = AssetAllocationForm(post_data,request.FILES)
+        print("------------------------------------")
+        print(post_data)
+        print("------------------------------------")
         if form.is_valid():
             asset = form.instance.asset_id.id
             asset = Asset.objects.filter(id=asset).first()
             asset.asset_status = "In use"
             asset.save()
-            form = form.save()
+            form = form.save(commit=False)
+            form.assigned_by_employee_id = request.user.employee_get
+            form.save()
             asset_request.asset_request_status = "Approved"
             asset_request.save()
             messages.success(request, _("Asset request approved successfully!."))

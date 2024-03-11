@@ -32,7 +32,7 @@
 </div>
 <div class="oh-modal__dialog-body" id="formBody">
   <form
-    hx-post="{% url 'work-type-request' %}"
+    hx-post="{% url 'work-type-request' %}?{{pd}}"
     hx-target="#objectCreateModalTarget"
   >
     {{form.as_p}}

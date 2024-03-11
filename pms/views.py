@@ -287,6 +287,7 @@ def objective_list_view(request):
     is_manager = Employee.objects.filter(
         employee_work_info__reporting_manager_id=employee
     )
+    template = "okr/okr_view.html"
 
     if request.user.has_perm("pms.view_employeeobjective"):
         objective_own = EmployeeObjective.objects.filter(employee_id=employee)
@@ -308,12 +309,6 @@ def objective_list_view(request):
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.none()
         context = objective_filter_pagination(request, objective_own, objective_all)
-    if objective_all.exists() or objective_own.exists():
-        # template = "okr/objective_list_view.html"
-        template = "okr/okr_view.html"
-
-    else:
-        template = "okr/objective_empty.html"
     return render(request, template, context)
 
 
@@ -677,7 +672,7 @@ def add_assignees(request, obj_id):
     objective = Objective.objects.get(id=obj_id)
     form = AddAssigneesForm(instance=objective)
     if request.method == "POST":
-        form = AddAssigneesForm(request.POST, objective)
+        form = AddAssigneesForm(request.POST, instance=objective)
         if form.is_valid():
             objective = form.save()
             assignees = form.cleaned_data["assignees"]
@@ -751,12 +746,6 @@ def update_employee_objective(request, emp_obj_id):
         form = EmployeeObjectiveForm(request.POST, instance=emp_objective)
         if form.is_valid:
             emp_obj = form.save(commit=False)
-            krs = form.cleaned_data["key_result_id"]
-            if krs:
-                for kr in krs:
-                    emp_kr = EmployeeKeyResult(
-                        employee_objective_id=emp_objective, key_result_id=kr
-                    ).save()
             emp_obj.save()
             messages.success(request, _("Employee objective Updated successfully"))
             return HttpResponse("<script>window.location.reload()</script>")

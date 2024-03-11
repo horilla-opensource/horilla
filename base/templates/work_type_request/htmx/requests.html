@@ -18,6 +18,7 @@
 class="oh-checkpoint-badge text-success mb-2"
 id="selectAllWorktypes"
 style="cursor: pointer"
+data-pd="{{pd}}"
 >
   {% trans "Select All Worktypes" %}
 </div>
@@ -324,6 +325,12 @@ style="cursor: pointer; display: none;"
   }
 
   $(document).ready(function () {
+    var search = $("#selectAllWorktypes").attr("data-pd");
+    if (search) {
+      var pd = $(".oh-pagination").attr("data-pd");
+      var hxVals = JSON.stringify(search);
+      $("#workTypeRequestCreate").attr("hx-vals", `{"pd":${hxVals}}`);
+    }
     $(".all-work-type-requests-row").change(function () {
       var parentTable = $(this).closest(".oh-sticky-table");
       var body = parentTable.find(".oh-sticky-table__tbody");
