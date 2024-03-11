@@ -287,6 +287,7 @@ def objective_list_view(request):
     is_manager = Employee.objects.filter(
         employee_work_info__reporting_manager_id=employee
     )
+    template = "okr/okr_view.html"
 
     if request.user.has_perm("pms.view_employeeobjective"):
         objective_own = EmployeeObjective.objects.filter(employee_id=employee)
@@ -308,12 +309,6 @@ def objective_list_view(request):
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.none()
         context = objective_filter_pagination(request, objective_own, objective_all)
-    if objective_all.exists() or objective_own.exists():
-        # template = "okr/objective_list_view.html"
-        template = "okr/okr_view.html"
-
-    else:
-        template = "okr/objective_empty.html"
     return render(request, template, context)
 
 
