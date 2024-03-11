@@ -425,7 +425,7 @@
                                                                 
                                                             </div>
                                                             <div data-cell-index="2" class="oh-sticky-table__td">
-                                                                {% for kr in objective.employee_key_result.all %}
+                                                                {% for kr in objective.key_result_id.all %}
                                                                 <span class="oh-user-panel oh-collapse-panel" data-type="user">
                                                                     <div class="oh-profile oh-profile--md">
                                                                         <div class="oh-profile__avatar mr-1">
@@ -441,7 +441,7 @@
                                                                     </div>
                                                                 </span>
                                                                 {% endfor %}
-                                                                <span class="count-span">{{objective.employee_key_result.all|length}} {% trans "Key results" %}</span>
+                                                                <span class="count-span">{{objective.key_result_id.all|length}} {% trans "Key results" %}</span>
 
                                                             </div> 
                                                             
