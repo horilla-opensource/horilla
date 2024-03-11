@@ -51,6 +51,7 @@ from base.forms import (
     AuditTagForm,
     CompanyForm,
     DepartmentForm,
+    DriverForm,
     DynamicMailConfForm,
     DynamicPaginationForm,
     EmployeeTagForm,
