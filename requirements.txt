@@ -46,6 +46,7 @@ qrcode==7.4.2
 reportlab==4.0.7
 requests==2.31.0
 rlPyCairo==0.3.0
+setuptools==69.0.2
 six==1.16.0
 sqlparse==0.4.4
 svglib==1.5.1
