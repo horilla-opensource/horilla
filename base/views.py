@@ -7,7 +7,7 @@ This module is used to map url pattens with django views or methods
 from django import forms
 from django.apps import apps
 from datetime import timedelta, datetime
-from urllib.parse import parse_qs, urlencode
+from urllib.parse import parse_qs, urlencode, unquote
 import uuid
 import json
 from django.db.models import ProtectedError
@@ -25,8 +25,6 @@ from attendance.forms import AttendanceValidationConditionForm
 from attendance.methods.group_by import group_by_queryset
 from attendance.models import AttendanceValidationCondition, GraceTime
 from django.views.decorators.csrf import csrf_exempt
-from employee.filters import EmployeeFilter
-from employee.forms import ActiontypeForm
 from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
 from notifications.models import Notification
@@ -39,13 +37,14 @@ from horilla.decorators import (
     login_required,
     manager_can_enter,
 )
-from base.backends import ConfiguredEmailBackend
 from employee.models import Actiontype, Employee, EmployeeTag, EmployeeWorkInformation
+from employee.forms import ActiontypeForm
+from employee.filters import EmployeeFilter
+from base.backends import ConfiguredEmailBackend
 from base.decorators import (
     shift_request_change_permission,
     work_type_request_change_permission,
 )
-from base.methods import closest_numbers, export_data, get_pagination
 from base.forms import (
     AnnouncementExpireForm,
     AuditTagForm,
@@ -128,6 +127,9 @@ from base.methods import (
     filtersubordinates,
     get_key_instances,
     sortby,
+    closest_numbers,
+    export_data,
+    get_pagination,
 )
 from payroll.forms.component_forms import PayrollSettingsForm
 from payroll.models.models import EncashmentGeneralSettings
@@ -2589,6 +2591,8 @@ def work_type_request(request):
     """
     This method is used to create request for work type  .
     """
+    encoded_data = request.GET.urlencode()
+    previous_data = unquote(encoded_data.replace("pd=", ""))
     form = WorkTypeRequestForm()
     employee = request.user.employee_get.id
     if request.GET.get("emp_id"):
@@ -2602,12 +2606,12 @@ def work_type_request(request):
     form = include_employee_instance(request, form)
 
     f = WorkTypeRequestFilter()
-    context = {"f": f}
+    context = {"f": f, "pd": previous_data}
     HTTP_REFERER = request.META.get("HTTP_REFERER", None)
     context["close_hx_url"] = ""
     context["close_hx_target"] = ""
     if HTTP_REFERER and HTTP_REFERER.endswith("work-type-request-view/"):
-        context["close_hx_url"] = "/work-type-request-search"
+        context["close_hx_url"] = f"/work-type-request-search?{previous_data}"
         context["close_hx_target"] = "#view-container"
     elif HTTP_REFERER and HTTP_REFERER.endswith("employee-profile/"):
         context["close_hx_url"] = "/employee/shift-tab/1?profile=true"
@@ -2628,9 +2632,6 @@ def work_type_request(request):
             "base.add_worktyperequest",
         )
         form = include_employee_instance(request, form)
-        response = render(
-            request, "work_type_request/request_form.html", {"form": form, "f": f}
-        )
         if form.is_valid():
             instance = form.save()
             try:
