@@ -58,7 +58,10 @@ $(document).ready(function() {
 			console.log("Error", error);
 		},
 	});
-
+	// $("#asset_request_view").on("click",function () {
+	// 	localStorage.setItem("activeTabAsset", "#tab_1");
+	// 	window.location.replace("/asset/asset-request-allocation-view/?asset_request_status=Requested");
+	// })
 });
 
 function emptyAssetAvialabeChart(assetAvailableChartChart,args,options){

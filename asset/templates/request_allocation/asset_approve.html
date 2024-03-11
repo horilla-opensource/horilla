@@ -1,7 +1,9 @@
 {% load i18n %}
 <h5 >{% trans "Asset Approve" %}</h5>
-<form hx-post="{%url 'asset-request-approve' req_id=id %}">
+<form hx-post="{%url 'asset-request-approve' req_id=id %}" hx-target="#asset-request-allocation-modal-target" hx-encoding="multipart/form-data">
     {% csrf_token %}
+    {{asset_allocation_form.non_field_errors}}
+    {{asset_allocation_form.errors}}
     <div class=" m-3">
         <div class="oh-input__group ">
             <label class="oh-input__label" for="objective">{% trans "Asset" %}</label>
