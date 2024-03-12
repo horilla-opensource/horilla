@@ -674,6 +674,15 @@ class AttendanceOverTime(models.Model):
         unique_together = [("employee_id"), ("month"), ("year")]
         ordering = ["-year", "-month_sequence"]
 
+    def clean(self):
+        try:
+            year = int(self.year)
+            if not (1900 <= year <= 2100):
+                raise ValidationError({"year": _("Year must be an integer value between 1900 and 2100")})
+        except (ValueError, TypeError):
+            raise ValidationError({"year": _("Year must be an integer value between 1900 and 2100")})
+
+
     def month_days(self):
         """
         this method is used to create new AttendanceOvertime's instance if there
