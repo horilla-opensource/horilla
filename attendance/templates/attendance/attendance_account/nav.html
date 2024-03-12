@@ -3,27 +3,6 @@
 {% load basefilters %}
 {% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager %}
 <div
-class="oh-modal"
-id="addAttendanceOtModal"
-role="dialog"
-aria-labelledby="addAttendanceOtModal"
-aria-hidden="true"
->
-<div class="oh-modal__dialog">
-  <div class="oh-modal__dialog-header">
-    <h2 class="oh-modal__dialog-title" id="addAttendanceOtModalLabel">
-      {% trans "Add OT" %}
-    </h2>
-    <button class="oh-modal__close" aria-label="Close" >
-      <ion-icon name="close-outline"></ion-icon>
-    </button>
-    </div>
-    <div class="oh-modal__dialog-body" id='addAttendanceOtModalBody'>
-    
-    </div>
-</div>
-</div>
-<div
   class="oh-modal"
   id="hourAccountExport"
   role="dialog"
@@ -208,9 +187,9 @@ aria-hidden="true"
             <div class="oh-dropdown" >
               <button class="oh-btn oh-btn--secondary"
                       data-toggle="oh-modal-toggle"
-                      data-target="#addAttendanceOtModal"
+                      data-target="#objectCreateModal"
                       hx-get="{% url 'attendance-overtime-create' %}"
-                      hx-target="#addAttendanceOtModalBody"
+                      hx-target="#objectCreateModalTarget"
                 >
                 <ion-icon name="add-sharp" class="mr-2"></ion-icon>
                 {% trans "Create" %}

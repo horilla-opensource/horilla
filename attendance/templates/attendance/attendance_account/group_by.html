@@ -74,7 +74,7 @@
               <div class="oh-sticky-table__td">
                 <div class="oh-btn-group">
                   {% if perms.recruitment.change_attendanceovertime or request.user|is_reportingmanager %}
-                  <a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#updateAttendanceOTModalBody' data-toggle='oh-modal-toggle' data-target='#updateOtModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+                  <a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
                   {% endif %}
                   {% if perms.recruitment.delete_attendance %}
                   {% comment %} <form action="{% url 'attendance-overtime-delete' ot.id %}?page={{accounts.number}}" method='post' class="w-50">
@@ -195,30 +195,6 @@
     </nav>
   </div>
 </div>
-{% if perms.attendance.change_attendanceovertime or request.user|is_reportingmanager %}
-<div
-class="oh-modal"
-id="updateOtModal"
-role="dialog"
-aria-labelledby="updateOtModal"
-aria-hidden="true"
->
-<div class="oh-modal__dialog">
-  <div class="oh-modal__dialog-header">
-    <h2 class="oh-modal__dialog-title" id="updateOtModalLabel">
-      {% trans "Update Account" %}
-    </h2>
-    <button class="oh-modal__close" aria-label="Close" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&page={{accounts.number}}" hx-target="#ot-table">
-      <ion-icon name="close-outline"></ion-icon>
-    </button>
-    <div class="oh-modal__dialog-body p-0 pt-2" id='updateAttendanceOTModalBody'>
-      
-    </div>
-  </div>
-</div>
-</div>
-{% endif %}
-
 <script>
   $(document).ready(function () {
     $("#selectAllInstances").show();
