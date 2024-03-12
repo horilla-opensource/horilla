@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
+    command: ./entrypoint.sh
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-bullseye
+    environment:
+      POSTGRES_DB: horilla
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+    volumes:
+      - horilla-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5  
+
+volumes:
+  horilla-data:
+
+
+
