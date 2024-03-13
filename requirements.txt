@@ -56,3 +56,6 @@ webencodings
 Whoosh
 xhtml2pdf
 XlsxWriter
+gunicorn
+psycopg2-binary
+whitenoise
