@@ -150,10 +150,10 @@
                 <a 
                   class="oh-btn oh-btn--light-bkg w-100" 
                   data-toggle="oh-modal-toggle"
-                  data-target="#rotating-shift-modal"
+                  data-target="#objectCreateModal"
                   hx-get="{% url 'rotating-shift-assign-duplicate' rshift.id %}?{{pg}}"
                   title="{% trans 'Duplicate' %}"
-                  hx-target="#rotatingShiftAssignModalBody"
+                  hx-target="#objectCreateModalTarget"
                   style= "cursor: pointer;"
                 >
                   <ion-icon name="copy-outline"></ion-icon>

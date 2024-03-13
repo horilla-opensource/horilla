@@ -1,20 +1,35 @@
 {% load i18n %}
-<form method="post" hx-post="{% url 'rotating-work-type-assign-update' update_form.instance.id %}" hx-target="#rotatingWorkTypeAssignUpdateModalLabel"id="rotating-work-type-assign-update-form" >
+<div class="oh-modal__dialog-header">
+  <h2 class="oh-modal__dialog-title" id="objectCreateModalLabel">
+    {% trans "Rotating Work Type Assign" %}
+  </h2>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
+    method="post"
+    hx-post="{% url 'rotating-work-type-assign-update' update_form.instance.id %}"
+    hx-target="#objectUpdateModalTarget"
+    id="rotating-work-type-assign-update-form"
+  >
     {% csrf_token %}
     <div class="oh-inner-sidebar-content__header"></div>
     {{update_form}}
-    
+
     <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
       <button type="submit" class="oh-btn oh-btn--secondary pl-5 pr-5">
         {% trans "Save" %}
       </button>
     </div>
     <div class="oh-inner-sidebar-content__footer"></div>
-</form>
+  </form>
+</div>
 
 <script>
-    $(document).ready(function () {
-      function hidBasedOn(basedOn,parent) {
+  $(document).ready(function () {
+    function hidBasedOn(basedOn, parent) {
       if (basedOn == "after") {
         parent.find("label[for='id_rotate_after_day']").show();
         parent.find("#id_rotate_after_day").show();
@@ -42,11 +57,11 @@
       }
     }
     var basedOn = $("#rotating-work-type-assign-update-form #id_based_on");
-    var parent = $("#rotating-work-type-assign-update-form")
-    hidBasedOn(basedOn.val(),parent);
+    var parent = $("#rotating-work-type-assign-update-form");
+    hidBasedOn(basedOn.val(), parent);
 
-    basedOn.on('change',function (e) {
-      hidBasedOn(basedOn.val(),parent);
+    basedOn.on("change", function (e) {
+      hidBasedOn(basedOn.val(), parent);
     });
-    });
+  });
 </script>
