@@ -177,7 +177,7 @@
 						</div>
 						<div class="oh-sticky-table__tbody">
 							{% for ot in accounts %}
-								<div class="oh-sticky-table__tr" draggable="true" >
+								<div class="oh-sticky-table__tr" draggable="true" id="hourAccount{{ot.id}}">
 									<div class="oh-sticky-table__sd">
 										<div class="oh-profile oh-profile--md">
 											<div class="oh-profile__avatar mr-1">
@@ -199,14 +199,14 @@
 									{% if perms.recruitment.change_attendanceovertime or perms.recruitment.delete_attendanceovertime %}
 									<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 										<div class="oh-btn-group">
-											{% if perms.recruitment.change_attendanceovertime %}
-											<a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#validateAttendanceRequestModalBody' data-toggle='oh-modal-toggle' data-target='#validateAttendanceRequest'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+											{% if perms.attendance.change_attendanceovertime %}
+												<a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
 											{% endif %}
-											{% if perms.recruitment.delete_attendance %}
-											<form action="{% url 'attendance-overtime-delete' ot.id  %}" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" hx-target="#ot-table" method='post' class='w-50'>
-											{% csrf_token %}
-											<button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"   title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-											</form>
+											{% if perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %} 
+												<form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}" hx-post="{% url 'attendance-overtime-delete' ot.id  %}" hx-target="#hourAccount{{ot.id}}" hx-swap="delete" class='w-50'>
+													{% csrf_token %}
+													<button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"   title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+												</form>
 											{% endif %}
 										</div>      
 									</div>

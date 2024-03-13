@@ -232,9 +232,9 @@
 						<button
 							class="oh-btn oh-btn--secondary"
 							data-toggle="oh-modal-toggle"
-							data-target="#documentRequestCreateModal"
+							data-target="#objectCreateModal"
 							hx-get="{% url 'document-request-create' %}"
-							hx-target="#documentRequestCreateForm"
+							hx-target="#objectCreateModalTarget"
 							onclick="event.preventDefault()"
 
 						>
@@ -273,7 +273,7 @@
 	role="dialog"
 	aria-labelledby="BulkRejectModal"
 	aria-hidden="true"
->
+	>
 	<div class="oh-modal__dialog">
 		<div class="oh-modal__dialog-header">
 			<span class="oh-modal__dialog-title" id="BulkRejectModalLabel"

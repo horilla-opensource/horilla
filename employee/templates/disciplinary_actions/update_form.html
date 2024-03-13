@@ -24,7 +24,7 @@
 </div>
 {% endif %}
 <div class="oh-modal__dialog-header">
-  <h5 class="oh-modal__dialog-title" id="actionUpdateModalLabel">
+  <h5 class="oh-modal__dialog-title" id="objectUpdateModalLabel">
     {% trans "Edit Action." %}
   </h5>
   <button
@@ -39,7 +39,7 @@
 <div class="oh-modal__dialog-body">
   <form
     hx-post="{% url 'update-actions' form.instance.id %}"
-    hx-target="#actionUpdateForm"
+    hx-target="#objectUpdateModalTarget"
     method="post"
     hx-encoding="multipart/form-data"
   >
@@ -48,5 +48,5 @@
 </div>
 
 <script>
-  $("#actionUpdateForm #id_action").change();
+  $("#objectUpdateModalTarget #id_action").change();
 </script>

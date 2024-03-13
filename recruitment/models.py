@@ -507,7 +507,7 @@ class RejectedCandidate(models.Model):
         RejectReason, verbose_name="Reject reason", blank=True
     )
     description = models.TextField(max_length=255)
-    objects = HorillaCompanyManager(related_company_field="candidate_id__company_id")
+    objects = HorillaCompanyManager(related_company_field="candidate_id__recruitment_id__company_id")
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -680,7 +680,7 @@ class RecruitmentMailTemplate(models.Model):
     title = models.CharField(max_length=25, unique=True)
     body = models.TextField()
     company_id = models.ForeignKey(
-        Company, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Company"
+        Company, null=True, blank=True, on_delete=models.CASCADE, verbose_name=_("Company")
     )
 
 
@@ -693,7 +693,10 @@ class SkillZone(models.Model):
     description = models.TextField(verbose_name=_("Description"), max_length=255)
     created_on = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
-    objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
+    company_id = models.ForeignKey(
+        Company, null=True, blank=True, on_delete=models.CASCADE, verbose_name=_("Company")
+    )
+    objects = HorillaCompanyManager()
 
     def get_active(self):
         return SkillZoneCandidate.objects.filter(is_active=True, skill_zone_id=self)
@@ -732,7 +735,7 @@ class SkillZoneCandidate(models.Model):
     reason = models.CharField(max_length=200, verbose_name=_("Reason"))
     added_on = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
-    objects = HorillaCompanyManager(related_company_field="skill_zone__company_id")
+    objects = HorillaCompanyManager(related_company_field="candidate_id__recruitment_id__company_id")
 
     class Meta:
         """
