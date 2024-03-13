@@ -1,57 +1,76 @@
 {% load i18n %}
-<form
-  id="file-form"
-  {% if document_request %}
-  	hx-post="{% url 'document-request-update' document_request.id %}"
-  {% else %}
-  	hx-post="{% url 'document-request-create' %}"
-  {% endif %}
-  	hx-target="#documentRequestCreateForm"
-  hx-encoding="multipart/form-data"
->
-  <div class="row">
-    <div class="col-sm-12 col-md-12 col-lg-6">
-      <div class="oh-input-group">
-        <label class="oh-label" for="{{form.title.id_for_label}}">{% trans "Title" %}</label>
-        {{form.title}}
+<div class="oh-modal__dialog-header">
+  <h5 class="oh-modal__dialog-title" id="objectCreateModalLabel">
+    {% trans "Document Request" %}
+  </h5>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
+    id="file-form"
+    {% if document_request%}
+      hx-post="{% url 'document-request-update' document_request.id %}"
+    {% else %}
+      hx-post="{% url 'document-request-create' %}"
+    {% endif %}
+    hx-target="#objectCreateModalTarget"
+    hx-encoding="multipart/form-data"
+  >
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-6">
+        <div class="oh-input-group">
+          <label class="oh-label" for="{{form.title.id_for_label}}"
+            >{% trans "Title" %}</label
+          >
+          {{form.title}}
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-12 col-lg-6">
+        <div class="oh-input-group">
+          <label class="oh-label" for="{{form.employee_id.id_for_label}}"
+            >{% trans "Employees" %}</label
+          >
+          {{form.employee_id}}
+        </div>
       </div>
     </div>
-    <div class="col-sm-12 col-md-12 col-lg-6">
-      <div class="oh-input-group">
-        <label class="oh-label" for="{{form.employee_id.id_for_label}}">{% trans "Employees" %}</label>
-        {{form.employee_id}}
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-6">
+        <div class="oh-input-group">
+          <label class="oh-label" for="{{form.format.id_for_label}}"
+            >{% trans "Format" %}</label
+          >
+          {{form.format}}
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-12 col-lg-6">
+        <div class="oh-input-group">
+          <label class="oh-label" for="{{form.max_size.id_for_label}}"
+            >{% trans "Max size (in MB)" %}</label
+          >
+          {{form.max_size}}
+        </div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-sm-12 col-md-12 col-lg-6">
-      <div class="oh-input-group">
-        <label class="oh-label" for="{{form.format.id_for_label}}">{% trans "Format" %}</label>
-        {{form.format}}
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="oh-input-group">
+          <label class="oh-label" for="{{form.description.id_for_label}}"
+            >{% trans "Description" %}</label
+          >
+          {{form.description}}
+        </div>
       </div>
     </div>
-    <div class="col-sm-12 col-md-12 col-lg-6">
-      <div class="oh-input-group">
-        <label class="oh-label" for="{{form.max_size.id_for_label}}">{% trans "Max size (in MB)" %}</label>
-        {{form.max_size}}
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-sm-12 col-md-12 col-lg-12">
-      <div class="oh-input-group">
-        <label class="oh-label" for="{{form.description.id_for_label}}">{% trans "Description" %}</label>
-        {{form.description}}
-      </div>
-    </div>
-  </div>
-
-  <div class="d-flex flex-row-reverse">
-    <button
+    <div class="d-flex flex-row-reverse">
+      <button
         type="submit"
         class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-        >
+      >
         {% trans "Save" %}
-    </button>
-  </div>
-</form>
+      </button>
+    </div>
+  </form>
+</div>

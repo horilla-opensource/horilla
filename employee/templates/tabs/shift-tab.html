@@ -66,10 +66,10 @@
         {% if not request.GET.profile and perms.base.add_rotatingworktypeassign or request.user|is_reportingmanager %}
         	<button
         	  class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
-        	  title="Add"
+        	  title="{% trans 'Add' %}"
         	  hx-get="{% url 'rotating-work-type-assign-add' %}?emp_id={{emp_id}}"
-        	  hx-target="#rotatingWorkTypeAssignModalBody"
-        	  data-target="#rotating-work-type-modal"
+        	  hx-target="#objectCreateModalTarget"
+        	  data-target="#objectCreateModal"
         	  data-toggle="oh-modal-toggle"
         	>
         	  <ion-icon
@@ -120,8 +120,8 @@
         	  class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
         	  title="Add"
         	  hx-get="{% url 'rotating-shift-assign-add' %}?emp_id={{emp_id}}"
-        	  hx-target="#rotatingShiftAssignModalBody"
-        	  data-target="#rotating-shift-modal"
+        	  hx-target="#objectCreateModalTarget"
+        	  data-target="#objectCreateModal"
         	  data-toggle="oh-modal-toggle"
         	>
         	  <ion-icon
@@ -575,8 +575,8 @@
         	    						{% if perms.base.change_rotatingworktypeassign or request.user|check_manager:rwork_type or request.user|is_reportingmanager %}
         	    							<a
         	    							  hx-get="{% url 'rotating-work-type-assign-update' rwork_type.id %}"
-        	    							  hx-target="#rotatingWorkTypeAssignModalBody"
-        	    							  data-target="#rotating-work-type-modal"
+        	    							  hx-target="#objectCreateModalTarget"
+        	    							  data-target="#objectCreateModal"
         	    							  data-toggle="oh-modal-toggle"
         	    							  type="button"
         	    							  class="oh-btn oh-btn--light-bkg w-50"
@@ -848,29 +848,6 @@
 
 <div
   class="oh-modal"
-  id="rotating-work-type-modal"
-  role="dialog"
-  aria-labelledby="rotating-work-type-modal"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="rotatingWorkTypeAssignModalLabel">
-        {% trans "Rotating Work Type Assign" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div
-      class="oh-modal__dialog-body"
-      id="rotatingWorkTypeAssignModalBody"
-    ></div>
-  </div>
-</div>
-
-<div
-  class="oh-modal"
   id="shiftRequestModalUpdate"
   role="dialog"
   aria-labelledby="shiftRequestModalUpdate"
@@ -937,48 +914,7 @@
   
 </div>
 
-<div
-  class="oh-modal"
-  id="rotating-shift-modal"
-  role="dialog"
-  aria-labelledby="rotating-shift-modal"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="rotatingShiftAssignModalLabel">
-        {% trans "Rotating Shift Assign" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div class="oh-modal__dialog-body" id="rotatingShiftAssignModalBody"></div>
-  </div>
-</div>
 
-<div
-  class="oh-modal"
-  id="rotating-work-type-update-modal"
-  role="dialog"
-  aria-labelledby="rotating-work-type-update-modal"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="">
-        {% trans "Rotating Work Type Assign Update" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div
-      class="oh-modal__dialog-body"
-      id="rotatingWorkTypeAssignUpdateModalLabel"
-    ></div>
-  </div>
-</div>
 
 <script>
   $(document).ready(function () {

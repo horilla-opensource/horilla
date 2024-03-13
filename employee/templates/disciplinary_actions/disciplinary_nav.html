@@ -119,7 +119,7 @@
             </div>
           </div>
           <div class="oh-main__titlebar-button-container">
-            <a hx-get="{% url 'create-actions' %}" hx-target="#actionCreateForm" data-toggle="oh-modal-toggle" data-target="#actionCreateModal" class="oh-btn oh-btn--secondary">
+            <a hx-get="{% url 'create-actions' %}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--secondary">
               <ion-icon name="add-outline"></ion-icon>
               {% trans 'Take An Action' %}
             </a>
@@ -191,28 +191,6 @@
     <div class="oh-modal__dialog-body" id="policyModalBody"></div>
   </div>
 </div>
-
-
-<!-- start of create modal -->
-<div
-	class="oh-modal"
-	id="actionCreateModal"
-	role="dialog"
-	aria-labelledby="emptagModal"
-	aria-hidden="true"
- >
-	<div class="oh-modal__dialog" id="actionCreateForm"> </div>
-</div>
-<!-- end of create modal -->
-
-
-<!-- start of update modal -->
-<div class="oh-modal" id="actionUpdateModal" 
-    role="dialog" aria-labelledby="actionUpdateModal"
-    aria-hidden="true">
-<div class="oh-modal__dialog" id='actionUpdateForm'> </div>
-</div>
-<!-- end of update modal -->
 
 <script>
 	function actionChange(selectElement) {
