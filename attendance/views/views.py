@@ -695,14 +695,23 @@ def attendance_overtime_delete(request, obj_id):
     args:
         obj_id : attendance overtime id
     """
+    previous_data = request.GET.urlencode()
+    hx_target = request.META.get("HTTP_HX_TARGET", None)
     try:
-        AttendanceOverTime.objects.get(id=obj_id).delete()
-        messages.success(request, _("Hour account deleted."))
+        attendance = AttendanceOverTime.objects.get(id=obj_id)
+        attendance.delete()
+        if hx_target == "ot-table":
+            messages.success(request, _("Hour account deleted."))
     except (AttendanceOverTime.DoesNotExist, OverflowError, ValueError):
-        messages.error(request, _("Hour account not found"))
+        if hx_target == "ot-table":
+            messages.error(request, _("Hour account not found"))
     except ProtectedError:
-        messages.error(request, _("You cannot delete this hour account"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        if hx_target == "ot-table":
+            messages.error(request, _("You cannot delete this hour account"))
+    if hx_target and hx_target == "ot-table":
+        return redirect(f"/attendance/attendance-overtime-search?{previous_data}")
+    elif hx_target:
+        return HttpResponse()
 
 
 @login_required

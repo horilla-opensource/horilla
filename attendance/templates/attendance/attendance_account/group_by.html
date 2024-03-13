@@ -1,6 +1,17 @@
 {% load i18n %}
 {% load attendancefilters %}
 {% load basefilters %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  	<div class="oh-alert-container">
+  	  <div class="oh-alert oh-alert--animated {{message.tags}}">
+  	    {{ message }}
+  	  </div>
+  	</div>
+  {% endfor %}
+</div>
+{% endif %}
 {% include 'filter_tags.html' %}
 <div class="oh-card">
   {% for attendance_list in accounts %}
@@ -71,16 +82,16 @@
               <div class="oh-sticky-table__td">{{ot.worked_hours}}</div>
               <div class="oh-sticky-table__td">{{ot.pending_hours}}</div>
               <div class="oh-sticky-table__td">{{ot.overtime}}</div>
-              <div class="oh-sticky-table__td">
+              <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                 <div class="oh-btn-group">
                   {% if perms.recruitment.change_attendanceovertime or request.user|is_reportingmanager %}
-                  <a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+                    <a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
                   {% endif %}
-                  {% if perms.recruitment.delete_attendance %}
-                  {% comment %} <form action="{% url 'attendance-overtime-delete' ot.id %}?page={{accounts.number}}" method='post' class="w-50">
-                    {% csrf_token %} {% endcomment %}
-                    <button data-id={{ot.id}} class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50 deletebutton" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-                  {% comment %} </form> {% endcomment %}
+                  {% if perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %}
+                    <form hx-confirm="{% trans 'Are you sure want to delete this hour account?' %}" hx-post="{% url 'attendance-overtime-delete' ot.id %}?{{pd}}&page={{accounts.number}}" hx-target="#ot-table" class="w-50">
+                      {% csrf_token %}
+                      <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"   title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                    </form>
                   {% endif %}
                 </div>  
               </div>
@@ -221,25 +232,6 @@
 
     $("#unselectAllInstances").click(function () {
       unselectAllHourAcconts();
-    });
-    $(".deletebutton").click(function () {
-      var id = $(this).attr("data-id");
-      var url = `/attendance/attendance-overtime-delete/${id}/`;
-
-      // Create a form element
-      var form = $("<form></form>");
-      form.attr("method", "POST");
-      form.attr("action", url);
-
-      // Create a hidden input field for the CSRF token
-      var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
-      var csrf_input = $('<input type="hidden" name="csrfmiddlewaretoken">');
-      csrf_input.val(csrf_token);
-      form.append(csrf_input);
-
-      // Append the form to the body and submit it
-      $(document.body).append(form);
-      form.submit();
     });
 
     $(".oh-table__sticky-collaspable-sort").click(function (e) {
