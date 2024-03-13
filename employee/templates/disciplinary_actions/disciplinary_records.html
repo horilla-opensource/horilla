@@ -129,13 +129,13 @@
                   <div class="oh-sticky-table__td">
                     <div class="oh-btn-group" >
                       {% if perms.payroll.change_disciplinaryaction %}
-                        <a hx-get="{% url 'update-actions' i.id %}" hx-target='#actionUpdateForm' data-toggle='oh-modal-toggle' data-target="#actionUpdateModal" class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
+                        <a hx-get="{% url 'update-actions' i.id %}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target="#objectUpdateModal" class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
                         <ion-icon name="create-outline"></ion-icon></a>
                       {% endif %}
                       {% if perms.payroll.add_disciplinaryaction %}
                       <a class="oh-btn oh-btn--light-bkg w-50" data-toggle="oh-modal-toggle"
-                        data-target="#actionCreateModal" hx-get="{% url 'duplicate-disciplinary-actions' i.id %}?{{pg}}"
-                        title="{% trans 'Duplicate' %}" hx-target="#actionCreateForm"
+                        data-target="#objectCreateModal" hx-get="{% url 'duplicate-disciplinary-actions' i.id %}?{{pg}}"
+                        title="{% trans 'Duplicate' %}" hx-target="#objectCreateModalTarget"
                         style= "cursor: pointer;"
                       >
                         <ion-icon name="copy-outline"></ion-icon>

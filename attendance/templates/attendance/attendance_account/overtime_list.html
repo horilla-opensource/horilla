@@ -1,6 +1,17 @@
 {% load i18n %}
 {% load static %}
 {% load basefilters %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  	<div class="oh-alert-container">
+  	  <div class="oh-alert oh-alert--animated {{message.tags}}">
+  	    {{ message }}
+  	  </div>
+  	</div>
+  {% endfor %}
+</div>
+{% endif %}
 {% include 'filter_tags.html' %}
 <div class="oh-table_sticky--wrapper" id="ot-table">
 	{% if accounts %}
@@ -80,10 +91,10 @@
 										{% if perms.attendance.change_attendanceovertime or request.user|is_reportingmanager %}
 											<a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
 										{% endif %}
-										{% if perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %}
-											<form action="{% url 'attendance-overtime-delete' ot.id  %}" 
-												onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
-												hx-target="#ot-table" method='post' class='w-50'>
+										{% if perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %} 
+											<form hx-confirm="{% trans 'Are you sure want to delete this hour account?' %}"
+												hx-post="{% url 'attendance-overtime-delete' ot.id  %}?{{pd}}" 
+												hx-target="#ot-table" class='w-50'>
 												{% csrf_token %}
 												<button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"   title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
 											</form>

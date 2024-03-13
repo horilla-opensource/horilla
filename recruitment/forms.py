@@ -824,7 +824,6 @@ class SkillZoneCreateForm(ModelForm):
         exclude = [
             "created_on",
             "objects",
-            "company_id",
             "is_active",
         ]
 
