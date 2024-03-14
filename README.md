@@ -146,7 +146,13 @@ python manage.py createhorillauser
 
 <br>
 Enter the details asked for creating the admin user for the project.
-5. Running the project
+
+5. Enabling the translations and breadcrumbs text
+   ```bash
+   python manage.py compilemessages
+   ```
+
+7. Running the project
 To run the project locally, execute the following command:
 
 ```bash
