@@ -1,16 +1,26 @@
 {% load i18n %}
-<form
-  hx-post="{% url 'rotating-shift-assign-add' %}"
-  hx-target="#rotatingShiftAssignModalBody"
-  method="post"
->
-  {% csrf_token %}
-  <div class="oh-inner-sidebar-content__header"></div>
-  {{form}}
-  <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
-    <button type="submit" class="oh-btn oh-btn--secondary pl-5 pr-5">
-      {% trans "Save" %}
-    </button>
-  </div>
-  <div class="oh-inner-sidebar-content__footer"></div>
-</form>
+<div class="oh-modal__dialog-header">
+  <h2 class="oh-modal__dialog-title" id="rotatingShiftAssignModalLabel">
+    {% trans "Rotating Shift Assign" %}
+  </h2>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
+    hx-post="{% url 'rotating-shift-assign-add' %}"
+    hx-target="#objectCreateModalTarget"
+    method="post"
+    >
+    {% csrf_token %}
+    <div class="oh-inner-sidebar-content__header"></div>
+    {{form}}
+    <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
+      <button type="submit" class="oh-btn oh-btn--secondary pl-5 pr-5">
+        {% trans "Save" %}
+      </button>
+    </div>
+    <div class="oh-inner-sidebar-content__footer"></div>
+  </form>
+</div>

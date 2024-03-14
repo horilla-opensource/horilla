@@ -137,8 +137,8 @@ style="cursor: pointer; display: none"
 								  {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager  %}
 								  <a
 									hx-get="{% url 'rotating-work-type-assign-update' rwork_type.id %}"
-									hx-target="#rotatingWorkTypeAssignUpdateModalLabel"
-									data-target="#rotating-work-type-update-modal"
+									hx-target="#objectUpdateModalTarget"
+									data-target="#objectUpdateModal"
 									data-toggle="oh-modal-toggle"
 									type="button"
 									class="oh-btn oh-btn--light-bkg w-50"
@@ -148,8 +148,8 @@ style="cursor: pointer; display: none"
 								  ></a>
 								  <a 
 									hx-get="{% url 'rotating-work-type-assign-duplicate' rwork_type.id %}"
-									hx-target="#rotatingWorkTypeAssignModalBody"
-									data-target="#rotating-work-type-modal"
+									hx-target="#objectCreateModalTarget"
+									data-target="#objectCreateModal"
 									data-toggle="oh-modal-toggle"
 									type="button"
 									class="oh-btn oh-btn--light-bkg w-50" 

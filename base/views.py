@@ -1419,7 +1419,6 @@ def rotating_work_type_assign_view(request):
 
 
 @login_required
-@manager_can_enter("base.view_rotatingworktypeassign")
 def rotating_work_individual_view(request, instance_id):
     """
     This view is used render detailed view of the rotating work type assign
@@ -2048,7 +2047,6 @@ def rotating_shift_assign_view(request):
 
 
 @login_required
-@manager_can_enter("base.view_rotatingworktypeassign")
 def rotating_shift_individual_view(request, instance_id):
     """
     This view is used render detailed view of the rotating shit assign
@@ -2614,7 +2612,7 @@ def work_type_request(request):
         context["close_hx_url"] = f"/work-type-request-search?{previous_data}"
         context["close_hx_target"] = "#view-container"
     elif HTTP_REFERER and HTTP_REFERER.endswith("employee-profile/"):
-        context["close_hx_url"] = "/employee/shift-tab/1?profile=true"
+        context["close_hx_url"] = f"/employee/shift-tab/{employee}?profile=true"
         context["close_hx_target"] = "#shift_target"
     elif HTTP_REFERER:
         HTTP_REFERERS = [part for part in HTTP_REFERER.split("/") if part]

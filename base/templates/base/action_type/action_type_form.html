@@ -23,7 +23,7 @@
     	hx-post="{% url 'action-type-create' %}?dynamic={{dynamic}}&{{hx_vals}}"
     {% endif %}
 	  {% if dynamic %}
-		  hx-target="#actionCreateForm"
+		  hx-target="#objectCreateModalTarget"
 	  {% else %}
 		  hx-target="#ticketForm"
 	  {% endif %}

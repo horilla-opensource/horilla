@@ -399,6 +399,7 @@
 								>
 							</li>
 							{% endif %}
+							{% if perms.employee.view_employee %}
 							<li class="oh-general__tab" data-cell-index="22" data-cell-title="{% trans 'Mail Log' %}">
 							  <a
 							  hx-get="{% url 'employee-get-mail-log' %}?emp_id={{employee.id}}"
@@ -409,6 +410,7 @@
 							  >{% trans "Mail Log" %}</a
 							  >
 							</li>
+							{% endif %}
 							{% if perms.employee.view_employeenote or request.user|check_manager:employee %}
 							<li data-cell-index="21" data-cell-title="{% trans 'Bonus' %}" class="oh-general__tab">
 								<a
