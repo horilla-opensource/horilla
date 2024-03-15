@@ -1108,7 +1108,7 @@ def available_leave_update(request, id):
     """
     leave_assign = AvailableLeave.objects.get(id=id)
     form = AvailableLeaveUpdateForm(instance=leave_assign)
-    previous_data = request.GET.urlencode()
+    previous_data = request.GET.urlencode() or "field=leave_type_id"
     if request.method == "POST":
         form = AvailableLeaveUpdateForm(request.POST, instance=leave_assign)
         if form.is_valid():
@@ -1833,6 +1833,8 @@ def user_leave_request(request, id):
                         icon="people-circle",
                         redirect=f"/leave/request-view?id={leave_request.id}",
                     )
+                if len(LeaveRequest.objects.filter(employee_id=employee)) == 1:
+                    return HttpResponse("<script>window.location.reload();</script>")
         else:
             form.add_error(
                 None, _("You dont have enough leave days to make the request..")
@@ -1946,16 +1948,20 @@ def user_request_delete(request, id):
     Returns:
     GET : return user leave request view template
     """
+    previous_data = request.GET.urlencode()
     try:
         leave_request = LeaveRequest.objects.get(id=id)
         if request.user.employee_get == leave_request.employee_id:
-            LeaveRequest.objects.get(id=id).delete()
             messages.success(request, _("Leave request deleted successfully.."))
+            leave_request.delete()
     except LeaveRequest.DoesNotExist:
         messages.error(request, _("User has no leave request.."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
-    return redirect(user_request_view)
+    if not LeaveRequest.objects.filter(employee_id=request.user.employee_get):
+        return HttpResponse("<script>window.location.reload();</script>")
+    else:
+        return redirect(f"/leave/user-request-filter?{previous_data}")
 
 
 @login_required
@@ -2680,6 +2686,11 @@ def leave_request_create(request):
                     )
                     mail_thread.start()
                     form = UserLeaveRequestCreationForm(initial={"employee_id": emp})
+                    if len(LeaveRequest.objects.filter(employee_id=emp_id)) == 1:
+                        return HttpResponse(
+                            "<script>window.location.reload();</script>"
+                        )
+
             return render(
                 request,
                 "leave/user_leave/request_form.html",

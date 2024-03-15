@@ -81,8 +81,8 @@
                   class="oh-sticky-table__tr"
                   draggable="false"
                   data-toggle="oh-modal-toggle"
-                  data-target="#objectDetailsModalW25"
-                  hx-target="#objectDetailsModalW25Target"
+                  data-target="#objectDetailsModal"
+                  hx-target="#objectDetailsModalTarget"
                   hx-get="{% url 'available-leave-single-view' available_leave.id %}?{{pd}}&instances_ids={{available_leave_ids}}"
                 >
                   <div
@@ -136,9 +136,9 @@
                         class="oh-btn oh-btn--light-bkg w-100"
                         title="{% trans 'Edit' %}"
                         data-toggle="oh-modal-toggle"
-                        data-target="#assignLeaveUpdateModal"
+                        data-target="#objectUpdateModal"
                         hx-get="{% url 'available-leave-update' available_leave.id %}?{{pd}}"
-                        hx-target="#assignLeaveUpdateFormModal"
+                        hx-target="#objectUpdateModalTarget"
                       >
                         <ion-icon name="create-outline"></ion-icon>
                       </button>

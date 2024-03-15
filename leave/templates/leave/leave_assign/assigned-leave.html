@@ -36,8 +36,8 @@
                 <div class="oh-sticky-table__td">
                     <div class="oh-btn-group">
                         <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
-                            data-target="#editModal1" hx-get="{% url 'available-leave-update' available_leave.id %}"
-                            hx-target="#leaveForm"><ion-icon name="create-outline"></ion-icon></button>
+                            data-target="#objectUpdateModal" hx-get="{% url 'available-leave-update' available_leave.id %}"
+                            hx-target="#objectUpdateModalTarget"><ion-icon name="create-outline"></ion-icon></button>
                         <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" id="delete-link"
                             href="{% url 'assign-delete' available_leave.id %}" title="{% trans 'Delete' %}"><ion-icon
                                 name="trash-outline"></ion-icon></a>
