@@ -13,17 +13,12 @@
     {% trans "Assign Leaves" %}
     <div class="oh-payslip__header mt-3 mb-0"></div>
   </span>
-  <button
-    class="oh-modal__close"
-    aria-label="Close"
-    hx-get="{% url 'assign-filter' %}"
-    hx-target="#assignedLeaves"
-  >
+  <button class="oh-modal__close" aria-label="Close">
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form hx-post="{% url 'assign' %}" hx-target="#assignLeaveFormModal">
+  <form hx-post="{% url 'assign' %}" hx-target="#objectCreateModalTarget">
     {{assign_form}}
     <div class="oh-modal__dialog-footer">
       <button type="submit" class="oh-btn oh-btn--secondary w-100">

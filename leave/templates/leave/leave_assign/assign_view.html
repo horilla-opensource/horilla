@@ -257,9 +257,9 @@
 				<button
 					class="oh-btn oh-btn--secondary oh-btn--shadow"
 					data-toggle="oh-modal-toggle"
-					data-target="#assignLeaveModal"
+					data-target="#objectCreateModal"
 					hx-get="{% url 'assign' %}"
-					hx-target="#assignLeaveFormModal"
+					hx-target="#objectCreateModalTarget"
 				>
 					{% trans "Assign" %}
 				</button>
@@ -353,17 +353,6 @@
   <div class="oh-modal__dialog oh-modal__dialog--timeoff" 
   	id="assignLeaveUpdateFormModal"> 
   </div>
-</div>
-
-<!-- Assign leave -->
-<div
-	class="oh-modal"
-	id="assignLeaveModal"
-	role="dialog"
-	aria-labelledby="assignLeaveModalLabel"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog" id="assignLeaveFormModal"> </div>
 </div>
 
 <script>

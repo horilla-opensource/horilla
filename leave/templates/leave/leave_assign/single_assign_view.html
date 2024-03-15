@@ -13,7 +13,6 @@
 <div class="oh-modal__dialog-header">
   <h2
     class="oh-modal__dialog-title"
-    style="margin-left: 30px"
     id="attendanceModalLabel"
   >
     {% trans "Details" %}
@@ -27,7 +26,7 @@
   <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button
       hx-get="{% url 'available-leave-single-view' previous_instance %}?instances_ids={{instance_ids_json}}"
-      hx-target="#objectDetailsModalW25Target"
+      hx-target="#objectDetailsModalTarget"
       class="oh-modal__diaglog-nav oh-modal__nav-prev"
     >
       <ion-icon
@@ -40,7 +39,7 @@
 
     <button
       hx-get="{% url 'available-leave-single-view' next_instance %}?instances_ids={{instance_ids_json}}"
-      hx-target="#objectDetailsModalW25Target"
+      hx-target="#objectDetailsModalTarget"
       class="oh-modal__diaglog-nav oh-modal__nav-next"
     >
       <ion-icon
@@ -52,7 +51,6 @@
     </button>
   </div>
   {% if available_leave %}
-    <div class="oh-modal__dialog-header">
       <a
         class="oh-timeoff-modal__profile-content"
         style="text-decoration: none"
@@ -80,7 +78,7 @@
           </div>
         </div>
       </a>
-
+    <div class="oh-modal__dialog-header" style="padding-top: 5px">
       <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
         <div class="oh-timeoff-modal__stat">
           <span class="oh-timeoff-modal__stat-title"
@@ -135,8 +133,8 @@
         <div class="oh-modal__button-container text-center">
           <div class="oh-btn-group">
             {% if request.user|is_reportingmanager or perms.leave.change_availableleave %}
-              <a hx-get="{% url 'available-leave-update' available_leave.id %}?{{pd}}" hx-target='#assignLeaveUpdateFormModal' 
-                data-toggle="oh-modal-toggle" data-target='#assignLeaveUpdateModal' class="oh-btn oh-btn--info w-50" title="{% trans 'Edit' %}">
+              <a hx-get="{% url 'available-leave-update' available_leave.id %}?{{pd}}" hx-target='#objectUpdateModalTarget' 
+                data-toggle="oh-modal-toggle" data-target='#objectUpdateModal' class="oh-btn oh-btn--info w-50" title="{% trans 'Edit' %}">
                 <ion-icon name="create-outline"></ion-icon>
               </a>
             {% endif %}

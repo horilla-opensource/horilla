@@ -41,7 +41,7 @@
 </div>
 <form
   hx-post="{% url 'available-leave-update' id %}?{{pd}}"
-  hx-target="#assignLeaveUpdateFormModal"
+  hx-target="#objectUpdateModalTarget"
 >
   <div class="oh-modal__dialog-body pb-2">
     <label class="oh-label d-block">{% trans "Available Days" %}</label>

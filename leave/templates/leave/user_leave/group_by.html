@@ -1,5 +1,16 @@
 {% load attendancefilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 
 <!-- start of selection buttons -->
 <div
@@ -136,8 +147,10 @@
                                                 </button>
                                                 <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
                                                     title="{% trans 'Delete' %}" id="delete-link"
-                                                    onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');"
-                                                    href="{% url 'user-request-delete' leave_request.id %}">
+                                                    hx-confirm="{% trans 'Are you sure you want to delete this leave request?' %}"
+                                                    hx-post="{% url 'user-request-delete' leave_request.id %}?{{pd}}"
+                                                    hx-target="#userRequest"
+                                                    >
                                                     <ion-icon name="trash-outline"></ion-icon>
                                                 </a>
                                             </div>

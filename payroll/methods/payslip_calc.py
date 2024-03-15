@@ -62,14 +62,110 @@ filter_mapping = {
 }
 
 
-def calculate_employer_contribution(deduction: Deduction, amount: float):
-    """
-    This method is used to calculate the employer contribution
-    """
-    employer_contribution_amount = 0
-    if max(0, deduction.employer_rate):
-        employer_contribution_amount = (amount * deduction.employer_rate) / 100
-    return employer_contribution_amount
+
+
+
+tets = {
+    "net_pay": 35140.905000000006,
+    "employee": 1,
+    "allowances": [
+        {
+            "allowance_id": 5,
+            "title": "Low Basic Pay Assistance",
+            "is_taxable": True,
+            "amount": 0,
+        },
+        {
+            "allowance_id": 13,
+            "title": "Bonus point Redeem for Adam Luis ",
+            "is_taxable": True,
+            "amount": 75.0,
+        },
+        {
+            "allowance_id": 17,
+            "title": "Motorcycle",
+            "is_taxable": True,
+            "amount": 5000.0,
+        },
+        {
+            "allowance_id": 2,
+            "title": "Meal Allowance",
+            "is_taxable": False,
+            "amount": 800.0,
+        },
+    ],
+    "gross_pay": 39284.09090909091,
+    "contract_wage": 35000.0,
+    "basic_pay": 33409.09090909091,
+    "paid_days": 21.0,
+    "unpaid_days": 1.0,
+    "taxable_gross_pay": {"taxable_gross_pay": 35848.47727272727},
+    "basic_pay_deductions": [],
+    "gross_pay_deductions": [],
+    "pretax_deductions": [
+        {
+            "deduction_id": 1,
+            "title": "Social Security (FICA)",
+            "is_pretax": True,
+            "amount": 2435.6136363636365,
+            "employer_contribution_rate": 6.2,
+        },
+        {
+            "deduction_id": 62,
+            "title": "Late Come penalty",
+            "is_pretax": True,
+            "amount": 200.0,
+            "employer_contribution_rate": 0.0,
+        },
+    ],
+    "post_tax_deductions": [
+        {
+            "deduction_id": 2,
+            "title": "Medicare tax",
+            "is_pretax": False,
+            "amount": 484.43181818181824,
+            "employer_contribution_rate": 1.45,
+        },
+        {
+            "deduction_id": 55,
+            "title": "ESI",
+            "is_pretax": False,
+            "amount": 0,
+            "employer_contribution_rate": 3.25,
+        },
+        {
+            "deduction_id": 73,
+            "title": "Test",
+            "is_pretax": False,
+            "amount": 0.0,
+            "employer_contribution_rate": 0.0,
+        },
+    ],
+    "tax_deductions": [
+        {
+            "deduction_id": 75,
+            "title": "test tax netpay",
+            "is_tax": True,
+            "amount": 668.1818181818182,
+            "employer_contribution_rate": 3.0,
+        }
+    ],
+    "net_deductions": [
+        {
+            "deduction_id": 74,
+            "title": "Test Netpay",
+            "is_pretax": False,
+            "amount": 354.9586363636364,
+            "employer_contribution_rate": 2.0,
+        }
+    ],
+    "total_deductions": 3788.227272727273,
+    "loss_of_pay": 1590.909090909091,
+    "federal_tax": 0,
+    "start_date": "2024-02-01",
+    "end_date": "2024-02-29",
+    "range": "Feb 01 2024 - Feb 29 2024",
+}
 
 
 def dynamic_attr(obj, attribute_path):
@@ -357,16 +453,12 @@ def calculate_tax_deduction(*_args, **kwargs):
         amount = if_condition_on(**kwargs)
         deductions_amt.append(amount)
     for deduction, amount in zip(deductions, deductions_amt):
-        employer_contribution_amount = calculate_employer_contribution(
-            deduction, kwargs[deduction.based_on]
-        )
         serialized_deduction = {
             "deduction_id": deduction.id,
             "title": deduction.title,
             "is_tax": deduction.is_tax,
             "amount": amount,
             "employer_contribution_rate": deduction.employer_rate,
-            "employer_contribution_amount": employer_contribution_amount,
         }
         serialized_deductions.append(serialized_deduction)
     return {"tax_deductions": serialized_deductions}
@@ -466,16 +558,12 @@ def calculate_pre_tax_deduction(*_args, **kwargs):
             kwargs["component"] = deduction
             pre_tax_deductions_amt.append(if_condition_on(**kwargs))
     for deduction, amount in zip(pre_tax_deductions, pre_tax_deductions_amt):
-        employer_contribution_amount = calculate_employer_contribution(
-            deduction, kwargs[deduction.based_on]
-        )
         serialized_deduction = {
             "deduction_id": deduction.id,
             "title": deduction.title,
             "is_pretax": deduction.is_pretax,
             "amount": amount,
             "employer_contribution_rate": deduction.employer_rate,
-            "employer_contribution_amount": employer_contribution_amount,
         }
         serialized_deductions.append(serialized_deduction)
     return {"pretax_deductions": serialized_deductions, "installments": installments}
@@ -548,7 +636,7 @@ def calculate_post_tax_deduction(*_args, **kwargs):
         else:
             if deduction.based_on != "net_pay":
                 calculation_function = calculation_mapping.get(deduction.based_on)
-                amount, taxable_gross_pay = calculation_function(
+                amount = calculation_function(
                     **{
                         "employee": employee,
                         "start_date": start_date,
@@ -558,7 +646,6 @@ def calculate_post_tax_deduction(*_args, **kwargs):
                         "total_allowance": total_allowance,
                         "basic_pay": basic_pay,
                         "day_dict": day_dict,
-                        "taxable_deduction": True,
                     }
                 )
                 kwargs["amount"] = amount
@@ -567,16 +654,12 @@ def calculate_post_tax_deduction(*_args, **kwargs):
                 post_tax_deductions_amt.append(amount)
 
     for deduction, amount in zip(post_tax_deductions, post_tax_deductions_amt):
-        employer_contribution_amount = calculate_employer_contribution(
-            deduction, taxable_gross_pay
-        )
         serialized_deduction = {
             "deduction_id": deduction.id,
             "title": deduction.title,
             "is_pretax": deduction.is_pretax,
             "amount": amount,
             "employer_contribution_rate": deduction.employer_rate,
-            "employer_contribution_amount": employer_contribution_amount,
         }
         serialized_deductions.append(serialized_deduction)
     for deduction in post_tax_deductions:
@@ -614,16 +697,12 @@ def calculate_net_pay_deduction(net_pay, net_pay_deductions, **kwargs):
         deduction_amt.append(amount)
     net_deduction = 0
     for deduction, amount in zip(deductions, deduction_amt):
-        employer_contribution_amount = calculate_employer_contribution(
-            deduction, net_pay
-        )
         serialized_deduction = {
             "deduction_id": deduction.id,
             "title": deduction.title,
             "is_pretax": deduction.is_pretax,
             "amount": amount,
             "employer_contribution_rate": deduction.employer_rate,
-            "employer_contribution_amount": employer_contribution_amount,
         }
         net_deduction = amount + net_deduction
         serialized_net_pay_deductions.append(serialized_deduction)
@@ -734,10 +813,7 @@ def calculate_based_on_taxable_gross_pay(*_args, **kwargs):
     taxable_gross_pay = taxable_gross_pay["taxable_gross_pay"]
     rate = component.rate
     amount = taxable_gross_pay * rate / 100
-    if kwargs["taxable_deduction"]:
-        return amount, taxable_gross_pay
-    else:
-        return amount
+    return amount
 
 
 def calculate_based_on_net_pay(component, net_pay, day_dict):

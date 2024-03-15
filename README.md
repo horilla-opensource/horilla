@@ -1,6 +1,6 @@
 
 # **Horilla 🦍** [![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
-Horilla is a free and open source software HRMS system.
+Horilla is a Free and Open Source HRMS Software.
 
 ## **Installation**
 ____
@@ -146,7 +146,13 @@ python manage.py createhorillauser
 
 <br>
 Enter the details asked for creating the admin user for the project.
-5. Running the project
+
+5. Enabling the translations and breadcrumbs text
+   ```bash
+   python manage.py compilemessages
+   ```
+
+7. Running the project
 To run the project locally, execute the following command:
 
 ```bash
