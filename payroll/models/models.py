@@ -963,6 +963,13 @@ class Allowance(models.Model):
             self.field = None
             self.condition = None
             self.value = None
+        if not self.is_fixed:
+            if not self.based_on:
+                raise ValidationError(
+                    _(
+                        "If the 'Is fixed' field is disabled, the 'Based on' field is required."
+                    )
+                )
         if self.is_condition_based:
             if not self.field or not self.value or not self.condition:
                 raise ValidationError(
@@ -1221,6 +1228,13 @@ class Deduction(models.Model):
 
         if self.is_tax:
             self.is_pretax = False
+        if not self.is_fixed:
+            if not self.based_on:
+                raise ValidationError(
+                    _(
+                        "If the 'Is fixed' field is disabled, the 'Based on' field is required."
+                    )
+                )
         if self.is_pretax and self.based_on in ["taxable_gross_pay"]:
             raise ValidationError(
                 {

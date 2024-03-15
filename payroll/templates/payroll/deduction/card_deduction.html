@@ -18,36 +18,39 @@
         <div class="oh-kanban-card__details">
         <span class="oh-card__title oh-card__title--sm fw-bold" style="font-size:18px;">{{deduction}}</span>
 
+
+        <span class="oh-timeoff-modal__stat-title fw-bold text-dark mt-2 mb-1">{% trans "Amount" %}</span>
+        {% if deduction.update_compensation %}
+            {% if deduction.is_fixed %}
+                <span class="oh-timeoff-modal__stat-title">{{deduction.amount}}{{currency}} Deduct From {{deduction.get_update_compensation_display}}</span>
+            {% else %}
+                <span class="oh-timeoff-modal__stat-title">{{deduction.rate}}% {% trans "of" %} {{deduction.get_update_compensation_display}}</span>
+            {% endif %}
+        {% else %}
+            {% if deduction.is_fixed %}
+                <span class="oh-timeoff-modal__stat-title ">{{deduction.amount}}{{currency}}</span>
+            {% else %}
+                <span class="oh-timeoff-modal__stat-title">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>    
+                <span class="oh-timeoff-modal__stat-title">{% trans "Employee Rate :" %} {{deduction.rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
+            {% endif %}
+        {% endif %}
+
+
         <div class="oh-timeoff-modal__stats-container mb-1">
-          <div class="oh-timeoff-modal__stat mt-2">
-              <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Taxable" %}</span>
-              <span class="oh-timeoff-modal__stat-title">{{deduction.is_tax|yesno|capfirst}}</span>
+          <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title fw-bold text-dark mt-2" style="width:135px;">{% trans "One Time Deduction" %}</span>
+            {% if deduction.one_time_date %}
+              <span class="oh-timeoff-modal__stat-title">{% trans "On" %}</span> <span class="oh-timeoff-modal__stat-count dateformat_changer"> {{deduction.one_time_date}}</span>
+            {% else %}
+              <span class="oh-timeoff-modal__stat-title">{% trans "No" %}</span>
+            {% endif %}
+
           </div>
-          <div class="oh-timeoff-modal__stat mt-2" style="margin-left: 20px;">
-            <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Amount" %}</span>
-                {% if deduction.update_compensation %}
-                    {% if deduction.is_fixed %}
-                        <span class="oh-timeoff-modal__stat-title">{{deduction.amount}}{{currency}} Deduct From {{deduction.get_update_compensation_display}}</span>
-                    {% else %}
-                        <span class="oh-timeoff-modal__stat-title">{{deduction.rate}}% {% trans "of" %} {{deduction.get_update_compensation_display}}</span>
-                    {% endif %}
-                {% else %}
-                    {% if deduction.is_fixed %}
-                        <span class="oh-timeoff-modal__stat-title ">{{deduction.amount}}{{currency}}</span>
-                    {% else %}
-                        <span class="oh-timeoff-modal__stat-title">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>    
-                        <span class="oh-timeoff-modal__stat-title">{% trans "Employee Rate :" %} {{deduction.rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
-                    {% endif %}
-                {% endif %}
+          <div class="oh-timeoff-modal__stat mt-2">
+            <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Pretax" %}</span>
+            <span class="oh-timeoff-modal__stat-title">{{deduction.is_pretax|yesno|capfirst}}</span>
           </div>
         </div>
-
-        <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "One Time Allowance" %}</span>
-        {% if allowance.one_time_date %}
-          <span class="oh-timeoff-modal__stat-title">{% trans "On" %}</span> <span class="oh-timeoff-modal__stat-count dateformat_changer"> {{allowance.one_time_date}}</span>
-        {% else %}
-          <span class="oh-timeoff-modal__stat-title">{% trans "No" %}</span>
-        {% endif %}
 
         </div>
         <div class="oh-kanban-card__dots">

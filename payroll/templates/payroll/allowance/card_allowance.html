@@ -28,13 +28,8 @@
         <div class="oh-kanban-card__details">
         <span class="oh-card__title oh-card__title--sm fw-bold" style="font-size:18px;">{{allowance}}</span>
 
-        <div class="oh-timeoff-modal__stats-container mb-1">
-          <div class="oh-timeoff-modal__stat mt-2">
-              <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Taxable" %}</span>
-              <span class="oh-timeoff-modal__stat-title">{{allowance.is_taxable|yesno|capfirst}}</span>
-          </div>
-          <div class="oh-timeoff-modal__stat mt-2" style="margin-left: 20px;">
-            <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Amount" %}</span>
+
+        <span class="oh-timeoff-modal__stat-title fw-bold text-dark mt-2 mb-1">{% trans "Amount" %}</span>
             {% if allowance.is_fixed %}
                 <span class="oh-timeoff-modal__stat-title">{{allowance.amount}}</span>
             {% else %}
@@ -54,15 +49,21 @@
                     <span class="oh-timeoff-modal__stat-title">{{allowance.amount_per_one_hr}} {{currency}} {% trans "Amount Per One Hour" %}</span>
                 {% endif %}
             {% endif %}
+
+        <div class="oh-timeoff-modal__stats-container mb-1">
+          <div class="oh-timeoff-modal__stat mt-2">
+            <span class="oh-timeoff-modal__stat-title fw-bold text-dark" style="width:135px;">{% trans "One Time Allowance" %}</span>
+            {% if allowance.one_time_date %}
+              <span class="oh-timeoff-modal__stat-title">{% trans "On" %}</span> <span class="oh-timeoff-modal__stat-count dateformat_changer"> {{allowance.one_time_date}}</span>
+            {% else %}
+              <span class="oh-timeoff-modal__stat-title">{% trans "No" %}</span>
+            {% endif %}
+          </div>
+          <div class="oh-timeoff-modal__stat mt-2" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Taxable" %}</span>
+            <span class="oh-timeoff-modal__stat-title">{{allowance.is_taxable|yesno|capfirst}}</span>
           </div>
         </div>
-
-        <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "One Time Allowance" %}</span>
-        {% if allowance.one_time_date %}
-          <span class="oh-timeoff-modal__stat-title">{% trans "On" %}</span> <span class="oh-timeoff-modal__stat-count dateformat_changer"> {{allowance.one_time_date}}</span>
-        {% else %}
-          <span class="oh-timeoff-modal__stat-title">{% trans "No" %}</span>
-        {% endif %}
 
         </div>
         <div class="oh-kanban-card__dots">
