@@ -58,6 +58,7 @@ from payroll.methods.payslip_calc import (
 )
 from payroll.methods.tax_calc import calculate_taxable_amount
 from payroll.methods.methods import (
+    calculate_employer_contribution,
     compute_salary_on_period,
     paginator_qry,
     save_payslip,
@@ -196,15 +197,15 @@ def payroll_calculation(employee, start_date, end_date):
         net_pay_deduction_list.append(deduction)
     net_pay = net_pay - net_pay_deductions["net_deduction"]
     payslip_data = {
-        "net_pay": net_pay,
         "employee": employee,
-        "allowances": allowances["allowances"],
-        "gross_pay": gross_pay,
         "contract_wage": contract_wage,
         "basic_pay": basic_pay,
+        "gross_pay": gross_pay,
+        "taxable_gross_pay": taxable_gross_pay["taxable_gross_pay"],
+        "net_pay": net_pay,
+        "allowances": allowances["allowances"],
         "paid_days": paid_days,
         "unpaid_days": unpaid_days,
-        "taxable_gross_pay": taxable_gross_pay,
         "basic_pay_deductions": basic_pay_deductions,
         "gross_pay_deductions": gross_pay_deductions,
         "pretax_deductions": pretax_deductions["pretax_deductions"],
@@ -613,6 +614,7 @@ def create_payslip(request, new_post_data=None):
                 data["deduction"] = payslip_data["total_deductions"]
                 data["net_pay"] = payslip_data["net_pay"]
                 data["pay_data"] = json.loads(payslip_data["json_data"])
+                calculate_employer_contribution(data)
                 data["installments"] = payslip_data["installments"]
                 payslip_data["instance"] = save_payslip(**data)
                 form = forms.PayslipForm()
@@ -1440,9 +1442,9 @@ def get_contribution_report(request):
 
     for deduction_id, group in grouped_deductions.items():
         title = group[0]["title"]
-        employee_contribution = sum(item["amount"] for item in group)
+        employee_contribution = sum(item.get("amount",0) for item in group)
         employer_contribution = sum(
-            item["employer_contribution_amount"] for item in group
+            item.get("employer_contribution_amount",0) for item in group
         )
         total_contribution = employee_contribution + employer_contribution
         if employer_contribution > 0:

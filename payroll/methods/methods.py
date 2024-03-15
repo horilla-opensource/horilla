@@ -12,7 +12,7 @@ from dateutil.relativedelta import relativedelta
 from base.methods import get_pagination
 from leave.models import Holiday, CompanyLeave
 from attendance.models import Attendance
-from payroll.models.models import Contract, Payslip
+from payroll.models.models import Contract, Deduction, Payslip
 
 
 def get_holiday_dates(range_start: date, range_end: date) -> list:
@@ -577,6 +577,40 @@ def paginator_qry(qryset, page_number):
     paginator = Paginator(qryset, get_pagination())
     qryset = paginator.get_page(page_number)
     return qryset
+
+
+def calculate_employer_contribution(data):
+    """
+    This method is used to calculate the employer contribution
+    """
+    pay_head_data = data["pay_data"]
+    deductions_to_process = [
+        pay_head_data.get("pretax_deductions"),
+        pay_head_data.get("post_tax_deductions"),
+        pay_head_data.get("tax_deductions"),
+        pay_head_data.get("net_deductions"),
+    ]
+
+    for deductions in deductions_to_process:
+        if deductions:
+            for deduction in deductions:
+                if (
+                    deduction.get("deduction_id")
+                    and deduction.get("employer_contribution_rate", 0) > 0
+                ):
+                    object = Deduction.objects.filter(
+                        id=deduction.get("deduction_id")
+                    ).first()
+                    if object:
+                        amount = pay_head_data.get(object.based_on)
+                        employer_contribution_amount = (
+                            amount * object.employer_rate
+                        ) / 100
+                        deduction["based_on"] = object.based_on
+                        deduction["employer_contribution_amount"] = (
+                            employer_contribution_amount
+                        )
+    return data
 
 
 def save_payslip(**kwargs):
