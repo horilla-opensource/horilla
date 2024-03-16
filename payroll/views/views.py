@@ -123,21 +123,43 @@ def contract_status_update(request, contract_id):
         ContractForm,
     )
 
+    previous_data = request.GET.urlencode()
     if request.method == "POST":
         contract = Contract.objects.get(id=contract_id)
         if request.POST.get("view"):
             status = request.POST.get("status")
             if status in dict(contract.CONTRACT_STATUS_CHOICES).keys():
-                contract.contract_status = request.POST.get("status")
-                contract.save()
-                messages.success(
-                    request, _("The contract status has been updated successfully.")
-                )
+                save = True
+                if status in ["active", "draft"]:
+                    active_contract = Contract.objects.filter(
+                        contract_status="active", employee_id=contract.employee_id
+                    ).exists()
+                    draft_contract = Contract.objects.filter(
+                        contract_status="draft", employee_id=contract.employee_id
+                    ).exists()
+                    if (status == "active" and active_contract) or (
+                        status == "draft" and draft_contract
+                    ):
+                        save = False
+                        messages.info(
+                            request,
+                            _("An {} contract already exists for {}").format(
+                                status, contract.employee_id
+                            ),
+                        )
+                if save:
+                    contract.contract_status = status
+                    contract.save()
+                    messages.success(
+                        request, _("The contract status has been updated successfully.")
+                    )
             else:
                 messages.warning(
                     request, _("You selected the wrong option for contract status.")
                 )
-            return redirect(contract_filter)
+
+            return redirect(f"/payroll/contract-filter?{previous_data}")
+
         contract_form = ContractForm(request.POST, request.FILES, instance=contract)
         if contract_form.is_valid():
             contract_form.save()
@@ -820,11 +842,6 @@ def payslip_export(request):
             "id", flat=True
         )
     )
-    print(start_date, "start_date")
-    print(end_date, "end_date")
-    print(contributions, "contributions")
-    print(employee, "employee")
-    print(status, "status")
     department = []
     total_amount = 0
 

@@ -11,7 +11,7 @@
 				{% if perms.payroll.view_payslip %}
 					<div class="col-sm-12">
 						<div class="oh-input-group">
-							<label class="oh-label">{% trans "Employee" %}</label>
+							<label class="oh-label" for="{{f.form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
 							{{ f.form.employee_id }}
 						</div>
 					</div>
@@ -20,13 +20,13 @@
 			<div class="row">
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label">{% trans "Start Date" %}</label>
+						<label class="oh-label" for="{{f.form.start_date.id_for_label}}">{% trans "Start Date" %}</label>
 						{{ f.form.start_date }}
 					</div>
 				</div>
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label">{% trans "End Date" %}</label>
+						<label class="oh-label" for="{{f.form.end_date.id_for_label}}">{% trans "End Date" %}</label>
 						{{ f.form.end_date }}
 					</div>
 				</div>
@@ -34,13 +34,13 @@
 			<div class="row">
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label">{% trans "Status" %}</label>
+						<label class="oh-label" for="{{f.form.status.id_for_label}}">{% trans "Status" %}</label>
 						{{ f.form.status }}
 					</div>
 				</div>
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label">{% trans "Batch" %}</label>
+						<label class="oh-label" for="{{f.form.group_name.id_for_label}}">{% trans "Batch" %}</label>
 						{{ f.form.group_name }}
 					</div>
 				</div>
@@ -48,7 +48,7 @@
 			<div class="row">
 					<div class="col-sm-12">
 						<div class="oh-input-group">
-							<label class="oh-label">{% trans "Mail Sent" %}</label>
+							<label class="oh-label" for="{{f.form.sent_to_employee.id_for_label}}">{% trans "Mail Sent" %}</label>
 							{{ f.form.sent_to_employee }}
 						</div>
 					</div>
@@ -61,13 +61,13 @@
 			<div class="row">
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label">{% trans "Start Date From" %}</label>
+						<label class="oh-label" for="{{f.form.start_date_from.id_for_label}}">{% trans "Start Date From" %}</label>
 						{{ f.form.start_date_from }}
 					</div>
 				</div>
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label">{% trans "Start Date Till" %}</label>
+						<label class="oh-label" for="{{f.form.start_date_till.id_for_label}}">{% trans "Start Date Till" %}</label>
 						{{ f.form.start_date_till }}
 					</div>
 				</div>
@@ -75,13 +75,13 @@
 			<div class="row">
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label">{% trans "End Date From" %}</label>
+						<label class="oh-label" for="{{f.form.end_date_from.id_for_label}}">{% trans "End Date From" %}</label>
 						{{ f.form.end_date_from }}
 					</div>
 				</div>
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label">{% trans "End Date Till" %}</label>
+						<label class="oh-label" for="{{f.form.end_date_till.id_for_label}}">{% trans "End Date Till" %}</label>
 						{{ f.form.end_date_till }}
 					</div>
 				</div>
@@ -89,7 +89,7 @@
 			<div class="row">
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label"
+						<label class="oh-label" for="{{f.form.gross_pay__lte.id_for_label}}"
 							>{% trans "Gross Pay Less Than or Equal" %}</label
 						>
 						{{ f.form.gross_pay__lte }}
@@ -97,7 +97,7 @@
 				</div>
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label"
+						<label class="oh-label" for="{{f.form.gross_pay__gte.id_for_label}}"
 							>{% trans "Gross Pay Greater or Equal" %}</label
 						>
 						{{ f.form.gross_pay__gte }}
@@ -107,7 +107,7 @@
 			<div class="row">
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label"
+						<label class="oh-label" for="{{f.form.deduction__lte.id_for_label}}"
 							>{% trans "Deduction Less Than or Equal" %}</label
 						>
 						{{ f.form.deduction__lte }}
@@ -115,7 +115,7 @@
 				</div>
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label"
+						<label class="oh-label" for="{{f.form.deduction__gte.id_for_label}}"
 							>{% trans "Deduction Greater or Equal" %}</label
 						>
 						{{ f.form.deduction__gte }}
@@ -125,7 +125,7 @@
 			<div class="row">
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label"
+						<label class="oh-label" for="{{f.form.net_pay__lte.id_for_label}}"
 							>{% trans "Net Pay Less Than or Equal" %}</label
 						>
 						{{ f.form.net_pay__lte }}
@@ -133,7 +133,7 @@
 				</div>
 				<div class="col-sm-6">
 					<div class="oh-input-group">
-						<label class="oh-label"
+						<label class="oh-label" for="{{f.form.net_pay__gte.id_for_label}}"
 							>{% trans "Net Pay Greater or Equal" %}</label
 						>
 						{{ f.form.net_pay__gte }}
