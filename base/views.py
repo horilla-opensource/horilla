@@ -3395,22 +3395,26 @@ def shift_request_update(request, shift_request_id):
     form = choosesubordinates(request, form, "base.change_shiftrequest")
     form = include_employee_instance(request, form)
     if request.method == "POST":
-        response = render(
-            request,
-            "shift_request/request_update_form.html",
-            {
-                "form": form,
-            },
-        )
-        form = ShiftRequestForm(request.POST, instance=shift_request)
-        form = choosesubordinates(request, form, "base.change_shiftrequest")
-        form = include_employee_instance(request, form)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("Request Updated Successfully"))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
+        if not shift_request.approved:
+            response = render(
+                request,
+                "shift_request/request_update_form.html",
+                {
+                    "form": form,
+                },
             )
+            form = ShiftRequestForm(request.POST, instance=shift_request)
+            form = choosesubordinates(request, form, "base.change_shiftrequest")
+            form = include_employee_instance(request, form)
+            if form.is_valid():
+                form.save()
+                messages.success(request, _("Request Updated Successfully"))
+                return HttpResponse(
+                    response.content.decode("utf-8") + "<script>location.reload();</script>"
+                )
+        else:
+            messages.info(request, _("Can't edit approved shift request"))
+            return HttpResponse("<script>location.reload();</script>")
 
     return render(request, "shift_request/request_update_form.html", {"form": form})
 
