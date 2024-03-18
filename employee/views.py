@@ -731,7 +731,7 @@ def document_create(request, emp_id):
     Returns: return document_tab template
     """
     employee_id = Employee.objects.get(id=emp_id)
-    form = DocumentForm(initial={"employee_id": employee_id})
+    form = DocumentForm(initial={"employee_id": employee_id, "expiry_date": None})
     if request.method == "POST":
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
