@@ -64,8 +64,9 @@
             			    role="button"
             			    data-toggle="oh-modal-toggle"
             			    data-target="#asset-return-allocation-modal"
-            			    hx-get="{%url 'asset-allocate-return'  asset_id=asset.id %}"
+            			    hx-get="{%url 'asset-allocate-return'  asset_id=asset.asset_id.id %}"
             			    hx-target="#asset-return-allocation-modal-target"
+							onclick="event.stopPropagation();"
             			  >
             			    <ion-icon name="return-down-back-sharp"></ion-icon>{% trans	"Return" %}
             			</button>

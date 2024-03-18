@@ -35,7 +35,7 @@
           </div>
             <div class="oh-sticky-table__td">
               <button href="#" class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
-                data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-allocate-return'  asset_id=asset.asset_id.id %}" hx-target="#asset-request-allocation-modal-target"><ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
+                data-target="#asset-return-allocation-modal" hx-get="{%url 'asset-allocate-return'  asset_id=asset.asset_id.id %}" hx-target="#asset-return-allocation-modal-target"><ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
             </div>
           </div>
           {% endfor %}
@@ -556,7 +556,7 @@
                       {% if not asset_allocation.return_status %}
                       <div class="oh-sticky-table__td" >
                         <button href="#" class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
-                          data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}" hx-target="#asset-request-allocation-modal-target"><ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
+                          data-target="#asset-return-allocation-modal" hx-get="{%url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}" hx-target="#asset-return-allocation-modal-target"><ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
                       </div>
                       {% else %}
                       <div class="oh-sticky-table__td" >
@@ -639,7 +639,7 @@
                           data-toggle="oh-modal-toggle"
                           data-target="#asset-request-allocation-modal" 
                           hx-get="{%url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}" 
-                          hx-target="#asset-request-allocation-modal-target">
+                          hx-target="#asset-return-allocation-modal-target">
                           <ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
                           {%endif %}
                         </div>
@@ -861,9 +861,9 @@
                   class="oh-btn oh-btn--secondary w-100" 
                   role="button" 
                   data-toggle="oh-modal-toggle"
-                  data-target="#asset-request-allocation-modal" 
+                  data-target="#asset-return-allocation-modal" 
                   hx-get="{%url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}" 
-                  hx-target="#asset-request-allocation-modal-target">
+                  hx-target="#asset-return-allocation-modal-target">
                   <ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
                   {%endif %}
                 </div>
