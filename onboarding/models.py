@@ -84,7 +84,7 @@ class OnboardingTask(models.Model):
         Employee, related_name="onboarding_task", verbose_name="Task Assignee"
     )
 
-    objects = HorillaCompanyManager("recruitment_id__company_id")
+    objects = HorillaCompanyManager("stage_id__recruitment_id__company_id")
 
     def __str__(self):
         return f"{self.task_title}"
