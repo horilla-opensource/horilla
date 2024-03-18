@@ -304,7 +304,7 @@
 				</div>
 			</div>
 		</div>
-		
+		{% if perms.employee.view_employeebankdetails or request.user == employee.employee_user_id %}
 		<div class="oh-card oh-card--margin">
 			<div class="oh-card__header">
 				<span class="oh-card__title oh-card__title--sm fw-bold me-2"
@@ -387,6 +387,7 @@
 				</div>
 			</div>
 		</div>
+		{% endif %}
 
 	</div>
 </div>
