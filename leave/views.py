@@ -280,6 +280,9 @@ def leave_request_creation(request, type_id=None, emp_id=None):
     GET : return leave request form template
     POST : return leave request view
     """
+    referer_parts = [
+        part for part in request.META.get("HTTP_REFERER").split("/") if part != ""
+    ]
     previous_data = unquote(request.GET.urlencode())[len("pd=") :]
     form = LeaveRequestCreationForm()
     if type_id and emp_id:
@@ -337,6 +340,8 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                     redirect=f"/leave/request-view?id={leave_request.id}",
                 )
             form = LeaveRequestCreationForm()
+            if referer_parts[-2] == "employee-view":
+                return HttpResponse("<script>window.location.reload();</script>")
     return render(
         request,
         "leave/leave_request/leave_request_form.html",
@@ -1833,7 +1838,11 @@ def user_leave_request(request, id):
                         icon="people-circle",
                         redirect=f"/leave/request-view?id={leave_request.id}",
                     )
-                if len(LeaveRequest.objects.filter(employee_id=employee)) == 1:
+                if len(
+                    LeaveRequest.objects.filter(employee_id=employee)
+                ) == 1 or request.META.get("HTTP_REFERER").endswith(
+                    "employee-profile/"
+                ):
                     return HttpResponse("<script>window.location.reload();</script>")
         else:
             form.add_error(
