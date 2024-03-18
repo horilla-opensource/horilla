@@ -15,7 +15,13 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.utils.translation import gettext_lazy as _
 from attendance.methods.group_by import group_by_queryset
-from base.methods import closest_numbers, get_key_instances, get_pagination, sortby
+from base.methods import (
+    closest_numbers,
+    filtersubordinates,
+    get_key_instances,
+    get_pagination,
+    sortby,
+)
 from base.models import Company
 from base.views import paginator_qry
 from employee.models import EmployeeWorkInformation
@@ -567,7 +573,7 @@ def asset_request_approve(request, req_id):
         # Add additional fields to the dictionary
         post_data["assigned_to_employee_id"] = asset_request.requested_employee_id
         post_data["assigned_by_employee_id"] = request.user.employee_get
-        form = AssetAllocationForm(post_data,request.FILES)
+        form = AssetAllocationForm(post_data, request.FILES)
         if form.is_valid():
             asset = form.instance.asset_id.id
             asset = Asset.objects.filter(id=asset).first()
@@ -678,7 +684,7 @@ def asset_allocate_return_request(request, asset_id):
     asset_assign.save()
     message = _("Return request for {} initiated.").format(asset_assign.asset_id)
     messages.info(request, message)
-    return redirect("asset-request-allocation-view")
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 @login_required
@@ -696,7 +702,7 @@ def asset_allocate_return(request, asset_id):
         asset_id=asset_id, return_status__isnull=True
     ).first()
     if request.method == "POST":
-        asset_return_form = AssetReturnForm(request.POST)
+        asset_return_form = AssetReturnForm(request.POST,request.FILES)
 
         if asset_return_form.is_valid():
             asset = Asset.objects.filter(id=asset_id).first()
@@ -750,6 +756,7 @@ def asset_allocate_return(request, asset_id):
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
+
     context = {"asset_return_form": asset_return_form, "asset_id": asset_id}
     context["asset_alocation"] = asset_allocation
     return render(request, "asset/asset_return_form.html", context)
@@ -763,7 +770,13 @@ def filter_pagination_asset_request_allocation(request):
         asset_request_alloaction_search = ""
     employee = request.user.employee_get
     asset_asignment = AssetAssignment.objects.all()
-    asset_request = AssetRequest.objects.all()
+    asset_request = filtersubordinates(
+        request=request,
+        perm="asset.view_assetrequest",
+        queryset=AssetRequest.objects.all(),
+        field="requested_employee_id",
+    ) | AssetRequest.objects.filter(requested_employee_id = request.user.employee_get)
+    asset_request = asset_request.distinct()
     if request.GET.get("assign_sortby"):
         asset_asignment = sortby(request, asset_asignment, "assign_sortby")
     if request.GET.get("request_sortby"):
@@ -775,108 +788,9 @@ def filter_pagination_asset_request_allocation(request):
         .filter(asset_id__asset_name__icontains=asset_request_alloaction_search)
     )
 
-    search_term = asset_request_alloaction_search.strip()
-
-    if request.user.has_perm(("asset.view_assetrequest", "asset.view_assetassignment")):
-        asset_allocations_queryset = asset_asignment.filter(
-            Q(assigned_to_employee_id__employee_first_name__icontains=search_term)
-            | Q(assigned_to_employee_id__employee_last_name__icontains=search_term)
-            | (
-                Q(
-                    assigned_to_employee_id__employee_first_name__icontains=search_term.split()[
-                        0
-                    ]
-                )
-                if search_term.split()
-                else Q()
-            )
-            | (
-                Q(
-                    assigned_to_employee_id__employee_last_name__icontains=search_term.split()[
-                        -1
-                    ]
-                )
-                if len(search_term.split()) > 1
-                else Q()
-            )
-        )
-        asset_requests_queryset = asset_request.filter(
-            Q(requested_employee_id__employee_first_name__icontains=search_term)
-            | Q(requested_employee_id__employee_last_name__icontains=search_term)
-            | (
-                Q(
-                    requested_employee_id__employee_first_name__icontains=search_term.split()[
-                        0
-                    ]
-                )
-                if search_term.split()
-                else Q()
-            )
-            | (
-                Q(
-                    requested_employee_id__employee_last_name__icontains=search_term.split()[
-                        -1
-                    ]
-                )
-                if len(search_term.split()) > 1
-                else Q()
-            )
-        )
-    else:
-        asset_allocations_queryset = AssetAssignment.objects.filter(
-            assigned_to_employee_id=employee
-        ).filter(
-            Q(assigned_to_employee_id__employee_first_name__icontains=search_term)
-            | Q(assigned_to_employee_id__employee_last_name__icontains=search_term)
-            | (
-                Q(
-                    assigned_to_employee_id__employee_first_name__icontains=search_term.split()[
-                        0
-                    ]
-                )
-                if search_term.split()
-                else Q()
-            )
-            | (
-                Q(
-                    assigned_to_employee_id__employee_last_name__icontains=search_term.split()[
-                        -1
-                    ]
-                )
-                if len(search_term.split()) > 1
-                else Q()
-            )
-        )
-        asset_requests_queryset = AssetRequest.objects.filter(
-            requested_employee_id=employee
-        ).filter(
-            Q(requested_employee_id__employee_first_name__icontains=search_term)
-            | Q(requested_employee_id__employee_last_name__icontains=search_term)
-            | (
-                Q(
-                    requested_employee_id__employee_first_name__icontains=search_term.split()[
-                        0
-                    ]
-                )
-                if search_term.split()
-                else Q()
-            )
-            | (
-                Q(
-                    requested_employee_id__employee_last_name__icontains=search_term.split()[
-                        -1
-                    ]
-                )
-                if len(search_term.split()) > 1
-                else Q()
-            )
-        )
-
     previous_data = request.GET.urlencode()
     assets_filtered = CustomAssetFilter(request.GET, queryset=assets)
-    asset_request_filtered = AssetRequestFilter(
-        request.GET, queryset=asset_requests_queryset
-    ).qs
+    asset_request_filtered = AssetRequestFilter(request.GET, queryset=asset_request).qs
     if request_field != "" and request_field is not None:
         asset_request_filtered = group_by_queryset(
             asset_request_filtered, request_field, request.GET.get("page"), "page"
@@ -898,7 +812,7 @@ def filter_pagination_asset_request_allocation(request):
         )
 
     asset_allocation_filtered = AssetAllocationFilter(
-        request.GET, queryset=asset_allocations_queryset
+        request.GET, queryset=asset_asignment
     ).qs
 
     if allocation_field != "" and allocation_field is not None:
@@ -944,12 +858,8 @@ def filter_pagination_asset_request_allocation(request):
         "asset_requests": asset_requests,
         "asset_allocations": asset_allocations,
         "assets_filter_form": assets_filtered.form,
-        "asset_request_filter_form": AssetRequestFilter(
-            request.GET, queryset=asset_requests_queryset
-        ).form,
-        "asset_allocation_filter_form": AssetAllocationFilter(
-            request.GET, queryset=asset_allocations_queryset
-        ).form,
+        "asset_request_filter_form": AssetRequestFilter().form,
+        "asset_allocation_filter_form": AssetAllocationFilter().form,
         "pg": previous_data,
         "filter_dict": data_dict,
         "gp_request_fields": AssetRequestReGroup.fields,

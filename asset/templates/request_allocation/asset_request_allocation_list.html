@@ -100,9 +100,9 @@
 											class="oh-btn oh-btn--secondary"
 											role="button"
 											data-toggle="oh-modal-toggle"
-											data-target="#asset-request-allocation-modal"
+											data-target="#asset-return-allocation-modal"
 											hx-get="{%url 'asset-allocate-return'  asset_id=asset.asset_id.id %}"
-											hx-target="#asset-request-allocation-modal-target"
+											hx-target="#asset-return-allocation-modal-target"
 										>
 											<ion-icon name="return-down-back-sharp"></ion-icon>{% trans	"Return" %}
 										</button>
@@ -241,7 +241,9 @@
 								hx-target="#asset_request_allocation_list" data-cell-index="102" data-cell-title='{% trans "Request Date" %}' >{% trans "Request Date" %}</div>
 								<div class="oh-sticky-table__th {% if request.sort_option.order == '-asset_request_status' %}arrow-up {% elif request.sort_option.order == 'asset_request_status' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-request-allocation-view-search-filter' %}?request_sortby=asset_request_status"
 								hx-target="#asset_request_allocation_list" data-cell-index="103" data-cell-title='{% trans "Status" %}' >{% trans "Status" %}</div>
-								<div class="oh-sticky-table__th" style="width:120px">{% trans "Confirmation" %}</div>
+								{% if perms.asset.add_assetassignment %} 
+									<div class="oh-sticky-table__th" style="width:120px">{% trans "Confirmation" %}</div>
+								{% endif %}
 							</div>
 						</div>
 						<div class="oh-sticky-table__tbody">
@@ -426,8 +428,8 @@
 				align-items: center;
 				"
 			>
-				<img style="    width: 190px;height: 190px;" src="{% static 'images/ui/asset.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
-				<h5 class="oh-404__subtitle">{% trans "There is no asset request has been created." %}</h5>
+				<img style="width: 190px;height: 190px;" src="{% static 'images/ui/asset.png' %}" class="oh-404__image" alt="Page not found. 404."/>
+				<h5 class="oh-404__subtitle">{% trans "There are no asset request." %}</h5>
 			</div>
 		{% endif %}
 		
@@ -520,9 +522,9 @@
 										class="oh-btn oh-btn--secondary"
 										role="button"
 										data-toggle="oh-modal-toggle"
-										data-target="#asset-request-allocation-modal"
+										data-target="#asset-return-allocation-modal"
 										hx-get="{% url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}"
-										hx-target="#asset-request-allocation-modal-target"
+										hx-target="#asset-return-allocation-modal-target"
 									>
 										<ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}
 									</button>
