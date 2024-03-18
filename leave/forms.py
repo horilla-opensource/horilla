@@ -403,9 +403,10 @@ class LeaveRequestUpdationForm(ModelForm):
         if f"{today.month}-{today.year}" in unique_dates:
             unique_dates.remove(f"{today.strftime('%m')}-{today.year}")
         forcasted_leaves = available_leave.forcasted_leaves()
-        if f"{today.year}-{today.strftime('%m')}" not in unique_dates:
-            for item in unique_dates:
-                total_leave_days += forcasted_leaves[item]
+        if leave_type_id.reset_based == "monthly":
+            if f"{today.year}-{today.strftime('%m')}" not in unique_dates:
+                for item in unique_dates:
+                    total_leave_days += forcasted_leaves[item]
         if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
