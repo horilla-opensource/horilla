@@ -14,8 +14,7 @@
 <div class="oh-modal__dialog-header">
   <h2
     class="oh-modal__dialog-title"
-    style="margin-left: 30px"
-    id="attendanceModalLabel"
+    id="objectDetailsModalLabel"
   >
     {% trans "Details" %}
   </h2>
@@ -53,34 +52,33 @@
       ></ion-icon>
     </button>
   </div>
-  <div class="oh-modal__dialog-header">
-    <a
-      class="oh-timeoff-modal__profile-content"
-      style="text-decoration: none"
-      href="{% url 'employee-view-individual' late_in_early_out.employee_id.id %}"
+  <a class="oh-timeoff-modal__profile-content"
+    style="text-decoration: none"
+    href="{% url 'employee-view-individual' late_in_early_out.employee_id.id %}"
     >
-      <div class="oh-profile mb-2">
-        <div class="oh-profile__avatar">
-          <img
-            src="{{late_in_early_out.employee_id.get_avatar}}"
-            class="oh-profile__image me-2"
-            alt="Mary Magdalene"
-          />
-        </div>
-        <div class="oh-timeoff-modal__profile-info">
-          <span class="oh-timeoff-modal__user fw-bold"
-            >{{late_in_early_out.employee_id}}</span
-          >
-          <span
-            class="oh-timeoff-modal__user m-0"
-            style="font-size: 18px; color: #4d4a4a"
-          >
-            {{late_in_early_out.employee_id.employee_work_info.department_id}} /
-            {{late_in_early_out.employee_id.employee_work_info.job_position_id}}</span
-          >
-        </div>
+    <div class="oh-profile mb-2">
+      <div class="oh-profile__avatar">
+        <img
+          src="{{late_in_early_out.employee_id.get_avatar}}"
+          class="oh-profile__image me-2"
+          alt="Mary Magdalene"
+        />
       </div>
-    </a>
+      <div class="oh-timeoff-modal__profile-info">
+        <span class="oh-timeoff-modal__user fw-bold"
+        >{{late_in_early_out.employee_id}}</span
+        >
+        <span
+        class="oh-timeoff-modal__user m-0"
+        style="font-size: 18px; color: #4d4a4a"
+        >
+        {{late_in_early_out.employee_id.employee_work_info.department_id}} /
+        {{late_in_early_out.employee_id.employee_work_info.job_position_id}}</span
+        >
+      </div>
+    </div>
+  </a>
+  <div class="oh-modal__dialog-header p-0 ml-2">
     <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
       <div class="oh-timeoff-modal__stat">
         <span class="oh-timeoff-modal__stat-title"

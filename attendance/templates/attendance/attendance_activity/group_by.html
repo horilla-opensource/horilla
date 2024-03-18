@@ -46,7 +46,9 @@
                 <div class='oh-sticky-table__th'>{% trans "Check In" %}</div>
                 <div class='oh-sticky-table__th'>{% trans "Check Out" %}</div>
                 <div class='oh-sticky-table__th' hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_out_date">{% trans "Out Date" %}</div>
+                {% if perms.attendance.delete_attendanceactivity %}
                 <div class='oh-sticky-table__th oh-sticky-table__right' scope="col" style="width: 80px;">{% trans "Actions" %}</div>
+                {% endif %}
               </div> 
             </div>
             <div class="oh-sticky-table__tbody">
@@ -80,8 +82,8 @@
                     <div class="oh-sticky-table__td timeformat_changer">{{activity.clock_in}}</div>
                     <div class="oh-sticky-table__td timeformat_changer">{{activity.clock_out}}</div>
                     <div class="oh-sticky-table__td dateformat_changer">{{activity.clock_out_date}}</div>
-                    <div class="oh-sticky-table__td oh-sticky-table__right">
-                      {% if perms.attendance.delete_attendanceactivity %}
+                    {% if perms.attendance.delete_attendanceactivity %}
+                      <div class="oh-sticky-table__td oh-sticky-table__right">
                         <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}" 
                           hx-post="{% url 'attendance-activity-delete' activity.id  %}?{{pd}}"
                           onclick="event.stopPropagation()" hx-target="#activity-table">
@@ -90,8 +92,8 @@
                             <ion-icon name="trash-outline"></ion-icon>
                           </button>
                         </form>
-                      {% endif %}
-                </div>      
+                      </div>      
+                    {% endif %}
               </div>
               {% endfor %}
           </div>

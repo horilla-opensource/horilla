@@ -80,7 +80,7 @@
 								</div>
 								<div data-cell-index="3"  class="oh-sticky-table__td">{{ot.year}}</div>
 								<div data-cell-index="4"  class="oh-sticky-table__td">{{ot.worked_hours}}</div>
-								<div  data-cell-index="5" class="oh-sticky-table__td"  onclick="event.stopPropagation();localStorage.setItem('activeTabAttendance', '#tab_1');window.location.href=`{% url "attendance-view" %}?employee_id={{ot.employee_id.id}}&month={{ot.get_month_index}}&year={{ot.year}}`">
+								<div  data-cell-index="5" class="oh-sticky-table__td" {% if perms.attendance.view_attendance %} onclick="event.stopPropagation();localStorage.setItem('activeTabAttendance', '#tab_1');window.location.href=`{% url "attendance-view" %}?employee_id={{ot.employee_id.id}}&month={{ot.get_month_index}}&year={{ot.year}}`" {% endif %}>
 									{{ot.not_validated_hrs}}
 								</div>
 								<div data-cell-index="6"  class="oh-sticky-table__td">{{ot.pending_hours}}</div>
