@@ -1,5 +1,16 @@
 {% load i18n %}
     <!-- Sticky Table  for own objective-->
+    <div class="oh-btn-group p-3 justify-content-end">
+      <div>
+        <button class="oh-btn oh-btn--secondary" title="{% trans 'Create asset request' %}"
+                data-toggle="oh-modal-toggle" data-target="#asset-request-allocation-modal"  
+                hx-get="{% url 'asset-request-creation' %}" hx-target="#asset-request-allocation-modal-target"
+          >
+          <ion-icon name="add-sharp" class="mr-2 md hydrated" role="img" aria-label="add sharp"></ion-icon>
+          {% trans "Create" %}
+        </button>
+      </div>
+    </div>
     {% if assets %}
     <div class="oh-sticky-table">
       <div class="oh-sticky-table__table ">
@@ -8,12 +19,13 @@
             <div class="oh-sticky-table__th">{% trans "Asset" %}</div>
             <div class="oh-sticky-table__th">{% trans "Status" %}</div>
             <div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
-            <div class="oh-sticky-table__th" style="width: 10px;">
-              <a class="link-danger oh-btn oh-btn--secondary-outline" role="button" data-toggle="oh-modal-toggle"
+            <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+            {% comment %} <div class="oh-sticky-table__th" style="width: 10px;"> {% endcomment %}
+              {% comment %} <a class="link-danger oh-btn oh-btn--secondary-outline" role="button" data-toggle="oh-modal-toggle"
                 data-target="#asset-request-allocation-modal" hx-get="{% url 'asset-request-creation' %}" hx-target="#asset-request-allocation-modal-target" title="{% trans 'Create asset request' %}">
                 <ion-icon name="add-outline" role="img" class="md hydrated" aria-label="add outline"></ion-icon>
               </a>
-            </div>
+            </div> {% endcomment %}
           </div>
         </div>
         <div class="oh-sticky-table__tbody">
@@ -43,7 +55,26 @@
                 {{asset.assigned_date}}
                 </span>
                 </div>
-                <div class="oh-sticky-table__td"></div>
+                <div class="oh-sticky-table__td">
+                  {% if asset.return_request %}
+											<div class="d-flex align-items-center">
+												<span
+													class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"
+												></span>
+												<span class="link-primary"> {% trans "Requested to return" %} </span>
+											</div>
+									{% else %}
+											<form action = "{% url 'asset-allocate-return-request' asset_id=asset.id %}"
+												onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');"
+												>
+												{% csrf_token %}
+												<button type="submit" class="oh-btn oh-btn--secondary">
+													<ion-icon name="return-down-back-sharp"></ion-icon>
+													{% trans "Return Request" %}
+												</button>
+											</form>
+									{% endif %}
+                </div>
             </div>
           {% endif %}
           {% endfor %}

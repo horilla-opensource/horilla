@@ -21,6 +21,9 @@
 				<div class="oh-sticky-table__th">{% trans "Asset" %}</div>
 				<div class="oh-sticky-table__th">{% trans "Status" %}</div>
 				<div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
+				{% if perms.asset.change_assetassignment %}
+					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+				{% endif %}
 			</div>
 		</div>
 		<div class="oh-sticky-table__tbody">
@@ -53,6 +56,21 @@
 					></span>
 					<span class="link-success dateformat_changer"> {{asset.assigned_date}} </span>
 				</div>
+				{% if perms.asset.change_assetassignment %}
+					<div class="oh-sticky-table__td">
+            			<button
+            			    href="#"
+            			    class="oh-btn oh-btn--secondary w-50"
+            			    role="button"
+            			    data-toggle="oh-modal-toggle"
+            			    data-target="#asset-return-allocation-modal"
+            			    hx-get="{%url 'asset-allocate-return'  asset_id=asset.id %}"
+            			    hx-target="#asset-return-allocation-modal-target"
+            			  >
+            			    <ion-icon name="return-down-back-sharp"></ion-icon>{% trans	"Return" %}
+            			</button>
+					</div>
+				{% endif %}
 			</div>
 			{% endif %} {% endfor %}
 		</div>

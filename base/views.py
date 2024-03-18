@@ -2774,7 +2774,7 @@ def work_type_request_approve(request, id):
 
         else:
             messages.error(
-                request, _("A shift request already exists during this time period.")
+                request, _("An approved work type request already exists during this time period.")
             )
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("You Do nt Have Permission")
@@ -3694,7 +3694,7 @@ def shift_request_approve(request, id):
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         else:
             messages.error(
-                request, _("A shift request already exists during this time period.")
+                request, _("An apporved shift request already exists during this time period.")
             )
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("You Dont Have Permission")
@@ -3729,7 +3729,7 @@ def shift_allocation_request_approve(request, id):
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     else:
         messages.error(
-            request, _("A shift request already exists during this time period.")
+            request, _("An approved shift request already exists during this time period.")
         )
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 

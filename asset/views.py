@@ -568,9 +568,6 @@ def asset_request_approve(request, req_id):
         post_data["assigned_to_employee_id"] = asset_request.requested_employee_id
         post_data["assigned_by_employee_id"] = request.user.employee_get
         form = AssetAllocationForm(post_data,request.FILES)
-        print("------------------------------------")
-        print(post_data)
-        print("------------------------------------")
         if form.is_valid():
             asset = form.instance.asset_id.id
             asset = Asset.objects.filter(id=asset).first()
