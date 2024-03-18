@@ -49,6 +49,13 @@ class KeyResult(models.Model):
     target_value = models.IntegerField(null=True, blank=True, default=0)
     duration = models.IntegerField(null=True, blank=True)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        verbose_name=_("Company"),
+        on_delete=models.CASCADE,
+    )
     objects = HorillaCompanyManager()
 
     def __str__(self):
@@ -84,6 +91,13 @@ class Objective(models.Model):
     add_assignees = models.BooleanField(default=False)
     archive = models.BooleanField(default=False, null=True, blank=True)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        verbose_name=_("Company"),
+        on_delete=models.CASCADE,
+    )
     objects = HorillaCompanyManager()
 
     class Meta:
@@ -262,7 +276,7 @@ class EmployeeKeyResult(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
-    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+    objects = HorillaCompanyManager("employee_objective_id__objective_id__company_id")
     progress_percentage = models.IntegerField(default=0)
 
     def __str__(self):
