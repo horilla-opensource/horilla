@@ -297,9 +297,9 @@ class AvailableLeave(models.Model):
             today = datetime.now()
             for i in range(1, 7):  # Calculate for the next 6 months
                 next_month = today + relativedelta(months=i)
-                forecasted_leave[next_month.strftime("%Y-%m")] = self.available_days + (
+                forecasted_leave[next_month.strftime("%Y-%m")] = self.available_days + min(self.leave_type_id.carryforward_max,(
                     self.leave_type_id.total_days * i
-                )
+                ))
         return forecasted_leave
 
     # Resetting carryforward days
