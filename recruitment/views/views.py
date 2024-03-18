@@ -206,6 +206,11 @@ def recruitment(request):
                     id__in=form.data.getlist("recruitment_managers")
                 )
             )
+            recruitment_obj.open_positions.set(
+                JobPosition.objects.filter(
+                    id__in=form.data.getlist("open_positions")
+                )
+            )
             messages.success(request, _("Recruitment added."))
             with contextlib.suppress(Exception):
                 managers = recruitment_obj.recruitment_managers.select_related(
@@ -1601,9 +1606,6 @@ def skill_zone_filter(request):
     if request.GET.get("is_active") == "false":
         skill_zone_filtered = SkillZoneFilter(request.GET).qs.filter(is_active=False)
         candidates = SkillZoneCandFilter(request.GET).qs.filter(is_active=False)
-        print("============================")
-        print(candidates)
-        print("============================")
 
     else:
         skill_zone_filtered = SkillZoneFilter(request.GET).qs.filter(is_active=True)
