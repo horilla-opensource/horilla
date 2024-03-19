@@ -593,6 +593,18 @@ class BonusPointRedeemForm(ModelForm):
         model = BonusPoint
         fields = ["points"]
 
+    def clean(self):
+        cleaned_data = super().clean()
+        available_points = BonusPoint.objects.filter(
+            employee_id=self.instance.employee_id
+        ).first()
+        if available_points.points < cleaned_data["points"]:
+            raise forms.ValidationError({"points": "Not enough bonus points to redeem"})
+        if cleaned_data["points"] <= 0:
+            raise forms.ValidationError(
+                {"points": "Points must be greater than zero to redeem."}
+            )
+
 
 class DisciplinaryActionForm(ModelForm):
     class Meta:

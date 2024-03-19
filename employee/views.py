@@ -3265,6 +3265,7 @@ def redeem_points(request, emp_id):
     """
     user = Employee.objects.get(id=emp_id)
     form = BonusPointRedeemForm()
+    form.instance.employee_id =user
     amount_for_bonus_point = (
         EncashmentGeneralSettings.objects.first().bonus_amount
         if EncashmentGeneralSettings.objects.first()
@@ -3272,6 +3273,7 @@ def redeem_points(request, emp_id):
     )
     if request.method == "POST":
         form = BonusPointRedeemForm(request.POST)
+        form.instance.employee_id =user
         if form.is_valid():
             form.save(commit=False)
             points = form.cleaned_data["points"]
