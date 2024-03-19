@@ -207,9 +207,7 @@ def recruitment(request):
                 )
             )
             recruitment_obj.open_positions.set(
-                JobPosition.objects.filter(
-                    id__in=form.data.getlist("open_positions")
-                )
+                JobPosition.objects.filter(id__in=form.data.getlist("open_positions"))
             )
             messages.success(request, _("Recruitment added."))
             with contextlib.suppress(Exception):
