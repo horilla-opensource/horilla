@@ -101,94 +101,95 @@ $(document).on('click', function (event) {
 </span>
 <ol class="oh-activity-sidebar__qa-list" role="list">
   {% for note in notes %}
-  <li class="oh-activity-sidebar__qa-item">
-      <span class="oh-activity-sidebar__q">{{note.description}}
-        {% if perms.employee.delete_employeenote or request.user|is_reportingmanager %}
-        <span
-        class="float-end"
-        title="{% trans 'Delete' %}"
-        hx-get="{% url 'employee-note-delete' note.id %}"
-        hx-swap="innerHTML"
-        hx-target="#note_target"
-        id="deleteNote"
-        >
-        <ion-icon name="close-outline" style="font-size: 24px"></ion-icon
-          ></span>
-          {% endif %}
-      </span>
-
-      <div class="d-flex mt-2 mb-2">
-        {% for file in note.note_files.all %}
-        <a
-          href="{{ file.files.url }}"
-          rel="noopener noreferrer"
-          target="_blank"
-          ><span
-            class="oh-file-icon oh-file-icon--pdf"
-            onmouseover="enlargeDoc('{{ file.files.url }}',$(this))"
-            onmouseout = "hideEnlargeDoc()"
-            style="width: 40px; height: 40px"
-            ><img
-              src="{% static 'images/ui/minus-icon.png' %}"
-              style="display: block; width: 50%; height: 50%"
-              hx-get='{% url "delete-employee-note-file" file.id %}'
-              hx-target="#note_target"
-              onclick="event.stopPropagation();event.preventDefault()" /></span
-        ></a>
-        {% endfor %}
-
-        <form
-          hx-post="{% url 'add-more-files-employee' note.id %}"
-          class="add-files-form"
-          hx-encoding="multipart/form-data"
-          data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#note_target"
-
-        >
-          {% csrf_token %}
-          <label for="addFile_{{note.id}}" title="Add Files"
-            ><ion-icon
-              name="add-outline"
-              style="font-size: 24px"
-              role="img"
-              class="md hydrated"
-              aria-label="add outline"
-            ></ion-icon
-          ></label>
-          <input
-            type="file"
-            name="files"
-            class="d-none"
-            multiple="true"
-            id="addFile_{{note.id}}"
-            onchange="submitForm(this)"
+    <div id="employeeNote{{note.id}}">
+      <li class="oh-activity-sidebar__qa-item">
+          <span class="oh-activity-sidebar__q">{{note.description}}
+            {% if perms.employee.delete_employeenote or request.user|is_reportingmanager %}
+            <span
+            class="float-end"
+            hx-get="{% url 'employee-note-delete' note.id %}"
+            hx-target="#employeeNote{{note.id}}"
+            hx-swap="delete"
+            id="deleteNote"
+            >
+            <ion-icon name="trash-outline" style="font-size: 24px"></ion-icon>
+            </span>
+              {% endif %}
+          </span>
+        
+          <div class="d-flex mt-2 mb-2">
+            {% for file in note.note_files.all %}
+            <a
+              href="{{ file.files.url }}"
+              rel="noopener noreferrer"
+              target="_blank"
+              ><span
+                class="oh-file-icon oh-file-icon--pdf"
+                onmouseover="enlargeDoc('{{ file.files.url }}',$(this))"
+                onmouseout = "hideEnlargeDoc()"
+                style="width: 40px; height: 40px"
+                ><img
+                  src="{% static 'images/ui/minus-icon.png' %}"
+                  style="display: block; width: 50%; height: 50%"
+                  hx-get='{% url "delete-employee-note-file" file.id %}'
+                  hx-target="#note_target"
+                  onclick="event.stopPropagation();event.preventDefault()" /></span
+            ></a>
+            {% endfor %}
+          
+            <form
+              hx-post="{% url 'add-more-files-employee' note.id %}"
+              class="add-files-form"
+              hx-encoding="multipart/form-data"
+              data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#note_target"
+          
+            >
+              {% csrf_token %}
+              <label for="addFile_{{note.id}}" title="Add Files"
+                ><ion-icon
+                  name="add-outline"
+                  style="font-size: 24px"
+                  role="img"
+                  class="md hydrated"
+                  aria-label="add outline"
+                ></ion-icon
+              ></label>
+              <input
+                type="file"
+                name="files"
+                class="d-none"
+                multiple="true"
+                id="addFile_{{note.id}}"
+                onchange="submitForm(this)"
+              />
+              <input
+                type="submit"
+                class="d-none add_more_submit"
+                value="save"
+              />
+            </form>
+          </div>
+        
+        <span class="oh-activity-sidebar__a">
+          {% trans "by" %}
+          <img
+            src="https://ui-avatars.com/api/?name={{note.updated_by.get_full_name}}&amp;background=random"
+            style="width: 1.5em; border-radius: 100%"
+            alt="User"
           />
-          <input
-            type="submit"
-            class="d-none add_more_submit"
-            value="save"
-          />
-        </form>
-      </div>
-
-    <span class="oh-activity-sidebar__a">
-      {% trans "by" %}
-      <img
-        src="https://ui-avatars.com/api/?name={{note.updated_by.get_full_name}}&amp;background=random"
-        style="width: 1.5em; border-radius: 100%"
-        alt="User"
-      />
-      {{note.updated_by}}
-    </span>
-    <span class="oh-activity-sidebar__a">
-      {% trans "at" %} &nbsp
-      <span class="dateformat_changer">{{ note.created_at|date:"Y-m-d" }}</span>
-      &nbsp
-      <span class="timeformat_changer">{{ note.created_at|time:"H:i" }}</span>
-    </span>
-    <div style="width: 30%">
-      <div id="enlargeDocContainer" class="enlargeDocContainer"></div>
+          {{note.updated_by}}
+        </span>
+        <span class="oh-activity-sidebar__a">
+          {% trans "at" %} &nbsp
+          <span class="dateformat_changer">{{ note.created_at|date:"Y-m-d" }}</span>
+          &nbsp
+          <span class="timeformat_changer">{{ note.created_at|time:"H:i" }}</span>
+        </span>
+        <div style="width: 30%">
+          <div id="enlargeDocContainer" class="enlargeDocContainer"></div>
+        </div>
+      </li>
     </div>
-  </li>
   {% endfor %}
 </ol>
 {% else %} {% if messages %}

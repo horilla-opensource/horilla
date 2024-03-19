@@ -63,6 +63,7 @@ from base.models import (
     EmployeeType,
     Company,
     WorkTypeRequest,
+    clear_messages,
 )
 from base.forms import ModelForm
 from base.methods import (
@@ -786,7 +787,13 @@ def document_delete(request, id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this document."))
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    if "HTTP_HX_TARGET" in request.META and request.META.get(
+        "HTTP_HX_TARGET"
+    ).startswith("document"):
+        clear_messages(request)
+        return HttpResponse()
+    else:
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -3104,9 +3111,10 @@ def employee_note_delete(request, note_id):
     note = EmployeeNote.objects.get(id=note_id)
     employee_id = note.employee_id.id
     note.delete()
-    messages.success(request, _("Note deleted successfully..."))
-    # return redirect(f"/employee/note-tab/{employee_id}")
-    return HttpResponse("<script>window.location.reload()</script>")
+    message = _("Note deleted successfully...")
+    return HttpResponse(
+        f"<div class='oh-wrapper'> <div class='oh-alert-container'> <div class='oh-alert oh-alert--animated oh-alert--success'>{message}</div></div></div>"
+    )
 
 
 @login_required
