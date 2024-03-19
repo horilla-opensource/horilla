@@ -66,7 +66,8 @@
             <ion-icon name="checkmark-outline"></ion-icon>
             {% trans "Approve" %}
           </a>
-            <form action="{% url 'asset-request-reject' req_id=asset_request.id %}" method="post">
+            <form action="{% url 'asset-request-reject' req_id=asset_request.id %}" method="post" 
+              onclick="event.stopPropagation(); return confirm('{% trans "Do you want to reject this request?" %}')">
               {% csrf_token %}
               <button class="oh-btn oh-btn--danger"><ion-icon
                 name="close-outline"></ion-icon>{% trans "Reject" %}</button>
@@ -129,9 +130,10 @@
                       data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" hx-target="#asset-request-allocation-modal-target"  title="{% trans 'Approve' %}">
                       <ion-icon name="checkmark-outline"></ion-icon>
                     </a>
-                    <form action="{% url 'asset-request-reject' req_id=asset_request.id %}" method="post" class="">
+                    <form action="{% url 'asset-request-reject' req_id=asset_request.id %}" method="post" class=""
+                      onsubmit="event.stopPropagation(); return confirm('{% trans "Do you want to reject this request?" %}')">
                       {% csrf_token %}
-                      <button class="oh-btn oh-btn--danger " title="{% trans 'Reject' %}"><ion-icon
+                      <button class="oh-btn oh-btn--danger " title="{% trans 'Reject' %}" onclick="event.stopPropagation();"><ion-icon
                         name="close-outline"></ion-icon></button>
                     </form>
                 {% endif %}

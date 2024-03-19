@@ -143,78 +143,95 @@
 
                                                             <div data-cell-index="1" class="oh-sticky-table__td">
                                                                 {% for manager in objective.managers.all %}
-                                                                <span class="oh-user-panel oh-collapse-panel" data-type="user" id="managerContainer{{manager.id}}">
-                                                                    <div class="oh-profile oh-profile--md">
-                                                                        <div class="oh-profile__avatar mr-1">
-                                                                            <img
-                                                                            src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
-                                                                            class="oh-profile__image"
-                                                                            alt="Baby C."
-                                                                            />
+                                                                <div id="managerContainer{{manager.id}}">
+                                                                    <span class="oh-user-panel oh-collapse-panel" data-type="user" >
+                                                                        <div class="oh-profile oh-profile--md">
+                                                                            <div class="oh-profile__avatar mr-1">
+                                                                                <img
+                                                                                src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
+                                                                                class="oh-profile__image"
+                                                                                alt="Baby C."
+                                                                                />
+                                                                            </div>
+                                                                            <span class="oh-profile__name oh-text--dark" title="{{manager}}"
+                                                                            >{{manager.employee_first_name|truncatechars:15}}</span>
                                                                         </div>
-                                                                        <span class="oh-profile__name oh-text--dark" title="{{manager}}"
-                                                                        >{{manager.employee_first_name|truncatechars:15}}</span
+                                                                        {% if perms.pms.change_objective %}
+                                                                        <a 
+                                                                            hx-confirm="{% trans 'Are you sure want to remove this manager?' %}"
+                                                                            hx-post="{% url 'objective-manager-remove' objective.id manager.id %}" 
+                                                                            title="{% trans "Remove" %}" hx-swap="outerHTML" 
+                                                                            hx-target="#managerContainer{{manager.id}}" class="oh-user-panel__remove" 
+                                                                            onclick="event.stopPropagation()"
                                                                         >
-                                                                    </div>
-                                                                    {% if perms.pms.change_objective %}
-                                                                    <a hx-post="{% url 'objective-manager-remove' objective.id manager.id %}" title="{% trans "Remove" %}" hx-swap="outerHTML" hx-target="#managerContainer{{manager.id}}" class="oh-user-panel__remove" onclick="event.stopPropagation()">
-                                                                        <ion-icon name="close-outline"></ion-icon>
-                                                                    </a>
-                                                                    {% endif %}
-                                                                </span>
+                                                                            <ion-icon name="close-outline"></ion-icon>
+                                                                        </a>
+                                                                        {% endif %}
+                                                                    </span>
+                                                                </div>
                                                                 {% endfor %}
                                                                 <span class="count-span">{{objective.managers.all|length}} {% trans "Managers" %}</span>
                                                                 
                                                             </div>
                                                             <div data-cell-index="2" class="oh-sticky-table__td">
                                                                 {% for kr in objective.id|kr_count %}
-                                                                <span class="oh-user-panel oh-collapse-panel" data-type="user" id="keyResultContainer{{kr.id}}">
-                                                                    <div class="oh-profile oh-profile--md">
-                                                                        <div class="oh-profile__avatar mr-1">
-                                                                            <img
-                                                                            src="https://ui-avatars.com/api/?name={{kr.key_result_id}}&background=random"
-                                                                            class="oh-profile__image"
-                                                                            alt="Baby C."
-                                                                            />
+                                                                <div id="keyResultContainer{{kr.id}}">
+                                                                    <span class="oh-user-panel oh-collapse-panel" data-type="user" >
+                                                                        <div class="oh-profile oh-profile--md">
+                                                                            <div class="oh-profile__avatar mr-1">
+                                                                                <img
+                                                                                src="https://ui-avatars.com/api/?name={{kr.key_result_id}}&background=random"
+                                                                                class="oh-profile__image"
+                                                                                alt="Baby C."
+                                                                                />
+                                                                            </div>
+                                                                            <span class="oh-profile__name oh-text--dark" title="{{kr.key_result_id}}"
+                                                                            >{{kr.key_result_id|truncatechars:15}}</span
+                                                                            >
                                                                         </div>
-                                                                        <span class="oh-profile__name oh-text--dark" title="{{kr.key_result_id}}"
-                                                                        >{{kr.key_result_id|truncatechars:15}}</span
+                                                                        {% if "perms.pms.delete_keyresult" %}                                                                    
+                                                                        <a 
+                                                                            hx-confirm="{% trans 'Are you sure want to remove this key result?' %}"
+                                                                            hx-post="{% url 'key-result-remove' kr.employee_objective_id.id kr.id %}" 
+                                                                            title="{% trans "Remove" %}" hx-swap="outerHTML" 
+                                                                            hx-target="#keyResultContainer{{kr.id}}" 
+                                                                            class="oh-user-panel__remove" 
+                                                                            onclick="event.stopPropagation()"
                                                                         >
-                                                                    </div>
-                                                                    {% if "perms.pms.delete_keyresult" %}                                                                    
-                                                                    <a 
-                                                                        hx-post="{% url 'key-result-remove' kr.employee_objective_id.id kr.id %}" 
-                                                                        title="{% trans "Remove" %}" hx-swap="outerHTML" 
-                                                                        hx-target="#keyResultContainer{{kr.id}}" 
-                                                                        class="oh-user-panel__remove" 
-                                                                        onclick="event.stopPropagation()"
-                                                                    >
-                                                                        <ion-icon name="close-outline"></ion-icon>
-                                                                    </a>
-                                                                    {% endif %}
-                                                                </span>
+                                                                            <ion-icon name="close-outline"></ion-icon>
+                                                                        </a>
+                                                                        {% endif %}
+                                                                    </span>
+                                                                </div>
                                                                 {% endfor %}
                                                                 <span class="count-span">{{objective.id|kr_count|length}} {% trans "Key results" %}</span>
                                                             </div> 
                                                             <div data-cell-index="1" class="oh-sticky-table__td">
                                                                 {% for emp_objective in objective.employee_objective.all %}
-                                                                    <span class="oh-user-panel oh-collapse-panel" data-type="user" id="assigneesContainer{{emp_objective.id}}">
-                                                                        <div class="oh-profile oh-profile--md">
-                                                                            <div class="oh-profile__avatar mr-1">
-                                                                                <img
-                                                                                src="https://ui-avatars.com/api/?name={{emp_objective.employee_id.get_full_name}}&background=random"
-                                                                                class="oh-profile__image"
-                                                                                alt="Baby C."
-                                                                                />
+                                                                    <div id="assigneesContainer{{emp_objective.id}}">
+                                                                        <span class="oh-user-panel oh-collapse-panel" data-type="user" >
+                                                                            <div class="oh-profile oh-profile--md">
+                                                                                <div class="oh-profile__avatar mr-1">
+                                                                                    <img
+                                                                                    src="https://ui-avatars.com/api/?name={{emp_objective.employee_id.get_full_name}}&background=random"
+                                                                                    class="oh-profile__image"
+                                                                                    alt="Baby C."
+                                                                                    />
+                                                                                </div>
+                                                                                <span class="oh-profile__name oh-text--dark" title="{{emp_objective.employee_id}}"
+                                                                                >{{emp_objective.employee_id|truncatechars:15}}</span
+                                                                                >
                                                                             </div>
-                                                                            <span class="oh-profile__name oh-text--dark" title="{{emp_objective.employee_id}}"
-                                                                            >{{emp_objective.employee_id|truncatechars:15}}</span
+                                                                            <a 
+                                                                                hx-confirm="{% trans 'Are you sure want to remove this assignee?' %}"
+                                                                                hx-post="{% url 'assignees-remove' objective.id emp_objective.employee_id.id %}" 
+                                                                                title="{% trans "Remove" %}" hx-swap="delete" hx-target="#assigneesContainer{{emp_objective.id}}" 
+                                                                                onclick="event.stopPropagation()" class="oh-user-panel__remove"
                                                                             >
-                                                                        </div>
-                                                                    <a hx-post="{% url 'assignees-remove' objective.id emp_objective.employee_id.id %}" title="{% trans "Remove" %}" hx-swap="outerHTML" hx-target="#assigneesContainer{{emp_objective.id}}" onclick="event.stopPropagation()" class="oh-user-panel__remove">
-                                                                        <ion-icon name="close-outline"></ion-icon>
-                                                                    </a>
-                                                                    </span>
+                                                                                <ion-icon name="close-outline"></ion-icon>
+                                                                            </a>
+                                                                        </span>
+                                                                    </div>
                                                                 {% endfor %}
                                                                 <span class="count-span">{{ objective.employee_objective.all|length}} {% trans "Assignees" %}</span>   
                                                             </div>

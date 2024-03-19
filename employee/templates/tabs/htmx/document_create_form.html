@@ -1,6 +1,32 @@
 {% load i18n %}
-<form id="add-form" 
-    hx-post="{% url 'document-create' emp_id %}" hx-target="#documentCreateForm" hx-swap = 'innerHTML' method='post' hx-encoding="multipart/form-data">
-    {{form.errors}}
-      {{form.as_p}}
+<form
+  id="add-form"
+  hx-post="{% url 'document-create' emp_id %}"
+  hx-target="#documentCreateForm"
+  hx-swap="innerHTML"
+  method="post"
+  hx-encoding="multipart/form-data"
+>
+  {{form.errors}} {{form.as_p}}
 </form>
+<script>
+  $(document).ready(function () {
+    var date = $("#id_expiry_date").val();
+    var notifyLabel = $("[for='id_notify_before']");
+    var notifyInput = $("#id_notify_before");
+    if (!date) {
+      notifyLabel.addClass("d-none");
+      notifyInput.addClass("d-none");
+    }
+    $("#id_expiry_date").on("change", function () {
+      date = $("#id_expiry_date").val();
+      if (!date) {
+        notifyLabel.addClass("d-none");
+        notifyInput.addClass("d-none");
+      } else {
+        notifyLabel.removeClass("d-none");
+        notifyInput.removeClass("d-none");
+      }
+    });
+  });
+</script>

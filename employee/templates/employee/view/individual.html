@@ -225,6 +225,7 @@
 		</div>
 		
 		<div class="oh-table_sticky--wrapper">
+			{% if request.user == employee.employee_user_id %}
 			<div class="oh-sticky-dropdown--header">
 				<div class="oh-dropdown" x-data="{open: false}">
 				<button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
@@ -235,6 +236,7 @@
 				</div>
 				</div>
 			</div>
+			{% endif %}
 			<div id="employee-tab" data-table-name="employee_tab">  
 				<div class="row">
 					<div class="col-sm-12 col-md-12 col lg-12">

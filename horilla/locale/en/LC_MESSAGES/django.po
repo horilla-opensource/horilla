@@ -4,13 +4,13 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #: .\base\templates\base\audit_tag\history_tracking_fields.html:42
-#: .\leave\views.py:2487
+#: .\leave\views.py:2493
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 09:02+0530\n"
+"POT-Creation-Date: 2024-03-15 16:15+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -166,7 +166,7 @@ msgstr "Asset"
 #: .\leave\templates\leave\leave_request\leave-requests.html:23
 #: .\leave\templates\leave\leave_request\leave_requests.html:22
 #: .\leave\templates\leave\user-requests.html:22
-#: .\leave\templates\leave\user_leave\user_requests.html:20
+#: .\leave\templates\leave\user_leave\user_requests.html:30
 #: .\leave\templates\leave\user_requests.html:22
 #: .\offboarding\templates\offboarding\resignation\request_cards.html:13
 #: .\payroll\templates\payroll\reimbursement\reimbursement_list.html:34
@@ -199,9 +199,9 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\leave_requests.html:117
 #: .\leave\templates\leave\leave_request\one_request_view.html:81
 #: .\leave\templates\leave\user-requests.html:26
-#: .\leave\templates\leave\user_leave\group_by.html:100
-#: .\leave\templates\leave\user_leave\user_requests.html:16
-#: .\leave\templates\leave\user_leave\user_requests.html:106
+#: .\leave\templates\leave\user_leave\group_by.html:111
+#: .\leave\templates\leave\user_leave\user_requests.html:26
+#: .\leave\templates\leave\user_leave\user_requests.html:108
 #: .\leave\templates\leave\user_requests.html:26
 #: .\offboarding\templates\offboarding\resignation\request_cards.html:18
 #: .\payroll\templates\payroll\reimbursement\reimbursement_list.html:23
@@ -220,7 +220,7 @@ msgstr ""
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:240
 #: .\leave\templates\leave\leave_request\leave_requests.html:10
 #: .\leave\templates\leave\leave_request\one_request_view.html:84
-#: .\leave\templates\leave\user_leave\user_requests.html:8
+#: .\leave\templates\leave\user_leave\user_requests.html:18
 #: .\offboarding\templates\offboarding\resignation\request_cards.html:8
 #: .\payroll\templates\payroll\reimbursement\reimbursement_list.html:12
 #: .\payroll\templates\payroll\reimbursement\request_cards.html:12
@@ -402,9 +402,9 @@ msgstr ""
 #: .\leave\templates\leave\request_view.html:67
 #: .\leave\templates\leave\user-request-view.html:66
 #: .\leave\templates\leave\user-requests.html:38
-#: .\leave\templates\leave\user_leave\group_by.html:65
+#: .\leave\templates\leave\user_leave\group_by.html:76
 #: .\leave\templates\leave\user_leave\user_request_view.html:99
-#: .\leave\templates\leave\user_leave\user_requests.html:68
+#: .\leave\templates\leave\user_leave\user_requests.html:70
 #: .\leave\templates\leave\user_request_view.html:67
 #: .\leave\templates\leave\user_requests.html:38
 #: .\offboarding\templates\offboarding\pipeline\filter.html:82
@@ -708,8 +708,8 @@ msgstr ""
 #: .\leave\templates\leave\leave_type\leave_type_individual_view.html:149
 #: .\leave\templates\leave\leave_type\leave_types.html:49
 #: .\leave\templates\leave\user-requests.html:67
-#: .\leave\templates\leave\user_leave\group_by.html:133
-#: .\leave\templates\leave\user_leave\user_requests.html:140
+#: .\leave\templates\leave\user_leave\group_by.html:144
+#: .\leave\templates\leave\user_leave\user_requests.html:142
 #: .\leave\templates\leave\user_requests.html:67
 #: .\offboarding\templates\offboarding\pipeline\offboardings.html:81
 #: .\offboarding\templates\offboarding\resignation\request_cards.html:41
@@ -845,9 +845,9 @@ msgstr ""
 #: .\leave\templates\leave\leave_type\leave_type_individual_view.html:158
 #: .\leave\templates\leave\leave_type\leave_types.html:54
 #: .\leave\templates\leave\user-requests.html:70
-#: .\leave\templates\leave\user_leave\group_by.html:139
+#: .\leave\templates\leave\user_leave\group_by.html:150
 #: .\leave\templates\leave\user_leave\user_request_view.html:207
-#: .\leave\templates\leave\user_leave\user_requests.html:146
+#: .\leave\templates\leave\user_leave\user_requests.html:148
 #: .\leave\templates\leave\user_requests.html:70
 #: .\offboarding\templates\offboarding\pipeline\offboardings.html:89
 #: .\offboarding\templates\offboarding\resignation\request_cards.html:47
@@ -1204,14 +1204,14 @@ msgstr "Employee"
 #: .\leave\templates\leave\leave_type\leave_types.html:71
 #: .\leave\templates\leave\user-requests.html:83
 #: .\leave\templates\leave\user-requests.html:87
-#: .\leave\templates\leave\user_leave\group_by.html:165
-#: .\leave\templates\leave\user_leave\group_by.html:171
-#: .\leave\templates\leave\user_leave\group_by.html:240
-#: .\leave\templates\leave\user_leave\group_by.html:244
+#: .\leave\templates\leave\user_leave\group_by.html:178
+#: .\leave\templates\leave\user_leave\group_by.html:184
+#: .\leave\templates\leave\user_leave\group_by.html:253
+#: .\leave\templates\leave\user_leave\group_by.html:257
 #: .\leave\templates\leave\user_leave\user-leave.html:34
 #: .\leave\templates\leave\user_leave\user-leave.html:38
-#: .\leave\templates\leave\user_leave\user_requests.html:172
 #: .\leave\templates\leave\user_leave\user_requests.html:176
+#: .\leave\templates\leave\user_leave\user_requests.html:180
 #: .\leave\templates\leave\user_requests.html:83
 #: .\leave\templates\leave\user_requests.html:87
 #: .\offboarding\templates\offboarding\resignation\group_by.html:194
@@ -1523,14 +1523,14 @@ msgstr ""
 #: .\leave\templates\leave\leave_type\leave_types.html:74
 #: .\leave\templates\leave\user-requests.html:83
 #: .\leave\templates\leave\user-requests.html:90
-#: .\leave\templates\leave\user_leave\group_by.html:166
-#: .\leave\templates\leave\user_leave\group_by.html:183
-#: .\leave\templates\leave\user_leave\group_by.html:240
-#: .\leave\templates\leave\user_leave\group_by.html:247
+#: .\leave\templates\leave\user_leave\group_by.html:179
+#: .\leave\templates\leave\user_leave\group_by.html:196
+#: .\leave\templates\leave\user_leave\group_by.html:253
+#: .\leave\templates\leave\user_leave\group_by.html:260
 #: .\leave\templates\leave\user_leave\user-leave.html:34
 #: .\leave\templates\leave\user_leave\user-leave.html:41
-#: .\leave\templates\leave\user_leave\user_requests.html:172
-#: .\leave\templates\leave\user_leave\user_requests.html:179
+#: .\leave\templates\leave\user_leave\user_requests.html:176
+#: .\leave\templates\leave\user_leave\user_requests.html:183
 #: .\leave\templates\leave\user_requests.html:83
 #: .\leave\templates\leave\user_requests.html:90
 #: .\offboarding\templates\offboarding\resignation\group_by.html:195
@@ -1761,10 +1761,10 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\leave_requests.html:246
 #: .\leave\templates\leave\leave_type\leave_types.html:80
 #: .\leave\templates\leave\user-requests.html:96
-#: .\leave\templates\leave\user_leave\group_by.html:196
-#: .\leave\templates\leave\user_leave\group_by.html:253
+#: .\leave\templates\leave\user_leave\group_by.html:209
+#: .\leave\templates\leave\user_leave\group_by.html:266
 #: .\leave\templates\leave\user_leave\user-leave.html:47
-#: .\leave\templates\leave\user_leave\user_requests.html:185
+#: .\leave\templates\leave\user_leave\user_requests.html:189
 #: .\leave\templates\leave\user_requests.html:96
 #: .\offboarding\templates\offboarding\resignation\group_by.html:225
 #: .\offboarding\templates\offboarding\resignation\group_by.html:297
@@ -1929,10 +1929,10 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\leave_requests.html:251
 #: .\leave\templates\leave\leave_type\leave_types.html:85
 #: .\leave\templates\leave\user-requests.html:101
-#: .\leave\templates\leave\user_leave\group_by.html:206
-#: .\leave\templates\leave\user_leave\group_by.html:259
+#: .\leave\templates\leave\user_leave\group_by.html:219
+#: .\leave\templates\leave\user_leave\group_by.html:272
 #: .\leave\templates\leave\user_leave\user-leave.html:52
-#: .\leave\templates\leave\user_leave\user_requests.html:190
+#: .\leave\templates\leave\user_leave\user_requests.html:194
 #: .\leave\templates\leave\user_requests.html:101
 #: .\offboarding\templates\offboarding\resignation\group_by.html:235
 #: .\offboarding\templates\offboarding\resignation\group_by.html:305
@@ -2098,10 +2098,10 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\leave_requests.html:258
 #: .\leave\templates\leave\leave_type\leave_types.html:92
 #: .\leave\templates\leave\user-requests.html:108
-#: .\leave\templates\leave\user_leave\group_by.html:217
-#: .\leave\templates\leave\user_leave\group_by.html:267
+#: .\leave\templates\leave\user_leave\group_by.html:230
+#: .\leave\templates\leave\user_leave\group_by.html:280
 #: .\leave\templates\leave\user_leave\user-leave.html:59
-#: .\leave\templates\leave\user_leave\user_requests.html:197
+#: .\leave\templates\leave\user_leave\user_requests.html:201
 #: .\leave\templates\leave\user_requests.html:108
 #: .\offboarding\templates\offboarding\resignation\group_by.html:246
 #: .\offboarding\templates\offboarding\resignation\group_by.html:314
@@ -2267,10 +2267,10 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\leave_requests.html:263
 #: .\leave\templates\leave\leave_type\leave_types.html:97
 #: .\leave\templates\leave\user-requests.html:113
-#: .\leave\templates\leave\user_leave\group_by.html:227
-#: .\leave\templates\leave\user_leave\group_by.html:273
+#: .\leave\templates\leave\user_leave\group_by.html:240
+#: .\leave\templates\leave\user_leave\group_by.html:286
 #: .\leave\templates\leave\user_leave\user-leave.html:64
-#: .\leave\templates\leave\user_leave\user_requests.html:202
+#: .\leave\templates\leave\user_leave\user_requests.html:206
 #: .\leave\templates\leave\user_requests.html:113
 #: .\offboarding\templates\offboarding\resignation\group_by.html:256
 #: .\offboarding\templates\offboarding\resignation\group_by.html:322
@@ -3415,9 +3415,9 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\request_view.html:142
 #: .\leave\templates\leave\leave_type\leave_types.html:36
 #: .\leave\templates\leave\user-requests.html:39
-#: .\leave\templates\leave\user_leave\group_by.html:68
+#: .\leave\templates\leave\user_leave\group_by.html:79
 #: .\leave\templates\leave\user_leave\user_request_view.html:194
-#: .\leave\templates\leave\user_leave\user_requests.html:71
+#: .\leave\templates\leave\user_leave\user_requests.html:73
 #: .\leave\templates\leave\user_requests.html:39
 #: .\offboarding\templates\offboarding\resignation\group_by.html:92
 #: .\offboarding\templates\offboarding\resignation\request_list.html:84
@@ -3710,8 +3710,8 @@ msgstr ""
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:168
 #: .\leave\templates\leave\leave_request\group_by.html:71
 #: .\leave\templates\leave\leave_request\leave_requests.html:79
-#: .\leave\templates\leave\user_leave\group_by.html:67
-#: .\leave\templates\leave\user_leave\user_requests.html:70
+#: .\leave\templates\leave\user_leave\group_by.html:78
+#: .\leave\templates\leave\user_leave\user_requests.html:72
 #: .\offboarding\templates\offboarding\resignation\request_list.html:87
 #: .\payroll\templates\payroll\reimbursement\reimbursement_list.html:115
 #: .\payroll\templates\payroll\reimbursement\reimbursement_list.html:401
@@ -4717,8 +4717,8 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\group_by.html:66
 #: .\leave\templates\leave\leave_request\leave_comment.html:46
 #: .\leave\templates\leave\leave_request\leave_requests.html:74
-#: .\leave\templates\leave\user_leave\group_by.html:66
-#: .\leave\templates\leave\user_leave\user_requests.html:69
+#: .\leave\templates\leave\user_leave\group_by.html:77
+#: .\leave\templates\leave\user_leave\user_requests.html:71
 #: .\payroll\models\models.py:1730
 #: .\payroll\templates\payroll\reimbursement\comment_view.html:21
 #: .\pms\templates\okr\objective_detailed_view.html:262
@@ -5369,8 +5369,8 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\group_by.html:54
 #: .\leave\templates\leave\leave_request\leave_requests.html:61
 #: .\leave\templates\leave\leave_request\leave_requests_export_filter.html:15
-#: .\leave\templates\leave\user_leave\group_by.html:56
-#: .\leave\templates\leave\user_leave\user_requests.html:59
+#: .\leave\templates\leave\user_leave\group_by.html:67
+#: .\leave\templates\leave\user_leave\user_requests.html:61
 #: .\onboarding\templates\onboarding\candidates.html:49
 #: .\payroll\templates\payroll\contract\contract_export_filter.html:10
 #: .\payroll\templates\payroll\contract\contract_list.html:40
@@ -5576,7 +5576,7 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: .\attendance\templates\attendance\attendance\attendance_request_one.html:8
+#: .\attendance\templates\attendance\attendance\attendance_request_one.html:7
 #: .\attendance\templates\attendance\attendance_activity\single_attendance_activity.html:20
 #: .\attendance\templates\attendance\late_come_early_out\single_report.html:20
 #: .\attendance\templates\requests\attendance\request_lines.html:415
@@ -5591,9 +5591,9 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\group_by.html:353
 #: .\leave\templates\leave\leave_request\leave_requests.html:311
 #: .\leave\templates\leave\leave_request\one_request_view.html:7
-#: .\leave\templates\leave\user_leave\group_by.html:308
+#: .\leave\templates\leave\user_leave\group_by.html:321
 #: .\leave\templates\leave\user_leave\user_request_one.html:7
-#: .\leave\templates\leave\user_leave\user_requests.html:252
+#: .\leave\templates\leave\user_leave\user_requests.html:256
 #: .\offboarding\templates\offboarding\pipeline\individual_view.html:6
 #: .\payroll\templates\payroll\loan\records_card.html:310
 #: .\payroll\templates\payroll\loan\records_list.html:774
@@ -5707,7 +5707,7 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:225
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:463
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:683
-#: .\leave\templates\leave\user_leave\user_requests.html:219
+#: .\leave\templates\leave\user_leave\user_requests.html:223
 #: .\offboarding\templates\offboarding\resignation\request_list.html:287
 #: .\onboarding\templates\onboarding\candidates.html:196
 #: .\payroll\templates\payroll\allowance\card_allowance.html:157
@@ -6135,11 +6135,11 @@ msgstr ""
 #: .\leave\templates\leave\user-leave-view.html:34
 #: .\leave\templates\leave\user-request-view.html:47
 #: .\leave\templates\leave\user-requests.html:34
-#: .\leave\templates\leave\user_leave\group_by.html:61
+#: .\leave\templates\leave\user_leave\group_by.html:72
 #: .\leave\templates\leave\user_leave\user_leave_view.html:34
 #: .\leave\templates\leave\user_leave\user_request_one.html:59
 #: .\leave\templates\leave\user_leave\user_request_view.html:80
-#: .\leave\templates\leave\user_leave\user_requests.html:64
+#: .\leave\templates\leave\user_leave\user_requests.html:66
 #: .\leave\templates\leave\user_leave_view.html:34
 #: .\leave\templates\leave\user_request_view.html:48
 #: .\leave\templates\leave\user_requests.html:34
@@ -6391,8 +6391,8 @@ msgstr ""
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:204
 #: .\leave\templates\leave\leave_request\group_by.html:115
 #: .\leave\templates\leave\leave_request\leave_requests.html:126
-#: .\leave\templates\leave\user_leave\group_by.html:109
-#: .\leave\templates\leave\user_leave\user_requests.html:115
+#: .\leave\templates\leave\user_leave\group_by.html:120
+#: .\leave\templates\leave\user_leave\user_requests.html:117
 #, fuzzy
 #| msgid "employee"
 msgid "Add / View Comment"
@@ -6730,12 +6730,12 @@ msgid "Default grace time deactivated successfully."
 msgstr ""
 
 #: .\attendance\views\views.py:1774 .\base\views.py:4866 .\base\views.py:5091
-#: .\leave\views.py:3481 .\leave\views.py:3657 .\payroll\views\views.py:1476
+#: .\leave\views.py:3492 .\leave\views.py:3668 .\payroll\views\views.py:1476
 msgid "Comment added successfully!"
 msgstr ""
 
 #: .\attendance\views\views.py:1899 .\base\views.py:5061 .\base\views.py:5181
-#: .\leave\views.py:3626 .\leave\views.py:3775 .\payroll\views\views.py:1560
+#: .\leave\views.py:3637 .\leave\views.py:3786 .\payroll\views\views.py:1560
 msgid "Comment deleted successfully!"
 msgstr ""
 
@@ -6896,7 +6896,7 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\group_payslips.html:25
 #: .\payroll\templates\payroll\payslip\payslips_quick_filter.html:39
 #: .\payroll\templates\payroll\payslip\view_payslips.html:264
-#: .\payroll\views\component_views.py:792 .\payroll\views\views.py:46
+#: .\payroll\views\component_views.py:794 .\payroll\views\views.py:46
 msgid "Draft"
 msgstr ""
 
@@ -6950,7 +6950,7 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\leave-requests.html:19
 #: .\leave\templates\leave\leave_request\leave_requests.html:14
 #: .\leave\templates\leave\user-requests.html:18
-#: .\leave\templates\leave\user_leave\user_requests.html:12
+#: .\leave\templates\leave\user_leave\user_requests.html:22
 #: .\leave\templates\leave\user_requests.html:18 .\recruitment\models.py:198
 #: .\recruitment\templates\dashboard\dashboard.html:329
 msgid "Cancelled"
@@ -7127,10 +7127,10 @@ msgstr ""
 #: .\leave\templates\leave\user-request-update.html:18
 #: .\leave\templates\leave\user-request-view.html:53
 #: .\leave\templates\leave\user-requests.html:35
-#: .\leave\templates\leave\user_leave\group_by.html:62
+#: .\leave\templates\leave\user_leave\group_by.html:73
 #: .\leave\templates\leave\user_leave\user_request_one.html:70
 #: .\leave\templates\leave\user_leave\user_request_view.html:86
-#: .\leave\templates\leave\user_leave\user_requests.html:65
+#: .\leave\templates\leave\user_leave\user_requests.html:67
 #: .\leave\templates\leave\user_request_form.html:14
 #: .\leave\templates\leave\user_request_one.html:22
 #: .\leave\templates\leave\user_request_update.html:18
@@ -8867,8 +8867,8 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\leave-requests.html:40
 #: .\leave\templates\leave\leave_request\leave_requests.html:71
 #: .\leave\templates\leave\leave_request_view.html:16
-#: .\leave\templates\leave\user_leave\group_by.html:64
-#: .\leave\templates\leave\user_leave\user_requests.html:67
+#: .\leave\templates\leave\user_leave\group_by.html:75
+#: .\leave\templates\leave\user_leave\user_requests.html:69
 msgid "Requested Days"
 msgstr ""
 
@@ -9036,12 +9036,12 @@ msgstr ""
 #: .\leave\templates\leave\one-request-view.html:90
 #: .\leave\templates\leave\one_request_view.html:84
 #: .\leave\templates\leave\one_request_view.html:90
-#: .\leave\templates\leave\user_leave\group_by.html:121
-#: .\leave\templates\leave\user_leave\group_by.html:122
-#: .\leave\templates\leave\user_leave\group_by.html:126
-#: .\leave\templates\leave\user_leave\user_requests.html:127
-#: .\leave\templates\leave\user_leave\user_requests.html:128
-#: .\leave\templates\leave\user_leave\user_requests.html:132
+#: .\leave\templates\leave\user_leave\group_by.html:132
+#: .\leave\templates\leave\user_leave\group_by.html:133
+#: .\leave\templates\leave\user_leave\group_by.html:137
+#: .\leave\templates\leave\user_leave\user_requests.html:129
+#: .\leave\templates\leave\user_leave\user_requests.html:130
+#: .\leave\templates\leave\user_leave\user_requests.html:134
 #: .\pms\templates\feedback\question\question_all.html:102
 msgid "Cancel"
 msgstr ""
@@ -10381,6 +10381,10 @@ msgstr "Grace Time"
 #: .\base\translator.py:318
 msgid "helpdesk-tag-view"
 msgstr "Helpdesk Tags"
+
+#: .\base\translator.py:319
+msgid "feedback-answer-view"
+msgstr "Answer"
 
 #: .\base\views.py:193
 msgid "Invalid username or password."
@@ -11819,10 +11823,10 @@ msgstr ""
 #: .\leave\templates\leave\user-request-update.html:28
 #: .\leave\templates\leave\user-request-view.html:60
 #: .\leave\templates\leave\user-requests.html:36
-#: .\leave\templates\leave\user_leave\group_by.html:63
+#: .\leave\templates\leave\user_leave\group_by.html:74
 #: .\leave\templates\leave\user_leave\user_request_one.html:74
 #: .\leave\templates\leave\user_leave\user_request_view.html:93
-#: .\leave\templates\leave\user_leave\user_requests.html:66
+#: .\leave\templates\leave\user_leave\user_requests.html:68
 #: .\leave\templates\leave\user_request_form.html:22
 #: .\leave\templates\leave\user_request_one.html:26
 #: .\leave\templates\leave\user_request_update.html:28
@@ -11903,7 +11907,7 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\group_payslips.html:26
 #: .\payroll\templates\payroll\payslip\payslips_quick_filter.html:50
 #: .\payroll\templates\payroll\payslip\view_payslips.html:266
-#: .\payroll\views\component_views.py:793 .\payroll\views\views.py:47
+#: .\payroll\views\component_views.py:795 .\payroll\views\views.py:47
 msgid "Review Ongoing"
 msgstr ""
 
@@ -11915,7 +11919,7 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\group_payslips.html:27
 #: .\payroll\templates\payroll\payslip\payslips_quick_filter.html:61
 #: .\payroll\templates\payroll\payslip\view_payslips.html:268
-#: .\payroll\views\component_views.py:794 .\payroll\views\views.py:48
+#: .\payroll\views\component_views.py:796 .\payroll\views\views.py:48
 msgid "Confirmed"
 msgstr ""
 
@@ -11927,7 +11931,7 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\group_payslips.html:28
 #: .\payroll\templates\payroll\payslip\payslips_quick_filter.html:72
 #: .\payroll\templates\payroll\payslip\view_payslips.html:269
-#: .\payroll\views\component_views.py:795 .\payroll\views\views.py:49
+#: .\payroll\views\component_views.py:797 .\payroll\views\views.py:49
 msgid "Paid"
 msgstr ""
 
@@ -13255,7 +13259,7 @@ msgstr ""
 msgid "Leave allocation request not found"
 msgstr "Leave Allocation Requests"
 
-#: .\leave\forms.py:255 .\leave\views.py:1754 .\leave\views.py:2630
+#: .\leave\forms.py:255 .\leave\views.py:1754 .\leave\views.py:2636
 msgid "An attachment is required for this leave request"
 msgstr ""
 
@@ -13644,8 +13648,6 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\leave-requests.html:109
 #: .\leave\templates\leave\leave_request\leave_requests.html:152
 #: .\leave\templates\leave\leave_request\penalty\create.html:50
-#: .\leave\templates\leave\user_leave\group_by.html:140
-#: .\leave\templates\leave\user_leave\user_requests.html:147
 #: .\recruitment\templates\skill_zone_cand\skill_zone_cand_list.html:64
 msgid "Are you sure you want to delete ?"
 msgstr ""
@@ -14230,15 +14232,15 @@ msgstr ""
 
 #: .\leave\templates\leave\leave_request\group_by.html:9
 #: .\leave\templates\leave\leave_request\leave_requests.html:31
-#: .\leave\templates\leave\user_leave\group_by.html:10
-#: .\leave\templates\leave\user_leave\user_requests.html:29
+#: .\leave\templates\leave\user_leave\group_by.html:21
+#: .\leave\templates\leave\user_leave\user_requests.html:39
 msgid "Select All Requests"
 msgstr ""
 
 #: .\leave\templates\leave\leave_request\group_by.html:16
 #: .\leave\templates\leave\leave_request\leave_requests.html:38
-#: .\leave\templates\leave\user_leave\group_by.html:17
-#: .\leave\templates\leave\user_leave\user_requests.html:36
+#: .\leave\templates\leave\user_leave\group_by.html:28
+#: .\leave\templates\leave\user_leave\user_requests.html:46
 msgid "Unselect All Requests"
 msgstr ""
 
@@ -14542,6 +14544,11 @@ msgstr ""
 msgid "My Leave Requests"
 msgstr ""
 
+#: .\leave\templates\leave\user_leave\group_by.html:151
+#: .\leave\templates\leave\user_leave\user_requests.html:149
+msgid "Are you sure you want to delete this leave request?"
+msgstr ""
+
 #: .\leave\templates\leave\user_leave\request_form.html:20
 msgid "Create Leave Request"
 msgstr ""
@@ -14576,7 +14583,7 @@ msgstr ""
 msgid "This leave types are already in use for {}"
 msgstr ""
 
-#: .\leave\views.py:326 .\leave\views.py:1823 .\leave\views.py:2664
+#: .\leave\views.py:326 .\leave\views.py:1823 .\leave\views.py:2670
 msgid "Leave request created successfully.."
 msgstr ""
 
@@ -14584,16 +14591,16 @@ msgstr ""
 msgid "Leave request is updated successfully.."
 msgstr ""
 
-#: .\leave\views.py:546 .\leave\views.py:1953
+#: .\leave\views.py:546 .\leave\views.py:1955
 msgid "Leave request deleted successfully.."
 msgstr ""
 
-#: .\leave\views.py:548 .\leave\views.py:3233 .\leave\views.py:3311
+#: .\leave\views.py:548 .\leave\views.py:3244 .\leave\views.py:3322
 msgid "Leave request not found."
 msgstr ""
 
 #: .\leave\views.py:550 .\leave\views.py:1156 .\leave\views.py:1527
-#: .\leave\views.py:1705 .\leave\views.py:1957 .\pms\views.py:1563
+#: .\leave\views.py:1705 .\leave\views.py:1960 .\pms\views.py:1563
 #: .\pms\views.py:1804 .\pms\views.py:1949 .\pms\views.py:2041
 #: .\pms\views.py:2481 .\recruitment\views\views.py:1542
 #: .\recruitment\views\views.py:1747 .\recruitment\views\views.py:1828
@@ -14740,92 +14747,92 @@ msgstr ""
 msgid "There is already a leave request for this date range.."
 msgstr ""
 
-#: .\leave\views.py:1838 .\leave\views.py:1926
+#: .\leave\views.py:1840 .\leave\views.py:1928
 msgid "You dont have enough leave days to make the request.."
 msgstr ""
 
-#: .\leave\views.py:1921
+#: .\leave\views.py:1923
 msgid "Leave request updated successfully.."
 msgstr ""
 
-#: .\leave\views.py:1934 .\leave\views.py:1955 .\leave\views.py:2167
+#: .\leave\views.py:1936 .\leave\views.py:1958 .\leave\views.py:2173
 msgid "User has no leave request.."
 msgstr ""
 
-#: .\leave\views.py:1993 .\leave\views.py:2024 .\leave\views.py:2067
-#: .\leave\views.py:2134
+#: .\leave\views.py:1999 .\leave\views.py:2030 .\leave\views.py:2073
+#: .\leave\views.py:2140
 msgid "User is not an employee.."
 msgstr ""
 
-#: .\leave\views.py:2366
+#: .\leave\views.py:2372
 msgid "Total leaves available"
 msgstr ""
 
-#: .\leave\views.py:2373
+#: .\leave\views.py:2379
 msgid "Oops!! No leaves available for you this month..."
 msgstr ""
 
-#: .\leave\views.py:2448
+#: .\leave\views.py:2454
 msgid "No leave request this month"
 msgstr ""
 
-#: .\leave\views.py:2573
+#: .\leave\views.py:2579
 msgid "Leave Trends"
 msgstr ""
 
-#: .\leave\views.py:2689
+#: .\leave\views.py:2700
 msgid "You don't have permission"
 msgstr ""
 
-#: .\leave\views.py:2819
+#: .\leave\views.py:2830
 msgid "New Leave allocation request is created"
 msgstr ""
 
-#: .\leave\views.py:2947
+#: .\leave\views.py:2958
 msgid "Leave allocation request is updated successfully."
 msgstr ""
 
-#: .\leave\views.py:3012
+#: .\leave\views.py:3023
 msgid "Leave allocation request approved successfully"
 msgstr ""
 
-#: .\leave\views.py:3026
+#: .\leave\views.py:3037
 msgid "The leave allocation request can't be approved"
 msgstr ""
 
-#: .\leave\views.py:3069
+#: .\leave\views.py:3080
 msgid "Leave allocation request rejected successfully"
 msgstr ""
 
-#: .\leave\views.py:3090
+#: .\leave\views.py:3101
 msgid "The leave allocation request can't be rejected"
 msgstr ""
 
-#: .\leave\views.py:3114
+#: .\leave\views.py:3125
 msgid "Leave allocation request deleted successfully.."
 msgstr ""
 
-#: .\leave\views.py:3117
+#: .\leave\views.py:3128
 msgid "Approved request can't be deleted."
 msgstr ""
 
-#: .\leave\views.py:3119 .\leave\views.py:3121
+#: .\leave\views.py:3130 .\leave\views.py:3132
 msgid "Leave allocation request not found."
 msgstr ""
 
-#: .\leave\views.py:3124
+#: .\leave\views.py:3135
 msgid "Related entries exist"
 msgstr ""
 
-#: .\leave\views.py:3230
+#: .\leave\views.py:3241
 msgid "{}'s leave request deleted."
 msgstr ""
 
-#: .\leave\views.py:3303
+#: .\leave\views.py:3314
 msgid "Leave request deleted."
 msgstr ""
 
-#: .\leave\views.py:3308
+#: .\leave\views.py:3319
 msgid "You cannot delete leave request with status {}."
 msgstr ""
 
@@ -17158,55 +17165,55 @@ msgstr ""
 msgid "record_type_name"
 msgstr ""
 
-#: .\payroll\views\component_views.py:244
+#: .\payroll\views\component_views.py:245
 msgid "Allowance created."
 msgstr ""
 
-#: .\payroll\views\component_views.py:339
+#: .\payroll\views\component_views.py:340
 msgid "Allowance updated."
 msgstr ""
 
-#: .\payroll\views\component_views.py:356
+#: .\payroll\views\component_views.py:357
 msgid "Allowance deleted successfully"
 msgstr ""
 
-#: .\payroll\views\component_views.py:358
+#: .\payroll\views\component_views.py:359
 msgid "Allowance not found"
 msgstr ""
 
-#: .\payroll\views\component_views.py:361
+#: .\payroll\views\component_views.py:362
 msgid "Validation error occurred while deleting the allowance"
 msgstr ""
 
-#: .\payroll\views\component_views.py:365
+#: .\payroll\views\component_views.py:366
 msgid "An error occurred while deleting the allowance"
 msgstr ""
 
-#: .\payroll\views\component_views.py:383
+#: .\payroll\views\component_views.py:384
 msgid "Deduction created."
 msgstr ""
 
-#: .\payroll\views\component_views.py:476
+#: .\payroll\views\component_views.py:477
 msgid "Deduction updated."
 msgstr ""
 
-#: .\payroll\views\component_views.py:492
+#: .\payroll\views\component_views.py:493
 msgid "Deduction deleted successfully"
 msgstr ""
 
-#: .\payroll\views\component_views.py:494
+#: .\payroll\views\component_views.py:495
 msgid "Deduction not found"
 msgstr ""
 
-#: .\payroll\views\component_views.py:619
+#: .\payroll\views\component_views.py:621
 msgid "Payslip Saved"
 msgstr ""
 
-#: .\payroll\views\component_views.py:951
+#: .\payroll\views\component_views.py:953
 msgid "Bonus Added"
 msgstr ""
 
-#: .\payroll\views\component_views.py:977
+#: .\payroll\views\component_views.py:979
 msgid "No active contract found for  {} during this payslip period"
 msgstr ""
 
@@ -19977,6 +19984,3 @@ msgstr ""
 
 #~ msgid "individual"
 #~ msgstr "Creation"
-
-#~ msgid "feedback-answer-view"
-#~ msgstr "Answer"

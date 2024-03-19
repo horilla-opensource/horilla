@@ -2774,7 +2774,7 @@ def work_type_request_approve(request, id):
 
         else:
             messages.error(
-                request, _("A shift request already exists during this time period.")
+                request, _("An approved work type request already exists during this time period.")
             )
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("You Do nt Have Permission")
@@ -3395,22 +3395,26 @@ def shift_request_update(request, shift_request_id):
     form = choosesubordinates(request, form, "base.change_shiftrequest")
     form = include_employee_instance(request, form)
     if request.method == "POST":
-        response = render(
-            request,
-            "shift_request/request_update_form.html",
-            {
-                "form": form,
-            },
-        )
-        form = ShiftRequestForm(request.POST, instance=shift_request)
-        form = choosesubordinates(request, form, "base.change_shiftrequest")
-        form = include_employee_instance(request, form)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("Request Updated Successfully"))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
+        if not shift_request.approved:
+            response = render(
+                request,
+                "shift_request/request_update_form.html",
+                {
+                    "form": form,
+                },
             )
+            form = ShiftRequestForm(request.POST, instance=shift_request)
+            form = choosesubordinates(request, form, "base.change_shiftrequest")
+            form = include_employee_instance(request, form)
+            if form.is_valid():
+                form.save()
+                messages.success(request, _("Request Updated Successfully"))
+                return HttpResponse(
+                    response.content.decode("utf-8") + "<script>location.reload();</script>"
+                )
+        else:
+            messages.info(request, _("Can't edit approved shift request"))
+            return HttpResponse("<script>location.reload();</script>")
 
     return render(request, "shift_request/request_update_form.html", {"form": form})
 
@@ -3694,7 +3698,7 @@ def shift_request_approve(request, id):
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         else:
             messages.error(
-                request, _("A shift request already exists during this time period.")
+                request, _("An apporved shift request already exists during this time period.")
             )
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("You Dont Have Permission")
@@ -3729,7 +3733,7 @@ def shift_allocation_request_approve(request, id):
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     else:
         messages.error(
-            request, _("A shift request already exists during this time period.")
+            request, _("An approved shift request already exists during this time period.")
         )
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 

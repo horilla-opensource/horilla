@@ -43,7 +43,9 @@
               <div data-cell-index="3" data-cell-title='{% trans "Check In" %}' class='oh-sticky-table__th'>{% trans "Check In" %}</div>
               <div data-cell-index="4" data-cell-title='{% trans "Check Out" %}' class='oh-sticky-table__th'>{% trans "Check Out" %}</div>
               <div data-cell-index="5" data-cell-title='{% trans "Out Date" %}' class="oh-sticky-table__th {% if request.sort_option.order == '-clock_out_date' %}arrow-up {% elif request.sort_option.order == 'clock_out_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_out_date">{% trans "Out Date" %}</div>
-              <div class='oh-sticky-table__th oh-sticky-table__right' scope="col" style="width: 86px;">{% trans "Actions" %}</div>
+              {% if perms.attendance.delete_attendanceactivity %}
+                <div class='oh-sticky-table__th oh-sticky-table__right' scope="col" style="width: 86px;">{% trans "Actions" %}</div>
+              {% endif %}
             </div> 
           </div>
           <div class="oh-sticky-table__tbody">
@@ -79,8 +81,8 @@
                   <div data-cell-index="3" class="oh-sticky-table__td timeformat_changer">{{activity.clock_in}}</div>
                   <div data-cell-index="4" class="oh-sticky-table__td timeformat_changer">{{activity.clock_out}}</div>
                   <div data-cell-index="5" class="oh-sticky-table__td dateformat_changer">{{activity.clock_out_date}}</div>
-                  <div class="oh-sticky-table__td oh-sticky-table__right">
-                    {% if perms.attendance.delete_attendanceactivity %}
+                  {% if perms.attendance.delete_attendanceactivity %}
+                    <div class="oh-sticky-table__td oh-sticky-table__right">
                       <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}" 
                         hx-post="{% url 'attendance-activity-delete' activity.id  %}?{{pd}}"
                         onclick="event.stopPropagation()" hx-target="#activity-table">
@@ -89,8 +91,8 @@
                           <ion-icon name="trash-outline"></ion-icon>
                         </button>
                       </form>
-                    {% endif %}
-              </div>      
+                    </div>      
+                  {% endif %}
             </div>
             {% endfor %}
         </div>

@@ -324,6 +324,7 @@ def get_key_instances(model, data_dict):
             "instances_ids",
             "asset_list",
             "vpage",
+            "click_id",
             "csrfmiddlewaretoken",
         ]
         or "dynamic_page" in key

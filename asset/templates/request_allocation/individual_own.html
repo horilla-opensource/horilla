@@ -53,8 +53,12 @@
 
   <div class="col-12 col-md-12 col-lg-6 mt-3">
     <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Return Status" %}</label>
-      <label class="oh-timeoff-modal__stat-count">{{asset.get_asset_status_display}}</label>
+      <label class="oh-timeoff-modal__stat-title">{% trans "Status" %}</label>
+      {% if asset_assignment.return_request %}
+        <span class="link-primary"> {% trans "Requested to return" %} </span>
+      {% else %}
+        <label class="oh-timeoff-modal__stat-count">{{asset.get_asset_status_display}}</label>
+      {% endif %}   
     </div>
   </div>
 
@@ -78,9 +82,10 @@
     </div>
   </div>
 
-  <div class="oh-modal__button-container text-center mt-3">       
-    <div class="oh-btn-group">
-        {% if perms.asset.change_assetassignment %}
+  <div class="oh-modal__button-container text-center mt-3">   
+    {% if perms.asset.change_assetassignment or not asset_assignment.return_request %}    
+      <div class="oh-btn-group">
+          {% if perms.asset.change_assetassignment %}
             <button
                 href="#"
                 class="oh-btn oh-btn--secondary w-100"
@@ -89,30 +94,24 @@
                 data-target="#asset-return-allocation-modal"
                 hx-get="{%url 'asset-allocate-return'  asset_id=asset.id %}"
                 hx-target="#asset-return-allocation-modal-target"
-            >
+              >
                 <ion-icon name="return-down-back-sharp"></ion-icon>{% trans	"Return" %}
             </button>
-        {% else %}
-            {% if asset.return_request %}
-                <div class="d-flex align-items-center">
-                    <span
-                        class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"
-                    ></span>
-                    <span class="link-primary"> {% trans "Requested to return" %} </span>
-                </div>
-            {% else %}
-                <form class=" w-100" action = "{% url 'asset-allocate-return-request' asset_id=asset_assignment.id %}"
-                    onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');"
-                    >
-                    {% csrf_token %}
-                    <button type="submit" class="oh-btn oh-btn--secondary w-100">
-                        <ion-icon name="return-down-back-sharp"></ion-icon>
-                        {% trans "Return Request" %}
-                    </button>
-                </form>
+          {% else %}
+            {% if not asset_assignment.return_request %}
+              <form class=" w-100" action = "{% url 'asset-allocate-return-request' asset_id=asset_assignment.id %}"
+                  onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');"
+                  >
+                  {% csrf_token %}
+                  <button type="submit" class="oh-btn oh-btn--secondary w-100">
+                      <ion-icon name="return-down-back-sharp"></ion-icon>
+                      {% trans "Return Request tets" %}
+                  </button>
+              </form>
             {% endif %}
-        {% endif %}
-    </div>
+          {% endif %}
+      </div>
+    {% endif %}
   </div>
 </div>
 </div>

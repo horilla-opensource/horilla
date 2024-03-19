@@ -116,7 +116,7 @@
                           <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="create-outline" ></ion-icon></button></td>
                         {% endif %}
                         <a 
-                          class="oh-btn oh-btn--light-bkg w-100" 
+                          class="oh-btn oh-btn--light-bkg w-50" 
                           data-toggle="oh-modal-toggle"
                           data-target="#shiftRequestModal"
                           hx-get="{% url 'shift-request-duplicate' shift_request.id %}?{{pg}}"
@@ -127,7 +127,7 @@
                         <ion-icon name="copy-outline"></ion-icon>
                         </a>
                         {% if shift_request.approved == False and shift_request.canceled == False %} 
-                          <form action="{% url 'shift-request-delete' shift_request.id  %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');" method='post' class="w-50">
+                          <form action="{% url 'shift-request-delete' shift_request.id  %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');" method='post' class="w-75">
                             {% csrf_token %}
                             <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
                           </form>

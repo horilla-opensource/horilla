@@ -10,24 +10,25 @@
 >
     <form
         class="oh-general__tab-target oh-profile-section"
-        action="{% url 'redeem-points' employee.id %}"
+        hx-post="{% url 'redeem-points' employee.id %}"
+        hx-target="#objectDetailsModalW25Target"
         method="post"
     >
         {% csrf_token %}
-        <div class="row mb-4">
+        <div class="row">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                 <label
                     class="oh-label"
                     for="id_points"
-                    title="{{form.points.help_text|safe}}"
                     >{% trans "Points :" %}</label
                 >
                 <div
-                    class="w-100 d-flex"
+                    class="w-100 d-flex mb-3"
                     style="align-items: center; justify-content: center !important"
                 >
-                    {{form.points}} {{form.points.errors}}
+                    {{form.points}} 
                 </div>
+                {{form.points.errors}}
             </div>
         </div>
         <div class="d-flex flex-row-reverse">

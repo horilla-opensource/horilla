@@ -35,7 +35,7 @@
     margin-top: 20px;
   }
 </style>
-{% if employee.leaverequest_set.all %}
+<!-- {% if employee.leaverequest_set.all %}
 <div class="d-flex flex-row-reverse">
   <span class="m-3">
     <span
@@ -66,10 +66,10 @@
     {% trans "Approved" %}
   </span>
 </div>
-{% endif %} 
+{% endif %}  -->
 {% if user_leaves %}
 <!-- Profile leave type card -->
-<div class="oh-sticky-table-container">
+<div class="oh-sticky-table-container mt-2">
   <div class="oh-sticky-table">
     <div class="kanban-card-container">
       <!-- Container for Kanban cards -->
@@ -78,9 +78,9 @@
           <div
             class="oh-kanban-card"
             data-toggle="oh-modal-toggle"
-            data-target="#editDialog"
+            data-target="#objectCreateModal"
             hx-get="{% url 'user-request' user_leave.leave_type_id.id %}?instances_ids={{user_request_ids}}"
-            hx-target="#requestForm"
+            hx-target="#objectCreateModalTarget"
            >
             <div class="oh-kanban-card__avatar">
               <div class="oh-kanban-card__profile-container">
@@ -124,7 +124,7 @@
 </div>
 {% elif employee_leaves %}
 <!-- Employe leave type card -->
-<div class="oh-sticky-table-container">
+<div class="oh-sticky-table-container mt-2">
   <div class="oh-sticky-table">
     <div class="kanban-card-container">
       <!-- Container for Kanban cards -->
@@ -133,9 +133,9 @@
           <div
             class="oh-kanban-card"
             data-toggle="oh-modal-toggle"
-            data-target="#editDialog"
+            data-target="#objectCreateModal"
             hx-get="{% url 'leave-request-creation' employee_leave.leave_type_id.id employee_leave.employee_id.id%}"
-            hx-target="#requestForm"
+            hx-target="#objectCreateModalTarget"
            >
             <div class="oh-kanban-card__avatar">
               <div class="oh-kanban-card__profile-container">

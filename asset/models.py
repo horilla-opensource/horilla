@@ -152,6 +152,9 @@ class AssetAssignment(models.Model):
         ReturnImages, blank=True, related_name="assign_images"
     )
 
+    class Meta:
+        ordering = ["-id"]
+
     def __str__(self):
         return f"{self.assigned_to_employee_id} --- {self.asset_id} --- {self.return_status}"
 
@@ -182,3 +185,6 @@ class AssetRequest(models.Model):
     objects = HorillaCompanyManager(
         "requested_employee_id__employee_work_info__company_id"
     )
+
+    class Meta:
+        ordering = ["-id"]

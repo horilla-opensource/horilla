@@ -481,7 +481,7 @@ def add_task(request):
         )
         if form.is_valid():
             form.save()
-            messages.success(request, "Task Added")
+            messages.success(request, _("Task Added"))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
@@ -586,7 +586,7 @@ def delete_task(request):
     """
     task_ids = request.GET.getlist("task_ids")
     OffboardingTask.objects.filter(id__in=task_ids).delete()
-    messages.success(request, "Task deleted")
+    messages.success(request, _("Task deleted"))
     return redirect(pipeline)
 
 
@@ -708,7 +708,12 @@ def search_resignation_request(request):
 
     if request.GET.get("view"):
         data_dict.pop("view")
-
+    pagination = (
+        False
+        if request.META.get("HTTP_REFERER")
+        and request.META.get("HTTP_REFERER").endswith("employee-profile/")
+        else True
+    )
     return render(
         request,
         template,
@@ -716,6 +721,7 @@ def search_resignation_request(request):
             "letters": letters,
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
+            "pagination": pagination,
             "requests_ids": requests_ids,
             "field": field,
         },
@@ -724,15 +730,17 @@ def search_resignation_request(request):
 
 @login_required
 @check_feature_enabled("resignation_request")
-@permission_required("offboarding.delete_resignationletter")
 def delete_resignation_request(request):
     """
     This method is used to delete resignation letter instance
     """
     ids = request.GET.getlist("letter_ids")
     ResignationLetter.objects.filter(id__in=ids).delete()
-    messages.success(request, "Resignation letter deleted")
-    return redirect(request_view)
+    messages.success(request, _("Resignation letter deleted"))
+    if request.META.get("HTTP_REFERER") and request.META.get("HTTP_REFERER").endswith("employee-profile/"):
+        return redirect("/employee/employee-profile/")
+    else:
+        return redirect(request_view)
 
 
 @login_required
@@ -750,7 +758,7 @@ def create_resignation_request(request):
         form = ResignationLetterForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Resingation letter saved")
+            messages.success(request, _("Resignation letter saved"))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "offboarding/resignation/form.html", {"form": form})
 
@@ -794,12 +802,12 @@ def update_status(request):
                     offboarding, notice_period_starts, notice_period_ends
                 )
             messages.success(
-                request, f"Resingation request has been {letter.get_status_display()}"
+                request, f"Resignation request has been {letter.get_status_display()}"
             )
             notify.send(
                 request.user.employee_get,
                 recipient=letter.employee_id.employee_user_id,
-                verb=f"Resingation request has been {letter.get_status_display()}",
+                verb=f"Resignation request has been {letter.get_status_display()}",
                 verb_ar=f"",
                 verb_de=f"",
                 verb_es=f"",

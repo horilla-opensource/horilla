@@ -895,7 +895,7 @@ class ShiftRequest(models.Model):
             )
         if self.is_any_request_exists():
             raise ValidationError(
-                _("A shift request already exists during this time period.")
+                _("An approved shift request already exists during this time period.")
             )
         if not self.is_permanent_shift:
             if not self.requested_till:

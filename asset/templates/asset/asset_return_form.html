@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="oh-modal__dialog-title">{% trans "Asset Return Form" %}</div>
-<form hx-post="{%url 'asset-allocate-return' asset_id=asset_id %}" hx-target="#asset-request-allocation-modal-target" method="post" hx-encoding="multipart/form-data">
+<form hx-post="{%url 'asset-allocate-return' asset_id=asset_id %}" hx-target="#asset-return-allocation-modal-target" hx-encoding="multipart/form-data">
   {% csrf_token %}
   <div class="m-3">
     <div class="oh-input__group ">
@@ -24,7 +24,7 @@
   <div class="oh-btn-group">
     <button 
       class=" oh-btn oh-btn--info oh-btn--shadow mt-3 w-100"
-      onclick="event.preventDefault();event.stopPropagation()"
+      type="button"
       hx-get="{% url "add-asset-report" asset_id %}"
       hx-target="#addAssetReportForm"
       data-toggle="oh-modal-toggle"

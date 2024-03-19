@@ -6,6 +6,8 @@ import uuid
 import django_filters
 from django import forms
 from django_filters import FilterSet
+
+from horilla.filters import filter_by_name
 from .models import Asset, AssetAssignment, AssetCategory, AssetRequest
 from base.methods import reload_queryset
 
@@ -138,6 +140,23 @@ class AssetRequestFilter(CustomFilterSet):
     """
     Custom filter set for AssetRequest instances.
     """
+    search = django_filters.CharFilter(method="search_method")
+    def search_method(self, queryset, _, value: str):
+        """
+        This method is used to search employees
+        """
+        values = value.split(" ")
+        empty = queryset.model.objects.none()
+        for split in values:
+            empty = empty | (
+                queryset.filter(
+                    requested_employee_id__employee_first_name__icontains=split
+                )
+                | queryset.filter(
+                    requested_employee_id__employee_last_name__icontains=split
+                )
+            )
+        return empty.distinct()
 
     class Meta:
         """
@@ -161,6 +180,23 @@ class AssetAllocationFilter(CustomFilterSet):
     """
     Custom filter set for AssetAllocation instances.
     """
+    search = django_filters.CharFilter(method="search_method")
+    def search_method(self, queryset, _, value: str):
+        """
+        This method is used to search employees
+        """
+        values = value.split(" ")
+        empty = queryset.model.objects.none()
+        for split in values:
+            empty = empty | (
+                queryset.filter(
+                    assigned_to_employee_id__employee_first_name__icontains=split
+                )
+                | queryset.filter(
+                    assigned_to_employee_id__employee_last_name__icontains=split
+                )
+            )
+        return empty.distinct()
 
     class Meta:
         """

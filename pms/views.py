@@ -213,7 +213,7 @@ def key_result_remove(request, obj_id, kr_id):
 
 
 @login_required
-@permission_required("pms.delete_keyresult")
+@manager_can_enter("pms.delete_employeeobjective")
 def assignees_remove(request, obj_id, emp_id):
     objective = get_object_or_404(Objective, id=obj_id)
     get_object_or_404(
@@ -221,7 +221,7 @@ def assignees_remove(request, obj_id, emp_id):
     ).delete()
     objective.assignees.remove(emp_id)
 
-    return HttpResponse("")
+    return HttpResponse()
 
 
 def objective_filter_pagination(request, objective_own, objective_all):

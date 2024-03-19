@@ -72,7 +72,7 @@
                                 <form
                                     action="{% url 'asset-request-reject' req_id=asset_request.id %}"
                                     method="post"
-                                    onclick="event.stopPropagation()"
+                                    onclick="event.stopPropagation(); return confirm('{% trans "Do you want to reject this request?" %}')"
                                     title="Reject request"
                                     class="w-50"
                                 >

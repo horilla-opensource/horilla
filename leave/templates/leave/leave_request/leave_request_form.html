@@ -21,8 +21,10 @@
   <button
     class="oh-modal__close"
     aria-label="Close"
-    hx-get="{% url 'request-filter' %}?{{pd}}"
-    hx-target="#leaveRequest"
+    {% if messages %}
+      hx-get="{% url 'request-filter' %}?{{pd}}"
+      hx-target="#leaveRequest"
+    {% endif %}
   >
     <ion-icon name="close-outline"></ion-icon>
   </button>
@@ -31,7 +33,7 @@
   <form
     hx-post="{% url 'request-creation' %}?{{pd}}"
     hx-encoding="multipart/form-data"
-    hx-target="#requestCreateFormModal"
+    hx-target="#objectCreateModalTarget"
   >
     {{form.as_p}}
   </form>

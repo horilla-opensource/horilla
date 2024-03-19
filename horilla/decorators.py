@@ -101,9 +101,17 @@ def duplicate_permission(function):
         is_manager = EmployeeWorkInformation.objects.filter(
             reporting_manager_id=employee
         ).exists()
+        
         app_label = kwargs["model"]._meta.app_label
-        modal_name = kwargs["model"]._meta.model_name
-        permission = f"{app_label}.add_{modal_name}"
+        model_name = kwargs["model"]._meta.model_name
+        obj_id = kwargs["obj_id"]
+        object_instance =  kwargs["model"].objects.filter(pk=obj_id).first()
+        try:
+            if object_instance.employee_id == employee:
+                 return function(request, *args, **kwargs)
+        except:
+            pass
+        permission = f"{app_label}.add_{model_name}"
         if request.user.has_perm(permission) or is_manager:
             return function(request, *args, **kwargs)
         else:

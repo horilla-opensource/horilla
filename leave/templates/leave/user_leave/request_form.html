@@ -31,7 +31,7 @@
 <div class="oh-modal__dialog-body">
   <form
     hx-post="{% url 'leave-request-create' %}?{{pd}}"
-    hx-target="#requestCreateFormModal"
+    hx-target="#objectCreateModalTarget"
     hx-encoding="multipart/form-data"
   >
     {{form.as_p}}
