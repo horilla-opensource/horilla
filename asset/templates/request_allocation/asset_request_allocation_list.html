@@ -309,12 +309,12 @@
 												<form
 													action="{% url 'asset-request-reject' req_id=asset_request.id %}"
 													method="post"
-													onclick="event.stopPropagation()"
-													title='{% trans "Reject"	%}'
-													class=' w-50'
+													onsubmit="return confirm('{% trans "Do you want to reject this request?" %}')"
+													title="{% trans 'Reject' %}"
+													class='w-50'
 												>
 													{% csrf_token %}
-													<button class="oh-btn oh-btn--danger  w-100">
+													<button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation();">
 														<ion-icon name="close-outline"></ion-icon>
 													</button>
 												</form>
@@ -330,8 +330,7 @@
 													onclick="event.stopPropagation()"
 													title='{% trans "Approve" %}'
 												>
-													<ion-icon name="checkmark-outline"></ion-icon>
-													
+													<ion-icon name="checkmark-outline"></ion-icon>													
 												</a>
 												<a
 													href="#"
@@ -340,10 +339,8 @@
 													onclick="event.stopPropagation()"
 													title='{% trans "Reject" %}'
 												>
-												<ion-icon name="close-outline"></ion-icon>
-													
-												</a>
-												
+													<ion-icon name="close-outline"></ion-icon>													
+												</a>												
 											</div>
 										</div>
 									{% endif %}
