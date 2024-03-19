@@ -18,7 +18,7 @@
 {% if data %}
 <!-- start of column toggle -->
 <div class="oh-table_sticky--wrapper">
-  <div class="oh-sticky-dropdown--header">
+  <div class="oh-sticky-dropdown--header m-0">
     <div class="oh-dropdown" x-data="{open: false}">
       <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
         role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
@@ -49,14 +49,14 @@
                 {% endif %}
             </div>
         </div>
-        <div class="oh-sticky-table__tbody">
-          {% for i in data reversed %}
-          <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed">
+        <div class="oh-sticky-table__tbody" data-id="{{action_id}}">
+          {% for i in data %}
+          <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed" data-id="{{i.id}}">
             <div class="oh-sticky-table__sd oh-permission-table--toggle"  data-toggle-count>
               <div class="d-flex align-items-center">
                 <button class="oh-permission-table__collapse me-2">
-                  <span  title="{% trans "Reveal" %}"><ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline"></ion-icon></span>
-                  <span  title="{% trans "Collapse" %}"><ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon></span>
+                  <span  title="{% trans "Reveal" %}" class="reveal-span"><ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline"></ion-icon></span>
+                  <span  title="{% trans "Collapse" %}" class="collapse-span"><ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon></span>
                 </button>
                 <span class="count-span" style="font-style:italic;color:hsl(0deg,0%,37%);">{{i.employee_id.all|length}} 
                   {% if i.employee_id.all|length > 1 %}
@@ -79,9 +79,9 @@
                     <span class="oh-profile__name oh-text--dark" title="{{emp}}"
                     >{{emp.get_full_name}}</span>
                   </div>
-                  {% comment %} <a title="{% trans "Remove" %}" hx-target="#recruitment-container"class="oh-user-panel__remove">
+                  <a title="{% trans "Remove" %}" hx-post="{% url 'remove-employee-disciplinary-action' i.id emp.id %}" hx-target="#actionContainer" class="oh-user-panel__remove">
                     <ion-icon name="close-outline"></ion-icon>
-                  </a> {% endcomment %}
+                  </a>
                 </span>
               {% endfor %}
             </div>
@@ -240,62 +240,75 @@
     var parentForm = selectElement.parents().closest("form");
     if (selectedActiontype !== "create" && selectedActiontype) {
       $.ajax({
-          type: "post",
-          url: "{% url 'action-type-details' %}",
-          data: {
-              csrfmiddlewaretoken: getCookie("csrftoken"),
-              "action_type": selectedActiontype,
-          },
-          success: function (response) {
-
-              // Check if the response.action_type is "suspension"
-              $("[id=id_unit_in]").change(function (e) { 
-                e.preventDefault();
-                if (this.value == "days") {
-                    parentForm.find('[id=id_days]').parent().show();
-                    parentForm.find('[id=id_hours]').parent().hide();
-                    parentForm.find('[name=days]').prop('required', true);
-                  }else{
-                    parentForm.find('[id=id_hours]').parent().show();
-                    parentForm.find('[id=id_days]').parent().hide();
-                    parentForm.find('[name=days]').prop('required', false);
-                  }
-              });
-              if (response.action_type === "suspension") {
-                  // Show the 'days' field
-                  parentForm.find('[id=id_unit_in]').parent().show();
-                  parentForm.find('[id=id_hours]').parent().show();
-                  $("[id=id_unit_in]").change()
-                } else {
-                  // Hide the 'days' field
-                  $("[id=id_unit_in]").change()
-                  parentForm.find('[id=id_days]').parent().hide();
-                  parentForm.find('[id=id_unit_in]').parent().hide();
-                  parentForm.find('[id=id_hours]').parent().hide();
-                  parentForm.find('[name=days]').prop('required', false);
-              }
-                
-          },
+        type: "post",
+        url: "{% url 'action-type-details' %}",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          action_type: selectedActiontype,
+        },
+        success: function (response) {
+          // Check if the response.action_type is "suspension"
+          $("[id=id_unit_in]").change(function (e) {
+            e.preventDefault();
+            if (this.value == "days") {
+              parentForm.find("[id=id_days]").parent().show();
+              parentForm.find("[id=id_hours]").parent().hide();
+              parentForm.find("[name=days]").prop("required", true);
+            } else {
+              parentForm.find("[id=id_hours]").parent().show();
+              parentForm.find("[id=id_days]").parent().hide();
+              parentForm.find("[name=days]").prop("required", false);
+            }
+          });
+          if (response.action_type === "suspension") {
+            // Show the 'days' field
+            parentForm.find("[id=id_unit_in]").parent().show();
+            parentForm.find("[id=id_hours]").parent().show();
+            $("[id=id_unit_in]").change();
+          } else {
+            // Hide the 'days' field
+            $("[id=id_unit_in]").change();
+            parentForm.find("[id=id_days]").parent().hide();
+            parentForm.find("[id=id_unit_in]").parent().hide();
+            parentForm.find("[id=id_hours]").parent().hide();
+            parentForm.find("[name=days]").prop("required", false);
+          }
+        },
       });
-    }else{
+    } else {
       let dynamicActionType = $("#dynamicActionType");
-      var view = parentForm.serialize()
+      var view = parentForm.serialize();
       dynamicActionType.attr("hx-vals", `{"data":"${view}"}`);
       dynamicActionType.click();
     }
   }
   // toggle columns //
-  toggleColumns("displinary-column-table","displinaryActionCells")
-  localStoragedisplinaryActionCells = localStorage.getItem("displinary_column_tab")
+  toggleColumns("displinary-column-table", "displinaryActionCells");
+  localStoragedisplinaryActionCells = localStorage.getItem(
+    "displinary_column_tab"
+  );
   if (!localStoragedisplinaryActionCells) {
-    $("#displinaryActionCells").find("[type=checkbox]").prop("checked",true)
+    $("#displinaryActionCells").find("[type=checkbox]").prop("checked", true);
   }
-  $("[type=checkbox]").change()
+  $("[type=checkbox]").change();
   $(document).ready(function () {
-    $("[data-toggle-count]").click(function (e) { 
+    $("[data-toggle-count]").click(function (e) {
       e.preventDefault();
-      span = $(this).parent().find(".count-span").toggle()
+      span = $(this).parent().find(".count-span").toggle();
     });
-
+    $(".oh-sticky-table__tbody").each(function () {
+      var parentId = $(this).data("id");
+      $(this)
+        .find(".oh-sticky-table__tr")
+        .each(function () {
+          var childId = $(this).data("id");
+          if (parentId === childId) {
+            var revealSpan = $(this).find(".reveal-span");
+            if (revealSpan.length > 0) {
+              revealSpan.click();
+            }
+          }
+        });
+    });
   });
 </script>

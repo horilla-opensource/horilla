@@ -314,6 +314,16 @@ def update_actions(request, action_id):
     return render(request, "disciplinary_actions/update_form.html", {"form": form})
 
 
+def remove_employee_disciplinary_action(request, action_id, emp_id):
+    action = DisciplinaryAction.objects.get(id=action_id)
+    employee = Employee.objects.get(id=emp_id)
+    action.employee_id.remove(employee)
+    messages.success(
+        request, _("Employee removed from disciplinary action successfully.")
+    )
+    return redirect(f"/employee/disciplinary-filter-view?click_id={action.id}")
+
+
 @login_required
 @permission_required("employee.delete_disciplinaryaction")
 def delete_actions(request, action_id):
@@ -371,6 +381,7 @@ def disciplinary_filter_view(request):
     """
 
     previous_data = request.GET.urlencode()
+    action_id = request.GET.get("click_id") if request.GET.get("click_id") else None
     dis_filter = DisciplinaryActionFilter(request.GET).qs
     page_number = request.GET.get("page")
     page_obj = paginator_qry(dis_filter, page_number)
@@ -384,6 +395,7 @@ def disciplinary_filter_view(request):
             "pd": previous_data,
             "filter_dict": data_dict,
             "dashboard": request.GET.get("dashboard"),
+            "action_id": action_id,
         },
     )
 

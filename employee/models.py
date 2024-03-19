@@ -813,6 +813,9 @@ class DisciplinaryAction(models.Model):
 
     def __str__(self) -> str:
         return f"{self.action}"
+    
+    class Meta:
+        ordering = ["-id"]
 
 
 class EmployeeGeneralSetting(models.Model):

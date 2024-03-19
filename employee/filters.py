@@ -340,6 +340,7 @@ class DisciplinaryActionFilter(FilterSet):
 
     class Meta:
         model = DisciplinaryAction
+        ordering = ["-id"]
         fields = [
             "employee_id",
             "action",
