@@ -944,7 +944,6 @@
         <div
           class="oh-sidebar__submenu"
           id="configNav"
-          style="display: none"
           x-show="isOpen"
           x-transition
           style="display: none"
@@ -968,6 +967,7 @@
                 >{% trans "Mail Templates" %}</a
               >
             </li>
+            {% endif %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'holiday-view' %}"
@@ -983,7 +983,6 @@
                 >{% trans "Company Leaves" %}</a
               >
             </li>
-            {% endif %}
           </ul>
         </div>
       </li>

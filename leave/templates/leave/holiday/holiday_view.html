@@ -71,55 +71,61 @@
       {% endif %}
 
       <!-- start of Actions -->
-      <div class="oh-dropdown ml-2" x-data="{open: false}">
-        <button
-          class="oh-btn oh-btn--dropdown"
-          @click="open = !open"
-          @click.outside="open = false"
-        >
-          {% trans "Actions" %}
-        </button>
-        <div
-          class="oh-dropdown__menu oh-dropdown__menu--right"
-          x-show="open"
-          style="display: none"
-        >
-          <ul class="oh-dropdown__items">
-            <li class="oh-dropdown__item">
-              <a
-                href="#"
-                class="oh-dropdown__link"
-                id="holidays-info-import"
-                data-toggle="oh-modal-toggle"
-                data-target="#holidayImport"
-                >{% trans "Import" %}</a
-              >
-            </li>
-            {% if holidays %}
-            <li class="oh-dropdown__item">
-              <a
-                href="#"
-                class="oh-dropdown__link"
-                id="holidays-export"
-                data-toggle="oh-modal-toggle"
-                data-target="#holidayExport"
-                >{% trans "Export" %}</a
-              >
-            </li>
-              {% if perms.leave.delete_holiday %}
+      {% if perms.leave.add_holiday or perms.leave.delete_holiday%} 
+        <div class="oh-dropdown ml-2" x-data="{open: false}">
+          <button
+            class="oh-btn oh-btn--dropdown"
+            @click="open = !open"
+            @click.outside="open = false"
+          >
+            {% trans "Actions" %}
+          </button>
+          <div
+            class="oh-dropdown__menu oh-dropdown__menu--right"
+            x-show="open"
+            style="display: none"
+          >
+            <ul class="oh-dropdown__items">
+              {% if perms.leave.add_holiday %}
                 <li class="oh-dropdown__item">
                   <a
                     href="#"
-                    id="bulkHolidaysDelete"
-                    class="oh-dropdown__link oh-dropdown__link--danger"
-                    >{% trans "Delete" %}</a
+                    class="oh-dropdown__link"
+                    id="holidays-info-import"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#holidayImport"
+                    >{% trans "Import" %}</a
                   >
                 </li>
               {% endif %}
-            {% endif %}
-          </ul>
+              {% if holidays %}
+                {% if perms.leave.add_holiday %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      class="oh-dropdown__link"
+                      id="holidays-export"
+                      data-toggle="oh-modal-toggle"
+                      data-target="#holidayExport"
+                      >{% trans "Export" %}</a
+                    >
+                  </li>
+                {% endif %}
+                {% if perms.leave.delete_holiday %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      id="bulkHolidaysDelete"
+                      class="oh-dropdown__link oh-dropdown__link--danger"
+                      >{% trans "Delete" %}</a
+                    >
+                  </li>
+                {% endif %}
+              {% endif %}
+            </ul>
+          </div>
         </div>
-      </div>
+      {% endif %}
       <!-- end of actions -->
 
       <!-- start of create -->
@@ -336,18 +342,6 @@
         return false;
       }
     });
-  });
-  $("#delete-link").on("click", function (event) {
-    event.preventDefault(); // prevent the default behavior of the link
-
-    const link = $(this);
-    const confirmation = confirm(
-      '{% trans "Are you sure you want to delete?" %}'
-    );
-
-    if (confirmation) {
-      window.location.href = link.attr("href"); // execute the href if confirmed
-    }
   });
 </script>
 

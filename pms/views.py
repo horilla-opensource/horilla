@@ -2080,19 +2080,19 @@ def dashboard_view(request):
     elif is_manager:
         employees_ids = [employee.id for employee in is_manager]
         count_objective = EmployeeObjective.objects.filter(
-            employee_id__in=employees_ids
+            employee_idemployee_objective_id__employee_id__in=employees_ids
         ).count()
         count_key_result = EmployeeObjective.objects.filter(
             emp_obj_id__employee_id__in=employees_ids
         ).count()
         count_feedback = Feedback.objects.filter(employee_id__in=employees_ids).count()
         okr_at_risk = EmployeeObjective.objects.filter(
-            employee_id__in=employees_ids
+            employee_objective_id__employee_id__in=employees_ids
         ).filter(status="At Risk")
     else:
         count_objective = EmployeeObjective.objects.filter(employee_id=employee).count()
         count_key_result = EmployeeKeyResult.objects.filter(
-            employee_id=employee
+            employee_objective_id__employee_id=employee
         ).count()
         count_feedback = Feedback.objects.filter(employee_id=employee).count()
         okr_at_risk = EmployeeObjective.objects.filter(employee_id=employee).filter(

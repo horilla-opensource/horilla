@@ -1523,6 +1523,7 @@ def holiday_delete(request, id):
     Returns:
     GET : return holiday view template
     """
+    query_string = request.GET.urlencode()
     try:
         Holiday.objects.get(id=id).delete()
         messages.success(request, _("Holiday deleted successfully.."))
@@ -1530,7 +1531,7 @@ def holiday_delete(request, id):
         messages.error(request, _("Holiday not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
-    return redirect(holiday_view)
+    return redirect(f"/leave/holiday-filter?{query_string}")
 
 
 @require_http_methods(["POST"])
