@@ -219,7 +219,7 @@ class Comment(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     history = HorillaAuditLog(excluded_fields=["comment"], bases=[HorillaAuditInfo])
-    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+    objects = HorillaCompanyManager(related_company_field="employee_id__employee_work_info__company_id")
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.comment} "
@@ -276,7 +276,7 @@ class EmployeeKeyResult(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
-    objects = HorillaCompanyManager("employee_objective_id__objective_id__company_id")
+    objects = HorillaCompanyManager(related_company_field="employee_objective_id__objective_id__company_id")
     progress_percentage = models.IntegerField(default=0)
 
     def __str__(self):
