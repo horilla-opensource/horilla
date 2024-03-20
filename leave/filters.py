@@ -452,17 +452,20 @@ class LeaveRequestReGroup:
     """
 
     fields = [
-        ("", "select"),
-        ("employee_id", "Employee"),
-        ("leave_type_id", "Leave Type"),
-        ("start_date", "Start Date"),
-        ("status", "Status"),
-        ("requested_days", "Requested Days"),
-        ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
-        ("employee_id.employee_work_info.department_id", "Department"),
-        ("employee_id.employee_work_info.job_position_id", "Job Position"),
-        ("employee_id.employee_work_info.employee_type_id", "Employment Type"),
-        ("employee_id.employee_work_info.company_id", "Company"),
+        ("", _("Select")),
+        ("employee_id", _("Employee")),
+        ("leave_type_id", _("Leave Type")),
+        ("start_date", _("Start Date")),
+        ("status", _("Status")),
+        ("requested_days", _("Requested Days")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__employee_type_id", _("Employment Type")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
     ]
 
 
@@ -472,10 +475,10 @@ class MyLeaveRequestReGroup:
     """
 
     fields = [
-        ("", "select"),
-        ("leave_type_id", "Leave Type"),
-        ("status", "Status"),
-        ("requested_days", "Requested Days"),
+        ("", _("Select")),
+        ("leave_type_id", _("Leave Type")),
+        ("status", _("Status")),
+        ("requested_days", _("Requested Days")),
     ]
 
 
@@ -485,18 +488,21 @@ class LeaveAssignReGroup:
     """
 
     fields = [
-        ("", "select"),
-        ("employee_id", "Employee"),
-        ("leave_type_id", "Leave Type"),
-        ("available_days", "Available Days"),
-        ("carryforward_days", "Carry Forward Days"),
-        ("total_leave_days", "Total Leave Days Days"),
-        ("assigned_date", "Assigned Date"),
-        ("employee_id__employee_work_info__reporting_manager_id", "Reporting Manager"),
-        ("employee_id__employee_work_info__department_id", "Department"),
-        ("employee_id__employee_work_info__job_position_id", "Job Position"),
-        ("employee_id__employee_work_info__employee_type_id", "Employment Type"),
-        ("employee_id__employee_work_info__company_id", "Company"),
+        ("", _("Select")),
+        ("employee_id", _("Employee")),
+        ("leave_type_id", _("Leave Type")),
+        ("available_days", _("Available Days")),
+        ("carryforward_days", _("Carry Forward Days")),
+        ("total_leave_days", _("Total Leave Days Days")),
+        ("assigned_date", _("Assigned Date")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__employee_type_id", _("Employment Type")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
     ]
 
 
@@ -506,14 +512,17 @@ class LeaveAllocationRequestReGroup:
     """
 
     fields = [
-        ("", "select"),
-        ("employee_id", "Employee"),
-        ("leave_type_id", "Leave Type"),
-        ("status", "Status"),
-        ("requested_days", "Requested Days"),
-        ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
-        ("employee_id.employee_work_info.department_id", "Department"),
-        ("employee_id.employee_work_info.job_position_id", "Job Position"),
-        ("employee_id.employee_work_info.employee_type_id", "Employment Type"),
-        ("employee_id.employee_work_info.company_id", "Company"),
+        ("", _("Select")),
+        ("employee_id", _("Employee")),
+        ("leave_type_id", _("Leave Type")),
+        ("status", _("Status")),
+        ("requested_days", _("Requested Days")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__employee_type_id", _("Employment Type")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
     ]
