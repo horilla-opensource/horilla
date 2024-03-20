@@ -1,28 +1,41 @@
 {% load i18n %} {% load static %} {% include 'filter_tags.html' %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{ message.tags }}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+{% endif %}
+</div>
 {% if holidays %}
     <!-- start of selection buttons -->
-    <div
-      class="oh-checkpoint-badge text-success mb-2"
-      id="selectAllHolidays"
-      style="cursor: pointer"
-    >
-      {% trans "Select All Holidays" %}
-    </div>
-    <div
-      class="oh-checkpoint-badge text-secondary mb-2"
-      id="unselectAllHolidays"
-      style="cursor: pointer; display:none;"
-    >
-      {% trans "Unselect All Holidays" %}
-    </div>
-    <div
-      class="oh-checkpoint-badge text-info mb-2"
-      id="exportHolidays"
-      style="cursor: pointer; display: none"
-    >
-      {% trans "Export Holidays" %}
-    </div>
-    <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowHolidays" style="display: none"></div>
+    {% if perms.leave.add_holiday %} 
+      <div
+        class="oh-checkpoint-badge text-success mb-2"
+        id="selectAllHolidays"
+        style="cursor: pointer"
+        >
+        {% trans "Select All Holidays" %}
+      </div>
+      <div
+        class="oh-checkpoint-badge text-secondary mb-2"
+        id="unselectAllHolidays"
+        style="cursor: pointer; display:none;"
+        >
+        {% trans "Unselect All Holidays" %}
+      </div>
+      <div
+        class="oh-checkpoint-badge text-info mb-2"
+        id="exportHolidays"
+        style="cursor: pointer; display: none"
+        >
+        {% trans "Export Holidays" %}
+      </div>
+      <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowHolidays" style="display: none"></div>
+    {% endif %}
     <!-- end of selection buttons -->
     <div class="oh-sticky-table">
         <div class="oh-sticky-table__table oh-table--sortable">
@@ -87,10 +100,11 @@
                                   </button>
                                 {% endif %}
                                 {% if perms.leave.delete_holiday %}
-                                  <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                  id="delete-link" href="{% url 'holiday-delete' holiday.id %}"
-                                  onclick="return confirm('{% trans "Are you sure you want to delete?"%}');" 
-                                  title="{% trans 'Delete' %}" >
+                                  <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
+                                    hx-confirm="{% trans 'Are you sure you want to delete?' %}" 
+                                    hx-post="{% url 'holiday-delete' holiday.id %}?{{pd}}"
+                                    hx-target="#holidays"
+                                        title="{% trans 'Delete' %}" >
                                   <ion-icon name="trash-outline"></ion-icon>
                                   </a>
                                 {% endif %}
