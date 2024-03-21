@@ -125,13 +125,13 @@ form.addEventListener("submit", function (event) {
               timerProgressBar: true,
             }).then(function() {
               window.location.reload();
-            });        
+            });
           }
         }
         reader.readAsText(response);
         return;
       }
-      if (!$(".file-xlsx-validation")) {
+      if (!$(".file-xlsx-validation").length) {
         swal.fire({
           text: `You have ${errorCount} errors. Do you want to download the error list?`,
           icon: "error",
@@ -158,7 +158,7 @@ form.addEventListener("submit", function (event) {
             document.body.appendChild(link);
             link.click();
             window.location.reload();
-          }                
+          }
           else if (result.isDenied) {
             formData.append("create_work_info", true);
             $.ajax({
@@ -193,18 +193,18 @@ form.addEventListener("submit", function (event) {
                   link.click();
                   window.location.reload();
                 });
-                
+
                 return;
               }
             })
-          } 
+          }
           else {
             $(".oh-dropdown__import-form").css("display", "block");
             $("#uploading").css("display", "none");
           }
         });
       }
-      
+
     },
     error: function (xhr, textStatus, errorThrown) {
       console.error("Error downloading file:", errorThrown);
