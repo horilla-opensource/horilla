@@ -6,6 +6,7 @@ from offboarding.models import (
     EmployeeTask,
     ResignationLetter,
     OffboardingEmployee,
+    OffboardingStage,
 )
 
 # Register your models here.
@@ -18,5 +19,6 @@ admin.site.register(
         OffboardingTask,
         EmployeeTask,
         OffboardingEmployee,
+        OffboardingStage,
     ]
 )

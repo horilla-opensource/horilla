@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static offboarding_filter %}
 <style>
     #enlargeImageContainer {
         position: absolute;
@@ -55,8 +55,11 @@
 		{% for note in employee.offboardingnote_set.all %}
 			<li class="oh-activity-sidebar__qa-item">
 				<span class="oh-activity-sidebar__q">{{ note.description }}
+					{% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
 						<span class="float-end" title="Delete" hx-get="{% url 'offboarding-note-delete' note.id %}" hx-swap="innerHTML" hx-target="#noteContainer">
-							<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="close outline"></ion-icon></span>
+							<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+						</span>
+					{% endif %}
 				</span>
 
 				<div class="d-flex mt-2 mb-2">
@@ -69,12 +72,16 @@
 							class="oh-file-icon oh-file-icon--pdf"
 							onmouseover="enlargeImage('{{ file.attachment.url }}',$(this))"
 							style="width: 40px; height: 40px"
-							><img
+						>
+						{% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
+							<img
 								src="{% static 'images/ui/minus-icon.png' %}"
 								style="display: block; width: 50%; height: 50%"
 								hx-get="{% url 'delete-note-attachment' %}?ids={{ file.id }}&employee_id={{ employee.id }}"
 								hx-target="#noteContainer"
-								onclick="event.stopPropagation();event.preventDefault()" /></span
+								onclick="event.stopPropagation();event.preventDefault()" />
+						{% endif %}
+						</span
 					></a>
 					{% endfor %}
 
@@ -116,7 +123,7 @@
 						src="{{ note.note_by.get_avatar }}"
 						style="width: 1.5em; border-radius: 100%"
 					/>
-					{{ note.updated_by }} @ {{note.stage_id }}
+					{{ note.note_by.get_full_name }} @ {{note.stage_id }}
 					{% trans "stage" %}
 				</span>
 				<div style="width: 50%">

@@ -7,16 +7,19 @@
 {% for stage in offboarding.offboarding.stages %}
 <div class="oh-accordion-meta" id="accordion{{stage.id}}">
     <div class="oh-accordion-meta__item">
-      <div class="oh-accordion-meta__header {% if stage.list|length and stage.grouper.type != "archived"  %} oh-accordion-meta__header--show {% endif %}" >
+      <div class="oh-accordion-meta__header {% if stage.list|length and stage.grouper.type != "archived"  %} oh-accordion-meta__header--show {% endif %}" style="min-height:50px">
         <span class="oh-accordion-meta__title" data-offboarding-id="{{offboarding.id}}">
           <span class="d-flex" onclick="event.stopPropagation()">
-            <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
-              id="offboardingBadge{{offboarding.id}}_{{forloop.counter}}" title="{{stage.list|length}} {% trans "Employees" %}" onclick="event.stopPropagation()">
-              {{ stage.list|length }}
-            </span>
+            {% if perms.offboarding.change_offboardingstage or request.user.employee_get|any_manager %}
+              <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
+                id="offboardingBadge{{offboarding.id}}_{{forloop.counter}}" title="{{stage.list|length}} {% trans "Employees" %}" onclick="event.stopPropagation()">
+                {{ stage.list|length }}
+              </span>
+            {% endif %}
             {{stage.grouper.title}}
           </span>
         </span>
+        {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
         <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
           <div class="oh-dropdown" x-data="{open: false}">
             <button class="oh-btn oh-stop-prop oh-accordion-meta__btn" @click="open = !open"
@@ -52,6 +55,7 @@
             </div>
           </div>
         </div>
+        {% endif %}
       </div>
       <div class="oh-accordion-meta__body {% if stage.grouper.type == "archived" or not stage.list|length %} d-none {% endif %}">
         <div style="width: 100%;overflow-x: scroll; min-height: 200px;">
@@ -107,7 +111,7 @@
             </div>
           </div>
         </div>
-        {% if stage.list.number %}
+        {% if stage.list.has_next or stage.list.has_previous %}
         <div class="oh-pagination">
           <span class="oh-pagination__page">
             {% trans "Page" %} {{ stage.list.number }} {% trans "of" %} {{ stage.list.paginator.num_pages }}.

@@ -1,4 +1,4 @@
-{% load i18n %} {% load offboarding_filter %}
+{% load i18n offboarding_filter %}
 
 <div class="oh-modal__dialog ">
     <div class="oh-modal__dialog-header">
@@ -11,18 +11,20 @@
     </div>
 
     <div class="oh-modal__dialog-relative">
-        {% if request.GET.requests_ids %}
-            <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-                <button hx-get="{% url "offboarding-individual-view" previous %}?requests_ids={{requests_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
-                    <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
-                    aria-label="chevron back outline"></ion-icon>
-                </button>
+        {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
+            {% if request.GET.requests_ids %}
+                <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+                    <button hx-get="{% url "offboarding-individual-view" previous %}?requests_ids={{requests_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+                        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+                        aria-label="chevron back outline"></ion-icon>
+                    </button>
 
-                <button hx-get="{% url "offboarding-individual-view" next %}?requests_ids={{requests_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
-                    <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
-                    aria-label="chevron forward outline"></ion-icon>
-                </button>
-            </div>
+                    <button hx-get="{% url "offboarding-individual-view" next %}?requests_ids={{requests_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
+                        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+                        aria-label="chevron forward outline"></ion-icon>
+                    </button>
+                </div>
+            {% endif %}
         {% endif %}
         <div class="oh-modal__dialog-body oh-timeoff-modal__body">
             <div class="oh-timeoff-modal__profile-content">
@@ -74,11 +76,17 @@
                 <div class="oh-timeoff-modal__stat">
                     <span class="oh-timeoff-modal__stat-title">{% trans "Stage" %}</span>
                     <span class="oh-timeoff-modal__stat-count">
-                        <form id="vla" hx-get="{% url "offboarding-change-stage" %}?employee_ids={{employee.id}}"
-                        hx-target="#offboardingBody{{employee.stage_id.offboarding_id.id}}">
-                            {{ stage_forms|individual_view_stages:employee.stage_id }}
-                            <input type="submit" hidden />
-                        </form>
+                        {% if perms.offboarding.change_offboardingstage or request.user.employee_get|any_manager %}
+                            <form id="stage_change" hx-get="{% url "offboarding-change-stage" %}?employee_ids={{employee.id}}"
+                            hx-target="#offboardingBody{{employee.stage_id.offboarding_id.id}}">
+                                {{ stage_forms|individual_view_stages:employee.stage_id }}
+                                <input type="submit" hidden />
+                            </form>
+                        {% else %}
+                            <span class="oh-timeoff-modal__stat-count">
+                                {{employee.stage_id}}
+                            </span>
+                        {% endif %}
                     </span>
                 </div>
             </div>

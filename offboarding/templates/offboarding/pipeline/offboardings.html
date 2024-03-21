@@ -61,7 +61,7 @@
   <div class="oh-tabs" onclick="switchTab(event)">
     <ul class="oh-tabs__tablist">
       {% for offboarding in offboardings %}
-        {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding %}
+        {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding.offboarding %}
           <li class="oh-tabs__tab" onclick="localStorage.setItem('activeTabOffboarding',$(this).attr('data-target'));" data-target="#Offboarding{{ offboarding.offboarding.id }}">
             {{ offboarding.offboarding.title }}
             <div class="d-flex">
@@ -70,6 +70,7 @@
                   {{ offboarding.offboarding.stages|length }}
                   </span>
               </div>
+              {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
               <div class="oh-dropdown" x-data="{open: false}">
                 <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open" @click.outside="open = false" title="Actions">
                   <ion-icon name="ellipsis-vertical" role="img" class="md hydrated" aria-label="ellipsis vertical"></ion-icon>
@@ -93,7 +94,8 @@
                     {% endif %}
                   </ul>
                 </div>
-              </div>      
+              </div>  
+              {% endif %}    
             </div>
           </li>
         {% endif %}
@@ -101,7 +103,7 @@
     </ul>
     <div class="oh-tabs__contents">
       {% for offboarding in offboardings %}
-        {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding %}
+        {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding.offboarding %}
           <div class="oh-tabs__content" id="Offboarding{{ offboarding.offboarding.id }}">
               {% if perms.offboarding.add_offboardingstage or request.user.employee_get|any_manager %}
                 <a hx-get="{% url 'create-offboarding-stage' %}?offboarding_id={{offboarding.offboarding.id}}" style="width: 100px;" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" class="mb-3 oh-btn oh-btn--secondary">
