@@ -227,18 +227,18 @@ class Contract(models.Model):
         related_name="contracts",
         verbose_name=_("Work Type"),
     )
+    notice_period_in_days = models.IntegerField(
+        default=30,
+        help_text=_("Notice period in total days."),
+        validators=[min_zero],
+        verbose_name=_("Notice Period"),
+    )
     contract_document = models.FileField(upload_to="uploads/", null=True, blank=True)
     is_active = models.BooleanField(default=True)
     deduct_leave_from_basic_pay = models.BooleanField(
         default=True,
         verbose_name=_("Deduct From Basic Pay"),
         help_text=_("Deduct the leave amount from basic pay."),
-    )
-    notice_period_in_month = models.IntegerField(
-        default=3,
-        help_text=_("Notice period in total months."),
-        validators=[min_zero],
-        verbose_name=_("Notice Period"),
     )
     calculate_daily_leave_amount = models.BooleanField(
         default=True,
@@ -1758,9 +1758,9 @@ class PayrollGeneralSetting(models.Model):
     """
 
     notice_period = models.IntegerField(
-        help_text="Notice period in month",
+        help_text="Notice period in days",
         validators=[min_zero],
-        default=3,
+        default=30,
     )
     company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
 

@@ -47,7 +47,7 @@ from notifications.signals import notify
 from django.utils.translation import gettext_lazy as _
 from onboarding.filters import OnboardingStageFilter
 
-from payroll.models.models import Contract
+from payroll.models.models import Contract, PayrollGeneralSetting
 from attendance.methods.group_by import group_by_queryset as group_by
 from recruitment.pipeline_grouper import group_by_queryset
 
@@ -66,7 +66,9 @@ def pipeline_grouper(filters={}, offboardings=[]):
             all_stages_grouper.append({"grouper": stage, "list": []})
             stage_employees = PipelineEmployeeFilter(
                 filters,
-                OffboardingEmployee.objects.filter(stage_id=stage),
+                OffboardingEmployee.objects.filter(
+                    stage_id=stage, employee_id__is_active=True
+                ),
             ).qs.order_by("stage_id__id")
             page_name = "page" + stage.title + str(offboarding.id)
             employee_grouper = group_by_queryset(
@@ -236,7 +238,7 @@ def add_employee(request):
         if intial_notice_period(request)["get_initial_notice_period"]
         else 0
     )
-    end_date = datetime.today() + timedelta(days=default_notice_period * 30)
+    end_date = datetime.today() + timedelta(days=default_notice_period)
     stage_id = request.GET["stage_id"]
     instance_id = eval(str(request.GET.get("instance_id")))
     instance = None
@@ -391,7 +393,7 @@ def view_notes(request, employee_id=None):
 
 
 @login_required
-@any_manager_can_enter("offboarding.add_offboardingnote")
+# @any_manager_can_enter("offboarding.add_offboardingnote")
 def add_note(request):
     """
     This method is used to create note for the offboarding employee
@@ -773,6 +775,7 @@ def update_status(request):
     ids = request.GET.getlist("letter_ids")
     status = request.GET["status"]
     offboarding_id = request.GET.get("offboarding_id")
+    default_notice_end = PayrollGeneralSetting.objects.first()
     if offboarding_id:
         offboarding = Offboarding.objects.get(id=offboarding_id)
         notice_period_starts = request.GET.get("notice_period_starts")
@@ -788,6 +791,10 @@ def update_status(request):
             ).date()
         else:
             notice_period_ends = None
+            if default_notice_end:
+                notice_period_ends = notice_period_starts + timedelta(
+                    days=default_notice_end.notice_period
+                )
         if not notice_period_starts:
             notice_period_starts = today
 
@@ -860,7 +867,7 @@ def get_notice_period(request):
         "notice_period_starts": str(datetime.today().date()),
     }
     if employee_contract:
-        response["notice_period"] = employee_contract.notice_period_in_month
+        response["notice_period"] = employee_contract.notice_period_in_days
     return JsonResponse(response)
 
 
@@ -868,7 +875,7 @@ def get_notice_period_end_date(request):
     start_date = request.GET.get("start_date")
     start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
     notice_period = intial_notice_period(request)["get_initial_notice_period"]
-    end_date = start_date + timedelta(days=notice_period * 30)
+    end_date = start_date + timedelta(days=notice_period)
     response = {
         "end_date": end_date,
     }

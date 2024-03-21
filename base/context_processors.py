@@ -125,7 +125,7 @@ def intial_notice_period(request):
     Check weather resignation_request enabled of not in offboarding
     """
     first = PayrollGeneralSetting.objects.first()
-    initial = 3
+    initial = 30
     if first:
         initial = first.notice_period
     return {"get_initial_notice_period": initial}

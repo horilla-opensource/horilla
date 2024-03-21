@@ -136,7 +136,7 @@ class ContractForm(ModelForm):
             )
         first = PayrollGeneralSetting.objects.first()
         if first and self.instance.pk is None:
-            self.initial["notice_period_in_month"] = first.notice_period
+            self.initial["notice_period_in_days"] = first.notice_period
 
     def as_p(self):
         """

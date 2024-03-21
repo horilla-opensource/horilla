@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from datetime import date
+from datetime import date, timedelta
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -11,6 +11,7 @@ from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from notifications.signals import notify
 from django.contrib.auth.models import User
 from base.thread_local_middleware import _thread_locals
+from payroll.models.models import Contract
 
 # Create your models here.
 
@@ -185,6 +186,18 @@ class ResignationLetter(models.Model):
             .filter(offboarding_id=offboarding)
             .first()
         )
+        contract_notice_end_date = Contract.objects.filter(
+            employee_id=self.employee_id, contract_status="active"
+        ).first()
+        try:
+            notice_period_ends = (
+                notice_period_starts + timedelta (contract_notice_end_date.notice_period_in_days)
+                if contract_notice_end_date
+                else notice_period_ends
+            )
+        except:
+            notice_period_ends = notice_period_ends
+
         offboarding_employee.notice_period_starts = notice_period_starts
         offboarding_employee.notice_period_ends = notice_period_ends
         if (
