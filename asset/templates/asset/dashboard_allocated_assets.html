@@ -12,10 +12,6 @@
         <div class="oh-sticky-table__tbody">
             {% for asset_allocation in asset_allocations %}
             <div class="oh-sticky-table__tr"
-                {% comment %} data-toggle="oh-modal-toggle"
-                data-target="#asset_dashboard_modal"
-                hx-get="{% url 'asset-allocation-individual-view' asset_allocation.id %}?allocations_ids={{allocations_ids}}"
-                hx-target="#asset_dashboard_modal_target" {% endcomment %}
             >
                 <div
                     class="oh-sticky-table__sd"

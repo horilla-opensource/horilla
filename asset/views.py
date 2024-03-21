@@ -1360,8 +1360,8 @@ def asset_dashboard(request):
     """
     assets = Asset.objects.all()
     asset_in_use = Asset.objects.filter(asset_status="In use")
-    asset_requests = AssetRequest.objects.filter(asset_request_status="Requested")
-    asset_allocations = AssetAssignment.objects.filter(asset_id__asset_status="In use")
+    asset_requests = AssetRequest.objects.filter(asset_request_status="Requested",requested_employee_id__is_active=True)
+    asset_allocations = AssetAssignment.objects.filter(asset_id__asset_status="In use",assigned_to_employee_id__is_active=True)
     context = {
         "assets": assets,
         "asset_requests": asset_requests,
