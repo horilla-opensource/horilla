@@ -59,8 +59,8 @@
                     <div class="oh-btn-group ml-2">
                         <div class="oh-dropdown" x-data="{open: false}">
                             <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
-                                data-target="#editModal1" hx-get="{% url 'company-leave-creation' %}"
-                                hx-target="#companyLeaveForm">
+                                data-target="#objectCreateModal" hx-get="{% url 'company-leave-creation' %}"
+                                hx-target="#objectCreateModalTarget" id="companyLeaveCreate">
                                 <ion-icon name="add-outline" class="me-1"></ion-icon>
                                 {% trans "Create" %}
                             </button>
@@ -74,49 +74,12 @@
 </section>
 
 <div class="oh-wrapper" id="companyLeave">
-    {% if company_leaves %}
-    {% include 'leave/company_leave/company_leave.html' %}
-    {% else %}
-    <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
-        <div style="" class="oh-404">
-        <img style="display: block;width:150px;height:150px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="mb-4" alt=""/>
-        <h3 style="font-size:20px" class="oh-404__subtitle">{% trans "There are no company leaves at the moment." %}</h3>
-        </div>
-    </div>
-    {% endif %}
+    {% include 'leave/company_leave/company_leave.html' %} 
 </div>
 
-
-<div class="oh-modal" id="editModal1" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
-    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
-        <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Company Leaves" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-        <div id="companyLeaveForm">
-
-        </div>
-    </div>
-</div>
-
-<div class="oh-modal" id="editModal2" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
-    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
-        <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Company Leaves" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-        <div id="companyUpdateForm">
-
-        </div>
-    </div>
-</div>
-</div>
 
 <script>
+
     $(document).on('htmx:load','#companyLeave', function () {
         // Create a new script element
         var scriptElement = document.createElement("script");
@@ -125,27 +88,11 @@
         // Append the script element to the head of the HTML document
         document.head.appendChild(scriptElement);
     });
-    $(document).on('htmx:load', '#companyLeaveForm', function () {
-        {% include 'select2.js' %}
-        $('#basedOnWeekDay #id_based_on_week_day').select2();
-        $('#basedOnWeek #id_based_on_week').select2();
+
+    $("#companyLeaveCreate").click(function (e) { 
+        $("#objectCreateModalTarget").css("max-width", "350px"); 
     });
-    $(document).on('htmx:load', '#companyUpdateForm', function () {
-        {% include 'select2.js' %}
-        $('#updateBasedOnWeekDay #id_based_on_week_day').select2();
-        $('#updateBasedOnWeek #id_based_on_week').select2();
-    });
-    $('#delete-link').on('click', function(event) {
-        event.preventDefault(); // prevent the default behavior of the link
-        
-        const link = $(this);
-        const confirmation = confirm('{% trans "Are you sure you want to delete?" %}');
-        
-        if (confirmation) {
-          window.location.href = link.attr('href'); // execute the href if confirmed
-        }
-      });
-      
+
 </script>
 
 <script src="{% static '/base/filter.js' %}"></script>

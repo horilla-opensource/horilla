@@ -1,5 +1,17 @@
-{% load i18n %}
+{% load i18n %} {% load static %}
+{% if messages %}
+  <div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+      <div class="oh-alert oh-alert--animated {{ message.tags }}">
+        {{ message }}
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+{% endif %}
 {% include 'filter_tags.html' %}
+{% if company_leaves %}
 <div class="oh-sticky-table">
   <div class="oh-sticky-table__table oh-table--sortable">
       <div class="oh-sticky-table__thead">
@@ -38,14 +50,16 @@
                   <div class="oh-btn-group">
                     {% if perms.leave.change_companyleave %}
                       <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
-                          data-target="#editModal2" hx-get="{% url 'company-leave-update' company_leave.id %}"
-                          hx-target="#companyUpdateForm"><ion-icon name="create-outline"></ion-icon></button>
+                          data-target="#objectUpdateModal" hx-get="{% url 'company-leave-update' company_leave.id %}"
+                          hx-target="#objectUpdateModalTarget"><ion-icon name="create-outline"></ion-icon></button>
                     {% endif %}
                     {% if perms.leave.delete_companyleave %}
-                      <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
-                          href="{% url 'company-leave-delete' company_leave.id %}"
-                          onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" 
-                          title="{% trans 'Delete' %}"><ion-icon name="trash-outline"></ion-icon></a>
+                        <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                            hx-confirm="{% trans 'Are you sure you want to delete ?' %}" 
+                            hx-post="{% url 'company-leave-delete' company_leave.id %}?{{pd}}"
+                            hx-target="#companyLeave"
+                            title="{% trans 'Delete' %}"><ion-icon name="trash-outline"></ion-icon>
+                        </a>
                     {% endif %}
                   </div>
                 </div>
@@ -96,3 +110,18 @@
       </ul>
   </nav>
 </div>
+<script>
+    $(document).ready(function() {
+        $('[data-target="#objectUpdateModal"]').click(function() {
+            $("#objectUpdateModalTarget").css("max-width", "350px");
+        });
+    });
+</script>
+{% else %}
+    <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
+        <div style="" class="oh-404">
+        <img style="display: block;width:150px;height:150px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="mb-4" alt=""/>
+        <h3 style="font-size:20px" class="oh-404__subtitle">{% trans "There are no company leaves at the moment." %}</h3>
+        </div>
+    </div>
+{% endif %}
