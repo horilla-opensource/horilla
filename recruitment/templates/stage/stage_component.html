@@ -123,7 +123,8 @@
                         </div>
                         <button hx-post="{% url 'rec-remove-stage-manager' manager.id stage.id %}?{{pd}}&page={{data.number}}"
                                 hx-target='#stage-container' class="oh-user-panel__remove"
-                                title="{% trans "Remove" %}">
+                                hx-confirm='{% trans "Are sure want to remove this manager?" %}'
+                                title='{% trans "Remove" %}'>
                           <ion-icon name="close-outline"></ion-icon>
                         </button>
                       </span>

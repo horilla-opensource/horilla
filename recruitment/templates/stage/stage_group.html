@@ -1,5 +1,24 @@
  {% load i18n %}{% load static %}
  
+ <!-- start of messages -->
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    setTimeout(function () {
+      $(".oh-modal__close").click();
+    }, 1000);
+  </script>
+</div>
+{% endif %}
+<!-- end of messages -->
+
  <!-- start of quick filters -->
   <div class="d-flex flex-row-reverse">
     <span class="m-1" 
