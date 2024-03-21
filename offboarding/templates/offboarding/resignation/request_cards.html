@@ -70,7 +70,7 @@
       </div>
     </div>
     <h3 class="oh-faq-card__title">{{ record.title }}</h3>
-    <div class="oh-faq-card__desc">{{ record.description|safe }}</div>
+    <div class="oh-faq-card__desc" style="overflow:auto; min-height:200px">{{ record.description|safe }}</div>
     <form action="{% url 'update-letter-status' %}">
       {% if perms.offboarding.change_resignationletter %}
       <div class="oh-btn-group">
@@ -79,19 +79,16 @@
           onclick="$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true);"
           class="oh-btn oh-btn--success w-100 oh-btn--block w-100">
           <ion-icon name="checkmark" class="mr-1 md hydrated" role="img" aria-label="checkmark"></ion-icon>
-          {% comment %} {% trans 'Approve' %} {% endcomment %}
         </button>
         {% else %}
         <button type="button" class="oh-btn oh-btn--success oh-btn--disabled oh-btn--block w-100">
           <ion-icon name="checkmark" class="mr-1 md hydrated" role="img" aria-label="checkmark"></ion-icon>
-          {% comment %} {% trans 'Approved' %} {% endcomment %}
         </button>
         {% endif %}
         <button type="button"
           onclick="$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
           class="oh-btn oh-btn--danger oh-btn--block w-100">
           <ion-icon name="close-circle-outline" class="mr-1 md hydrated" role="img" aria-label="close"></ion-icon>
-          {% comment %} {% trans 'Reject' %} {% endcomment %}
         </button>
         <input type="hidden" name="status">
         <input type="hidden" name="letter_ids" value="{{record.id}}">
