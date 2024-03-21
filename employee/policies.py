@@ -314,14 +314,37 @@ def update_actions(request, action_id):
     return render(request, "disciplinary_actions/update_form.html", {"form": form})
 
 
+@login_required
+@permission_required("employee.change_disciplinaryaction")
 def remove_employee_disciplinary_action(request, action_id, emp_id):
-    action = DisciplinaryAction.objects.get(id=action_id)
+    dis_action = DisciplinaryAction.objects.get(id=action_id)
     employee = Employee.objects.get(id=emp_id)
-    action.employee_id.remove(employee)
+
+    action_type = get_action_type_delete(dis_action.action)
+
+    if action_type == "dismissal" or action_type == "suspension":
+        emp = get_object_or_404(Employee, id=emp_id)
+        user = get_object_or_404(User, id=emp.employee_user_id.id)
+        if user.is_active:
+            pass
+        else:
+            messages.warning(
+                request, _("Employees login credentials will be unblocked.")
+            )
+            user.is_active = True
+            user.save()
+
+    dis_action.employee_id.remove(employee)
+
+    employees = len(dis_action.employee_id.all())
+
+    if employees == 0:
+        dis_action.delete()
+
     messages.success(
         request, _("Employee removed from disciplinary action successfully.")
     )
-    return redirect(f"/employee/disciplinary-filter-view?click_id={action.id}")
+    return redirect(f"/employee/disciplinary-filter-view?click_id={dis_action.id}")
 
 
 @login_required
@@ -344,7 +367,7 @@ def delete_actions(request, action_id):
                 pass
             else:
                 messages.warning(
-                    request, "Employees login credentials will be unblocked."
+                    request, _("Employees login credentials will be unblocked.")
                 )
                 user.is_active = True
                 user.save()

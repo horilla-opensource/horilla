@@ -79,7 +79,8 @@
                     <span class="oh-profile__name oh-text--dark" title="{{emp}}"
                     >{{emp.get_full_name}}</span>
                   </div>
-                  <a title="{% trans "Remove" %}" hx-post="{% url 'remove-employee-disciplinary-action' i.id emp.id %}" hx-target="#actionContainer" class="oh-user-panel__remove">
+                  <a title="{% trans "Remove" %}" hx-post="{% url 'remove-employee-disciplinary-action' i.id emp.id %}" hx-target="#actionContainer" class="oh-user-panel__remove"
+                    hx-confirm="{% trans 'Are you sure want to remove this employee from this action?' %}">
                     <ion-icon name="close-outline"></ion-icon>
                   </a>
                 </span>
