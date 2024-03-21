@@ -258,7 +258,7 @@ def create_actions(request):
                 user = employee.employee_user_id
                 employees.append(user)
 
-            form.save()
+            form.save(request=request)
             messages.success(request, _("Disciplinary action taken."))
             notify.send(
                 request.user.employee_get,

@@ -111,6 +111,14 @@ class ModelForm(forms.ModelForm):
             except:
                 pass
 
+    def save(self, request=None, *args, **kwargs):
+        if request:
+            instance = super().save(commit=False)
+            instance.save(request=request, *args, **kwargs)
+        else:
+            instance.save(*args, **kwargs)
+        return super().save(*args, **kwargs)
+
 
 class UserForm(ModelForm):
     """
@@ -610,7 +618,7 @@ class DisciplinaryActionForm(ModelForm):
     class Meta:
         model = DisciplinaryAction
         fields = "__all__"
-        exclude = ["company_id", "objects"]
+        exclude = ["company_id", "objects", "is_active"]
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}),
         }

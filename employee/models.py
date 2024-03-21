@@ -16,6 +16,7 @@ from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from base import thread_local_middleware
+from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from horilla_audit.methods import get_diff
 from base.models import (
@@ -786,7 +787,7 @@ class Actiontype(models.Model):
         return f"{self.title}"
 
 
-class DisciplinaryAction(models.Model):
+class DisciplinaryAction(HorillaModel):
     """
     Disciplinary model
     """
@@ -796,7 +797,7 @@ class DisciplinaryAction(models.Model):
     action = models.ForeignKey(Actiontype, on_delete=models.CASCADE)
     description = models.TextField(max_length=255)
     unit_in = models.CharField(max_length=10, choices=choices, default="days")
-    days = models.IntegerField(null=True, default=2)
+    days = models.IntegerField(null=True, default=1)
     hours = models.CharField(
         max_length=6,
         default="00:00",
