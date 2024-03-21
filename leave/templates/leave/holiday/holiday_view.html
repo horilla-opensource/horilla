@@ -1,18 +1,4 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
-<!-- start of message  -->
-{% comment %} {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{ message.tags }}">
-      {{ message }}
-    </div>
-  </div>
-  {% endfor %}
-</div>
-{% endif %} {% endcomment %}
-<!-- end of messages -->
-
 <!-- start of nav bar -->
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
   <!-- start of title -->
@@ -61,7 +47,7 @@
     <div class="oh-main__titlebar-button-container">
       <!-- start of filter -->
       <div class="oh-dropdown" x-data="{open: false}">
-        <button  class="oh-btn ml-2" @click="open = !open">
+        <button class="oh-btn ml-2" @click="open = !open">
           <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
           <div id="filterCount"></div>
         </button>
@@ -71,81 +57,77 @@
       {% endif %}
 
       <!-- start of Actions -->
-      {% if perms.leave.add_holiday or perms.leave.delete_holiday%} 
-        <div class="oh-dropdown ml-2" x-data="{open: false}">
-          <button
-            class="oh-btn oh-btn--dropdown"
-            @click="open = !open"
-            @click.outside="open = false"
-          >
-            {% trans "Actions" %}
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right"
-            x-show="open"
-            style="display: none"
-          >
-            <ul class="oh-dropdown__items">
-              {% if perms.leave.add_holiday %}
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link"
-                    id="holidays-info-import"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#holidayImport"
-                    >{% trans "Import" %}</a
-                  >
-                </li>
-              {% endif %}
-              {% if holidays %}
-                {% if perms.leave.add_holiday %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      href="#"
-                      class="oh-dropdown__link"
-                      id="holidays-export"
-                      data-toggle="oh-modal-toggle"
-                      data-target="#holidayExport"
-                      >{% trans "Export" %}</a
-                    >
-                  </li>
-                {% endif %}
-                {% if perms.leave.delete_holiday %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      href="#"
-                      id="bulkHolidaysDelete"
-                      class="oh-dropdown__link oh-dropdown__link--danger"
-                      >{% trans "Delete" %}</a
-                    >
-                  </li>
-                {% endif %}
-              {% endif %}
-            </ul>
-          </div>
+      {% if perms.leave.add_holiday or perms.leave.delete_holiday%}
+      <div class="oh-dropdown ml-2" x-data="{open: false}">
+        <button
+          class="oh-btn oh-btn--dropdown"
+          @click="open = !open"
+          @click.outside="open = false"
+        >
+          {% trans "Actions" %}
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right"
+          x-show="open"
+          style="display: none"
+        >
+          <ul class="oh-dropdown__items">
+            {% if perms.leave.add_holiday %}
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                class="oh-dropdown__link"
+                id="holidays-info-import"
+                data-toggle="oh-modal-toggle"
+                data-target="#holidayImport"
+                >{% trans "Import" %}</a
+              >
+            </li>
+            {% endif %} {% if holidays %} {% if perms.leave.add_holiday %}
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                class="oh-dropdown__link"
+                id="holidays-export"
+                data-toggle="oh-modal-toggle"
+                data-target="#holidayExport"
+                >{% trans "Export" %}</a
+              >
+            </li>
+            {% endif %} {% if perms.leave.delete_holiday %}
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                id="bulkHolidaysDelete"
+                class="oh-dropdown__link oh-dropdown__link--danger"
+                >{% trans "Delete" %}</a
+              >
+            </li>
+            {% endif %} {% endif %}
+          </ul>
         </div>
+      </div>
       {% endif %}
       <!-- end of actions -->
 
       <!-- start of create -->
       {% if perms.leave.add_holiday %}
-        <div class="oh-btn-group ml-2">
-          <div class="oh-dropdown" x-data="{open: false}">
-            <button
-              id="holidayCreateButton"
-              class="oh-btn oh-btn--secondary oh-btn--shadow"
-              data-toggle="oh-modal-toggle"
-              data-target="#holidayCreateModal"
-              hx-get="{% url 'holiday-creation' %}"
-              hx-target="#holidayCreateFormModal"
-              onclick="createHolidayHxValue();"
-            >
-              <ion-icon name="add-outline" class="me-1"></ion-icon>
-              {% trans "Create" %}
-            </button>
-          </div>
+      <div class="oh-btn-group ml-2">
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            id="holidayCreateButton"
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'holiday-creation' %}"
+            hx-target="#objectCreateModalTarget"
+            onclick="createHolidayHxValue();"
+          >
+            <ion-icon name="add-outline" class="me-1"></ion-icon>
+            {% trans "Create" %}
+          </button>
         </div>
+      </div>
       {% endif %}
       <!-- end of create -->
     </div>
@@ -153,17 +135,23 @@
   </div>
 </section>
 <!-- end of nav bar -->
-  
-<div class="oh-checkpoint-badge mb-2" id="selectedHolidays" data-ids="[]" data-clicked="" style="display:none;" >
+
+<div
+  class="oh-checkpoint-badge mb-2"
+  id="selectedHolidays"
+  data-ids="[]"
+  data-clicked=""
+  style="display: none"
+>
   {% trans "Selected Holidays" %}
 </div>
-  
+
 <!--start of holiday display  -->
 <div class="oh-wrapper" id="holidays">
   {% if holidays %} 
     {% include 'leave/holiday/holiday.html' %} 
   {% else %}
-    <!--start of empty page  -->
+  <!--start of empty page  -->
     <div
       style="
         height: 70vh;
@@ -172,7 +160,7 @@
         justify-content: center;
       "
       class=""
-    >
+      >
       <div style="" class="oh-404">
         <img
           style="display: block; width: 150px; height: 150px; margin: 10px auto"
@@ -185,37 +173,10 @@
         </h3>
       </div>
     </div>
-    <!-- end of empty page -->
+  <!-- end of empty page -->
   {% endif %}
 </div>
 <!-- end of Holiday display -->
-
-<!-- Holiday creation -->
-<div
-  class="oh-modal"
-  id="holidayCreateModal"
-  role="dialog"
-  aria-labelledby="holidayCreateModalLabel"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog" id="holidayCreateFormModal">
-  </div>
-</div>
-
-<!-- start of modals -->
-
-<!-- start of Update Holiday -->
-<div
-  class="oh-modal"
-  id="holidayEditModal"
-  role="dialog"
-  aria-labelledby="holidayEditModalLabel"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog" id="holidayEditFormModal">
-  </div>
-</div>
-<!-- end of update modal -->
 
 <!-- start Import Holiday Modal -->
 <div
@@ -224,7 +185,7 @@
   role="dialog"
   aria-labelledby="holidayImport"
   aria-hidden="true"
-  >
+>
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="holidayImportLavel">
@@ -264,7 +225,12 @@
                 >{% trans "Drag and drop files here" %}</span
               >
             </label>
-            <input type="file" name="holidays_import" id="importHoliday" required />
+            <input
+              type="file"
+              name="holidays_import"
+              id="importHoliday"
+              required
+            />
           </div>
           <button
             onclick="
@@ -298,18 +264,15 @@
       <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
       </button>
-      <div
-        class="oh-modal__dialog-body p-0 pt-2"
-        id="holidayExportModalBody"
-      >
+      <div class="oh-modal__dialog-body p-0 pt-2" id="holidayExportModalBody">
         <form
           action="{%url 'holiday-info-export' %}"
           method="get"
           onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
           id="holidayExportForm"
-          >
-          {% csrf_token %} 
-          {% include "leave/holiday/holiday_export_filter.html" %}
+        >
+          {% csrf_token %} {% include "leave/holiday/holiday_export_filter.html"
+          %}
           <div class="oh-dropdown__filter-footer">
             <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
               {% trans "Export" %}
@@ -349,7 +312,7 @@
 <script src="{% static '/holiday/action.js' %}"></script>
 <script>
   $(document).ready(function () {
-    $("[name=recurring]").select2
+    $("[name=recurring]").select2;
   });
 </script>
 

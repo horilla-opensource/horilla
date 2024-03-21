@@ -1702,6 +1702,7 @@ def company_leave_delete(request, id):
     GET : return company leave creation form template
     POST : return company leave view template
     """
+    query_string = request.GET.urlencode()
     try:
         CompanyLeave.objects.get(id=id).delete()
         messages.success(request, _("Company leave deleted successfully.."))
@@ -1709,7 +1710,7 @@ def company_leave_delete(request, id):
         messages.error(request, _("Company leave not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
-    return redirect(company_leave_view)
+    return redirect(f"/leave/company-leave-filter?{query_string}")
 
 
 @login_required

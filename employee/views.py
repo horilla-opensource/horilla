@@ -2971,7 +2971,7 @@ def employee_select(request):
     This method is used to return all the id of the employees to select the employee row
     """
     page_number = request.GET.get("page")
-    employees = Employee.objects.all()
+    employees = Employee.objects.filter()
     if page_number == "all":
         employees = Employee.objects.filter(is_active=True)
 
@@ -2991,7 +2991,7 @@ def employee_select_filter(request):
     """
     page_number = request.GET.get("page")
     if page_number == "all":
-        employee_filter = EmployeeFilter(request.GET, queryset=Employee.objects.all())
+        employee_filter = EmployeeFilter(request.GET, queryset=Employee.objects.filter())
 
         # Get the filtered queryset
         filtered_employees = filtersubordinatesemployeemodel(

@@ -211,9 +211,9 @@
                     <li class="oh-dropdown__item">
                       <a
                         hx-get='{% url "stage-update-pipeline" stage.grouper.id %}'
-                        hx-target="#stageUpdate"
+                        hx-target="#objectUpdateModalTarget"
                         data-toggle="oh-modal-toggle"
-                        data-target="#updateStageModal"
+                        data-target="#objectUpdateModal"
                         class="oh-dropdown__link"
                         >{% trans "Edit" %}</a
                       >
