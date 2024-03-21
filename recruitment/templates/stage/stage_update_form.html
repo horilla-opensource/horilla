@@ -1,58 +1,64 @@
-{% load i18n %}
-{% if messages %}
+{% load i18n %} {% if messages %}
 <div class="oh-alert-container">
-    {% for message in messages %}
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-          {{ message }}
-        </div> 
-    {% endfor %}
+  {% for message in messages %}
+  <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+  {% endfor %}
 </div>
 {% endif %}
-<form method="post" class='oh-general__tab-target oh-profile-section' hx-post="{% url 'rec-stage-update' form.instance.id %}" hx-target='#stageUpdate'>
+<div class="oh-modal__dialog-header">
+  <h5 class="oh-modal__dialog-title" id="updateStageModalLabel">
+    {% trans "Edit Stage" %}
+  </h5>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
+    method="post"
+    class="oh-general__tab-target oh-profile-section"
+    hx-post="{% url 'rec-stage-update' form.instance.id %}"
+    hx-target="#objectUpdateModalTarget"
+  >
     {% csrf_token %}
-    <div id='stageFormCreate' >
-        {% csrf_token %}
-        <div class="row" id='stageFormUpdate'>
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                <label class="oh-label" for="">{% trans "Stage" %} *</label>
-                {{form.stage}}
-                {{form.stage.errors}}
-            </div>
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                <label class="oh-label" for="">{% trans "Recruitment" %} *</label>
-                {{form.recruitment_id}}
-                {{form.recruitment_id.errors}}
-            </div>
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                <label class="oh-label" for="">{% trans "Stage Managers" %} *</label>
-                {{form.stage_managers}}
-                {{form.stage_managers.errors}}
-                <ul id="error-list" class="errorlist" style="display: none">
-                    <li>This field is requied</li>
-                </ul>
-            </div>
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                <label class="oh-label" for="">{% trans "Stage Type" %} *</label>
-                {{form.stage_type}}
-                {{form.stage_type.errors}}
-            </div>
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                <label class="oh-label" for="">{% trans "Is Active" %}?</label>
-                <div class="oh-switch">
-                    {{form.is_active}}
-                    {{form.is_active.errors}}
-                </div>
-            </div>
+    <div id="stageFormCreate">
+      {% csrf_token %}
+      <div class="row" id="stageFormUpdate">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+          <label class="oh-label" for="">{% trans "Stage" %} *</label>
+          {{form.stage}} {{form.stage.errors}}
         </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+          <label class="oh-label" for="">{% trans "Recruitment" %} *</label>
+          {{form.recruitment_id}} {{form.recruitment_id.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+          <label class="oh-label" for="">{% trans "Stage Managers" %} *</label>
+          {{form.stage_managers}} {{form.stage_managers.errors}}
+          <ul id="error-list" class="errorlist" style="display: none">
+            <li>{% trans "This field is requied" %}</li>
+          </ul>
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+          <label class="oh-label" for="">{% trans "Stage Type" %} *</label>
+          {{form.stage_type}} {{form.stage_type.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+          <label class="oh-label" for="">{% trans "Is Active" %}?</label>
+          <div class="oh-switch">
+            {{form.is_active}} {{form.is_active.errors}}
+          </div>
+        </div>
+      </div>
     </div>
-    
-    <div class="d-flex flex-row-reverse">
-        <input type="submit" value="Save" class='mt-4 oh-btn oh-btn--secondary'>
-    </div>
-</form>
-<script>
-    $(document).ready(function () {
-        $("#stageFormCreate [name=stage_managers]").removeAttr("required");
-    });
-</script>
 
+    <div class="d-flex flex-row-reverse">
+      <input type="submit" value="Save" class="mt-4 oh-btn oh-btn--secondary" />
+    </div>
+  </form>
+</div>
+<script>
+  $(document).ready(function () {
+    $("#stageFormCreate [name=stage_managers]").removeAttr("required");
+  });
+</script>

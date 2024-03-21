@@ -70,7 +70,7 @@
                 <ul class="oh-dropdown__items">
                   {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec%}
                   <li class="oh-dropdown__item">
-                    <a hx-get='{% url "stage-update-pipeline" stage.grouper.id %}' hx-target='#stageUpdate' class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#updateStageModal" data-key=".oh-kanban__section">{% trans "Edit" %}</a>
+                    <a hx-get='{% url "stage-update-pipeline" stage.grouper.id %}' hx-target='#objectUpdateModalTarget' class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#objectUpdateModal" data-key=".oh-kanban__section">{% trans "Edit" %}</a>
                   </li>
                   {% endif %}
                   {% if perms.recruitment.delete_stage %}

@@ -143,9 +143,9 @@
                         {% if perms.recruitment.change_stage %}
                           <a
                             hx-get="{% url 'rec-stage-update' stage.id %}"
-                            hx-target="#stageUpdate"
+                            hx-target="#objectUpdateModalTarget"
                             data-toggle="oh-modal-toggle"
-                            data-target="#updateStageModal"
+                            data-target="#objectUpdateModal"
                             class="oh-btn oh-btn--light-bkg w-50"
                             title="{% trans 'Edit' %}"
                           >
@@ -271,28 +271,6 @@
   </div>
   <!-- end of empty page -->
 {% endif %}
-  <div 
-      class="oh-modal"
-      id="updateStageModal"
-      role="dialog"
-      aria-labelledby="updateStageModal"
-      aria-hidden="true"
-    >
-    <div class="oh-modal__dialog">
-      <div class="oh-modal__dialog-header">
-        <h5 class="oh-modal__dialog-title" id="updateStageModalLabel"
-          >{% trans "Edit Stage" %}</span
-        >
-        <button class="oh-modal__close" aria-label="Close" title="Close" >
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-      </div>
-      <div class="oh-modal__dialog-body" id='stageUpdate'>
-        
-      </div>
-    </div>
-  </div>
- 
 <script>
     // toggle colums //
     toggleColumns("stage-table","StageCells")
