@@ -2,18 +2,6 @@
 {% load i18n %}
 
 <!-- ******************** Leave modal ******************** -->
-  
-  <div
-	class="oh-modal"
-	id="requestCreateModal"
-	role="dialog"
-	aria-labelledby="requestCreateModal"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog" id="requestCreateFormModal">
-	</div>
-</div>
-
 <div
 	class="oh-modal"
 	id="tableTimeOff"
@@ -32,31 +20,6 @@
 
 		<div id="userRequestView"></div>
 	</div>
-</div>
-
-<!-- ******************** Attendance modal ******************** -->
-
-<div
-  class="oh-modal"
-  id="newAttendanceRequest"
-  role="dialog"
-  aria-labelledby="newAttendanceRequest"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
-        {% trans "New Attendances Request" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div
-      class="oh-modal__dialog-body"
-      id="newAttendanceRequestModalBody"
-    ></div>
-  </div>
 </div>
 
 <!-- ******************** Shift modal ******************** -->

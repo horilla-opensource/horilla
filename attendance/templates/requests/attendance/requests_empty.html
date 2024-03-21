@@ -37,29 +37,6 @@
 
 <div
   class="oh-modal"
-  id="newAttendanceRequest"
-  role="dialog"
-  aria-labelledby="newAttendanceRequest"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
-        {% trans "New Attendances Request" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div
-      class="oh-modal__dialog-body"
-      id="newAttendanceRequestModalBody"
-    ></div>
-  </div>
-</div>
-
-<div
-  class="oh-modal"
   id="validateAttendanceRequest"
   role="dialog"
   aria-labelledby="validateAttendanceRequest"
@@ -128,9 +105,9 @@
     <button
       class="oh-btn oh-btn--secondary ml-2"
       data-toggle="oh-modal-toggle"
-      data-target="#newAttendanceRequest"
+      data-target="#objectCreateModal"
       hx-get="{% url 'request-new-attendance' %}"
-      hx-target="#newAttendanceRequestModalBody"
+      hx-target="#objectCreateModalTarget"
     >
       <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "New Request" %}
     </button>
