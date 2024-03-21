@@ -324,6 +324,7 @@ def get_key_instances(model, data_dict):
             "instances_ids",
             "asset_list",
             "vpage",
+            "opage",
             "click_id",
             "csrfmiddlewaretoken",
         ]

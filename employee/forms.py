@@ -115,8 +115,6 @@ class ModelForm(forms.ModelForm):
         if request:
             instance = super().save(commit=False)
             instance.save(request=request, *args, **kwargs)
-        else:
-            instance.save(*args, **kwargs)
         return super().save(*args, **kwargs)
 
 
