@@ -29,7 +29,7 @@
   <form
     hx-post="{% url 'user-request-update' id %}?{{pd}}"
     hx-encoding="multipart/form-data"
-    hx-target="#requestEditFormModal"
+    hx-target="#objectUpdateModalTarget"
   >
     {{form.as_p}}
   </form>

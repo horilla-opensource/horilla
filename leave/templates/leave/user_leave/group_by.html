@@ -141,8 +141,8 @@
                                         {% if leave_request.status == 'requested'%}
                                             <div class="oh-btn-group" >
                                                 <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
-                                                    data-target="#requestEditModal" hx-get="{% url 'user-request-update' leave_request.id %}?{{pd}}"
-                                                    hx-target="#requestEditFormModal">
+                                                    data-target="#objectUpdateModal" hx-get="{% url 'user-request-update' leave_request.id %}?{{pd}}"
+                                                    hx-target="#objectUpdateModalTarget">
                                                     <ion-icon name="create-outline"></ion-icon>
                                                 </button>
                                                 <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
