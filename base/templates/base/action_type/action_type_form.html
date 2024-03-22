@@ -1,70 +1,59 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-  <h2 class="oh-modal__dialog-title" id="createModalTitle">
-    {% if act_id %}
-		{% trans "Action Type Update" %}
-	{% else %}
-		{% trans "Create Action Type" %}
-	{% endif %}
-  </h2>
-  <button
-    class="oh-modal__close--custom"
-    aria-label="Close"
-    onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
-    >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+  	<h2 class="oh-modal__dialog-title" id="createModalTitle">
+		{% if act_id %} 
+			{% trans "Action Type Update" %} 
+		{% else %} 
+			{% trans "Create Action Type" %} 
+		{% endif %}
+  	</h2>
+  	<button class="oh-modal__close--custom"
+    		aria-label="Close"
+    		onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+  		>
+    	<ion-icon name="close-outline"></ion-icon>
+  	</button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    {% if act_id %}
-    	hx-post="{% url 'action-type-update' act_id %}"
-    {% else %}
-    	hx-post="{% url 'action-type-create' %}?dynamic={{dynamic}}&{{hx_vals}}"
-    {% endif %}
-	  {% if dynamic %}
-		  hx-target="#objectCreateModalTarget"
-	  {% else %}
-		  hx-target="#ticketForm"
-	  {% endif %}
-    >
-    {% csrf_token %} {{form.non_field_errors}} {{form.as_p}}
-    <div class="d-flex flex-row-reverse">
-    <button
-      type="submit"
-      class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-      
-      >
-      {% trans "Save" %}
-    </button>
-    </div>
-  </form>
+  	<form
+  	  	{% if act_id %}
+  	  		hx-post="{% url 'action-type-update' act_id %}"
+			hx-target="#objectUpdateModalTarget"
+  	  	{% else %}
+  	  		hx-post="{% url 'action-type-create' %}?dynamic={{dynamic}}&{{hx_vals}}"
+			hx-target="#objectCreateModalTarget"
+  	  	{% endif %}
+  		>
+  	  	{% csrf_token %} {{form.non_field_errors}} {{form.as_p}}
+  	  	<div class="d-flex flex-row-reverse">
+  	  	  	<button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
+  	  	  	  {% trans "Save" %}
+  	  	  	</button>
+  	  	</div>
+  	</form>
 </div>
 
-
 <script>
-	function actionChange(selectElement) {
-		var selectedActiontype = selectElement.val();
-		var parentForm = selectElement.parents().closest("form");
-		$.ajax({
-			type: "post",
-			url: "{% url 'action-type-name' %}",
-			data: {
-				csrfmiddlewaretoken: getCookie("csrftoken"),
-				"action_type": selectedActiontype,
-			},
-			success: function (response) {
-
-				// Check if the response.action_type is "warning"
-				if (response.action_type === "warning") {
-					// Hide the 'block_option' field
-					parentForm.find('[id=id_block_option]').parent().hide();
-				} else {
-					// Show the 'block_option' field
-					parentForm.find('[id=id_block_option]').parent().show();
-				}
-				
-			},
-		});
-	  }
+  function actionChange(selectElement) {
+    var selectedActiontype = selectElement.val();
+    var parentForm = selectElement.parents().closest("form");
+    $.ajax({
+      type: "post",
+      url: "{% url 'action-type-name' %}",
+      data: {
+        csrfmiddlewaretoken: getCookie("csrftoken"),
+        action_type: selectedActiontype,
+      },
+      success: function (response) {
+        // Check if the response.action_type is "warning"
+        if (response.action_type === "warning") {
+          // Hide the 'block_option' field
+          parentForm.find("[id=id_block_option]").parent().hide();
+        } else {
+          // Show the 'block_option' field
+          parentForm.find("[id=id_block_option]").parent().show();
+        }
+      },
+    });
+  }
 </script>

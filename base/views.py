@@ -2774,7 +2774,10 @@ def work_type_request_approve(request, id):
 
         else:
             messages.error(
-                request, _("An approved work type request already exists during this time period.")
+                request,
+                _(
+                    "An approved work type request already exists during this time period."
+                ),
             )
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("You Do nt Have Permission")
@@ -3410,7 +3413,8 @@ def shift_request_update(request, shift_request_id):
                 form.save()
                 messages.success(request, _("Request Updated Successfully"))
                 return HttpResponse(
-                    response.content.decode("utf-8") + "<script>location.reload();</script>"
+                    response.content.decode("utf-8")
+                    + "<script>location.reload();</script>"
                 )
         else:
             messages.info(request, _("Can't edit approved shift request"))
@@ -3698,7 +3702,8 @@ def shift_request_approve(request, id):
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         else:
             messages.error(
-                request, _("An apporved shift request already exists during this time period.")
+                request,
+                _("An apporved shift request already exists during this time period."),
             )
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("You Dont Have Permission")
@@ -3733,7 +3738,8 @@ def shift_allocation_request_approve(request, id):
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     else:
         messages.error(
-            request, _("An approved shift request already exists during this time period.")
+            request,
+            _("An approved shift request already exists during this time period."),
         )
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -4776,7 +4782,7 @@ def clear_form_fields_and_remove_extra_fields(form, managers):
 
 from django.db.models import F
 
-
+@login_required
 def multiple_level_approval_edit(request, condition_id):
     create = False
     condition = MultipleApprovalCondition.objects.get(id=condition_id)
@@ -5237,7 +5243,6 @@ def action_type_create(request):
                 return HttpResponse("<script>window.location.reload()</script>")
             else:
                 from django.urls import reverse
-
                 url = reverse("create-actions")
                 instance = Actiontype.objects.all().order_by("-id").first()
                 mutable_get = request.GET.copy()
@@ -5289,8 +5294,10 @@ def action_type_delete(request, act_id):
     This method is used to delete the action type.
     """
     Actiontype.objects.filter(id=act_id).delete()
-    messages.success(request, _("Action has been deleted successfully!"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    message = _("Action has been deleted successfully!")
+    return HttpResponse(
+        f"<div class='oh-wrapper'> <div class='oh-alert-container'> <div class='oh-alert oh-alert--animated oh-alert--success'>{message}</div></div></div>"
+    )
 
 
 @login_required
