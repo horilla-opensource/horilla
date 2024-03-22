@@ -4,17 +4,16 @@ models.py
 This module is used to register django models
 """
 
-from collections.abc import Iterable
-from typing import Any
 import django
 from django.contrib import messages
-from base.thread_local_middleware import _thread_locals
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.contrib.auth.models import User
-from base.horilla_company_manager import HorillaCompanyManager
+from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from base.horilla_company_manager import HorillaCompanyManager
+from base.thread_local_middleware import _thread_locals
 
 # Create your models here.
 
@@ -75,7 +74,7 @@ class Company(models.Model):
         return str(self.company)
 
 
-class Department(models.Model):
+class Department(HorillaModel):
     """
     Department model
     """
@@ -114,7 +113,7 @@ class Department(models.Model):
         return str(self.department)
 
 
-class JobPosition(models.Model):
+class JobPosition(HorillaModel):
     """
     JobPosition model
     """
@@ -142,7 +141,7 @@ class JobPosition(models.Model):
         return str(self.job_position)
 
 
-class JobRole(models.Model):
+class JobRole(HorillaModel):
     """JobRole model"""
 
     job_position_id = models.ForeignKey(
@@ -166,7 +165,7 @@ class JobRole(models.Model):
         return f"{self.job_role} - {self.job_position_id.job_position}"
 
 
-class WorkType(models.Model):
+class WorkType(HorillaModel):
     """
     WorkType model
     """
@@ -207,7 +206,7 @@ class WorkType(models.Model):
         return self
 
 
-class RotatingWorkType(models.Model):
+class RotatingWorkType(HorillaModel):
     """
     RotatingWorkType model
     """
@@ -354,7 +353,7 @@ class RotatingWorkTypeAssign(models.Model):
             raise ValidationError(_("Date must be greater than or equal to today"))
 
 
-class EmployeeType(models.Model):
+class EmployeeType(HorillaModel):
     """
     EmployeeType model
     """
@@ -421,7 +420,7 @@ class EmployeeShiftDay(models.Model):
         return str(_(self.day).capitalize())
 
 
-class EmployeeShift(models.Model):
+class EmployeeShift(HorillaModel):
     """
     EmployeeShift model
     """
@@ -489,7 +488,7 @@ class EmployeeShift(models.Model):
         return self
 
 
-class EmployeeShiftSchedule(models.Model):
+class EmployeeShiftSchedule(HorillaModel):
     """
     EmployeeShiftSchedule model
     """
@@ -528,7 +527,7 @@ class EmployeeShiftSchedule(models.Model):
         super().save(*args, **kwargs)
 
 
-class RotatingShift(models.Model):
+class RotatingShift(HorillaModel):
     """
     RotatingShift model
     """
@@ -1092,7 +1091,7 @@ CONDITION_CHOICE = [
 ]
 
 
-class MultipleApprovalCondition(models.Model):
+class MultipleApprovalCondition(HorillaModel):
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     condition_field = models.CharField(
         max_length=255,

@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from base.thread_local_middleware import _thread_locals
+
 
 
 class HorillaModel(models.Model):
@@ -13,7 +15,7 @@ class HorillaModel(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        request = kwargs.get("request", None)
+        request = getattr(_thread_locals, "request", None)
         if request and not self.pk:
             user = request.user
             if user.is_authenticated:
