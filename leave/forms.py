@@ -144,6 +144,7 @@ class LeaveTypeForm(ConditionForm):
     class Meta:
         model = LeaveType
         fields = "__all__"
+        exclude = ["is_active"]
         labels = {
             "name": _("Name"),
         }
@@ -188,7 +189,7 @@ class UpdateLeaveTypeForm(ConditionForm):
     class Meta:
         model = LeaveType
         fields = "__all__"
-        exclude = ["period_in", "total_days"]
+        exclude = ["period_in", "total_days", "is_active"]
         widgets = {
             "color": TextInput(attrs={"type": "color", "style": "height:40px;"}),
         }
@@ -303,7 +304,7 @@ class LeaveRequestCreationForm(ModelForm):
                     total_leave_days += forcasted_leaves[item]
         if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
-        
+
         return cleaned_data
 
     def __init__(self, *args, **kwargs):
@@ -467,7 +468,7 @@ class AvailableLeaveForm(ModelForm):
 
     class Meta:
         model = AvailableLeave
-        fields = ["leave_type_id", "employee_id"]
+        fields = ["leave_type_id", "employee_id", "is_active"]
 
 
 class HolidayForm(ModelForm):
@@ -492,6 +493,7 @@ class HolidayForm(ModelForm):
     class Meta:
         model = Holiday
         fields = "__all__"
+        exclude = ["is_active"]
         labels = {
             "name": _("Name"),
         }
@@ -516,7 +518,7 @@ class LeaveOneAssignForm(HorillaModelForm):
 
     class Meta:
         model = AvailableLeave
-        fields = ["employee_id"]
+        fields = ["employee_id", "is_active"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -526,13 +528,14 @@ class LeaveOneAssignForm(HorillaModelForm):
 class AvailableLeaveUpdateForm(ModelForm):
     class Meta:
         model = AvailableLeave
-        fields = ["available_days", "carryforward_days"]
+        fields = ["available_days", "carryforward_days", "is_active"]
 
 
 class CompanyLeaveForm(ModelForm):
     class Meta:
         model = CompanyLeave
         fields = "__all__"
+        exclude = ["is_active"]
 
 
 class UserLeaveRequestForm(ModelForm):

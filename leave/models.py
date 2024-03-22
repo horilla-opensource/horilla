@@ -13,6 +13,7 @@ from base import thread_local_middleware
 from base.models import Company, MultipleApprovalCondition, clear_messages
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
+from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from .methods import calculate_requested_days
 from django.core.files.storage import default_storage
@@ -139,7 +140,7 @@ WEEK_DAYS = [
 ]
 
 
-class LeaveType(models.Model):
+class LeaveType(HorillaModel):
     icon = models.ImageField(null=True, blank=True, upload_to="leave/leave_icon")
     name = models.CharField(max_length=30, null=False)
     color = models.CharField(null=True, max_length=30)
@@ -214,7 +215,7 @@ class LeaveType(models.Model):
         return self.name
 
 
-class Holiday(models.Model):
+class Holiday(HorillaModel):
     name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
@@ -228,7 +229,7 @@ class Holiday(models.Model):
         return self.name
 
 
-class CompanyLeave(models.Model):
+class CompanyLeave(HorillaModel):
     based_on_week = models.CharField(
         max_length=100, choices=WEEKS, blank=True, null=True
     )
@@ -236,7 +237,6 @@ class CompanyLeave(models.Model):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
-    objects = models.Manager()
     objects = HorillaCompanyManager(related_company_field="company_id")
 
     class Meta:
@@ -246,7 +246,7 @@ class CompanyLeave(models.Model):
         return f"{dict(WEEK_DAYS).get(self.based_on_week_day)} | {dict(WEEKS).get(self.based_on_week)}"
 
 
-class AvailableLeave(models.Model):
+class AvailableLeave(HorillaModel):
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
