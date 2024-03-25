@@ -416,7 +416,7 @@ def home(request):
                 "completed_field_count": "0",
             },
         )
-    announcements = Announcement.objects.all().order_by("-created_on")
+    announcements = Announcement.objects.filter(expire_date__gte = datetime.today()).order_by("-created_on")
     announcement_list = announcements.filter(employees=request.user.employee_get)
     announcement_list = announcement_list | announcements.filter(employees__isnull=True)
     if request.user.has_perm("base.view_announcement"):

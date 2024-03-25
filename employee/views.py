@@ -2919,7 +2919,7 @@ def dashboard_employee_tiles(request):
     data["total_employees"] = Employee.objects.filter(is_active=True).count()
     # filtering newbies
     data["newbies_today"] = Candidate.objects.filter(
-        joining_date__range=[date.today(), date.today() + timedelta(days=1)]
+        joining_date__range=[date.today(), date.today() + timedelta(days=1)],is_active=True
     ).count()
     try:
         data[
@@ -2938,7 +2938,7 @@ def dashboard_employee_tiles(request):
         joining_date__range=[
             date.today() - timedelta(days=date.today().weekday()),
             date.today() + timedelta(days=6 - date.today().weekday()),
-        ]
+        ],is_active=True, hired=True
     ).count()
     try:
         data[

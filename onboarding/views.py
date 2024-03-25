@@ -531,14 +531,17 @@ def candidates_view(request):
     GET : return candidate view  template
     """
     queryset = Candidate.objects.filter(
+        is_active=True,
         hired=True,
         recruitment_id__closed=False,
     )
-    candidate_filter_obj = CandidateFilter()
+    candidate_filter_obj = CandidateFilter(request.GET, queryset)
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
-    page_obj = paginator_qry(queryset, page_number)
+    page_obj = paginator_qry(candidate_filter_obj.qs, page_number)
     mail_templates = RecruitmentMailTemplate.objects.all()
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Candidate, data_dict)
     return render(
         request,
         "onboarding/candidates_view.html",
@@ -549,6 +552,7 @@ def candidates_view(request):
             "gp_fields": CandidateReGroup.fields,
             "mail_templates": mail_templates,
             "hired_candidates": queryset,
+            "filter_dict": data_dict
         },
     )
 
@@ -587,6 +591,7 @@ def candidate_filter(request):
     GET : return candidate view template
     """
     queryset = Candidate.objects.filter(
+        is_active=True,
         hired=True,
         recruitment_id__closed=False,
     )
