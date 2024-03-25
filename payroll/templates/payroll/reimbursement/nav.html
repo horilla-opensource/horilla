@@ -46,7 +46,7 @@
       {% include 'payroll/reimbursement/filter.html' %}
       <div class="oh-main__titlebar-button-container">
         <div class="oh-main__titlebar-button-container">
-          <a hx-get="{% url 'create-reimbursement' %}" hx-target="#reimbursementModalBody" data-toggle="oh-modal-toggle" data-target="#reimbursementModal" class="oh-btn oh-btn--secondary">
+          <a hx-get="{% url 'create-reimbursement' %}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--secondary">
             <ion-icon name="add-outline"></ion-icon>
             {% trans 'Create' %}
           </a>

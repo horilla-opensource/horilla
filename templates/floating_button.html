@@ -1,0 +1,253 @@
+{% load static %}
+<style>
+    @font-face {
+        font-family: "Material Icons";
+        font-style: normal;
+        font-weight: 400;
+        src: url({% static "fonts/material_icons.woff2" %}) format("woff2");
+    }
+
+    .material-icons {
+        font-family: "Material Icons";
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-feature-settings: "liga";
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .round {
+        border-radius: 50%;
+    }
+
+    .fab {
+        transition: all 300ms ease-in-out;
+        width: 56px;
+        height: 56px;
+        background-color: #ff3b38;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        right: 10px;
+        bottom: 35px;
+        user-select: none;
+        cursor: pointer;
+        color: white;
+        font-size: 2em;
+        box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.16),
+            0px 3px 10px rgba(0, 0, 0, 0.16);
+        z-index: 10;
+    }
+
+    .fab i {
+        transition: all 300ms ease-in-out;
+        will-change: transform;
+    }
+
+    .inner-fabs .fab {
+        width: 40px;
+        height: 40px;
+        right: 20px;
+        bottom: 40px;
+        font-size: 1.5em;
+        will-change: bottom;
+    }
+
+    .inner-fabs.show .fab:nth-child(1) {
+        bottom: 100px;
+    }
+
+    .inner-fabs.show .fab:nth-child(2) {
+        bottom: 150px;
+    }
+
+    .inner-fabs.show .fab:nth-child(3) {
+        bottom: 200px;
+    }
+
+    .inner-fabs.show .fab:nth-child(4) {
+        bottom: 250px;
+    }
+
+    .inner-fabs.show .fab:nth-child(5) {
+        bottom: 300px;
+    }
+
+    .inner-fabs.show .fab:nth-child(6) {
+        bottom: 350px;
+    }
+
+    .inner-fabs.show .fab:nth-child(7) {
+        bottom: 400px;
+    }
+
+    .inner-fabs.show + .fab i {
+        transform: rotate(135deg);
+    }
+
+    .fab:before {
+        content: attr(data-tooltip);
+        transition: opacity 150ms cubic-bezier(0.4, 0, 1, 1);
+        position: absolute;
+        visibility: hidden;
+        opacity: 0;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        color: #ececec;
+        right: 50px;
+        top: 25%;
+        background-color: rgba(70, 70, 70, 0.9);
+        font-size: 0.5em;
+        line-height: 1em;
+        display: inline-block;
+        text-align: center;
+        white-space: nowrap;
+        border-radius: 2px;
+        padding: 6px 8px;
+        max-width: 200px;
+        font-weight: bold;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+    }
+
+    .fab:hover:before {
+        content: attr(data-tooltip);
+        visibility: visible;
+        opacity: 1;
+    }
+    .inner-fabs a {
+        display: block;
+    }
+</style>
+
+<div class="inner-fabs">
+    <div id="fab8" class="fab round" data-tooltip="Create Ticket">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'ticket-create' %}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <i class="material-icons mt-2">sell</i>
+        </a>
+    </div>
+    <div id="fab7" class="fab round" data-tooltip="Create Asset Request">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'asset-request-creation' %}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <i class="material-icons mt-2">devices</i>
+        </a>
+    </div>
+    <div id="fab6" class="fab round" data-tooltip="Create Reimbursement">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'create-reimbursement' %}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <i class="material-icons mt-2">paid</i>
+        </a>
+    </div>
+    <div id="fab5" class="fab round" data-tooltip="Create Work Type Request">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'work-type-request' %}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <i class="material-icons mt-2">work</i>
+        </a>
+    </div>
+    <div id="fab4" class="fab round" data-tooltip="Create Shift Request">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'shift-request' %}?emp_id={{request.user.employee_get.id}}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <i class="material-icons mt-2">history</i>
+        </a>
+    </div>
+    <div id="fab3" class="fab round" data-tooltip="Create Leave Request">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            {% if perms.leave.create_leaverequest %}
+                hx-get="{% url 'request-creation' %}"
+            {% else %}
+                hx-get="{% url 'leave-request-create' %}"
+            {% endif %}
+            hx-target="#objectCreateModalTarget"
+        >
+            <i class="material-icons mt-2">logout</i>
+        </a>
+    </div>
+    <div id="fab2" class="fab round" data-tooltip="Create Attendance Request">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'request-new-attendance' %}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <i class="material-icons mt-2">fingerprint</i>
+        </a>
+    </div>
+</div>
+<div id="fab1" class="fab round" data-tooltip="Quick Add">
+    <i id="fabIcon" class="material-icons">add</i>
+</div>
+
+<script>
+    $(document).ready(function () {
+        let fab1 = $("#fab1");
+        let innerFabs = $(".inner-fabs");
+
+        fab1.on("click", function () {
+            innerFabs.toggleClass("show");
+        });
+
+        $(document).on("click", function (e) {
+            let targetId = $(e.target);
+            let allowedIds = [
+                "fab1",
+                "fab2",
+                "fab3",
+                "fab4",
+                "fab5",
+                "fab6",
+                "fab7",
+                "fab8",
+                "fabIcon",
+            ];
+            let isCloseButton =
+                targetId.hasClass("oh-modal__close") ||
+                targetId.hasClass("oh-modal__close--custom");
+
+            if (
+                !(
+                    allowedIds.includes(targetId.closest(".fab").attr("id")) ||
+                    isCloseButton
+                )
+            ) {
+                innerFabs.removeClass("show");
+            }
+        });
+    });
+</script>

@@ -1,40 +1,71 @@
 {% load i18n %}
-<form hx-post="{% url "create-reimbursement" %}?instance_id={{form.instance.id}}" hx-target="#reimbursementModalBody"
-  hx-encoding="multipart/form-data">
-  {{form.as_p}}
-</form>
-<table class="oh-table oh-table--sortable" {% if not form.instance.id or form.instance.type == "reimbursement" or form.instance.type == "bonus_encashment" %}
-  id="availableTable" style="display: none;" {% endif %}>
-  <thead>
-    <tr>
-      <th>{% trans "Leave Type" %}</th>
-      <th>{% trans "Available Days" %}</th>
-      <th title="{% trans " Carry Forward Days" %}">{% trans "CFD" %}</th>
-    </tr>
-  </thead>
-  <tbody {% if not form.instance.id %} id="availableTableBody" {% endif %}>
-    {% for available_leave in form.assigned_leaves %}
-    <tr class="toggle-highlight">
-      <td>{{available_leave.leave_type_id}}</td>
-      <td>{{available_leave.available_days}}</td>
-      <td>{{available_leave.carryforward_days}}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" id="createTitle">
+        {% if form.instance.id %}
+		 	{% trans "Update Encashment" %}
+		{% else %} 
+			{% trans "Create Encashment" %} 
+		{% endif %}
+    </h2>
+    <button type="button" class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+
+<!-- htmx form -->
+<div class="oh-modal__dialog-body">
+    <form
+        hx-post='{% url "create-reimbursement" %}?instance_id={{form.instance.id}}'
+        hx-target="#objectCreateModalTarget"
+        hx-encoding="multipart/form-data"
+    >
+        {{form.as_p}}
+    </form>
+    <table
+        class="oh-table oh-table--sortable" {% if not form.instance.id or form.instance.type == "reimbursement" or form.instance.type == "bonus_encashment" %}
+        id="availableTable"
+        style="display: none"
+        {% endif %}
+    >
+        <thead>
+            <tr>
+                <th>{% trans "Leave Type" %}</th>
+                <th>{% trans "Available Days" %}</th>
+                <th title=" {% trans 'Carry Forward Days' %}">{% trans "CFD" %}</th>
+            </tr>
+        </thead>
+        <tbody
+            {% if not form.instance.id %}
+            id="availableTableBody"
+            {% endif %}
+        >
+            {% for available_leave in form.assigned_leaves %}
+            <tr class="toggle-highlight">
+                <td>{{available_leave.leave_type_id}}</td>
+                <td>{{available_leave.available_days}}</td>
+                <td>{{available_leave.carryforward_days}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 <script>
-  toggleReimbursmentType($("#reimbursementModalBody [name=type]").first())
-  removeHighlight()
-  var attachemntLabelElement = $("#reimbursementModalBody [for=id_attachment]");
-  var attachemntlElement = $("#reimbursementModalBody #id_attachment");
-  var attachemntParentlElement = $("#reimbursementModalBody [for=id_attachment]").parent();
+    toggleReimbursmentType($("#objectCreateModalTarget [name=type]").first());
+    {% comment %} removeHighlight(); {% endcomment %}
+    var attachemntLabelElement = $(
+        "#objectCreateModalTarget [for=id_attachment]"
+    );
+    var attachemntlElement = $("#objectCreateModalTarget #id_attachment");
+    var attachemntParentlElement = $(
+        "#objectCreateModalTarget [for=id_attachment]"
+    ).parent();
 
-  // Detach both elements from the DOM
-  attachemntLabelElement.detach();
-  attachemntlElement.detach();
-  attachemntParentlElement.html("")
-  // Append them in the desired order
-  attachemntParentlElement.append(attachemntLabelElement);
-  attachemntParentlElement.append(attachemntlElement);
-
+    // Detach both elements from the DOM
+    attachemntLabelElement.detach();
+    attachemntlElement.detach();
+    attachemntParentlElement.html("");
+    // Append them in the desired order
+    attachemntParentlElement.append(attachemntLabelElement);
+    attachemntParentlElement.append(attachemntlElement);
 </script>
+</div>
+

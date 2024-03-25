@@ -326,13 +326,13 @@
             <button
               class="oh-btn oh-btn--secondary"
               data-toggle="oh-modal-toggle"
-              data-target="#shiftRequestModal"
+              data-target="#objectCreateModal"
               {% if perms.base.add_shiftrequest or request.user|is_reportingmanager %}
               hx-get="{% url 'shift-request' %}"
               {% else %}
               hx-get="{% url 'shift-request' %}?emp_id={{request.user.employee_get.id}}"
               {% endif %}
-              hx-target="#shiftRequestTargetModal"
+              hx-target="#objectCreateModalTarget"
               >
               <ion-icon name="add-sharp" class="mr-2"></ion-icon>{% trans "Create" %}
             </button>
