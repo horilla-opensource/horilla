@@ -193,6 +193,7 @@ class AssetCategoryForm(ModelForm):
 
         model = AssetCategory
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "asset_category_name": forms.TextInput(
                 attrs={"placeholder": _("Computers."), "class": "oh-input w-100"}
