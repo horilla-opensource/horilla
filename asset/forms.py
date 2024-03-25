@@ -54,6 +54,7 @@ class AssetForm(ModelForm):
 
         model = Asset
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "asset_name": forms.TextInput(
                 attrs={"placeholder": "Macbook Pro.", "class": "oh-input w-100"}
@@ -159,6 +160,7 @@ class AssetReportForm(ModelForm):
             "title",
             "asset_id",
         ]
+        exclude = ["is_active"]
 
     # def __init__(self, *args, **kwargs):
     #     super(AssetReportForm, self).__init__(*args, **kwargs)
@@ -225,6 +227,7 @@ class AssetRequestForm(ModelForm):
 
         model = AssetRequest
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "requested_employee_id": forms.Select(
                 attrs={
@@ -299,7 +302,13 @@ class AssetAllocationForm(ModelForm):
 
         model = AssetAssignment
         fields = "__all__"
-        exclude = ["return_date", "return_condition", "assigned_date", "return_images"]
+        exclude = [
+            "return_date",
+            "return_condition",
+            "assigned_date",
+            "return_images",
+            "is_active",
+        ]
         widgets = {
             "asset_id": forms.Select(attrs={"class": "oh-select oh-select-2 "}),
             "assigned_to_employee_id": forms.Select(
@@ -311,10 +320,9 @@ class AssetAllocationForm(ModelForm):
                 },
             ),
         }
-        
+
         # def clean(self):
         #     cleaned_data = super.clean()
-            
 
 
 class AssetReturnForm(ModelForm):

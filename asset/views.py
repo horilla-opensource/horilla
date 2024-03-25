@@ -247,7 +247,7 @@ def asset_delete(request, asset_id):
     asset_list_filter = request.GET.get("asset_list")
     asset_allocation = AssetAssignment.objects.filter(asset_id=asset).first()
     if asset_list_filter:
-        # if the asset deleted is from the filterd list of asset
+        # if the asset deleted is from the filtered list of asset
         asset_under = "asset_filter"
         assets = Asset.objects.all()
         previous_data = request.GET.urlencode()
@@ -456,7 +456,7 @@ def filter_pagination_asset_category(request):
     asset_export_filter = AssetExportFilter(request.GET, queryset=Asset.objects.all())
     asset_category_paginator = Paginator(asset_category_filtered.qs, get_pagination())
     page_number = request.GET.get("page")
-    asset_categorys = asset_category_paginator.get_page(page_number)
+    asset_categories = asset_category_paginator.get_page(page_number)
     data_dict = parse_qs(previous_data)
     get_key_instances(AssetCategory, data_dict)
     asset_creation_form = AssetForm()
@@ -466,7 +466,7 @@ def filter_pagination_asset_category(request):
         "asset_creation_form": asset_creation_form,
         "asset_category_form": asset_category_form,
         "asset_export_filter": asset_export_filter,
-        "asset_categorys": asset_categorys,
+        "asset_categories": asset_categories,
         "asset_category_filter_form": asset_category_filtered.form,
         "asset_filter_form": asset_filter_form.form,
         "pg": previous_data,
@@ -618,8 +618,8 @@ def asset_request_reject(request, req_id):
     req_id (int): the id of the AssetRequest object to reject
 
     Returns:
-    HttpResponse: a redirect to the asset request list view with a success m
-        essage if the asset request is rejected successfully, or a redirect to the
+    HttpResponse: a redirect to the asset request list view with a success 
+        message if the asset request is rejected successfully, or a redirect to the
         asset request detail view with an error message if the asset request is not
         found or already rejected
     """
@@ -763,13 +763,13 @@ def asset_allocate_return(request, asset_id):
 
 
 def filter_pagination_asset_request_allocation(request):
-    asset_request_alloaction_search = request.GET.get("search")
+    asset_request_allocation_search = request.GET.get("search")
     request_field = request.GET.get("request_field")
     allocation_field = request.GET.get("allocation_field")
-    if asset_request_alloaction_search is None:
-        asset_request_alloaction_search = ""
+    if asset_request_allocation_search is None:
+        asset_request_allocation_search = ""
     employee = request.user.employee_get
-    asset_asignment = AssetAssignment.objects.all()
+    asset_assignment = AssetAssignment.objects.all()
     asset_request = filtersubordinates(
         request=request,
         perm="asset.view_assetrequest",
@@ -778,14 +778,14 @@ def filter_pagination_asset_request_allocation(request):
     ) | AssetRequest.objects.filter(requested_employee_id = request.user.employee_get)
     asset_request = asset_request.distinct()
     if request.GET.get("assign_sortby"):
-        asset_asignment = sortby(request, asset_asignment, "assign_sortby")
+        asset_assignment = sortby(request, asset_assignment, "assign_sortby")
     if request.GET.get("request_sortby"):
         asset_request = sortby(request, asset_request, "request_sortby")
 
     assets = (
-        asset_asignment.filter(assigned_to_employee_id=employee)
+        asset_assignment.filter(assigned_to_employee_id=employee)
         .exclude(return_status__isnull=False)
-        .filter(asset_id__asset_name__icontains=asset_request_alloaction_search)
+        .filter(asset_id__asset_name__icontains=asset_request_allocation_search)
     )
 
     previous_data = request.GET.urlencode()
@@ -812,7 +812,7 @@ def filter_pagination_asset_request_allocation(request):
         )
 
     asset_allocation_filtered = AssetAllocationFilter(
-        request.GET, queryset=asset_asignment
+        request.GET, queryset=asset_assignment
     ).qs
 
     if allocation_field != "" and allocation_field is not None:
@@ -1206,13 +1206,13 @@ def asset_batch_view(request):
     -  all asset batch numbers based on page
     """
 
-    asset_batchs = AssetLot.objects.all()
+    asset_batches = AssetLot.objects.all()
     previous_data = request.GET.urlencode()
-    asset_batch_numbers_search_paginator = Paginator(asset_batchs, 20)
+    asset_batch_numbers_search_paginator = Paginator(asset_batches, 20)
     page_number = request.GET.get("page")
     asset_batch_numbers = asset_batch_numbers_search_paginator.get_page(page_number)
     asset_batch_form = AssetBatchForm()
-    if asset_batchs.exists():
+    if asset_batches.exists():
         template = "batch/asset_batch_number_view.html"
     else:
         template = "batch/asset_batch_empty.html"

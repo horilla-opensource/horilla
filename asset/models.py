@@ -8,12 +8,13 @@ within an Asset Management System.
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from horilla.models import HorillaModel
 from base.models import Company
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
 
 
-class AssetCategory(models.Model):
+class AssetCategory(HorillaModel):
     """
     Represents a category for different types of assets.
     """
@@ -27,7 +28,7 @@ class AssetCategory(models.Model):
         return f"{self.asset_category_name}"
 
 
-class AssetLot(models.Model):
+class AssetLot(HorillaModel):
     """
     Represents a lot associated with a collection of assets.
     """
@@ -41,7 +42,7 @@ class AssetLot(models.Model):
         return f"{self.lot_number}"
 
 
-class Asset(models.Model):
+class Asset(HorillaModel):
     """
     Represents a asset with various attributes.
     """
@@ -88,7 +89,7 @@ class Asset(models.Model):
         return super().clean()
 
 
-class AssetReport(models.Model):
+class AssetReport(HorillaModel):
     title = models.CharField(max_length=255, blank=True, null=True)
     asset_id = models.ForeignKey(
         Asset, related_name="asset_report", on_delete=models.CASCADE
@@ -118,7 +119,7 @@ class ReturnImages(models.Model):
     image = models.FileField(upload_to="asset/return_images/", blank=True, null=True)
 
 
-class AssetAssignment(models.Model):
+class AssetAssignment(HorillaModel):
     """
     Represents the allocation and return of assets to and from employees.
     """
@@ -159,7 +160,7 @@ class AssetAssignment(models.Model):
         return f"{self.assigned_to_employee_id} --- {self.asset_id} --- {self.return_status}"
 
 
-class AssetRequest(models.Model):
+class AssetRequest(HorillaModel):
     """
     Represents a request for assets made by employees.
     """
