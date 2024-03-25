@@ -111,12 +111,6 @@ class ModelForm(forms.ModelForm):
             except:
                 pass
 
-    def save(self, request=None, *args, **kwargs):
-        if request:
-            instance = super().save(commit=False)
-            instance.save(request=request, *args, **kwargs)
-        return super().save(*args, **kwargs)
-
 
 class UserForm(ModelForm):
     """
@@ -654,6 +648,7 @@ class ActiontypeForm(ModelForm):
     class Meta:
         model = Actiontype
         fields = "__all__"
+        exclude = ["is_active"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

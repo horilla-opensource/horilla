@@ -764,7 +764,7 @@ class BonusPoint(models.Model):
             BonusPoint.objects.create(employee_id=instance)
 
 
-class Actiontype(models.Model):
+class Actiontype(HorillaModel):
     """
     Action type model
     """

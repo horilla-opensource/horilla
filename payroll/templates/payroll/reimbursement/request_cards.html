@@ -73,10 +73,10 @@
                                     {% if req.status != "approved" %}
                                     <a
                                         hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                        hx-target="#reimbursementModalBody"
+                                        hx-target="#objectCreateModalTarget"
                                         class="mr-2"
                                         data-toggle="oh-modal-toggle"
-                                        data-target="#reimbursementModal"
+                                        data-target="#objectCreateModal"
                                         ><ion-icon
                                             class="text-dark md hydrated"
                                             name="create-outline"
@@ -369,10 +369,10 @@
                                     {% if req.status != "approved" %}
                                     <a
                                         hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                        hx-target="#reimbursementModalBody"
+                                        hx-target="#objectCreateModalTarget"
                                         class="mr-2"
                                         data-toggle="oh-modal-toggle"
-                                        data-target="#reimbursementModal"
+                                        data-target="#objectCreateModal"
                                         ><ion-icon
                                             class="text-dark md hydrated"
                                             name="create-outline"
@@ -662,10 +662,10 @@
                                     {% if req.status != "approved" %}
                                     <a
                                         hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                        hx-target="#reimbursementModalBody"
+                                        hx-target="#objectCreateModalTarget"
                                         class="mr-2"
                                         data-toggle="oh-modal-toggle"
-                                        data-target="#reimbursementModal"
+                                        data-target="#objectCreateModal"
                                         ><ion-icon
                                             class="text-dark md hydrated"
                                             name="create-outline"

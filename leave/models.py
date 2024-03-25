@@ -13,6 +13,7 @@ from base import thread_local_middleware
 from base.models import Company, MultipleApprovalCondition, clear_messages
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
+from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from .methods import calculate_requested_days
 from django.core.files.storage import default_storage
@@ -139,7 +140,7 @@ WEEK_DAYS = [
 ]
 
 
-class LeaveType(models.Model):
+class LeaveType(HorillaModel):
     icon = models.ImageField(null=True, blank=True, upload_to="leave/leave_icon")
     name = models.CharField(max_length=30, null=False)
     color = models.CharField(null=True, max_length=30)
@@ -214,7 +215,7 @@ class LeaveType(models.Model):
         return self.name
 
 
-class Holiday(models.Model):
+class Holiday(HorillaModel):
     name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
@@ -228,7 +229,7 @@ class Holiday(models.Model):
         return self.name
 
 
-class CompanyLeave(models.Model):
+class CompanyLeave(HorillaModel):
     based_on_week = models.CharField(
         max_length=100, choices=WEEKS, blank=True, null=True
     )
@@ -236,7 +237,6 @@ class CompanyLeave(models.Model):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
-    objects = models.Manager()
     objects = HorillaCompanyManager(related_company_field="company_id")
 
     class Meta:
@@ -246,7 +246,7 @@ class CompanyLeave(models.Model):
         return f"{dict(WEEK_DAYS).get(self.based_on_week_day)} | {dict(WEEKS).get(self.based_on_week)}"
 
 
-class AvailableLeave(models.Model):
+class AvailableLeave(HorillaModel):
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
@@ -298,12 +298,16 @@ class AvailableLeave(models.Model):
             for i in range(1, 7):  # Calculate for the next 6 months
                 next_month = today + relativedelta(months=i)
                 if self.leave_type_id.carryforward_max:
-                    forecasted_leave[next_month.strftime("%Y-%m")] = self.available_days + min(self.leave_type_id.carryforward_max,(
-                        self.leave_type_id.total_days * i
-                    ))
+                    forecasted_leave[next_month.strftime("%Y-%m")] = (
+                        self.available_days
+                        + min(
+                            self.leave_type_id.carryforward_max,
+                            (self.leave_type_id.total_days * i),
+                        )
+                    )
                 else:
-                    forecasted_leave[next_month.strftime("%Y-%m")] = self.available_days +(
-                        self.leave_type_id.total_days * i
+                    forecasted_leave[next_month.strftime("%Y-%m")] = (
+                        self.available_days + (self.leave_type_id.total_days * i)
                     )
         return forecasted_leave
 
@@ -411,7 +415,7 @@ class AvailableLeave(models.Model):
         super().save(*args, **kwargs)
 
 
-class LeaveRequest(models.Model):
+class LeaveRequest(HorillaModel):
     employee_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
     )
@@ -451,17 +455,8 @@ class LeaveRequest(models.Model):
     requested_date = models.DateField(
         default=timezone.now, verbose_name=_("Created Date")
     )
-    created_by = models.ForeignKey(
-        Employee,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="leave_request_created",
-        verbose_name=_("Created By"),
-    )
     approved_available_days = models.FloatField(default=0)
     approved_carryforward_days = models.FloatField(default=0)
-    created_at = models.DateTimeField(auto_now_add="True")
     reject_reason = models.TextField(
         blank=True, verbose_name=_("Reject Reason"), max_length=255
     )
@@ -470,6 +465,14 @@ class LeaveRequest(models.Model):
         bases=[
             HorillaAuditInfo,
         ],
+    )
+    created_by = models.ForeignKey(
+        Employee,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="leave_request_created",
+        verbose_name=_("Created By"),
     )
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
@@ -701,7 +704,7 @@ class LeaverequestFile(models.Model):
     file = models.FileField(upload_to="leave/request_files")
 
 
-class LeaverequestComment(models.Model):
+class LeaverequestComment(HorillaModel):
     """
     LeaverequestComment Model
     """
@@ -710,11 +713,6 @@ class LeaverequestComment(models.Model):
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     files = models.ManyToManyField(LeaverequestFile, blank=True)
     comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Created At"),
-        null=True,
-    )
 
     def __str__(self) -> str:
         return f"{self.comment}"
@@ -784,7 +782,7 @@ class LeaveAllocationRequest(models.Model):
             return None
 
 
-class LeaveallocationrequestComment(models.Model):
+class LeaveallocationrequestComment(HorillaModel):
     """
     LeaveallocationrequestComment Model
     """
@@ -793,11 +791,6 @@ class LeaveallocationrequestComment(models.Model):
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     files = models.ManyToManyField(LeaverequestFile, blank=True)
     comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Created At"),
-        null=True,
-    )
 
     def __str__(self) -> str:
         return f"{self.comment}"

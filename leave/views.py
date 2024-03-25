@@ -321,8 +321,8 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                     )
                     leave_request.approved_available_days = leave_request.requested_days
                 leave_request.status = "approved"
-                leave_request.created_by = request.user.employee_get
                 available_leave.save()
+            leave_request.created_by = request.user.employee_get
             leave_request.save()
             mail_thread = LeaveMailSendThread(request, leave_request, type="request")
             mail_thread.start()
@@ -1824,8 +1824,8 @@ def user_leave_request(request, id):
                             leave_request.requested_days
                         )
                     leave_request.status = "approved"
-                    leave_request.created_by = employee
                     available_leave.save()
+                leave_request.created_by = employee
                 leave_request.save()
                 messages.success(request, _("Leave request created successfully.."))
                 with contextlib.suppress(Exception):
@@ -2674,9 +2674,9 @@ def leave_request_create(request):
                             leave_request.requested_days
                         )
                     leave_request.status = "approved"
-                    leave_request.created_by = request.user.employee_get
                     available_leave.save()
                 if save:
+                    leave_request.created_by = request.user.employee_get
                     leave_request.save()
                     messages.success(request, _("Leave request created successfully.."))
                     with contextlib.suppress(Exception):

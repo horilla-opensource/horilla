@@ -1,30 +1,42 @@
-{% load i18n %} {% load static %} {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+{% load i18n %} {% load static %}
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" id="createTitle">
+		{% trans "Create Shift Request" %}
+    </h2>
+    <button type="button" class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+
+<!-- htmx form -->
+<div class="oh-modal__dialog-body">
+  {% if messages %}
+  <div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+      <div class="oh-alert oh-alert--animated {{message.tags}}">
+        {{ message }}
+      </div>
     </div>
+    {% endfor %}
+    <script>
+      setTimeout(function () {
+        $(".oh-modal__close").click();
+      }, 1000);
+    </script>
   </div>
-  {% endfor %}
-  <script>
-    setTimeout(function () {
-      $(".oh-modal__close").click();
-    }, 1000);
-  </script>
-</div>
-{% endif %}
+  {% endif %}
 
-<div class="oh-modal__dialog-body" style="padding: 0;">
-  <form
-    hx-post="{% url 'shift-request' %}"
-    hx-target="#shiftRequestTargetModal"
-    id="addForm"
-  >
-    {{form.as_p}}
-  </form>
+  <div class="oh-modal__dialog-body" style="padding: 0;">
+    <form
+      hx-post="{% url 'shift-request' %}"
+      hx-target="#objectCreateModalTarget"
+      id="addForm"
+    >
+      {{form.as_p}}
+    </form>
+  </div>
 </div>
-
 <script>
   function toggleFunctionShiftRequestForm() {
     if ($("#id_is_permanent_shift").is(":checked")) {

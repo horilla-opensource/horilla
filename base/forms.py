@@ -439,6 +439,7 @@ class DepartmentForm(ModelForm):
 
         model = Department
         fields = "__all__"
+        exclude = ["is_active"]
 
 
 class JobPositionForm(ModelForm):
@@ -453,6 +454,7 @@ class JobPositionForm(ModelForm):
 
         model = JobPosition
         fields = "__all__"
+        exclude = ["is_active"]
 
 
 class JobRoleForm(ModelForm):
@@ -467,6 +469,7 @@ class JobRoleForm(ModelForm):
 
         model = JobRole
         fields = "__all__"
+        exclude = ["is_active"]
 
 
 class WorkTypeForm(ModelForm):
@@ -481,6 +484,7 @@ class WorkTypeForm(ModelForm):
 
         model = WorkType
         fields = "__all__"
+        exclude = ["is_active"]
 
 
 class RotatingWorkTypeForm(ModelForm):
@@ -495,7 +499,7 @@ class RotatingWorkTypeForm(ModelForm):
 
         model = RotatingWorkType
         fields = "__all__"
-        exclude = ("employee_id",)
+        exclude = ["employee_id", "is_active"]
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
         }
@@ -791,6 +795,7 @@ class EmployeeTypeForm(ModelForm):
 
         model = EmployeeType
         fields = "__all__"
+        exclude = ["is_active"]
 
 
 class EmployeeShiftForm(ModelForm):
@@ -805,7 +810,7 @@ class EmployeeShiftForm(ModelForm):
 
         model = EmployeeShift
         fields = "__all__"
-        exclude = ("days",)
+        exclude = ["days", "is_active"]
 
     def clean(self):
         full_time = self.data["full_time"]
@@ -826,6 +831,7 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
         """
 
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "start_time": DateInput(attrs={"type": "time"}),
             "end_time": DateInput(attrs={"type": "time"}),
@@ -862,7 +868,7 @@ class EmployeeShiftScheduleForm(ModelForm):
 
         model = EmployeeShiftSchedule
         fields = "__all__"
-        exclude = ["is_night_shift"]
+        exclude = ["is_night_shift", "is_active"]
         widgets = {
             "start_time": DateInput(attrs={"type": "time"}),
             "end_time": DateInput(attrs={"type": "time"}),
@@ -930,7 +936,7 @@ class RotatingShiftForm(ModelForm):
 
         model = RotatingShift
         fields = "__all__"
-        exclude = ("employee_id",)
+        exclude = ["employee_id", "is_active"]
 
 
 class RotatingShiftAssignForm(forms.ModelForm):
@@ -1758,6 +1764,7 @@ class MultipleApproveConditionForm(ModelForm):
     class Meta:
         model = MultipleApprovalCondition
         fields = "__all__"
+        exclude = ["is_active",]
 
 
 class DynamicPaginationForm(ModelForm):

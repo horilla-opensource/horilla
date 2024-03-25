@@ -3,8 +3,8 @@
     <div class="oh-btn-group p-3 justify-content-end">
       <div>
         <button class="oh-btn oh-btn--secondary" title="{% trans 'Create asset request' %}"
-                data-toggle="oh-modal-toggle" data-target="#asset-request-allocation-modal"  
-                hx-get="{% url 'asset-request-creation' %}" hx-target="#asset-request-allocation-modal-target"
+            data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+            hx-get="{% url 'asset-request-creation' %}" hx-target="#objectCreateModalTarget"
           >
           <ion-icon name="add-sharp" class="mr-2 md hydrated" role="img" aria-label="add sharp"></ion-icon>
           {% trans "Create" %}

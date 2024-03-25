@@ -1,4 +1,15 @@
 {% load i18n %}
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" id="createTitle">
+		{% trans "Create Shift Request" %}
+    </h2>
+    <button type="button" class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+
+<!-- htmx form -->
+<div class="oh-modal__dialog-body">
 {% if messages %}
 <div class="oh-alert-container">
     {% for message in messages %}
@@ -14,5 +25,4 @@
     {{form}}
     <input type="submit" value="{% trans 'Submit' %}" class='mt-4 btn oh-btn--secondary'>
 </form>
-
-
+</div>

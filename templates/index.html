@@ -402,6 +402,9 @@
 .swal2-actions {
   direction: rtl;
 }
+.oh-dropdown__menu {
+  z-index:15
+}
   </style>
 </head>
 
@@ -667,6 +670,7 @@
           </div>
 
         </div>
+      {% include "floating_button.html" %}
       </nav>
       <!-- End of Navigation -->
 
@@ -724,6 +728,65 @@
 
   <script src="{% static 'build/js/web.frontend.min.js' %}"></script>
   <script src="{% static 'htmx/htmx.min.js' %}"></script>
+  <script>
+    function toggleReimbursmentType(element) {
+      if (element.val() == 'reimbursement') {
+        $('#objectCreateModalTarget [name=attachment]').parent().show()
+        $('#objectCreateModalTarget [name=attachment]').attr("required",true)
+        $('#objectCreateModalTarget [name=leave_type_id]').parent().hide().attr("required",false)
+        $('#objectCreateModalTarget [name=cfd_to_encash]').parent().hide().attr("required",false)
+        $('#objectCreateModalTarget [name=ad_to_encash]').parent().hide().attr("required",false)
+        $('#objectCreateModalTarget [name=amount]').parent().show().attr("required",true)
+        $('#objectCreateModalTarget #availableTable').hide().attr("required",false)
+        $('#objectCreateModalTarget [name=bonus_to_encash]').parent().hide().attr("required",false)
+
+      } else if(element.val() == 'leave_encashment') {
+        $('#objectCreateModalTarget [name=attachment]').parent().hide()
+        $('#objectCreateModalTarget [name=attachment]').attr("required",false)
+        $('#objectCreateModalTarget [name=leave_type_id]').parent().show().attr("required",true)
+        $('#objectCreateModalTarget [name=cfd_to_encash]').parent().show().attr("required",true)
+        $('#objectCreateModalTarget [name=ad_to_encash]').parent().show().attr("required",true)
+        $('#objectCreateModalTarget [name=amount]').parent().hide().attr("required",false)
+        $('#objectCreateModalTarget #availableTable').show().attr("required",true)
+        $('#objectCreateModalTarget [name=bonus_to_encash]').parent().hide().attr("required",false)
+
+      } else if(element.val() == 'bonus_encashment') {
+        $('#objectCreateModalTarget [name=attachment]').parent().hide()
+        $('#objectCreateModalTarget [name=attachment]').attr("required",false)
+        $('#objectCreateModalTarget [name=leave_type_id]').parent().hide().attr("required",false)
+        $('#objectCreateModalTarget [name=cfd_to_encash]').parent().hide().attr("required",false)
+        $('#objectCreateModalTarget [name=ad_to_encash]').parent().hide().attr("required",false)
+        $('#objectCreateModalTarget [name=amount]').parent().hide().attr("required",false)
+        $('#objectCreateModalTarget #availableTable').hide().attr("required",false)
+        $('#objectCreateModalTarget [name=bonus_to_encash]').parent().show().attr("required",true)
+
+
+      }
+    }
+    function getAssignedLeave(employeeId) {
+      $.ajax({
+          type: "get",
+          url: "{% url "get-assigned-leaves" %}",
+          data: { "employeeId": employeeId },
+          dataType: "json",
+          success: function (response) {
+              let rows = ""
+              for (let index = 0; index < response.length; index++) {
+                  const element = response[index];
+                  rows = rows + `<tr class="toggle-highlight"><td>${element.leave_type_id__name
+                      }</td><td>${element.available_days}</td><td>${element.carryforward_days}</td></tr>`
+              }
+              $("#availableTableBody").html($(rows))
+              removeHighlight()
+          }
+      });
+    }
+    function removeHighlight() {
+      setTimeout(function() {
+          $(".toggle-highlight").removeClass("toggle-highlight")
+      }, 200);
+    }
+  </script>
   <script>
     document.body.addEventListener('htmx:configRequest', (event) => {
       event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';

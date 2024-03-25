@@ -30,7 +30,9 @@ def paginator_qry(qryset, page_number):
 
 @login_required
 def dashboard_shift_request(request):
-    requests = ShiftRequest.objects.filter(approved=False, canceled=False)
+    requests = ShiftRequest.objects.filter(
+        approved=False, canceled=False, employee_id__is_active=True
+    )
     requests = filtersubordinates(request, requests, "base.add_shiftrequest")
     requests_ids = json.dumps([instance.id for instance in requests])
     return render(
@@ -45,7 +47,9 @@ def dashboard_shift_request(request):
 
 @login_required
 def dashboard_work_type_request(request):
-    requests = WorkTypeRequest.objects.filter(approved=False, canceled=False)
+    requests = WorkTypeRequest.objects.filter(
+        approved=False, canceled=False, employee_id__is_active=True
+    )
     requests = filtersubordinates(request, requests, "base.add_worktyperequest")
     requests_ids = json.dumps([instance.id for instance in requests])
     return render(
@@ -117,7 +121,9 @@ def dashboard_attendance_validate(request):
 def leave_request_and_approve(request):
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
-    leave_requests = LeaveRequest.objects.filter(status="requested")
+    leave_requests = LeaveRequest.objects.filter(
+        status="requested", employee_id__is_active=True
+    )
     leave_requests = filtersubordinates(
         request, leave_requests, "leave.change_leaverequest"
     )
@@ -139,7 +145,9 @@ def leave_request_and_approve(request):
 def leave_allocation_approve(request):
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
-    allocation_reqests = LeaveAllocationRequest.objects.filter(status="requested")
+    allocation_reqests = LeaveAllocationRequest.objects.filter(
+        status="requested", employee_id__is_active=True
+    )
     allocation_reqests = filtersubordinates(
         request, allocation_reqests, "leave.view_leaveallocationrequest"
     )
@@ -178,7 +186,9 @@ def dashboard_feedback_answer(request):
 
 @login_required
 def dashboard_asset_request_approve(request):
-    asset_requests = AssetRequest.objects.filter(asset_request_status="Requested")
+    asset_requests = AssetRequest.objects.filter(
+        asset_request_status="Requested", requested_employee_id__is_active=True
+    )
 
     asset_requests = filtersubordinates(
         request,
