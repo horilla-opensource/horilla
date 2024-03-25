@@ -15,7 +15,7 @@ from horilla_widgets.forms import HorillaForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from base.forms import Form, ModelForm
-from employee.models import Employee
+from employee.models import BonusPoint, Employee
 from employee.filters import EmployeeFilter
 from leave.models import AvailableLeave, LeaveType
 from payroll.models import tax_models as models
@@ -632,6 +632,23 @@ class ReimbursementForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
+
+    def clean(self):
+        cleaned_data = super().clean()
+        available_points = BonusPoint.objects.filter(
+            employee_id=cleaned_data["employee_id"]
+        ).first()
+        if cleaned_data["type"] =="bonus_encashment":
+            if available_points.points < cleaned_data["bonus_to_encash"]:
+                raise forms.ValidationError(
+                    {"bonus_to_encash": "Not enough bonus points to redeem"}
+                )
+            if cleaned_data["bonus_to_encash"] <= 0:
+                raise forms.ValidationError(
+                    {
+                        "bonus_to_encash": "Points must be greater than zero to redeem."
+                    }
+                )
 
     def save(self, commit: bool = ...) -> Any:
         is_new = not self.instance.pk
