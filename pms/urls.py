@@ -4,16 +4,24 @@ from . import models
 
 
 urlpatterns = [
+
+    # objectives
+    path("objective-list-view/", views.objective_list_view, name="objective-list-view"),
     path("objective-creation/", views.objective_creation, name="objective-creation"),
+    path(
+        "objective-update/<int:obj_id>", views.objective_update, name="objective-update"
+    ),
+    path("add-assignees/<int:obj_id>", views.add_assignees, name="add-assignees"),
+
+    # key results
+    path("key-result-creation", views.key_result_create, name="key-result-creation"),
+
     path(
         "objective-list-search",
         views.objective_list_search,
         name="objective-list-search",
     ),
-    path("objective-list-view/", views.objective_list_view, name="objective-list-view"),
-    path(
-        "objective-update/<int:obj_id>", views.objective_update, name="objective-update"
-    ),
+
     path(
         "objective-delete/<int:obj_id>", views.objective_delete, name="objective-delete"
     ),
@@ -284,7 +292,6 @@ urlpatterns = [
         views.change_employee_objective_status,
         name="change-employee-objective-status",
     ),
-    path("add-assignees/<int:obj_id>", views.add_assignees, name="add-assignees"),
     path(
         "employee-key-result-creation/<int:emp_obj_id>",
         views.employee_keyresult_creation,
@@ -305,7 +312,6 @@ urlpatterns = [
         views.employee_keyresult_update_status,
         name="employee-keyresult-update-status",
     ),
-    path("key-result-creation", views.key_result_create, name="key-result-creation"),
     path(
         "key-result-current-value-update",
         views.key_result_current_value_update,

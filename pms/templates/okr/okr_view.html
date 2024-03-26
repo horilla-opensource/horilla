@@ -131,7 +131,62 @@
             });
         targetEl.classList.add("oh-tabs__content--active");
     }
-}
+  }
+
+  //create key result dynamically
+  function keyResultChange(element) {
+    
+    var kr = $(element).val();
+    // Check if 'create_new_key_result' exists in the list
+    if (kr.includes('create_new_key_result')) {
+      var objData = $('#objectiveForm').serialize()
+      $("[name=dyanamic_create]").val(objData)
+      $("#kRModal").show();
+    }
+
+
+  }
+    {% comment %} function saveKeyResult(){
+      var title=$('#kRModal').find('#id_title').val()
+      var description = $('#kRModal').find("#id_description").val()
+      var progress_type = $('#kRModal').find("#id_progress_type").val()
+      var target_value = $('#kRModal').find("#id_target_value").val()
+      var duration =$('#kRModal').find('#id_duration').val()
+      $.ajax({
+        type: "post",
+        url: "{% url 'key-result-creation' %}",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          "title": title,
+          "description":description,
+          'progress_type':progress_type,
+          "target_value":target_value,
+          'duration':duration
+              },
+              success: function (response) {
+                if (response.errors === "no_error") {
+                  var newOption = $('<option selected></option>').val(response.kr_id).text(response.title)
+                  $("#kRModal").hide();
+                  $("#id_key_result_id option[value='create_new_key_result']").before(newOption);
+                  $("#id_key_result_id option[value='create_new_key_result']").prop('selected',false)
+                }else{
+
+                } 
+              }
+              });
+    } {% endcomment %}
+    function removeCreateKR(){
+      $("#id_key_result_id option[value='create_new_key_result']").prop('selected',false)
+      // Select the li element
+      var listItem = $('li.select2-selection__choice[title="Create new Key result"]');
+
+      // Select the remove span within the li element
+      var removeSpan = listItem.find('span.select2-selection__choice__remove');
+
+      // Trigger a click event on the remove span
+      removeSpan.click();
+
+    }
 
 </script>
 {% endblock content %}

@@ -44,9 +44,9 @@ class KeyResult(models.Model):
         blank=False, null=False, max_length=255, verbose_name="Description"
     )
     progress_type = models.CharField(
-        max_length=60, null=True, blank=True, choices=PROGRESS_CHOICES
+        max_length=60, default='%', choices=PROGRESS_CHOICES
     )
-    target_value = models.IntegerField(null=True, blank=True, default=0)
+    target_value = models.IntegerField(null=True, blank=True, default=100)
     duration = models.IntegerField(null=True, blank=True)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
     company_id = models.ForeignKey(
@@ -84,7 +84,7 @@ class Objective(models.Model):
         KeyResult,
         blank=True,
         related_name="objective",
-        verbose_name="Key results",
+        verbose_name="Default Key results",
     )
     duration = models.IntegerField(default=1, validators=[MinValueValidator(0)])
     created_at = models.DateField(auto_now_add=True)
@@ -320,7 +320,7 @@ class EmployeeKeyResult(models.Model):
         # if self.employee_id is None:
         #     self.employee_id = self.employee_objective_id.employee_id
         # if self.target_value != 0:
-        if not self.pk:
+        if not self.pk and not self.current_value:
             self.current_value = self.start_value
         self.update_kr_progress()
         super().save(*args, **kwargs)

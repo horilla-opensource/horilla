@@ -89,6 +89,18 @@ class ObjectiveForm(BaseForm):
         widget=forms.DateInput(attrs={"class": "oh-input w-100", "type": "date"}),
     )
     add_assignees = forms.BooleanField(required=False)
+    # default_key_results = forms.ModelMultipleChoiceField(
+    #     queryset=KeyResult.objects.all(),
+    #     required=False,
+    #     widget=forms.SelectMultiple(
+    #         attrs={
+    #             "class": "oh-select oh-select-2 select2-hidden-accessible",
+    #             "onchange": "keyResultChange($(this))",
+    #         }
+    #     ),
+    #     # widget=forms.SelectMultiple(attrs={'style': 'display:none;'})
+    # )
+
     # archive = forms.BooleanField()
 
     class Meta:
@@ -102,6 +114,7 @@ class ObjectiveForm(BaseForm):
             "managers",
             "description",
             "duration",
+            'key_result_id',
             "add_assignees",
             "assignees",
             # 'period',
@@ -109,14 +122,20 @@ class ObjectiveForm(BaseForm):
             # 'end_date',
             # 'archive',
         ]
-        # widgets = {
+        widgets = {
+            "key_result_id":forms.SelectMultiple(
+                attrs={
+                    "class": "oh-select oh-select-2 select2-hidden-accessible",
+                    "onchange": "keyResultChange($(this))",
+                }
+            ),
         #     "start_date": forms.DateInput(
         #         attrs={"class": "oh-input w-100", "type": "date"}
         #     ),
         #     "end_date": forms.DateInput(
         #         attrs={"class": "oh-input w-100", "type": "date"}
         #     ),
-        # }
+        }
 
     def __init__(self, *args, **kwargs):
         """
@@ -142,6 +161,13 @@ class ObjectiveForm(BaseForm):
                 label="Assignees",
             )
         reload_queryset(self.fields)
+        self.fields["key_result_id"].choices = list(
+            self.fields["key_result_id"].choices
+        )
+        self.fields["key_result_id"].choices.append(
+            ("create_new_key_result", "Create new Key result")
+        )
+
         # self.fields['start_date'].widget.attrs.update({"style":"display:none;"})
         # self.fields['assignees'].widget.attrs.update({"style":"display:none;"})
 
@@ -384,7 +410,33 @@ class KRForm(MF):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        duration = cleaned_data.get('duration')
+        target_value = cleaned_data.get('target_value')
+        progress_type = cleaned_data.get('progress_type')
 
+        if duration is None or duration == '':
+            raise ValidationError({
+                'duration':'This field is required'
+            })
+        if target_value is None or target_value == '':
+            raise ValidationError({
+                'target_value':'This field is required'
+            })
+        if duration <= 0:
+            raise ValidationError({
+                'duration':'Duration cannot be less than or equal to zero'
+            })
+        if target_value <= 0:
+            raise ValidationError({
+                'target_value':'Duration cannot be less than or equal to zero'
+            })
+        if progress_type == '%' and target_value > 100 :
+            raise ValidationError({
+                'target_value':'Target value cannot be greater than zero for progress type "percentage"'
+            })
 
 class KeyResultForm(ModelForm):
     """

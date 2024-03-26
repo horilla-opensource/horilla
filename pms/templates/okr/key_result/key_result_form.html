@@ -1,0 +1,50 @@
+{% load static %}{% load i18n %}
+<!-- start of messages -->
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    setTimeout(function () {
+    $('#kRModal').find(".oh-modal__close--custom").click();
+    }, 1000);
+  </script>
+</div>
+{% endif %} 
+<!-- end of messages -->
+
+<div class="oh-modal__dialog">
+    <!-- for creating key result -->
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" >
+        {% trans "Create Key Result" %}
+      </h2>
+      <button type="button" class="oh-modal__close--custom" 
+        onclick="removeCreateKR();$('#kRModal').hide();"
+        {% if messages %}
+        hx-get="{{redirect_url}}"
+        hx-target="#objectivesTarget"
+        {% endif %}
+
+      >
+        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" >
+        <form 
+            hx-target = "#kRModal"
+            hx-post="{% url 'key-result-creation' %}"
+            id ="krForm"
+        >
+
+            <input type="hidden" name="dyanamic_create" id="">
+            {% csrf_token %}
+            {{k_form.as_p}}
+        </form>
+    </div>
+  </div>
