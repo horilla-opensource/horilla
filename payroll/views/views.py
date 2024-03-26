@@ -1472,22 +1472,22 @@ def create_payrollrequest_comment(request, payroll_id):
     This method renders form and template to create Reimbursement request comments
     """
     from payroll.forms.forms import (
-        ReimbursementrequestCommentForm,
+        ReimbursementRequestCommentForm,
     )
 
     payroll = Reimbursement.objects.filter(id=payroll_id).first()
     emp = request.user.employee_get
-    form = ReimbursementrequestCommentForm(
+    form = ReimbursementRequestCommentForm(
         initial={"employee_id": emp.id, "request_id": payroll_id}
     )
 
     if request.method == "POST":
-        form = ReimbursementrequestCommentForm(request.POST)
+        form = ReimbursementRequestCommentForm(request.POST)
         if form.is_valid():
             form.instance.employee_id = emp
             form.instance.request_id = payroll
             form.save()
-            form = ReimbursementrequestCommentForm(
+            form = ReimbursementRequestCommentForm(
                 initial={"employee_id": emp.id, "request_id": payroll_id}
             )
             messages.success(request, _("Comment added successfully!"))

@@ -164,9 +164,9 @@ class WorkRecordForm(ModelForm):
         model = WorkRecord
 
 
-class ReimbursementrequestCommentForm(ModelForm):
+class ReimbursementRequestCommentForm(ModelForm):
     """
-    ReimbursementrequestCommentForm form
+    ReimbursementRequestCommentForm form
     """
 
     class Meta:
@@ -176,6 +176,7 @@ class ReimbursementrequestCommentForm(ModelForm):
 
         model = ReimbursementrequestComment
         fields = ("comment",)
+        exclude = ["is_active"]
 
 
 class EncashmentGeneralSettingsForm(ModelForm):
