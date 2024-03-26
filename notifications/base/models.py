@@ -321,7 +321,10 @@ def notify_handler(verb, **kwargs):
 
         if kwargs and EXTRA_DATA:
             newnotify.data = kwargs
-
+            newnotify.verb_ar = newnotify.data.get("verb_ar", None)
+            newnotify.verb_de = newnotify.data.get("verb_de", None)
+            newnotify.verb_es = newnotify.data.get("verb_es", None)
+            newnotify.verb_fr = newnotify.data.get("verb_fr", None)
         newnotify.save()
         new_notifications.append(newnotify)
 
