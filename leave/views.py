@@ -2198,16 +2198,13 @@ def employee_leave(request):
     """
     today = date.today()
     employees = []
-    leave_requests = LeaveRequest.objects.filter(
-        Q(start_date__lte=today)
-        & Q(end_date__gte=today)
-        & Q(status="approved")
-        & Q(employee_id__is_active=True)
-    )
+    leave_requests = LeaveRequest.objects.filter(status="approved")
+    
     for leave_request in leave_requests:
-        if leave_request.employee_id.__str__() not in employees:
-            employees.append(leave_request.employee_id.__str__())
-    return JsonResponse({"employees": employees})
+        if today in leave_request.requested_dates():
+            employees.append(leave_request.employee_id)
+    return render(request,"leave/on_leave.html",{'employees':employees})
+
 
 
 @login_required
