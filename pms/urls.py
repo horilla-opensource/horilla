@@ -15,7 +15,12 @@ urlpatterns = [
 
     # key results
     path("key-result-creation", views.key_result_create, name="key-result-creation"),
-
+     path(
+        "key-reult-remove/<int:obj_id>/<int:kr_id>",
+        views.key_result_remove,
+        name="key-result-remove",
+    ),
+    
     path(
         "objective-list-search",
         views.objective_list_search,
@@ -58,11 +63,6 @@ urlpatterns = [
         "objective-manager-remove/<int:obj_id>/<int:manager_id>",
         views.objective_manager_remove,
         name="objective-manager-remove",
-    ),
-    path(
-        "key-reult-remove/<int:obj_id>/<int:kr_id>",
-        views.key_result_remove,
-        name="key-result-remove",
     ),
     path(
         "assignees-remove/<int:obj_id>/<int:emp_id>",

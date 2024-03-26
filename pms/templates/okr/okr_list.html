@@ -30,7 +30,7 @@
 
 {% if not request.GET.dashboard %}
     <!-- start of selection buttons -->
-    <div
+    {% comment %} <div
       class="oh-checkpoint-badge text-success mb-2"
       id="selectAllObjectives"
       style="cursor: pointer"
@@ -43,7 +43,7 @@
       style="cursor: pointer"
     >
       {% trans "Unselect All Objectives" %}
-    </div>
+    </div> {% endcomment %}
     {% comment %} <div
       class="oh-checkpoint-badge text-info mb-2"
       id="exportObjectives"
@@ -190,7 +190,7 @@
                                                                         {% if "perms.pms.delete_keyresult" %}                                                                    
                                                                         <a 
                                                                             hx-confirm="{% trans 'Are you sure want to remove this key result?' %}"
-                                                                            {% comment %} hx-post="{% url 'key-result-remove' kr.employee_objective_id.id kr.id %}"  {% endcomment %}
+                                                                            hx-post="{% url 'key-result-remove' objective.id kr.id %}" 
                                                                             title="{% trans "Remove" %}" hx-swap="outerHTML" 
                                                                             hx-target="#keyResultContainer{{kr.id}}" 
                                                                             class="oh-user-panel__remove" 
@@ -451,7 +451,7 @@
                                                                             />
                                                                         </div>
                                                                         <span class="oh-profile__name oh-text--dark" title="{{kr.key_result_id}}"
-                                                                        >{{kr.key_result_id|truncatechars:15}}.</span
+                                                                        >{{kr|truncatechars:15}}.</span
                                                                         >
                                                                     </div>
                                                                 </span>
