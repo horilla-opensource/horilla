@@ -32,22 +32,21 @@
                         {% endif %}
                     </div>
                     <div>
-                        {% if request.user|is_reportingmanager or perms.pms.add_employeeobjective %}
                         {% comment %} <div class="d-flex" onclick="event.stopPropagation()"> {% endcomment %}
                             
                             <div class="oh-btn-group">
-                                {% if request.user|is_reportingmanager or perms.pms.view_employeekeyresult %}
+                                {% comment %} {% if request.user|is_reportingmanager or perms.pms.view_employeekeyresult %} {% endcomment %}
                                     <a 
                                         hx-get='{% url "view-employee-objective" emp_objective.id %}' 
                                         hx-target="#objectDetailsModalTarget" 
                                         data-toggle="oh-modal-toggle" 
                                         data-target="#objectDetailsModal" 
                                         type="button" title="{% trans 'View' %}" 
-                                        class="oh-btn oh-btn--light-bkg p-3 w-50"  onclick="event.stopPropagation()"
+                                        class="oh-btn oh-btn--light-bkg p-3 w-100"  onclick="event.stopPropagation()"
                                     > 
                                         <ion-icon name="eye-outline"></ion-icon>
                                     </a>
-                                {% endif %}
+                                {% comment %} {% endif %} {% endcomment %}
                                 {% if request.user|is_reportingmanager or perms.pms.view_employeekeyresult %}
                                     <a 
                                         hx-get='{% url "objective-detailed-view-activity" emp_objective.id %}' 
@@ -71,6 +70,8 @@
                                         <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
                                     </button>
                                 {% endif %}
+                                {% if request.user|is_reportingmanager or perms.pms.add_employeeobjective %}
+
                                 <div class="" onclick="event.stopPropagation()">
                                     <div class="oh-dropdown" x-data="{show: false}">
                                         <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" title={% trans "Actions" %}>
@@ -129,9 +130,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% endif %}
+
                                     
                             </div>
-                        {% endif %}
                     </div>
                 </div>
             </div> 
