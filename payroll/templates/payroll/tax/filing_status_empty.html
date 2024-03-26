@@ -13,9 +13,9 @@
                   <div>
                       <a  class="oh-btn oh-btn--secondary oh-btn--shadow"
                           data-toggle="oh-modal-toggle"
-                          data-target="#FilingStatusModal"
+                          data-target="#objectCreateModal"
                           hx-get = "{% url 'create-filing-status' %}"
-                          hx-target="#FilingStatusFormTarget"
+                          hx-target="#objectCreateModalTarget"
                       > 
                           <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans "Create" %}</a>
                   </div>
@@ -23,12 +23,6 @@
           </div>
 
 </main>
-<div class="oh-modal" id="FilingStatusModal" role="dialog" aria-labelledby="FilingStatusModal" aria-hidden="true">
-  <div class="oh-modal__dialog " style="max-width: 550px;" id="FilingStatusFormTarget"></div>
-</div>
-<div class="oh-modal" id="TaxBracketModal" role="dialog" aria-labelledby="TaxBracketModal" aria-hidden="true">
-    <div class="oh-modal__dialog" style="max-width: 550px" id="TaxBracketFormTarget"></div>
-</div>
 
 <div
 class="oh-wrapper-main"

@@ -11,10 +11,11 @@ from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 from base.models import Company
 
+from horilla.models import HorillaModel
 from payroll.models.models import FilingStatus
 
 
-class PayrollSettings(models.Model):
+class PayrollSettings(HorillaModel):
     """
     Payroll settings model"""
 
@@ -34,7 +35,7 @@ class PayrollSettings(models.Model):
         return super().save(*args, **kwargs)
 
 
-class TaxBracket(models.Model):
+class TaxBracket(HorillaModel):
     """
     TaxBracket model
     """
@@ -85,14 +86,14 @@ class TaxBracket(models.Model):
             tax_rate=self.tax_rate,
         ).exclude(pk=self.pk)
         if existing_bracket.exists():
-            raise ValidationError("This tax bracket already exists")
+            raise ValidationError(_("This tax bracket already exists"))
 
         if self.max_income is None:
             self.max_income = math.inf
 
         if self.min_income >= self.max_income:
             raise ValidationError(
-                {"max_income": "Maximum income must be greater than minimum income."}
+                {"max_income": _("Maximum income must be greater than minimum income.")}
             )
 
         existing_brackets = TaxBracket.objects.filter(
@@ -112,14 +113,3 @@ class TaxBracket(models.Model):
                         )
                     }
                 )
-
-
-# class FederalTax(models.Model):
-#     """
-#     FederalTax models
-#     """
-
-#     filing_status_id = models.ForeignKey(
-#         FilingStatus, models.CASCADE, verbose_name=_("Filing Status")
-#     )
-#     taxable_gross = models.IntegerField(null=False, blank=False)

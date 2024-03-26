@@ -37,10 +37,9 @@
           <a
             class="oh-btn oh-btn--light-bkg w-100"
             data-toggle="oh-modal-toggle"
-            data-target="#TaxBracketModal"
+            data-target="#objectUpdateModal"
             hx-get="{% url 'tax-bracket-update' tax_bracket_id=tax_bracket.id %}"
-            onclick="event.stopPropagation(); document.querySelector('#TaxBracketModal').classList.add('oh-modal--show')"
-            hx-target="#TaxBracketFormTarget"
+            hx-target="#objectUpdateModalTarget"
             title="{% trans 'Update' %}"
           >
             <ion-icon

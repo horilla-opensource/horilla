@@ -92,6 +92,7 @@ class FilingStatusForm(ModelForm):
 
         model = FilingStatus
         fields = "__all__"
+        exclude = ["is_active"]
 
 
 class TaxBracketForm(ModelForm):
@@ -102,6 +103,7 @@ class TaxBracketForm(ModelForm):
 
         model = TaxBracket
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "filing_status_id": forms.Select(
                 attrs={"class": "oh-select  oh-select-2 select2-hidden-accessible"}

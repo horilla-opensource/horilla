@@ -24,7 +24,7 @@
   </button>
   <form
     hx-post="{%url 'tax-bracket-create' filing_status_id=form.initial.filing_status_id %}"
-    hx-target="#TaxBracketFormTarget"
+    hx-target="#objectCreateModalTarget"
   >
     {% csrf_token %} {{ form.as_p }}
     <div class="oh-modal__dialog-footer">
@@ -34,23 +34,3 @@
     </div>
   </form>
 </div>
-{% comment %}
-<script>
-  // Function to display the pop-up message
-  function showPopupMessage(message) {
-    alert(message);
-  }
-
-  // Event listener for form submission
-  document
-    .getElementById("TaxBracketFormTarget")
-    .addEventListener("submit", function (event) {
-      var maxIncomeInput = document.getElementById("id_max_income");
-      if (maxIncomeInput.value === "") {
-        showPopupMessage(
-          "The value for maximum income will be set to infinity."
-        );
-      }
-    });
-</script>
-{% endcomment %}

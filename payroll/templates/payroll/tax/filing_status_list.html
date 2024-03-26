@@ -49,10 +49,10 @@
                     <a
                       class="oh-dropdown__link oh-dropdown__link"
                       data-toggle="oh-modal-toggle"
-                      data-target="#TaxBracketModal"
+                      data-target="#objectCreateModal"
                       hx-get="{% url 'tax-bracket-create' filing_status_id=filing_status.id %}"
                       onclick="event.stopPropagation()"
-                      hx-target="#TaxBracketFormTarget"
+                      hx-target="#objectCreateModalTarget"
                       >{% trans "Create" %}
                     </a>
                   </li>
@@ -62,10 +62,10 @@
                     <a
                       class="oh-dropdown__link oh-dropdown__link"
                       data-toggle="oh-modal-toggle"
-                      data-target="#FilingStatusModal"
+                      data-target="#objectUpdateModal"
                       hx-get="{% url 'filing-status-update' filing_status_id=filing_status.id %}"
                       onclick="event.stopPropagation()"
-                      hx-target="#FilingStatusFormTarget"
+                      hx-target="#objectUpdateModalTarget"
                     >
                       {% trans "Update" %}</a
                     >

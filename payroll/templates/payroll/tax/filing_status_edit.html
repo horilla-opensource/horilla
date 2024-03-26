@@ -31,7 +31,7 @@
   </button>
   <form
     hx-post="{%url 'filing-status-update' form.instance.id %}"
-    hx-target="#FilingStatusFormTarget"
+    hx-target="#objectUpdateModalTarget"
   >
     {% csrf_token %} {{ form.as_p }}
     <div class="oh-modal__dialog-footer">

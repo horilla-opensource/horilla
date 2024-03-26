@@ -24,14 +24,16 @@
     data-dismiss="oh-modal"
     aria-label="Close"
     data-toggle="oh-modal-toggle"
-    hx-get="{% url 'filing-status-search' %}"
-    hx-target="#FilingStatusList"
+    {% if messages %}
+      hx-get="{% url 'filing-status-search' %}"
+      hx-target="#FilingStatusList"
+    {% endif %}
   >
     <ion-icon name="close-outline"></ion-icon>
   </button>
   <form
     hx-post="{%url 'create-filing-status' %}"
-    hx-target="#FilingStatusFormTarget"
+    hx-target="#objectCreateModalTarget"
   >
     {% csrf_token %} {{ form.as_p }}
     <div class="oh-modal__dialog-footer">
