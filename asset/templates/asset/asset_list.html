@@ -15,6 +15,7 @@
 {% endif %}
 <!-- end of messages -->
 {% include 'filter_tags.html' %}
+<div class="oh-sticky-table oh-sticky-table--no-overflow mb-5" id="assetList{{asset_category.id}}">
 <div class="oh-sticky-table__table" data-count="{{total_count}}">
   <div class="oh-sticky-table__thead">
     <div class="oh-sticky-table__tr">
@@ -120,8 +121,16 @@
               title='{% trans "Asset Report" %}'> 
               <ion-icon name="document-attach-outline"></ion-icon>
             </a>
+            {% else %}
+            <a 
+              class="oh-btn oh-btn--light-bkg w-100 oh-btn--disabled" 
+              onclick="event.stopPropagation()"
+              id="oh-btn-asset-update-modal"
+              title='{% trans "Asset Report" %}'> 
+              <ion-icon name="document-attach-outline"></ion-icon>
+            </a>
             {% endif %}
-            
+
             {% if perms.asset.delete_asset %}
             <form action="{% url 'asset-delete' asset_id=asset.id %}?{{pg}}" 
             onclick="event.stopPropagation()"
@@ -139,6 +148,7 @@
     </div>
     {% endfor %}
   </div>
+</div>
 </div>
 
 <!-- pagination start -->

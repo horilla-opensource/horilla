@@ -25,7 +25,7 @@
           class="oh-accordion-meta__header oh-accordion-meta__header--custom" 
           data-target="#assetCategory{{asset_category.id}}" 
           hx-get="{%url 'asset-list' cat_id=asset_category.id %}" 
-          hx-target="#assetList{{asset_category.id}}">
+          hx-target="#assetCategory{{asset_category.id}}">
             <div class="d-flex">
                 <span 
                   class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" 
@@ -81,8 +81,8 @@
         </div>
         <div class="oh-accordion-meta__body d-none" id="assetCategory{{asset_category.id}}">
           <!-- htmx asset list loading here -->
-          <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5" id="assetList{{asset_category.id}}">
-          </div>
+          {% comment %} <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5" id="assetList{{asset_category.id}}">
+          </div> {% endcomment %}
         </div>
         {% endfor %}
         

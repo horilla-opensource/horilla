@@ -162,17 +162,9 @@ class AssetReportForm(ModelForm):
         ]
         exclude = ["is_active"]
 
-    # def __init__(self, *args, **kwargs):
-    #     super(AssetReportForm, self).__init__(*args, **kwargs)
-    #     self.fields['documents'].queryset = AssetDocuments.objects.all()
-
-    # def as_p(self, *args, **kwargs):
-    #     """
-    #     Render the form fields as HTML table rows with Bootstrap styling.
-    #     """
-    #     context = {"form": self}
-    #     table_html = render_to_string("attendance_form.html", context)
-    #     return table_html
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['asset_id'].widget.attrs['disabled'] = 'disabled'
 
 
 class AssetCategoryForm(ModelForm):
