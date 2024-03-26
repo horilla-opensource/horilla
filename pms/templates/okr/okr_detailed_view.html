@@ -310,66 +310,62 @@
         <div class="oh-activity-sidebar__body" id="activityContainer">
         </div>
       </div>
-    <script>
-        
-        function enlargeImage(src) {
-            var enlargeImageContainer = $('#enlargeImageContainer');
-            enlargeImageContainer.empty();
-        style = "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white"
-            var enlargedImage = $('<iframe>').attr({'src': src,'style': style,});
-        var name =$('<span>').text(src.split('/').pop().replace(/_/g, " "))
-            enlargeImageContainer.append(enlargedImage);
-            enlargeImageContainer.append(name);
-            setTimeout(function() {
-            enlargeImageContainer.show();
-    
-        const iframe = document.querySelector("iframe").contentWindow; 
-        var iframe_document = iframe.document
-        iframe_image = iframe_document.getElementsByTagName('img')[0]
-        $(iframe_image).attr("style","width:100%; height:100%;")
-    
-            }, 100);
-        }
-        
-        function hideEnlargeImage() {
-                var enlargeImageContainer = $('#enlargeImageContainer');
-                enlargeImageContainer.empty();
-        }
-        function keyResultChange(element) {
-          
-            var kr = $(element).val();
-            if (kr == 'create_new_key_result'){
-              $('#kRModal').show()
-            }
+<script>
+  $(document).ready(function () {
+    $(".oh-accordion-meta__header").click(function () {
+      var target = $(this).find(".oh-accordion-meta__body");
+      $(this).toggleClass("oh-accordion-meta__header--show");
+      $(target).toggleClass("d-none");
+    });
+  });
 
-        }
-        function saveKeyResult(){
-          var title=$('#id_title').val()
-          var description = $("#id_description").val()
-          var progress_type = $("#id_progress_type").val()
-          var target_value = $("#id_target_value").val()
-          var duration =$('#id_duration').val()
-          $.ajax({
-            type: "post",
-            url: "{% url 'key-result-creation' %}",
-            data: {
-              csrfmiddlewaretoken: getCookie("csrftoken"),
-              "title": title,
-              "description":description,
-              'progress_type':progress_type,
-              "target_value":target_value,
-			  'duration':duration
-            },
-            success: function (response) {
-              if (response.errors === "no_error") {
-              var newOption = $('<option selected></option>').val(response.kr_id).text(response.title)
-              $("#kRModal").hide();
-              $("#id_key_result_id option[value='create_new_key_result']").before(newOption);
-              $("#id_key_result_id option[value='create_new_key_result']").prop('selected',false)
-              }    
-            }
-            });
-        }
+  function enlargeImage(src) {
+        var enlargeImageContainer = $('#enlargeImageContainer');
+        enlargeImageContainer.empty();
+    style = "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white"
+        var enlargedImage = $('<iframe>').attr({'src': src,'style': style,});
+    var name =$('<span>').text(src.split('/').pop().replace(/_/g, " "))
+        enlargeImageContainer.append(enlargedImage);
+        enlargeImageContainer.append(name);
+        setTimeout(function() {
+        enlargeImageContainer.show();
+
+    const iframe = document.querySelector("iframe").contentWindow; 
+    var iframe_document = iframe.document
+    iframe_image = iframe_document.getElementsByTagName('img')[0]
+    $(iframe_image).attr("style","width:100%; height:100%;")
+
+        }, 100);
+  }
+        
+  function hideEnlargeImage() {
+          var enlargeImageContainer = $('#enlargeImageContainer');
+          enlargeImageContainer.empty();
+  }
+  //create key result dynamically
+  function keyResultChange(element) {
+    
+    var kr = $(element).val();
+    // Check if 'create_new_key_result' exists in the list
+    if (kr.includes('create_new_key_result')) {
+      var objData = $('#objectiveForm').serialize()
+      $("[name=dyanamic_create]").val(objData)
+      $("#kRModal").show();
+    }
+  }
+    
+  function removeCreateKR(){
+    $("#id_key_result_id option[value='create_new_key_result']").prop('selected',false)
+    // Select the li element
+    var listItem = $('li.select2-selection__choice[title="Create new Key result"]');
+
+    // Select the remove span within the li element
+    var removeSpan = listItem.find('span.select2-selection__choice__remove');
+
+    // Trigger a click event on the remove span
+    removeSpan.click();
+
+  }
 
 		function progress (element) {
 			var currentValue = $(element).val()
@@ -444,5 +440,5 @@
         });
         
         
-    </script>
+</script>
 {% endblock %}

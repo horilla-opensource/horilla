@@ -151,30 +151,6 @@ def objective_creation(request):
     context = {"objective_form": objective_form, "p_form": PeriodForm(),"k_form": KRForm()}
     return render(request, "okr/objective_creation.html", context=context)
 
-
-@login_required
-def key_result_create(request):
-    """
-    This method renders form and template to create Ticket type
-    """
-    form = KRForm()
-    redirect_url = None
-    if request.method == "POST":
-        form = KRForm(request.POST)
-        if form.is_valid():
-            instance = form.save()
-            obj_data = request.POST.get("dyanamic_create")
-            obj_data = obj_data.replace("create_new_key_result", str(instance.id))
-            messages.success(
-                request,
-                _("Key result %(key_result)s created successfully") % {"key_result": instance},
-            )
-            # Redirect to the desired URL with encoded query parameters
-            redirect_url = f'/pms/objective-creation?{obj_data}'
-            form = KRForm()
-    return render(request,'okr/key_result/key_result_form.html',{'k_form':form,'redirect_url':redirect_url})
-
-
 @login_required
 @hx_request_required
 @manager_can_enter(perm="pms.change_employeeobjective")
@@ -188,6 +164,8 @@ def objective_update(request, obj_id):
     """
     instance = Objective.objects.get(id=obj_id)
     objective_form = ObjectiveForm(instance=instance)
+    if request.GET.get('key_result_id') is not None:
+        objective_form = ObjectiveForm(request.GET)
     if request.method == "POST":
         objective_form = ObjectiveForm(request.POST, instance=instance)
         if objective_form.is_valid():
@@ -251,6 +229,30 @@ def objective_update(request, obj_id):
     context = {"objective_form": objective_form,"k_form": KRForm(), "update": True}
 
     return render(request, "okr/objective_creation.html", context)
+
+# key result
+@login_required
+def key_result_create(request):
+    """
+    This method renders form and template to create Ticket type
+    """
+    form = KRForm()
+    redirect_url = None
+    if request.method == "POST":
+        form = KRForm(request.POST)
+        if form.is_valid():
+            instance = form.save()
+            obj_data = request.POST.get("dyanamic_create")
+            obj_data = obj_data.replace("create_new_key_result", str(instance.id))
+            messages.success(
+                request,
+                _("Key result %(key_result)s created successfully") % {"key_result": instance},
+            )
+            # Redirect to the desired URL with encoded query parameters
+            redirect_url = f'/pms/objective-creation?{obj_data}'
+            form = KRForm()
+    return render(request,'okr/key_result/key_result_form.html',{'k_form':form,'redirect_url':redirect_url})
+
 
 @login_required
 def add_assignees(request, obj_id):
@@ -349,7 +351,7 @@ def objective_manager_remove(request, obj_id, manager_id):
 @login_required
 @permission_required("pms.delete_keyresult")
 def key_result_remove(request, obj_id, kr_id):
-    objective = get_object_or_404(EmployeeObjective, id=obj_id)
+    objective = get_object_or_404(Objective, id=obj_id)
     objective.key_result_id.remove(kr_id)
     return HttpResponse("")
 
@@ -634,11 +636,12 @@ def objective_detailed_view_comment(request, id):
 @login_required
 def kr_table_view(request, emp_objective_id):
     objective_id = request.GET.get("objective_id")
-    emp_objectives = EmployeeObjective.objects.get(id=emp_objective_id)
-    krs = emp_objectives.employee_key_result.all()
+    emp_objective = EmployeeObjective.objects.get(id=emp_objective_id)
+    krs = emp_objective.employee_key_result.all()
     context = {
         "krs": krs,
         "key_result_status": EmployeeKeyResult.STATUS_CHOICES,
+        'emp_objective':emp_objective
     }
     template = "okr/kr_list.html"
     return render(request, template, context)

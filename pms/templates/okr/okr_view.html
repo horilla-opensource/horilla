@@ -146,35 +146,7 @@
 
 
   }
-    {% comment %} function saveKeyResult(){
-      var title=$('#kRModal').find('#id_title').val()
-      var description = $('#kRModal').find("#id_description").val()
-      var progress_type = $('#kRModal').find("#id_progress_type").val()
-      var target_value = $('#kRModal').find("#id_target_value").val()
-      var duration =$('#kRModal').find('#id_duration').val()
-      $.ajax({
-        type: "post",
-        url: "{% url 'key-result-creation' %}",
-        data: {
-          csrfmiddlewaretoken: getCookie("csrftoken"),
-          "title": title,
-          "description":description,
-          'progress_type':progress_type,
-          "target_value":target_value,
-          'duration':duration
-              },
-              success: function (response) {
-                if (response.errors === "no_error") {
-                  var newOption = $('<option selected></option>').val(response.kr_id).text(response.title)
-                  $("#kRModal").hide();
-                  $("#id_key_result_id option[value='create_new_key_result']").before(newOption);
-                  $("#id_key_result_id option[value='create_new_key_result']").prop('selected',false)
-                }else{
-
-                } 
-              }
-              });
-    } {% endcomment %}
+    
     function removeCreateKR(){
       $("#id_key_result_id option[value='create_new_key_result']").prop('selected',false)
       // Select the li element
