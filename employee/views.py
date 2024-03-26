@@ -2844,7 +2844,7 @@ def dashboard_employee(request):
         _("Active"),
         _("In-Active"),
     ]
-    employees = Employee.objects.all()
+    employees = Employee.objects.filter()
     response = {
         "dataSet": [
             {
