@@ -323,14 +323,14 @@
         <li class="oh-tabs__tab" data-target="#tab_1">
           {% trans "Asset Request" %}
           <a
-            href="#"
             class="link-danger oh-btn oh-btn--secondary-outline"
-            role=""
+            role="button"
+            onclick="event.stopPropagation()"
             data-toggle="oh-modal-toggle"
             data-target="#objectCreateModal"
-            hx-get="{%url 'asset-request-creation'%}"
+            hx-get="{% url 'asset-request-creation' %}"
             hx-target="#objectCreateModalTarget"
-            title='{% trans "Create request" %}'
+            title="{% trans 'Create request' %}"
           >
             <ion-icon
               name="add-outline"
@@ -344,14 +344,14 @@
         <li class="oh-tabs__tab" data-target="#tab_2">
           {% trans "Asset Allocation" %}
           <a
-            href="#"
             class="oh-btn oh-btn--secondary-outline"
             role="button"
             data-toggle="oh-modal-toggle"
+            onclick="event.stopPropagation()"
             data-target="#asset-request-allocation-modal"
-            hx-get="{%url 'asset-allocate-creation' %}"
+            hx-get="{% url 'asset-allocate-creation' %}"
             hx-target="#asset-request-allocation-modal-target"
-            title='{% trans "Create allocation" %}'
+            title="{% trans 'Create allocation' %}"
             >
             <ion-icon
               name="add-outline"
