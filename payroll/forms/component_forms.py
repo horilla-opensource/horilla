@@ -50,6 +50,7 @@ class AllowanceForm(forms.ModelForm):
 
         model = payroll.models.models.Allowance
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "one_time_date": forms.DateTimeInput(attrs={"type": "date"}),
         }
@@ -117,6 +118,7 @@ class DeductionForm(forms.ModelForm):
 
         model = payroll.models.models.Deduction
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "one_time_date": forms.DateTimeInput(attrs={"type": "date"}),
         }
@@ -220,6 +222,7 @@ class PayslipForm(ModelForm):
             "start_date",
             "end_date",
         ]
+        exclude = ["is_active"]
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}),
             "end_date": forms.DateInput(attrs={"type": "date"}),
@@ -470,6 +473,7 @@ class LoanAccountForm(ModelForm):
     class Meta:
         model = LoanAccount
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "provided_date": forms.DateTimeInput(attrs={"type": "date"}),
             "installment_start_date": forms.DateTimeInput(attrs={"type": "date"}),
@@ -541,6 +545,7 @@ class ReimbursementForm(ModelForm):
     class Meta:
         model = Reimbursement
         fields = "__all__"
+        exclude = ["is_active"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

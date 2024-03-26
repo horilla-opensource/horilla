@@ -4,34 +4,36 @@ Used to register models
 """
 
 import calendar
-from collections.abc import Iterable
 from datetime import date, datetime, timedelta
-from typing import Any
 from django import forms
 from django.db import models
 from django.dispatch import receiver
 from django.contrib import messages
-from django.core.validators import MinValueValidator
 from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.db.models.signals import pre_save, pre_delete
 from django.http import QueryDict
+from horilla.models import HorillaModel
+from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from asset.models import Asset
 from base import thread_local_middleware
-from employee.models import BonusPoint, EmployeeWorkInformation
-from employee.models import Employee, Department, JobPosition
-from base.models import Company, EmployeeShift, WorkType, JobRole
-from base.horilla_company_manager import HorillaCompanyManager
-from attendance.models import (
-    validate_time_format,
+from base.models import (
+    Company,
+    EmployeeShift,
+    WorkType,
+    JobRole,
+    Department,
+    JobPosition,
 )
+from base.horilla_company_manager import HorillaCompanyManager
+from employee.models import BonusPoint, EmployeeWorkInformation, Employee
 from attendance.models import (
     Attendance,
     strtime_seconds,
+    validate_time_format,
 )
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.models import LeaveRequest, LeaveType
 
 
@@ -74,7 +76,7 @@ def get_date_range(start_date, end_date):
     return date_list
 
 
-class FilingStatus(models.Model):
+class FilingStatus(HorillaModel):
     """
     FilingStatus model
     """
@@ -111,7 +113,7 @@ class FilingStatus(models.Model):
         return str(self.filing_status)
 
 
-class Contract(models.Model):
+class Contract(HorillaModel):
     """
     Contract Model
     """
@@ -234,7 +236,6 @@ class Contract(models.Model):
         verbose_name=_("Notice Period"),
     )
     contract_document = models.FileField(upload_to="uploads/", null=True, blank=True)
-    is_active = models.BooleanField(default=True)
     deduct_leave_from_basic_pay = models.BooleanField(
         default=True,
         verbose_name=_("Deduct From Basic Pay"),
@@ -255,7 +256,6 @@ class Contract(models.Model):
     )
 
     note = models.TextField(null=True, blank=True, max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -279,7 +279,7 @@ class Contract(models.Model):
             and Contract.objects.filter(
                 employee_id=self.employee_id, contract_status="active"
             )
-            .exclude(id=self.id)
+            .exclude(id=self.pk)
             .count()
             >= 1
         ):
@@ -291,7 +291,7 @@ class Contract(models.Model):
             and Contract.objects.filter(
                 employee_id=self.employee_id, contract_status="draft"
             )
-            .exclude(id=self.id)
+            .exclude(id=self.pk)
             .count()
             >= 1
         ):
@@ -344,7 +344,7 @@ class Contract(models.Model):
             and Contract.objects.filter(
                 employee_id=self.employee_id, contract_status="draft"
             )
-            .exclude(id=self.id)
+            .exclude(id=self.pk)
             .count()
             >= 1
         ):
@@ -512,6 +512,9 @@ class OverrideAttendance(Attendance):
 
     @receiver(post_save, sender=Attendance)
     def attendance_post_save(sender, instance, **_kwargs):
+        """
+        Function triggered after saving an instance of Attendance.
+        """
         work_record = (
             WorkRecord()
             if not WorkRecord.objects.filter(
@@ -704,7 +707,7 @@ class MultipleCondition(models.Model):
     )
 
 
-class Allowance(models.Model):
+class Allowance(HorillaModel):
     """
     Allowance model
     """
@@ -1025,7 +1028,7 @@ class Allowance(models.Model):
             super().save()
 
 
-class Deduction(models.Model):
+class Deduction(HorillaModel):
     """
     Deduction model
     """
@@ -1217,9 +1220,11 @@ class Deduction(models.Model):
     other_conditions = models.ManyToManyField(
         MultipleCondition, blank=True, editable=False
     )
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def installment_payslip(self):
+        """
+        Method to retrieve the payslip associated with this installment.
+        """
         payslip = Payslip.objects.filter(installment_ids=self).first()
         return payslip
 
@@ -1299,7 +1304,7 @@ class Deduction(models.Model):
             super().save()
 
 
-class Payslip(models.Model):
+class Payslip(HorillaModel):
     """
     Payslip model
     """
@@ -1331,7 +1336,6 @@ class Payslip(models.Model):
     sent_to_employee = models.BooleanField(null=True, default=False)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
     installment_ids = models.ManyToManyField(Deduction, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -1395,6 +1399,11 @@ class Payslip(models.Model):
         )
 
     def get_payslip_title(self):
+        """
+        Method to generate the title for a payslip.
+        Returns:
+            str: The title for the payslip.
+        """
         if self.group_name:
             return self.group_name
         return (
@@ -1413,7 +1422,7 @@ class Payslip(models.Model):
         ]
 
 
-class LoanAccount(models.Model):
+class LoanAccount(HorillaModel):
     """
     This modal is used to store the loan Account details
     """
@@ -1449,6 +1458,13 @@ class LoanAccount(models.Model):
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def get_installments(self):
+        """
+        Method to calculate installment schedule for the loan.
+
+        Returns:
+            dict: A dictionary representing the installment schedule with installment dates as keys
+            and corresponding installment amounts as values.
+        """
         loan_amount = self.loan_amount
         total_installments = self.installments
         installment_amount = loan_amount / total_installments
@@ -1474,6 +1490,9 @@ class LoanAccount(models.Model):
         return installment_schedule
 
     def delete(self, *args, **kwargs):
+        """
+        Method to delete the instance and associated objects.
+        """
         self.deduction_ids.all().delete()
         if self.allowance_id is not None:
             self.allowance_id.delete()
@@ -1484,6 +1503,9 @@ class LoanAccount(models.Model):
         return
 
     def installment_ratio(self):
+        """
+        Method to calculate the ratio of paid installments to total installments in loan account.
+        """
         total_installments = self.installments
         installment_paid = Payslip.objects.filter(
             installment_ids__in=self.deduction_ids.all()
@@ -1552,7 +1574,7 @@ class ReimbursementMultipleAttachment(models.Model):
     objects = models.Manager()
 
 
-class Reimbursement(models.Model):
+class Reimbursement(HorillaModel):
     """
     Reimbursement Model
     """
@@ -1610,8 +1632,6 @@ class Reimbursement(models.Model):
     allowance_id = models.ForeignKey(
         Allowance, on_delete=models.SET_NULL, null=True, editable=False
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True, editable=False)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def save(self, *args, **kwargs) -> None:
@@ -1628,7 +1648,7 @@ class Reimbursement(models.Model):
             self.employee_id = request.user.employee_get
         if self.type == "reimbursement" and self.attachment is None:
             raise ValidationError({"attachment": "This field is required"})
-        elif self.type == "leave_encashment" and self.leave_type_id is None:
+        if self.type == "leave_encashment" and self.leave_type_id is None:
             raise ValidationError({"leave_type_id": "This field is required"})
         if self.type == "leave_encashment":
             if self.status == "requested":
@@ -1686,7 +1706,10 @@ class Reimbursement(models.Model):
                             if request:
                                 messages.info(
                                     request,
-                                    "The employee don't have that much leaves to encash in CFD / Available days",
+                                    _(
+                                        "The employee don't have that much leaves \
+                                        to encash in CFD / Available days"
+                                    ),
                                 )
 
                 if proceed:
@@ -1726,7 +1749,7 @@ class Reimbursement(models.Model):
         return super().delete(*args, **kwargs)
 
 
-# changing sattus canceled to reject for existing reimbursement
+# changing status canceled to reject for existing reimbursement
 try:
     if Reimbursement.objects.filter(status="canceled").exists():
         Reimbursement.objects.filter(status="canceled").update(status="rejected")
@@ -1734,19 +1757,14 @@ except:
     pass
 
 
-class ReimbursementrequestComment(models.Model):
+class ReimbursementrequestComment(HorillaModel):
     """
-    ReimbursementrequestComment Model
+    ReimbursementRequestComment Model
     """
 
     request_id = models.ForeignKey(Reimbursement, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Created At"),
-        null=True,
-    )
 
     def __str__(self) -> str:
         return f"{self.comment}"
@@ -1772,3 +1790,4 @@ class EncashmentGeneralSettings(models.Model):
 
     bonus_amount = models.IntegerField(default=1)
     leave_amount = models.IntegerField(blank=True, null=True, verbose_name="Amount")
+    objects = models.Manager()
