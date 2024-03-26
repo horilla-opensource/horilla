@@ -127,9 +127,7 @@
                                                         <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
                                                             onclick="window.location.href = `{% url 'objective-detailed-view' objective.id %}`" 
                                                         >                                         
-                                                            <div class="oh-sticky-table__sd oh-permission-table--toggle {% if rec.closed %} row-status--red
-                                                                {% elif not rec.closed %} row-status--yellow  
-                                                                {% endif %}" 
+                                                            <div class="oh-sticky-table__sd oh-permission-table--toggle " 
                                                                 data-toggle-count
                                                             >
                                                                 <div class="d-flex align-items-center">
@@ -174,7 +172,7 @@
                                                                 
                                                             </div>
                                                             <div data-cell-index="2" class="oh-sticky-table__td">
-                                                                {% for kr in objective.id|kr_count %}
+                                                                {% for kr in objective.key_result_id.all %}
                                                                 <div id="keyResultContainer{{kr.id}}">
                                                                     <span class="oh-user-panel oh-collapse-panel" data-type="user" >
                                                                         <div class="oh-profile oh-profile--md">
@@ -186,13 +184,13 @@
                                                                                 />
                                                                             </div>
                                                                             <span class="oh-profile__name oh-text--dark" title="{{kr.key_result_id}}"
-                                                                            >{{kr.key_result_id|truncatechars:15}}</span
+                                                                            >{{kr|truncatechars:15}}</span
                                                                             >
                                                                         </div>
                                                                         {% if "perms.pms.delete_keyresult" %}                                                                    
                                                                         <a 
                                                                             hx-confirm="{% trans 'Are you sure want to remove this key result?' %}"
-                                                                            hx-post="{% url 'key-result-remove' kr.employee_objective_id.id kr.id %}" 
+                                                                            {% comment %} hx-post="{% url 'key-result-remove' kr.employee_objective_id.id kr.id %}"  {% endcomment %}
                                                                             title="{% trans "Remove" %}" hx-swap="outerHTML" 
                                                                             hx-target="#keyResultContainer{{kr.id}}" 
                                                                             class="oh-user-panel__remove" 
@@ -204,7 +202,7 @@
                                                                     </span>
                                                                 </div>
                                                                 {% endfor %}
-                                                                <span class="count-span">{{objective.id|kr_count|length}} {% trans "Key results" %}</span>
+                                                                <span class="count-span">{{objective.key_result_id.all|length}} {% trans "Key results" %}</span>
                                                             </div> 
                                                             <div data-cell-index="1" class="oh-sticky-table__td">
                                                                 {% for emp_objective in objective.employee_objective.all %}
