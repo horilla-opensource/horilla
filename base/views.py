@@ -3892,7 +3892,7 @@ def clear_notification(request):
     This method is used to clear notification
     """
     try:
-        request.user.notifications.read().delete()
+        request.user.notifications.unread().delete()
         messages.success(request, _("Unread notifications removed."))
     except Exception as e:
         messages.error(request, e)

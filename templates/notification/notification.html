@@ -18,35 +18,10 @@
       </span>
     </a>
 
-    <div 
-    id="showallnotificationbtn"
-    class="oh-navbar__notification-tray"
-    x-data="{markRead: false, visible: true}" 
-    x-show="open" 
-    style="display: none;"
+    <div id="showallnotificationbtn" class="oh-navbar__notification-tray"
+      x-data="{markRead: false, visible: true}"  x-show="open" style="display: none;"
       @click.outside="open = false">
-      <div class="oh-navbar__notification-head">
-        <span class="oh-navbar__notification-head-title">{% trans "Notifications" %}</span>
-        <div class="oh-navbar__notification-links" x-show="visible">
-          <a 
-          hx-get="{% url 'read-notifications' %}" 
-          hx-swap="none"
-          nx-target="#notificationContainer"
-          class="oh-navbar__notification-tray-link mr-2"
-           x-show="!markRead" @click="markRead = true">
-            <ion-icon name="checkmark-done-outline" class="mr-1"></ion-icon> {% trans "Mark as read" %}
-          </a>
-          <a  
-          class="oh-navbar__notification-tray-link oh-navbar__notification-tray-link--danger" 
-          hx-get="{% url 'clear-notifications' %}"
-          hx-target="#notificationContainer"
-          {% comment %} onclick="return confirm('Do you want to clear all the notifications?')" {% endcomment %}
-           @click="visible = false">
-            <ion-icon name="close-outline" class="mr-1"></ion-icon> {% trans "Clear" %}
-          </a>
-        </div>
-      </div>
-      <div class="oh-navbar__notification-body" x-show="visible" id="notificationContainer">
+      <div id="notificationContainer">
         {% include 'notification/notification_items.html' %}
       </div>
       <div class="oh-navbar__notification-footer" x-show="visible">

@@ -1,5 +1,6 @@
-{% load i18n %} 
+{% load i18n %}  {% load static %}
 {% get_current_language as LANGUAGE_CODE %} 
+
 {% if messages %}
 <div class="oh-alert-container">
   {% for message in messages %}
@@ -7,6 +8,29 @@
   {% endfor %}
 </div>
 {% endif %}
+
+<div class="oh-navbar__notification-head">
+  <span class="oh-navbar__notification-head-title">{% trans "Notifications" %}</span>
+  {% if notifications %}
+    <div class="oh-navbar__notification-links" x-show="visible">
+      <a class="oh-navbar__notification-tray-link mr-2"
+        hx-get="{% url 'read-notifications' %}" 
+        hx-target="#notificationContainer"
+        x-show="!markRead" @click="markRead = true">
+        <ion-icon name="checkmark-done-outline" class="mr-1"></ion-icon> {% trans "Mark as read" %}
+      </a>
+      <a class="oh-navbar__notification-tray-link oh-navbar__notification-tray-link--danger" 
+        hx-get="{% url 'clear-notifications' %}"
+        hx-target="#notificationContainer"
+        >
+        <ion-icon name="close-outline" class="mr-1"></ion-icon> {% trans "Clear" %}
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<div class="oh-navbar__notification-body" x-show="visible">
+{% if notifications %}
 <ul class="oh-navbar__nofication-list">
   {% for notification in notifications %}
     <a class="oh-navbar__notification-item" href="{{notification.data.redirect}}#"
@@ -92,6 +116,14 @@
     </a>
   {% endfor %}
 </ul>
+{% else %}
+<div class="oh-navbar__notification-empty">
+  <img src="{% static 'images/ui/happy.svg' %}" alt="All caught up" width="50" height="50" loading="lazy" />
+  <span class="oh-navbar__notification-empty-title">{% trans "All caught up!" %}</span>
+  <span class="oh-navbar__notification-empty-desc">{% trans "You have no new notifications at the moment." %}</span>
+</div>
+{% endif %}
+</div>
 <script>
   $(document).ready(function () {
     $(".oh-navbar__notification-item").on("click", function (event) {

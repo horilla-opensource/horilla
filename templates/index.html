@@ -508,7 +508,7 @@
             ></ion-icon>
         </span>
         <span class="oh-activity-sidebar__title"> {% trans "All Notifications" %}</span>
-        <a class="delete-all-link" hx-target="#allNotificationBody" hx-post="{% url 'delete-all-notifications'%}">{% trans "Delete all" %}</a>    
+        <a class="delete-all-link" hx-target="#allNotificationBody" hx-post="{% url 'delete-all-notifications'%}">{% trans "Clear all" %}</a>    
       </div>
       <div class="oh-activity-sidebar__body" id="allNotificationBody">
         {% include "notification/all_notifications.html" %}
