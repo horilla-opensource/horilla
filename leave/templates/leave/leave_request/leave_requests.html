@@ -69,6 +69,7 @@
                   <div class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=start_date" hx-target="#leaveRequest" >{% trans "Start Date" %}</div>
                   <div class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=end_date" hx-target="#leaveRequest" >{% trans "End Date" %}</div>
                   <div class="oh-sticky-table__th {% if request.sort_option.order == '-requested_days' %}arrow-up {% elif request.sort_option.order == 'requested_days' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=requested_days" hx-target="#leaveRequest" >{% trans "Requested Days" %}</div>
+                  <div class="oh-sticky-table__th" style="width:115px;">{% trans "Leave Clash" %}</div>
                   <div class="oh-sticky-table__th {% if request.sort_option.order == '-status' %}arrow-up {% elif request.sort_option.order == 'status' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=status" hx-target="#leaveRequest" >{% trans "Status" %}</div>
                   {% if  not dashboard %}
                       <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
@@ -111,6 +112,19 @@
                   <div class="oh-sticky-table__td dateformat_changer">{{leave_request.start_date}}</div>
                   <div class="oh-sticky-table__td dateformat_changer">{{leave_request.end_date}}</div>
                   <div class="oh-sticky-table__td">{{leave_request.requested_days}}</div>
+                  <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+
+                    <div class="d-flex" style="justify-content:center;" data-target="#clashViewModal" data-toggle="oh-modal-toggle" hx-get="{% url 'view-clashes' leave_request.id  %}?leave_request_id={{leave_request.id}}" hx-target="#clashViewModalBody">
+                      <i class="material-icons" style="font-size:33px;">groups</i>
+                        <span
+                        class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-1"
+                        >
+                          {{ leave_request.leave_clashes_count }}
+                        </span>
+                    </div>
+
+                  </div>
+
                   <div class="oh-sticky-table__td">
                     {% if leave_request.multiple_approvals and leave_request.status == "requested" %}
                       <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" title="{% for manager in leave_request.multiple_approvals.managers %}{{ manager }}{% if not forloop.last %} , {% endif %}{% endfor %}">
@@ -273,12 +287,23 @@
   <div class="oh-modal__dialog" style="max-width: 596px" id="penaltyModalBody"></div>
 </div>
 
+
+<div class="oh-modal" id="clashViewModal" role="dialog" aria-hidden="true" style="z-index:50;">
+  <div class="oh-modal__dialog" style="max-width: 1200px;">
+    <div class="oh-modal__dialog-header">
+      <h3 class="oh-main__titlebar-title fw-bold ">{% trans "Clashed Leave Requests" %}</h3>
+      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+    <div class="oh-modal__dialog-body" id="clashViewModalBody" style="overflow-x:auto;"></div>
+  </div>
+</div>
+
 <div class="oh-modal" id="penaltyViewModal" role="dialog" aria-hidden="true">
   <div class="oh-modal__dialog" style="max-width: 900px">
     <div class="oh-modal__dialog-header">
       <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
     </div>
-    <div class="oh-modal__dialog-body" id="penaltyViewModalBody"></div>
+    <div class="oh-modal__dialog-body" id="penaltyViewModalBody" style="overflow-x:auto;"></div>
   </div>
 </div>
 

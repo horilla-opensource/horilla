@@ -1,0 +1,115 @@
+{% load static %} {% load i18n %} 
+{% if records %}
+  <div class="oh-sticky-table__table mt-3">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__td fw-bold" style="width: 180px;">{% trans "Employee" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Clashed Due To" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
+        <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Requested Days" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Confirmation" %}</div>
+      </div>
+    </div>
+    <div class="oh-sticky-table__tbody">
+      {% for leave in records %}
+        <div class="oh-sticky-table__tr" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25" hx-get="{% url 'one-request-view' leave.id %}?instances_ids={{requests_ids}}" hx-target="#objectDetailsModalW25Target">
+          <div class="oh-sticky-table__td">
+            
+            <div class="oh-profile oh-profile--md">
+                  <div class="oh-profile__avatar mr-1">
+                      <img src="{{leave.employee_id.get_avatar}}" class="oh-profile__image"
+                          alt="" />
+                  </div>
+                  <span class="oh-profile__name oh-text--dark">{{leave.employee_id}}</span>
+              </div>
+
+          </div>
+          <div class="oh-sticky-table__td">{{ leave.leave_type_id }}</div>
+          <div class="oh-sticky-table__td">
+            {% if leave in clashed_due_to_department and leave in clashed_due_to_job_position %}
+              <div align="center" style="background-color: rgba(229, 79, 56, 0.13); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 102%;">{% trans "Same Department & Job Position" %}</div>
+            {% elif leave in clashed_due_to_department %}
+              <div align="center" style="background-color: rgb(229 56 226 / 13%); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 102%;">{% trans "Same Department" %}</div>
+            {% elif leave in clashed_due_to_job_position %}
+              <div align="center" style="background-color: rgb(56 89 229 / 13%); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 102%;">{% trans "Same Job Position" %}</div>
+            {% endif %}
+          </div>
+          <div class="oh-sticky-table__td dateformat_changer">{{ leave.start_date }}</div>
+          <div class="oh-sticky-table__td dateformat_changer">{{ leave.end_date }}</div>
+          <div class="oh-sticky-table__td">{{ leave.requested_days }}</div>
+          <div class="oh-sticky-table__td">
+            {% if leave.multiple_approvals and leave.status == "requested" %}
+              <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" title="{% for manager in leave.multiple_approvals.managers %}{{ manager }}{% if not forloop.last %} , {% endif %}{% endfor %}">
+                {{leave.multiple_approvals.approved|length}} / {{leave.multiple_approvals.managers|length}} {% trans "Approved" %}
+              </div>
+            {% else %}
+              {{leave.get_status_display}}
+            {% endif %}
+          </div>
+          <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+              <div class="oh-btn-group" >
+                {% if leave.status == 'cancelled' %}
+                  {% if leave.end_date >= current_date %}
+                    <a type="submit" data-toggle="oh-modal-toggle"
+                        data-target="#rejectModal" hx-get="{% url 'request-cancel' leave.id %}" hx-target="#rejectForm"  title="{% trans 'Approve cancellation request' %}"
+                        class="oh-btn oh-btn--warning w-100";>
+                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                    </a>
+                  {% else %}
+                    <a type="submit" href="#" title="{% trans 'Approve cancellation request' %}"
+                        class="oh-btn oh-btn--secondary oh-btn--disabled
+                        w-100">
+                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                    </a>
+                  {% endif %}
+                {% else %}
+                  {% if leave.is_approved and leave.status == 'requested' and leave.end_date >= current_date %}
+                    <a href="{% url 'request-approve' leave.id %}" title="{% trans 'Approve' %}"
+                        class="oh-btn oh-btn--success w-100" {% if leave.end_date.month > current_date.month %} onclick = "leaveRequestConfirm('This leave request is for the month of {{leave.start_date|date:'F'}}. Approval depends on the {{leave.employee_id.get_full_name}} having available leave days for this month.',event);" {% else %}  onclick = "return confirm('Do You really want to Approve this request?')"; {% endif %}>
+                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                    </a>
+                  {% else %}
+                    <a type="submit" href="#" title="{% trans 'Approve' %}"
+                        class="oh-btn oh-btn--success oh-btn--disabled
+                        w-100">
+                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                    </a>
+                  {% endif %}
+                  {% if leave.status != 'rejected' and leave.end_date >= current_date %}
+                    <a type="submit" data-toggle="oh-modal-toggle"
+                        data-target="#rejectModal" hx-get="{% url 'request-cancel' leave.id %}" hx-target="#rejectForm" title="{% trans 'Reject' %}"
+                        class="oh-btn oh-btn--danger w-100">
+                        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                    </a>
+                  {% else %}
+                    <a type="submit" href="#" title="{% trans 'Reject' %}"
+                        class="oh-btn oh-btn--danger oh-btn--disabled w-100" >
+                        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                    </a>
+                  {% endif %}
+                {% endif %}
+              </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% else %}
+    <div class="oh-sticky-table__table mt-3">
+      <div class="oh-404__subtitle">
+        <img
+          style="width: 190px; height: 190px"
+          src="{% static 'images/ui/argument.png' %}"
+          class="oh-404__image mb-4"
+          alt="Page not found. 404."
+        />
+        <h5 class="oh-404__subtitle">
+          {% trans "No clashed requestes found" %}
+        </h5>
+      </div>
+    </div>
+    
+{% endif %}

@@ -360,4 +360,7 @@ urlpatterns = [
         views.delete_allocation_comment_file,
         name="delete-allocation-comment-file",
     ),
+    path(
+        "view-clashes/<int:leave_request_id>/", views.view_clashes, name="view-clashes"
+    ),
 ]

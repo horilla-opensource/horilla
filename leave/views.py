@@ -9,7 +9,7 @@ from datetime import datetime, timedelta, date
 from collections import defaultdict
 from urllib.parse import parse_qs
 from django.db.models import Q
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.db.models import ProtectedError
 from django.utils.translation import gettext as __
 from django.core.paginator import Paginator
@@ -3814,3 +3814,42 @@ def delete_allocation_comment_file(request):
             "request_id": leave_id,
         },
     )
+
+
+@login_required
+def view_clashes(request, leave_request_id):
+    """
+    This method is used to filter or view the leave clashes
+    """
+    record = get_object_or_404(LeaveRequest, id=leave_request_id)
+    overlapping_requests = LeaveRequest.objects.filter(
+        Q(employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id) |
+        Q(employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id),
+        start_date__lte=record.end_date,
+        end_date__gte=record.start_date,
+    ).exclude(id=leave_request_id)
+
+    clashed_due_to_department = overlapping_requests.filter(
+        employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
+    )
+
+    clashed_due_to_job_position = overlapping_requests.filter(
+        employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
+    )
+
+    leave_request_filter = LeaveRequestFilter(request.GET, overlapping_requests).qs
+    leave_request_filter = paginator_qry(
+        leave_request_filter, request.GET.get("page")
+    )
+
+    requests_ids = json.dumps(
+        [instance.id for instance in leave_request_filter.object_list]
+    )
+
+    return render(request, "leave/leave_request/leave_clashes.html", {
+                    "records": overlapping_requests, 
+                   "current_date": date.today(),
+                    "requests_ids": requests_ids,
+                    "clashed_due_to_department": clashed_due_to_department,
+                    "clashed_due_to_job_position": clashed_due_to_job_position,
+        })

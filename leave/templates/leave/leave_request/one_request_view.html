@@ -7,7 +7,7 @@
       {% trans "Details" %}
     </span>
     <button class="oh-modal__close" aria-label="Close">
-      <ion-icon name="close-outline"></ion-icon>
+      <button  class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');" ><ion-icon  name="close-outline"></ion-icon></button>
     </button>
 </div>
 <div class="oh-modal__dialog-body  oh-modal__dialog-relative">

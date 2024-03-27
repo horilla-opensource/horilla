@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import math
 import operator
 import sys
+from django.db.models import Q
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -439,6 +440,7 @@ class LeaveRequest(HorillaModel):
     requested_days = models.FloatField(
         blank=True, null=True, verbose_name=_("Requested Days")
     )
+    leave_clashes_count = models.IntegerField(default=0, verbose_name=_("Leave Clashes Count"))
     description = models.TextField(verbose_name=_("Description"), max_length=255)
     attachment = models.FileField(
         null=True,
@@ -575,7 +577,12 @@ class LeaveRequest(HorillaModel):
             self.exclude_all_leaves()
         else:
             self.exclude_leaves()
+
+        self.leave_clashes_count = self.count_leave_clashes()
+
+        self.update_leave_clashes_count()
         super().save(*args, **kwargs)
+
         department_id = self.employee_id.employee_work_info.department_id
         requested_days = self.requested_days
         applicable_condition = False
@@ -692,12 +699,49 @@ class LeaveRequest(HorillaModel):
 
     def delete(self, *args, **kwargs):
         request = getattr(thread_local_middleware._thread_locals, "request", None)
+        leave_requests_to_update = LeaveRequest.objects.all().exclude(id=self.id)
+
         if self.status == "requested":
+            """
+            Override the delete method to update the leave clashes count of related leave requests.
+            """
             super().delete(*args, **kwargs)
+
+            for leave_request in leave_requests_to_update:
+                leave_request.leave_clashes_count = leave_request.count_leave_clashes()
+                leave_request.save()
+
         else:
             if request:
                 clear_messages(request)
                 messages.warning(request, "The leave request cannot be deleted.")
+
+
+    def update_leave_clashes_count(self):
+        """
+        Update the leave clashes count for all leave requests.
+        """
+        leave_requests_to_update = LeaveRequest.objects.all().exclude(id=self.id)
+
+        for leave_request in leave_requests_to_update:
+            leave_request.leave_clashes_count = leave_request.count_leave_clashes()
+        
+        # Bulk update leave clashes count for all leave requests
+        LeaveRequest.objects.bulk_update(leave_requests_to_update, ['leave_clashes_count'])
+
+    def count_leave_clashes(self):
+        """
+        Method to count leave clashes where this employee's leave request overlaps
+        with other employees' requested dates.
+        """
+        overlapping_requests = LeaveRequest.objects.exclude(id=self.id).filter(
+            Q(employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id) |
+            Q(employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id),
+            start_date__lte=self.end_date,
+            end_date__gte=self.start_date,
+        )
+
+        return overlapping_requests.count()
 
 
 class LeaverequestFile(models.Model):
