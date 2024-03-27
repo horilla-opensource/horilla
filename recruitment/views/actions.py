@@ -111,7 +111,7 @@ def note_delete(request, note_id):
     """
     try:
         note = StageNote.objects.get(id=note_id)
-        cand_id = note.candidate_id.id
+        candidate_id = note.candidate_id.id
         note.delete()
         messages.success(request, _("Note deleted"))
     except StageNote.DoesNotExist:
@@ -119,7 +119,7 @@ def note_delete(request, note_id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this note."))
 
-    return redirect("view-note", cand_id=cand_id)
+    return redirect("view-note", cand_id=candidate_id)
 
 
 @login_required
@@ -129,7 +129,6 @@ def note_delete_individual(request, note_id):
     This method is used to delete the stage note
     """
     note = StageNote.objects.get(id=note_id)
-    cand_id = note.candidate_id
     note.delete()
     messages.success(request, _("Note deleted."))
     return HttpResponse("<script>window.location.reload()</script>")

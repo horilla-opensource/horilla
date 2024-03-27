@@ -16,6 +16,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from horilla_audit.methods import get_diff
 from horilla.decorators import logger
@@ -186,7 +187,7 @@ def create_initial_stage(sender, instance, created, **kwargs):
         initial_stage.save()
 
 
-class Stage(models.Model):
+class Stage(HorillaModel):
     """
     Stage model
     """
@@ -210,7 +211,6 @@ class Stage(models.Model):
         max_length=20, choices=stage_types, default="interview"
     )
     sequence = models.IntegerField(null=True, default=0)
-    is_active = models.BooleanField(default=True)
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
 
     def __str__(self):
@@ -378,7 +378,7 @@ class Candidate(models.Model):
 
     def get_avatar(self):
         """
-        Method will retun the api to the avatar or path to the profile image
+        Method will rerun the api to the avatar or path to the profile image
         """
         url = (
             f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
@@ -474,7 +474,7 @@ class Candidate(models.Model):
         ordering = ["sequence"]
 
 
-class RejectReason(models.Model):
+class RejectReason(HorillaModel):
     """
     RejectReason
     """
@@ -492,7 +492,7 @@ class RejectReason(models.Model):
         return self.title
 
 
-class RejectedCandidate(models.Model):
+class RejectedCandidate(HorillaModel):
     """
     RejectedCandidate
     """
@@ -507,7 +507,9 @@ class RejectedCandidate(models.Model):
         RejectReason, verbose_name="Reject reason", blank=True
     )
     description = models.TextField(max_length=255)
-    objects = HorillaCompanyManager(related_company_field="candidate_id__recruitment_id__company_id")
+    objects = HorillaCompanyManager(
+        related_company_field="candidate_id__recruitment_id__company_id"
+    )
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -526,7 +528,7 @@ class StageFiles(models.Model):
         return self.files.name.split("/")[-1]
 
 
-class StageNote(models.Model):
+class StageNote(HorillaModel):
     """
     StageNote model
     """
@@ -534,18 +536,17 @@ class StageNote(models.Model):
     candidate_id = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     description = models.TextField(verbose_name=_("Description"), max_length=255)
     stage_id = models.ForeignKey(Stage, on_delete=models.CASCADE)
-    updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
     stage_files = models.ManyToManyField(StageFiles, blank=True)
+    updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
     objects = HorillaCompanyManager(
         related_company_field="candidate_id__recruitment_id__company_id"
     )
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self) -> str:
         return f"{self.description}"
 
 
-class SurveyTemplate(models.Model):
+class SurveyTemplate(HorillaModel):
     """
     SurveyTemplate Model
     """
@@ -561,7 +562,7 @@ class SurveyTemplate(models.Model):
         return self.title
 
 
-class RecruitmentSurvey(models.Model):
+class RecruitmentSurvey(HorillaModel):
     """
     RecruitmentSurvey model
     """
@@ -680,21 +681,27 @@ class RecruitmentMailTemplate(models.Model):
     title = models.CharField(max_length=25, unique=True)
     body = models.TextField()
     company_id = models.ForeignKey(
-        Company, null=True, blank=True, on_delete=models.CASCADE, verbose_name=_("Company")
+        Company,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Company"),
     )
 
 
-class SkillZone(models.Model):
+class SkillZone(HorillaModel):
     """ "
     Model for talent pool
     """
 
     title = models.CharField(max_length=50, verbose_name="Skill Zone")
     description = models.TextField(verbose_name=_("Description"), max_length=255)
-    created_on = models.DateField(auto_now_add=True)
-    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     company_id = models.ForeignKey(
-        Company, null=True, blank=True, on_delete=models.CASCADE, verbose_name=_("Company")
+        Company,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Company"),
     )
     objects = HorillaCompanyManager()
 
@@ -705,7 +712,7 @@ class SkillZone(models.Model):
         return self.title
 
 
-class SkillZoneCandidate(models.Model):
+class SkillZoneCandidate(HorillaModel):
     """
     Model for saving candidate data's for future recruitment
     """
@@ -734,8 +741,9 @@ class SkillZoneCandidate(models.Model):
 
     reason = models.CharField(max_length=200, verbose_name=_("Reason"))
     added_on = models.DateField(auto_now_add=True)
-    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
-    objects = HorillaCompanyManager(related_company_field="candidate_id__recruitment_id__company_id")
+    objects = HorillaCompanyManager(
+        related_company_field="candidate_id__recruitment_id__company_id"
+    )
 
     class Meta:
         """
@@ -751,7 +759,7 @@ class SkillZoneCandidate(models.Model):
         return str(self.candidate_id.get_full_name())
 
 
-class CandidateRating(models.Model):
+class CandidateRating(HorillaModel):
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, related_name="candidate_rating"
     )

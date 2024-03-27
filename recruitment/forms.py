@@ -286,7 +286,7 @@ class StageCreationForm(ModelForm):
 
         model = Stage
         fields = "__all__"
-        exclude = ("sequence",)
+        exclude = ["sequence", "is_active"]
         labels = {
             "stage": _("Stage"),
         }
@@ -532,9 +532,7 @@ class StageDropDownForm(DropDownForm):
 
         model = Stage
         fields = "__all__"
-        exclude = [
-            "sequence",
-        ]
+        exclude = ["sequence", "is_active"]
         labels = {
             "stage": _("Stage"),
         }
@@ -583,7 +581,8 @@ class StageNoteForm(ModelForm):
         #     "updated_by",
         #     "stage_id",
         # )
-        fields = ("description",)
+        fields = ["description"]
+        exclude = ["is_active"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -619,7 +618,7 @@ class StageNoteUpdateForm(ModelForm):
         """
 
         model = StageNote
-        exclude = ("updated_by", "stage_id", "stage_files")
+        exclude = ["updated_by", "stage_id", "stage_files", "is_active"]
         fields = "__all__"
 
     def __init__(self, *args, **kwargs):
@@ -652,6 +651,7 @@ class QuestionForm(ModelForm):
         exclude = [
             "recruitment_ids",
             "job_position_ids",
+            "is_active",
         ]
         labels = {
             "question": _("Question"),
@@ -727,6 +727,7 @@ class TemplateForm(ModelForm):
     class Meta:
         model = SurveyTemplate
         fields = "__all__"
+        exclude = ["is_active"]
 
     def as_p(self, *args, **kwargs):
         """
@@ -821,11 +822,7 @@ class SkillZoneCreateForm(ModelForm):
 
         model = SkillZone
         fields = "__all__"
-        exclude = [
-            "created_on",
-            "objects",
-            "is_active",
-        ]
+        exclude = ["is_active"]
 
     def as_p(self, *args, **kwargs):
         """
@@ -970,6 +967,7 @@ class RejectReasonForm(ModelForm):
     class Meta:
         model = RejectReason
         fields = "__all__"
+        exclude = ["is_active"]
 
     def as_p(self, *args, **kwargs):
         """
@@ -990,6 +988,7 @@ class RejectedCandidateForm(ModelForm):
     class Meta:
         model = RejectedCandidate
         fields = "__all__"
+        exclude = ["is_active"]
 
     def as_p(self, *args, **kwargs):
         """

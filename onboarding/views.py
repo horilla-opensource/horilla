@@ -552,7 +552,7 @@ def candidates_view(request):
             "gp_fields": CandidateReGroup.fields,
             "mail_templates": mail_templates,
             "hired_candidates": queryset,
-            "filter_dict": data_dict
+            "filter_dict": data_dict,
         },
     )
 
@@ -1686,7 +1686,6 @@ def add_to_rejected_candidates(request):
     instance = None
     if candidate_id:
         instance = RejectedCandidate.objects.filter(candidate_id=candidate_id).first()
-
     form = RejectedCandidateForm(
         initial={"candidate_id": candidate_id}, instance=instance
     )
@@ -1694,6 +1693,7 @@ def add_to_rejected_candidates(request):
         form = RejectedCandidateForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
+            form = RejectedCandidateForm()
             messages.success(request, "Candidate reject reason saved")
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "onboarding/rejection/form.html", {"form": form})
