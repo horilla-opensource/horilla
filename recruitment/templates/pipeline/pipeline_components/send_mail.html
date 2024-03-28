@@ -6,8 +6,13 @@
   <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
 </div>
 <div class="oh-modal__dialog-body">
-<form hx-post='{% url "send-acknowledgement" %} ' class="oh-general__tab-target oh-profile-section"
-  id='ack-form-{{cand.id}}' hx-target="#ack-message-{{cand.id}}" hx-encoding="multipart/form-data">
+<form onsubmit="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')" 
+  hx-post='{% url "send-acknowledgement" %} ' 
+  hx-swap="none"
+  class="oh-general__tab-target oh-profile-section"
+  id='ack-form-{{cand.id}}' 
+  hx-target="#ack-message-{{cand.id}}" 
+  hx-encoding="multipart/form-data">
   <input type="hidden" value="{{cand.id}}" name="id">
   <div class="modal-body">
     <div class="oh-timeoff-modal__profile-content">
@@ -103,12 +108,11 @@
         `));
     }
     if (valid) {
-      
-      $(`#messages`).html($(`
-        <div class="oh-alert oh-alert--animated oh-alert--info" role="alert">
-          Processing...
-          </div>
-          `));
+      Swal.fire({
+        title: "Processing",
+        text: "Mail will sent on the background",
+        icon: "info"
+      });
     }
   };
   $(document).ready(function () {
