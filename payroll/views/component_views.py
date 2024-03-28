@@ -427,7 +427,7 @@ def view_single_deduction(request, deduction_id):
 
     HTTP_REFERER = request.META.get("HTTP_REFERER")
     HTTP_REFERERS = [part for part in HTTP_REFERER.split("/") if part]
-    if HTTP_REFERER.endswith("view-deduction/"):
+    if "view-deduction" in HTTP_REFERERS:
         context["close_hx_url"] = "/payroll/filter-deduction"
         context["close_hx_target"] = "#payroll-deduction-container"
 
@@ -946,7 +946,7 @@ def send_slip(request):
     Send payslip method
     """
     email_backend = ConfiguredEmailBackend()
-    if not len(email_backend.dynamic_username_with_display_name):
+    if not email_backend and not len(email_backend.dynamic_username_with_display_name):
         messages.error(request, "Email server is not configured")
         return redirect(view_payslip)
     payslip_ids = request.GET.getlist("id")
