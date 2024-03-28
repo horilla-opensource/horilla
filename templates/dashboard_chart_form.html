@@ -1,0 +1,74 @@
+{% load i18n %} {% load static %}
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" id="createTitle">
+        {% trans "Dashboard Chart Select" %}
+    </h2>
+    <button type="button" class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+
+<!-- htmx form -->
+<div class="oh-modal__dialog-body">
+    <div class="oh-modal__dialog-body" style="padding: 0">
+        <form
+            hx-post="{% url 'employee-chart-show' %}"
+            hx-target="#objectDetailsModalTarget"
+            id="dashboardChartForm"
+        >
+            <div class="oh-sticky-table">
+                <div class="oh-sticky-table__table">
+                    <div class="oh-sticky-table__thead">
+                        <div class="oh-sticky-table__th">
+                            {% trans "Charts" %}
+                        </div>
+                        <div class="oh-sticky-table__th" align="center">
+                            {% trans "View" %}
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__tbody">
+                        {% for chart in dashboard_charts %}
+                        <div class="oh-sticky-table__tr">
+                            <div class="oh-sticky-table__td">
+                                <div class="oh-profile oh-profile--md">
+                                    <div class="oh-profile__avatar mr-1">
+                                        <img
+                                            src="https://ui-avatars.com/api/?name={{chart.1}}&background=random"
+                                            class="oh-profile__image"
+                                        />
+                                    </div>
+                                    <span class="oh-profile__name oh-text--dark"
+                                        >{{chart.1}}</span
+                                    >
+                                </div>
+                            </div>
+                            <div class="oh-sticky-table__td">
+                                <div class="d-flex justify-content-center">
+                                    <div class="oh-switch">
+                                        <input
+                                            type="checkbox"
+                                            name="{{chart.0}}"
+                                            class="oh-switch__checkbox"
+											{% if not chart.0 in employee_chart%}
+											checked
+											{% endif %}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-row-reverse">
+                <button
+                    type="submit"
+                    class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
+                >
+                    {% trans "Save" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

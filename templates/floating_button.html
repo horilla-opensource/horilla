@@ -66,6 +66,10 @@
         bottom: 400px;
     }
 
+    .inner-fabs.show .fab:nth-child(8) {
+        bottom: 450px;
+    }
+
     .inner-fabs.show + .fab i {
         transform: rotate(135deg);
     }
@@ -105,6 +109,17 @@
 </style>
 
 <div class="inner-fabs">
+    <div id="fab9" class="fab round" data-tooltip="Dashboard Charts">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectDetailsModal"
+            hx-get="{% url 'employee-chart-show' %}"
+            hx-target="#objectDetailsModalTarget"
+        >
+            <i class="material-icons mt-2">leaderboard</i>
+        </a>
+    </div>
     <div id="fab8" class="fab round" data-tooltip="Create Ticket">
         <a
             class="text-light"
@@ -172,7 +187,9 @@
             {% endif %}
             hx-target="#objectCreateModalTarget"
         >
-            <i class="material-icons mt-2">logout</i>
+            <span class="material-symbols-outlined mt-2">
+            calendar_add_on
+            </span>
         </a>
     </div>
     <div id="fab2" class="fab round" data-tooltip="Create Attendance Request">
@@ -183,11 +200,13 @@
             hx-get="{% url 'request-new-attendance' %}"
             hx-target="#objectCreateModalTarget"
         >
-            <i class="material-icons mt-2">fingerprint</i>
+            <span class="material-symbols-outlined mt-2">
+                person_add
+            </span>
         </a>
     </div>
 </div>
-<div id="fab1" class="fab round" data-tooltip="Quick Add">
+<div id="fab1" class="fab round" data-tooltip="Quick Action">
     <i id="fabIcon" class="material-icons">add</i>
 </div>
 
@@ -211,6 +230,7 @@
                 "fab6",
                 "fab7",
                 "fab8",
+                "fab9",
                 "fabIcon",
             ];
             let isCloseButton =

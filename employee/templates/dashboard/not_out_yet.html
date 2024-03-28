@@ -2,6 +2,9 @@
 <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
   <div class="oh-card-dashboard__header oh-card-dashboard__header--divider mb-0">
     <span class="oh-card-dashboard__title">{% trans 'Online Employees' %}</span>
+	<span class="float-end chart_close_button fs-5" role="button" data-chart="online_employees" hx-post="{% url 'employee-charts' %}?chart_id=online_employees" hx-target="#notoutYetdd" hx-swap="outerHTML">
+		<i class="material-icons fw-lighter">close</i>
+	</span>
   </div>
   {% if employees %}
     <div class="oh-card-dashboard__body">

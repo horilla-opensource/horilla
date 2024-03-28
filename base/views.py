@@ -91,6 +91,7 @@ from base.models import (
     AnnouncementView,
     BaserequestFile,
     Company,
+    DashboardEmployeeCharts,
     DynamicEmailConfiguration,
     DynamicPagination,
     JobPosition,
@@ -137,6 +138,7 @@ from payroll.models.tax_models import PayrollSettings
 from helpdesk.models import DepartmentManager, TicketType
 from helpdesk.forms import TicketTypeForm
 from recruitment.models import RejectReason
+from django.db.models import F
 
 
 def custom404(request):
@@ -370,6 +372,9 @@ def home(request):
     last_day_of_week = first_day_of_week + timedelta(days=6)
 
     employees_with_pending = []
+    employee_charts = DashboardEmployeeCharts.objects.get_or_create(
+        employee=request.user.employee_get
+    )[0]
 
     # List of field names to focus on
     fields_to_focus = [
@@ -416,20 +421,16 @@ def home(request):
                 "completed_field_count": "0",
             },
         )
-    announcements = Announcement.objects.filter(expire_date__gte = datetime.today()).order_by("-created_on")
-    announcement_list = announcements.filter(employees=request.user.employee_get)
-    announcement_list = announcement_list | announcements.filter(employees__isnull=True)
-    if request.user.has_perm("base.view_announcement"):
-        announcement_list = announcements
+    announcements = Announcement.objects.all()
     general_expire = AnnouncementExpire.objects.all().first()
     general_expire_date = 30 if not general_expire else general_expire.days
 
-    for announcement in announcement_list:
-        if announcement.expire_date is None:
-            calculated_expire_date = announcement.created_on + timedelta(
-                days=general_expire_date
-            )
-            announcement.expire_date = calculated_expire_date
+    for announcement in announcements.filter(expire_date__isnull=True):
+        calculated_expire_date = announcement.created_on + timedelta(
+            days=general_expire_date
+        )
+        announcement.expire_date = calculated_expire_date
+        announcement.save()
 
         # Check if the user has viewed the announcement
         announcement_view = AnnouncementView.objects.filter(
@@ -439,12 +440,20 @@ def home(request):
             announcement_view is not None and announcement_view.viewed
         )
 
+    announcements = announcements.exclude(expire_date__lt = datetime.today().date()).order_by("-created_on")
+
+    announcement_list = announcements.filter(employees=request.user.employee_get)
+    announcement_list = announcement_list | announcements.filter(employees__isnull=True)
+    if request.user.has_perm("base.view_announcement"):
+        announcement_list = announcements
+
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
         "employees_with_pending": employees_with_pending,
         "announcement": announcement_list,
         "general_expire_date": general_expire_date,
+        "charts": employee_charts.charts,
     }
 
     return render(request, "index.html", context)
@@ -4780,8 +4789,6 @@ def clear_form_fields_and_remove_extra_fields(form, managers):
             form.fields.pop(field_name, None)
 
 
-from django.db.models import F
-
 @login_required
 def multiple_level_approval_edit(request, condition_id):
     create = False
@@ -5243,6 +5250,7 @@ def action_type_create(request):
                 return HttpResponse("<script>window.location.reload()</script>")
             else:
                 from django.urls import reverse
+
                 url = reverse("create-actions")
                 instance = Actiontype.objects.all().order_by("-id").first()
                 mutable_get = request.GET.copy()
@@ -5309,3 +5317,127 @@ def driver_viewed_status(request):
     if form.is_valid():
         form.save()
     return HttpResponse("")
+
+
+@login_required
+def employee_charts(request):
+    employee_charts = DashboardEmployeeCharts.objects.get_or_create(
+        employee=request.user.employee_get
+    )[0]
+    charts = employee_charts.charts or []
+    chart_id = request.GET.get("chart_id")
+    if chart_id and chart_id not in charts:
+        charts.append(chart_id)
+        employee_charts.charts = charts
+        employee_charts.save()
+    return HttpResponse("")
+
+
+def check_permission(request, charts):
+    from recruitment.templatetags.recruitmentfilters import (
+        is_stagemanager,
+        is_recruitmentmangers,
+    )
+
+    permissions = {
+        "offline_employees": "employee.view_employee",
+        "online_employees": "employee.view_employee",
+        "overall_leave_chart": "leave.view_leaverequest",
+        "hired_candidates": "recruitment.view_candidate",
+        "onboarding_candidates": "recruitment.view_candidate",
+        "recruitment_analytics": "recruitment.view_recruitment",
+        "attendance_analytic": "attendance.view_attendance",
+        "hours_chart": "attendance.view_attendance",
+        "objective_status": "pms.view_employeeobjective",
+        "key_result_status": "pms.view_employeekeyresult",
+        "feedback_status": "pms.view_feedback",
+        "shift_request_approve": "base.change_shiftrequest",
+        "work_type_request_approve": "base.change_worktyperequest",
+        "overtime_approve": "attendance.change_attendance",
+        "attendance_validate": "attendance.change_attendance",
+        "leave_request_approve": "leave.change_leaverequest",
+        "leave_allocation_approve": "leave.change_leaveallocationrequest",
+        "asset_request_approve": "asset.change_assetrequest",
+    }
+    chart_list = []
+    need_recruitment_manager = [
+        "offline_employees",
+        "online_employees",
+        "attendance_analytic",
+        "hours_chart",
+        "objective_status",
+        "key_result_status",
+        "feedback_status",
+        "shift_request_approve",
+        "work_type_request_approve",
+        "overtime_approve",
+        "attendance_validate",
+        "leave_request_approve",
+        "leave_allocation_approve",
+        "asset_request_approve",
+    ]
+    need_stage_manager = [
+        "hired_candidates",
+        "onboarding_candidates",
+        "recruitment_analytics",
+    ]
+    for chart in charts:
+        if chart[0] in permissions.keys() or chart[0] in need_recruitment_manager or chart[0] in need_stage_manager:
+            if request.user.has_perm(permissions[chart[0]]):
+                chart_list.append(chart)
+            elif chart[0] in need_recruitment_manager:
+                if is_recruitmentmangers(request.user):
+                    chart_list.append(chart)
+            elif chart[0] in need_stage_manager:
+                if is_stagemanager(request.user):
+                    chart_list.append(chart)
+        else:
+            chart_list.append(chart)
+
+    return chart_list
+
+
+@login_required
+def employee_chart_show(request):
+    employee_charts = DashboardEmployeeCharts.objects.filter(
+        employee=request.user.employee_get
+    ).first()
+    charts = [
+        ("offline_employees", _("Offline Employees")),
+        ("online_employees", _("Online Employees")),
+        ("overall_leave_chart", _("Overall Leave Chart")),
+        ("hired_candidates", _("Hired Candidates")),
+        ("onboarding_candidates", _("Onboarding Candidates")),
+        ("recruitment_analytics", _("Recruitment Analytics")),
+        ("attendance_analytic", _("Attendance analytics")),
+        ("hours_chart", _("Hours Chart")),
+        ("employees_chart", _("Employee Chart")),
+        ("department_chart", _("Department Chart")),
+        ("gender_chart", _("Gender Chart")),
+        ("objective_status", _("Objective Status")),
+        ("key_result_status", _("Key Result Status")),
+        ("feedback_status", _("Feedback Status")),
+        ("shift_request_approve", _("Shift Request to Approve")),
+        ("work_type_request_approve", _("Work Type Request to Approve")),
+        ("overtime_approve", _("Overtime to Approve")),
+        ("attendance_validate", _("Attendance to Validate")),
+        ("leave_request_approve", _("Leave Request to Approve")),
+        ("leave_allocation_approve", _("Leave Allocation to Approve")),
+        ("feedback_answer", _("Feedbacks to Answer")),
+        ("asset_request_approve", _("Asset Request to Approve")),
+    ]
+    charts = check_permission(request, charts)
+    if request.POST:
+        data = request.POST
+        for chart in charts:
+            if chart[0] not in data.keys() and chart[0] not in employee_charts.charts:
+                employee_charts.charts.append(chart[0])
+            elif chart[0] in data.keys() and chart[0] in employee_charts.charts:
+                employee_charts.charts.remove(chart[0])
+            else:
+                pass
+
+        employee_charts.save()
+        return HttpResponse("<script>window.location.reload();</script>")
+    context = {"dashboard_charts": charts, "employee_chart": employee_charts.charts}
+    return render(request, "dashboard_chart_form.html", context)

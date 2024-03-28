@@ -1377,3 +1377,14 @@ class DriverViewed(models.Model):
         This method is used to access all the viewd driver
         """
         return self.user.driverviewed_set.values_list("viewed", flat=True)
+
+
+class DashboardEmployeeCharts(HorillaModel):
+    from employee.models import Employee
+    
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    charts = models.JSONField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.employee} - charts"
+    

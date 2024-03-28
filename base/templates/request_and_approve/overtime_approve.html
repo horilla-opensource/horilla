@@ -6,53 +6,12 @@
     <span class="oh-card-dashboard__title"
         >{% trans 'Overtime To Approve' %}
     </span>
-    <div class=" float-end mb-2">
-        {% if overtime_attendances.has_previous %}
-        <span
-            class="oh-card-dashboard__title"
-            id="department-previous"
-            style="cursor: pointer"
-            hx-target="#OTApproveTarget"
-            hx-get="{% url 'dashboard-overtime-approve' %}?{{pd}}&page={{ overtime_attendances.previous_page_number }}"
-            hx-trigger="click delay:0.3s"
-            title="Previous Page"
-        >
-            <ion-icon
-                name="caret-back-outline"
-                role="img"
-                class="md hydrated"
-                aria-label="caret back outline"
-            ></ion-icon>
-        </span>
-        {% endif %}
-        {% if overtime_attendances.has_next %}
-        <span
-            class="oh-card-dashboard__title float-end ms-2 "
-            id="department-previous"
-            style="cursor: pointer"
-            hx-target="#OTApproveTarget"
-            hx-get="{% url 'dashboard-overtime-approve' %}?{{pd}}&page={{ overtime_attendances.next_page_number }}"
-            hx-trigger="click delay:0.3s"
-            title="Next Page"
-        >
-            <ion-icon
-                name="caret-forward-outline"
-                role="img"
-                class="md hydrated"
-                aria-label="caret back outline"
-            ></ion-icon>
-        </span>
-        {% endif %}
-        {% if overtime_attendances.has_next or overtime_attendances.has_previous %}
-        <span class="oh-pagination__page float-end fw-bold">
-            {% trans "Page" %} {{ overtime_attendances.number }} {%trans "of" %}
-            {{overtime_attendances.paginator.num_pages }}
-        </span>
-        {% endif %}
-    </div>
+    <span class="float-end chart_close_button " role="button" data-chart="overtime_approve" hx-post="{% url 'employee-charts' %}?chart_id=overtime_approve" hx-target="#OTApprove" hx-swap="outerHTML">
+      <i class="material-icons fw-lighter fs-5">close</i>
+    </span>
 </div>
 
-<div class="oh-card-dashboard__body" id="OTApproveBody" style="height: 80%">
+<div class="oh-card-dashboard__body" id="OTApproveBody" style="height: 75%">
     {% if overtime_attendances %}
     <div class="oh-sticky-table h-100">
         <div class="oh-sticky-table__table oh-table--sortable">
@@ -130,5 +89,49 @@
             </h3>
         </div>
     </div>
+    {% endif %}
+</div>
+<div class=" float-end mt-3 mb-3">
+    {% if overtime_attendances.has_previous %}
+    <span
+        class="oh-card-dashboard__title"
+        id="department-previous"
+        style="cursor: pointer"
+        hx-target="#OTApproveTarget"
+        hx-get="{% url 'dashboard-overtime-approve' %}?{{pd}}&page={{ overtime_attendances.previous_page_number }}"
+        hx-trigger="click delay:0.3s"
+        title="Previous Page"
+    >
+        <ion-icon
+            name="caret-back-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="caret back outline"
+        ></ion-icon>
+    </span>
+    {% endif %}
+    {% if overtime_attendances.has_next %}
+    <span
+        class="oh-card-dashboard__title float-end ms-2 "
+        id="department-previous"
+        style="cursor: pointer"
+        hx-target="#OTApproveTarget"
+        hx-get="{% url 'dashboard-overtime-approve' %}?{{pd}}&page={{ overtime_attendances.next_page_number }}"
+        hx-trigger="click delay:0.3s"
+        title="Next Page"
+    >
+        <ion-icon
+            name="caret-forward-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="caret back outline"
+        ></ion-icon>
+    </span>
+    {% endif %}
+    {% if overtime_attendances.has_next or overtime_attendances.has_previous %}
+    <span class="oh-pagination__page float-end fw-bold">
+        {% trans "Page" %} {{ overtime_attendances.number }} {%trans "of" %}
+        {{overtime_attendances.paginator.num_pages }}
+    </span>
     {% endif %}
 </div>

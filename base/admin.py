@@ -32,6 +32,7 @@ from base.models import (
     ShiftRequest,
     WorkTypeRequest,
     WorktyperequestComment,
+    DashboardEmployeeCharts,
 )
 
 # Register your models here.
@@ -60,3 +61,4 @@ admin.site.register(DynamicPagination)
 admin.site.register(Announcement)
 admin.site.register(Attachment)
 admin.site.register(EmailLog)
+admin.site.register(DashboardEmployeeCharts)
