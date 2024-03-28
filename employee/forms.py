@@ -548,7 +548,7 @@ class PolicyForm(ModelForm):
     class Meta:
         model = Policy
         fields = "__all__"
-        exclude = ["attachments"]
+        exclude = ["attachments", "is_active"]
         widgets = {
             "body": forms.Textarea(
                 attrs={"data-summernote": "", "style": "display:none;"}

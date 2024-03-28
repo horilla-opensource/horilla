@@ -436,7 +436,7 @@ class Employee(models.Model):
         return self
 
 
-class EmployeeTag(models.Model):
+class EmployeeTag(HorillaModel):
     """
     EmployeeTag Model
     """
@@ -642,14 +642,14 @@ class EmployeeBankDetails(models.Model):
                 )
 
 
-class NoteFiles(models.Model):
+class NoteFiles(HorillaModel):
     files = models.FileField(upload_to="employee/NoteFiles", blank=True, null=True)
 
     def __str__(self):
         return self.files.name.split("/")[-1]
 
 
-class EmployeeNote(models.Model):
+class EmployeeNote(HorillaModel):
     """
     EmployeeNote model
     """
@@ -659,14 +659,8 @@ class EmployeeNote(models.Model):
         on_delete=models.CASCADE,
         related_name="employee_name",
     )
-    # title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
     description = models.TextField(
         verbose_name=_("Description"), max_length=255, null=True
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Created At"),
-        null=True,
     )
     note_files = models.ManyToManyField(NoteFiles, blank=True)
     updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
@@ -686,7 +680,7 @@ class PolicyMultipleFile(models.Model):
     attachment = models.FileField(upload_to="employee/policies")
 
 
-class Policy(models.Model):
+class Policy(HorillaModel):
     """
     Policies model
     """
@@ -814,7 +808,7 @@ class DisciplinaryAction(HorillaModel):
 
     def __str__(self) -> str:
         return f"{self.action}"
-    
+
     class Meta:
         ordering = ["-id"]
 
