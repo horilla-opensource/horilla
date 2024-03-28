@@ -64,11 +64,11 @@
         <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{own_objectives.paginator.count}} objectives" onclick="event.stopPropagation()">{{own_objectives.paginator.count}}</span>
       </li>
       <!-- normal user can't view all objective  -->
-      {% if perms.pms.view_objective or request.user|filtersubordinates %}
-      <li class="oh-tabs__tab" onclick="switchTab(event)" data-target="#all_objective">
-        {% trans "All Objective" %}
-        <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{objectives.paginator.count}} objectives" onclick="event.stopPropagation()">{{objectives.paginator.count}}</span>
-      </li>
+      {% if perms.pms.view_objective or manager %}
+        <li class="oh-tabs__tab" onclick="switchTab(event)" data-target="#all_objective">
+            {% trans "All Objective" %}
+            <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{objectives.paginator.count}} objectives" onclick="event.stopPropagation()">{{objectives.paginator.count}}</span>
+        </li>
       {% endif %}
     </ul>
     <div>
@@ -118,8 +118,9 @@
                                                         <div data-cell-index="7" data-cell-title='{% trans "Description" %}' 
                                                             class="oh-sticky-table__th"
                                                         >{% trans "Description" %}</div>
-                                                    
-                                                        <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 315px;">{% trans "Actions" %}</div>
+                                                        {% if  perms.pms.add_employeeobjective or perms.pms.change_objective or perms.pms.delete_objective %}
+                                                            <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 315px;">{% trans "Actions" %}</div>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                                 <div class="oh-sticky-table__tbody">
@@ -239,6 +240,8 @@
                                                             <div data-cell-index="3" class="oh-sticky-table__td">
                                                                 {{objective.description}}
                                                             </div>
+                                                            {% if  perms.pms.add_employeeobjective or perms.pms.change_objective or perms.pms.delete_objective %}
+
                                                             <div class="oh-sticky-table__td oh-sticky-table__right">
                                                                 <div class="oh-btn-group" >
                                                                     {% if perms.pms.add_employeeobjective %}
@@ -279,6 +282,7 @@
                                                                     {% endif %}
                                                                 </div>
                                                             </div>
+                                                            {% endif %}
                                                         </div>
                                                     {% endfor %} 
                                                 </div>

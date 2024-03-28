@@ -391,7 +391,15 @@ def objective_filter_pagination(request, objective_own, objective_all):
     objective_filter_all = ObjectiveFilter(
         request.GET or initial_data, queryset=objective_all
     ).qs
-    objectives = ActualObjectiveFilter(request.GET, queryset=Objective.objects.all()).qs
+    user = request.user
+    employee = Employee.objects.filter(employee_user_id=user).first()
+    manager = False
+    if Objective.objects.filter(managers=employee).exists():
+        manager = True
+        objectives = Objective.objects.filter(managers=employee).distinct()
+    if request.user.has_perm("pms.view_objective"):
+        objectives = Objective.objects.all()
+    objectives = ActualObjectiveFilter(request.GET, queryset=objectives).qs
     objectives = Paginator(objectives, get_pagination())
     objective_paginator_own = Paginator(objective_filter_own, get_pagination())
     objective_paginator_all = Paginator(objective_filter_all, get_pagination())
@@ -405,6 +413,7 @@ def objective_filter_pagination(request, objective_own, objective_all):
     data_dict = parse_qs(previous_data)
     get_key_instances(EmployeeObjective, data_dict)
     context = {
+        'manager':manager,
         "superuser": "true",
         "objectives": objectives,
         "own_objectives": objectives_own,
@@ -875,22 +884,22 @@ def change_employee_objective_status(request, emp_obj):
     status = request.POST.get("status")
     if emp_objective.status != status:
         emp_objective.status = status
-        emp_objective.save()
+        emp_objective.save() 
         messages.success(
-            request, _("The employee objective status updated successfully.")
+            request, _(f"The status of the objective '{emp_objective.objective_id}' has been changed to {emp_objective.status}.")
         )
         notify.send(
             request.user.employee_get,
             recipient=emp_objective.employee_id,
-            verb=f"The status of the objective '{emp_objective.objective_id}'has been changed to {emp_objective.status}.",
-            # verb_ar="تم تغيير حالة التذكرة.",
-            # verb_de="Der Status des Tickets wurde geändert.",
-            # verb_es="El estado del ticket ha sido cambiado.",
-            # verb_fr="Le statut du ticket a été modifié.",
+            verb=f"The status of the objective '{emp_objective.objective_id}' has been changed to {emp_objective.status}.",
+            verb_ar=f"تم تغيير حالة الهدف '{emp_objective.objective_id}' إلى {emp_objective.status}.",
+            verb_de=f"Der Status des Ziels '{emp_objective.objective_id}' wurde zu {emp_objective.status} geändert.",
+            verb_es=f"El estado del objetivo '{emp_objective.objective_id}' ha sido cambiado a {emp_objective.status}.",
+            verb_fr=f"Le statut de l'objectif '{emp_objective.objective_id}' a été changé à {emp_objective.status}.",
             redirect=f"/pms/objective-detailed-view/{emp_objective.objective_id.id}",
         )
     else:
-        messages.success(
+        messages.info(
             request, _("The status of the objective is the same as selected.")
         )
 

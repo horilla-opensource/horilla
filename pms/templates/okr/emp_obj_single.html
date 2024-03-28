@@ -63,8 +63,8 @@
     </a>
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title me-3">{% trans "Status" %}</span>
-                <select name="status" id="{{instance.id}}" class="oh-table__editable-input oh-select p-3"
-                    hx-trigger="change" hx-post="{% url 'change-employee-objective-status' instance.id %}" hx-target="#objectDetailsModalTarget"
+                <select name="status" id="{{instance.id}}" class="oh-table__editable-input p-3"
+                hx-trigger="change" hx-post="{% url 'change-employee-objective-status' instance.id %}" hx-target="#objectDetailsModalTarget"
                 >
                     {% for status in objective_key_result_status %}
                     <option value="{{status.0}}"  {% if status.0 == instance.status %} selected {% endif %}>
@@ -164,3 +164,9 @@
     </div>
 </div>
 </div>
+
+<script>
+    function empObjStatusUpdate(element){
+        alert('ssssssssssss')
+    }
+</script>
