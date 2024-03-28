@@ -1757,6 +1757,11 @@ except:
     pass
 
 
+class ReimbursementFile(models.Model):
+    file = models.FileField(upload_to="payroll/request_files")
+    objects = models.Manager()
+
+
 class ReimbursementrequestComment(HorillaModel):
     """
     ReimbursementRequestComment Model
@@ -1765,6 +1770,12 @@ class ReimbursementrequestComment(HorillaModel):
     request_id = models.ForeignKey(Reimbursement, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
+    files = models.ManyToManyField(ReimbursementFile, blank=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At"),
+        null=True,
+    )
 
     def __str__(self) -> str:
         return f"{self.comment}"

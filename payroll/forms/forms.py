@@ -3,17 +3,20 @@ forms.py
 """
 
 from datetime import date
+from typing import Any
 from django import forms
 from django.forms import widgets
 from django.utils.translation import gettext_lazy as trans
 from django.template.loader import render_to_string
 from base import thread_local_middleware
 from base.forms import Form
+from employee.forms import MultipleFileField
 from employee.models import Employee
 from payroll.context_processors import get_active_employees
 from payroll.models.models import (
     EncashmentGeneralSettings,
     PayrollGeneralSetting,
+    ReimbursementFile,
     ReimbursementrequestComment,
     WorkRecord,
 )
@@ -176,7 +179,48 @@ class ReimbursementRequestCommentForm(ModelForm):
 
         model = ReimbursementrequestComment
         fields = ("comment",)
-        exclude = ["is_active"]
+
+
+class reimbursementCommentForm(ModelForm):
+    """
+    Reimbursement request comment model form
+    """
+
+    verbose_name = "Add Comment"
+
+    class Meta:
+        model = ReimbursementrequestComment
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["files"] = MultipleFileField(label="files")
+        self.fields["files"].required = False
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+    def save(self, commit: bool = ...) -> Any:
+        multiple_files_ids = []
+        files = None
+        if self.files.getlist("files"):
+            files = self.files.getlist("files")
+            self.instance.attachemnt = files[0]
+            multiple_files_ids = []
+            for attachemnt in files:
+                file_instance = ReimbursementFile()
+                file_instance.file = attachemnt
+                file_instance.save()
+                multiple_files_ids.append(file_instance.pk)
+        instance = super().save(commit)
+        if commit:
+            instance.files.add(*multiple_files_ids)
+        return instance, files
 
 
 class EncashmentGeneralSettingsForm(ModelForm):

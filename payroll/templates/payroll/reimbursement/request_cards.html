@@ -75,6 +75,8 @@
                                         hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
                                         hx-target="#objectCreateModalTarget"
                                         class="mr-2"
+                                        style="cursor:pointer;"
+                                        title='{% trans "Update" %}'
                                         data-toggle="oh-modal-toggle"
                                         data-target="#objectCreateModal"
                                         ><ion-icon
@@ -87,6 +89,7 @@
                                     {% endif %}
                                     {% if perms.payroll.delete_reimbursement  %}
                                     <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')"
+                                        title='{% trans "Delete" %}'
                                         ><ion-icon
                                             class="text-danger md hydrated"
                                             name="trash-outline"
@@ -129,25 +132,12 @@
                                 <div class="mb-2">
                                     <i
                                         ><a
-                                            hx-target="#shiftRequestCommentForm"
-                                            hx-get="{% url 'payroll-request-add-comment' req.id %}"
-                                            class="text-primary"
-                                            hx-swap="innerHTML"
-                                            data-toggle="oh-modal-toggle"
-                                            data-target="#shiftcommentModal"
-                                            style="cursor: pointer"
-                                            >{% trans 'Add Comments' %}</a
-                                        >
-                                        &nbsp,
-
-                                        <a
-                                            hx-target="#shiftRequestDetailTarget"
                                             hx-get="{% url 'payroll-request-view-comment' req.id %}"
-                                            class="text-primary"
-                                            data-toggle="oh-modal-toggle"
-                                            data-target="#shiftRequestDetailModal"
+                                            hx-target="#commentContainer"
+                                            data-target = '#activitySidebar'
+                                            class="text-primary fw-bold oh-activity-sidebar__open w-100"
                                             style="cursor: pointer"
-                                            >{% trans 'View Comments' %}</a
+                                            >{% trans 'Comments' %}</a
                                         ></i
                                     >
                                 </div>
@@ -371,6 +361,8 @@
                                         hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
                                         hx-target="#objectCreateModalTarget"
                                         class="mr-2"
+                                        style="cursor:pointer;"
+                                        title='{% trans "Update" %}'
                                         data-toggle="oh-modal-toggle"
                                         data-target="#objectCreateModal"
                                         ><ion-icon
@@ -383,6 +375,7 @@
                                     {% endif %}
                                     {% if perms.payroll.delete_reimbursement  %}
                                     <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')"
+                                        title='{% trans "Delete" %}'
                                         ><ion-icon
                                             class="text-danger md hydrated"
                                             name="trash-outline"
@@ -424,25 +417,12 @@
                                 <div class="mb-2">
                                     <i
                                         ><a
-                                            hx-target="#shiftRequestCommentForm"
-                                            hx-get="{% url 'payroll-request-add-comment' req.id %}"
-                                            class="text-primary"
-                                            hx-swap="innerHTML"
-                                            data-toggle="oh-modal-toggle"
-                                            data-target="#shiftcommentModal"
-                                            style="cursor: pointer"
-                                            >{% trans 'Add Comments' %}</a
-                                        >
-                                        &nbsp,
-
-                                        <a
-                                            hx-target="#shiftRequestDetailTarget"
+                                            hx-target="#commentContainer"
                                             hx-get="{% url 'payroll-request-view-comment' req.id %}"
-                                            class="text-primary"
-                                            data-toggle="oh-modal-toggle"
-                                            data-target="#shiftRequestDetailModal"
+                                            class="text-primary fw-bold oh-activity-sidebar__open w-100"
+                                            data-target = '#activitySidebar'
                                             style="cursor: pointer"
-                                            >{% trans 'View Comments' %}</a
+                                            >{% trans 'Comments' %}</a
                                         ></i
                                     >
                                 </div>
@@ -664,6 +644,8 @@
                                         hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
                                         hx-target="#objectCreateModalTarget"
                                         class="mr-2"
+                                        style="cursor:pointer;"
+                                        title='{% trans "Update" %}'
                                         data-toggle="oh-modal-toggle"
                                         data-target="#objectCreateModal"
                                         ><ion-icon
@@ -676,7 +658,7 @@
                                     {% endif %}
                                     {% if perms.payroll.delete_reimbursement  %}
                                     <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')"
-                                        ><ion-icon
+                                        title='{% trans "Delete" %}'><ion-icon
                                             class="text-danger md hydrated"
                                             name="trash-outline"
                                             role="img"
@@ -717,25 +699,12 @@
                                 <div class="mb-2">
                                     <i
                                         ><a
-                                            hx-target="#shiftRequestCommentForm"
-                                            hx-get="{% url 'payroll-request-add-comment' req.id %}"
-                                            class="text-primary"
-                                            hx-swap="innerHTML"
-                                            data-toggle="oh-modal-toggle"
-                                            data-target="#shiftcommentModal"
-                                            style="cursor: pointer"
-                                            >{% trans 'Add Comments' %}</a
-                                        >
-                                        &nbsp,
-
-                                        <a
-                                            hx-target="#shiftRequestDetailTarget"
+                                            hx-target="#commentContainer"
                                             hx-get="{% url 'payroll-request-view-comment' req.id %}"
-                                            class="text-primary"
-                                            data-toggle="oh-modal-toggle"
-                                            data-target="#shiftRequestDetailModal"
+                                            class="text-primary fw-bold oh-activity-sidebar__open w-100"
+                                            data-target = '#activitySidebar'
                                             style="cursor: pointer"
-                                            >{% trans 'View Comments' %}</a
+                                            >{% trans 'Comments' %}</a
                                         ></i
                                     >
                                 </div>
@@ -936,54 +905,16 @@
         </div>
     </div>
 
-    <!-- start of comment modal -->
-    <div
-        class="oh-modal"
-        id="shiftcommentModal"
-        role="dialog"
-        aria-labelledby="emptagModal"
-        aria-hidden="true"
-    >
-        <div class="oh-modal__dialog">
-            <div class="oh-modal__dialog-header">
-                <h2 class="oh-modal__dialog-title" id="createModalTitle">
-                    {% trans "Add Comment" %}
-                </h2>
-                <button class="oh-modal__close" aria-label="Close">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
-            </div>
-            <div
-                class="oh-modal__dialog-body"
-                id="shiftRequestCommentForm"
-            ></div>
-        </div>
-    </div>
-    <!-- end of comment modal -->
+    <!-- Activty side bar for comment section-->
 
-    <div
-        class="oh-modal"
-        style="z-index: 60"
-        id="shiftRequestDetailModal"
-        role="dialog"
-        aria-labelledby="shiftRequestDetailModal"
-        aria-hidden="true"
-    >
-        <div class="oh-modal__dialog">
-            <div class="oh-modal__dialog-header">
-                <h2 class="oh-modal__dialog-title" id="">
-                    {% trans "Details" %}
-                </h2>
-                <button class="oh-modal__close" aria-label="Close">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
-            </div>
-            <div
-                class="oh-modal__dialog-body oh-modal__dialog-relative"
-                id="shiftRequestDetailTarget"
-            ></div>
+    <div class="oh-activity-sidebar" id="activitySidebar" style="z-index:1000;">
+
+        <div class="oh-activity-sidebar__body" id="commentContainer">
         </div>
     </div>
+
+    <!-- End of Activty side bar for comment section-->
+
 
     <script>
         function reimbursementConfirm(params, target, approve = false) {

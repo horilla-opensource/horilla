@@ -158,6 +158,11 @@ urlpatterns = [
         name="payroll-request-delete-comment",
     ),
     path(
+        "delete-reimbursement-comment-file/",
+        views.delete_reimbursement_comment_file,
+        name="delete-reimbursement-comment-file",
+    ),
+    path(
         "initial-notice-period",
         views.initial_notice_period,
         name="initial-notice-period",

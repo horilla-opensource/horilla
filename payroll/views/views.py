@@ -29,6 +29,7 @@ from payroll.models.models import (
     PayrollGeneralSetting,
     Payslip,
     Reimbursement,
+    ReimbursementFile,
     ReimbursementrequestComment,
     WorkRecord,
     Contract,
@@ -1487,30 +1488,70 @@ def create_payrollrequest_comment(request, payroll_id):
             form.instance.employee_id = emp
             form.instance.request_id = payroll
             form.save()
+            comments = ReimbursementrequestComment.objects.filter(
+                request_id=payroll_id
+            ).order_by("-created_at")
+            no_comments = False
+            if not comments.exists():
+                no_comments = True
             form = ReimbursementRequestCommentForm(
                 initial={"employee_id": emp.id, "request_id": payroll_id}
             )
             messages.success(request, _("Comment added successfully!"))
 
-            if request.user.employee_get.id == payroll.employee_id.id:
-                rec = (
-                    payroll.employee_id.employee_work_info.reporting_manager_id.employee_user_id
-                )
-                notify.send(
-                    request.user.employee_get,
-                    recipient=rec,
-                    verb=f"{payroll.employee_id}'s reimbursement request has received a comment.",
-                    verb_ar=f"تلقى طلب استرداد نفقات {payroll.employee_id} تعليقًا.",
-                    verb_de=f"{payroll.employee_id}s Rückerstattungsantrag hat einen Kommentar erhalten.",
-                    verb_es=f"La solicitud de reembolso de gastos de {payroll.employee_id} ha recibido un comentario.",
-                    verb_fr=f"La demande de remboursement de frais de {payroll.employee_id} a reçu un commentaire.",
-                    redirect="/payroll/view-reimbursement",
-                    icon="chatbox-ellipses",
-                )
-            elif (
-                request.user.employee_get.id
-                == payroll.employee_id.employee_work_info.reporting_manager_id.id
+            if (
+                payroll.employee_id.employee_work_info.reporting_manager_id
+                is not None
             ):
+
+                if request.user.employee_get.id == payroll.employee_id.id:
+                    rec = (
+                        payroll.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                    )
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=rec,
+                        verb=f"{payroll.employee_id}'s reimbursement request has received a comment.",
+                        verb_ar=f"تلقى طلب استرداد نفقات {payroll.employee_id} تعليقًا.",
+                        verb_de=f"{payroll.employee_id}s Rückerstattungsantrag hat einen Kommentar erhalten.",
+                        verb_es=f"La solicitud de reembolso de gastos de {payroll.employee_id} ha recibido un comentario.",
+                        verb_fr=f"La demande de remboursement de frais de {payroll.employee_id} a reçu un commentaire.",
+                        redirect="/payroll/view-reimbursement",
+                        icon="chatbox-ellipses",
+                    )
+                elif (
+                    request.user.employee_get.id
+                    == payroll.employee_id.employee_work_info.reporting_manager_id.id
+                ):
+                    rec = payroll.employee_id.employee_user_id
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=rec,
+                        verb="Your reimbursement request has received a comment.",
+                        verb_ar="تلقى طلب استرداد نفقاتك تعليقًا.",
+                        verb_de="Ihr Rückerstattungsantrag hat einen Kommentar erhalten.",
+                        verb_es="Tu solicitud de reembolso ha recibido un comentario.",
+                        verb_fr="Votre demande de remboursement a reçu un commentaire.",
+                        redirect="/payroll/view-reimbursement",
+                        icon="chatbox-ellipses",
+                    )
+                else:
+                    rec = [
+                        payroll.employee_id.employee_user_id,
+                        payroll.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    ]
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=rec,
+                        verb=f"{payroll.employee_id}'s reimbursement request has received a comment.",
+                        verb_ar=f"تلقى طلب استرداد نفقات {payroll.employee_id} تعليقًا.",
+                        verb_de=f"{payroll.employee_id}s Rückerstattungsantrag hat einen Kommentar erhalten.",
+                        verb_es=f"La solicitud de reembolso de gastos de {payroll.employee_id} ha recibido un comentario.",
+                        verb_fr=f"La demande de remboursement de frais de {payroll.employee_id} a reçu un commentaire.",
+                        redirect="/payroll/view-reimbursement",
+                        icon="chatbox-ellipses",
+                    )
+            else:
                 rec = payroll.employee_id.employee_user_id
                 notify.send(
                     request.user.employee_get,
@@ -1523,27 +1564,15 @@ def create_payrollrequest_comment(request, payroll_id):
                     redirect="/payroll/view-reimbursement",
                     icon="chatbox-ellipses",
                 )
-            else:
-                rec = [
-                    payroll.employee_id.employee_user_id,
-                    payroll.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                ]
-                notify.send(
-                    request.user.employee_get,
-                    recipient=rec,
-                    verb=f"{payroll.employee_id}'s reimbursement request has received a comment.",
-                    verb_ar=f"تلقى طلب استرداد نفقات {payroll.employee_id} تعليقًا.",
-                    verb_de=f"{payroll.employee_id}s Rückerstattungsantrag hat einen Kommentar erhalten.",
-                    verb_es=f"La solicitud de reembolso de gastos de {payroll.employee_id} ha recibido un comentario.",
-                    verb_fr=f"La demande de remboursement de frais de {payroll.employee_id} a reçu un commentaire.",
-                    redirect="/payroll/view-reimbursement",
-                    icon="chatbox-ellipses",
-                )
 
-            return HttpResponse("<script>window.location.reload()</script>")
+            return render(
+                request,
+                "payroll/reimbursement/reimbursement_comment.html",
+                {"comments": comments, "no_comments": no_comments, "request_id": payroll_id,},
+            )
     return render(
         request,
-        "payroll/reimbursement/reimbursement_request_comment_form.html",
+        "payroll/reimbursement/reimbursement_comment.html",
         {"form": form, "request_id": payroll_id},
     )
 
@@ -1556,14 +1585,26 @@ def view_payrollrequest_comment(request, payroll_id):
     comments = ReimbursementrequestComment.objects.filter(
         request_id=payroll_id
     ).order_by("-created_at")
+
     no_comments = False
     if not comments.exists():
         no_comments = True
 
+    if request.FILES:
+        files = request.FILES.getlist("files")
+        comment_id = request.GET["comment_id"]
+        comment = ReimbursementrequestComment.objects.get(id=comment_id)
+        attachments = []
+        for file in files:
+            file_instance = ReimbursementFile()
+            file_instance.file = file
+            file_instance.save()
+            attachments.append(file_instance)
+        comment.files.add(*attachments)
     return render(
         request,
-        "payroll/reimbursement/comment_view.html",
-        {"comments": comments, "no_comments": no_comments},
+        "payroll/reimbursement/reimbursement_comment.html",
+        {"comments": comments, "no_comments": no_comments, "request_id": payroll_id,},
     )
 
 
@@ -1572,11 +1613,33 @@ def delete_payrollrequest_comment(request, comment_id):
     """
     This method is used to delete Reimbursement request comments
     """
-    ReimbursementrequestComment.objects.get(id=comment_id).delete()
+    comment=ReimbursementrequestComment.objects.get(id=comment_id)
+    reimbursementrequest = comment.request_id.id
+    comment.delete()
 
     messages.success(request, _("Comment deleted successfully!"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return redirect('payroll-request-view-comment', payroll_id = reimbursementrequest)
 
+
+@login_required
+def delete_reimbursement_comment_file(request):
+    """
+    Used to delete attachment
+    """
+    ids = request.GET.getlist("ids")
+    ReimbursementFile.objects.filter(id__in=ids).delete()
+    payroll_id = request.GET["payroll_id"]
+    comments = ReimbursementrequestComment.objects.filter(request_id=payroll_id).order_by(
+        "-created_at"
+    )
+    return render(
+        request,
+        "payroll/reimbursement/reimbursement_comment.html",
+        {
+            "comments": comments,
+            "request_id": payroll_id,
+        },
+    )
 
 @login_required
 @permission_required("payroll.add_payrollgeneralsetting")
