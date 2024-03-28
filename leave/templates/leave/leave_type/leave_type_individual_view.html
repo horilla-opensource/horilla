@@ -137,6 +137,16 @@
                     <div class="oh-timeoff-modal__stat-count">{{leave_type.get_exclude_holiday_display}}</div>
                 </div>
             </div>
+            <div class="oh-timeoff-modal__stats ">
+                <div class="oh-timeoff-modal__stat">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Is Encashable" %}</span>
+                    {% if leave_type.is_encashable %}
+                        <div class="oh-timeoff-modal__stat-count">{% trans "Yes" %}</div>
+                    {% else %}
+                        <div class="oh-timeoff-modal__stat-count">{% trans "No" %}</div>
+                    {% endif %}
+                </div>
+            </div>
             
         </div>
     </div>

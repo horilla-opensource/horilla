@@ -150,6 +150,7 @@ class LeaveType(HorillaModel):
     period_in = models.CharField(max_length=30, choices=TIME_PERIOD, default="day")
     total_days = models.IntegerField(null=True, default=1)
     reset = models.BooleanField(default=False)
+    is_encashable = models.BooleanField(default=False,verbose_name=_("Is encashable"))
     reset_based = models.CharField(
         max_length=30,
         choices=RESET_BASED,

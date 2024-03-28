@@ -193,6 +193,16 @@
                   </div>
               </div>
           </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group oh-label__info ">
+                <label for="" class="oh-label">{% trans "Is Encashable" %}</label>
+                <span class=" oh-info me-3" title="{% trans "Do you need to encash pending leave days?" %}"></span>
+                <div class="oh-switch p-3 ">
+                    {{form.is_encashable}}
+                    {{form.is_encashable.errors}}
+                </div>
+            </div>
+          </div>
           <div hidden>{{form.require_approval}}</div>
           <div hidden>{{form.require_attachment}}</div>
           <div hidden>{{form.exclude_company_leave}}</div>
