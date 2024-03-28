@@ -89,8 +89,36 @@
 	</div>
 </section>
 
-<div class="oh-wrapper" id="leaveTypes">
-	{% include 'leave/leave_type/leave_types.html' %}
+<div class="oh-wrapper" >
+	<!-- start of Quick filters  -->
+	<div class="d-flex flex-row-reverse mb-2">
+		<span
+		class="me-3"
+		onclick="$('[name=payment]').val('paid');$('.filterButton').click()"
+		style="cursor: pointer"
+		>
+		<span
+			class="oh-dot oh-dot--small me-1"
+			style="background-color: yellowgreen"
+		></span>
+		{% trans "Paid" %}
+		</span>
+		<span
+		class="me-3"
+		style="cursor: pointer"
+		onclick="$('[name=payment]').val('unpaid');$('.filterButton').click()"
+		>
+		<span
+			class="oh-dot oh-dot--small me-1"
+			style="background-color: orange"
+		></span>
+		{% trans "Unpaid" %}
+		</span>
+	</div>
+	<!-- end of quick filters  -->
+  	<div id="leaveTypes">
+		{% include 'leave/leave_type/leave_types.html' %}
+  	</div>
 </div>
 
 <div
