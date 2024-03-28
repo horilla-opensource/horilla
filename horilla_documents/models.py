@@ -10,6 +10,8 @@ from employee.models import Employee
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
+from horilla.models import HorillaModel
+
 
 STATUS = [
     ("requested", "Requested"),
@@ -38,7 +40,7 @@ def document_create(instance):
         )
 
 
-class DocumentRequest(models.Model):
+class DocumentRequest(HorillaModel):
     title = models.CharField(max_length=100)
     employee_id = models.ManyToManyField(Employee)
     format = models.CharField(choices=FORMATS, max_length=10)
@@ -47,8 +49,7 @@ class DocumentRequest(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
-    is_active = models.BooleanField(default=True)
-
+    
     def __str__(self):
         return self.title
 
@@ -67,7 +68,7 @@ def your_model_m2m_changed(sender, instance, action, **kwargs):
         document_create(instance)
 
 
-class Document(models.Model):
+class Document(HorillaModel):
     title = models.CharField(max_length=250)
     employee_id = models.ForeignKey(Employee, on_delete=models.PROTECT)
     document_request_id = models.ForeignKey(
@@ -76,7 +77,6 @@ class Document(models.Model):
     document = models.FileField(upload_to="employee/documents", null=True)
     status = models.CharField(choices=STATUS, max_length=10, default="requested")
     reject_reason = models.TextField(blank=True, null=True, max_length=255)
-    is_active = models.BooleanField(default=True)
     expiry_date = models.DateField(null=True, blank=True)
     notify_before = models.IntegerField(default=1, null=True)
     is_digital_asset = models.BooleanField(default=False)

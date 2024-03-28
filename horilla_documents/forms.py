@@ -16,6 +16,7 @@ class DocumentRequestForm(ModelForm):
     class Meta:
         model = DocumentRequest
         fields = "__all__"
+        exclude = ["is_active"]
 
     def clean(self):
         for field_name, field_instance in self.fields.items():
@@ -87,6 +88,7 @@ class DocumentUpdateForm(ModelForm):
     class Meta:
         model = Document
         fields = "__all__"
+        exclude = ["is_active"]
 
 
 class DocumentRejectForm(ModelForm):
