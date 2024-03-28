@@ -52,6 +52,11 @@ urlpatterns = [
         component_views.delete_deduction,
         name="delete-deduction",
     ),
+    path(
+        "delete-deduction/<int:deduction_id>/<int:emp_id>/",
+        component_views.delete_deduction,
+        name="delete-deduction",
+    ),
     path("create-payslip", component_views.create_payslip, name="create-payslip"),
     path("generate-payslip", component_views.generate_payslip, name="generate-payslip"),
     path(

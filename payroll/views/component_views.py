@@ -11,7 +11,7 @@ import operator
 from datetime import date, datetime
 from urllib.parse import parse_qs
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.http import HttpResponse, JsonResponse, QueryDict
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
@@ -415,8 +415,7 @@ def view_single_deduction(request, deduction_id):
     """
     This method is used render template to view all the deduction instances
     """
-
-    deduction = payroll.models.models.Deduction.objects.get(id=deduction_id)
+    deduction = payroll.models.models.Deduction.objects.filter(id=deduction_id).first()
     context = {"deduction": deduction}
     deduction_ids_json = request.GET.get("instances_ids")
     if deduction_ids_json:
@@ -425,6 +424,33 @@ def view_single_deduction(request, deduction_id):
         context["next"] = next_id
         context["previous"] = previous_id
         context["deduction_ids"] = deduction_ids
+
+    HTTP_REFERER = request.META.get("HTTP_REFERER")
+    HTTP_REFERERS = [part for part in HTTP_REFERER.split("/") if part]
+    if HTTP_REFERER.endswith("view-deduction/"):
+        context["close_hx_url"] = "/payroll/filter-deduction"
+        context["close_hx_target"] = "#payroll-deduction-container"
+
+    elif len(HTTP_REFERERS) >= 2 and HTTP_REFERERS[-2] == "employee-view":
+        try:
+            employee_id = int(HTTP_REFERERS[-1])
+            context["close_hx_url"] = (
+                f"/employee/allowances-deductions-tab/{employee_id}"
+            )
+            context["close_hx_target"] = "#allowance_deduction"
+        except ValueError:
+            pass
+
+    elif HTTP_REFERER.endswith("employee-profile/"):
+        context["close_hx_url"] = (
+            f"/employee/allowances-deductions-tab/{request.user.employee_get.id}"
+        )
+        context["close_hx_target"] = "#allowance_deduction"
+
+    else:
+        context["close_hx_url"] = None
+        context["close_hx_target"] = None
+
     return render(
         request,
         "payroll/deduction/view_single_deduction.html",
@@ -481,19 +507,34 @@ def update_deduction(request, deduction_id, **kwargs):
 
 @login_required
 @permission_required("payroll.delete_deduction")
-def delete_deduction(request, deduction_id):
-    """
-    This method is used to delete the deduction instance
-    Args:
-        id : deduction instance id
-    """
-    deduction = payroll.models.models.Deduction.objects.filter(id=deduction_id)
+def delete_deduction(request, deduction_id, emp_id=None):
+    instances_ids = request.GET.get("instances_ids")
+    next_instance = None
+    instances_list = None
+    if instances_ids:
+        instances_list = json.loads(instances_ids)
+        previous_instance, next_instance = closest_numbers(instances_list, deduction_id)
+        instances_list.remove(deduction_id)
+    deduction = Deduction.objects.filter(id=deduction_id).first()
     if deduction:
         deduction.delete()
         messages.success(request, _("Deduction deleted successfully"))
     else:
         messages.error(request, _("Deduction not found"))
-    return redirect(view_deduction)
+
+    paths = {
+        "payroll-deduction-container": f"/payroll/filter-deduction?{request.GET.urlencode()}",
+        "allowance_deduction": f"/employee/allowances-deductions-tab/{emp_id}",
+        "objectDetailsModalTarget": f"/payroll/single-deduction-view/{next_instance}?instances_ids={instances_list}",
+    }
+    http_hx_target = request.META.get("HTTP_HX_TARGET")
+    redirected_path = paths.get(http_hx_target)
+    if http_hx_target and redirected_path:
+        return redirect(redirected_path)
+
+    return HttpResponseRedirect(
+        request.path if http_hx_target else request.META.get("HTTP_REFERER", "/")
+    )
 
 
 @login_required
@@ -1442,9 +1483,9 @@ def get_contribution_report(request):
 
     for deduction_id, group in grouped_deductions.items():
         title = group[0]["title"]
-        employee_contribution = sum(item.get("amount",0) for item in group)
+        employee_contribution = sum(item.get("amount", 0) for item in group)
         employer_contribution = sum(
-            item.get("employer_contribution_amount",0) for item in group
+            item.get("employer_contribution_amount", 0) for item in group
         )
         total_contribution = employee_contribution + employer_contribution
         if employer_contribution > 0:
