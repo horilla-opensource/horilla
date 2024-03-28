@@ -946,7 +946,9 @@ def send_slip(request):
     Send payslip method
     """
     email_backend = ConfiguredEmailBackend()
-    if not email_backend and not len(email_backend.dynamic_username_with_display_name):
+    if not getattr(
+        email_backend, "dynamic_username_with_display_name", None
+    ) or not len(email_backend.dynamic_username_with_display_name):
         messages.error(request, "Email server is not configured")
         return redirect(view_payslip)
     payslip_ids = request.GET.getlist("id")
