@@ -71,7 +71,7 @@ x-data="{searchShow: false}"
 <div class="oh-main__titlebar oh-main__titlebar--left">
   <div class="oh-main__titlebar-title fw-bold mb-0 text-dark"  style="cursor:pointer;">{% trans "Recruitments" %}</div>
 </div>
-<form href="" id="filterForm">
+<form hx-get="{% url 'pipeline-search' %}" onsubmit="event.preventDefault()" hx-target="#pipelineSearchContainer" id="filterForm">
 <div class="oh-main__titlebar oh-main__titlebar--right">
   
   
@@ -89,7 +89,7 @@ x-data="{searchShow: false}"
 		placeholder="{% trans 'Search' %}" 
 		name='candidate_name'
     value="{{request.GET.candidate_name}}"
-    onkeyup="$(this).closest('form').submit()"
+    onkeyup="$(this).closest('form').find('.filterButton').click()"
 		class="oh-input oh-input__icon"
 		aria-label="Search Input"
 		/>
@@ -99,12 +99,12 @@ x-data="{searchShow: false}"
 	<ul id="viewTypes" class="oh-view-types ml-2" style="margin-bottom: 0;">
     <input type="hidden" name="view" value="list">
 		<li class="oh-view-type candidate-view-type" >
-		<div onclick="$(this).closest('ul').find('[name=view]').val('list');$(this).closest('form').submit()" class="oh-btn oh-btn--view {% if request.GET.view != 'card' %} oh-btn--view-active {% endif %}"
+		<div onclick="$(this).closest('ul').find('[name=view]').val('list');$(this).closest('form').find('.filterButton').click();$('.oh-btn--view-active').removeClass('oh-btn--view-active');$(this).addClass('oh-btn--view-active');" class="oh-btn oh-btn--view oh-btn--view-active"
 			title={% trans 'List' %}><ion-icon name="list-outline"></ion-icon
 		></a>
 		</li>
 		<li class="oh-view-type candidate-view-type" \>
-		<div  onclick="$(this).closest('ul').find('[name=view]').val('card');$(this).closest('form').submit()" class="oh-btn oh-btn--view {% if request.GET.view == 'card' %} oh-btn--view-active {% endif %}"
+		<div  onclick="$(this).closest('ul').find('[name=view]').val('card');$(this).closest('form').find('.filterButton').click();$('.oh-btn--view-active').removeClass('oh-btn--view-active');$(this).addClass('oh-btn--view-active');" class="oh-btn oh-btn--view "
     title={% trans 'Card' %}><ion-icon name="grid-outline"></ion-icon
 		></a>
 		</li>
@@ -180,6 +180,39 @@ x-data="{searchShow: false}"
     </div>
   </div>
 </div>
+<div
+  class="oh-modal"
+  id="updateStageModal"
+  role="dialog"
+  aria-labelledby="updateStageModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog" id="updateStageModalBody">
+  </div>
+</div>
+
+<div
+class="oh-modal"
+id="recruitmentUpdateModal"
+role="dialog"
+aria-labelledby="recruitmentUpdateModal"
+aria-hidden="true"
+>
+<div class="oh-modal__dialog">
+  <div class="oh-modal__dialog-header">
+    <h5 class="oh-modal__dialog-title" id="recruitmentUpdateModalLabel"
+      >{% trans "Edit Recruitment" %}</span
+    >
+    <button class="oh-modal__close" aria-label="Close" >
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+  <div class="oh-modal__dialog-body" id='recruitmentUpdate'>
+    
+  </div>
+</div>
+</div>
+
 
 <script>
 $(document).ready(function(){
@@ -226,3 +259,175 @@ $(document).ready(function(){
   runDriver()
 </script>
 {% endif %}
+
+<script>
+  function switchTab(e) {
+    let parentContainerEl = e.target.closest(".oh-tabs");
+    let tabElement = e.target.closest(".oh-tabs__tab");
+    
+
+    let targetSelector = e.target.dataset.target;
+    let targetEl = parentContainerEl
+        ? parentContainerEl.querySelector(targetSelector)
+        : null;
+
+    // Highlight active tabs
+    if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
+        parentContainerEl
+            .querySelectorAll(".oh-tabs__tab--active")
+            .forEach(function (item) {
+                item.classList.remove("oh-tabs__tab--active");
+            });
+
+        if (!tabElement.classList.contains("oh-tabs__new-tab")) {
+            tabElement.classList.add("oh-tabs__tab--active");
+        }
+    }
+
+    // Switch tabs
+    if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
+        parentContainerEl
+            .querySelectorAll(".oh-tabs__content--active")
+            .forEach(function (item) {
+                item.classList.remove("oh-tabs__content--active");
+            });
+        targetEl.classList.add("oh-tabs__content--active");
+    }
+}
+
+</script>
+
+
+<script>
+  $(document).ready(function () {
+    Toast = Swal.mixin({
+      toast: true,
+      icon: 'success',
+      title: 'General Title',
+      animation: true,
+      position: 'top-right',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    });
+    htmx.onLoad(function(content) {
+    
+    var sortables = content.querySelectorAll(".hx-sortable");
+
+
+    for (var i = 0; i < sortables.length; i++) {
+      var sortable = sortables[i];
+      window.candidateCurrentStage = undefined
+      $(sortable).droppable({
+        drop: function( event, ui ) {
+          stageId = $(this).closest(".candidate-table").attr("data-stage-id")
+          row = $(ui.draggable)
+          candidateId = row.attr("data-candidate-id")
+          currentStage = row.find('[name="stage_id"]').val()
+          if (stageId != window.candidateCurrentStage) {
+              array = $(this).find("input[type=text][name=order]:hidden")
+              values = []
+              for (let index = 0; index < array.length; index++) {
+                values.push($(array[index]).val())
+              }
+            $.ajax({
+              type: "get",
+              url: "{% url 'update-candidate-stage' %}",
+              data: {
+                "stage_id":stageId,
+                "candidate_id":candidateId,
+                "order":values,
+
+              },
+              success: function (response) {
+                row.find('[name="stage_id"]').val(stageId)
+                Toast.fire({
+                  icon: 'success',
+                  title: '{% trans "Candidate stage updated" %}',
+                  position:"top-end"
+
+                })
+                return
+              }
+            });
+            Toast.fire({
+              icon: 'error',
+              title: '{% trans "Something went wrong" %}',
+              position:"top-end"
+
+            })
+            return
+          }
+        }
+      });
+      $(sortable).sortable({
+        connectWith: ".hx-sortable",
+        animation: 150,
+        ghostClass: 'blue-background-class',
+        items: "> :not(.htmx-indicator)",
+        start: function( event, ui ) {
+          row = $(ui.item)
+          candidateCurrentStage = row.closest(".candidate-table").attr("data-stage-id")
+        },
+        update: function(event, ui) {
+              array = $(this).find("input[type=text][name=order]:hidden")
+              stageSelect = $(ui.item).find("[name=stage_id]")
+              stageId = $(this).attr("data-stage-id")
+              parent = $(this).parent()
+              if (stageId != stageSelect.val()) {
+                stageSelect.val(stageId)
+                stageTitle = $(`[name=stage_id] option[value=${stageId}]:first`).html()
+                stageSelect.next().find(".select2-selection__rendered").html(stageTitle)
+              }
+              values = []
+              for (let index = 0; index < array.length; index++) {
+
+                values.push($(array[index]).val())
+                
+              }
+              $.ajax({
+                type: "get",
+                url: "{% url 'update-candidate-sequence' %}",
+                traditional:true,
+                data: {
+                  "order":values,
+                  "stage_id":stageId,
+                },
+                success: function (response) {
+                  $(`.reload-badge`).click()
+                  $(`.stage-badges`).removeAttr("title")
+                }
+              });
+
+          }
+      });
+    }
+  })
+});
+$(document).on('htmx:beforeRequest', function(event) {
+    var target = event.target;
+
+    // Check if the event is for the element you're interested in
+    isDrag = $(event.target).attr("data-drag-htmx")
+    if (isDrag == "true") {
+
+
+      
+      $.ajax({
+        type: "get",
+        url: "{% url 'update-candidate-sequence' %}",
+        traditional:true,
+        data: {
+          "order":values
+        },
+        success: function (response) {
+          
+        }
+      });
+    }
+});
+</script>

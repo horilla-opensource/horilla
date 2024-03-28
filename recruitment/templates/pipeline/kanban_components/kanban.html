@@ -1,0 +1,75 @@
+
+{% load i18n recruitmentfilters static %}
+{% include 'pipeline/pipeline_tabs.html' %}
+{% include "filter_tags.html" %}
+
+{% for rec in recruitment %}
+{% if request.user|stage_manages:rec or perms.recruitment.view_recruitment %}
+<div class="oh-tabs__content " id="tab_rec_{{rec.id}}">
+  <div class="ui-sortable">
+    <div class="oh-kanban ui-sortable drop-target" id="stageContainer{{ rec.id }}" hx-trigger="load" hx-get="{% url 'pipeline-stages-component' %}?rec_id={{ rec.id }}&view=card">
+        <div class="animated-background"></div>
+    </div>
+</div>
+</div>
+{% endif %}
+{% endfor %}
+ 
+<div class="oh-wrapper mb-5">
+  <!-- Paginator Section -->
+  <div class="oh-pagination">
+  <span
+    class="oh-pagination__page"
+    data-toggle="modal"
+    data-target="#addEmployeeModal"
+    >
+    {% trans "Page" %} {{ recruitment.number }} {% trans "of" %} {{ recruitment.paginator.num_pages }}.
+    </span
+    >
+    
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{recruitment.number}}"
+        hx-target="#pipelineSearchContainer"
+        hx-get="{% url 'pipeline-search' %}?{{pd}}"
+        min="1"
+        />
+        <span class="oh-pagination__label">{% trans "of" %} {{recruitment.paginator.num_pages}}</span>
+      </div>
+      
+      <ul class="oh-pagination__items">
+        {% if recruitment.has_previous %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target="#pipelineSearchContainer"
+          hx-get="{% url 'pipeline-search' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target="#pipelineSearchContainer"
+          hx-get="{% url 'pipeline-search' %}?{{pd}}&page={{ recruitment.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+        </li>
+        {% endif %}
+        {% if recruitment.has_next %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target="#pipelineSearchContainer"
+          hx-get="{% url 'pipeline-search' %}?{{pd}}&page={{ recruitment.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target="#pipelineSearchContainer"
+          hx-get="{% url 'pipeline-search' %}?{{pd}}&page={{ recruitment.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+        </li>
+        {% endif %}
+        
+      </ul>
+    </nav>
+  </div>
+  
+</div>
+</div>
+{% include 'pipeline/footer_components.html' %}
+<script src="{% static 'kanban/stageSequence.js' %}"></script>

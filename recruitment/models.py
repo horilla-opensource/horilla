@@ -172,7 +172,12 @@ class Recruitment(models.Model):
         if self.is_event_based and self.open_positions is None:
             raise ValidationError({"open_positions": _("This field is required")})
 
-
+    def ordered_stages(self):
+        """
+        This method will returns all the stage respectivly to the ascending order of stages
+        """
+        return self.stage_set.order_by("sequence")
+    
 @receiver(post_save, sender=Recruitment)
 def create_initial_stage(sender, instance, created, **kwargs):
     """

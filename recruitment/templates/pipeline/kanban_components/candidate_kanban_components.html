@@ -1,0 +1,220 @@
+{% load i18n recruitmentfilters static %}
+{% for cand in candidates %}
+    <div
+        class="oh-kanban__card candidate change-cand"
+        data-candidate-id="{{cand.id}}"
+        data-recruitment-id ="{{rec.id}}"
+        id="canididate-{{cand.id}}"
+        style="cursor: pointer;overflow: visible;"
+        data-candidate = "{{cand.name}}"
+        data-job-position ="{{cand.job_position_id}}"
+        onclick="window.location.href = `{% url 'candidate-view-individual' cand.id %}`"
+    >
+        <div class="oh-kanban__card-head align-items-baseline pb-0" {% if cand.is_offer_rejected %}
+        style="border-left: solid orangered;"
+        {% endif %}>
+        <div class="oh-profile oh-profile--md align-items-baseline">
+            <div class="oh-profile__avatar mr-2">
+            <img
+                src="{{cand.get_avatar}}"
+                class="oh-profile__image d-block mt-3"
+                alt=""
+            />
+            </div>
+            <div>
+            <span
+            class="oh-profile__name oh-text--dark"
+            data-type="label"
+            >{{cand}}
+            <input type="text" name="order" value="{{cand.id}}" hidden>
+            <select name="stage_id" id="" hidden>
+                {% for stage in cand.recruitment_id.stage_set.all %}
+                <option value="{{stage.id}}" 
+                {% if stage == cand.stage_id %}
+                selected
+                {% endif %}
+                >{{stage}}</option>
+                {% endfor %}
+            </select>
+            </span
+            >
+            {% if request.user|stage_manages:rec or perms.recruitment.add_candidaterating %}
+            {% with request.user.employee_get.candidate_rating.all as candidate_ratings  %}
+                {% if candidate_ratings|has_candidate_rating:cand %} 
+                <form hx-swap="none" hx-post='{% url "update-candidate-rating" cand.id %}' method="post">
+                {% csrf_token %}
+                <div class="d-block mb-0">                           
+                    <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                    {% for i in "54321" %}
+                    <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" {% if candidate_ratings|rating:cand == i %} checked {% endif %} />
+                    <label for="star{{i}}{{cand.id}}" title="{{i}} Stars">5 {% trans "Stars" %}</label>
+                    {% endfor %}
+                    </div>
+                    <button type="submit"  hidden="true" onclick="event.stopPropagation()"></button>
+                    <span id="rating-radio-error"></span>
+                </div>
+                </form>
+                {% else %}
+                <form hx-swap="none" hx-post='{% url "create-candidate-rating" cand.id %}' method="post">
+                {% csrf_token %}
+                <div class="d-block mb-0">                           
+                    <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                    {% for i in "54321" %}
+                    <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" />
+                    <label for="star{{i}}{{cand.id}}" title="{{i}} Stars">5 {% trans "Stars" %}</label>
+                    {% endfor %}
+                    </div>
+                    <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                    <span id="rating-radio-error"></span>
+                </div>
+                </form>
+                {% endif %}
+            {% endwith %}
+            {% endif %}
+            </div>
+        </div>
+        <div class="oh-dropdown" x-data="{open: false}" onclick="event.stopPropagation();">
+            <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open"
+                @click.outside="open = false" title="{% trans " Actions" %}">
+                <ion-icon name="ellipsis-vertical"></ion-icon>
+                </button>
+
+            <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
+                <ul class="oh-dropdown__items">
+                {% if perms.recruitment.change_candidate or request.user|is_stagemanager %}
+                <li class="oh-dropdown__item">
+                    <a
+                    class="oh-dropdown__link oh-dropdown__link--secondary"
+                    hx-get='{% url "send-mail" cand.id %}' 
+                    hx-target='#objectDetailsModalTarget' 
+                    hx-swap='innerHTML'
+                    style="cursor: pointer;"
+                    data-toggle='oh-modal-toggle'
+                    data-target='#objectDetailsModal'
+                    >{% trans "Send Mail" %}</a
+                    >
+                </li>
+                {% endif %}
+                {% if perms.recruitment.add_skillzonecandidate or request.user|is_stagemanager %}
+                <li class="oh-dropdown__item">
+                    <a
+                    class="oh-dropdown__link oh-dropdown__link--secondary"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#createModal"
+                    hx-get="{% url 'to-skill-zone' cand.id %}"
+                    hx-target="#createTarget"
+                    >{% trans "Add to Skill Zone" %}</a
+                    >
+                </li>
+                {% endif %}
+                {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
+                <li class="oh-dropdown__item">
+                    <a
+                    class="oh-dropdown__link oh-dropdown__link--secondary"
+                    hx-target="#rejectModalBody"
+                        hx-swap="innerHTML"
+                        class="oh-btn oh-btn--light"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#rejectModal"
+                        hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
+                        {% if cand.is_offer_rejected %}
+                        title="{% trans "Added In Rejected Candidates" %}"
+                        {% else %}
+                        title="{% trans "Add To Rejected Candidates" %}"
+                        {% endif %}
+                    >
+                    {% if not cand.is_offer_rejected %}
+                    {% trans "Add to Rejected" %}
+                    {% else %}
+                    {% trans "Edit Rejected Candidate" %}
+                    {% endif %}
+                    </a
+                    >
+                </li>
+                {% endif %}
+                {% if perms.view_stagenote or request.user|is_stagemanager %}
+                <li class="oh-dropdown__item">
+                    <a
+                    class="oh-dropdown__link oh-dropdown__link--secondary oh-activity-sidebar__open"
+                    hx-get='{% url "view-note" cand.id %}' 
+                    hx-target='#activitySidebar' 
+                    hx-swap="innerHTML" 
+                    data-target="#activitySidebar"
+                    >{% trans "Notes" %}</a
+                    >
+                </li>
+                {% endif %}
+                <li class="oh-dropdown__item">
+                    <a style="color: inherit;text-decoration: none;" class="oh-dropdown__link oh-dropdown__link--secondary" href="/media/{{cand.resume}}" target="_blank"
+                    >{% trans "Resume" %}</a>
+                </li>
+                {% if perms.recruitment.change_candidate or request.user|is_stagemanager %}
+                <li class="oh-dropdown__item">
+                    <a style="color: inherit;text-decoration: none;" class="oh-dropdown__link oh-dropdown__link--secondary" href="{% url 'rec-candidate-update' cand.id %}" target="_blank"
+                    >{% trans "Edit" %}</a>
+                </li>
+                {% endif %}
+                {% if perms.recruitment.delete_candidate %}
+                <li class="oh-dropdown__item">
+                    <a onclick="return confirm('{% trans "Do you want to archive this candidate?" %}')" href="{% url 'rec-candidate-archive' cand.id %}?is_active=False" class="oh-dropdown__link ">{% trans "Archive" %}</a>
+                </li>
+                {% endif %}
+                {% if perms.recruitment.delete_candidate %}
+                <li class="oh-dropdown__item">
+                <form action="{% url 'rec-candidate-delete' cand.id %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this candidate?" %}');" method="post">
+                    {% csrf_token %}
+                    <button class="oh-dropdown__link oh-dropdown__link--danger ">{% trans "Delete" %}</button>
+                </form>
+                </li>
+                {% endif %}
+                
+                </ul>
+            </div>
+        </div>
+        </div>
+        <div class="oh-kanban__card-footer" 
+        {% if cand.is_offer_rejected %}
+        style="border-left: solid orangered;"
+        {% endif %}
+        >
+        <span class="oh-kanban__card-footer-text oh-text--light"
+            >{{cand.email}}</span
+        ></br>
+        
+        <span class="oh-kanban__card-footer-text oh-text--light"
+            >{{cand.job_position_id}}</span
+        >
+        </div>
+    </div>
+    
+    <script>
+        $("#stageCount{{stage.id}}").text({{candidates.paginator.count}})
+        $("#stageCount{{stage.id}}").attr("title",'{{candidates.paginator.count}} {% trans "Candidates" %}')
+    </script>
+    {% endfor %}
+    {% if candidates.number %}
+    <div class="oh-pagination" ondrag="event.stopPropagation();" onmousedown="event.stopPropagation()">
+        <nav class="oh-pagination__nav">
+            <ul class="oh-pagination__items">
+                {% if candidates.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target="#kanbanCandidates{{candidates.0.stage_id.id}}" hx-get="{% url 'candidate-stage-component' %}?{{pd}}&candidate_page=1&stage_id={{candidates.0.stage_id.id}}" class="oh-pagination__link">{% trans "First" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target="#kanbanCandidates{{candidates.0.stage_id.id}}" hx-get="{% url 'candidate-stage-component' %}?{{pd}}&candidate_page={{ candidates.previous_page_number }}&stage_id={{candidates.0.stage_id.id}}"
+                        class="oh-pagination__link">{% trans "Previous" %}</a>
+                </li>
+                {% endif %} {% if candidates.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target="#kanbanCandidates{{candidates.0.stage_id.id}}" hx-get="{% url 'candidate-stage-component' %}?{{pd}}&candidate_page={{ candidates.next_page_number }}&stage_id={{candidates.0.stage_id.id}}"
+                        class="oh-pagination__link">{% trans "Next" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target="#kanbanCandidates{{candidates.0.stage_id.id}}" hx-get="{% url 'candidate-stage-component' %}?{{pd}}&candidate_page={{ candidates.paginator.num_pages }}&stage_id={{candidates.0.stage_id.id}}"
+                        class="oh-pagination__link">{% trans "Last" %}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}

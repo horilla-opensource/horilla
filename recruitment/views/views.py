@@ -316,6 +316,15 @@ def recruitment_update(request, rec_id):
     return render(request, "recruitment/recruitment_update_form.html", {"form": form})
 
 
+def paginator_qry_recruitment_limited(qryset, page_number):
+    """
+    This method is used to generate common paginator limit.
+    """
+    paginator = Paginator(qryset, 4)
+    qryset = paginator.get_page(page_number)
+    return qryset
+
+
 @login_required
 @manager_can_enter(perm="recruitment.view_recruitment")
 def recruitment_pipeline(request):
@@ -323,46 +332,200 @@ def recruitment_pipeline(request):
     This method is used to filter out candidate through pipeline structure
     """
     view = request.GET.get("view")
-
-    filter_obj = RecruitmentFilter(request.GET)
-    # is active filteration not providing on pipeline
-    recruitments = filter_obj.qs.filter(is_active=True)
-    rec = Recruitment.objects.all()
-    if rec.exists() and view == "card":
+    rec = Recruitment.objects.filter(is_active=True)
+    filter_obj = RecruitmentFilter(request.GET, queryset=rec)
+    if filter_obj.qs.exists() and view == "card":
         template = "pipeline/pipeline_card.html"
     elif rec.exists():
         template = "pipeline/pipeline.html"
     else:
         template = "pipeline/pipeline_empty.html"
+    stage_filter = StageFilter(request.GET)
+    candidate_filter = CandidateFilter(request.GET)
+    recruitments = paginator_qry_recruitment_limited(
+        filter_obj.qs, request.GET.get("page")
+    )
+    return render(
+        request,
+        template,
+        {
+            "rec_filter_obj": filter_obj,
+            "recruitment": recruitments,
+            "stage_filter_obj": stage_filter,
+            "candidate_filter_obj": candidate_filter,
+        },
+    )
 
+
+cache = {}
+
+
+@login_required
+@permission_required("recruitment.view_recruitment")
+def filter_pipeline(request):
+    """
+    This method is used to search/filter from pipeline
+    """
+    filter_obj = RecruitmentFilter(request.GET)
+    stage_filter = StageFilter(request.GET)
+    candidate_filter = CandidateFilter(request.GET)
+    view = request.GET.get("view")
+    recruitments = filter_obj.qs.filter(is_active=True)
     closed = request.GET.get("closed")
+    filter_dict = parse_qs(request.GET.urlencode())
+    filter_dict = get_key_instances(Recruitment, filter_dict)
+
+    cache[request.user.id] = {
+        "candidates": candidate_filter.qs.filter(is_active=True).order_by("sequence"),
+        "stages": stage_filter.qs.order_by("sequence"),
+        "recruitments": recruitments,
+        "filter_dict": filter_dict,
+        "filter_query": request.GET,
+    }
 
     previous_data = request.GET.urlencode()
     paginator = Paginator(recruitments, 4)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    groups = pipeline_grouper(request, page_obj)
 
-    for item in groups:
-        setattr(item["recruitment"], "stages", item["stages"])
-    filter_dict = parse_qs(request.GET.urlencode())
-    for key, val in filter_dict.copy().items():
-        if val[0] == "unknown" or key == "view":
-            del filter_dict[key]
+    template = "pipeline/components/pipeline_search_components.html"
+    if request.GET.get("view") == "card":
+        template = "pipeline/kanban_components/kanban.html"
     return render(
         request,
         template,
         {
             "recruitment": page_obj,
-            "rec_filter_obj": filter_obj,
-            "stage_filter_obj": StageFilter(request.GET),
-            "candidate_filter_obj": CandidateFilter(request.GET),
+            "stage_filter_obj": stage_filter,
+            "candidate_filter_obj": candidate_filter,
             "filter_dict": filter_dict,
             "status": closed,
             "view": view,
             "pd": previous_data,
         },
     )
+
+
+@login_required
+@manager_can_enter("recruitment.view_recruitment")
+def get_stage_badge_count(request):
+    """
+    Method to update stage badge count
+    """
+    stage_id = request.GET["stage_id"]
+    stage = Stage.objects.get(id=stage_id)
+    count = stage.candidate_set.filter(is_active=True).count()
+    return HttpResponse(count)
+
+
+@login_required
+@manager_can_enter(perm="recruitment.view_recruitment")
+def stage_component(request):
+    """
+    This method will stage tab contents
+    """
+    recruitment_id = request.GET["rec_id"]
+    recruitment = Recruitment.objects.get(id=recruitment_id)
+    ordered_stages = cache[request.user.id]["stages"].filter(
+        recruitment_id__id=recruitment_id
+    )
+    template = "pipeline/components/stages_tab_content.html"
+    if request.GET.get("view") == "card":
+        template = "pipeline/kanban_components/kanban_stage_components.html"
+    return render(
+        request,
+        template,
+        {
+            "rec": recruitment,
+            "ordered_stages": ordered_stages,
+            "filter_dict": cache[request.user.id]["filter_dict"],
+        },
+    )
+
+
+@login_required
+@manager_can_enter(perm="recruitment.change_candidate")
+def update_candidate_sequence(request):
+    """
+    Update candidate sequence method
+    """
+    order_list = request.GET.getlist("order")
+    stage_id = request.GET["stage_id"]
+    stage = cache[request.user.id]["stages"].filter(id=stage_id).first()
+    for index, cand_id in enumerate(order_list):
+        candidate = cache[request.user.id]["candidates"].filter(id=cand_id)
+        candidate.update(sequence=index, stage_id=stage)
+    return HttpResponse("")
+
+
+@login_required
+@manager_can_enter(perm="recruitment.change_candidate")
+def update_candidate_stage(request):
+    """
+    Update candidate stage
+    """
+    stage_id = request.GET["stage_id"]
+    candidate_id = request.GET["candidate_id"]
+    stage = Stage.objects.get(id=stage_id)
+    candidate = cache[request.user.id]["candidates"].filter(id=candidate_id)
+    candidate.update(stage_id=stage)
+    return update_candidate_sequence(request)
+
+
+def limited_paginator_qry(querset, page):
+    """
+    Limited pagination
+    """
+    paginator = Paginator(querset, 10)
+    querset = paginator.get_page(page)
+    return querset
+
+
+@login_required
+@manager_can_enter(perm="recruitment.view_recruitment")
+def candidate_component(request):
+    """
+    Candidate component
+    """
+    stage_id = request.GET.get("stage_id")
+    stage = cache[request.user.id]["stages"].filter(id=stage_id).first()
+    candidates = cache[request.user.id]["candidates"].filter(stage_id=stage)
+
+    template = "pipeline/components/candidate_stage_component.html"
+    if cache[request.user.id]["filter_query"].get("view") == "card":
+        template = "pipeline/kanban_components/candidate_kanban_components.html"
+
+    return render(
+        request,
+        template,
+        {
+            "candidates": limited_paginator_qry(
+                candidates, request.GET.get("candidate_page")
+            ),
+            "stage": stage,
+            "rec": getattr(candidates.first(), "recruitment_id", {}),
+        },
+    )
+
+
+@login_required
+@manager_can_enter("recruitment.change_candidate")
+def change_candidsate_stage(request):
+    """
+    This mehtod is used to update candidates stage
+    """
+    candidate_id = request.GET["candidate_id"]
+    stage_id = request.GET["stage_id"]
+    candidate = Candidate.objects.get(id=candidate_id)
+    stage = Stage.objects.filter(
+        recruitment_id=candidate.recruitment_id, id=stage_id
+    ).first()
+    if stage:
+        candidate.stage_id = stage
+        candidate.save()
+        messages.success(request, "Candidate stage updated")
+
+    return stage_component(request)
 
 
 @login_required

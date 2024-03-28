@@ -1,0 +1,101 @@
+
+{% load i18n recruitmentfilters static %}
+
+{% for stage in ordered_stages %}
+{% for stage in rec.stage_set.all %}
+    <button hidden class="reload-badge" hx-get="{% url "get-stage-count" %}?stage_id={{stage.id}}" hx-target="#stageCount{{stage.id}}" id="reloadBadge{{stage.id}}">{{stage}}</button>
+{% endfor %}
+<div
+    class="oh-kanban__section pipeline_item candidate-table"
+    data-container='candidate'
+    id="kanban{{stage.id}}"
+    data-stage-id="{{stage.id}}"
+    data-sequence = "{{stage.sequence}}"
+    data-recruitment-id = "{{rec.id}}"
+>
+    <div class="oh-kanban__section-head stage" style="cursor: pointer; {% if request.user.employee_get in stage.stage_managers.all %} background-color: hsl(38.08deg 100% 50% / 8%); {% endif %}" data-recruitment-id='{{rec.id}}'>
+    <div class="d-flex">
+        <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" data-rec-stage-badge="{{rec.id}}" id="stageCount{{stage.id}}" >0</span>
+        <span class="oh-kanban__section-title" data-type="label"
+        ><input
+        class="oh-tabs__movable-title oh-table__editable-input"
+        value="{{stage}}"
+        {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec %}
+        hx-post="{% url 'stage-title-update' stage.id %}"
+        name='stage'
+        {% endif %}
+        hx-target = "#update-message"
+        style="width: 160px;"
+        readonly=""
+    />
+    </span>
+    </div>
+
+    <div class="oh-kanban__head-actions oh-kanban__dropdown candidate-table" data-stage-id="{{stage.id}}" >          
+        <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open"
+        @click.outside="open = false" title="{% trans " Actions" %}">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+        </button>
+        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
+            <ul class="oh-dropdown__items">
+                {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec%}
+                <li class="oh-dropdown__item">
+                <a class="oh-dropdown__link" 
+                hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.id}}" 
+                hx-target="#createTarget" 
+                data-toggle="oh-modal-toggle" 
+                data-target="#createModal"  data-key=".oh-kanban__section">{% trans "Add Candidate" %}</a>
+                </li>
+                {% endif %}
+                {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec%}
+                <li class="oh-dropdown__item">
+                <a hx-get='{% url "stage-update-pipeline" stage.id %}' hx-target='#objectUpdateModalTarget' class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#objectUpdateModal" data-key=".oh-kanban__section">{% trans "Edit" %}</a>
+                </li>
+                {% endif %}
+                {% if perms.recruitment.delete_stage %}
+                <li class="oh-dropdown__item">
+                <form action="{% url 'rec-stage-delete' stage.id %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');" method="post">
+                    {% csrf_token %}
+                    <button class="oh-dropdown__link oh-dropdown__link--danger ">{% trans "Delete" %}</button>
+                </form>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        </div>
+        
+    </div>
+    </div>
+
+    <div 
+        class="oh-kanban__section-body ui-sortable candidate-container hx-sortable" 
+        data-stage-id='{{stage.id}}' 
+        data-recruitment-id="{{rec.id}}"
+        hx-get="{% url 'candidate-stage-component' %}?stage_id={{stage.id}}&view=card"
+        hx-trigger="load"
+        id="kanbanCandidates{{stage.id}}"
+        >
+        <div class="animated-background" ondrop="event.stopPropagation()" ondrag="event.stopPropagation()"></div>
+    
+    </div>
+
+</div>
+{% endfor %}
+
+    
+{% if perms.recruitment.add_stage or request.user|recruitment_manages:rec %}
+<div class="oh-kanban__add-container">
+    <button class="oh-btn oh-btn--x-small oh-kanban__add-section"data-target="#addStageModal" data-toggle="oh-modal-toggle" hx-get="{% url "rec-stage-create" %}?recruitment_id={{rec.id}}" hx-target="#addStageModalBody">
+        <ion-icon class="me-1 md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+        {% trans "Stage" %}
+    </button>                        
+</div>
+{% endif %}
+
+<script>
+initialAvtiveTab = $(".oh-tabs__content--active").length
+if (!initialAvtiveTab) {
+    $(".oh-tabs__tab:first").click()
+}
+</script>

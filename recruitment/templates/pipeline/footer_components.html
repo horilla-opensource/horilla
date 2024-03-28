@@ -53,36 +53,13 @@
 <div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
   <div class="oh-modal__dialog" style="max-width: 550px">
       <div class="oh-modal__dialog-header">
-      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      <button onclick="$(this).closest('#createModal').removeClass('oh-modal--show');" type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
       </div>
 
       <div class="oh-modal__dialog-body" id="createTarget"></div>
   </div>
 </div>
         
-  <div
-  class="oh-modal"
-  id="recruitmentUpdateModal"
-  role="dialog"
-  aria-labelledby="recruitmentUpdateModal"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h5 class="oh-modal__dialog-title" id="recruitmentUpdateModalLabel"
-        >{% trans "Edit Recruitment" %}</span
-      >
-      <button class="oh-modal__close" aria-label="Close" >
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div class="oh-modal__dialog-body" id='recruitmentUpdate'>
-      
-    </div>
-  </div>
-  </div>
-  
-  
   <div
   class="oh-modal"
   id="recruitmentCreateModal"
@@ -121,4 +98,3 @@
   <script src="{% static 'pipeline/load.js' %}"></script>
   <script src="{% static 'pipeline/badge.js' %}"></script>
   <script src="{% static 'pipeline/pipelineDrag.js' %}"></script>
-  <script src="{% static 'pipeline/activeTab.js' %}"></script>

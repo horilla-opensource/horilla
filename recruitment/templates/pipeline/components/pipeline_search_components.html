@@ -1,0 +1,130 @@
+{% load i18n recruitmentfilters %}
+{% include 'pipeline/pipeline_tabs.html' %}
+{% include "filter_tags.html" %}
+
+<div class="oh-tabs__contents">
+  {% for rec in recruitment %}
+    {% for stage in rec.stage_set.all %}
+      <button hidden class="reload-badge" hx-get="{% url "get-stage-count" %}?stage_id={{stage.id}}" hx-target="#stageCount{{stage.id}}" id="reloadBadge{{stage.id}}">{{stage}}</button>
+    {% endfor %}
+    <button id="stageReloadContainer{{rec.id}}"  
+      hidden
+        hx-get="{% url 'pipeline-stages-component' %}?rec_id={{rec.id}}" 
+        hx-target="#stageContainer{{rec.id}}">
+    </button>
+    {% if request.user|stage_manages:rec or perms.recruitment.view_recruitment %}
+      <!-- Tab Content -->
+      <div class="oh-tabs__content oh-tabs__content" id="tab_rec_{{ rec.id }}">
+        {% if request.user|recruitment_manages:rec or perms.recruitment.add_stage %}
+          <button class="oh-btn oh-btn--secondary" data-target="#addStageModal" data-toggle="oh-modal-toggle" hx-get="{% url 'rec-stage-create' %}?recruitment_id={{ rec.id }}" hx-target="#addStageModalBody">
+            <ion-icon class="me-1" name="add-outline"></ion-icon>
+            {% trans 'Stage' %}
+          </button>
+        {% endif %}
+        {% comment %}ordered_stages method in Recruitment model{% endcomment %}
+        <div class="pt-3 stage-badges" id="stageContainer{{ rec.id }}" hx-trigger="load" hx-get="{% url 'pipeline-stages-component' %}?rec_id={{ rec.id }}">
+          <div class="animated-background"></div>
+        </div>
+      </div>
+      <!-- End of TabContent -->
+    {% endif %}
+  {% endfor %}
+  
+<div class="oh-wrapper mb-5">
+  <!-- Paginator Section -->
+  <div class="oh-pagination">
+  <span
+    class="oh-pagination__page"
+    data-toggle="modal"
+    data-target="#addEmployeeModal"
+    >
+    {% trans "Page" %} {{ recruitment.number }} {% trans "of" %} {{ recruitment.paginator.num_pages }}.
+    </span
+    >
+    
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{recruitment.number}}"
+        hx-target="#pipelineSearchContainer"
+        hx-get="{% url 'pipeline-search' %}?{{pd}}"
+        min="1"
+        />
+        <span class="oh-pagination__label">{% trans "of" %} {{recruitment.paginator.num_pages}}</span>
+      </div>
+      
+      <ul class="oh-pagination__items">
+        {% if recruitment.has_previous %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target="#pipelineSearchContainer"
+          hx-get="{% url 'pipeline-search' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target="#pipelineSearchContainer"
+          hx-get="{% url 'pipeline-search' %}?{{pd}}&page={{ recruitment.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+        </li>
+        {% endif %}
+        {% if recruitment.has_next %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target="#pipelineSearchContainer"
+          hx-get="{% url 'pipeline-search' %}?{{pd}}&page={{ recruitment.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target="#pipelineSearchContainer"
+          hx-get="{% url 'pipeline-search' %}?{{pd}}&page={{ recruitment.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+        </li>
+        {% endif %}
+        
+      </ul>
+    </nav>
+  </div>
+  
+</div>
+</div>
+<script>
+$(document).ready(function () {
+    var activeTab = localStorage.getItem('activeTabRecruitment')
+    
+    console.log($(`[data-target="${activeTab}"]`))
+    if (activeTab != null && $(`[data-target="${activeTab}"]`).length) {
+      var tab  = $(`[data-target="${activeTab}"]`)  
+      var tabContent = $(activeTab)
+      $(tab).attr('class', 'oh-tabs__tab oh-tabs__tab--active');   
+      $(tabContent).attr('class', 'oh-tabs__content oh-tabs__content--active'); 
+    }
+    else{
+      $('.oh-tabs__tab:first').click()
+    }
+    $('.oh-tabs__tab').click(function (e) { 
+      var activeTab = $(this).attr('data-target');
+      localStorage.setItem('activeTabRecruitment',activeTab)
+    });
+  });
+  
+  $(document).ready(function () {
+    $('.oh-tabs__tab').click(function (e) {
+        // Remove fw-bold class from all tabs
+        $('.oh-tabs__tab').removeClass('fw-bold');
+  
+        // Add fw-bold class to the clicked tab
+        $(this).addClass('fw-bold');
+  
+        // Your existing code for storing the active tab
+        var activeTab = $(this).attr('data-target');
+        localStorage.setItem('activeTabOnboarding', activeTab);
+    });
+  
+    // Your existing code for setting the active tab on page load
+    var activeTab = localStorage.getItem('activeTabOnboarding');
+    if (activeTab != null) {
+        var tab = $(`[data-target="${activeTab}"]`);
+        $(tab).addClass('fw-bold');
+    }
+  });
+  
+</script>

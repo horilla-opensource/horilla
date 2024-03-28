@@ -33,7 +33,7 @@ class CandidateFilter(FilterSet):
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
     # for pipeline use
     candidate_name = django_filters.CharFilter(
-        field_name="name", lookup_expr="icontains"
+        method="pipeline_search", lookup_expr="icontains"
     )
     start_date = django_filters.DateFilter(
         field_name="recruitment_id__start_date",
@@ -85,6 +85,17 @@ class CandidateFilter(FilterSet):
         method="filter_joining_set",
         widget=django_filters.widgets.BooleanWidget(),
     )
+
+    def pipeline_search(self, queryset, _, value):
+        """
+        This method is used to include the candidates when they in the recruitment/stages
+        """
+        queryset = (
+            queryset.filter(name__icontains=value)
+            | queryset.filter(stage_id__stage__icontains=value)
+            | queryset.filter(stage_id__recruitment_id__title__icontains=value)
+        ).distinct()
+        return queryset
 
     class Meta:
         """
@@ -319,8 +330,10 @@ class StageFilter(FilterSet):
         """
         This method is used to search recruitment
         """
-        queryset = queryset.filter(stage__icontains=value) | queryset.filter(
-            candidate__name__icontains=value
+        queryset = (
+            queryset.filter(stage__icontains=value)
+            | queryset.filter(candidate__name__icontains=value)
+            | queryset.filter(recruitment_id__title__icontains=value)
         )
         return queryset.distinct()
 

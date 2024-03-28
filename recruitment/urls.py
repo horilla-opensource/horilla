@@ -81,6 +81,33 @@ urlpatterns = [
         name="recruitment-reopen-pipeline",
     ),
     path("pipeline/", views.recruitment_pipeline, name="pipeline"),
+    path("pipeline-search/", views.filter_pipeline, name="pipeline-search"),
+    path(
+        "pipeline-stages-component",
+        views.stage_component,
+        name="pipeline-stages-component",
+    ),
+    path("get-stage-count", views.get_stage_badge_count, name="get-stage-count"),
+    path(
+        "update-candidate-sequence",
+        views.update_candidate_sequence,
+        name="update-candidate-sequence",
+    ),
+    path(
+        "update-candidate-stage",
+        views.update_candidate_stage,
+        name="update-candidate-stage",
+    ),
+    path(
+        "candidate-stage-component",
+        views.candidate_component,
+        name="candidate-stage-component",
+    ),
+    path(
+        "candidate-stage-change",
+        views.change_candidsate_stage,
+        name="candidate-stage-change",
+    ),
     path("pipeline-card", views.recruitment_pipeline_card, name="pipeline-card"),
     path(
         "recruitment-archive/<int:rec_id>",
