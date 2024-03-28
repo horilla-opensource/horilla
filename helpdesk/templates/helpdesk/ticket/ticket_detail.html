@@ -452,12 +452,14 @@
           >
             {% csrf_token %}
             {{create_tag_f.as_p}}
+            <div class="d-flex flex-row-reverse mt-2">
             <button
               type="submit"
               class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
             >
               {% trans "Save" %}
             </button>
+          </div>
           </form>
         </div>
       </div>
