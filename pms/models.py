@@ -44,7 +44,7 @@ class KeyResult(models.Model):
         blank=False, null=False, max_length=255, verbose_name="Description"
     )
     progress_type = models.CharField(
-        max_length=60, default='%', choices=PROGRESS_CHOICES
+        max_length=60, default="%", choices=PROGRESS_CHOICES
     )
     target_value = models.IntegerField(null=True, blank=True, default=100)
     duration = models.IntegerField(null=True, blank=True)
@@ -219,7 +219,9 @@ class Comment(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     history = HorillaAuditLog(excluded_fields=["comment"], bases=[HorillaAuditInfo])
-    objects = HorillaCompanyManager(related_company_field="employee_id__employee_work_info__company_id")
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.comment} "
@@ -276,7 +278,9 @@ class EmployeeKeyResult(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
-    objects = HorillaCompanyManager(related_company_field="employee_objective_id__objective_id__company_id")
+    objects = HorillaCompanyManager(
+        related_company_field="employee_objective_id__objective_id__company_id"
+    )
     progress_percentage = models.IntegerField(default=0)
 
     def __str__(self):
@@ -581,51 +585,34 @@ class KeyResultFeedback(models.Model):
 
 
 def manipulate_existing_data():
-    # correct the existing objectives and key results, run after all apps are loaded
     from dateutil.relativedelta import relativedelta
     from horilla.decorators import logger
 
-    # for existing employee objectives
     try:
-        emp_objectives = EmployeeObjective.objects.all()
-        for emp_objective in emp_objectives:
-            if emp_objective.objective != None:
-                objective, created = Objective.objects.get_or_create(
-                    title=emp_objective.objective
-                )
-                objective.save()
-                objective.duration = 20
-                objective.save()
-                # emp = emp_objective.employee_id
-                # emp_objective.employee_id = emp
-                emp_objective.end_date = emp_objective.start_date + relativedelta(
-                    days=20
-                )
-                emp_objective.objective_id = objective
-                emp_objective.objective = None
-                emp_objective.objective_description = None
-                emp_objective.save()
+        for emp_objective in EmployeeObjective.objects.exclude(objective=None):
+            objective, _ = Objective.objects.get_or_create(
+                title=emp_objective.objective
+            )
+            objective.duration = 20
+            objective.save()
+            emp_objective.end_date = emp_objective.start_date + relativedelta(days=20)
+            emp_objective.objective_id = objective
+            emp_objective.objective = None
+            emp_objective.objective_description = None
+            emp_objective.save()
+
+        for e_kr in EmployeeKeyResult.objects.exclude(key_result=None):
+            kr, _ = KeyResult.objects.get_or_create(title=e_kr.key_result)
+            kr.duration = 2
+            kr.save()
+            e_kr.end_date = e_kr.start_date + relativedelta(days=2)
+            e_kr.key_result = None
+            e_kr.key_result_description = None
+            e_kr.key_result_id = kr
+            e_kr.save()
 
     except Exception as e:
-        logger.error(e)
-
-    # for existing key results
-    try:
-        e_krs = EmployeeKeyResult.objects.all()
-        for e_kr in e_krs:
-            if e_kr.key_result != None:
-                kr, created = KeyResult.objects.get_or_create(title=e_kr.key_result)
-                kr.duration = 2
-                kr.save()
-                e_kr.end_date = e_kr.start_date + relativedelta(days=2)
-                e_kr.key_result = None
-                e_kr.key_result_description = None
-                e_kr.key_result_id = kr
-                e_kr.save()
-
-    except Exception as e:
-        logger.error(e)
+        return
 
 
-for r in range(1):
-    manipulate_existing_data()
+manipulate_existing_data()
