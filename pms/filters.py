@@ -9,7 +9,7 @@ import datetime
 import django_filters
 from django import forms
 from django_filters import DateFilter
-from pms.models import EmployeeKeyResult, EmployeeObjective, Feedback, Objective
+from pms.models import EmployeeKeyResult, EmployeeObjective, Feedback, KeyResult, Objective
 from base.methods import reload_queryset
 from base.filters import FilterSet
 
@@ -225,6 +225,34 @@ class KeyResultFilter(CustomFilterSet):
     class Meta:
         model = EmployeeKeyResult
         fields = "__all__"
+
+class ActualKeyResultFilter(FilterSet):
+    """
+    Filter through KeyResult model
+    """
+
+    search = django_filters.CharFilter(method="search_method")
+
+    class Meta:
+        model = KeyResult
+        fields = [
+            "progress_type",
+            "target_value",
+            "duration",
+            'company_id'
+        ]
+
+    def search_method(self, queryset, _, value: str):
+        """
+        This method is used to search employees and objective
+        """
+        values = value.split(" ")
+        empty = queryset.model.objects.none()
+        for split in values:
+            empty = empty | (queryset.filter(title__icontains=split)
+            )
+
+        return empty.distinct()
 
 
 class ObjectiveReGroup:

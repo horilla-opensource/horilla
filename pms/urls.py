@@ -1,4 +1,6 @@
 from django.urls import path
+
+from base.views import object_delete
 from . import views
 from . import models
 
@@ -14,8 +16,18 @@ urlpatterns = [
     path("add-assignees/<int:obj_id>", views.add_assignees, name="add-assignees"),
 
     # key results
+    path("view-key-result/", views.view_key_result, name="view-key-result"),
+    path("filter-key-result/", views.filter_key_result, name="filter-key-result"),
+    path("create-key-result/", views.kr_create_or_update, name="create-key-result"),
+    path("update-key-result/<int:kr_id>", views.kr_create_or_update, name="update-key-result"),
+    path(
+        "delete-key-result/<int:id>/",
+        object_delete,
+        name="delete-key-result",
+        kwargs={"model": models.KeyResult, "redirect_path": "/pms/filter-key-result/"},
+    ),
     path("key-result-creation", views.key_result_create, name="key-result-creation"),
-     path(
+    path(
         "key-reult-remove/<int:obj_id>/<int:kr_id>",
         views.key_result_remove,
         name="key-result-remove",

@@ -709,6 +709,15 @@
             {% if perms.pms.view_period or request.user|is_reportingmanager %}
             <li class="oh-sidebar__submenu-item">
               <a
+                href="{% url 'view-key-result'  %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Key Results" %}</a
+              >
+            </li>
+            {% endif %}
+            {% if perms.pms.view_period or request.user|is_reportingmanager %}
+            <li class="oh-sidebar__submenu-item">
+              <a
                 href="{% url 'period-view'  %}"
                 class="oh-sidebar__submenu-link"
                 >{% trans "Period" %}</a

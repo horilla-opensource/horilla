@@ -16,9 +16,11 @@ from horilla.decorators import manager_can_enter, permission_required
 from horilla.decorators import login_required, hx_request_required
 from notifications.signals import notify
 from base.methods import get_key_instances, get_pagination, sortby
+from base.views import paginator_qry
 from base.models import Department, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
 from pms.filters import (
+    ActualKeyResultFilter,
     ActualObjectiveFilter,
     KeyResultFilter,
     ObjectiveFilter,
@@ -232,6 +234,51 @@ def objective_update(request, obj_id):
 
 # key result
 @login_required
+@permission_required("pms.view_keyresult")
+def view_key_result(request):
+    """
+    This method is used render template to view all the key result instances
+    """
+    krs=KeyResult.objects.all()
+    krs_filter = ActualKeyResultFilter(request.GET)
+    krs = paginator_qry(krs, request.GET.get("page"))
+    krs_ids = json.dumps([instance.id for instance in krs.object_list])
+    context={
+        'krs':krs,
+        "f": krs_filter,
+        "krs_ids": krs_ids,
+    }
+    return render(request, "okr/key_result/view_kr.html", context)
+
+
+@login_required
+@permission_required("payroll.view_key_result")
+def filter_key_result(request):
+    """
+    Filter and retrieve a list of key results based on the provided query parameters.
+    """
+    query_string = request.GET.urlencode()
+    krs = ActualKeyResultFilter(request.GET).qs
+    template = "okr/key_result/kr_card.html"
+    if request.GET.get("view") == "list":
+        template = "okr/key_result/kr_list.html"
+    krs = sortby(request, krs, "sortby")
+    krs = paginator_qry(krs, request.GET.get("page"))
+    allowance_ids = json.dumps([instance.id for instance in krs.object_list])
+    data_dict = parse_qs(query_string)
+    get_key_instances(KeyResult, data_dict)
+    return render(
+        request,
+        template,
+        {
+            "krs": krs,
+            "pd": query_string,
+            "filter_dict": data_dict,
+            "krs_ids": allowance_ids,
+        },
+    )
+
+@login_required
 def key_result_create(request):
     """
     This method renders form and template to create Ticket type
@@ -242,17 +289,47 @@ def key_result_create(request):
         form = KRForm(request.POST)
         if form.is_valid():
             instance = form.save()
-            obj_data = request.POST.get("dyanamic_create")
-            obj_data = obj_data.replace("create_new_key_result", str(instance.id))
             messages.success(
                 request,
                 _("Key result %(key_result)s created successfully") % {"key_result": instance},
             )
-            # Redirect to the desired URL with encoded query parameters
-            redirect_url = f'/pms/objective-creation?{obj_data}'
-            form = KRForm()
+
+            if request.POST.get('dynamic_create'):
+                obj_data = request.POST.get("dyanamic_create")
+                obj_data = obj_data.replace("create_new_key_result", str(instance.id))
+                
+                # Redirect to the desired URL with encoded query parameters
+                redirect_url = f'/pms/objective-creation?{obj_data}'
+                form = KRForm()
     return render(request,'okr/key_result/key_result_form.html',{'k_form':form,'redirect_url':redirect_url})
 
+@login_required
+@permission_required("payroll.add_key_result")
+def kr_create_or_update(request,kr_id=None):
+    form=KRForm()
+    kr = False
+    if kr_id is not None:
+        kr=KeyResult.objects.filter(id=kr_id).first()
+        form=KRForm(instance=kr)
+    if request.method == "POST":
+        if kr:
+            form = KRForm(request.POST, instance=kr)
+            if form.is_valid():
+                instance = form.save()
+                messages.success(
+                    request,
+                    _("Key result %(key_result)s updated successfully") % {"key_result": instance},
+                )
+        else:
+            form = KRForm(request.POST)
+            if form.is_valid():
+                instance = form.save()
+                messages.success(
+                    request,
+                    _("Key result %(key_result)s created successfully") % {"key_result": instance},
+                )
+        return HttpResponse("<script>window.location.reload()</script>")
+    return render(request,'okr/key_result/real_kr_form.html',{'form':form})
 
 @login_required
 def add_assignees(request, obj_id):

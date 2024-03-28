@@ -1,0 +1,126 @@
+{% load i18n %}
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}"
+>
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Key Results" %}</h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon md hydrated"
+        role="img"
+        aria-label="search outline"
+      ></ion-icon>
+    </a>
+  </div>
+  <form
+    hx-get='{% url "filter-key-result" %}'
+    id="filterForm"
+    hx-swap="innerHTML"
+    hx-target="#krs-container"
+  >
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+      <div
+        class="oh-input-group oh-input__search-group"
+        :class="searchShow ? 'oh-input__search-group--show' : ''"
+      >
+        <ion-icon
+          name="search-outline"
+          class="oh-input-group__icon oh-input-group__icon--left"
+        ></ion-icon>
+        <input
+          type="text"
+          class="oh-input oh-input__icon"
+          aria-label="Search Input"
+          id="filter-key-result"
+          name="search"
+          placeholder="{% trans 'Search' %}"
+          onkeyup="$('.filterButton')[0].click();"
+        />
+      </div>
+      <div class="oh-main__titlebar-button-container">
+        <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
+          <li class="oh-view-type allowance-view-type" data-view="list">
+            <a class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}" 
+              title='{% trans "List" %}'
+              onclick="$('[name=view]').val('list');$('.filterButton')[0].click();"
+            >
+              <ion-icon name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon>
+            </a>
+          </li>
+          <li class="oh-view-type allowance-view-type" data-view="card">
+            <a  class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}" 
+              title='{% trans "Card" %}'
+              onclick="$('[name=view]').val('card');$('.filterButton')[0].click();"
+            >
+              <ion-icon name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon>
+            </a>
+          </li>
+        </ul>
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button class="oh-btn ml-2" @click="open = !open">
+            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+            <div id="filterCount"></div>
+          </button>
+          <div
+            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+            x-show="open"
+            @click.outside="open = false"
+            style="display: none"
+          >
+            {% include 'okr/key_result/kr_filter.html' %}
+          </div>
+        </div>
+        {% comment %} <div class="oh-btn-group ml-2">
+            <div class="oh-dropdown" x-data="{open: false}">
+                <button
+                    class="oh-btn oh-btn--dropdown"
+                    @click="open = !open"
+                    @click.outside="open = false"
+                >
+                    {% trans "Actions" %}
+                </button>
+                <div
+                    class="oh-dropdown__menu oh-dropdown__menu--right"
+                    x-show="open"
+                    style="display: none; cursor: pointer"
+                >
+                    <ul class="oh-dropdown__items">
+                        <li class="oh-dropdown__item">
+                            <a
+                                class="oh-dropdown__link oh-dropdown__link--danger"
+                                id="DeleteContractBulk"
+                                >{% trans "Bulk Delete" %}</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div> {% endcomment %}
+        <div class="oh-btn-group ml-2">
+          <div>
+            <a
+              class="oh-btn oh-btn--secondary oh-btn--shadow"
+              data-toggle="oh-modal-toggle"
+              data-target="#objectDetailsModal"
+              hx-get="{% url 'create-key-result' %}"
+              hx-target="#objectDetailsModalTarget"
+            >
+              <ion-icon
+                class="md hydrated"
+                name="add-outline"
+                role="img"
+                aria-label="add outline"
+              ></ion-icon
+              >{% trans "Create" %}</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>

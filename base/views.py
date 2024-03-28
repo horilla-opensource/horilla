@@ -804,6 +804,8 @@ def object_delete(request, id, **kwargs):
             _("This {} is already in use for {}.").format(instance, model_names_str),
         ),
     if redirect_path:
+        previous_data = request.GET.urlencode()
+        redirect_path = redirect_path + "?" + previous_data
         return redirect(redirect_path)
     else:
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
