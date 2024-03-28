@@ -103,7 +103,7 @@ class AssetReport(HorillaModel):
         )
 
 
-class AssetDocuments(models.Model):
+class AssetDocuments(HorillaModel):
     asset_report = models.ForeignKey(
         "AssetReport", related_name="documents", on_delete=models.CASCADE
     )
@@ -115,7 +115,7 @@ class AssetDocuments(models.Model):
         return f"document for {self.asset_report}"
 
 
-class ReturnImages(models.Model):
+class ReturnImages(HorillaModel):
     image = models.FileField(upload_to="asset/return_images/", blank=True, null=True)
 
 

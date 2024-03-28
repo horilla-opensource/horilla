@@ -150,6 +150,7 @@ class DocumentForm(forms.ModelForm):
         fields = [
             "file",
         ]
+        exclude = ["is_active"]
 
 
 class AssetReportForm(ModelForm):
