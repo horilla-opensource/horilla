@@ -35,7 +35,7 @@ from base.models import (
     JobPosition,
     JobRole,
     MultipleApprovalCondition,
-    ShiftrequestComment,
+    ShiftRequestComment,
     WorkType,
     EmployeeType,
     EmployeeShift,
@@ -48,7 +48,7 @@ from base.models import (
     ShiftRequest,
     EmployeeShiftDay,
     Tags,
-    WorktyperequestComment,
+    WorkTypeRequestComment,
 )
 from base.methods import reload_queryset
 from horilla_audit.models import AuditTag
@@ -688,7 +688,12 @@ class RotatingWorkTypeAssignUpdateForm(forms.ModelForm):
 
         model = RotatingWorkTypeAssign
         fields = "__all__"
-        exclude = ("next_change_date", "current_work_type", "next_work_type")
+        exclude = [
+            "next_change_date",
+            "current_work_type",
+            "next_work_type",
+            "is_active",
+        ]
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
         }
@@ -969,7 +974,7 @@ class RotatingShiftAssignForm(forms.ModelForm):
 
         model = RotatingShiftAssign
         fields = "__all__"
-        exclude = ("next_change_date", "current_shift", "next_shift")
+        exclude = ["next_change_date", "current_shift", "next_shift", "is_active"]
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
         }
@@ -1073,7 +1078,6 @@ class RotatingShiftAssignForm(forms.ModelForm):
             "sunday",
         ]
         target_day = day_names.index(day_name.lower())
-
         for employee_id in employee_ids:
             employee = Employee.objects.filter(id=employee_id).first()
             rotating_shift_assign = RotatingShiftAssign()
@@ -1082,7 +1086,6 @@ class RotatingShiftAssignForm(forms.ModelForm):
             rotating_shift_assign.based_on = self.cleaned_data["based_on"]
             rotating_shift_assign.start_date = self.cleaned_data["start_date"]
             rotating_shift_assign.next_change_date = self.cleaned_data["start_date"]
-            rotating_shift_assign.is_active = self.cleaned_data["is_active"]
             rotating_shift_assign.rotate_after_day = self.data.get("rotate_after_day")
             rotating_shift_assign.rotate_every = self.cleaned_data["rotate_every"]
             rotating_shift_assign.rotate_every_weekend = self.cleaned_data[
@@ -1122,7 +1125,7 @@ class RotatingShiftAssignUpdateForm(ModelForm):
 
         model = RotatingShiftAssign
         fields = "__all__"
-        exclude = ("next_change_date", "current_shift", "next_shift")
+        exclude = ["next_change_date", "current_shift", "next_shift", "is_active"]
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
         }
@@ -1227,7 +1230,7 @@ class ShiftRequestForm(ModelForm):
 
         model = ShiftRequest
         fields = "__all__"
-        exclude = (
+        exclude = [
             "reallocate_to",
             "approved",
             "canceled",
@@ -1236,7 +1239,7 @@ class ShiftRequestForm(ModelForm):
             "previous_shift_id",
             "is_active",
             "shift_changed",
-        )
+        ]
         widgets = {
             "requested_date": DateInput(attrs={"type": "date"}),
             "requested_till": DateInput(attrs={"type": "date"}),
@@ -1614,7 +1617,7 @@ class TagsForm(ModelForm):
         model = Tags
         fields = "__all__"
         widgets = {"color": TextInput(attrs={"type": "color", "style": "height:50px"})}
-        exclude = ("objects",)
+        exclude = ["objects", "is_active"]
 
 
 class EmployeeTagForm(ModelForm):
@@ -1629,6 +1632,7 @@ class EmployeeTagForm(ModelForm):
 
         model = EmployeeTag
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {"color": TextInput(attrs={"type": "color", "style": "height:50px"})}
 
 
@@ -1646,7 +1650,7 @@ class AuditTagForm(ModelForm):
         fields = "__all__"
 
 
-class ShiftrequestcommentForm(ModelForm):
+class ShiftRequestCommentForm(ModelForm):
     """
     Shift request comment form
     """
@@ -1656,55 +1660,13 @@ class ShiftrequestcommentForm(ModelForm):
         Meta class for additional options
         """
 
-        model = ShiftrequestComment
+        model = ShiftRequestComment
         fields = ("comment",)
 
 
-class shiftCommentForm(ModelForm):
+class WorkTypeRequestCommentForm(ModelForm):
     """
-    Shift request comment model form
-    """
-
-    verbose_name = "Add Comment"
-
-    class Meta:
-        model = ShiftrequestComment
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["files"] = MultipleFileField(label="files")
-        self.fields["files"].required = False
-
-    def as_p(self):
-        """
-        Render the form fields as HTML table rows with Bootstrap styling.
-        """
-        context = {"form": self}
-        table_html = render_to_string("common_form.html", context)
-        return table_html
-
-    def save(self, commit: bool = ...) -> Any:
-        multiple_files_ids = []
-        files = None
-        if self.files.getlist("files"):
-            files = self.files.getlist("files")
-            self.instance.attachemnt = files[0]
-            multiple_files_ids = []
-            for attachemnt in files:
-                file_instance = BaserequestFile()
-                file_instance.file = attachemnt
-                file_instance.save()
-                multiple_files_ids.append(file_instance.pk)
-        instance = super().save(commit)
-        if commit:
-            instance.files.add(*multiple_files_ids)
-        return instance, files
-
-
-class WorktyperequestcommentForm(ModelForm):
-    """
-    Worktype request comment form
+    WorkType request comment form
     """
 
     class Meta:
@@ -1712,7 +1674,7 @@ class WorktyperequestcommentForm(ModelForm):
         Meta class for additional options
         """
 
-        model = WorktyperequestComment
+        model = WorkTypeRequestComment
         fields = ("comment",)
 
 
@@ -1764,7 +1726,9 @@ class MultipleApproveConditionForm(ModelForm):
     class Meta:
         model = MultipleApprovalCondition
         fields = "__all__"
-        exclude = ["is_active",]
+        exclude = [
+            "is_active",
+        ]
 
 
 class DynamicPaginationForm(ModelForm):

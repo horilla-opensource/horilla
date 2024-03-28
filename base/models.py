@@ -265,7 +265,7 @@ BASED_ON = [
 ]
 
 
-class RotatingWorkTypeAssign(models.Model):
+class RotatingWorkTypeAssign(HorillaModel):
     """
     RotatingWorkTypeAssign model
     """
@@ -322,8 +322,6 @@ class RotatingWorkTypeAssign(models.Model):
         verbose_name=_("Rotate Every Month"),
     )
 
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -566,7 +564,7 @@ class RotatingShift(HorillaModel):
             raise ValidationError(_("Choose different shifts"))
 
 
-class RotatingShiftAssign(models.Model):
+class RotatingShiftAssign(HorillaModel):
     """
     RotatingShiftAssign model
     """
@@ -621,8 +619,6 @@ class RotatingShiftAssign(models.Model):
         choices=DAY_DATE,
         verbose_name=_("Rotate Every Month"),
     )
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -657,7 +653,7 @@ class BaserequestFile(models.Model):
     objects = models.Manager()
 
 
-class WorkTypeRequest(models.Model):
+class WorkTypeRequest(HorillaModel):
     """
     WorkTypeRequest model
     """
@@ -696,8 +692,6 @@ class WorkTypeRequest(models.Model):
     approved = models.BooleanField(default=False, verbose_name=_("Approved"))
     canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
     work_type_changed = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -789,9 +783,9 @@ class WorkTypeRequest(models.Model):
             {self.employee_id.employee_last_name} - {self.requested_date}"
 
 
-class WorktyperequestComment(models.Model):
+class WorkTypeRequestComment(HorillaModel):
     """
-    WorktyperequestComment Model
+    WorkTypeRequestComment Model
     """
 
     from employee.models import Employee
@@ -800,18 +794,13 @@ class WorktyperequestComment(models.Model):
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
     files = models.ManyToManyField(BaserequestFile, blank=True)
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Created At"),
-        null=True,
-    )
     objects = models.Manager()
 
     def __str__(self) -> str:
         return f"{self.comment}"
 
 
-class ShiftRequest(models.Model):
+class ShiftRequest(HorillaModel):
     """
     ShiftRequest model
     """
@@ -860,8 +849,6 @@ class ShiftRequest(models.Model):
     approved = models.BooleanField(default=False, verbose_name=_("Approved"))
     canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
     shift_changed = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -956,9 +943,9 @@ class ShiftRequest(models.Model):
             {self.employee_id.employee_last_name} - {self.requested_date}"
 
 
-class ShiftrequestComment(models.Model):
+class ShiftRequestComment(HorillaModel):
     """
-    ShiftrequestComment Model
+    ShiftRequestComment Model
     """
 
     from employee.models import Employee
@@ -967,21 +954,15 @@ class ShiftrequestComment(models.Model):
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     files = models.ManyToManyField(BaserequestFile, blank=True)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Created At"),
-        null=True,
-    )
     objects = models.Manager()
 
     def __str__(self) -> str:
         return f"{self.comment}"
 
 
-class Tags(models.Model):
+class Tags(HorillaModel):
     title = models.CharField(max_length=30)
     color = models.CharField(max_length=30)
-    is_active = models.BooleanField(default=True)
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
@@ -1285,7 +1266,7 @@ class AnnouncementExpire(models.Model):
 
 class Announcement(models.Model):
     """
-    Anonuncement Model for stroing all announcements.
+    Announcement Model for storing all announcements.
     """
 
     from employee.models import Employee

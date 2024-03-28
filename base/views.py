@@ -63,7 +63,7 @@ from base.forms import (
     RotatingWorkTypeAssignExportForm,
     ShiftAllocationForm,
     ShiftRequestColumnForm,
-    ShiftrequestcommentForm,
+    ShiftRequestCommentForm,
     WorkTypeForm,
     UserGroupForm,
     RotatingShiftForm,
@@ -83,7 +83,7 @@ from base.forms import (
     ChangePasswordForm,
     TagsForm,
     MultipleApproveConditionForm,
-    WorktyperequestcommentForm,
+    WorkTypeRequestCommentForm,
 )
 from base.models import (
     Announcement,
@@ -99,7 +99,7 @@ from base.models import (
     Department,
     MultipleApprovalCondition,
     MultipleApprovalManagers,
-    ShiftrequestComment,
+    ShiftRequestComment,
     WorkType,
     EmployeeShift,
     EmployeeShiftDay,
@@ -111,7 +111,7 @@ from base.models import (
     ShiftRequest,
     WorkTypeRequest,
     Tags,
-    WorktyperequestComment,
+    WorkTypeRequestComment,
 )
 from base.filters import (
     RotatingShiftRequestReGroup,
@@ -4861,23 +4861,23 @@ def create_shiftrequest_comment(request, shift_id):
     """
     shift = ShiftRequest.objects.filter(id=shift_id).first()
     emp = request.user.employee_get
-    form = ShiftrequestcommentForm(
+    form = ShiftRequestCommentForm(
         initial={"employee_id": emp.id, "request_id": shift_id}
     )
 
     if request.method == "POST":
-        form = ShiftrequestcommentForm(request.POST)
+        form = ShiftRequestCommentForm(request.POST)
         if form.is_valid():
             form.instance.employee_id = emp
             form.instance.request_id = shift
             form.save()
-            comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by(
+            comments = ShiftRequestComment.objects.filter(request_id=shift_id).order_by(
                 "-created_at"
             )
             no_comments = False
             if not comments.exists():
                 no_comments = True
-            form = ShiftrequestcommentForm(
+            form = ShiftRequestCommentForm(
                 initial={"employee_id": emp.id, "request_id": shift_id}
             )
             messages.success(request, _("Comment added successfully!"))
@@ -4964,7 +4964,7 @@ def view_shift_comment(request, shift_id):
     """
     This method is used to render all the notes of the employee
     """
-    comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by(
+    comments = ShiftRequestComment.objects.filter(request_id=shift_id).order_by(
         "-created_at"
     )
     no_comments = False
@@ -4973,7 +4973,7 @@ def view_shift_comment(request, shift_id):
     if request.FILES:
         files = request.FILES.getlist("files")
         comment_id = request.GET["comment_id"]
-        comment = ShiftrequestComment.objects.get(id=comment_id)
+        comment = ShiftRequestComment.objects.get(id=comment_id)
         attachments = []
         for file in files:
             file_instance = BaserequestFile()
@@ -5000,8 +5000,9 @@ def delete_shift_comment_file(request):
     """
     ids = request.GET.getlist("ids")
     BaserequestFile.objects.filter(id__in=ids).delete()
+    messages.success(request,_("File deleted successfully"))
     shift_id = request.GET["shift_id"]
-    comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by(
+    comments = ShiftRequestComment.objects.filter(request_id=shift_id).order_by(
         "-created_at"
     )
     return render(
@@ -5019,7 +5020,7 @@ def view_work_type_comment(request, work_type_id):
     """
     This method is used to render all the notes of the employee
     """
-    comments = WorktyperequestComment.objects.filter(request_id=work_type_id).order_by(
+    comments = WorkTypeRequestComment.objects.filter(request_id=work_type_id).order_by(
         "-created_at"
     )
     no_comments = False
@@ -5028,7 +5029,7 @@ def view_work_type_comment(request, work_type_id):
     if request.FILES:
         files = request.FILES.getlist("files")
         comment_id = request.GET["comment_id"]
-        comment = WorktyperequestComment.objects.get(id=comment_id)
+        comment = WorkTypeRequestComment.objects.get(id=comment_id)
         attachments = []
         for file in files:
             file_instance = BaserequestFile()
@@ -5055,8 +5056,9 @@ def delete_work_type_comment_file(request):
     """
     ids = request.GET.getlist("ids")
     BaserequestFile.objects.filter(id__in=ids).delete()
+    messages.success(request,_("File deleted successfully"))
     work_type_id = request.GET["work_type_id"]
-    comments = WorktyperequestComment.objects.filter(request_id=work_type_id)
+    comments = WorkTypeRequestComment.objects.filter(request_id=work_type_id)
     return render(
         request,
         "work_type_request/htmx/work_type_comment.html",
@@ -5072,7 +5074,7 @@ def delete_shiftrequest_comment(request, comment_id):
     """
     This method is used to delete shift request comments
     """
-    comment = ShiftrequestComment.objects.get(id=comment_id)
+    comment = ShiftRequestComment.objects.get(id=comment_id)
     shift_id = comment.request_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
@@ -5086,23 +5088,23 @@ def create_worktyperequest_comment(request, worktype_id):
     """
     work_type = WorkTypeRequest.objects.filter(id=worktype_id).first()
     emp = request.user.employee_get
-    form = WorktyperequestcommentForm(
+    form = WorkTypeRequestCommentForm(
         initial={"employee_id": emp.id, "request_id": worktype_id}
     )
 
     if request.method == "POST":
-        form = WorktyperequestcommentForm(request.POST)
+        form = WorkTypeRequestCommentForm(request.POST)
         if form.is_valid():
             form.instance.employee_id = emp
             form.instance.request_id = work_type
             form.save()
-            comments = WorktyperequestComment.objects.filter(
+            comments = WorkTypeRequestComment.objects.filter(
                 request_id=worktype_id
             ).order_by("-created_at")
             no_comments = False
             if not comments.exists():
                 no_comments = True
-            form = WorktyperequestcommentForm(
+            form = WorkTypeRequestCommentForm(
                 initial={"employee_id": emp.id, "request_id": worktype_id}
             )
             messages.success(request, _("Comment added successfully!"))
@@ -5192,7 +5194,7 @@ def delete_worktyperequest_comment(request, comment_id):
     """
     This method is used to delete Work type request comments
     """
-    comment = WorktyperequestComment.objects.get(id=comment_id)
+    comment = WorkTypeRequestComment.objects.get(id=comment_id)
     worktype_id = comment.request_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))

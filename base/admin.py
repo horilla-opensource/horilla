@@ -22,7 +22,7 @@ from base.models import (
     EmployeeShiftDay,
     EmployeeType,
     MultipleApprovalManagers,
-    ShiftrequestComment,
+    ShiftRequestComment,
     Tags,
     WorkType,
     RotatingWorkType,
@@ -31,7 +31,7 @@ from base.models import (
     RotatingShiftAssign,
     ShiftRequest,
     WorkTypeRequest,
-    WorktyperequestComment,
+    WorkTypeRequestComment,
     DashboardEmployeeCharts,
 )
 
@@ -55,8 +55,8 @@ admin.site.register(WorkTypeRequest)
 admin.site.register(Tags)
 admin.site.register(DynamicEmailConfiguration)
 admin.site.register(MultipleApprovalManagers)
-admin.site.register(ShiftrequestComment)
-admin.site.register(WorktyperequestComment)
+admin.site.register(ShiftRequestComment)
+admin.site.register(WorkTypeRequestComment)
 admin.site.register(DynamicPagination)
 admin.site.register(Announcement)
 admin.site.register(Attachment)

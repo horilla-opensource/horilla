@@ -166,7 +166,7 @@ def shift_rotate_weekend(rotating_shift, today=datetime.now()):
     switch_date = rotating_shift.next_change_date
     if switch_date.strftime("%Y-%m-%d") == today.strftime("%Y-%m-%d"):
         # calculate the next work type switch date
-        day = datetime.now().strftime("%A").lower()
+        day = today.strftime("%A").lower()
         switch_day = rotating_shift.rotate_every_weekend
         if day == switch_day:
             new_date = today + timedelta(days=7)
