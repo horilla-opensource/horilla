@@ -13,7 +13,7 @@ from .models import (
     AttendanceValidationCondition,
     GraceTime,
     PenaltyAccount,
-    AttendancerequestComment,
+    AttendanceRequestComment,
 )
 
 # Register your models here.
@@ -24,4 +24,4 @@ admin.site.register(AttendanceLateComeEarlyOut)
 admin.site.register(AttendanceValidationCondition)
 admin.site.register(PenaltyAccount)
 admin.site.register(GraceTime)
-admin.site.register(AttendancerequestComment)
+admin.site.register(AttendanceRequestComment)

@@ -45,8 +45,8 @@ from attendance.models import (
     AttendanceActivity,
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
-    AttendancerequestComment,
-    AttendancerequestFile,
+    AttendanceRequestComment,
+    AttendanceRequestFile,
     GraceTime,
     PenaltyAccount,
     strtime_seconds,
@@ -152,6 +152,7 @@ class AttendanceUpdateForm(ModelForm):
             "is_validate_request",
             "is_validate_request_approved",
             "attendance_overtime",
+            "is_active",
         ]
         model = Attendance
         widgets = {
@@ -242,7 +243,7 @@ class AttendanceForm(ModelForm):
 
         model = Attendance
         fields = "__all__"
-        exclude = (
+        exclude = [
             "attendance_overtime_approve",
             "attendance_overtime_calculation",
             "at_work_second",
@@ -255,7 +256,8 @@ class AttendanceForm(ModelForm):
             "is_validate_request",
             "is_validate_request_approved",
             "attendance_overtime",
-        )
+            "is_active",
+        ]
         widgets = {
             "attendance_clock_in": DateTimeInput(attrs={"type": "time"}),
             "attendance_clock_out": DateTimeInput(attrs={"type": "time"}),
@@ -435,6 +437,7 @@ class AttendanceOverTimeForm(ModelForm):
             "overtime_second",
             "month_sequence",
             "hour_pending_second",
+            "is_active",
         ]
         labels = {
             "employee_id": _("Employee"),
@@ -505,6 +508,7 @@ class AttendanceValidationConditionForm(forms.ModelForm):
             "overtime_cutoff": _("Maximum Allowed Overtime Per Day"),
         }
         fields = "__all__"
+        exclude = ["is_active"]
 
 
 class AttendanceRequestForm(ModelForm):
@@ -806,12 +810,12 @@ class GraceTimeForm(ModelForm):
             "allowed_time": forms.TextInput(attrs={"placeholder": "00:00 minutes"}),
         }
 
-        exclude = ["objects", "allowed_time_in_secs"]
+        exclude = ["objects", "allowed_time_in_secs", "is_active"]
 
 
-class AttendancerequestCommentForm(ModelForm):
+class AttendanceRequestCommentForm(ModelForm):
     """
-    AttendancerequestComment form
+    AttendanceRequestComment form
     """
 
     class Meta:
@@ -819,47 +823,5 @@ class AttendancerequestCommentForm(ModelForm):
         Meta class for additional options
         """
 
-        model = AttendancerequestComment
+        model = AttendanceRequestComment
         fields = ("comment",)
-
-
-class AttendanceCommentForm(ModelForm):
-    """
-    Leave request comment model form
-    """
-
-    verbose_name = "Add Comment"
-
-    class Meta:
-        model = AttendancerequestComment
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["files"] = MultipleFileField(label="files")
-        self.fields["files"].required = False
-
-    def as_p(self):
-        """
-        Render the form fields as HTML table rows with Bootstrap styling.
-        """
-        context = {"form": self}
-        table_html = render_to_string("common_form.html", context)
-        return table_html
-
-    def save(self, commit: bool = ...) -> Any:
-        multiple_files_ids = []
-        files = None
-        if self.files.getlist("files"):
-            files = self.files.getlist("files")
-            self.instance.attachemnt = files[0]
-            multiple_files_ids = []
-            for attachemnt in files:
-                file_instance = AttendancerequestFile()
-                file_instance.file = attachemnt
-                file_instance.save()
-                multiple_files_ids.append(file_instance.pk)
-        instance = super().save(commit)
-        if commit:
-            instance.files.add(*multiple_files_ids)
-        return instance, files

@@ -20,6 +20,7 @@ import pandas as pd
 from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
+from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.models import (
     WEEK_DAYS,
@@ -120,7 +121,7 @@ month_mapping = {
 }
 
 
-class AttendanceActivity(models.Model):
+class AttendanceActivity(HorillaModel):
     """
     AttendanceActivity model
     """
@@ -160,7 +161,7 @@ class AttendanceActivity(models.Model):
         ordering = ["-attendance_date", "employee_id__employee_first_name", "clock_in"]
 
 
-class Attendance(models.Model):
+class Attendance(HorillaModel):
     """
     Attendance model
     """
@@ -259,7 +260,6 @@ class Attendance(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -582,30 +582,25 @@ class Attendance(models.Model):
                 )
 
 
-class AttendancerequestFile(models.Model):
+class AttendanceRequestFile(HorillaModel):
     file = models.FileField(upload_to="attendance/request_files")
 
 
-class AttendancerequestComment(models.Model):
+class AttendanceRequestComment(HorillaModel):
     """
-    AttendancerequestComment Model
+    AttendanceRequestComment Model
     """
 
     request_id = models.ForeignKey(Attendance, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    files = models.ManyToManyField(AttendancerequestFile, blank=True)
+    files = models.ManyToManyField(AttendanceRequestFile, blank=True)
     comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Created At"),
-        null=True,
-    )
 
     def __str__(self) -> str:
         return f"{self.comment}"
 
 
-class AttendanceOverTime(models.Model):
+class AttendanceOverTime(HorillaModel):
     """
     AttendanceOverTime model
     """
@@ -759,7 +754,7 @@ class AttendanceOverTime(models.Model):
         super().save(*args, **kwargs)
 
 
-class AttendanceLateComeEarlyOut(models.Model):
+class AttendanceLateComeEarlyOut(HorillaModel):
     """
     AttendanceLateComeEarlyOut model
     """
@@ -813,7 +808,7 @@ class AttendanceLateComeEarlyOut(models.Model):
             {self.attendance_id.employee_id.employee_last_name} - {self.type}"
 
 
-class AttendanceValidationCondition(models.Model):
+class AttendanceValidationCondition(HorillaModel):
     """
     AttendanceValidationCondition model
     """
@@ -855,7 +850,7 @@ months = [
 ]
 
 
-class PenaltyAccount(models.Model):
+class PenaltyAccount(HorillaModel):
     """
     LateComeEarlyOutPenaltyAccount
     """
@@ -884,7 +879,6 @@ class PenaltyAccount(models.Model):
     minus_leaves = models.FloatField(default=0.0, null=True)
     deduct_from_carry_forward = models.BooleanField(default=False)
     penalty_amount = models.FloatField(default=0.0, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def clean(self) -> None:
         super().clean()
@@ -966,7 +960,7 @@ def create_initial_stage(sender, instance, created, **kwargs):
             available.save()
 
 
-class GraceTime(models.Model):
+class GraceTime(HorillaModel):
     """
     Model for saving Grace time
     """
@@ -979,7 +973,6 @@ class GraceTime(models.Model):
     )
     allowed_time_in_secs = models.IntegerField()
     is_default = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
 
@@ -1023,7 +1016,7 @@ class GraceTime(models.Model):
         super().save(*args, **kwargs)
 
 
-class AttendanceGeneralSetting(models.Model):
+class AttendanceGeneralSetting(HorillaModel):
     """
     AttendanceGeneralSettings
     """

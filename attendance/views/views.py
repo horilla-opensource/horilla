@@ -55,7 +55,7 @@ from attendance.forms import (
     AttendanceValidationConditionForm,
     AttendanceUpdateForm,
     AttendanceExportForm,
-    AttendancerequestCommentForm,
+    AttendanceRequestCommentForm,
     GraceTimeForm,
     LateComeEarlyOutExportForm,
 )
@@ -67,8 +67,8 @@ from attendance.models import (
     AttendanceOverTime,
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
-    AttendancerequestComment,
-    AttendancerequestFile,
+    AttendanceRequestComment,
+    AttendanceRequestFile,
     GraceTime,
 )
 from attendance.filters import (
@@ -1681,6 +1681,9 @@ def update_grace_time(request, grace_id):
     GET : return grace time form template
     """
     grace_time = GraceTime.objects.get(id=grace_id)
+    print('_______________________________________________________________________')
+    print(grace_time.__dict__)
+    print('_______________________________________________________________________')
     form = GraceTimeForm(instance=grace_time)
     if request.method == "POST":
         form = GraceTimeForm(request.POST, instance=grace_time)
@@ -1760,23 +1763,23 @@ def create_attendancerequest_comment(request, attendance_id):
     previous_data = request.GET.urlencode()
     attendance = Attendance.objects.filter(id=attendance_id).first()
     emp = request.user.employee_get
-    form = AttendancerequestCommentForm(
+    form = AttendanceRequestCommentForm(
         initial={"employee_id": emp.id, "request_id": attendance_id}
     )
 
     if request.method == "POST":
-        form = AttendancerequestCommentForm(request.POST)
+        form = AttendanceRequestCommentForm(request.POST)
         if form.is_valid():
             form.instance.employee_id = emp
             form.instance.request_id = attendance
             form.save()
-            comments = AttendancerequestComment.objects.filter(
+            comments = AttendanceRequestComment.objects.filter(
                 request_id=attendance_id
             ).order_by("-created_at")
             no_comments = False
             if not comments.exists():
                 no_comments = True
-            form = AttendancerequestCommentForm(
+            form = AttendanceRequestCommentForm(
                 initial={"employee_id": emp.id, "request_id": attendance_id}
             )
             messages.success(request, _("Comment added successfully!"))
@@ -1869,7 +1872,7 @@ def view_attendancerequest_comment(request, attendance_id):
     """
     This method is used to show Attendance request comments
     """
-    comments = AttendancerequestComment.objects.filter(
+    comments = AttendanceRequestComment.objects.filter(
         request_id=attendance_id
     ).order_by("-created_at")
     no_comments = False
@@ -1879,10 +1882,10 @@ def view_attendancerequest_comment(request, attendance_id):
     if request.FILES:
         files = request.FILES.getlist("files")
         comment_id = request.GET["comment_id"]
-        comment = AttendancerequestComment.objects.get(id=comment_id)
+        comment = AttendanceRequestComment.objects.get(id=comment_id)
         attachments = []
         for file in files:
-            file_instance = AttendancerequestFile()
+            file_instance = AttendanceRequestFile()
             file_instance.file = file
             file_instance.save()
             attachments.append(file_instance)
@@ -1901,7 +1904,7 @@ def delete_attendancerequest_comment(request, comment_id):
     This method is used to delete Attendance request comments
     """
 
-    comment = AttendancerequestComment.objects.get(id=comment_id)
+    comment = AttendanceRequestComment.objects.get(id=comment_id)
     attendance_id = comment.request_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
@@ -1914,9 +1917,9 @@ def delete_comment_file(request):
     Used to delete attachment
     """
     ids = request.GET.getlist("ids")
-    AttendancerequestFile.objects.filter(id__in=ids).delete()
+    AttendanceRequestFile.objects.filter(id__in=ids).delete()
     leave_id = request.GET["leave_id"]
-    comments = AttendancerequestComment.objects.filter(request_id=leave_id).order_by(
+    comments = AttendanceRequestComment.objects.filter(request_id=leave_id).order_by(
         "-created_at"
     )
     return render(
