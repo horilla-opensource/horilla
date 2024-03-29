@@ -44,12 +44,14 @@ class TicketTypeForm(ModelForm):
     class Meta:
         model = TicketType
         fields = "__all__"
+        exclude = ["is_active"]
 
 
 class FAQForm(ModelForm):
     class Meta:
         model = FAQ
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "category": forms.HiddenInput(),
             "tags": forms.SelectMultiple(
@@ -163,6 +165,7 @@ class FAQCategoryForm(ModelForm):
     class Meta:
         model = FAQCategory
         fields = "__all__"
+        exclude = ["is_active"]
 
 
 class CommentForm(forms.ModelForm):
@@ -171,6 +174,7 @@ class CommentForm(forms.ModelForm):
         fields = [
             "comment",
         ]
+        exclude = ["is_active"]
         widgets = {"employee_id": forms.HiddenInput()}
 
 
@@ -190,6 +194,7 @@ class AttachmentForm(forms.ModelForm):
     class Meta:
         model = Attachment
         fields = ["file", "comment", "ticket"]
+        exclude = ["is_active"]
 
 
 class DepartmentManagerCreateForm(ModelForm):

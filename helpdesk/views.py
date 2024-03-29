@@ -1189,7 +1189,7 @@ def update_department_manager(request, dep_id):
     department_manager = DepartmentManager.objects.get(id=dep_id)
     form = DepartmentManagerCreateForm(instance=department_manager)
     if request.method == "POST":
-        form = DepartmentManagerCreateForm(request.POST, request.FILES)
+        form = DepartmentManagerCreateForm(request.POST, instance=department_manager)
         if form.is_valid():
             form.save()
             messages.success(request, _("The department manager updated successfully."))

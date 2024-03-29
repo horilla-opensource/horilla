@@ -9,6 +9,7 @@ from employee.models import Employee
 from base.models import Company
 from base.horilla_company_manager import HorillaCompanyManager
 from django.db.models.signals import post_save, post_delete
+from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
@@ -43,7 +44,7 @@ TICKET_STATUS = [
 ]
 
 
-class DepartmentManager(models.Model):
+class DepartmentManager(HorillaModel):
     manager = models.ForeignKey(
         Employee,
         verbose_name="Manager",
@@ -61,11 +62,10 @@ class DepartmentManager(models.Model):
     )
 
 
-class TicketType(models.Model):
+class TicketType(HorillaModel):
     title = models.CharField(max_length=100, unique=True)
     type = models.CharField(choices=TICKET_TYPES, max_length=50)
     prefix = models.CharField(max_length=3, unique=True)
-    is_active = models.BooleanField(default=True)
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
@@ -75,7 +75,7 @@ class TicketType(models.Model):
         return self.title
 
 
-class Ticket(models.Model):
+class Ticket(HorillaModel):
 
     title = models.CharField(max_length=50)
     employee_id = models.ForeignKey(
@@ -98,7 +98,6 @@ class Ticket(models.Model):
     deadline = models.DateField(null=True, blank=True)
     tags = models.ManyToManyField(Tags, blank=True, related_name="ticket_tags")
     status = models.CharField(choices=TICKET_STATUS, default="new", max_length=50)
-    is_active = models.BooleanField(default=True)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -146,7 +145,7 @@ class Ticket(models.Model):
         return get_diff(self)
 
 
-class Comment(models.Model):
+class Comment(HorillaModel):
     comment = models.TextField(null=True, blank=True, max_length=255)
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="comment")
     employee_id = models.ForeignKey(
@@ -158,7 +157,7 @@ class Comment(models.Model):
         return self.comment
 
 
-class Attachment(models.Model):
+class Attachment(HorillaModel):
     file = models.FileField(upload_to="Tickets/Attachment")
     description = models.CharField(max_length=100, blank=True, null=True)
     format = models.CharField(max_length=50, blank=True, null=True)
@@ -197,7 +196,7 @@ class Attachment(models.Model):
         return os.path.basename(self.file.name)
 
 
-class FAQCategory(models.Model):
+class FAQCategory(HorillaModel):
     title = models.CharField(max_length=30)
     description = models.TextField(blank=True, null=True, max_length=255)
 
@@ -205,12 +204,11 @@ class FAQCategory(models.Model):
         return self.title
 
 
-class FAQ(models.Model):
+class FAQ(HorillaModel):
     question = models.CharField(max_length=255)
     answer = models.TextField(max_length=255)
     tags = models.ManyToManyField(Tags)
     category = models.ForeignKey(FAQCategory, on_delete=models.PROTECT)
-    is_active = models.BooleanField(default=True)
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
