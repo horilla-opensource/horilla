@@ -1,4 +1,4 @@
-{% load i18n %}{% load static %}
+{% load i18n %}{% load static recruitmentfilters %}
 <div
   class="oh-modal"
   id="candidateExport"
@@ -182,6 +182,16 @@ x-data="{searchShow: false}"
                 >
                 {% endif %}
               </li>
+              {% if perms.change_candidates or request.user|is_stagemanager %}
+              <li class="oh-dropdown__item">
+                <a href="#" class="oh-dropdown__link "
+                  hx-get='{% url "send-mail" %}?stage_id={{stage.id}}' hx-target="#objectDetailsModalTarget"
+                  data-toggle="oh-modal-toggle" data-target="#objectDetailsModal"
+
+                  >{% trans "Bulk mail" %}</a
+                >
+              </li>
+              {% endif %}
               {% if perms.delete_candidates %}
               <li class="oh-dropdown__item">
                 <a href="#" class="oh-dropdown__link " id="archiveCandidates"
