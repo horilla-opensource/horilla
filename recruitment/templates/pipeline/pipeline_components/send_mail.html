@@ -15,6 +15,7 @@
   hx-encoding="multipart/form-data">
   <input type="hidden" value="{{cand.id}}" name="id">
   <div class="modal-body">
+    {% if cand %}
     <div class="oh-timeoff-modal__profile-content">
       <div class="oh-profile mb-2">
         <div class="oh-profile__avatar">
@@ -35,6 +36,17 @@
       </label>
       <input required type="text" value="{{cand.email}}" name='to' class="oh-input w-100" id="to"
         placeholder="Subject">
+    </div>
+    {% endif %}
+    <div class="form-group mt-2">
+      <label for="candidates">
+        <h6>{% trans "Also send to" %}</h6>
+      </label>
+      <select class="oh-select oh-select-2" {% if not cand %} required {% endif %} name="candidates" id="candidates" multiple>
+        {% for cand in candidates %}
+          <option value="{{cand.id}}">{{cand}}</option>
+        {% endfor %}
+      </select>
     </div>
     <div class="form-group mt-2">
       <label for="subject">
@@ -84,8 +96,23 @@
 </form>
 </div>
 
-
-
+<script>
+{% if stage_id %}
+  $(document).ready(function () {
+    var idsArray = $("#candidateContainer{{stage_id}}")
+    .find(".candidate-checkbox[type=checkbox]:checked")
+    .map(function() {
+      console.log($(this))
+        return this.id;
+    }).get();
+    $("#candidates").val(idsArray).change()
+  });
+{% else %}
+  var selectedIds = JSON.parse($("#selectedInstances").attr("data-ids"));
+  $("#candidates[name=candidates]select[multiple]").val(selectedIds).change()
+{% endif %}
+</script>
+    
 <script>
   button = document.querySelector('.submit-send')
   button.onclick = function (event) {

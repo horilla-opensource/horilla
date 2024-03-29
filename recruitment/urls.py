@@ -198,6 +198,7 @@ urlpatterns = [
         name="note-delete-individual",
     ),
     path("send-mail/<int:cand_id>/", views.form_send_mail, name="send-mail"),
+    path("send-mail/", views.form_send_mail, name="send-mail"),
     path("candidate-view/", views.candidate_view, name="candidate-view"),
     path(
         "candidate-filter-view",

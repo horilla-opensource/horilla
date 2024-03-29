@@ -53,6 +53,12 @@
                                
                                 class="oh-dropdown__link">{% trans "Edit" %}</a>
                         </li>
+                        <li class="oh-dropdown__item" style="cursor: pointer;">
+                            <a hx-get='{% url "send-mail" %}?stage_id={{stage.id}}' hx-target="#updateStageModalBody"
+                                data-toggle="oh-modal-toggle" data-target="#updateStageModal"
+                               
+                                class="oh-dropdown__link">{% trans "Bulk mail" %}</a>
+                        </li>
                         {% endif %}
                         {% if perms.recruitment.delete_stage %}
                         <li class="oh-dropdown__item">

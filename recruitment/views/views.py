@@ -1426,16 +1426,32 @@ def candidate_history(request, cand_id):
 @login_required
 @hx_request_required
 @manager_can_enter(perm="recruitment.change_candidate")
-def form_send_mail(request, cand_id):
+def form_send_mail(request, cand_id=None):
     """
     This method is used to render the bootstrap modal content body form
     """
-    candidate_obj = Candidate.objects.get(id=cand_id)
+    candidate_obj = None
+    stage_id = None
+    if request.GET.get("stage_id"):
+        stage_id = eval(request.GET.get("stage_id"))
+    if cand_id:
+        candidate_obj = Candidate.objects.get(id=cand_id)
+    candidates = Candidate.objects.all()
+    if stage_id and isinstance(stage_id, int):
+        candidates = candidates.filter(stage_id__id=stage_id)
+    else:
+        stage_id = None
+
     templates = RecruitmentMailTemplate.objects.all()
     return render(
         request,
         "pipeline/pipeline_components/send_mail.html",
-        {"cand": candidate_obj, "templates": templates},
+        {
+            "cand": candidate_obj,
+            "templates": templates,
+            "candidates": candidates,
+            "stage_id": stage_id,
+        },
     )
 
 
@@ -1445,58 +1461,67 @@ def send_acknowledgement(request):
     """
     This method is used to send acknowledgement mail to the candidate
     """
-    candidate_id = request.POST["id"]
+    candidate_id = request.POST.get("id")
     subject = request.POST.get("subject")
     bdy = request.POST.get("body")
+    candidate_ids = request.POST.getlist("candidates")
+    candidates = Candidate.objects.filter(id__in=candidate_ids)
+
     other_attachments = request.FILES.getlist("other_attachments")
     attachments = [
         (file.name, file.read(), file.content_type) for file in other_attachments
     ]
     email_backend = ConfiguredEmailBackend()
     host = email_backend.dynamic_username
-    candidate_obj = Candidate.objects.get(id=candidate_id)
+    if candidate_id:
+        candidate_obj = Candidate.objects.filter(id=candidate_id)
+    else:
+        candidate_obj = Candidate.objects.none()
+    candidates = (candidates | candidate_obj).distinct()
+
     template_attachment_ids = request.POST.getlist("template_attachments")
-    bodys = list(
-        RecruitmentMailTemplate.objects.filter(
-            id__in=template_attachment_ids
-        ).values_list("body", flat=True)
-    )
-    for html in bodys:
-        # due to not having solid template we first need to pass the context
-        template_bdy = template.Template(html)
+    for candidate in candidates:
+        bodys = list(
+            RecruitmentMailTemplate.objects.filter(
+                id__in=template_attachment_ids
+            ).values_list("body", flat=True)
+        )
+        for html in bodys:
+            # due to not having solid template we first need to pass the context
+            template_bdy = template.Template(html)
+            context = template.Context(
+                {"instance": candidate, "self": request.user.employee_get}
+            )
+            render_bdy = template_bdy.render(context)
+            attachments.append(
+                (
+                    "Document",
+                    generate_pdf(render_bdy, {}, path=False, title="Document").content,
+                    "application/pdf",
+                )
+            )
+
+        template_bdy = template.Template(bdy)
         context = template.Context(
-            {"instance": candidate_obj, "self": request.user.employee_get}
+            {"instance": candidate, "self": request.user.employee_get}
         )
         render_bdy = template_bdy.render(context)
-        attachments.append(
-            (
-                "Document",
-                generate_pdf(render_bdy, {}, path=False, title="Document").content,
-                "application/pdf",
-            )
+        to = candidate.email
+        email = EmailMessage(
+            subject,
+            render_bdy,
+            host,
+            [to],
         )
+        email.content_subtype = "html"
 
-    template_bdy = template.Template(bdy)
-    context = template.Context(
-        {"instance": candidate_obj, "self": request.user.employee_get}
-    )
-    render_bdy = template_bdy.render(context)
-    to = request.POST["to"]
-    email = EmailMessage(
-        subject,
-        render_bdy,
-        host,
-        [to],
-    )
-    email.content_subtype = "html"
-
-    email.attachments = attachments
-    try:
-        email.send()
-        messages.success(request, "Mail sent to candidate")
-    except Exception as e:
-        logger.exception(e)
-        messages.error(request, "Something went wrong")
+        email.attachments = attachments
+        try:
+            email.send()
+            messages.success(request, "Mail sent to candidate")
+        except Exception as e:
+            logger.exception(e)
+            messages.error(request, "Something went wrong")
     return HttpResponse("<script>window.location.reload()</script>")
 
 
