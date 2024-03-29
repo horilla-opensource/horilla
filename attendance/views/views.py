@@ -1185,9 +1185,17 @@ def validate_bulk_attendance(request):
     for obj_id in ids:
         try:
             attendance = Attendance.objects.get(id=obj_id)
-            attendance.attendance_validated = True
-            attendance.save()
-            messages.success(request, _("Attendance validated."))
+            if not attendance.is_validate_request:
+                attendance.attendance_validated = True
+                attendance.save()
+                messages.success(request, _("Attendance validated."))
+            else:
+                messages.info(
+                    request,
+                    _(
+                        "Pending attendance update request for {}'s attendance on {}!"
+                    ).format(attendance.employee_id, attendance.attendance_date),
+                )
             notify.send(
                 request.user.employee_get,
                 recipient=attendance.employee_id.employee_user_id,
