@@ -137,9 +137,9 @@
                 {% if perms.base.change_rotatingshiftassign  or request.user|is_reportingmanager %}
                 <a
                   hx-get="{% url 'rotating-shift-assign-update' rshift.id %}"
-                  hx-target="#rotatingShiftAssignUpdateModalBody"
+                  hx-target="#objectUpdateModalTarget"
                   hx-swap="innerHTML"
-                  data-target="#rotating-shift-update-modal"
+                  data-target="#objectUpdateModal"
                   data-toggle="oh-modal-toggle"
                   type="button"
                   class="oh-btn oh-btn--light-bkg w-100"

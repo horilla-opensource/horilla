@@ -1,5 +1,18 @@
 {% load i18n %}
-<form method="post" hx-post="{% url 'rotating-shift-assign-update' update_form.instance.id %}" hx-target="#rotatingShiftAssignUpdateModalBody" id="rotating-shift-assign-update-form" >
+<div class="oh-modal__dialog-header">
+  <h2 class="oh-modal__dialog-title" id="">
+    {% trans "Rotating Shift Assign Update" %}
+  </h2>
+  <button
+    class="oh-modal__close--custom" onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+    aria-label="Close"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+
+<div class="oh-modal__dialog-body">
+  <form hx-post="{% url 'rotating-shift-assign-update' update_form.instance.id %}" hx-target="#objectUpdateModalTarget" id="rotating-shift-assign-update-form" >
     {% csrf_token %}
     <div class="oh-inner-sidebar-content__header"></div>
     {{update_form}}
@@ -10,7 +23,7 @@
     </div>
     <div class="oh-inner-sidebar-content__footer"></div>
   </form>
-
+</div>
   
 <script>
   $(document).ready(function () {

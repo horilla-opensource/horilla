@@ -1,37 +1,14 @@
 {% extends 'index.html' %} {% block content %} 
 {% load static %}
 {% load i18n %}
+
 <style>
   form label {
     margin:5px 0;
   }
 </style>
+
 {% include 'base/rotating_shift/rotating_shift_assign_nav.html' %}
-
-<div
-  class="oh-modal"
-  id="rotating-shift-update-modal"
-  role="dialog"
-  aria-labelledby="rotating-shift-update-modal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="">
-        {% trans "Rotating Shift Assign Update" %}
-      </h2>
-      <button
-        class="oh-modal__close--custom" onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
-        aria-label="Close"
-      >
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-
-    <div class="oh-modal__dialog-body" id="rotatingShiftAssignUpdateModalBody">
-    </div>
-  </div>
-</div>
 
 <div class="oh-checkpoint-badge mb-2" id="selectedRShifts" data-ids="[]" data-clicked="" style="display:none;" >
   {% trans "Selected Shifts" %}

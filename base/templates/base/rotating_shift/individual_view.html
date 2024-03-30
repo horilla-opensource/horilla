@@ -170,9 +170,9 @@
         <div class="oh-btn-group">
           {% if perms.base.change_rotatingshiftassign  or request.user|is_reportingmanager %}
             <a class="oh-btn oh-btn--info" data-toggle="oh-modal-toggle"
-              data-target="#rotating-shift-update-modal"
+              data-target="#objectUpdateModal"
               hx-get="{% url "rotating-shift-assign-update" instance.id %}"
-              hx-target="#rotatingShiftAssignUpdateModalBody" 
+              hx-target="#objectUpdateModalTarget" 
               style="width: 50%;">
               <ion-icon name="create-outline"> </ion-icon>{% trans "Edit" %} 
             </a>
