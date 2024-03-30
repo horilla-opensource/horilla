@@ -399,7 +399,8 @@
 
       }
     }
-    function getAssignedLeave(employeeId) {
+    function getAssignedLeave(employeeElement) {
+      var employeeId=employeeElement.val()
       $.ajax({
           type: "get",
           url: "{% url "get-assigned-leaves" %}",
@@ -413,6 +414,13 @@
                       }</td><td>${element.available_days}</td><td>${element.carryforward_days}</td></tr>`
               }
               $("#availableTableBody").html($(rows))
+              let newLeaves = ""
+              for (let index = 0; index < response.length; index++) {
+                  const leave = response[index];
+                  newLeaves = newLeaves + `<option value="${leave.leave_type_id__id
+                      }">${leave.leave_type_id__name}</option>`
+              }
+              $('#id_leave_type_id').html(newLeaves) 
               removeHighlight()
           }
       });

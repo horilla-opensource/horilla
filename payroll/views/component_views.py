@@ -1334,9 +1334,9 @@ def get_assigned_leaves(request):
     """
     assigned_leaves = (
         AvailableLeave.objects.filter(
-            employee_id__id=request.GET["employeeId"], total_leave_days__gte=1
+            employee_id__id=request.GET["employeeId"], total_leave_days__gte=1,leave_type_id__is_encashable=True,
         )
-        .values("leave_type_id__name", "available_days", "carryforward_days")
+        .values("leave_type_id__name", "available_days", "carryforward_days",'leave_type_id__id')
         .distinct()
     )
     return JsonResponse(list(assigned_leaves), safe=False)

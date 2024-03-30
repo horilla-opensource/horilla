@@ -547,6 +547,14 @@ class ReimbursementForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
 
+    def get_encashable_leaves(self,employee):
+        leaves=LeaveType.objects.filter(
+            employee_available_leave__employee_id=employee,
+            employee_available_leave__total_leave_days__gte=1,
+            is_encashable=True,
+        )
+        return leaves
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         exclude_fields = []
@@ -561,10 +569,7 @@ class ReimbursementForm(ModelForm):
                 else self.instance.employee_id
             )
         self.initial["employee_id"] = employee.id
-        assigned_leaves = LeaveType.objects.filter(
-            employee_available_leave__employee_id=employee,
-            employee_available_leave__total_leave_days__gte=1,
-        )
+        assigned_leaves = self.get_encashable_leaves(employee)
         self.assigned_leaves = AvailableLeave.objects.filter(
             leave_type_id__in=assigned_leaves, employee_id=employee
         )
@@ -577,7 +582,7 @@ class ReimbursementForm(ModelForm):
         self.fields["type"].widget.attrs.update(type_attr)
 
         employee_attr = self.fields["employee_id"].widget.attrs
-        employee_attr["onchange"] = "getAssignedLeave($(this).val())"
+        employee_attr["onchange"] = "getAssignedLeave($(this))"
         self.fields["employee_id"].widget.attrs.update(employee_attr)
 
         self.fields["allowance_on"].widget = forms.DateInput(
@@ -640,21 +645,42 @@ class ReimbursementForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        available_points = BonusPoint.objects.filter(
+        if self.instance.pk:
+           employee_id = self.instance.employee_id
+           type= self.instance.type
+           leave_type_id = self.instance.leave_type_id
+        else:
             employee_id=cleaned_data["employee_id"]
+            type =cleaned_data["type"]
+            leave_type_id = cleaned_data["leave_type_id"] 
+
+        available_points = BonusPoint.objects.filter(
+            employee_id=employee_id
         ).first()
-        if cleaned_data["type"] =="bonus_encashment":
-            if available_points.points < cleaned_data["bonus_to_encash"]:
+        if type =="bonus_encashment":
+            if self.instance.pk:
+                bonus_to_encash = self.instance.bonus_to_encash
+            else:
+                bonus_to_encash=cleaned_data["bonus_to_encash"]
+
+            if available_points.points < bonus_to_encash:
                 raise forms.ValidationError(
                     {"bonus_to_encash": "Not enough bonus points to redeem"}
                 )
-            if cleaned_data["bonus_to_encash"] <= 0:
+            if bonus_to_encash <= 0:
                 raise forms.ValidationError(
                     {
                         "bonus_to_encash": "Points must be greater than zero to redeem."
                     }
                 )
-
+        if type =="leave_encashment":
+            leave_type_id = leave_type_id 
+            encashable_leaves = self.get_encashable_leaves(employee_id)
+            if (leave_type_id is None) or (leave_type_id not in encashable_leaves):
+                raise forms.ValidationError(
+                    {"leave_type_id": "This leave type is not encashable"}
+                )
+            
     def save(self, commit: bool = ...) -> Any:
         is_new = not self.instance.pk
         attachemnt = []
