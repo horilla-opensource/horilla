@@ -15,8 +15,7 @@
   <div class="oh-layout--grid-3">
     {% for kr in krs %}
     <div class="oh-kanban-card " 
-        data-toggle="oh-modal-toggle" data-target = "#objectDetailsModal" 
-        {% comment %} hx-get="{% url 'single-kr-view' kr.id %}?instances_ids={{kr_ids}}" hx-target = "#objectDetailsModalTarget" {% endcomment %}
+        
     >
         <div class="oh-kanban-card__avatar">
         <div class="oh-kanban-card__profile-container">
@@ -59,7 +58,10 @@
             <ul class="oh-dropdown__items">
                 <li class="oh-dropdown__item">
                 <a onclick="event.stopPropagation();"
-                  {% comment %} href="{% url 'update-allowance' allowance.id %}" {% endcomment %}
+                  data-toggle="oh-modal-toggle"
+                  data-target="#objectDetailsModal"
+                  hx-get="{% url 'update-key-result' kr.id %}"
+                  hx-target="#objectDetailsModalTarget"
                 >{% trans "Edit" %}</a>
                 </li>
                 <li class="oh-dropdown__item">

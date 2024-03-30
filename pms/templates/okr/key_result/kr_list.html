@@ -70,8 +70,6 @@
             </div>
             {% for kr in krs %}
             <div class="oh-sticky-table__tbody " draggable="true" 
-                data-toggle="oh-modal-toggle" data-target = "#objectDetailsModal" 
-                {% comment %} hx-get="{% url 'single-allowance-view' allowance.id %}?instances_ids={{allowance_ids}}" hx-target = "#objectDetailsModalTarget" {% endcomment %}
             >
             <div class="oh-sticky-table__tr ">
                 <div class="oh-sticky-table__sd" onclick="event.stopPropagation()">
