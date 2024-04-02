@@ -73,7 +73,7 @@ $(document).ready(function () {
         
       },
       error: (error) => {
-
+        console.log(error);
       }
     });
   }
@@ -91,7 +91,14 @@ $(document).ready(function () {
         });   
     }
   });
-
+  $("#id_cyclic_feedback").on("change", function(){
+    if (this.checked){
+      $("#cyclic_feedback_period").show()
+    }
+    else{
+      $("#cyclic_feedback_period").hide()
+    }
+  })
 
 });
 
@@ -101,7 +108,6 @@ function validateFeedBack(event) {
   var employeElement = $("#id_employee_id")
   var managerElement =  $("#id_manager_id")
   var questionTemplateElement =  $("#id_question_template_id")
-  console.log(employeElement.val());
   if (employeElement.val()=='') {
     $(employeElement).siblings(".errorlist").first().show();
   }

@@ -326,6 +326,8 @@ class EmployeeKeyResult(models.Model):
         # if self.target_value != 0:
         if not self.pk and not self.current_value:
             self.current_value = self.start_value
+        if self.key_result_id:
+            self.key_result = self.key_result_id.title
         self.update_kr_progress()
         super().save(*args, **kwargs)
         self.employee_objective_id.update_objective_progress()
@@ -409,6 +411,11 @@ class Feedback(models.Model):
         ("At Risk", _("At Risk")),
         ("Not Started", _("Not Started")),
     )
+    PERIOD = (
+        ("days", _("Days")),
+        ("months", _("Months")),
+        ("years", _("Years")),
+    )
     review_cycle = models.CharField(max_length=100, null=False, blank=False)
     manager_id = models.ForeignKey(
         Employee,
@@ -448,7 +455,36 @@ class Feedback(models.Model):
         EmployeeKeyResult,
         blank=True,
     )
+    cyclic_feedback = models.BooleanField(default=False)
+    cyclic_feedback_days_count = models.IntegerField(blank=True, null=True)
+    cyclic_feedback_period = models.CharField(
+        max_length=50, choices=PERIOD, blank=True, null=True
+    )
+    cyclic_next_start_date = models.DateField(null=True, blank=True)
+    cyclic_next_end_date = models.DateField(null=True, blank=True)
+
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+    
+    class Meta:
+        ordering = ["-id"]
+
+    def save(self, *args, **kwargs):
+        start_date = self.start_date
+        end_date = self.end_date
+        cyclic_feedback_period = self.cyclic_feedback_period
+        cyclic_feedback_days_count = self.cyclic_feedback_days_count
+        
+        if cyclic_feedback_period == "months":
+            self.cyclic_next_start_date = self.start_date + relativedelta(months=cyclic_feedback_days_count)
+            self.cyclic_next_end_date = end_date + relativedelta(months=cyclic_feedback_days_count)
+        elif cyclic_feedback_period == "years":
+            self.cyclic_next_start_date = start_date + relativedelta(years=cyclic_feedback_days_count)
+            self.cyclic_next_end_date = end_date + relativedelta(years=cyclic_feedback_days_count)
+        elif cyclic_feedback_period == "days":
+            self.cyclic_next_start_date = start_date + relativedelta(days=cyclic_feedback_days_count)
+            self.cyclic_next_end_date = end_date + relativedelta(days=cyclic_feedback_days_count)
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.review_cycle}"

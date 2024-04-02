@@ -1269,7 +1269,7 @@ def feedback_creation_ajax(request):
         if request.method == "POST":
             employee_id = request.POST.get("employee_id")
             key_results = EmployeeKeyResult.objects.filter(
-                employee_id=employee_id
+                employee_objective_id__employee_id=employee_id
             ).values()
             employee_work_info = EmployeeWorkInformation.objects.filter(
                 employee_id__id=employee_id

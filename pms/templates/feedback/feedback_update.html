@@ -99,11 +99,46 @@
             </div>
 
         </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-5" id="">
+                <div class="oh-input__group">
+                    <label class="oh-input__label" for="{{feedback_form.cyclic_feedback.id_for_label}}">{% trans "Is Cyclic Feedback" %}</label>
+                    <div class="oh-switch">
+                    {{feedback_form.cyclic_feedback}}
+                    </div>
+                    {{feedback_form.cyclic_feedback.errors}}
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6" style="display:none" id="cyclic_feedback_period">
+                <div class="oh-input__group">
+                    <label class="oh-input__label" for="id_employee_key_results_id">{% trans "Cycle Period" %}</label>
+                    <div class="w-100 d-flex">
+                        {{feedback_form.cyclic_feedback_days_count}}
+                        {{feedback_form.cyclic_feedback_period}}
+                    </div>
+                </div>
+            </div>
+        </div>
         <button type="submit" class=" w-100 oh-btn oh-btn--secondary oh-btn--shadow mt-4 mb-4">
             {% trans "Save" %}
         </button>
     </form>
 
+<script>
+    $(document).ready(function() {
+        if ($("#id_cyclic_feedback").prop("checked")){
+            $("#cyclic_feedback_period").show()
+        }
+        $("#id_cyclic_feedback").on("change", function(){
+            if (this.checked){
+            $("#cyclic_feedback_period").show()
+            }
+            else{
+            $("#cyclic_feedback_period").hide()
+            }
+        })
+    })
+</script>
 
 <script src="{% static 'src/feedback/feedback_creation.js' %}"></script> 
     

@@ -4,6 +4,7 @@ forms.py
 This module is used to register the forms for pms models
 """
 
+import datetime
 from typing import Any
 import uuid
 from django import forms
@@ -658,6 +659,24 @@ class FeedbackForm(ModelForm):
                 attrs={
                     "class": "oh-select oh-select--lg oh-select-no-search",
                     "style": "width:100%; display:none;",
+                    "required": "false",
+                }
+            ),
+            "cyclic_feedback": forms.CheckboxInput(
+                attrs={
+                    "class": "oh-switch__checkbox",
+                }
+            ),
+            "cyclic_feedback_period": forms.Select(
+                attrs={
+                    "class": "oh-select oh-select--lg oh-select-no-search",
+                    "style": "width:100%; display:none;",
+                    "required": "false",
+                }
+            ),
+            "cyclic_feedback_days_count": forms.NumberInput(
+                attrs={
+                    "class": "oh-input",
                     "required": "false",
                 }
             ),

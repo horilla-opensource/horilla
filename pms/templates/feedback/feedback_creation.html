@@ -110,7 +110,6 @@
                     </div>
                 </div>
                 <div class="row">
-
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="oh-input__group">
                             <label class="oh-input__label" for="{{feedback_form.question_template_id.id_for_label}}">{% trans "Question Template" %}</label>
@@ -129,7 +128,26 @@
                             </select>
                         </div>
                     </div>
-
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-5" id="">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{feedback_form.cyclic_feedback.id_for_label}}">{% trans "Is Cyclic Feedback" %}</label>
+                            <div class="oh-switch">
+                            {{feedback_form.cyclic_feedback}}
+                            </div>
+                            {{feedback_form.cyclic_feedback.errors}}
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6" style="display:none" id="cyclic_feedback_period">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="id_employee_key_results_id">{% trans "Cycle Period" %}</label>
+                            <div class="w-100 d-flex">
+                                {{feedback_form.cyclic_feedback_days_count}}
+                                {{feedback_form.cyclic_feedback_period}}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             </section>
