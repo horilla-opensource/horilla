@@ -1,17 +1,20 @@
-{% extends "index.html" %}
-{% block content %}
-{% load i18n %}
-{% load basefilters %}
-{% load attendancefilters %}
+{% extends "index.html" %} {% block content %} {% load i18n %} 
+{% load basefilters %} {% load attendancefilters %} 
 {% include 'shift_request/shift_request_nav.html' %}
 
-<div class="oh-checkpoint-badge mb-2" id="selectedShifts" data-ids="[]" data-clicked="" style="display:none;" >
+<div
+  class="oh-checkpoint-badge mb-2"
+  id="selectedShifts"
+  data-ids="[]"
+  data-clicked=""
+  style="display: none"
+  >
   {% trans "Selected Shifts" %}
 </div>
-<div  class="oh-wrapper">
-
-  <!-- start of Quick filters  -->
-    <div class="d-flex flex-row-reverse" style="height:3px;">
+<div class="oh-wrapper">
+  {% if data %}
+    <!-- start of Quick filters  -->
+    <div class="d-flex flex-row-reverse" style="height: 3px">
       <span
         class="m-3 review_ongoing"
         onclick="$('[name=canceled]').val('true');$('[name=approved]').val('unknown');$('[name=canceled]').first().change();$('.filterButton').click()"
@@ -35,47 +38,54 @@
         {% trans "Approved" %}
       </span>
     </div>
-  <!-- end of quick filters  -->
+    <!-- end of quick filters  -->
 
-  <div
-    class="oh-checkpoint-badge text-success mb-2"
-    id="selectAllShifts"
-    style="cursor: pointer"
+    <!-- start of select all instance and export  -->
+    <div
+      id="selectAllShifts"
+      style="cursor: pointer"
+      class="oh-checkpoint-badge text-success mb-2"
     >
       {% trans "Select All Shifts" %}
     </div>
     <div
-    class="oh-checkpoint-badge text-secondary mb-2"
-    id="unselectAllShifts"
-    style="cursor: pointer;
-          display:none;"
+      id="unselectAllShifts"
+      style="cursor: pointer; display: none"
+      class="oh-checkpoint-badge text-secondary mb-2"
     >
       {% trans "Unselect All Shifts" %}
     </div>
     <div
-    class="oh-checkpoint-badge text-info mb-2"
-    id="exportShifts"
-    style="cursor: pointer;"
+      class="oh-checkpoint-badge text-info mb-2"
+      id="exportShifts"
+      style="cursor: pointer"
     >
       {% trans "Export Shifts" %}
     </div>
-    <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowShifts" style="display: none"></div>
-
-
-    <div class="oh-tabs">
-      <ul class="oh-tabs__tablist">
-        <li class="oh-tabs__tab oh-tabs__tab--active" data-target="#shift_request">
-          {% trans "Shift Requests" %}
-        </li>
-        <li class="oh-tabs__tab" data-target="#allocated_shift">
-          {% trans "Allocated Shift Requests" %}
-        </li>
-      </ul>  
-      <div id="view-container">
-        {% include 'shift_request/htmx/requests.html' %}
-      </div>
+    <div
+      class="oh-checkpoint-badge text-danger mb-2"
+      id="selectedShowShifts"
+      style="display: none"
+    ></div>
+    <!--end of select all instance and export  -->
+  {% endif %}
+  <div class="oh-tabs">
+    <ul class="oh-tabs__tablist">
+      <li
+        class="oh-tabs__tab oh-tabs__tab--active"
+        data-target="#shift_request"
+      >
+        {% trans "Shift Requests" %}
+      </li>
+      <li class="oh-tabs__tab" data-target="#allocated_shift">
+        {% trans "Allocated Shift Requests" %}
+      </li>
+    </ul>
+    <div id="view-container">
+      {% include 'shift_request/htmx/requests.html' %}
+    </div>
+  </div>
 </div>
-
 
 <div
   class="oh-modal"
@@ -83,66 +93,68 @@
   role="dialog"
   aria-labelledby="shiftRequestModalUpdate"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
-      <h5 class="oh-modal__dialog-title" id="shiftRequestModalUpdateLabel"
-        >{% trans "Update Request" %}</span
+      <h5 class="oh-modal__dialog-title" id="shiftRequestModalUpdateLabel">
+        {% trans "Update Request" %}
+      </h5>
+      <button
+        class="oh-modal__close--custom"
+        aria-label="Close"
+        onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
       >
-      <button class="oh-modal__close--custom" aria-label="Close" onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
-    
-    <div class="oh-modal__dialog-body" id='shiftRequestModalUpdateBody'>
-    </div>
+
+    <div class="oh-modal__dialog-body" id="shiftRequestModalUpdateBody"></div>
   </div>
 </div>
 
-<div class="oh-activity-sidebar" id="activitySidebar" style="z-index:1000;">
-
-  <div class="oh-activity-sidebar__body" id="commentContainer">
-  </div>
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+  <div class="oh-activity-sidebar__body" id="commentContainer"></div>
 </div>
-
 
 <script>
   // This lines is used to set default selected stage for exits lines
 
-  function enlargeImage(src,$element) {
-      $(".enlargeImageContainer").empty()
-      var enlargeImageContainer = $element.parents().closest("li").find(".enlargeImageContainer")
-      enlargeImageContainer.empty()
-      style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
-      var enlargedImage = $('<iframe>').attr({ src: src, style: style })
-      var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
-      enlargeImageContainer.append(enlargedImage)
-      enlargeImageContainer.append(name)
-      setTimeout(function () {
-          enlargeImageContainer.show()
+  function enlargeImage(src, $element) {
+    $(".enlargeImageContainer").empty();
+    var enlargeImageContainer = $element
+      .parents()
+      .closest("li")
+      .find(".enlargeImageContainer");
+    enlargeImageContainer.empty();
+    style =
+      "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white";
+    var enlargedImage = $("<iframe>").attr({ src: src, style: style });
+    var name = $("<span>").text(src.split("/").pop().replace(/_/g, " "));
+    enlargeImageContainer.append(enlargedImage);
+    enlargeImageContainer.append(name);
+    setTimeout(function () {
+      enlargeImageContainer.show();
 
-          const iframe = document.querySelector('iframe').contentWindow
-          var iframe_document = iframe.document
-          iframe_image = iframe_document.getElementsByTagName('img')[0]
-          $(iframe_image).attr('style', 'width:100%; height:100%;')
-      }, 100)
+      const iframe = document.querySelector("iframe").contentWindow;
+      var iframe_document = iframe.document;
+      iframe_image = iframe_document.getElementsByTagName("img")[0];
+      $(iframe_image).attr("style", "width:100%; height:100%;");
+    }, 100);
   }
 
   function hideEnlargeImage() {
-      var enlargeImageContainer = $('.enlargeImageContainer')
-      enlargeImageContainer.empty()
+    var enlargeImageContainer = $(".enlargeImageContainer");
+    enlargeImageContainer.empty();
   }
 
-  $(document).on('click', function (event) {
-      if (!$(event.target).closest('#enlargeImageContainer').length) {
-          hideEnlargeImage()
-      }
-  })  
+  $(document).on("click", function (event) {
+    if (!$(event.target).closest("#enlargeImageContainer").length) {
+      hideEnlargeImage();
+    }
+  });
   function submitForm(elem) {
-      $(elem).siblings(".add_more_submit").click();
+    $(elem).siblings(".add_more_submit").click();
   }
 </script>
-
-
 
 {% endblock content %}

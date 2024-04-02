@@ -3,37 +3,34 @@
 {% load static %}
 {% load i18n %}
 {% include 'filter_tags.html' %}
+
 {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+  <div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+      <div class="oh-alert oh-alert--animated {{message.tags}}">
+        {{ message }}
+      </div>
     </div>
+    {% endfor %}
   </div>
-  {% endfor %}
-</div>
 {% endif %}
-<div
-class="oh-checkpoint-badge text-success mb-2"
-id="selectAllWorktypes"
-style="cursor: pointer"
-data-pd="{{pd}}"
->
+
+<div data-pd="{{pd}}"
+  id="selectAllWorktypes"
+  style="cursor: pointer"
+  class="oh-checkpoint-badge text-success mb-2">
   {% trans "Select All Worktypes" %}
 </div>
-<div
-class="oh-checkpoint-badge text-secondary mb-2"
-id="unselectAllWorktypes"
-style="cursor: pointer;display: none;"
->
+<div id="unselectAllWorktypes"
+  style="cursor: pointer;display: none;"
+  class="oh-checkpoint-badge text-secondary mb-2">
   {% trans "Unselect All Worktypes" %}
 </div>
-<div
-class="oh-checkpoint-badge text-info mb-2"
-id="exportWorktypes"
-style="cursor: pointer; display: none;"
->
+<div id="exportWorktypes"
+  style="cursor: pointer; display: none;"
+  class="oh-checkpoint-badge text-info mb-2"
+  >
   {% trans "Export Worktypes" %}
 </div>
 <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowWorktypes" style="display: none;"></div>

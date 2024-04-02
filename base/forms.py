@@ -535,7 +535,12 @@ class RotatingWorkTypeAssignForm(ModelForm):
 
         model = RotatingWorkTypeAssign
         fields = "__all__"
-        exclude = ("next_change_date", "current_work_type", "next_work_type")
+        exclude = [
+            "next_change_date",
+            "current_work_type",
+            "next_work_type",
+            "is_active",
+        ]
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
             "is_active": HiddenInput(),
