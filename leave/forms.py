@@ -1,24 +1,26 @@
+"""
+This module provides Horilla ModelForms for creating and managing leave-related data,
+including leave type, leave request, leave allocation request, holidays and company leaves.
+"""
+
 from datetime import date, datetime
 import re
 from typing import Any
 import uuid
 from django import forms
-from django.core.files.base import File
-from django.db.models.base import Model
 from django.forms import ModelForm
-from django.forms.utils import ErrorList
 from django.forms.widgets import TextInput
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
-from base import thread_local_middleware
-from employee.filters import EmployeeFilter
-from employee.forms import MultipleFileField
-from employee.models import Employee
-from base.methods import reload_queryset
 from horilla_widgets.forms import HorillaForm, HorillaModelForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from base import thread_local_middleware
+from base.methods import reload_queryset
+from employee.filters import EmployeeFilter
+from employee.forms import MultipleFileField
+from employee.models import Employee
 from .models import (
     LeaveType,
     LeaveRequest,
@@ -42,7 +44,19 @@ CHOICES = [("yes", _("Yes")), ("no", _("No"))]
 
 
 class ModelForm(forms.ModelForm):
+    """
+    Customized ModelForm class with additional functionality for field customization
+    based on the type of widget and setting initial values based on the current request.
+    """
+
     def __init__(self, *args, **kwargs):
+        """
+        Initializes the ModelForm instance.
+
+        This method customizes field attributes such as CSS classes and placeholders
+        based on the type of widget. It also sets initial values for specific fields
+        based on the current request, particularly for 'employee_id' and 'company_id' fields.
+        """
         super().__init__(*args, **kwargs)
         request = getattr(thread_local_middleware._thread_locals, "request", None)
         reload_queryset(self.fields)
@@ -455,6 +469,17 @@ class LeaveRequestUpdationForm(ModelForm):
 
 
 class AvailableLeaveForm(ModelForm):
+    """
+    Form for managing available leave data.
+
+    This form allows users to manage available leave data by specifying details such as
+    the leave type and employee.
+
+    Attributes:
+        - leave_type_id: A ModelChoiceField representing the leave type associated with the available leave.
+        - employee_id: A ModelChoiceField representing the employee associated with the available leave.
+    """
+
     leave_type_id = forms.ModelChoiceField(
         queryset=LeaveType.objects.all(),
         widget=forms.SelectMultiple,
@@ -472,6 +497,17 @@ class AvailableLeaveForm(ModelForm):
 
 
 class HolidayForm(ModelForm):
+    """
+    Form for creating or updating a holiday.
+
+    This form allows users to create or update holiday data by specifying details such as
+    the start date and end date.
+
+    Attributes:
+        - start_date: A DateField representing the start date of the holiday.
+        - end_date: A DateField representing the end date of the holiday.
+    """
+
     start_date = forms.DateField(
         widget=forms.DateInput(attrs={"type": "date"}),
     )
@@ -491,6 +527,10 @@ class HolidayForm(ModelForm):
         return end_date
 
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = Holiday
         fields = "__all__"
         exclude = ["is_active"]
@@ -504,6 +544,16 @@ class HolidayForm(ModelForm):
 
 
 class LeaveOneAssignForm(HorillaModelForm):
+    """
+    Form for assigning available leave to employees.
+
+    This form allows administrators to assign available leave to a single employee
+    by specifying the employee and setting the is_active flag.
+
+    Attributes:
+        - employee_id: A HorillaMultiSelectField representing the employee to assign leave to.
+    """
+
     employee_id = HorillaMultiSelectField(
         queryset=Employee.objects.all(),
         widget=HorillaMultiSelectWidget(
@@ -517,6 +567,10 @@ class LeaveOneAssignForm(HorillaModelForm):
     )
 
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = AvailableLeave
         fields = ["employee_id", "is_active"]
 
@@ -526,13 +580,46 @@ class LeaveOneAssignForm(HorillaModelForm):
 
 
 class AvailableLeaveUpdateForm(ModelForm):
+    """
+    Form for updating available leave data.
+
+    This form allows users to update available leave data by modifying fields such as
+    available_days, carryforward_days, and is_active.
+
+    Attributes:
+        - Meta: Inner class defining metadata options.
+            - model: The model associated with the form (AvailableLeave).
+            - fields: A list of fields to include in the form.
+    """
+
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = AvailableLeave
         fields = ["available_days", "carryforward_days", "is_active"]
 
 
 class CompanyLeaveForm(ModelForm):
+    """
+    Form for managing company leave data.
+
+    This form allows users to manage company leave data by including all fields from
+    the CompanyLeave model except for is_active.
+
+    Attributes:
+        - Meta: Inner class defining metadata options.
+            - model: The model associated with the form (CompanyLeave).
+            - fields: A special value indicating all fields should be included in the form.
+            - exclude: A list of fields to exclude from the form (is_active).
+    """
+
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = CompanyLeave
         fields = "__all__"
         exclude = ["is_active"]
@@ -607,6 +694,10 @@ class UserLeaveRequestForm(ModelForm):
         return table_html
 
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = LeaveRequest
         fields = [
             "employee_id",
@@ -633,6 +724,21 @@ excluded_fields = [
 
 
 class AvailableLeaveColumnExportForm(forms.Form):
+    """
+    Form for selecting columns to export in available leave data.
+
+    This form allows users to select specific columns from the AvailableLeave model
+    for export. The available columns are dynamically generated based on the
+    model's meta information, excluding specified excluded_fields.
+
+    Attributes:
+        - model_fields: A list of fields in the AvailableLeave model.
+        - field_choices: A list of field choices for the form, consisting of field names
+          and their verbose names, excluding specified excluded_fields.
+        - selected_fields: A MultipleChoiceField representing the selected columns
+          to be exported.
+    """
+
     model_fields = AvailableLeave._meta.get_fields()
     field_choices = [
         (field.name, field.verbose_name)
@@ -653,6 +759,21 @@ class AvailableLeaveColumnExportForm(forms.Form):
 
 
 class HolidaysColumnExportForm(forms.Form):
+    """
+    Form for selecting columns to export in holiday data.
+
+    This form allows users to select specific columns from the Holiday model
+    for export. The available columns are dynamically generated based on the
+    model's meta information, excluding specified excluded_fields.
+
+    Attributes:
+        - model_fields: A list of fields in the Holiday model.
+        - field_choices: A list of field choices for the form, consisting of field names
+          and their verbose names, excluding specified excluded_fields.
+        - selected_fields: A MultipleChoiceField representing the selected columns
+          to be exported.
+    """
+
     model_fields = Holiday._meta.get_fields()
     field_choices = [
         (field.name, field.verbose_name)
@@ -672,12 +793,26 @@ class HolidaysColumnExportForm(forms.Form):
 
 
 class RejectForm(forms.Form):
+    """
+    Form for rejecting a leave request.
+
+    This form allows administrators to provide a rejection reason when rejecting
+    a leave request.
+
+    Attributes:
+        - reason: A CharField representing the reason for rejecting the leave request.
+    """
+
     reason = forms.CharField(
         label=_("Rejection Reason"),
         widget=forms.Textarea(attrs={"rows": 4, "class": "p-4 oh-input w-100"}),
     )
 
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = LeaveRequest
         fields = ["reject_reason"]
 
@@ -750,6 +885,10 @@ class UserLeaveRequestCreationForm(ModelForm):
         return cleaned_data
 
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = LeaveRequest
         fields = [
             "leave_type_id",
@@ -769,6 +908,16 @@ class UserLeaveRequestCreationForm(ModelForm):
 
 
 class LeaveAllocationRequestForm(ModelForm):
+    """
+    Form for creating a leave allocation request.
+
+    This form allows users to create a leave allocation request by specifying
+    details such as leave type, employee, requested days, description, and attachment.
+
+    Methods:
+        - as_p: Render the form fields as HTML table rows with Bootstrap styling.
+    """
+
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -778,6 +927,10 @@ class LeaveAllocationRequestForm(ModelForm):
         return table_html
 
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = LeaveAllocationRequest
         fields = [
             "leave_type_id",
@@ -789,6 +942,16 @@ class LeaveAllocationRequestForm(ModelForm):
 
 
 class LeaveAllocationRequestRejectForm(forms.Form):
+    """
+    Form for rejecting a leave allocation request.
+
+    This form allows administrators to provide a rejection reason when rejecting
+    a leave allocation request.
+
+    Attributes:
+        - reason: A CharField representing the reason for rejecting the leave allocation request.
+    """
+
     reason = forms.CharField(
         label=_("Rejection Reason"),
         widget=forms.Textarea(attrs={"rows": 4, "class": "p-4 oh-input w-100"}),
@@ -800,6 +963,21 @@ class LeaveAllocationRequestRejectForm(forms.Form):
 
 
 class LeaveRequestExportForm(forms.Form):
+    """
+    Form for selecting fields to export in a leave request export.
+
+    This form allows users to select specific fields from the LeaveRequest model
+    for export. The available fields are dynamically generated based on the
+    model's meta information, excluding certain fields specified in 'excluded_fields'.
+
+    Attributes:
+        - model_fields: A list of fields in the LeaveRequest model.
+        - field_choices: A list of field choices for the form, consisting of field names
+          and their verbose names, excluding specified excluded_fields.
+        - selected_fields: A MultipleChoiceField representing the selected fields
+          to be exported.
+    """
+
     model_fields = LeaveRequest._meta.get_fields()
     field_choices = [
         (field.name, field.verbose_name)
@@ -892,6 +1070,10 @@ class LeaveCommentForm(ModelForm):
     verbose_name = "Add Comment"
 
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = LeaverequestComment
         fields = "__all__"
 
@@ -948,6 +1130,10 @@ class LeaveAllocationCommentForm(ModelForm):
     verbose_name = "Add Comment"
 
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = LeaveallocationrequestComment
         fields = "__all__"
 
