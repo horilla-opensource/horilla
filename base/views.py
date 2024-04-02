@@ -440,7 +440,9 @@ def home(request):
             announcement_view is not None and announcement_view.viewed
         )
 
-    announcements = announcements.exclude(expire_date__lt = datetime.today().date()).order_by("-created_on")
+    announcements = announcements.exclude(
+        expire_date__lt=datetime.today().date()
+    ).order_by("-created_on")
 
     announcement_list = announcements.filter(employees=request.user.employee_get)
     announcement_list = announcement_list | announcements.filter(employees__isnull=True)
@@ -988,7 +990,7 @@ def department_update(request, id, **kwargs):
     args:
         id : department instance id
     """
-    department = Department.objects.get(id=id)
+    department = Department.find(id)
     form = DepartmentForm(instance=department)
     if request.method == "POST":
         form = DepartmentForm(request.POST, instance=department)
@@ -1060,7 +1062,7 @@ def job_position_update(request, id, **kwargs):
         id : job position instance id
 
     """
-    job_position = JobPosition.objects.get(id=id)
+    job_position = JobPosition.find(id)
     form = JobPositionForm(instance=job_position)
     if request.method == "POST":
         form = JobPositionForm(request.POST, instance=job_position)
@@ -1131,8 +1133,7 @@ def job_role_update(request, id, **kwargs):
 
     """
 
-    job_role = JobRole.objects.get(id=id)
-
+    job_role = JobRole.find(id)
     form = JobRoleForm(instance=job_role)
     if request.method == "POST":
         form = JobRoleForm(request.POST, instance=job_role)
@@ -1201,7 +1202,7 @@ def work_type_update(request, id, **kwargs):
 
     """
 
-    work_type = WorkType.objects.get(id=id)
+    work_type = WorkType.find(id)
     form = WorkTypeForm(instance=work_type)
     if request.method == "POST":
         form = WorkTypeForm(request.POST, instance=work_type)
@@ -1265,7 +1266,7 @@ def rotating_work_type_update(request, id, **kwargs):
 
     """
 
-    rotating_work_type = RotatingWorkType.objects.get(id=id)
+    rotating_work_type = RotatingWorkType.find(id)
     form = RotatingWorkTypeForm(instance=rotating_work_type)
     if request.method == "POST":
         form = RotatingWorkTypeForm(request.POST, instance=rotating_work_type)
@@ -1705,7 +1706,7 @@ def employee_type_update(request, id, **kwargs):
 
     """
 
-    employee_type = EmployeeType.objects.get(id=id)
+    employee_type = EmployeeType.find(id)
     form = EmployeeTypeForm(instance=employee_type)
     if request.method == "POST":
         form = EmployeeTypeForm(request.POST, instance=employee_type)
@@ -1768,7 +1769,7 @@ def employee_shift_update(request, id, **kwargs):
         id  : employee shift id
 
     """
-    employee_shift = EmployeeShift.objects.get(id=id)
+    employee_shift = EmployeeShift.find(id)
     form = EmployeeShiftForm(instance=employee_shift)
     if request.method == "POST":
         form = EmployeeShiftForm(request.POST, instance=employee_shift)
@@ -1832,7 +1833,7 @@ def employee_shift_schedule_update(request, id, **kwargs):
         id : employee shift instance id
     """
 
-    employee_shift_schedule = EmployeeShiftSchedule.objects.get(id=id)
+    employee_shift_schedule = EmployeeShiftSchedule.find(id)
     form = EmployeeShiftScheduleUpdateForm(instance=employee_shift_schedule)
     if request.method == "POST":
         form = EmployeeShiftScheduleUpdateForm(
@@ -1895,7 +1896,7 @@ def rotating_shift_update(request, id, **kwargs):
         id : rotating shift instance id
     """
 
-    rotating_shift = RotatingShift.objects.get(id=id)
+    rotating_shift = RotatingShift.find(id)
     form = RotatingShiftForm(instance=rotating_shift)
     if request.method == "POST":
         form = RotatingShiftForm(request.POST, instance=rotating_shift)
@@ -2100,7 +2101,7 @@ def rotating_shift_assign_update(request, id):
         id : rotating shift assign instance id
 
     """
-    rotating_shift_assign_obj = RotatingShiftAssign.objects.get(id=id)
+    rotating_shift_assign_obj = RotatingShiftAssign.find(id)
     form = RotatingShiftAssignUpdateForm(instance=rotating_shift_assign_obj)
     form = choosesubordinates(request, form, "base.change_rotatingshiftassign")
     if request.method == "POST":
@@ -2678,7 +2679,7 @@ def work_type_request_cancel(request, id):
         id  : work type request id
 
     """
-    work_type_request = WorkTypeRequest.objects.get(id=id)
+    work_type_request = WorkTypeRequest.find(id)
     if (
         is_reportingmanger(request, work_type_request)
         or request.user.has_perm("base.cancel_worktyperequest")
@@ -2754,7 +2755,7 @@ def work_type_request_approve(request, id):
     This method is used to approve requested work type
     """
 
-    work_type_request = WorkTypeRequest.objects.get(id=id)
+    work_type_request = WorkTypeRequest.find(id)
     if (
         is_reportingmanger(request, work_type_request)
         or request.user.has_perm("approve_worktyperequest")
@@ -3038,7 +3039,7 @@ def shift_request(request):
                 )
             except Exception as e:
                 pass
-            messages.success(request, _("Request Added"))
+            messages.success(request, _("Shift request added"))
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
@@ -3351,7 +3352,7 @@ def shift_request_details(request, id):
     args:
         id : shift request instance id
     """
-    shift_request = ShiftRequest.objects.get(id=id)
+    shift_request = ShiftRequest.find(id)
     requests_ids_json = request.GET.get("instances_ids")
     context = {
         "shift_request": shift_request,
@@ -3377,7 +3378,7 @@ def shift_allocation_request_details(request, id):
     args:
         id : shift request instance id
     """
-    shift_request = ShiftRequest.objects.get(id=id)
+    shift_request = ShiftRequest.find(id)
     requests_ids_json = request.GET.get("instances_ids")
     context = {
         "shift_request": shift_request,
@@ -3510,7 +3511,7 @@ def shift_request_cancel(request, id):
 
     """
 
-    shift_request = ShiftRequest.objects.get(id=id)
+    shift_request = ShiftRequest.find(id)
     if (
         is_reportingmanger(request, shift_request)
         or request.user.has_perm("base.cancel_shiftrequest")
@@ -3569,7 +3570,7 @@ def shift_allocation_request_cancel(request, id):
 
     """
 
-    shift_request = ShiftRequest.objects.get(id=id)
+    shift_request = ShiftRequest.find(id)
 
     shift_request.reallocate_canceled = True
     shift_request.reallocate_approved = False
@@ -3663,7 +3664,7 @@ def shift_request_approve(request, id):
         id : shift request instance id
     """
 
-    shift_request = ShiftRequest.objects.get(id=id)
+    shift_request = ShiftRequest.find(id)
 
     if (
         is_reportingmanger(request, shift_request)
@@ -3728,7 +3729,7 @@ def shift_allocation_request_approve(request, id):
         id : shift request instance id
     """
 
-    shift_request = ShiftRequest.objects.get(id=id)
+    shift_request = ShiftRequest.find(id)
 
     if not shift_request.is_any_request_exists():
         shift_request.reallocate_approved = True
@@ -3815,7 +3816,7 @@ def shift_request_delete(request, id):
 
     """
     try:
-        shift_request = ShiftRequest.objects.get(id=id)
+        shift_request = ShiftRequest.find(id)
         user = shift_request.employee_id.employee_user_id
         messages.success(request, "Shift request deleted")
         shift_request.delete()
@@ -5002,7 +5003,7 @@ def delete_shift_comment_file(request):
     """
     ids = request.GET.getlist("ids")
     BaserequestFile.objects.filter(id__in=ids).delete()
-    messages.success(request,_("File deleted successfully"))
+    messages.success(request, _("File deleted successfully"))
     shift_id = request.GET["shift_id"]
     comments = ShiftRequestComment.objects.filter(request_id=shift_id).order_by(
         "-created_at"
@@ -5058,7 +5059,7 @@ def delete_work_type_comment_file(request):
     """
     ids = request.GET.getlist("ids")
     BaserequestFile.objects.filter(id__in=ids).delete()
-    messages.success(request,_("File deleted successfully"))
+    messages.success(request, _("File deleted successfully"))
     work_type_id = request.GET["work_type_id"]
     comments = WorkTypeRequestComment.objects.filter(request_id=work_type_id)
     return render(
@@ -5386,7 +5387,11 @@ def check_permission(request, charts):
         "recruitment_analytics",
     ]
     for chart in charts:
-        if chart[0] in permissions.keys() or chart[0] in need_recruitment_manager or chart[0] in need_stage_manager:
+        if (
+            chart[0] in permissions.keys()
+            or chart[0] in need_recruitment_manager
+            or chart[0] in need_stage_manager
+        ):
             if request.user.has_perm(permissions[chart[0]]):
                 chart_list.append(chart)
             elif chart[0] in need_recruitment_manager:
