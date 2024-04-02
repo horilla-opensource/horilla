@@ -198,7 +198,7 @@ class AttendanceUpdateForm(ModelForm):
         )
         self.fields["attendance_date"].widget.attrs.update(
             {
-                "onchange": "dateChange($(this))",
+                "onchange": "attendanceDateChange($(this))",
             }
         )
         self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
@@ -302,7 +302,7 @@ class AttendanceForm(ModelForm):
         )
         self.fields["attendance_date"].widget.attrs.update(
             {
-                "onchange": "dateChange($(this))",
+                "onchange": "attendanceDateChange($(this))",
             }
         )
         self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
@@ -546,7 +546,7 @@ class AttendanceRequestForm(ModelForm):
         )
         self.fields["attendance_date"].widget.attrs.update(
             {
-                "onchange": "dateChange($(this))",
+                "onchange": "attendanceDateChange($(this))",
             }
         )
         self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})

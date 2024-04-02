@@ -105,3 +105,276 @@ nav.after(
   `
   )
 );
+
+
+
+function empleavetypeChange(selectElement) {
+  var selectedLeavetype =selectElement.val()
+  let parentForm = selectElement.parents().closest("form")
+  var employeeId = parentForm.find('[name = employee_id]').val()
+  var start_date = parentForm.find('[name = start_date_id]').val()
+  $.ajax({
+    type: "post",
+    url: "/leave/employee-leave-details",
+    data: {
+    csrfmiddlewaretoken: getCookie("csrftoken"),
+    "leave_type":selectedLeavetype,
+    "employee_id":employeeId,
+    "date":start_date,
+    },
+    success: function (response) {
+      
+      // Assuming parentForm is a reference to the form containing the element to update
+      var messageDiv = parentForm.find(".leave-message");
+
+      // Check if the messageDiv already exists, if not create it
+      if (!messageDiv.length) {
+        messageDiv = $("<div class='leave-message'></div>");
+        parentForm.prepend(messageDiv);
+      }
+      // Checking leave type is selected in the form or not
+      if (response.leave_count != '' && response.employee != ''){
+        messageDiv.show()
+        messageDiv.text("Available Leaves :  " + response.leave_count);
+        messageDiv.css({
+          'background-color': '#dff0d8',
+          'border': '2px solid #3c763d',
+          'border-radius': '18px',
+          'padding': '10px',
+          'font-weight': 'bold',
+          'margin-bottom': '15px',
+          'width': '35%'
+        });
+      }
+      else if ( selectedLeavetype === ''){
+        messageDiv.hide()
+      }
+      else if (selectedLeavetype != '' && response.leave_count === '' && response.employee != ''){
+        messageDiv.show()
+        messageDiv.text("Leave type is not assigned for selecetd employee.");
+        messageDiv.css({
+          'background-color': 'rgb(229 79 56 / 17%)',
+          'border': '2px solid hsl(8,77%,56%)',
+          'border-radius': '18px',
+          'padding': '10px',
+          'font-weight': 'bold',
+          'margin-bottom': '15px',
+          'width': 'auto'
+        });
+      }
+      else if (response.leave_count === 0.0){
+        messageDiv.show()
+        messageDiv.text("Available Leaves :  " + response.leave_count);
+        messageDiv.css({
+          'background-color': 'rgb(229 79 56 / 17%)',
+          'border': '2px solid hsl(8,77%,56%)',
+          'border-radius': '18px',
+          'padding': '10px',
+          'font-weight': 'bold',
+          'margin-bottom': '15px',
+          'width': '35%'
+        });
+      }
+      else{
+        messageDiv.hide()
+      }
+
+    }
+  });
+}
+
+
+function employeeChange(selectElement) {
+  var employeeId =selectElement.val()
+  let parentForm = selectElement.parents().closest("form")
+  var leavetypeId = parentForm.find('[name = leave_type_id]').val()
+  var start_date = parentForm.find('[name = start_date_id]').val()
+  $.ajax({
+    type: "post",
+    url: "/leave/employee-leave-details",
+    data: {
+    csrfmiddlewaretoken: getCookie("csrftoken"),
+    "leave_type":leavetypeId,
+    "employee_id":employeeId,
+    "date":start_date,
+    },
+    success: function (response) {
+      
+      // Assuming parentForm is a reference to the form containing the element to update
+      var messageDiv = parentForm.find(".leave-message");
+
+      // Check if the messageDiv already exists, if not create it
+      if (!messageDiv.length) {
+        messageDiv = $("<div class='leave-message'></div>");
+        parentForm.prepend(messageDiv);
+      }
+      // Checking leave type is selected in the form or not
+      if (response.leave_count != '' && response.employee != ''){
+        messageDiv.show()
+        messageDiv.text("Available Leaves :  " + response.leave_count);
+        messageDiv.css({
+          'background-color': '#dff0d8',
+          'border': '2px solid #3c763d',
+          'border-radius': '18px',
+          'padding': '10px',
+          'font-weight': 'bold',
+          'margin-bottom': '15px',
+          'width': '35%'
+        });
+      }
+      else if ( leavetypeId === ''){
+        messageDiv.hide()
+      }
+      else if (leavetypeId != '' && response.leave_count === '' && response.employee != ''){
+        messageDiv.show()
+        messageDiv.text("Leave type is not assigned for selecetd employee.");
+        messageDiv.css({
+          'background-color': 'rgb(229 79 56 / 17%)',
+          'border': '2px solid hsl(8,77%,56%)',
+          'border-radius': '18px',
+          'padding': '10px',
+          'font-weight': 'bold',
+          'margin-bottom': '15px',
+          'width': 'auto'
+        });
+      }
+      else if (response.leave_count === 0.0){
+        messageDiv.show()
+        messageDiv.text("Available Leaves :  " + response.leave_count);
+        messageDiv.css({
+          'background-color': 'rgb(229 79 56 / 17%)',
+          'border': '2px solid hsl(8,77%,56%)',
+          'border-radius': '18px',
+          'padding': '10px',
+          'font-weight': 'bold',
+          'margin-bottom': '15px',
+          'width': '35%'
+        });
+      }
+      else{
+        messageDiv.hide()
+      }
+
+    }
+  });
+}
+
+function dateChange(selectElement) {
+  let parentForm = selectElement.parents().closest("form")
+  var employeeId = parentForm.find('[name = employee_id]').val()
+  var leavetypeId = parentForm.find('[name = leave_type_id]').val()
+  var start_date = selectElement.val()
+  $.ajax({
+    type: "post",
+    url: "/leave/employee-leave-details",
+    data: {
+    csrfmiddlewaretoken: getCookie("csrftoken"),
+    "leave_type":leavetypeId,
+    "employee_id":employeeId,
+    "date": start_date,
+    },
+    success: function (response) {
+      // Assuming parentForm is a reference to the form containing the element to update
+      var messageDiv = parentForm.find(".leave-message");
+
+      // Check if the messageDiv already exists, if not create it
+      if (!messageDiv.length) {
+        messageDiv = $("<div class='leave-message'></div>");
+        parentForm.prepend(messageDiv);
+      }
+      // Checking leave type is selected in the form or not
+      if (response.leave_count != '' && response.employee != '') {
+        messageDiv.show()
+        messageDiv.text("Available Leaves :  " + response.leave_count);
+        messageDiv.css({
+          'background-color': '#dff0d8',
+          'border': '2px solid #3c763d',
+          'border-radius': '18px',
+          'padding': '10px',
+          'font-weight': 'bold',
+          'margin-bottom': '15px',
+          'width': '35%'
+        });
+      }
+      else if ( leavetypeId === ''){
+        messageDiv.hide()
+      }
+      else if (leavetypeId != '' && response.leave_count === '' && response.employee != ''){
+        messageDiv.show()
+        messageDiv.text("Leave type is not assigned for selecetd employee.");
+        messageDiv.css({
+          'background-color': 'rgb(229 79 56 / 17%)',
+          'border': '2px solid hsl(8,77%,56%)',
+          'border-radius': '18px',
+          'padding': '10px',
+          'font-weight': 'bold',
+          'margin-bottom': '15px',
+          'width': 'auto'
+        });
+      }
+      else if (response.leave_count === 0.0){
+        messageDiv.show()
+        messageDiv.text("Available Leaves :  " + response.leave_count);
+        messageDiv.css({
+          'background-color': 'rgb(229 79 56 / 17%)',
+          'border': '2px solid hsl(8,77%,56%)',
+          'border-radius': '18px',
+          'padding': '10px',
+          'font-weight': 'bold',
+          'margin-bottom': '15px',
+          'width': '35%'
+        });
+      }
+      else{
+        messageDiv.hide()
+      }
+    }
+  });
+}
+
+function shiftChange(selectElement) {
+  var shiftId =selectElement.val()
+  let parentForm = selectElement.parents().closest("form")
+  var attendanceDate = parentForm.find("[name=attendance_date]").first().val()
+  $.ajax({
+    type: "post",
+    url: "/attendance/update-shift-details",
+    data: {
+      csrfmiddlewaretoken: getCookie("csrftoken"),
+      "shift_id":shiftId,
+      "attendance_date":attendanceDate
+
+    },
+    success: function (response) {
+      parentForm.find("[name=attendance_clock_in]").val(response.shift_start_time)
+      parentForm.find("[name=attendance_clock_out]").val(response.shift_end_time)
+      parentForm.find("[name=attendance_worked_hour]").val(response.worked_hour)
+      parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
+      parentForm.find("[name=attendance_clock_out_date]").val(response.checkout_date)
+      parentForm.find("[name=attendance_clock_in_date]").val(response.checkin_date)
+      if (parentForm.find("[name=attendance_date]").val().length == 0) {
+        parentForm.find("[name=attendance_date]").val(response.checkin_date)
+      }
+    }
+  });
+}
+
+function attendanceDateChange(selectElement) {
+  var selectedDate =selectElement.val()
+  let parentForm = selectElement.parents().closest("form")
+  var shiftId = parentForm.find("[name=shift_id]").val()
+
+  $.ajax({
+    type: "post",
+    url: "/attendance/update-date-details",
+    data: {
+      csrfmiddlewaretoken: getCookie("csrftoken"),
+      "attendance_date":selectedDate,
+      "shift_id":shiftId
+    },
+    success: function (response) {
+      parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
+
+    }
+  });
+}
