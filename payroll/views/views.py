@@ -269,6 +269,16 @@ def view_single_contract(request, contract_id):
         The rendered contract single view page.
 
     """
+    HTTP_REFERERS = [
+        part for part in request.META.get("HTTP_REFERER").split("/") if part
+    ]
+    delete_hx_target = (
+        "#personal_target"
+        if HTTP_REFERERS[:-2]
+        and HTTP_REFERERS[-2] == "employee-view"
+        or HTTP_REFERERS[-1] == "employee-profile"
+        else "#payroll-contract-container"
+    )
     dashboard = ""
     if request.GET.get("dashboard"):
         dashboard = request.GET.get("dashboard")
@@ -276,6 +286,7 @@ def view_single_contract(request, contract_id):
     context = {
         "contract": contract,
         "dashboard": dashboard,
+        "delete_hx_target": delete_hx_target,
     }
     contract_ids_json = request.GET.get("instances_ids")
     if contract_ids_json:
@@ -1499,10 +1510,7 @@ def create_payrollrequest_comment(request, payroll_id):
             )
             messages.success(request, _("Comment added successfully!"))
 
-            if (
-                payroll.employee_id.employee_work_info.reporting_manager_id
-                is not None
-            ):
+            if payroll.employee_id.employee_work_info.reporting_manager_id is not None:
 
                 if request.user.employee_get.id == payroll.employee_id.id:
                     rec = (
@@ -1568,7 +1576,11 @@ def create_payrollrequest_comment(request, payroll_id):
             return render(
                 request,
                 "payroll/reimbursement/reimbursement_comment.html",
-                {"comments": comments, "no_comments": no_comments, "request_id": payroll_id,},
+                {
+                    "comments": comments,
+                    "no_comments": no_comments,
+                    "request_id": payroll_id,
+                },
             )
     return render(
         request,
@@ -1604,7 +1616,11 @@ def view_payrollrequest_comment(request, payroll_id):
     return render(
         request,
         "payroll/reimbursement/reimbursement_comment.html",
-        {"comments": comments, "no_comments": no_comments, "request_id": payroll_id,},
+        {
+            "comments": comments,
+            "no_comments": no_comments,
+            "request_id": payroll_id,
+        },
     )
 
 
@@ -1613,12 +1629,12 @@ def delete_payrollrequest_comment(request, comment_id):
     """
     This method is used to delete Reimbursement request comments
     """
-    comment=ReimbursementrequestComment.objects.get(id=comment_id)
+    comment = ReimbursementrequestComment.objects.get(id=comment_id)
     reimbursementrequest = comment.request_id.id
     comment.delete()
 
     messages.success(request, _("Comment deleted successfully!"))
-    return redirect('payroll-request-view-comment', payroll_id = reimbursementrequest)
+    return redirect("payroll-request-view-comment", payroll_id=reimbursementrequest)
 
 
 @login_required
@@ -1629,9 +1645,9 @@ def delete_reimbursement_comment_file(request):
     ids = request.GET.getlist("ids")
     ReimbursementFile.objects.filter(id__in=ids).delete()
     payroll_id = request.GET["payroll_id"]
-    comments = ReimbursementrequestComment.objects.filter(request_id=payroll_id).order_by(
-        "-created_at"
-    )
+    comments = ReimbursementrequestComment.objects.filter(
+        request_id=payroll_id
+    ).order_by("-created_at")
     return render(
         request,
         "payroll/reimbursement/reimbursement_comment.html",
@@ -1640,6 +1656,7 @@ def delete_reimbursement_comment_file(request):
             "request_id": payroll_id,
         },
     )
+
 
 @login_required
 @permission_required("payroll.add_payrollgeneralsetting")
