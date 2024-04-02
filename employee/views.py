@@ -2893,14 +2893,20 @@ def dashboard_employee_department(request):
     count = []
     departments = Department.objects.all()
     for dept in departments:
-        labels.append(dept.department)
-        count.append(
-            len(
-                Employee.objects.filter(
-                    employee_work_info__department_id__department=dept, is_active=True
+        if len(
+            Employee.objects.filter(
+                employee_work_info__department_id__department=dept, is_active=True
+            )
+        ):
+            labels.append(dept.department)
+            count.append(
+                len(
+                    Employee.objects.filter(
+                        employee_work_info__department_id__department=dept,
+                        is_active=True,
+                    )
                 )
             )
-        )
     response = {
         "dataSet": [{"label": "Department", "data": count}],
         "labels": labels,
@@ -2919,7 +2925,8 @@ def dashboard_employee_tiles(request):
     data["total_employees"] = Employee.objects.filter(is_active=True).count()
     # filtering newbies
     data["newbies_today"] = Candidate.objects.filter(
-        joining_date__range=[date.today(), date.today() + timedelta(days=1)],is_active=True
+        joining_date__range=[date.today(), date.today() + timedelta(days=1)],
+        is_active=True,
     ).count()
     try:
         data[
@@ -2938,7 +2945,9 @@ def dashboard_employee_tiles(request):
         joining_date__range=[
             date.today() - timedelta(days=date.today().weekday()),
             date.today() + timedelta(days=6 - date.today().weekday()),
-        ],is_active=True, hired=True
+        ],
+        is_active=True,
+        hired=True,
     ).count()
     try:
         data[
@@ -2991,7 +3000,9 @@ def employee_select_filter(request):
     """
     page_number = request.GET.get("page")
     if page_number == "all":
-        employee_filter = EmployeeFilter(request.GET, queryset=Employee.objects.filter())
+        employee_filter = EmployeeFilter(
+            request.GET, queryset=Employee.objects.filter()
+        )
 
         # Get the filtered queryset
         filtered_employees = filtersubordinatesemployeemodel(
@@ -3265,7 +3276,7 @@ def redeem_points(request, emp_id):
     """
     user = Employee.objects.get(id=emp_id)
     form = BonusPointRedeemForm()
-    form.instance.employee_id =user
+    form.instance.employee_id = user
     amount_for_bonus_point = (
         EncashmentGeneralSettings.objects.first().bonus_amount
         if EncashmentGeneralSettings.objects.first()
@@ -3273,7 +3284,7 @@ def redeem_points(request, emp_id):
     )
     if request.method == "POST":
         form = BonusPointRedeemForm(request.POST)
-        form.instance.employee_id =user
+        form.instance.employee_id = user
         if form.is_valid():
             form.save(commit=False)
             points = form.cleaned_data["points"]
