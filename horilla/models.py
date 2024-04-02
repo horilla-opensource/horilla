@@ -36,3 +36,15 @@ class HorillaModel(models.Model):
                 if user.is_authenticated:
                     self.created_by = user
         super(HorillaModel, self).save(*args, **kwargs)
+
+    @classmethod
+    def find(cls, object_id):
+        # object_id = 1020
+        return cls.objects.filter(id=object_id).first()
+    
+    @classmethod
+    def activate_deactivate(cls, object_id):       
+        object = cls.find(object_id)
+        if object:
+            object.is_active = not object.is_active
+            object.save()
