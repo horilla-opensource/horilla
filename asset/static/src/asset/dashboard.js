@@ -1,6 +1,7 @@
 $(document).ready(function() {
     function available_asset_chart(dataSet) {
-        var Asset_available_chart = document.getElementById("assetAvailableChart");
+      var Asset_available_chart = document.getElementById("assetAvailableChart");
+      if (Asset_available_chart){
         var assetAvailableChartChart = new Chart(Asset_available_chart, {
             type: "pie",
             data: {
@@ -15,10 +16,12 @@ $(document).ready(function() {
                 },
               ],
         });
+      }
     }
     
     function asset_category_chart(dataSet) {
-        var Asset_category_chart = document.getElementById("assetCategoryChart");
+      var Asset_category_chart = document.getElementById("assetCategoryChart");
+      if (Asset_category_chart){
         var assetCategoryChart = new Chart(Asset_category_chart, {
             type: "bar",
             data: {
@@ -33,6 +36,7 @@ $(document).ready(function() {
                 },
               ],
         });
+      }
     }
 
     $.ajax({
@@ -58,10 +62,6 @@ $(document).ready(function() {
 			console.log("Error", error);
 		},
 	});
-	// $("#asset_request_view").on("click",function () {
-	// 	localStorage.setItem("activeTabAsset", "#tab_1");
-	// 	window.location.replace("/asset/asset-request-allocation-view/?asset_request_status=Requested");
-	// })
 });
 
 function emptyAssetAvialabeChart(assetAvailableChartChart,args,options){

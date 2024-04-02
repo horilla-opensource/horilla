@@ -6,34 +6,36 @@ $(document).ready(function () {
 		};
 		// Create chart using the Chart.js library
 		window["myChart"] = {};
-		const ctx = document.getElementById("recruitmentChart1").getContext("2d");
-		myChart = new Chart(ctx, {
-			type: "bar",
-			data: data,
-			options: {
-				responsive: true,
+		if (document.getElementById("recruitmentChart1")){
+			const ctx = document.getElementById("recruitmentChart1").getContext("2d");
+			myChart = new Chart(ctx, {
+				type: "bar",
+				data: data,
+				options: {
+					responsive: true,
 
-				onClick: (e, activeEls) => {
-					let datasetIndex = activeEls[0].datasetIndex;
-					let dataIndex = activeEls[0].index;
-					let datasetLabel = e.chart.data.datasets[datasetIndex].label;
-					let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
-					let label = e.chart.data.labels[dataIndex];
-					localStorage.removeItem("savedFilters");
-					window.location.href =
-						"/recruitment/candidate-view" +
-						"?recruitment=" +
-						datasetLabel +
-						"&stage_id__stage_type=" +
-						label.toLowerCase();
+					onClick: (e, activeEls) => {
+						let datasetIndex = activeEls[0].datasetIndex;
+						let dataIndex = activeEls[0].index;
+						let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+						let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+						let label = e.chart.data.labels[dataIndex];
+						localStorage.removeItem("savedFilters");
+						window.location.href =
+							"/recruitment/candidate-view" +
+							"?recruitment=" +
+							datasetLabel +
+							"&stage_id__stage_type=" +
+							label.toLowerCase();
+					},
 				},
-			},
-			plugins: [
-				{
-					afterRender: (chart) => emptyChart(chart),
-				},
-			],
-		});
+				plugins: [
+					{
+						afterRender: (chart) => emptyChart(chart),
+					},
+				],
+			});
+		}
 	}
 	$.ajax({
 		url: "/recruitment/dashboard-pipeline",

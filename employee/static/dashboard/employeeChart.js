@@ -6,33 +6,35 @@ $(document).ready(function () {
     };
     // Create chart using the Chart.js library
     window["myChart"] = {};
-    const ctx = document.getElementById("totalEmployees").getContext("2d");
-    employeeChart = new Chart(ctx, {
-      type: "doughnut",
-      data: data,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        onClick: (e, activeEls) => {
-          let datasetIndex = activeEls[0].datasetIndex;
-          let dataIndex = activeEls[0].index;
-          let datasetLabel = e.chart.data.datasets[datasetIndex].label;
-          let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
-          let label = e.chart.data.labels[dataIndex];
-          var active = "False";
-          if (label.toLowerCase() == "active") {
-            active = "True";
-          }
-          localStorage.removeItem("savedFilters");
-          window.location.href = "/employee/employee-view?is_active=" + active;
+    if (document.getElementById("totalEmployees")){
+      const ctx = document.getElementById("totalEmployees").getContext("2d");
+      employeeChart = new Chart(ctx, {
+        type: "doughnut",
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          onClick: (e, activeEls) => {
+            let datasetIndex = activeEls[0].datasetIndex;
+            let dataIndex = activeEls[0].index;
+            let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+            let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+            let label = e.chart.data.labels[dataIndex];
+            var active = "False";
+            if (label.toLowerCase() == "active") {
+              active = "True";
+            }
+            localStorage.removeItem("savedFilters");
+            window.location.href = "/employee/employee-view?is_active=" + active;
+          },
         },
-      },
-      plugins: [
-        {
-          afterRender: (chart) => emptyChart(chart),
-        },
-      ],
-    });
+        plugins: [
+          {
+            afterRender: (chart) => emptyChart(chart),
+          },
+        ],
+      });
+    }
   }
 
   function genderChart(dataSet, labels) {
@@ -42,30 +44,32 @@ $(document).ready(function () {
     };
     // Create chart using the Chart.js library
     window["genderChart"] = {};
-    const ctx = document.getElementById("genderChart").getContext("2d");
-    genderChart = new Chart(ctx, {
-      type: "doughnut",
-      data: data,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        onClick: (e, activeEls) => {
-          let datasetIndex = activeEls[0].datasetIndex;
-          let dataIndex = activeEls[0].index;
-          let datasetLabel = e.chart.data.datasets[datasetIndex].label;
-          let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
-          let label = e.chart.data.labels[dataIndex];
-          localStorage.removeItem("savedFilters");
-          window.location.href =
-            "/employee/employee-view?gender=" + label.toLowerCase();
+    if (document.getElementById("genderChart")){
+      const ctx = document.getElementById("genderChart").getContext("2d");
+      genderChart = new Chart(ctx, {
+        type: "doughnut",
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          onClick: (e, activeEls) => {
+            let datasetIndex = activeEls[0].datasetIndex;
+            let dataIndex = activeEls[0].index;
+            let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+            let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+            let label = e.chart.data.labels[dataIndex];
+            localStorage.removeItem("savedFilters");
+            window.location.href =
+              "/employee/employee-view?gender=" + label.toLowerCase();
+          },
         },
-      },
-      plugins: [
-        {
-          afterRender: (chart) => emptyChart(chart),
-        },
-      ],
-    });
+        plugins: [
+          {
+            afterRender: (chart) => emptyChart(chart),
+          },
+        ],
+      });
+    }
   }
 
   function departmentChart(dataSet, labels) {
@@ -75,31 +79,33 @@ $(document).ready(function () {
     };
     // Create chart using the Chart.js library
     window["departmentChart"] = {};
-    const ctx = document.getElementById("departmentChart").getContext("2d");
-    departmentChart = new Chart(ctx, {
-      type: "doughnut",
-      data: data,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        onClick: (e, activeEls) => {
-          let datasetIndex = activeEls[0].datasetIndex;
-          let dataIndex = activeEls[0].index;
-          let datasetLabel = e.chart.data.datasets[datasetIndex].label;
-          let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
-          let label = e.chart.data.labels[dataIndex];
-          localStorage.removeItem("savedFilters");
-          window.location.href =
-          "/employee/employee-view?department=" + label;
+    if (document.getElementById("departmentChart")){
+      const ctx = document.getElementById("departmentChart").getContext("2d");
+      departmentChart = new Chart(ctx, {
+        type: "doughnut",
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          onClick: (e, activeEls) => {
+            let datasetIndex = activeEls[0].datasetIndex;
+            let dataIndex = activeEls[0].index;
+            let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+            let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+            let label = e.chart.data.labels[dataIndex];
+            localStorage.removeItem("savedFilters");
+            window.location.href =
+            "/employee/employee-view?department=" + label;
 
+          },
         },
-      },
-      plugins: [
-        {
-          afterRender: (chart) => emptyChart(chart),
-        },
-      ],
-    });
+        plugins: [
+          {
+            afterRender: (chart) => emptyChart(chart),
+          },
+        ],
+      });
+    }
   }
 
   function employeeCount(data) {

@@ -56,7 +56,9 @@ function objectiveStatusDataUpdate(data) {
 	objectiveStatusData.labels = data.objective_label;
 	objectiveStatusData.datasets[0].data = data.objective_value;
 	objectiveStatusData.message = data.message;
-	objectiveStatusChart.update();
+	if (objectiveStatusChart){
+		objectiveStatusChart.update();
+	}
 }
 
 $.ajax({
@@ -87,7 +89,10 @@ $("#objective-status-chart").click(function (e) {
 		chartType = "line";
 	}
 	objectiveStatusChart.config.type = chartType;
-	objectiveStatusChart.update();
+	if (objectiveStatusChart){
+		objectiveStatusChart.update();
+	}
+	
 });
 
 // objecitve chart section end
@@ -150,7 +155,9 @@ function keyResultStatusDataUpdate(data) {
 	keyResultStatusData.labels = data.key_result_label;
 	keyResultStatusData.datasets[0].data = data.key_result_value;
 	keyResultStatusData.message = data.message;
-	keyResultStatusChart.update();
+	if(keyResultStatusChart){
+		keyResultStatusChart.update();
+	}
 }
 
 $.ajax({
@@ -181,7 +188,9 @@ $("#key-result-status-chart").click(function (e) {
 		chartType = "line";
 	}
 	keyResultStatusChart.config.type = chartType;
-	keyResultStatusChart.update();
+	if(keyResultStatusChart){
+		keyResultStatusChart.update();
+	}
 });
 
 // key result chart section
@@ -244,7 +253,9 @@ function feedbackStatusDataUpdate(data) {
 	feedbackStatusData.labels = data.feedback_label;
 	feedbackStatusData.datasets[0].data = data.feedback_value;
 	feedbackStatusData.message = data.message;
-	feedbackStatusChart.update();
+	if (feedbackStatusChart){
+		feedbackStatusChart.update();
+	}
 }
 
 $.ajax({
@@ -275,6 +286,8 @@ $("#feedback-status-chart").click(function (e) {
 		chartType = "line";
 	}
 	feedbackStatusChart.config.type = chartType;
-	feedbackStatusChart.update();
+	if (feedbackStatusChart){
+		feedbackStatusChart.update();
+	}
 });
 });
