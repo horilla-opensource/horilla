@@ -91,6 +91,14 @@ urlpatterns = [
     ),
     path("assign-filter", views.leave_assign_filter, name="assign-filter"),
     path("holiday-view", views.holiday_view, name="holiday-view"),
+
+    path("get_job_positions", views.get_job_positions, name="get_job_positions"),
+    path("restrict-view", views.restrict_view, name="restrict-view"),
+    path("restrict-filter", views.restrict_filter, name="restrict-filter"),
+    path("restrict-creation", views.restrict_creation, name="restrict-creation"),
+    path("restrict-update/<int:id>", views.restrict_update, name="restrict-update"),
+    path("restrict-delete/<int:id>", views.restrict_delete, name="restrict-delete"),
+
     path(
         "holidays-excel-template",
         views.holidays_excel_template,
@@ -220,19 +228,9 @@ urlpatterns = [
         name="leave-allocation-request-view",
     ),
     path(
-        "leave-allocation-request-create",
-        views.leave_allocation_request_create,
-        name="leave-allocation-request-create",
-    ),
-    path(
         "leave-allocation-request-filter",
         views.leave_allocation_request_filter,
         name="leave-allocation-request-filter",
-    ),
-    path(
-        "leave-allocation-request-single-view/<int:req_id>",
-        views.leave_allocation_request_single_view,
-        name="leave-allocation-request-single-view",
     ),
     path(
         "leave-allocation-request-update/<int:req_id>",
@@ -243,16 +241,6 @@ urlpatterns = [
         "leave-allocation-request-approve/<int:req_id>",
         views.leave_allocation_request_approve,
         name="leave-allocation-request-approve",
-    ),
-    path(
-        "leave-allocation-request-reject/<int:req_id>",
-        views.leave_allocation_request_reject,
-        name="leave-allocation-request-reject",
-    ),
-    path(
-        "leave-allocation-request-delete/<int:req_id>",
-        views.leave_allocation_request_delete,
-        name="leave-allocation-request-delete",
     ),
     path(
         "assigned-leave-select/",
