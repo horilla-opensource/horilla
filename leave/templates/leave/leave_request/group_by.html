@@ -1,6 +1,19 @@
 {% load attendancefilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %} 
   <!-- start of selection buttons -->
+
+{% if messages %}
+<div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
   <div
     class="oh-checkpoint-badge text-success mb-2"
     id="selectAllLeaverequests"
@@ -123,7 +136,7 @@
                                                   hx-target="#penaltyModalBody" hx-get="{% url "leave-cut-penalty" leave_request.id %}?{{pd}}" 
                                                   type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
                                                   title="{% trans 'Penalty' %}">
-                                                  <ion-icon name="information-circle-outline"></ion-icon>            
+                                                  <ion-icon name="information-circle-outline"></ion-icon>
                                                 </button>
                                               {% endif %}
                                               <button  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
@@ -132,7 +145,7 @@
                                               {% endif %}
                                               {% if request.user|is_reportingmanager or perms.attendance.delete_leaverequest %}
                                               <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
-                                                  href="{% url 'request-delete' leave_request.id %}" onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" title="{% trans 'Delete' %}"><ion-icon
+                                              hx-confirm="{% trans "Are you sure you want to delete ?" %}" hx-get="{% url 'request-delete' leave_request.id %}?{{pd}}" hx-target="#leaveRequest"  title="{% trans 'Delete' %}"><ion-icon
                                                   name="trash-outline">group_by</ion-icon></a>
                                               
                                           </div>

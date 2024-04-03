@@ -1,13 +1,4 @@
 {% load i18n %} {% load yes_no %}
-<div class="oh-modal__dialog-header">
-    <h2 class="oh-modal__dialog-title" id="editDialogDialog">
-        {% trans "Leave Type Details" %}
-    </h2>
-    <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-    </button>
-</div>
-<div class="oh-modal__dialog-body oh-modal__dialog-relative">
 {% if request.GET.instances_ids %}
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
         <button 
@@ -24,20 +15,28 @@
             aria-label="chevron forward outline"></ion-icon>
         </button>
     </div>
-    {% endif %}
-    <div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-3 pt-3">
-        <div class="oh-timeoff-modal__profile-content">
-            <div class="oh-profile">
-                <div class="oh-profile__avatar mr-1">
-                    <img src="{{leave_type.get_avatar}}" class="oh-profile__image"
-                        alt="" />
-                </div>
+{% endif %}
+
+<div class="oh-modal__dialog-header pb-0">
+    <h2 class="oh-modal__dialog-title" id="editDialogDialog">
+        {% trans "Details" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <div class="oh-timeoff-modal__profile-content m-0">
+        <div class="oh-profile mb-2">
+            <div class="oh-profile__avatar">
+              <img src="{{leave_type.get_avatar}}" class="oh-profile__image me-2" alt="Mary Magdalene"/>
             </div>
             <div class="oh-timeoff-modal__profile-info">
-                <span class="oh-timeoff-modal__user fw-bold">{{leave_type.name}}</span>
+              <span class="oh-timeoff-modal__user fw-bold m-0">{{leave_type.name}}</span>
             </div>
         </div>
-    
+    </div>
+    <div class="oh-modal__dialog-header pt-0">
         <div class="oh-timeoff-modal__stats-container">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Period In" %}</span>
@@ -124,7 +123,7 @@
                     <div class="oh-timeoff-modal__stat-description">{{leave_type.get_require_attachment_display }}</div>
                 </div>
             </div>
-            
+
             <div class="oh-timeoff-modal__stats ">
                 <div class="oh-timeoff-modal__stat">
                     <span class="oh-timeoff-modal__stat-title">{% trans "Exclude company Leaves" %}</span>
@@ -147,27 +146,25 @@
                     {% endif %}
                 </div>
             </div>
-            
         </div>
-    </div>
-
-    <div class="oh-modal__button-container text-center">
-        {% if perms.leave.change_leavetype and perms.leave.add_availableleave and  perms.leave.delete_leavetype %}
-            <div class="oh-btn-group">
-                <a href="{% url 'type-update' leave_type.id %}"  class="oh-btn oh-btn--info w-50">
-                    <ion-icon class="me-1" name="create-outline"></ion-icon>
-                    {% trans "Edit" %}
-                </a>
-                <a data-toggle="oh-modal-toggle" data-target="#editModal"
-                hx-get="{% url 'assign-one' leave_type.id %}" hx-target="#leaveForm" class="oh-btn oh-btn--success w-50">
-                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                    {% trans "Assign" %}
-                </a>
-                <a href="{% url 'type-delete' leave_type.id %}" class="oh-btn oh-btn--danger w-50">
-                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                    {% trans "Delete" %}
-                </a>
-            </div>
-        {% endif %} 
+        <div class="oh-modal__button-container text-center mt-3">
+            {% if perms.leave.change_leavetype and perms.leave.add_availableleave and  perms.leave.delete_leavetype %}
+                <div class="oh-btn-group">
+                    <a href="{% url 'type-update' leave_type.id %}"  class="oh-btn oh-btn--info w-50">
+                        <ion-icon class="me-1" name="create-outline"></ion-icon>
+                        {% trans "Edit" %}
+                    </a>
+                    <a data-toggle="oh-modal-toggle" data-target="#editModal"
+                    hx-get="{% url 'assign-one' leave_type.id %}" hx-target="#leaveForm" class="oh-btn oh-btn--success w-50">
+                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                        {% trans "Assign" %}
+                    </a>
+                    <a href="{% url 'type-delete' leave_type.id %}" class="oh-btn oh-btn--danger w-50">
+                        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                        {% trans "Delete" %}
+                    </a>
+                </div>
+            {% endif %} 
+        </div>
     </div>
 </div>

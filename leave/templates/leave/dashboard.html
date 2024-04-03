@@ -96,10 +96,10 @@
                             <ul class="oh-card-dashboard__user-list" style="height: 380px;overflow-y:auto">
                                 {% for leave_today_employee in leave_today_employees %}
                                     <li class="oh-card-dashboard__user-item pointer" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25"
-                                    hx-get="{% url 'one-request-view' leave_today_employee.id %}" hx-target="#objectDetailsModalW25Target">
+                                    hx-get="{% url 'one-request-view' leave_today_employee.id %}?instances_ids={{requests_ids}}" hx-target="#objectDetailsModalW25Target">
                                         <div class="oh-profile oh-profile--md">
                                             <div class="oh-profile__avatar mr-1">
-                                                <img src="https://ui-avatars.com/api/?name={{leave_today_employee.employee_id}}&background=random"
+                                                <img src="{{leave_today_employee.employee_id.get_avatar}}"
                                                     class="oh-profile__image" alt="" />
                                             </div>
                                             <span class="oh-profile__name oh-text--dark">{{leave_today_employee.employee_id}}</span>
@@ -262,7 +262,7 @@
 <script>
 $(document).ready(function() {
     $("#requestedLeaves").on("click", function(){
-        window.location.href='{% url "request-view" %}?status=requested'
+        window.location.href='{% url "request-view" %}?status=requested&from_date={{today}}'
     })
     $("#approvedLeaves").on("click", function(){
         window.location.href='{% url "request-view" %}?status=approved&from_date={{first_day}}&to_date={{last_day}}'
