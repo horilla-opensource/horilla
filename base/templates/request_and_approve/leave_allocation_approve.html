@@ -7,26 +7,21 @@
                 <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Requested Days" %}</div>
-                <div class="oh-sticky-table__th"></div>
+                <div class="oh-sticky-table__th" align="center">{% trans "Actions" %}</div>
             </div>
         </div>
         <div class="oh-sticky-table__tbody">
             {% for leave_allocation_request in allocation_reqests %}
                 <div class="oh-sticky-table__tr" draggable="true"  
                     data-toggle="oh-modal-toggle"
-                    data-target="#smallModal"
-                    hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?instances_ids={{reqests_ids}}&dashboard=true" 
-                    hx-target="#smallModalTarget">
+                    data-target="#objectDetailsModalW25"
+                    hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?instances_ids={{reqests_ids}}" 
+                    hx-target="#objectDetailsModalW25Target">
                     <div class="oh-sticky-table__sd" >
                         <div class="oh-profile oh-profile--md">
                             <div class="oh-profile__avatar mr-1">
-                                {% if leave_allocation_request.employee_id.employee_profile %}
                                 <img src="{{leave_allocation_request.employee_id.get_avatar}}" class="oh-profile__image"
                                     alt="" />
-                                {% else %}
-                                <img src="https://ui-avatars.com/api/?name={{leave_allocation_request.employee_id}}&background=random"
-                                    class="oh-profile__image" alt="" />
-                                {% endif %}
                             </div>
                             <span class="oh-profile__name oh-text--dark">{{leave_allocation_request.employee_id}}</span>
                         </div>
