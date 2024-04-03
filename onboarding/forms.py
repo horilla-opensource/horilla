@@ -165,26 +165,7 @@ class OnboardingStageForm(ModelForm):
 
         model = OnboardingStage
         fields = "__all__"
-        exclude = ("sequence",)
-
-
-class OnboardingTaskForm(forms.ModelForm):
-    """
-    Form for OnboardingTask Model
-    """
-
-    class Meta:
-        """
-        Meta class to apply some additional info
-        """
-
-        model = OnboardingTask
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for visible in self.visible_fields():
-            visible.field.widget.attrs["class"] = "form-control"
+        exclude = ["sequence", "is_active"]
 
 
 class OnboardingCandidateForm(ModelForm):
@@ -260,7 +241,7 @@ class OnboardingViewTaskForm(ModelForm):
 
         model = CandidateTask
         fields = "__all__"
-        exclude = ("status", "candidate_id", "onboarding_task_id")
+        exclude = ["status", "candidate_id", "onboarding_task_id", "is_active"]
 
     def clean(self):
         for field_name, field_instance in self.fields.items():
@@ -312,7 +293,7 @@ class OnboardingTaskForm(ModelForm):
 
         model = OnboardingTask
         fields = "__all__"
-        exclude = ("stage_id",)
+        exclude = ["stage_id", "is_active"]
         widgets = {
             "candidates": forms.SelectMultiple(
                 attrs={"class": "oh-select oh-select-2 w-100 select2-hidden-accessible"}

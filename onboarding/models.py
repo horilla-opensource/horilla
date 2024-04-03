@@ -6,20 +6,18 @@ This module is used to register models for onboarding app
 """
 
 from datetime import datetime
-import time
-from typing import Any
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from base.horilla_company_manager import HorillaCompanyManager
 from recruitment.models import Recruitment, Candidate
 from employee.models import Employee
-from base.horilla_company_manager import HorillaCompanyManager
-from django.contrib.auth.models import User
 
 
-class OnboardingStage(models.Model):
+class OnboardingStage(HorillaModel):
     """
     OnboardingStage models
     """
@@ -61,7 +59,7 @@ def create_initial_stage(sender, instance, created, **kwargs):
         initial_stage.save()
 
 
-class OnboardingTask(models.Model):
+class OnboardingTask(HorillaModel):
     """
     OnboardingTask models
     """
@@ -81,7 +79,7 @@ class OnboardingTask(models.Model):
         related_name="cand_onboarding_task",
     )
     employee_id = models.ManyToManyField(
-        Employee, related_name="onboarding_task", verbose_name="Task Assignee"
+        Employee, related_name="onboarding_task", verbose_name=_("Task Managers")
     )
 
     objects = HorillaCompanyManager("stage_id__recruitment_id__company_id")
@@ -90,7 +88,7 @@ class OnboardingTask(models.Model):
         return f"{self.task_title}"
 
 
-class CandidateStage(models.Model):
+class CandidateStage(HorillaModel):
     """
     CandidateStage model
     """
@@ -114,7 +112,9 @@ class CandidateStage(models.Model):
         super(CandidateStage, self).save(*args, **kwargs)
 
     def task_completion_ratio(self):
-        # function that used for getting the numbers between task completed v/s tasks assigned
+        """
+        function that used for getting the numbers between task completed v/s tasks assigned
+        """
         cans_tasks = self.candidate_id.candidate_task
         completed_tasks = cans_tasks.filter(status="done")
         return f"{completed_tasks.count()}/{cans_tasks.count()}"
@@ -128,7 +128,7 @@ class CandidateStage(models.Model):
         ordering = ["sequence"]
 
 
-class CandidateTask(models.Model):
+class CandidateTask(HorillaModel):
     """
     CandidateTask model
     """
@@ -174,7 +174,7 @@ class CandidateTask(models.Model):
         # unique_together = ("candidate_id", "onboarding_task_id")
 
 
-class OnboardingPortal(models.Model):
+class OnboardingPortal(HorillaModel):
     """
     OnboardingPortal model
     """
