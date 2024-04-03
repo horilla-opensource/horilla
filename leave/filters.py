@@ -22,6 +22,7 @@ from .models import (
     Holiday,
     CompanyLeave,
     LeaveAllocationRequest,
+    RestrictLeave,
 )
 from base.filters import FilterSet
 
@@ -526,3 +527,36 @@ class LeaveAllocationRequestReGroup:
         ("employee_id__employee_work_info__employee_type_id", _("Employment Type")),
         ("employee_id__employee_work_info__company_id", _("Company")),
     ]
+
+
+class RestrictLeaveFilter(FilterSet):
+    """
+    Filter class for Restrict model.
+
+    This filter allows searching Restrictleave objects based on name and date range.
+    """
+
+    search = filters.CharFilter(field_name="title", lookup_expr="icontains")
+    from_date = DateFilter(
+        field_name="start_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    to_date = DateFilter(
+        field_name="end_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+    class Meta:
+        """
+        Meta class defines the model and fields to filter
+        """
+
+        model = RestrictLeave
+        fields = '__all__'
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"

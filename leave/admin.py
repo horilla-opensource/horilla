@@ -14,6 +14,7 @@ from .models import (
     LeaveAllocationRequest,
     LeaveallocationrequestComment,
     LeaverequestComment,
+    RestrictLeave
 )
 from simple_history.admin import SimpleHistoryAdmin
 
@@ -28,3 +29,4 @@ admin.site.register(LeaveAllocationRequest, SimpleHistoryAdmin)
 admin.site.register(LeaveRequestConditionApproval)
 admin.site.register(LeaverequestComment)
 admin.site.register(LeaveallocationrequestComment)
+admin.site.register(RestrictLeave)

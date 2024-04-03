@@ -18,6 +18,7 @@ from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelec
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from base import thread_local_middleware
 from base.methods import reload_queryset
+from base.models import Department
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee
@@ -31,6 +32,7 @@ from .models import (
     LeaveallocationrequestComment,
     LeaverequestComment,
     LeaverequestFile,
+    RestrictLeave,
 )
 from .methods import (
     calculate_requested_days,
@@ -1166,3 +1168,36 @@ class LeaveAllocationCommentForm(ModelForm):
         if commit:
             instance.files.add(*multiple_files_ids)
         return instance, files
+
+
+class RestrictLeaveForm(ModelForm):
+    start_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+    def clean_end_date(self):
+        start_date = self.cleaned_data.get("start_date")
+        end_date = self.cleaned_data.get("end_date")
+
+        if start_date and end_date and end_date < start_date:
+            raise ValidationError(
+                _("End date should not be earlier than the start date.")
+            )
+
+        return end_date
+
+    class Meta:
+        model = RestrictLeave
+        fields = "__all__"
+        exclude = ["is_active"]
+        labels = {
+            "title": _("Title"),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(RestrictLeaveForm, self).__init__(*args, **kwargs)
+        self.fields["title"].widget.attrs["autocomplete"] = "title"
+

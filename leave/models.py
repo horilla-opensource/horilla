@@ -1,6 +1,6 @@
 import calendar
 from collections.abc import Iterable
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 import math
 import operator
 import sys
@@ -11,11 +11,12 @@ from django.core.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext_lazy as _
 from base import thread_local_middleware
-from base.models import Company, MultipleApprovalCondition, clear_messages
+from base.models import Company, Department, JobPosition, MultipleApprovalCondition, clear_messages
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from leave.threading import LeaveClashThread
 from .methods import calculate_requested_days
 from django.core.files.storage import default_storage
 from django.conf import settings
@@ -150,7 +151,7 @@ class LeaveType(HorillaModel):
     period_in = models.CharField(max_length=30, choices=TIME_PERIOD, default="day")
     total_days = models.IntegerField(null=True, default=1)
     reset = models.BooleanField(default=False)
-    is_encashable = models.BooleanField(default=False,verbose_name=_("Is encashable"))
+    is_encashable = models.BooleanField(default=False, verbose_name=_("Is encashable"))
     reset_based = models.CharField(
         max_length=30,
         choices=RESET_BASED,
@@ -417,6 +418,19 @@ class AvailableLeave(HorillaModel):
         super().save(*args, **kwargs)
 
 
+def restrict_leaves(restri):
+
+    restricted_dates = []
+    restricted_days = RestrictLeave.objects.filter(id = restri)
+    for i in restricted_days:
+        restrict_start_date = i.start_date
+        restrict_end_date = i.end_date
+        total_days = restrict_end_date - restrict_start_date
+        for i in range(total_days.days + 1):
+            date = restrict_start_date + timedelta(i)
+            restricted_dates.append(date)
+    return restricted_dates
+
 class LeaveRequest(HorillaModel):
     employee_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
@@ -441,7 +455,9 @@ class LeaveRequest(HorillaModel):
     requested_days = models.FloatField(
         blank=True, null=True, verbose_name=_("Requested Days")
     )
-    leave_clashes_count = models.IntegerField(default=0, verbose_name=_("Leave Clashes Count"))
+    leave_clashes_count = models.IntegerField(
+        default=0, verbose_name=_("Leave Clashes Count")
+    )
     description = models.TextField(verbose_name=_("Description"), max_length=255)
     attachment = models.FileField(
         null=True,
@@ -480,6 +496,9 @@ class LeaveRequest(HorillaModel):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+
+    class Meta:
+        ordering = ["-id"]
 
     def tracking(self):
         return get_diff(self)
@@ -565,6 +584,7 @@ class LeaveRequest(HorillaModel):
         return company_leave_dates
 
     def save(self, *args, **kwargs):
+        
         self.requested_days = calculate_requested_days(
             self.start_date,
             self.end_date,
@@ -617,6 +637,38 @@ class LeaveRequest(HorillaModel):
                     leave_request_id=self,
                     manager_id=manager,
                 )
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+        restricted_leave = RestrictLeave.objects.all()
+
+        emp_dep = self.employee_id.employee_work_info.department_id
+        emp_job = self.employee_id.employee_work_info.job_position_id
+
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+
+        if request.user.has_perm('leave.add_restrictleave') == False:
+            for restrict in restricted_leave:
+                restri = restrict.id
+                requ_days = self.requested_dates()
+                restri_days  = restrict_leaves(restri)
+                if restrict.department == emp_dep and len(restrict.job_position.all()) == 0:
+
+                    # Check if any date in requ_days is present in restri_days
+                    if any(date in restri_days for date in requ_days):
+                        raise ValidationError("You cannot request leave for this date range. The requestesd dates are restricted, Please contact admin.")
+                elif restrict.job_position.all():
+                    if emp_job in restrict.job_position.all(): 
+                        if any(date in restri_days for date in requ_days):
+                            raise ValidationError("You cannot request leave for this date range. The requestesd dates are restricted, Please contact admin.")
+                else:
+                    print('NO PROBS')
+                    pass
+
+        return cleaned_data
+                
+
 
     def exclude_all_leaves(self):
         requested_dates = self.requested_dates()
@@ -700,23 +752,22 @@ class LeaveRequest(HorillaModel):
 
     def delete(self, *args, **kwargs):
         request = getattr(thread_local_middleware._thread_locals, "request", None)
-        leave_requests_to_update = LeaveRequest.objects.all().exclude(id=self.id)
 
         if self.status == "requested":
             """
             Override the delete method to update the leave clashes count of related leave requests.
             """
+            leave_request = self
+
             super().delete(*args, **kwargs)
 
-            for leave_request in leave_requests_to_update:
-                leave_request.leave_clashes_count = leave_request.count_leave_clashes()
-                leave_request.save()
+            clash_thread = LeaveClashThread(leave_request)
+            clash_thread.start()
 
         else:
             if request:
                 clear_messages(request)
                 messages.warning(request, "The leave request cannot be deleted.")
-
 
     def update_leave_clashes_count(self):
         """
@@ -726,9 +777,11 @@ class LeaveRequest(HorillaModel):
 
         for leave_request in leave_requests_to_update:
             leave_request.leave_clashes_count = leave_request.count_leave_clashes()
-        
+
         # Bulk update leave clashes count for all leave requests
-        LeaveRequest.objects.bulk_update(leave_requests_to_update, ['leave_clashes_count'])
+        LeaveRequest.objects.bulk_update(
+            leave_requests_to_update, ["leave_clashes_count"]
+        )
 
     def count_leave_clashes(self):
         """
@@ -736,13 +789,25 @@ class LeaveRequest(HorillaModel):
         with other employees' requested dates.
         """
         overlapping_requests = LeaveRequest.objects.exclude(id=self.id).filter(
-            Q(employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id) |
-            Q(employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id),
+            Q(
+                employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+            )
+            | Q(
+                employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
+            ),
             start_date__lte=self.end_date,
             end_date__gte=self.start_date,
         )
 
         return overlapping_requests.count()
+
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        if self.start_date < date.today() and not request.user.has_perm('leave.add_leavereaquest'):
+            raise ValidationError(
+                _("Requests cannot be made for past dates.")
+            )
 
 
 class LeaverequestFile(models.Model):
@@ -763,7 +828,7 @@ class LeaverequestComment(HorillaModel):
         return f"{self.comment}"
 
 
-class LeaveAllocationRequest(models.Model):
+class LeaveAllocationRequest(HorillaModel):
     leave_type_id = models.ForeignKey(
         LeaveType, on_delete=models.PROTECT, verbose_name="Leave type"
     )
@@ -772,13 +837,6 @@ class LeaveAllocationRequest(models.Model):
     )
     requested_days = models.FloatField(blank=True, null=True)
     requested_date = models.DateField(default=timezone.now)
-    created_by = models.ForeignKey(
-        Employee,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="leave_allocation_request_created",
-    )
     description = models.TextField(max_length=255)
     attachment = models.FileField(
         null=True, blank=True, upload_to="leave/leave_attachment"
@@ -786,7 +844,6 @@ class LeaveAllocationRequest(models.Model):
     status = models.CharField(
         max_length=30, choices=LEAVE_ALLOCATION_STATUS, default="requested"
     )
-    created_at = models.DateTimeField(auto_now="True")
     reject_reason = models.TextField(blank=True, max_length=255)
     history = HorillaAuditLog(
         related_name="history_set",
@@ -797,6 +854,9 @@ class LeaveAllocationRequest(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+
+    class Meta:
+        ordering = ["-id"]
 
     def __str__(self):
         return f"{self.employee_id}| {self.leave_type_id}| {self.id}"
@@ -847,3 +907,18 @@ class LeaveRequestConditionApproval(models.Model):
     is_rejected = models.BooleanField(default=False)
     leave_request_id = models.ForeignKey(LeaveRequest, on_delete=models.CASCADE)
     manager_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+
+
+class RestrictLeave(HorillaModel):
+    title = models.CharField(max_length = 20)
+    start_date = models.DateField(verbose_name=_("Start Date"))
+    end_date = models.DateField(verbose_name=_("End Date"))
+    department = models.ForeignKey(Department, verbose_name=_("Department"), on_delete=models.CASCADE)
+    jobposition = models.ManyToManyField(
+        JobPosition, verbose_name=_("Job Position"), blank=True, help_text = _('If no job positions are specifically selected, the system will consider all job positions under the selected department.')
+        )
+
+    description = models.TextField(null=True, verbose_name=_("Description"), max_length=255)
+ 
+    def __str__(self) -> str:
+        return f"{self.title}"

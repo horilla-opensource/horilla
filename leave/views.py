@@ -28,7 +28,7 @@ from base.methods import (
     filter_conditional_leave_request,
     get_pagination,
 )
-from base.threading import LeaveMailSendThread
+from leave.threading import LeaveMailSendThread
 from base.models import *
 from base.methods import (
     filtersubordinates,
@@ -546,6 +546,7 @@ def leave_request_delete(request, id):
     Returns:
     GET : return leave request view template
     """
+    previous_data = request.GET.urlencode()
     try:
         LeaveRequest.objects.get(id=id).delete()
         messages.success(request, _("Leave request deleted successfully.."))
@@ -553,6 +554,9 @@ def leave_request_delete(request, id):
         messages.error(request, _("Leave request not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
+    hx_target = request.META.get("HTTP_HX_TARGET", None)
+    if hx_target == "leaveRequest":
+        return redirect(f"/leave/request-filter?{previous_data}")
     return redirect(leave_request_view)
 
 
@@ -1448,6 +1452,157 @@ def holiday_view(request):
     )
 
 
+def get_job_positions(request):
+    department_id = request.GET.get('department_id')
+    job_positions = JobPosition.objects.filter(department_id=department_id).values_list('id', 'job_position')
+    return JsonResponse({'job_positions': dict(job_positions)})
+
+
+@login_required
+@hx_request_required
+@permission_required("leave.add_restrictleave")
+def restrict_creation(request):
+    """
+    function used to create restricted days.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return restricted days creation form template
+    POST : return restricted days view template
+    """
+
+    query_string = request.GET.urlencode()
+    if query_string.startswith("pd="):
+        previous_data = unquote(query_string[len("pd=") :])
+    else:
+        previous_data = unquote(query_string)
+    form = RestrictLeaveForm()
+
+    if request.method == "POST":
+        form = RestrictLeaveForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Restricted day created successfully.."))
+    return render(
+        request, "leave/restrict/restrict_form.html", {"form": form, "pd": previous_data}
+    )
+
+
+@login_required
+def restrict_view(request):
+    """
+    function used to view restricted days.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return restricted days view  template
+    """
+    queryset = RestrictLeave.objects.all()[::-1]
+    previous_data = request.GET.urlencode()
+    page_number = request.GET.get("page")
+    page_obj = paginator_qry(queryset, page_number)
+    restrictday_filter = RestrictLeaveFilter()
+    return render(
+        request,
+        "leave/restrict/view_restrict.html",
+        {
+            "restrictday": page_obj,
+            "form": restrictday_filter.form,
+            "pd": previous_data,
+        },
+    )
+
+
+@login_required
+@hx_request_required
+def restrict_filter(request):
+    """
+    function used to filter restricted days.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return restricted days view template
+    """
+    queryset = RestrictLeave.objects.all()
+    previous_data = request.GET.urlencode()
+    restrictday_filter = RestrictLeaveFilter(request.GET, queryset).qs
+    if request.GET.get("sortby"):
+        restrictday_filter = sortby(request, restrictday_filter, "sortby")
+    page_number = request.GET.get("page")
+    page_obj = paginator_qry(restrictday_filter[::-1], page_number)
+    data_dict = parse_qs(previous_data)
+    get_key_instances(RestrictLeave, data_dict)
+    return render(
+        request,
+        "leave/restrict/restrict.html",
+        {"restrictday": page_obj, "pd": previous_data, "filter_dict": data_dict},
+    )
+
+
+@login_required
+@hx_request_required
+@permission_required("leave.change_restrictleave")
+def restrict_update(request, id):
+    """
+    function used to update restricted days.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    id : restricted days id
+
+    Returns:
+    GET : return restricted days update form template
+    POST : return restricted days view template
+    """
+    query_string = request.GET.urlencode()
+    if query_string.startswith("pd="):
+        previous_data = unquote(query_string[len("pd=") :])
+    else:
+        previous_data = unquote(query_string)
+    restrictday = RestrictLeave.objects.get(id=id)
+    form = RestrictleaveForm(instance=restrictday)
+    if request.method == "POST":
+        form = RestrictLeaveForm(request.POST, instance=restrictday)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Restricted day updated successfully.."))
+    return render(
+        request,
+        "leave/restrict/restrict_update_form.html",
+        {"form": form, "id": id, "pd": previous_data},
+    )
+
+
+@login_required
+@permission_required("leave.delete_restrictleave")
+def restrict_delete(request, id):
+    """
+    function used to delete restricted days.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    id : restricted days id
+
+    Returns:
+    GET : return restricted days view template
+    """
+    query_string = request.GET.urlencode()
+    try:
+        RestrictLeave.objects.get(id=id).delete()
+        messages.success(request, _("Restricted day deleted successfully.."))
+    except RestrictLeave.DoesNotExist:
+        messages.error(request, _("Restricted day not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
+    return redirect(f"/leave/restrict-filter?{query_string}")
+
+
 @login_required
 @hx_request_required
 def holiday_filter(request):
@@ -1502,7 +1657,7 @@ def holiday_update(request, id):
         form = HolidayForm(request.POST, instance=holiday)
         if form.is_valid():
             form.save()
-            messages.info(request, _("Holiday updated successfully.."))
+            messages.success(request, _("Holiday updated successfully.."))
     return render(
         request,
         "leave/holiday/holiday_update_form.html",
@@ -1874,7 +2029,7 @@ def user_request_update(request, id):
     previous_data = request.GET.urlencode()
     leave_request = LeaveRequest.objects.get(id=id)
     try:
-        if request.user.employee_get == leave_request.employee_id:
+        if request.user.employee_get == leave_request.employee_id and leave_request.status != "approved":
             form = UserLeaveRequestForm(instance=leave_request)
             if request.method == "POST":
                 form = UserLeaveRequestForm(
@@ -1943,6 +2098,9 @@ def user_request_update(request, id):
                 "leave/user_leave/user_request_update.html",
                 {"form": form, "id": id, "pd": previous_data},
             )
+        else:
+            messages.error(request, _("You can't update this leave request..."))
+            return HttpResponse("<script>window.location.reload();</script>")
     except Exception as e:
         messages.error(request, _("User has no leave request.."))
 
@@ -2197,14 +2355,16 @@ def employee_leave(request):
     GET : return Json response of employee
     """
     today = date.today()
-    employees = []
+    leaves = []
     leave_requests = LeaveRequest.objects.filter(status="approved")
-    
+    requests_ids = []
+
     for leave_request in leave_requests:
         if today in leave_request.requested_dates():
-            employees.append(leave_request.employee_id)
-    return render(request,"leave/on_leave.html",{'employees':employees})
-
+            leaves.append(leave_request)
+            requests_ids.append(leave_request.employee_id.id)
+            
+    return render(request, "leave/on_leave.html", {"leaves": leaves,"requests_ids":requests_ids})
 
 
 @login_required
@@ -2245,9 +2405,10 @@ def dashboard(request):
     Returns:
     GET : return Admin dasboard template.
     """
+    requests_ids = []
     today = date.today()
     leave_requests = LeaveRequest.objects.filter(start_date__month=today.month)
-    requested = LeaveRequest.objects.filter(status="requested")
+    requested = LeaveRequest.objects.filter(start_date__gte=today, status="requested")
     approved = LeaveRequest.objects.filter(
         status="approved", start_date__month=today.month
     )
@@ -2271,6 +2432,9 @@ def dashboard(request):
         end_date__gte=today,
     )
 
+    for item in leave_today:
+        requests_ids.append(item.id)
+
     context = {
         "leave_requests": leave_requests,
         "requested": requested,
@@ -2280,10 +2444,12 @@ def dashboard(request):
         "holidays": holidays,
         "leave_today_employees": leave_today,
         "dashboard": "dashboard",
+        "today":today,
         "first_day": today.replace(day=1).strftime("%Y-%m-%d"),
         "last_day": date(
             today.year, today.month, calendar.monthrange(today.year, today.month)[1]
         ).strftime("%Y-%m-%d"),
+        "requests_ids":requests_ids
     }
     return render(request, "leave/dashboard.html", context)
 
@@ -2832,7 +2998,6 @@ def leave_allocation_request_create(request):
         form = LeaveAllocationRequestForm(request.POST, request.FILES)
         if form.is_valid():
             leave_allocation_request = form.save(commit=False)
-            leave_allocation_request.created_by = employee
             leave_allocation_request.skip_history = False
             leave_allocation_request.save()
             messages.success(request, _("New Leave allocation request is created"))
@@ -2953,44 +3118,47 @@ def leave_allocation_request_update(request, req_id):
     form.fields["employee_id"].queryset = form.fields[
         "employee_id"
     ].queryset | Employee.objects.filter(employee_user_id=request.user)
-    if request.method == "POST":
-        form = LeaveAllocationRequestForm(
-            request.POST, request.FILES, instance=leave_allocation_request
-        )
-        if form.is_valid():
-            leave_allocation_request = form.save(commit=False)
-            leave_allocation_request.created_by = request.user.employee_get
-            leave_allocation_request.skip_history = False
-            leave_allocation_request.save()
-            messages.info(
-                request, _("Leave allocation request is updated successfully.")
+    if leave_allocation_request.status != "approved":
+        if request.method == "POST":
+            form = LeaveAllocationRequestForm(
+                request.POST, request.FILES, instance=leave_allocation_request
             )
-            with contextlib.suppress(Exception):
-                notify.send(
-                    request.user.employee_get,
-                    recipient=leave_allocation_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                    verb=f"Leave allocation request updated for {leave_allocation_request.employee_id}.",
-                    verb_ar=f"تم تحديث طلب تخصيص الإجازة لـ {leave_allocation_request.employee_id}.",
-                    verb_de=f"Urlaubszuteilungsanforderung aktualisiert für {leave_allocation_request.employee_id}.",
-                    verb_es=f"Solicitud de asignación de licencia actualizada para {leave_allocation_request.employee_id}.",
-                    verb_fr=f"Demande d'allocation de congé mise à jour pour {leave_allocation_request.employee_id}.",
-                    icon="people-cicle",
-                    redirect=f"/leave/leave-allocation-request-view?id={leave_allocation_request.id}",
+            if form.is_valid():
+                leave_allocation_request = form.save(commit=False)
+                leave_allocation_request.skip_history = False
+                leave_allocation_request.save()
+                messages.info(
+                    request, _("Leave allocation request is updated successfully.")
                 )
-            response = render(
-                request,
-                "leave/leave_allocation_request/leave_allocation_request_update.html",
-                {"form": form, "req_id": req_id},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8")
-                + "<script>location. reload();</script>"
-            )
-    return render(
-        request,
-        "leave/leave_allocation_request/leave_allocation_request_update.html",
-        {"form": form, "req_id": req_id},
-    )
+                with contextlib.suppress(Exception):
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=leave_allocation_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                        verb=f"Leave allocation request updated for {leave_allocation_request.employee_id}.",
+                        verb_ar=f"تم تحديث طلب تخصيص الإجازة لـ {leave_allocation_request.employee_id}.",
+                        verb_de=f"Urlaubszuteilungsanforderung aktualisiert für {leave_allocation_request.employee_id}.",
+                        verb_es=f"Solicitud de asignación de licencia actualizada para {leave_allocation_request.employee_id}.",
+                        verb_fr=f"Demande d'allocation de congé mise à jour pour {leave_allocation_request.employee_id}.",
+                        icon="people-cicle",
+                        redirect=f"/leave/leave-allocation-request-view?id={leave_allocation_request.id}",
+                    )
+                response = render(
+                    request,
+                    "leave/leave_allocation_request/leave_allocation_request_update.html",
+                    {"form": form, "req_id": req_id},
+                )
+                return HttpResponse(
+                    response.content.decode("utf-8")
+                    + "<script>location. reload();</script>"
+                )
+        return render(
+            request,
+            "leave/leave_allocation_request/leave_allocation_request_update.html",
+            {"form": form, "req_id": req_id},
+        )
+    else:
+        messages.error(request, _("You can't update this request..."))
+        return HttpResponse("<script>window.location.reload();</script>")
 
 
 @login_required
@@ -3823,8 +3991,12 @@ def view_clashes(request, leave_request_id):
     """
     record = get_object_or_404(LeaveRequest, id=leave_request_id)
     overlapping_requests = LeaveRequest.objects.filter(
-        Q(employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id) |
-        Q(employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id),
+        Q(
+            employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
+        )
+        | Q(
+            employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
+        ),
         start_date__lte=record.end_date,
         end_date__gte=record.start_date,
     ).exclude(id=leave_request_id)
@@ -3838,18 +4010,20 @@ def view_clashes(request, leave_request_id):
     )
 
     leave_request_filter = LeaveRequestFilter(request.GET, overlapping_requests).qs
-    leave_request_filter = paginator_qry(
-        leave_request_filter, request.GET.get("page")
-    )
+    leave_request_filter = paginator_qry(leave_request_filter, request.GET.get("page"))
 
     requests_ids = json.dumps(
         [instance.id for instance in leave_request_filter.object_list]
     )
 
-    return render(request, "leave/leave_request/leave_clashes.html", {
-                    "records": overlapping_requests, 
-                   "current_date": date.today(),
-                    "requests_ids": requests_ids,
-                    "clashed_due_to_department": clashed_due_to_department,
-                    "clashed_due_to_job_position": clashed_due_to_job_position,
-        })
+    return render(
+        request,
+        "leave/leave_request/leave_clashes.html",
+        {
+            "records": overlapping_requests,
+            "current_date": date.today(),
+            "requests_ids": requests_ids,
+            "clashed_due_to_department": clashed_due_to_department,
+            "clashed_due_to_job_position": clashed_due_to_job_position,
+        },
+    )

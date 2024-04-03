@@ -1,0 +1,209 @@
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+<!-- start of nav bar -->
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <!-- start of title -->
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Restricted Days" %}</h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon"
+      ></ion-icon>
+    </a>
+  </div>
+  <!-- end of title -->
+
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    {% if restrictday %}
+    <!-- start of search -->
+    <div
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        id="searchHoliday"
+        type="text"
+        class="oh-input oh-input__icon"
+        aria-label="Search Input"
+        placeholder="{% trans 'Search' %}"
+        name="search"
+        hx-get="{% url 'restrict-filter' %}"
+        hx-trigger="keyup"
+        hx-target="#restrictday"
+      />
+    </div>
+    <!-- end of search -->
+
+    <!-- start of Nav bar buttons -->
+    <div class="oh-main__titlebar-button-container">
+      <!-- start of filter -->
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open">
+          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+          <div id="filterCount"></div>
+        </button>
+        {% include "leave/restrict/restrict_filter.html" %}
+      </div>
+      <!-- end of filter -->
+      {% endif %}
+
+      {% comment %} <!-- start of Actions -->
+      {% if perms.leave.add_restrictleave or perms.leave.delete_restrictleave %}
+      <div class="oh-dropdown ml-2" x-data="{open: false}">
+        <button
+          class="oh-btn oh-btn--dropdown"
+          @click="open = !open"
+          @click.outside="open = false"
+        >
+          {% trans "Actions" %}
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right"
+          x-show="open"
+          style="display: none"
+        >
+          <ul class="oh-dropdown__items">
+            {% if perms.leave.add_restrictleave %}
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                class="oh-dropdown__link"
+                id="holidays-info-import"
+                data-toggle="oh-modal-toggle"
+                data-target="#holidayImport"
+                >{% trans "Import" %}</a
+              >
+            </li>
+            {% endif %} {% if holidays %} {% if perms.leave.add_restrictleave %}
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                class="oh-dropdown__link"
+                id="holidays-export"
+                data-toggle="oh-modal-toggle"
+                data-target="#holidayExport"
+                >{% trans "Export" %}</a
+              >
+            </li>
+            {% endif %} {% if perms.leave.delete_restrictleave %}
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                id="bulkHolidaysDelete"
+                class="oh-dropdown__link oh-dropdown__link--danger"
+                >{% trans "Delete" %}</a
+              >
+            </li>
+            {% endif %} {% endif %}
+          </ul>
+        </div>
+      </div>
+      {% endif %}
+      <!-- end of actions --> {% endcomment %}
+
+      <!-- start of create -->
+      {% if perms.leave.add_restrictleave %}
+      <div class="oh-btn-group ml-2">
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            id="holidayCreateButton"
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'restrict-creation' %}"
+            hx-target="#objectCreateModalTarget"
+          >
+            <ion-icon name="add-outline" class="me-1"></ion-icon>
+            {% trans "Create" %}
+          </button>
+        </div>
+      </div>
+      {% endif %}
+      <!-- end of create -->
+    </div>
+    <!-- end of nav bar buttons -->
+  </div>
+</section>
+<!-- end of nav bar -->
+
+{% comment %} <div
+  class="oh-checkpoint-badge mb-2"
+  id="selectedHolidays"
+  data-ids="[]"
+  data-clicked=""
+  style="display: none"
+>
+  {% trans "Selected Holidays" %}
+</div> {% endcomment %}
+
+<!--start of holiday display  -->
+<div class="oh-wrapper" id="restrictday">
+  {% if restrictday %} 
+    {% include 'leave/restrict/restrict.html' %} 
+  {% else %}
+  <!--start of empty page  -->
+    <div
+      style="
+        height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+      class=""
+      >
+      <div style="" class="oh-404">
+        <img
+          style="display: block; width: 150px; height: 150px; margin: 10px auto"
+          src="{% static 'images/ui/restrict.png' %}"
+          class="mb-4"
+          alt=""
+        />
+        <h3 style="font-size: 20px" class="oh-404__subtitle">
+          {% trans "No restricted date available." %}
+        </h3>
+      </div>
+    </div>
+  <!-- end of empty page -->
+  {% endif %}
+</div>
+<!-- end of Holiday display -->
+
+<!-- end of modals -->
+<script>
+  $(document).on("htmx:load", "#restrictday", function () {
+    // Create a new script element
+    var scriptElement = document.createElement("script");
+    // Set the source URL of the script file to be loaded
+    scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
+    // Append the script element to the head of the HTML document
+    document.head.appendChild(scriptElement);
+  });
+  $(document).ready(function () {
+    $("#delete").submit(function (e) {
+      e.preventDefault(); // Prevent form submission
+      if (confirm("Are you sure you want to delete this record?")) {
+        // If user confirms, submit the form
+        this.submit();
+      } else {
+        // If user cancels, do nothing
+        return false;
+      }
+    });
+  });
+</script>
+
+<script src="{% static '/base/filter.js' %}"></script>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,96 @@
+{% load i18n %} {% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{ message.tags }}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<script>
+  setTimeout(() => {
+    $(".oh-modal__close").click();
+  }, 1000);
+</script>
+{% endif %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="editDialogDialog"
+    >{% trans "Create Restricted Day" %}</span
+  >
+  <button
+    class="oh-modal__close"
+    aria-label="Close"
+    hx-get="{% url 'restrict-filter' %}?{{pd}}"
+    hx-target="#restrictday"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<form
+  hx-post="{% url 'restrict-creation' %}?{{pd}}"
+  hx-target="#objectCreateModalTarget"
+>
+  <div class="oh-modal__dialog-body pb-2">
+    <label class="oh-label d-block" for="{{ form.title.id_for_label }}"
+      >{% trans "Title" %}</label
+    >
+    {{form.title}} {{form.title.errors}}
+    <label class="oh-label d-block" for="{{ form.start_date.id_for_label }}"
+      >{% trans "Start Date" %}</label
+    >
+    {{form.start_date}} {{form.start_date.errors}}
+    <label class="oh-label d-block" for="{{ form.end_date.id_for_label }}"
+      >{% trans "End Date" %}</label
+    >
+    {{form.end_date}} {{form.end_date.errors}}
+    <label class="oh-label d-block" for="{{ form.department.id_for_label }}"
+      >{% trans "Department" %}</label
+    >
+    {{form.department}} {{form.department.errors}}
+    <label class="oh-label d-flex" for="{{ form.jobposition.id_for_label }}"
+      >{% trans "Job Position" %}<span class="oh-info ms-2" title = "{{ form.jobposition.help_text|safe }}">
+      </span></label
+    >
+    {{form.jobposition}} {{form.jobposition.errors}}
+    <label class="oh-label d-block" for="{{ form.description.id_for_label }}"
+      >{% trans "Description" %}</label
+    >
+    {{form.description}} {{form.description.errors}}
+  </div>
+  <div class="oh-modal__dialog-footer">
+    <button type="submit" class="oh-btn oh-btn--secondary w-100">
+      {% trans "Apply" %}
+    </button>
+  </div>
+</form>
+
+<script>
+  $(document).ready(function() {
+    // Add event listener to the Department dropdown
+    $('#id_department').change(function() {
+      var departmentId = $(this).val(); // Get the selected department ID
+
+      // Make AJAX request to fetch available job positions for the selected department
+      $.ajax({
+        url: '{% url "get_job_positions" %}', // Replace "get_job_positions" with your actual URL endpoint
+        method: 'GET',
+        data: {
+          'department_id': departmentId
+        },
+        success: function(data) {
+          // Clear existing options in the Job Position dropdown
+          $('#id_jobposition').empty();
+          
+          // Append new options based on the response
+          $.each(data.job_positions, function(key, value) {
+            $('#id_jobposition').append($('<option>', {
+              value: key,
+              text: value
+            }));
+          });
+        }
+      });
+    });
+  });
+</script>
