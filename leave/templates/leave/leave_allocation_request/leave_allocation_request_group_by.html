@@ -43,9 +43,9 @@
                                             {% for leave_allocation_request in leave_allocation_request_list.list %}
                                                 <div class="oh-sticky-table__tr" draggable="true" 
                                                     data-toggle="oh-modal-toggle"
-                                                    data-target="#singleViewModal"
+                                                    data-target="#objectDetailsModal"
                                                     hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?my_request=True&my_instances_ids={{my_requests_ids}}" 
-                                                    hx-target="#singleViewTarget">
+                                                    hx-target="#objectDetailsModalW25Target">
                                                     <div class="oh-sticky-table__sd
                                                         {% if leave_allocation_request.status == 'requested' %} row-status--blue 
                                                         {% elif leave_allocation_request.status == 'approved' %} row-status--yellow 
@@ -214,9 +214,9 @@
                                                 {% for leave_allocation_request in leave_allocation_request_list.list %}
                                                     <div class="oh-sticky-table__tr" draggable="true" 
                                                         data-toggle="oh-modal-toggle"
-                                                        data-target="#singleViewModal"
+                                                        data-target="#objectDetailsModal"
                                                         hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?instances_ids={{requests_ids}}" 
-                                                        hx-target="#singleViewTarget">
+                                                        hx-target="#objectDetailsModalW25Target">
                                                         <div class="oh-sticky-table__sd
                                                             {% if leave_allocation_request.status == 'requested' %} row-status--blue 
                                                             {% elif leave_allocation_request.status == 'approved' %} row-status--yellow 

@@ -4,32 +4,37 @@
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
         <button 
             hx-get="{% url 'leave-allocation-request-single-view' previous %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}" 
-            hx-target="{% if dashboard == 'true' %}#smallModalTarget {% else %}#singleViewTarget{% endif %}"
+            hx-target="#objectDetailsModalW25Target"
             class="oh-modal__diaglog-nav oh-modal__nav-prev">
             <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
             aria-label="chevron back outline"></ion-icon>
         </button>
         <button  
             hx-get="{% url 'leave-allocation-request-single-view' next %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"  
-            hx-target="{% if dashboard == 'true' %}#smallModalTarget {% else %}#singleViewTarget{% endif %}"
+            hx-target="#objectDetailsModalW25Target"
             class="oh-modal__diaglog-nav oh-modal__nav-next">
             <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
             aria-label="chevron forward outline"></ion-icon>
         </button>
     </div>
 {% endif %} 
+</div>
+
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" id="objectDetailsModalLabel">
+      {% trans "Details" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+    </button>
+</div>
 <div class="oh-modal__dialog-body">
     <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
         href ="{% url 'employee-view-individual' leave_allocation_request.employee_id.id %}">
         <div class="oh-profile">
             <div class="oh-profile__avatar mr-1">
-                {% if leave_allocation_request.employee_id.employee_profile %}
                 <img src="{{leave_allocation_request.employee_id.get_avatar}}" class="oh-profile__image"
                     alt="" />
-                {% else %}
-                <img src="https://ui-avatars.com/api/?name={{leave_allocation_request.employee_id}}&background=random"
-                    class="oh-profile__image" alt="" />
-                {% endif %}
             </div>
         </div>
         <div class="oh-timeoff-modal__profile-info">
@@ -37,67 +42,70 @@
             <span class="oh-timeoff-modal__position">{{leave_allocation_request.employee_id.employee_work_info.job_position_id}}</span>
         </div>
     </a>
-    <div class="oh-timeoff-modal__stats-container mt-3">
-        <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Requested Days" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{leave_allocation_request.requested_days}}</span>
-        </div>
-        <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Leave Type" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{leave_allocation_request.leave_type_id}}</span>
-        </div>
-    </div>
-    <div class="oh-timeoff-modal__stats-container mt-3">
-        <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Created Date" %}</span>
-            <span class="oh-timeoff-modal__stat-count dateformat_changer">{{leave_allocation_request.requested_date}}</span>
-        </div>
-        <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Created By" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{leave_allocation_request.created_by}}</span>
-        </div>
-    </div>
-
-    <div class="oh-timeoff-modal__stats w-100 mt-3">
-        <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Description KUW HFOW HF" %}</span>
-            <div class="oh-timeoff-modal__stat-description">{{leave_allocation_request.description}}</div>
-        </div>
-    </div>
-    {% if leave_allocation_request.allocate_tracking %}
-    <div class="oh-timeoff-modal__stats w-100 mt-3 mb-3">
-        <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "History" %}</span>
-            <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary">
-                <div class="oh-timeoff-modal__stat-count">
-                    <span style="color: #665d5d;">{% trans "Requested days" %} : {{leave_allocation_request.allocate_tracking.old}}</span>
-                    <img src="/static/images/ui/arrow-right-line.svg" style="width: 100px; height: 20px;" class="oh-progress_arrow">
-                    <span style="color: #35b835;"> {% trans "Allocated days" %} : {{leave_allocation_request.allocate_tracking.new}}</span>
-                </div>
-                <div class="oh-timeoff-modal__stat-count"></div>
-            </div> 
-        </div>
-    </div>
-    {% endif %}
-    {% if leave_allocation_request.reject_reason %}
-        {% if leave_allocation_request.status == "rejected" %}
-            <div class="oh-timeoff-modal__stats w-100 mt-3  p-2 row-status--red ">
-                <div class="oh-timeoff-modal__stat">
-                    <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Rejection" %}</span>
-                    <div class="oh-timeoff-modal__stat-description">{{leave_allocation_request.reject_reason}}</div>
-                </div>
+    <div class="oh-modal__dialog-header pt-0">
+        <div class="oh-timeoff-modal__stats-container mt-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Requested Days" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{{leave_allocation_request.requested_days}}</span>
             </div>
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Leave Type" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{{leave_allocation_request.leave_type_id}}</span>
+            </div>
+        </div>
+        <div class="oh-timeoff-modal__stats-container mt-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Created Date" %}</span>
+                <span class="oh-timeoff-modal__stat-count dateformat_changer">{{leave_allocation_request.requested_date}}</span>
+            </div>
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Created By" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{{leave_allocation_request.created_by.employee_get}}</span>
+            </div>
+        </div>
+    
+        <div class="oh-timeoff-modal__stats w-100 mt-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
+                <div class="oh-timeoff-modal__stat-description">{{leave_allocation_request.description}}</div>
+            </div>
+        </div>
+        {% if leave_allocation_request.allocate_tracking %}
+        <div class="oh-timeoff-modal__stats w-100 mt-3 mb-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "History" %}</span>
+                <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary">
+                    <div class="oh-timeoff-modal__stat-count">
+                        <span style="color: #665d5d;">{% trans "Requested days" %} : {{leave_allocation_request.allocate_tracking.old}}</span>
+                        <br >
+                        <img src="/static/images/ui/arrow-right-line.svg" style="width: 100px; height: 20px;" class="oh-progress_arrow">
+                        <br >
+                        <span style="color: #35b835;"> {% trans "Allocated days" %} : {{leave_allocation_request.allocate_tracking.new}}</span>
+                    </div>
+                    <div class="oh-timeoff-modal__stat-count"></div>
+                </div> 
+            </div>
+        </div>
         {% endif %}
-    {% endif %}
-    {% if leave_allocation_request.attachment %}
-        <a href="{{leave_allocation_request.attachment.url}}" target="_blank" class="oh-timeoff-modal__download-link justify-content-center" >
-            <ion-icon class="me-1" name="download-outline" ></ion-icon>
-            <span class="oh-timeoff-modal__download-link-text " ></span>
-            {% trans "View attachment" %}
-        </a>
-    {% endif %}
-
-    <div class="oh-modal__button-container text-center">
+        {% if leave_allocation_request.reject_reason %}
+            {% if leave_allocation_request.status == "rejected" %}
+                <div class="oh-timeoff-modal__stats w-100 mt-3 p-2 row-status--red ">
+                    <div class="oh-timeoff-modal__stat">
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Rejection" %}</span>
+                        <div class="oh-timeoff-modal__stat-description">{{leave_allocation_request.reject_reason}}</div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if leave_allocation_request.attachment %}
+            <a href="{{leave_allocation_request.attachment.url}}" target="_blank" class="oh-timeoff-modal__download-link justify-content-center" >
+                <ion-icon class="me-1" name="download-outline" ></ion-icon>
+                <span class="oh-timeoff-modal__download-link-text " ></span>
+                {% trans "View attachment" %}
+            </a>
+        {% endif %}
+    </div>
+    <div class="oh-modal__button-container text-center mt-3">
         <div class="oh-btn-group">
             {% if my_request %}
                 {% if leave_allocation_request.status ==  'requested' %}
@@ -174,7 +182,6 @@
                             {% trans "Reject" %}
                         </a>
                     {% endif %}
-
                 {% endif %}
             {% endif %}
         </div>
