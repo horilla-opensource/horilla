@@ -531,7 +531,7 @@
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
-                href="{% url 'attendance-overtime-view' %}"
+                href="{% url 'attendance-overtime-view' %}?year={% now 'Y' %}"
                 >{% trans "Hour Account" %}</a
               >
             </li>
@@ -990,6 +990,13 @@
                 href="{% url 'company-leave-view' %}"
                 class="oh-sidebar__submenu-link"
                 >{% trans "Company Leaves" %}</a
+              >
+            </li>
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="{% url 'restrict-view' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Restrict Leaves" %}</a
               >
             </li>
           </ul>
