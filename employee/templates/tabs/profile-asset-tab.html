@@ -1,123 +1,122 @@
 {% load i18n %}
-    <!-- Sticky Table  for own objective-->
-    <div class="oh-btn-group p-3 justify-content-end">
-      <div>
-        <button class="oh-btn oh-btn--secondary" title="{% trans 'Create asset request' %}"
-            data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
-            hx-get="{% url 'asset-request-creation' %}" hx-target="#objectCreateModalTarget"
-          >
-          <ion-icon name="add-sharp" class="mr-2 md hydrated" role="img" aria-label="add sharp"></ion-icon>
-          {% trans "Create" %}
-        </button>
-      </div>
-    </div>
-    {% if assets %}
-    <div class="oh-sticky-table">
-      <div class="oh-sticky-table__table ">
-        <div class="oh-sticky-table__thead">
-          <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__th">{% trans "Asset" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-            {% comment %} <div class="oh-sticky-table__th" style="width: 10px;"> {% endcomment %}
-              {% comment %} <a class="link-danger oh-btn oh-btn--secondary-outline" role="button" data-toggle="oh-modal-toggle"
-                data-target="#asset-request-allocation-modal" hx-get="{% url 'asset-request-creation' %}" hx-target="#asset-request-allocation-modal-target" title="{% trans 'Create asset request' %}">
-                <ion-icon name="add-outline" role="img" class="md hydrated" aria-label="add outline"></ion-icon>
-              </a>
-            </div> {% endcomment %}
-          </div>
-        </div>
-        <div class="oh-sticky-table__tbody">
-          {% for asset in assets %}
-          {% if asset.asset_id.asset_status == "In use" %}
-            <!-- asset request looping -->
-            <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-get="{% url 'own-asset-individual-view' asset.id %}?assets_ids={{assets_ids}}" hx-target="#objectDetailsModalTarget">
-                <div class="oh-sticky-table__sd">
-                <div class="oh-profile oh-profile--md">
-                    <div class="oh-profile__avatar mr-1">
-                    <img src="https://ui-avatars.com/api/?name={{asset.asset_id.asset_name}}&background=random" class="oh-profile__image"
-                        alt="" />
-                    </div>
-                    <span class="oh-profile__name oh-text--dark">{{asset.asset_id.asset_name}}
-                    </span>
-                </div>
-                </div>
-                <div class="oh-sticky-table__td">
-                <span class="oh-dot oh-dot--small  me-1 oh-dot--color oh-dot--warning"></span>
-                <span class="link-warning">
-                {{asset.asset_id.asset_status}}
-                </span>
-                </div>
-                <div class="oh-sticky-table__td">
-                <span class="oh-dot oh-dot--small  me-1 oh-dot--color oh-dot--success"></span>
-                <span class="link-success dateformat_changer">
-                {{asset.assigned_date}}
-                </span>
-                </div>
-                <div class="oh-sticky-table__td">
-                  {% if asset.return_request %}
-											<div class="d-flex align-items-center">
-												<span
-													class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"
-												></span>
-												<span class="link-primary"> {% trans "Requested to return" %} </span>
-											</div>
-									{% else %}
-											<form action = "{% url 'asset-allocate-return-request' asset_id=asset.id %}"
-												onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');"
-												>
-												{% csrf_token %}
-												<button type="submit" class="oh-btn oh-btn--secondary" onclick="event.stopPropagation()">
-													<ion-icon name="return-down-back-sharp"></ion-icon>
-													{% trans "Return Request" %}
-												</button>
-											</form>
-									{% endif %}
-                </div>
-            </div>
-          {% endif %}
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-    {% else %}
-    <div class="d-flex justify-content-center align-items-center" style="height:40vh">
-      <h5 class="oh-404__subtitle">{% trans "No assets have been allocated." %}</h5>
-    </div>
-    {% endif %}
-    <!-- End of Sticky Table -->
-
-    <div class="oh-modal" id="asset-request-allocation-modal" role="dialog" aria-labelledby="AssetRequestModal" aria-hidden="true">
-      <div class="oh-modal__dialog " style="max-width:550px">
-        <div class="oh-modal__dialog-header">
-            <button type="button" class="oh-modal__close" aria-label="Close">
-              <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-        <!-- htmx form -->
-        <div class="oh-modal__dialog-body" id="asset-request-allocation-modal-target"></div>
-      </div>
-    </div>
-    <div
-      class="oh-modal"
-      id="asset-return-allocation-modal"
-      role="dialog"
-      aria-labelledby="AssetRequestModal"
-      aria-hidden="true"
+<div class="oh-btn-group p-3 justify-content-end">
+  <div>
+    <button class="oh-btn oh-btn--secondary" title="{% trans 'Create asset request' %}"
+        data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+        hx-get="{% url 'asset-request-creation' %}" hx-target="#objectCreateModalTarget"
       >
-      <div class="oh-modal__dialog" style="max-width: 550px">
-        <div class="oh-modal__dialog-header">
-          <button type="button" class="oh-modal__close--custom" aria-label="Close" onclick="$('#asset-return-allocation-modal').toggleClass('oh-modal--show')">
-            <ion-icon name="close-outline"></ion-icon>
-          </button>
+      <ion-icon name="add-sharp" class="mr-2 md hydrated" role="img" aria-label="add sharp"></ion-icon>
+      {% trans "Create" %}
+    </button>
+  </div>
+</div>
+{% if assets %}
+  <!-- Sticky Table  for own objective-->
+  <div class="oh-sticky-table">
+    <div class="oh-sticky-table__table ">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th">{% trans "Asset" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+          {% comment %} <div class="oh-sticky-table__th" style="width: 10px;"> {% endcomment %}
+            {% comment %} <a class="link-danger oh-btn oh-btn--secondary-outline" role="button" data-toggle="oh-modal-toggle"
+              data-target="#asset-request-allocation-modal" hx-get="{% url 'asset-request-creation' %}" hx-target="#asset-request-allocation-modal-target" title="{% trans 'Create asset request' %}">
+              <ion-icon name="add-outline" role="img" class="md hydrated" aria-label="add outline"></ion-icon>
+            </a>
+          </div> {% endcomment %}
         </div>
-      
-        <!-- htmx form -->
-        <div
-          class="oh-modal__dialog-body"
-          id="asset-return-allocation-modal-target"
-        ></div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+        {% for asset in assets %}
+        {% if asset.asset_id.asset_status == "In use" %}
+          <!-- asset request looping -->
+          <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-get="{% url 'own-asset-individual-view' asset.id %}?assets_ids={{assets_ids}}" hx-target="#objectDetailsModalTarget">
+              <div class="oh-sticky-table__sd">
+              <div class="oh-profile oh-profile--md">
+                  <div class="oh-profile__avatar mr-1">
+                  <img src="https://ui-avatars.com/api/?name={{asset.asset_id.asset_name}}&background=random" class="oh-profile__image"
+                      alt="" />
+                  </div>
+                  <span class="oh-profile__name oh-text--dark">{{asset.asset_id.asset_name}}
+                  </span>
+              </div>
+              </div>
+              <div class="oh-sticky-table__td">
+              <span class="oh-dot oh-dot--small  me-1 oh-dot--color oh-dot--warning"></span>
+              <span class="link-warning">
+              {{asset.asset_id.asset_status}}
+              </span>
+              </div>
+              <div class="oh-sticky-table__td">
+              <span class="oh-dot oh-dot--small  me-1 oh-dot--color oh-dot--success"></span>
+              <span class="link-success dateformat_changer">
+              {{asset.assigned_date}}
+              </span>
+              </div>
+              <div class="oh-sticky-table__td">
+                {% if asset.return_request %}
+										<div class="d-flex align-items-center">
+											<span
+												class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"
+											></span>
+											<span class="link-primary"> {% trans "Requested to return" %} </span>
+										</div>
+								{% else %}
+										<form action = "{% url 'asset-allocate-return-request' asset_id=asset.id %}"
+											onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');"
+											>
+											{% csrf_token %}
+											<button type="submit" class="oh-btn oh-btn--secondary" onclick="event.stopPropagation()">
+												<ion-icon name="return-down-back-sharp"></ion-icon>
+												{% trans "Return Request" %}
+											</button>
+										</form>
+								{% endif %}
+              </div>
+          </div>
+        {% endif %}
+        {% endfor %}
       </div>
     </div>
+  </div>
+  <!-- End of Sticky Table -->
+{% else %}
+  <div class="d-flex justify-content-center align-items-center" style="height:40vh">
+    <h5 class="oh-404__subtitle">{% trans "No assets have been allocated." %}</h5>
+  </div>
+{% endif %}
+<div class="oh-modal" id="asset-request-allocation-modal" role="dialog" aria-labelledby="AssetRequestModal" aria-hidden="true">
+  <div class="oh-modal__dialog " style="max-width:550px">
+    <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+    </div>
+    <!-- htmx form -->
+    <div class="oh-modal__dialog-body" id="asset-request-allocation-modal-target"></div>
+  </div>
+</div>
+<div
+  class="oh-modal"
+  id="asset-return-allocation-modal"
+  role="dialog"
+  aria-labelledby="AssetRequestModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog" style="max-width: 550px">
+    <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close--custom" aria-label="Close" onclick="$('#asset-return-allocation-modal').toggleClass('oh-modal--show')">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+  
+    <!-- htmx form -->
+    <div
+      class="oh-modal__dialog-body"
+      id="asset-return-allocation-modal-target"
+    ></div>
+  </div>
+</div>
 
