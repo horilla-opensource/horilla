@@ -618,7 +618,7 @@ def asset_request_reject(request, req_id):
     req_id (int): the id of the AssetRequest object to reject
 
     Returns:
-    HttpResponse: a redirect to the asset request list view with a success 
+    HttpResponse: a redirect to the asset request list view with a success
         message if the asset request is rejected successfully, or a redirect to the
         asset request detail view with an error message if the asset request is not
         found or already rejected
@@ -684,7 +684,7 @@ def asset_allocate_return_request(request, asset_id):
     asset_assign.save()
     message = _("Return request for {} initiated.").format(asset_assign.asset_id)
     messages.info(request, message)
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -702,7 +702,7 @@ def asset_allocate_return(request, asset_id):
         asset_id=asset_id, return_status__isnull=True
     ).first()
     if request.method == "POST":
-        asset_return_form = AssetReturnForm(request.POST,request.FILES)
+        asset_return_form = AssetReturnForm(request.POST, request.FILES)
 
         if asset_return_form.is_valid():
             asset = Asset.objects.filter(id=asset_id).first()
@@ -775,7 +775,7 @@ def filter_pagination_asset_request_allocation(request):
         perm="asset.view_assetrequest",
         queryset=AssetRequest.objects.all(),
         field="requested_employee_id",
-    ) | AssetRequest.objects.filter(requested_employee_id = request.user.employee_get)
+    ) | AssetRequest.objects.filter(requested_employee_id=request.user.employee_get)
     asset_request = asset_request.distinct()
     if request.GET.get("assign_sortby"):
         asset_assignment = sortby(request, asset_assignment, "assign_sortby")
@@ -947,7 +947,6 @@ def asset_request_individual_view(request, id):
     asset_request = AssetRequest.objects.get(id=id)
     context = {
         "asset_request": asset_request,
-        "dashboard": request.GET.get("dashboard"),
     }
     requests_ids_json = request.GET.get("requests_ids")
     if requests_ids_json:
@@ -1360,11 +1359,17 @@ def asset_dashboard(request):
     """
     assets = Asset.objects.all()
     asset_in_use = Asset.objects.filter(asset_status="In use")
-    asset_requests = AssetRequest.objects.filter(asset_request_status="Requested",requested_employee_id__is_active=True)
-    asset_allocations = AssetAssignment.objects.filter(asset_id__asset_status="In use",assigned_to_employee_id__is_active=True)
+    asset_requests = AssetRequest.objects.filter(
+        asset_request_status="Requested", requested_employee_id__is_active=True
+    )
+    requests_ids = json.dumps([instance.id for instance in asset_requests])
+    asset_allocations = AssetAssignment.objects.filter(
+        asset_id__asset_status="In use", assigned_to_employee_id__is_active=True
+    )
     context = {
         "assets": assets,
         "asset_requests": asset_requests,
+        "requests_ids": requests_ids,
         "asset_in_use": asset_in_use,
         "asset_allocations": asset_allocations,
     }

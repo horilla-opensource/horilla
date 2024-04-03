@@ -1,44 +1,4 @@
 {% load i18n %} {% load static %} {% include 'filter_tags.html' %}
-<!-- Asset request Status -->
-<div
-	class="oh-modal"
-	id="requestModal"
-	role="dialog"
-	aria-labelledby="requestModal"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog oh-modal__dialog--timeoff oh-timeoff-modal">
-		<div class="oh-modal__dialog-header mb-2">
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div
-			class="oh-modal__dialog-body oh-modal__dialog-relative oh-timeoff-modal__body mb-5"
-			id="singleRequest"
-		></div>
-	</div>
-</div>
-<!-- End asset return status -->
-<div
-	class="oh-modal"
-	id="allocateModal"
-	role="dialog"
-	aria-labelledby="allocateModal"
-	aria-hidden="false"
->
-	<div class="oh-modal__dialog oh-modal__dialog--timeoff oh-timeoff-modal">
-		<div class="oh-modal__dialog-header mb-2">
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div
-			class="oh-modal__dialog-body oh-modal__dialog-relative oh-timeoff-modal__body pb-5"
-			id="singleAllocate"
-		></div>
-	</div>
-</div>
 
 <div class="oh-tabs__contents">
 	<div class="oh-tabs__content" id="tab_3">
@@ -254,9 +214,9 @@
 								class="oh-sticky-table__tr"
 								draggable="true"
 								data-toggle="oh-modal-toggle"
-								data-target="#requestModal"
+								data-target="#objectDetailsModalW25"
 								hx-get="{% url 'asset-request-individual-view' asset_request.id %}?requests_ids={{requests_ids}}"
-								hx-target="#singleRequest"
+								hx-target="#objectDetailsModalW25Target"
 							>
 								<div class="oh-sticky-table__sd">
 									<div class="oh-profile oh-profile--md">
@@ -462,9 +422,9 @@
 							{% for asset_allocation in asset_allocations %}
 							<div class="oh-sticky-table__tr" draggable="true"
 								data-toggle="oh-modal-toggle"
-								data-target="#allocateModal"
+								data-target="#objectDetailsModalW25"
 								hx-get="{% url 'asset-allocation-individual-view' asset_allocation.id %}?allocations_ids={{allocations_ids}}"
-								hx-target="#singleAllocate"
+								hx-target="#objectDetailsModalW25Target"
 							>
 								<div
 									class="oh-sticky-table__td"
