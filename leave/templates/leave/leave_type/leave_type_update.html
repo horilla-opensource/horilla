@@ -72,10 +72,12 @@
                   {{form.total_days.errors}}
               </div>
           </div>
-          <div class="col-sm-12 col-md-12 ">
-              <div class="oh-input-group oh-label__info">
-                  <label for="id_reset" class="oh-label">{% trans "Reset" %}</label>
-                  <span class=" oh-info me-3" title="{% trans "Do you need to reset leaves based on conditions?" %}"></span>
+          <div class="col-sm-12 col-md-6">
+              <div class="oh-input-group oh-label__info justify-content-between">
+                <div class="d-flex align-items-center">
+                    <label for="id_reset" class="oh-label">{% trans "Reset" %}</label>
+                    <span class=" oh-info me-3" title="{% trans "Do you need to reset leaves based on conditions?" %}"></span>
+                  </div>
                   <div class="oh-switch p-3 ">
                       {{form.reset}}
                       {{form.reset.errors}}
@@ -154,9 +156,11 @@
               </div>
           </div>
           <div class="col-sm-12 col-md-12  col-lg-6">
-              <div class="oh-input-group oh-label__info">
-                  <label for="" class="oh-label ">{% trans "Require Approval" %}</label>
-                  <span class=" oh-info me-3" title="{% trans "Do you need approval for leave from the authority?" %}"></span>
+              <div class="oh-input-group oh-label__info justify-content-between">
+                  <div class="d-flex align-items-center">
+                    <label for="" class="oh-label ">{% trans "Require Approval" %}</label>
+                    <span class=" oh-info me-3" title="{% trans "Do you need approval for leave from the authority?" %}"></span>
+                  </div>
                   <div class="oh-switch p-3 ">
                       <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_approval" checked>
                       {{form.require_approval.errors}}
@@ -164,9 +168,11 @@
               </div>
           </div>
           <div class="col-sm-12 col-md-12  col-lg-6">
-              <div class="oh-input-group oh-label__info">
-                  <label for="" class="oh-label">{% trans "Require Attachment" %}</label>
-                  <span class=" oh-info me-3" title="{% trans "Do you need to attach a document for leave?" %}"></span>
+              <div class="oh-input-group oh-label__info justify-content-between">
+                  <div class="d-flex align-items-center">
+                    <label for="" class="oh-label">{% trans "Require Attachment" %}</label>
+                    <span class=" oh-info me-3" title="{% trans "Do you need to attach a document for leave?" %}"></span>
+                  </div>
                   <div class="oh-switch p-3 ">
                       <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_attachment">
                       {{form.require_attachment.errors}}
@@ -174,9 +180,11 @@
                 </div>
           </div>
           <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group oh-label__info">
-                  <label for="" class="oh-label">{% trans "Exclude Company Holidays" %}</label>
-                  <span class=" oh-info me-3" title="{% trans "Do you need to exclude company holidays from the requested leave days?" %}"></span>
+              <div class="oh-input-group oh-label__info justify-content-between">
+                  <div class="d-flex align-items-center">
+                    <label for="" class="oh-label">{% trans "Exclude Company Holidays" %}</label>
+                    <span class=" oh-info me-3" title="{% trans "Do you need to exclude company holidays from the requested leave days?" %}"></span>
+                  </div>
                   <div class="oh-switch p-3 ">
                       <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_exclude_comp_leave">
                       {{form.exclude_company_leave.errors}}
@@ -184,9 +192,11 @@
               </div>
           </div>
           <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group oh-label__info ">
-                  <label for="" class="oh-label">{% trans "Exclude Holidays" %}</label>
-                  <span class=" oh-info me-3" title="{% trans "Do you need to exclude public holidays from the requested leave days?" %}"></span>
+              <div class="oh-input-group oh-label__info justify-content-between">
+                  <div class="d-flex align-items-center">
+                    <label for="" class="oh-label">{% trans "Exclude Holidays" %}</label>
+                    <span class=" oh-info me-3" title="{% trans "Do you need to exclude public holidays from the requested leave days?" %}"></span>
+                  </div>
                   <div class="oh-switch p-3 ">
                       <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_exclude_public_leave">
                       {{form.exclude_holiday.errors}}
@@ -194,9 +204,11 @@
               </div>
           </div>
           <div class="col-sm-12 col-md-12 col-lg-6">
-            <div class="oh-input-group oh-label__info ">
-                <label for="" class="oh-label">{% trans "Is Encashable" %}</label>
-                <span class=" oh-info me-3" title="{% trans "Do you need to encash pending leave days?" %}"></span>
+            <div class="oh-input-group oh-label__info justify-content-between">
+                <div class="d-flex align-items-center">
+                  <label for="" class="oh-label">{% trans "Is Encashable" %}</label>
+                  <span class=" oh-info me-3" title="{% trans "Do you need to encash pending leave days?" %}"></span>
+                </div>
                 <div class="oh-switch p-3 ">
                     {{form.is_encashable}}
                     {{form.is_encashable.errors}}
