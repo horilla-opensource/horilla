@@ -137,11 +137,11 @@ def get_diff(instance):
                 "updated_by": updated_by,
             }
         )
-    from .models import HistoryTrackingFields
-
-    history_tracking_instance = HistoryTrackingFields.objects.first()
-    if history_tracking_instance:
-        track_fields = history_tracking_instance.tracking_fields["tracking_fields"]
-        if track_fields:
-            delta_changes = filter_history(delta_changes, track_fields)
+    if instance._meta.model_name == "employeeworkinformation":
+        from .models import HistoryTrackingFields
+        history_tracking_instance = HistoryTrackingFields.objects.first()
+        if history_tracking_instance:
+            track_fields = history_tracking_instance.tracking_fields["tracking_fields"]
+            if track_fields:
+                delta_changes = filter_history(delta_changes, track_fields)
     return delta_changes
