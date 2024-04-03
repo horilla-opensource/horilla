@@ -18,7 +18,7 @@ from django.db.models import Q, ProtectedError
 from attendance.methods.group_by import group_by_queryset
 from notifications.signals import notify
 from base.models import Company
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import login_required, owner_can_enter, permission_required
 from base.methods import export_data, generate_colors, get_key_instances, sortby
 from employee.models import Employee, EmployeeWorkInformation
 from base.methods import closest_numbers
@@ -256,7 +256,7 @@ def contract_view(request):
 
 
 @login_required
-@permission_required("payroll.view_contract")
+@owner_can_enter("payroll.view_contract", Contract)
 def view_single_contract(request, contract_id):
     """
     Renders a single contract view page.
