@@ -946,18 +946,18 @@ def send_slip(request):
     Send payslip method
     """
     email_backend = ConfiguredEmailBackend()
+    view = request.GET.get("view")
+    payslip_ids = request.GET.getlist("id")
+    payslips = Payslip.objects.filter(id__in=payslip_ids)
     if not getattr(
         email_backend, "dynamic_username_with_display_name", None
     ) or not len(email_backend.dynamic_username_with_display_name):
         messages.error(request, "Email server is not configured")
-        return redirect(view_payslip)
-    payslip_ids = request.GET.getlist("id")
-    view = request.GET.get("view")
-    payslips = Payslip.objects.filter(id__in=payslip_ids)
+        return redirect(f"view-payslip/{payslips[0].id}/" if view else filter_payslip)
+
     result_dict = defaultdict(
         lambda: {"employee_id": None, "instances": [], "count": 0}
     )
-
     for payslip in payslips:
         employee_id = payslip.employee_id
         result_dict[employee_id]["employee_id"] = employee_id
@@ -966,11 +966,7 @@ def send_slip(request):
     mail_thread = MailSendThread(request, result_dict=result_dict, ids=payslip_ids)
     mail_thread.start()
     messages.info(request, "Mail processing")
-    if view:
-        return redirect(
-            f"view-payslip/{payslips[0].id}/",
-        )
-    return redirect(filter_payslip)
+    return redirect(f"view-payslip/{payslips[0].id}/" if view else filter_payslip)
 
 
 @login_required
@@ -1334,9 +1330,16 @@ def get_assigned_leaves(request):
     """
     assigned_leaves = (
         AvailableLeave.objects.filter(
-            employee_id__id=request.GET["employeeId"], total_leave_days__gte=1,leave_type_id__is_encashable=True,
+            employee_id__id=request.GET["employeeId"],
+            total_leave_days__gte=1,
+            leave_type_id__is_encashable=True,
         )
-        .values("leave_type_id__name", "available_days", "carryforward_days",'leave_type_id__id')
+        .values(
+            "leave_type_id__name",
+            "available_days",
+            "carryforward_days",
+            "leave_type_id__id",
+        )
         .distinct()
     )
     return JsonResponse(list(assigned_leaves), safe=False)
