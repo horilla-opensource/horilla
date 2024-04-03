@@ -122,7 +122,7 @@ def leave_request_and_approve(request):
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     leave_requests = LeaveRequest.objects.filter(
-        status="requested", employee_id__is_active=True
+        status="requested", employee_id__is_active=True, start_date__gte = date.today()
     )
     leave_requests = filtersubordinates(
         request, leave_requests, "leave.change_leaverequest"
