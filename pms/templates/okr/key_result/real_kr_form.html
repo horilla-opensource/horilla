@@ -3,7 +3,7 @@
 
 
 <div class="oh-modal__dialog-header">
-  {% if form.instance %}
+  {% if form.instance.id %}
     <h2 class="oh-modal__dialog-title" >
       {% trans "Update Key result" %}
     </h2>
@@ -18,7 +18,7 @@
   </button>
 </div>
 <div class="oh-modal__dialog-body">
-  {% if form.instance %}
+  {% if form.instance.id %}
     <form 
       hx-post="{% url 'update-key-result' form.instance.id %}"
       hx-target="#objectDetailsModalTarget"

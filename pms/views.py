@@ -306,6 +306,7 @@ def key_result_create(request):
 @login_required
 @permission_required("payroll.add_key_result")
 def kr_create_or_update(request,kr_id=None):
+    print('----------kr_create_or_update-------------')
     form=KRForm()
     kr = False
     if kr_id is not None:
@@ -320,6 +321,8 @@ def kr_create_or_update(request,kr_id=None):
                     request,
                     _("Key result %(key_result)s updated successfully") % {"key_result": instance},
                 )
+                return HttpResponse("<script>window.location.reload()</script>")
+
         else:
             form = KRForm(request.POST)
             if form.is_valid():
@@ -328,7 +331,13 @@ def kr_create_or_update(request,kr_id=None):
                     request,
                     _("Key result %(key_result)s created successfully") % {"key_result": instance},
                 )
-        return HttpResponse("<script>window.location.reload()</script>")
+                return HttpResponse("<script>window.location.reload()</script>")
+
+            else:
+                print('errors======',form.errors)
+    
+    print(form.instance)
+    print('-----------------------')
     return render(request,'okr/key_result/real_kr_form.html',{'form':form})
 
 @login_required

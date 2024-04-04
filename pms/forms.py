@@ -436,7 +436,7 @@ class KRForm(MF):
             })
         if progress_type == '%' and target_value > 100 :
             raise ValidationError({
-                'target_value':'Target value cannot be greater than zero for progress type "percentage"'
+                'target_value':'Target value cannot be greater than hundred for progress type "percentage"'
             })
 
 class KeyResultForm(ModelForm):
