@@ -79,7 +79,9 @@
                             <span class="oh-card-dashboard__title">{% trans "Employee Leaves" %}</span>
                             <span class="oh-card-dashboard__title float-end pointer" id="employee-next" title="{% trans "next" %}"><ion-icon name="caret-forward"></ion-icon></span>
                         </div>
-                        <input type="month" class="mb-2 float-end pointer" name="" id="dash_month" />
+                        <div class="d-flex flex-row-reverse">
+                            <input type="month" class="mb-2 float-end pointer" name="" id="dash_month" />
+                        </div>
                         <div class="oh-card-dashboard__body" id="employee_leave_canvas">
                             <canvas id="employeeLeave" class="pointer"></canvas>
                         </div>
@@ -87,7 +89,6 @@
                 </div> 
                 <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-2" style = "height:400px">
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
-
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                             <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
                         </div>
@@ -115,8 +116,7 @@
                               <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today is a holiday." %}</h3>
                             </div>
                         </div>
-
-                        {% else %}                    
+                        {% else %}
                         <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
                             <div style="" class="">
                               <img style="display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="" alt=""/>
@@ -126,7 +126,6 @@
                         {% endif %}
                     </div>
                 </div>
-                
             </div>
         </div> 
         <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
@@ -154,7 +153,7 @@
                             <span class="oh-dashboard__event-title">{% trans "Next Holiday" %}</span>
                             <span class="oh-dashboard__event-main">{{next_holiday.name}}</span>
                             <span class="dateformat_changer oh-dashboard__event-date">{{next_holiday.start_date}}</span>
-                        </div>                
+                        </div>
                     </div>
                 </div>
             </div>
@@ -191,9 +190,7 @@
                     <span class="oh-card-dashboard__title">{% trans "Department Leaves" %}</span>
                 </div>
                 <div class="oh-card-dashboard__body">
-                    {% if leave_today_employees %}
-                        <canvas id="departmentLeave" class="pointer"></canvas>
-                    {% elif current_date == next_holiday.start_date|date:"Y-m-d" %}
+                    {% if current_date == next_holiday.start_date|date:"Y-m-d" %}
                     <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
                         <div style="" class="">
                             <img style="    display: block;width: 70px;margin: 20px auto ;" src="{% static 'images/ui/sunbed outline.png' %}" class="" alt=""/>
@@ -201,11 +198,11 @@
                         </div>
                     </div>
                     {% else %}
-                        <div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
-                            <div style="" class="">
-                            <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="" alt=""/>
-                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No leave requests for today." %}</h3>
-                            </div>
+                        <div class="d-flex flex-row-reverse">
+                            <input type="month" class="mb-2 pointer" name="" id="dash_department_month" />
+                        </div>
+                        <div class="oh-card-dashboard__body" id="department_leave_canvas">
+                            <canvas id="departmentLeave" class="pointer"></canvas>
                         </div>
                     {% endif %}
                 </div>
@@ -214,19 +211,15 @@
         <div class="col-12 col-sm-12 col-md-12 col-lg-3 mt-3">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                    <span class="oh-card-dashboard__title">{% trans "Leave Type - Count of approved leaves" %}</span>
+                    <span class="oh-card-dashboard__title">{% trans "Leave Type - Count of leaves" %}</span>
                 </div>
                 <div class="oh-card-dashboard__body">
-                    {% if leave_requests %}
-                        <canvas id="leaveType" class="pointer"></canvas>
-                    {% else %}
-                        <div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
-                            <div style="" class="">
-                            <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="" alt=""/>
-                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No leave requests for any leave type this month." %}</h3>
-                            </div>
+                        <div class="d-flex flex-row-reverse">
+                            <input type="month" class="mb-2 pointer" name="" id="dash_leave_type_month" />
                         </div>
-                    {% endif %}
+                        <div class="oh-card-dashboard__body" id="leave_type_canvas">
+                            <canvas id="leaveType" class="pointer"></canvas>
+                        </div>
                 </div>
             </div>
         </div> 

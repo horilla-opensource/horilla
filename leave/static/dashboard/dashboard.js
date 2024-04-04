@@ -19,6 +19,8 @@ $(document).ready(function () {
 	year = today.getFullYear();
 	$(".month").val(`${year}-${month}`);
 	$("#dash_month").val(`${year}-${month}`);
+	$("#dash_department_month").val(`${year}-${month}`);
+	$("#dash_leave_type_month").val(`${year}-${month}`);
 
 	function isChartEmpty(chartData) {
 		if (!chartData) {
@@ -189,7 +191,7 @@ $(document).ready(function () {
 				$("#employee_leave_canvas").html(
 					`<div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
 					<div style="" class="">
-					<img style="    display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/attendance.png" class="" alt=""/>
+					<img style=" display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/attendance.png" class="" alt=""/>
 					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
 					</div>
 				</div>`
@@ -213,7 +215,7 @@ $(document).ready(function () {
 				$("#availableLeaveContainer").html(
 					`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
 					<div style="" class="">
-					<img style="    display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/sunbed outline.png" class="" alt=""/>
+					<img style=" display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/sunbed outline.png" class="" alt=""/>
 					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
 					</div>
 				</div>`
@@ -280,7 +282,7 @@ $(document).ready(function () {
 					$("#employee_leave_canvas").html(
 						`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
 					<div style="" class="">
-					<img style="    display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/attendance.png" class="" alt=""/>
+					<img style=" display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/attendance.png" class="" alt=""/>
 					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
 					</div>
 				</div>`
@@ -375,6 +377,70 @@ $(document).ready(function () {
 						dataset: updated_data,
 					};
 					employee_leave_chart(dataset);
+				}
+			},
+			error: (error) => {
+				console.log("Error", error);
+			},
+		});
+	});
+
+	$("#dash_department_month").on("change", function () {
+		let month = $(this).val();
+		$.ajax({
+			type: "GET",
+			url: "/leave/department-leave-chart",
+			dataType: "json",
+			data: {
+				date: month,
+			},
+			success: function (response) {
+				if (isChartEmpty(response.dataset)) {
+					$("#department_leave_canvas").html(
+						`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+								<div style="" class="">
+								<img style=" display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/attendance.png" class="" alt=""/>
+								<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+							</div>
+						</div>`
+					);
+				} else {
+					$("#department_leave_canvas").html(
+						'<canvas id="departmentLeave" class="pointer"></canvas>'
+					);
+					department_leave_chart(response);
+				}
+			},
+			error: (error) => {
+				console.log("Error", error);
+			},
+		});
+	});
+
+	$("#dash_leave_type_month").on("change", function () {
+		let month = $(this).val();
+		$.ajax({
+			type: "GET",
+			url: "/leave/leave-type-chart",
+			dataType: "json",
+			data: {
+				date: month,
+			},
+			success: function (response) {
+				if (isChartEmpty(response.dataset)) {
+					$("#leave_type_canvas").html(
+						`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+								<div style="" class="">
+								<img style=" display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/leave_types.png" class="" alt=""/>
+								<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+							</div>
+						</div>`
+					);
+				} else {
+					$("#leave_type_canvas").html(
+						'<canvas id="leaveType" class="pointer"></canvas>'
+					);
+					leave_type_chart(response);
 				}
 			},
 			error: (error) => {
