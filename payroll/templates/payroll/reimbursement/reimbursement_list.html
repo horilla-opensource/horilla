@@ -117,11 +117,16 @@
                             </div>
                             <div class="oh-sticky-table__tbody">
                                 {% for req in reimbursements %}
-                                    <form
+                                <div class="oh-sticky-table__tr"
+                                    hx-get="{% url 'reimbursement-individual-view' req.id %}?instances_ids={{reimbursements_ids}}" 
+                                    hx-target="#objectDetailsModalTarget" 
+                                    data-target="#objectDetailsModal"  data-toggle="oh-modal-toggle"
+                                >
+                                    {% comment %} <form
                                         action="{% url 'approve-reimbursements' %}"
                                         class="oh-sticky-table__tr"
                                         id="requestCard{{ req.id }}"
-                                    >
+                                    > {% endcomment %}
                                         {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                                         <input
                                             type="checkbox"
@@ -168,7 +173,7 @@
                                             </button>
                                         </div>  
                                         <div class="oh-sticky-table__td">
-                                            <div class="oh-btn-group">
+                                            <div class="oh-btn-group"  >
                                                 {% if perms.payroll.change_reimbursement or request.user %}
                                                     <a
                                                         onclick="event.stopPropagation()"
@@ -195,7 +200,7 @@
                                         <div class="oh-sticky-table__td oh-sticky-table__right">
                                             <input type="hidden" name="ids" value="{{ req.id }}" />
                                             <input type="hidden" name="status" />
-                                            <div class="oh-btn-group">
+                                            <div class="oh-btn-group" onclick="event.stopPropagation();">
                                                 
                                                 {% if req.status != "approved" and req.status != 'rejected'%}
                                                     <button
@@ -207,13 +212,13 @@
                                                         <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                                     </button>
                                                 {% else %}
-                                                    <button class='oh-btn oh-btn--success w-100' disabled>
+                                                    <button class='oh-btn oh-btn--success w-100' disabled onclick="event.preventDefault();">
                                                         <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                                     </button>
                                                 {% endif %}
                                                 <button
                                                     type="button"
-                                                    onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
+                                                    onclick="event.preventDefault();$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
                                                     class="oh-btn oh-btn--danger w-100"
                                                     title="{% trans 'Reject' %}"
                                                 >
@@ -229,7 +234,8 @@
                                             
                                         </div>
                                         
-                                    </form>
+                                    {% comment %} </form> {% endcomment %}
+                                </div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -394,7 +400,7 @@
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-cfd_to_encash' %}arrow-up {% elif request.sort_option.order == 'cfd_to_encash' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=cfd_to_encash" 
                                         hx-target="#reimbursementContainer"
-                                    >{% trans "carryforward to encash" %}</div>
+                                    >{% trans "Carryforward to encash" %}</div>
                                     <div data-cell-index="17" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
                                     <div
                                         data-cell-index="18" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th" style="width:200px"
@@ -408,131 +414,137 @@
                             </div>
                             <div class="oh-sticky-table__tbody"> 
                                 {% for req in leave_encashments %}
-                                    <form
-                                        action="{% url 'approve-reimbursements' %}"
-                                        class="oh-sticky-table__tr"
-                                        id="requestCard{{ req.id }}"
+                                    <div class="oh-sticky-table__tr"
+                                        hx-get="{% url 'reimbursement-individual-view' req.id %}?instances_ids={{leave_encashments_ids}}" 
+                                        hx-target="#objectDetailsModalTarget" 
+                                        data-target="#objectDetailsModal"  data-toggle="oh-modal-toggle"
                                     >
-                                        {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
-                                            <input
-                                            type="checkbox"
-                                            id="{{attendance.id}}"
-                                            class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row"
-                                            />
-                                        </div> {% endcomment %}
-                                        <div class="oh-sticky-table__sd
-                                            {% if req.status == 'rejected' %} row-status--red 
-                                            {% elif  req.status == 'approved' %} row-status--yellow 
-                                            {% else %} row-status--purple 
-                                            {% endif %}" 
-                                        >
-                                            <div class="d-flex">
-                                                <div class="oh-profile oh-profile--md">
-                                                    <div class="oh-profile__avatar mr-1">
-                                                        <img
-                                                            src="{{req.employee_id.get_avatar}}"
-                                                            class="oh-profile__image"
-                                                            alt=""
-                                                        />
+                                        {% comment %} <form
+                                            action="{% url 'approve-reimbursements' %}"
+                                            class="oh-sticky-table__tr"
+                                            id="requestCard{{ req.id }}"
+                                        > {% endcomment %}
+                                            {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+                                                <input
+                                                type="checkbox"
+                                                id="{{attendance.id}}"
+                                                class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row"
+                                                />
+                                            </div> {% endcomment %}
+                                            <div class="oh-sticky-table__sd
+                                                {% if req.status == 'rejected' %} row-status--red 
+                                                {% elif  req.status == 'approved' %} row-status--yellow 
+                                                {% else %} row-status--purple 
+                                                {% endif %}" 
+                                            >
+                                                <div class="d-flex">
+                                                    <div class="oh-profile oh-profile--md">
+                                                        <div class="oh-profile__avatar mr-1">
+                                                            <img
+                                                                src="{{req.employee_id.get_avatar}}"
+                                                                class="oh-profile__image"
+                                                                alt=""
+                                                            />
+                                                        </div>
+                                                        <span class="oh-profile__name oh-text--dark">{{req.employee_id}}</span>
                                                     </div>
-                                                    <span class="oh-profile__name oh-text--dark">{{req.employee_id}}</span>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div data-cell-index="11" class="oh-sticky-table__td dateformat_changer">{{req.created_at|date:"F j, Y"}}</div>
-                                        <div data-cell-index="12" class="oh-sticky-table__td">
-                                            {{req.title|truncatechars:20 }}
-                                        </div>
-                                        <div data-cell-index="13" class="oh-sticky-table__td">
-                                            <input type="number" required
-                                            default="0" min="0" placeholder="Amount"
-                                            name="amount" class="w-75"{% if req.status == "approved" %}disabled{% endif %} {% if req.amount %}
-                                            value="{{req.amount}}"{% endif %} />
-                                        </div>
-                                        <div data-cell-index="14" class="oh-sticky-table__td">
-                                            {{req.leave_type_id}}
-                                        </div>
-                                        <div data-cell-index="15" class="oh-sticky-table__td">
-                                            {{req.ad_to_encash}}
-                                        </div>
-                                        <div data-cell-index="16" class="oh-sticky-table__td">
-                                            {{req.cfd_to_encash}}
-                                        </div>
-                                        <div data-cell-index="17" class="oh-sticky-table__td">
-                                            {{req.get_status_display}}
-                                        </div>
-                                        <div data-cell-index="18" class="oh-sticky-table__td">
-                                            {{req.description}}
-                                        </div>
-                                        <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                                            <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
-                                                    data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                                                    <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
-                                            </button>
-                                        </div>  
+                                            <div data-cell-index="11" class="oh-sticky-table__td dateformat_changer">{{req.created_at|date:"F j, Y"}}</div>
+                                            <div data-cell-index="12" class="oh-sticky-table__td">
+                                                {{req.title|truncatechars:20 }}
+                                            </div>
+                                            <div data-cell-index="13" class="oh-sticky-table__td">
+                                                <input type="number" required
+                                                default="0" min="0" placeholder="Amount"
+                                                name="amount" class="w-75"{% if req.status == "approved" %}disabled{% endif %} {% if req.amount %}
+                                                value="{{req.amount}}"{% endif %} />
+                                            </div>
+                                            <div data-cell-index="14" class="oh-sticky-table__td">
+                                                {{req.leave_type_id}}
+                                            </div>
+                                            <div data-cell-index="15" class="oh-sticky-table__td">
+                                                {{req.ad_to_encash}}
+                                            </div>
+                                            <div data-cell-index="16" class="oh-sticky-table__td">
+                                                {{req.cfd_to_encash}}
+                                            </div>
+                                            <div data-cell-index="17" class="oh-sticky-table__td">
+                                                {{req.get_status_display}}
+                                            </div>
+                                            <div data-cell-index="18" class="oh-sticky-table__td">
+                                                {{req.description}}
+                                            </div>
+                                            <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
+                                                <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
+                                                        data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+                                                        <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
+                                                </button>
+                                            </div>  
 
-                                        <div class="oh-sticky-table__td">
-                                            <div class="oh-btn-group">
-                                                {% if perms.payroll.change_reimbursement or request.user %}
-                                                    <a
-                                                        onclick="event.stopPropagation()"
-                                                        hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                                        hx-target="#objectCreateModalTarget"
-                                                        data-toggle="oh-modal-toggle"
-                                                        data-target="#objectCreateModal"
-                                                        class="oh-btn oh-btn--light-bkg w-100"
-                                                        title="{% trans 'Edit' %}"
-                                                    >
-                                                    <ion-icon name="create-outline"></ion-icon>
-                                                    </a>
-                                                {% endif %} 
-                                                {% if perms.payroll.delete_reimbursement %}
-                                                    <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
-                                                        class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'> 
-                                                        
-                                                        <ion-icon name="trash-outline"></ion-icon>
-                                                    </a>
-                                                {% endif %}
+                                            <div class="oh-sticky-table__td">
+                                                <div class="oh-btn-group">
+                                                    {% if perms.payroll.change_reimbursement or request.user %}
+                                                        <a
+                                                            onclick="event.stopPropagation()"
+                                                            hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
+                                                            hx-target="#objectCreateModalTarget"
+                                                            data-toggle="oh-modal-toggle"
+                                                            data-target="#objectCreateModal"
+                                                            class="oh-btn oh-btn--light-bkg w-100"
+                                                            title="{% trans 'Edit' %}"
+                                                        >
+                                                        <ion-icon name="create-outline"></ion-icon>
+                                                        </a>
+                                                    {% endif %} 
+                                                    {% if perms.payroll.delete_reimbursement %}
+                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
+                                                            class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'> 
+                                                            
+                                                            <ion-icon name="trash-outline"></ion-icon>
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            </div> 
+                                            <div class="oh-sticky-table__td oh-sticky-table__right">
+                                                <input type="hidden" name="ids" value="{{ req.id }}" />
+                                                <input type="hidden" name="status" />
+                                                <div class="oh-btn-group">
+                                                    {% if req.status != "approved" and req.status != "rejected" %}
+                                                        <button
+                                                            type="button"
+                                                            title="{% trans 'Approve' %}"
+                                                            onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
+                                                            class="oh-btn oh-btn--success w-100"
+                                                        >
+                                                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                        </button>
+                                                    {% else %}
+                                                        <button
+                                                            type="button"
+                                                            title="{% trans 'Approve' %}"
+                                                            class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                                                        >
+                                                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                        </button>
+                                                    {% endif %}
+                                                        <button
+                                                            type="button"
+                                                            title="{% trans 'Reject' %}"
+                                                            onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
+                                                            class="oh-btn oh-btn--danger w-100"
+                                                        >
+                                                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                                        </button> 
+                                                </div>
+                                                <input
+                                                    type="submit"
+                                                    hidden
+                                                    id="requestCard{{ req.id }}Button"
+                                                />
                                             </div>
-                                        </div> 
-                                        <div class="oh-sticky-table__td oh-sticky-table__right">
-                                            <input type="hidden" name="ids" value="{{ req.id }}" />
-                                            <input type="hidden" name="status" />
-                                            <div class="oh-btn-group">
-                                                {% if req.status != "approved" and req.status != "rejected" %}
-                                                    <button
-                                                        type="button"
-                                                        title="{% trans 'Approve' %}"
-                                                        onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
-                                                        class="oh-btn oh-btn--success w-100"
-                                                    >
-                                                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                    </button>
-                                                {% else %}
-                                                    <button
-                                                        type="button"
-                                                        title="{% trans 'Approve' %}"
-                                                        class="oh-btn oh-btn--success oh-btn--disabled w-100"
-                                                    >
-                                                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                    </button>
-                                                {% endif %}
-                                                    <button
-                                                        type="button"
-                                                        title="{% trans 'Reject' %}"
-                                                        onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
-                                                        class="oh-btn oh-btn--danger w-100"
-                                                    >
-                                                        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                                    </button> 
-                                            </div>
-                                            <input
-                                                type="submit"
-                                                hidden
-                                                id="requestCard{{ req.id }}Button"
-                                            />
-                                        </div>
-                                    </form>
+                                        {% comment %} </form> {% endcomment %}
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -706,125 +718,131 @@
                             </div>
                             <div class="oh-sticky-table__tbody">
                                 {% for req in bonus_encashments %}
-                                    <form
-                                        action="{% url 'approve-reimbursements' %}"
-                                        class="oh-sticky-table__tr"
-                                        id="requestCard{{ req.id }}"
+                                    <div class="oh-sticky-table__tr"
+                                        hx-get="{% url 'reimbursement-individual-view' req.id %}?instances_ids={{bonus_encashment_ids}}" 
+                                        hx-target="#objectDetailsModalTarget" 
+                                        data-target="#objectDetailsModal"  data-toggle="oh-modal-toggle"
                                     >
-                                        {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
-                                            <input
-                                            type="checkbox"
-                                            id="{{attendance.id}}"
-                                            class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row"
-                                            />
-                                        </div> {% endcomment %}
-                                        <div class="oh-sticky-table__sd
-                                            {% if req.status == 'rejected' %} row-status--red 
-                                            {% elif  req.status == 'approved' %} row-status--yellow 
-                                            {% else %} row-status--purple 
-                                            {% endif %}" 
-                                        >
-                                            <div class="d-flex">
-                                                <div class="oh-profile oh-profile--md">
-                                                    <div class="oh-profile__avatar mr-1">
-                                                        <img
-                                                            src="{{req.employee_id.get_avatar}}"
-                                                            class="oh-profile__image"
-                                                            alt=""
-                                                        />
+                                        {% comment %} <form
+                                            action="{% url 'approve-reimbursements' %}"
+                                            class="oh-sticky-table__tr"
+                                            id="requestCard{{ req.id }}"
+                                        > {% endcomment %}
+                                            {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+                                                <input
+                                                type="checkbox"
+                                                id="{{attendance.id}}"
+                                                class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row"
+                                                />
+                                            </div> {% endcomment %}
+                                            <div class="oh-sticky-table__sd
+                                                {% if req.status == 'rejected' %} row-status--red 
+                                                {% elif  req.status == 'approved' %} row-status--yellow 
+                                                {% else %} row-status--purple 
+                                                {% endif %}" 
+                                            >
+                                                <div class="d-flex">
+                                                    <div class="oh-profile oh-profile--md">
+                                                        <div class="oh-profile__avatar mr-1">
+                                                            <img
+                                                                src="{{req.employee_id.get_avatar}}"
+                                                                class="oh-profile__image"
+                                                                alt=""
+                                                            />
+                                                        </div>
+                                                        <span class="oh-profile__name oh-text--dark">{{req.employee_id}}</span>
                                                     </div>
-                                                    <span class="oh-profile__name oh-text--dark">{{req.employee_id}}</span>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div data-cell-index="21" class="oh-sticky-table__td dateformat_changer">{{req.created_at|date:"F j, Y"}}</div>
-                                        <div data-cell-index="22" class="oh-sticky-table__td">
-                                            {{req.title|truncatechars:20 }}
-                                        </div>
-                                        <div data-cell-index="23" class="oh-sticky-table__td">
-                                            <input type="number" required
-                                            default="0" min="0" placeholder="Amount"
-                                            name="amount" class="w-75"{% if req.status == "approved" %}disabled{% endif %} {% if req.amount %}
-                                            value="{{req.amount}}"{% endif %} />
-                                        </div>
-                                        <div data-cell-index="24" class="oh-sticky-table__td">
-                                            {{req.bonus_to_encash}}
-                                        </div>
-                                        <div data-cell-index="25" class="oh-sticky-table__td">
-                                            {{req.get_status_display}}
-                                        </div>
-                                        <div data-cell-index="26" class="oh-sticky-table__td">
-                                            {{req.description}}
-                                        </div>
-                                        <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                                            <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
-                                                    data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                                                    <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
-                                            </button>
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            <div class="oh-btn-group">
-                                                {% if perms.payroll.change_reimbursement or request.user %}
-                                                    <a
-                                                        onclick="event.stopPropagation()"
-                                                        hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                                        hx-target="#objectCreateModalTarget"
-                                                        data-toggle="oh-modal-toggle"
-                                                        data-target="#objectCreateModal"
-                                                        class="oh-btn oh-btn--light-bkg w-100"
-                                                        title="{% trans 'Edit' %}"
-                                                    >
-                                                    <ion-icon name="create-outline"></ion-icon>
-                                                    </a>
-                                                {% endif %} 
-                                                {% if perms.payroll.delete_reimbursement %}
-                                                    <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
-                                                        class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'> 
-                                                        
-                                                        <ion-icon name="trash-outline"></ion-icon>
-                                                    </a>
-                                                {% endif %}
+                                            <div data-cell-index="21" class="oh-sticky-table__td dateformat_changer">{{req.created_at|date:"F j, Y"}}</div>
+                                            <div data-cell-index="22" class="oh-sticky-table__td">
+                                                {{req.title|truncatechars:20 }}
                                             </div>
-                                        </div> 
-                                        <div class="oh-sticky-table__td oh-sticky-table__right">
-                                            <input type="hidden" name="ids" value="{{ req.id }}" />
-                                            <input type="hidden" name="status" />
-                                            <div class="oh-btn-group">
-                                                {% if req.status != "approved" and req.status != "rejected" %}
-                                                <button
-                                                    type="button"
-                                                    title="{% trans 'Approve' %}"
-                                                    onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
-                                                    class="oh-btn oh-btn--success w-100"
-                                                >
-                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                            <div data-cell-index="23" class="oh-sticky-table__td">
+                                                <input type="number" required
+                                                default="0" min="0" placeholder="Amount"
+                                                name="amount" class="w-75"{% if req.status == "approved" %}disabled{% endif %} {% if req.amount %}
+                                                value="{{req.amount}}"{% endif %} />
+                                            </div>
+                                            <div data-cell-index="24" class="oh-sticky-table__td">
+                                                {{req.bonus_to_encash}}
+                                            </div>
+                                            <div data-cell-index="25" class="oh-sticky-table__td">
+                                                {{req.get_status_display}}
+                                            </div>
+                                            <div data-cell-index="26" class="oh-sticky-table__td">
+                                                {{req.description}}
+                                            </div>
+                                            <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
+                                                <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
+                                                        data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+                                                        <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
                                                 </button>
-                                                {% else %}
+                                            </div>
+                                            <div class="oh-sticky-table__td">
+                                                <div class="oh-btn-group">
+                                                    {% if perms.payroll.change_reimbursement or request.user %}
+                                                        <a
+                                                            onclick="event.stopPropagation()"
+                                                            hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
+                                                            hx-target="#objectCreateModalTarget"
+                                                            data-toggle="oh-modal-toggle"
+                                                            data-target="#objectCreateModal"
+                                                            class="oh-btn oh-btn--light-bkg w-100"
+                                                            title="{% trans 'Edit' %}"
+                                                        >
+                                                        <ion-icon name="create-outline"></ion-icon>
+                                                        </a>
+                                                    {% endif %} 
+                                                    {% if perms.payroll.delete_reimbursement %}
+                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
+                                                            class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'> 
+                                                            
+                                                            <ion-icon name="trash-outline"></ion-icon>
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            </div> 
+                                            <div class="oh-sticky-table__td oh-sticky-table__right">
+                                                <input type="hidden" name="ids" value="{{ req.id }}" />
+                                                <input type="hidden" name="status" />
+                                                <div class="oh-btn-group">
+                                                    {% if req.status != "approved" and req.status != "rejected" %}
                                                     <button
-                                                        title="{% trans 'Approve' %}"
                                                         type="button"
-                                                        class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                                                        title="{% trans 'Approve' %}"
+                                                        onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
+                                                        class="oh-btn oh-btn--success w-100"
                                                     >
                                                         <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                                     </button>
-                                                {% endif %}
-                                                    <button
-                                                        type="button"
-                                                        onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
-                                                        class="oh-btn oh-btn--danger w-100"
-                                                    >
-                                                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                                    {% else %}
+                                                        <button
+                                                            title="{% trans 'Approve' %}"
+                                                            type="button"
+                                                            class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                                                        >
+                                                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                        </button>
+                                                    {% endif %}
+                                                        <button
+                                                            type="button"
+                                                            onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
+                                                            class="oh-btn oh-btn--danger w-100"
+                                                        >
+                                                        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
 
-                                                    </button> 
+                                                        </button> 
+                                                </div>
+                                                <input
+                                                    type="submit"
+                                                    hidden
+                                                    id="requestCard{{ req.id }}Button"
+                                                />
                                             </div>
-                                            <input
-                                                type="submit"
-                                                hidden
-                                                id="requestCard{{ req.id }}Button"
-                                            />
+                                            
+                                        {% comment %} </form> {% endcomment %}
                                         </div>
-                                        
-                                    </form>
                                 {% endfor %}
                             </div>
                         </div>
@@ -926,7 +944,6 @@
             {% endif %}
         </div>
         <!-- end of Bonus Encashments-->
-
     </div>
     <!-- end of tabs -->
 

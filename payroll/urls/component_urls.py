@@ -133,6 +133,11 @@ urlpatterns = [
         name="delete-reimbursement",
     ),
     path(
+        "reimbursement-individual-view/<int:instance_id>/",
+        component_views.reimbursement_individual_view,
+        name="reimbursement-individual-view",
+    ),
+    path(
         "reimbursement-attachements/<int:instance_id>/",
         component_views.reimbursement_attachments,
         name="reimbursement-attachments",
