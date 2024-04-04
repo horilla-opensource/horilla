@@ -147,7 +147,7 @@
                     <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                 </a>
             {% endif %}
-            <button data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-target="#objectDetailsModalTarget" hx-get="{% url 'cut-penalty' leave_request.id %}" type="submit" class="oh-btn oh-btn--info w-100" title="Penalty">
+            <button data-toggle="oh-modal-toggle" data-target="#objectCreateModal" hx-target="#objectCreateModalTarget" hx-get="{% url 'leave-cut-penalty' leave_request.id %}" type="submit" class="oh-btn oh-btn--info w-100" title="Penalty">
                 <ion-icon name="information-circle-outline" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
             </button>
             {% if leave_request.status != 'rejected' and leave_request.status != 'cancelled' and leave_request.end_date >= current_date %}

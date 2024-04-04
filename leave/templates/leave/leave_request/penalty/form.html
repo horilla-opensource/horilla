@@ -16,9 +16,10 @@
 </div>
 {% endif %}
 <div class="oh-modal__dialog-header">
-  <button type="button" class="oh-modal__close" 
-          hx-target="#leaveRequest" hx-get="{% url 'request-filter' %}?{{pd}}" 
-          aria-label="Close">
+  <button type="button" class="oh-modal__close--custom" 
+      onclick = "$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+      hx-target="#leaveRequest" hx-get="{% url 'request-filter' %}?{{pd}}" 
+      aria-label="Close">
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
