@@ -648,11 +648,10 @@ class ReimbursementForm(ModelForm):
         if self.instance.pk:
            employee_id = self.instance.employee_id
            type= self.instance.type
-           leave_type_id = self.instance.leave_type_id
+           
         else:
             employee_id=cleaned_data["employee_id"]
             type =cleaned_data["type"]
-            leave_type_id = cleaned_data["leave_type_id"] 
 
         available_points = BonusPoint.objects.filter(
             employee_id=employee_id
@@ -674,7 +673,10 @@ class ReimbursementForm(ModelForm):
                     }
                 )
         if type =="leave_encashment":
-            leave_type_id = leave_type_id 
+            if self.instance.pk:
+                leave_type_id = self.instance.leave_type_id
+            else:
+                leave_type_id=cleaned_data["leave_type_id"]
             encashable_leaves = self.get_encashable_leaves(employee_id)
             if (leave_type_id is None) or (leave_type_id not in encashable_leaves):
                 raise forms.ValidationError(
