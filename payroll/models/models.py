@@ -1747,7 +1747,8 @@ class Reimbursement(HorillaModel):
         if self.allowance_id:
             self.allowance_id.delete()
         return super().delete(*args, **kwargs)
-
+    def __str__(self):
+        return f"{self.title}"
 
 # changing status canceled to reject for existing reimbursement
 try:

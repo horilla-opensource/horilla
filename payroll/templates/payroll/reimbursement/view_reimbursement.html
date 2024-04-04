@@ -64,6 +64,7 @@
   
   <script>
     function reimbursementConfirm(params, target, approve = false) {
+      event.preventDefault();event.stopPropagation()
       Swal.fire({
           text: params,
           icon: "question",

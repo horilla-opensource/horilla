@@ -1203,11 +1203,6 @@ def search_loan(request):
     adv_salary_ids=json.dumps(
         list(adv_salary.values_list("id", flat=True))
     )
-    print('ooooooooooooooooooooooo')
-    print(fine_ids)
-    print(loan_ids)
-    print(adv_salary_ids)
-    print('ooooooooooooooooooooooo')
     loan = sortby(request, loan, "sortby")
     adv_salary = sortby(request, adv_salary, "sortby")
     fine = sortby(request, fine, "sortby")
@@ -1353,12 +1348,6 @@ def search_reimbursement(request):
     if view == "list":
         template = "payroll/reimbursement/reimbursement_list.html"
     get_key_instances(Reimbursement, data_dict)
-    print('================')
-    print(reimbursements_ids)
-    print(leave_encashments_ids)
-    print(bonus_encashment_ids)
-
-    print('================')
 
     return render(
         request,
