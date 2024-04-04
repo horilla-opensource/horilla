@@ -645,7 +645,6 @@ class RotatingWorkTypeAssignForm(ModelForm):
             rotating_work_type_assign = RotatingWorkTypeAssign()
             rotating_work_type_assign.rotating_work_type_id = rotating_work_type
             rotating_work_type_assign.employee_id = employee
-            rotating_work_type_assign.is_active = self.cleaned_data["is_active"]
             rotating_work_type_assign.based_on = self.cleaned_data["based_on"]
             rotating_work_type_assign.start_date = self.cleaned_data["start_date"]
             rotating_work_type_assign.next_change_date = self.cleaned_data["start_date"]

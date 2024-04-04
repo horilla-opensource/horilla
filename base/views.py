@@ -267,6 +267,9 @@ def send_link(employee, request, id, user):
     url = request.build_absolute_uri("/") + "reset-password/" + id
     message = f"Reset Your Password {url}."
     email_backend = ConfiguredEmailBackend()
+    if not email_backend.configuration:
+        messages.error(request, _("Primary mail server is not configured"))
+        return
     reset_ids.append({"uuid": id, "user": user})
     try:
         send_mail(
@@ -5282,7 +5285,8 @@ def action_type_update(request, act_id):
     form = ActiontypeForm(instance=action)
 
     if action.action_type == "warning":
-        form.fields["block_option"].widget = forms.HiddenInput()
+        if AccountBlockUnblock.objects.first().is_enabled:
+            form.fields["block_option"].widget = forms.HiddenInput()
 
     if request.method == "POST":
         form = ActiontypeForm(request.POST, instance=action)
