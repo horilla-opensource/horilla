@@ -404,4 +404,6 @@ urlpatterns = [
         views.get_manager_in,
         name="get-manager-in",
     ),
+    path("get_job_roles", views.get_job_roles, name="get_job_roles"),
+
 ]

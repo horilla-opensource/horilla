@@ -34,4 +34,61 @@
 <script>
   {% include "country.js" %}
 </script>
+
+<script>
+  function depChange(value) {
+      var departmentId = value.val(); // Get the selected department ID
+
+      // Make AJAX request to fetch available job positions for the selected department
+      $.ajax({
+        url: '{% url "get_job_positions" %}',
+        method: 'GET',
+        data: {
+          'department_id': departmentId
+        },
+        success: function(data) {
+
+          // Clear existing options in the Job Position dropdown
+          $('#id_job_position_id').empty();
+          
+          // Append new options based on the response
+          $.each(data.job_positions, function(key, value) {
+            $('#id_job_position_id').append($('<option>', {
+              value: key,
+              text: value
+            }));
+          });
+        }
+      });
+
+  }
+
+  // Add event listener to the Job Position dropdown
+  function jobChange(selectElement){
+
+    var jobId = selectElement.val(); // Get the selected jobposition ID
+
+    // Make AJAX request to fetch available job roles for the selected job positions
+    $.ajax({
+      url: '{% url "get_job_roles" %}',
+      method: 'GET',
+      data: {
+        'job_id': jobId
+      },
+      success: function(data) {
+        // Clear existing options in the Job role dropdown
+        $('#id_job_role_id').empty();
+        
+        // Append new options based on the response
+        $.each(data.job_roles, function(key, value) {
+          $('#id_job_role_id').append($('<option>', {
+            value: key,
+            text: value
+          }));
+        });
+      }
+    });
+  };
+</script>
+
 {% endblock %}

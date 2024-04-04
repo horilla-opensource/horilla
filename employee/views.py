@@ -1090,7 +1090,6 @@ def employee_view(request):
 def view_employee_bulk_update(request):
     if request.method == "POST":
         update_fields = request.POST.getlist("update_fields")
-        update_fields_str = json.dumps(update_fields)
         bulk_employee_ids = request.POST.get("bulk_employee_ids")
         bulk_employee_ids_str = (
             json.dumps(bulk_employee_ids) if bulk_employee_ids else ""
@@ -1147,7 +1146,32 @@ def view_employee_bulk_update(request):
                                     field_obj = EmployeeWorkInformation._meta.get_field(
                                         parts[-1]
                                     )
+
+                                    if parts[1] == 'department_id' or parts[1] == 'job_position_id' or parts[1] == 'job_role_id':
+                                        if not "employee_work_info__department_id" in update_fields:
+                                            fields.append("department_id")
+                                            widgets["department_id"] = Select(
+                                                attrs={"required": True}
+                                            )
+                                        if not "employee_work_info__job_position_id" in update_fields:
+                                            fields.append("job_position_id")
+                                            widgets["job_position_id"] = Select(
+                                                attrs={"required": True}
+                                            )
+                                        if not "employee_work_info__job_role_id" in update_fields:
+                                            fields.append("job_role_id")
+                                            widgets["job_role_id"] = Select(
+                                                attrs={"required": True}
+                                            )
+                                        fields.append(parts[1])
+                                        widgets[field] = Select(attrs={"required": True})
+
+
                                     fields.append(parts[-1])
+
+                                    # Remove inner lists
+                                    fields = [item for item in fields if not isinstance(item, list)]                                    
+
                                     if isinstance(field_obj, models.DateField):
                                         widgets[parts[-1]] = DateInput(
                                             attrs={"type": "date"}
@@ -1163,6 +1187,18 @@ def view_employee_bulk_update(request):
 
                 def __init__(self, *args, **kwargs):
                     super(WorkInfoBulkUpdateForm, self).__init__(*args, **kwargs)
+                    if "department_id" in self.fields:
+                        self.fields["department_id"].widget.attrs.update(
+                            {
+                                "onchange": "depChange($(this))",
+                            }
+                        )
+                    if "job_position_id" in self.fields:
+                        self.fields["job_position_id"].widget.attrs.update(
+                            {
+                                "onchange": "jobChange($(this))",
+                            }
+                        )
                     for field_name, field in self.fields.items():
                         field.required = True
 
@@ -1213,6 +1249,22 @@ def view_employee_bulk_update(request):
             form = EmployeeBulkUpdateForm()
             form1 = WorkInfoBulkUpdateForm()
             form2 = BankInfoBulkUpdateForm()
+
+            keys = form1.fields.keys()
+            # Convert dict_keys object to a list
+            keys_list = list(keys)
+
+            fields_list = []
+            for i in keys_list:
+                i = "employee_work_info__" + i
+                fields_list.append(i)
+
+            for i in fields_list:
+                if i not in update_fields:
+                    update_fields.append(i)
+
+            update_fields_str = json.dumps(update_fields)
+
             context = {
                 "form": form,
                 "form1": form1,
@@ -3460,3 +3512,9 @@ def employee_get_mail_log(request):
         "-created_at"
     )
     return render(request, "tabs/mail_log.html", {"tracked_mails": tracked_mails})
+
+
+def get_job_roles(request):
+    job_id = request.GET.get('job_id')
+    job_roles = JobRole.objects.filter(job_position_id=job_id).values_list('id', 'job_role')
+    return JsonResponse({'job_roles': dict(job_roles)})
