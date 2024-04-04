@@ -1,45 +1,77 @@
 {% load i18n %}
-<div class="oh-timeoff-modal__profile-content">
-  <div class="oh-profile mb-2">
-    <div class="oh-profile__avatar">
-      <img src="{{ loan.employee_id.get_avatar }}" class="oh-profile__image me-2" />
-    </div>
-    <div class="oh-timeoff-modal__profile-info">
-      <span class="oh-timeoff-modal__user m-0 fw-bold">{{ loan.employee_id }}</span>
-      <span class="oh-timeoff-modal__user m-0" style="font-size: 12px; color: #4d4a4a">{{ loan.employee_id.get_department }} /{{ loan.employee_id.get_job_position }}</span>
-      <span class="oh-timeoff-modal__user m-0" style="font-size: 12px; color: #4d4a4a">{{ record.provided_date }}</span>
-    </div>
-  </div>
+
+<div class="oh-modal__dialog-header">
+  <h2 class="oh-modal__dialog-title" id="objectDetailsModalLabel">
+    {% trans "Details" %}
+  </h2>
+  <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+  </button>
 </div>
-<h3 class="oh-faq-card__title">
-  {{loan.title}}
-</h3>
-<div class="oh-sticky-table__table mt-3">
-    <div class="oh-sticky-table__thead">
-      <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th" align="center" style="width: 50px;">{% trans "S/n" %}</div>
-        <div class="oh-sticky-table__th" align="center" style="width: 80px;">{% trans "One Time Date" %}</div>
-        <div class="oh-sticky-table__th" align="center" style="width: 80px;">{% trans "Amount" %}</div>
-        <div class="oh-sticky-table__th" align="center" style="width: 60px;">{% trans "Status" %}</div>
+<div class="oh-modal__dialog-body oh-modal__dialog-relative">
+  {% if instances_ids %}
+      <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+          <button 
+          hx-get="{% url 'view-installments' %}?loan_id={{ previous }}&instances_ids={{instances_ids}}" hx-target="#objectDetailsModalTarget" 
+              class="oh-modal__diaglog-nav oh-modal__nav-prev">
+              <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+              aria-label="chevron back outline"></ion-icon>
+          </button>
+          <button  
+              hx-get="{% url 'view-installments' %}?loan_id={{ next }}&instances_ids={{instances_ids}}" hx-target="#objectDetailsModalTarget" 
+              class="oh-modal__diaglog-nav oh-modal__nav-next">
+              <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+              aria-label="chevron forward outline"></ion-icon>
+          </button>
       </div>
-    </div>
-    <div class="oh-sticky-table__tbody">
-      {% for deduction in installments %}
-        <div class="oh-sticky-table__tr">
-          <div class="oh-sticky-table__td" align="center">{{ forloop.counter }}</div>
-          <div class="oh-sticky-table__td dateformat_changer" align="center">{{ deduction.one_time_date }}</div>
-          <div class="oh-sticky-table__td" align="center">{{ deduction.amount|floatformat:2 }}</div>
-          <div class="oh-sticky-table__td" align="center">
-            {% if deduction.installment_payslip %}
-            <span title="Installment paid, Click to view">
-              <a href="{% url "view-created-payslip" deduction.installment_payslip.id %}">
-                ✅
-              </a>
-            </span>
-            {% endif %}
+  {% endif %} 
+    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+        href ="{% url 'employee-view-individual' loan.employee_id.id %}">
+        <div class="oh-profile mb-2">
+            <div class="oh-profile__avatar mr-1">
+                <img src="{{ loan.employee_id.get_avatar }}" class="oh-profile__image me-2"
+                    alt="{{loan.employee_id}}" />
+            </div>
+            <div class="oh-timeoff-modal__profile-info">
+              <span class="oh-timeoff-modal__user fw-bold">{{ loan.employee_id }}</span>
+              <span class="oh-timeoff-modal__user m-0"
+              style="font-size: 18px; color: #4d4a4a">{{ loan.employee_id.get_department }} /{{ loan.employee_id.get_job_position }}</span>
+            </div>
+        </div>
+
+    </a>
+    <div class="oh-modal__dialog-header" style="padding-top: 5px">
+
+      <h3 class="oh-faq-card__title">
+        {{loan.title}}
+      </h3>
+      <div class="oh-sticky-table__table mt-3">
+        <div class="oh-sticky-table__thead">
+          <div class="oh-sticky-table__tr">
+            <div class="oh-sticky-table__th" align="center" style="width: 50px;">{% trans "S/n" %}</div>
+            <div class="oh-sticky-table__th" align="center" style="width: 80px;">{% trans "One Time Date" %}</div>
+            <div class="oh-sticky-table__th" align="center" style="width: 80px;">{% trans "Amount" %}</div>
+            <div class="oh-sticky-table__th" align="center" style="width: 60px;">{% trans "Status" %}</div>
           </div>
         </div>
-      {% endfor %}
+        <div class="oh-sticky-table__tbody">
+          {% for deduction in installments %}
+            <div class="oh-sticky-table__tr">
+              <div class="oh-sticky-table__td" align="center">{{ forloop.counter }}</div>
+              <div class="oh-sticky-table__td dateformat_changer" align="center">{{ deduction.one_time_date }}</div>
+              <div class="oh-sticky-table__td" align="center">{{ deduction.amount|floatformat:2 }}</div>
+              <div class="oh-sticky-table__td" align="center">
+                {% if deduction.installment_payslip %}
+                <span title="Installment paid, Click to view">
+                  <a href="{% url "view-created-payslip" deduction.installment_payslip.id %}">
+                    ✅
+                  </a>
+                </span>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
     </div>
-  </div>
-  
+</div>

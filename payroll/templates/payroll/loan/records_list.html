@@ -95,7 +95,7 @@
                             <div class="oh-sticky-table__tbody">
                                 {% for req in loan %}
                                     <div class="oh-sticky-table__tr"
-                                        hx-get="{% url 'view-installments' %}?loan_id={{ req.id }}" hx-target="#viewInstallmentModalBody" data-target="#viewInstallmentModal" data-toggle="oh-modal-toggle">
+                                        hx-get="{% url 'view-installments' %}?loan_id={{ req.id }}&instances_ids={{loan_ids}}" hx-target="#objectDetailsModalTarget" data-target="#objectDetailsModal" data-toggle="oh-modal-toggle">
                                         {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                                         <input
                                             type="checkbox"
@@ -332,7 +332,7 @@
                             <div class="oh-sticky-table__tbody">
                                 {% for req in adv_salary %}
                                     <div class="oh-sticky-table__tr"
-                                        hx-get="{% url 'view-installments' %}?loan_id={{ req.id }}" hx-target="#viewInstallmentModalBody" data-target="#viewInstallmentModal" data-toggle="oh-modal-toggle">
+                                        hx-get="{% url 'view-installments' %}?loan_id={{ req.id }}&instances_ids={{adv_salary_ids}}" hx-target="#objectDetailsModalTarget" data-target="#objectDetailsModal" data-toggle="oh-modal-toggle">
                                         {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                                         <input
                                             type="checkbox"
@@ -569,7 +569,7 @@
                             <div class="oh-sticky-table__tbody">
                                 {% for req in fine %}
                                     <div class="oh-sticky-table__tr"
-                                        hx-get="{% url 'view-installments' %}?loan_id={{ req.id }}" hx-target="#viewInstallmentModalBody" data-target="#viewInstallmentModal" data-toggle="oh-modal-toggle">
+                                        hx-get="{% url 'view-installments' %}?loan_id={{ req.id }}&instances_ids={{fine_ids}}" hx-target="#objectDetailsModalTarget" data-target="#objectDetailsModal" data-toggle="oh-modal-toggle">
                                         {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                                         <input
                                             type="checkbox"
@@ -779,7 +779,7 @@
     </div>
 
     
-
+{% comment %} 
     <div class="oh-modal" id="loanModal" role="dialog" aria-hidden="true">
         <div class="oh-modal__dialog" style="max-width: 550px">
           <div class="oh-modal__dialog-header">
@@ -795,9 +795,9 @@
             <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
           </div>
     
-          <div class="oh-modal__dialog-body" id="viewInstallmentModalBody"></div>
+          <div class="oh-modal__dialog oh-modal__dialog-relative" id="viewInstallmentModalBody"></div>
         </div>
-      </div>
+      </div> {% endcomment %}
 
     <script>
         function reimbursementConfirm(params, target, approve = false) {

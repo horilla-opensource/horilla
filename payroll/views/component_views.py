@@ -1091,6 +1091,16 @@ def view_loans(request):
     loan = records.filter(type="loan")
     adv_salary = records.filter(type="advanced_salary")
     fine = records.filter(type="fine")
+    
+    fine_ids=json.dumps(
+        list(fine.values_list("id", flat=True))
+    )
+    loan_ids=json.dumps(
+        list(loan.values_list("id", flat=True))
+    )
+    adv_salary_ids=json.dumps(
+        list(adv_salary.values_list("id", flat=True))
+    )
     loan = sortby(request, loan, "sortby")
     adv_salary = sortby(request, adv_salary, "sortby")
     fine = sortby(request, fine, "sortby")
@@ -1102,6 +1112,9 @@ def view_loans(request):
             "records": paginator_qry(records, request.GET.get("page")),
             "loan": paginator_qry(loan, request.GET.get("lpage")),
             "adv_salary": paginator_qry(adv_salary, request.GET.get("apage")),
+            'fine_ids':fine_ids,
+            'loan_ids':loan_ids,
+            'adv_salary_ids':adv_salary_ids,
             "fine": paginator_qry(fine, request.GET.get("fpage")),
             "f": filter_instance,
         },
@@ -1137,10 +1150,20 @@ def view_installments(request):
     loan_id = request.GET["loan_id"]
     loan = LoanAccount.objects.get(id=loan_id)
     installments = loan.deduction_ids.all()
+    
+    requests_ids_json = request.GET.get("instances_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids,int(loan_id))
     return render(
         request,
         "payroll/loan/installments.html",
-        {"installments": installments, "loan": loan},
+        {"installments": installments,
+            "loan": loan,
+            "instances_ids": requests_ids_json,
+            "previous": previous_id,
+            "next": next_id,
+        },
     )
 
 
@@ -1171,6 +1194,20 @@ def search_loan(request):
     adv_salary = records.filter(type="advanced_salary")
     fine = records.filter(type="fine")
 
+    fine_ids=json.dumps(
+        list(fine.values_list("id", flat=True))
+    )
+    loan_ids=json.dumps(
+        list(loan.values_list("id", flat=True))
+    )
+    adv_salary_ids=json.dumps(
+        list(adv_salary.values_list("id", flat=True))
+    )
+    print('ooooooooooooooooooooooo')
+    print(fine_ids)
+    print(loan_ids)
+    print(adv_salary_ids)
+    print('ooooooooooooooooooooooo')
     loan = sortby(request, loan, "sortby")
     adv_salary = sortby(request, adv_salary, "sortby")
     fine = sortby(request, fine, "sortby")
@@ -1189,6 +1226,9 @@ def search_loan(request):
             "loan": paginator_qry(loan, request.GET.get("lpage")),
             "adv_salary": paginator_qry(adv_salary, request.GET.get("apage")),
             "fine": paginator_qry(fine, request.GET.get("fpage")),
+            'fine_ids':fine_ids,
+            'loan_ids':loan_ids,
+            'adv_salary_ids':adv_salary_ids,
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
         },
@@ -1296,6 +1336,15 @@ def search_reimbursement(request):
     reimbursements = requests.filter(type="reimbursement")
     leave_encashments = requests.filter(type="leave_encashment")
     bonus_encashment = requests.filter(type="bonus_encashment")
+    reimbursements_ids = json.dumps(
+        list(reimbursements.values_list("id", flat=True))
+    )
+    leave_encashments_ids = json.dumps(
+        list(leave_encashments.values_list("id", flat=True))
+    )
+    bonus_encashment_ids = json.dumps(
+        list(bonus_encashment.values_list("id", flat=True))
+    )
     reimbursements = sortby(request, reimbursements, "sortby")
     leave_encashments = sortby(request, leave_encashments, "sortby")
     bonus_encashment = sortby(request, bonus_encashment, "sortby")
@@ -1304,6 +1353,13 @@ def search_reimbursement(request):
     if view == "list":
         template = "payroll/reimbursement/reimbursement_list.html"
     get_key_instances(Reimbursement, data_dict)
+    print('================')
+    print(reimbursements_ids)
+    print(leave_encashments_ids)
+    print(bonus_encashment_ids)
+
+    print('================')
+
     return render(
         request,
         template,
@@ -1318,6 +1374,9 @@ def search_reimbursement(request):
             ),
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
+            'reimbursements_ids':reimbursements_ids,
+            'leave_encashments_ids':leave_encashments_ids,
+            'bonus_encashment_ids':bonus_encashment_ids,
         },
     )
 
@@ -1422,6 +1481,28 @@ def delete_reimbursements(request):
 
     return redirect(view_reimbursement)
 
+@login_required
+@owner_can_enter("payroll.view_reimbursement", Reimbursement, True)
+def reimbursement_individual_view(request, instance_id):
+    """
+    This method is used to render the individual view of reimbursement object
+    """
+    reimbursement = Reimbursement.objects.get(id=instance_id)
+    requests_ids_json = request.GET.get("instances_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, instance_id)
+    context = {
+        "reimbursement": reimbursement,
+        "instances_ids": requests_ids_json,
+        "previous": previous_id,
+        "next": next_id,
+    }
+    return render(
+        request,
+        "payroll/reimbursement/reimbursenent_individual.html",
+        context,
+    )
 
 @login_required
 @owner_can_enter("payroll.view_reimbursement", Reimbursement, True)
