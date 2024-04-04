@@ -58,6 +58,15 @@ class KeyResult(models.Model):
     )
     objects = HorillaCompanyManager()
 
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        ordering = [
+            "-id",
+        ]
+
     def __str__(self):
         return f"{self.title}"
 
