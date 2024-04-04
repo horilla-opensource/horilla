@@ -31,15 +31,26 @@
 <div class="oh-modal__dialog-body">
     <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
         href ="{% url 'employee-view-individual' leave_allocation_request.employee_id.id %}">
-        <div class="oh-profile">
-            <div class="oh-profile__avatar mr-1">
-                <img src="{{leave_allocation_request.employee_id.get_avatar}}" class="oh-profile__image"
-                    alt="" />
-            </div>
-        </div>
-        <div class="oh-timeoff-modal__profile-info">
-            <span class="oh-timeoff-modal__user fw-bold">{{leave_allocation_request.employee_id}}</span>
-            <span class="oh-timeoff-modal__position">{{leave_allocation_request.employee_id.employee_work_info.job_position_id}}</span>
+        <div class="oh-profile mb-2">
+          <div class="oh-profile__avatar">
+            <img
+              src="{{leave_allocation_request.employee_id.get_avatar}}"
+              class="oh-profile__image me-2"
+              alt="Mary Magdalene"
+            />
+          </div>
+          <div class="oh-timeoff-modal__profile-info">
+            <span class="oh-timeoff-modal__user fw-bold"
+              >{{leave_allocation_request.employee_id}}</span
+            >
+            <span
+              class="oh-timeoff-modal__user m-0"
+              style="font-size: 18px; color: #4d4a4a"
+            >
+              {{leave_allocation_request.employee_id.employee_work_info.department_id}} /
+              {{leave_allocation_request.employee_id.employee_work_info.job_position_id}}</span
+            >
+          </div>
         </div>
     </a>
     <div class="oh-modal__dialog-header pt-0">

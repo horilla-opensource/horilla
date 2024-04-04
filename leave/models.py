@@ -648,6 +648,11 @@ class LeaveRequest(HorillaModel):
 
         request = getattr(thread_local_middleware._thread_locals, "request", None)
 
+        if self.start_date < date.today() and not request.user.has_perm('leave.add_leavereaquest'):
+            raise ValidationError(
+                _("Requests cannot be made for past dates.")
+            )
+
         if request.user.has_perm('leave.add_restrictleave') == False:
             for restrict in restricted_leave:
                 restri = restrict.id
@@ -767,7 +772,7 @@ class LeaveRequest(HorillaModel):
         else:
             if request:
                 clear_messages(request)
-                messages.warning(request, "The leave request cannot be deleted.")
+                messages.warning(request, _("The {} leave request cannot be deleted !").format(self.status))
 
     def update_leave_clashes_count(self):
         """
@@ -800,14 +805,6 @@ class LeaveRequest(HorillaModel):
         )
 
         return overlapping_requests.count()
-
-    def clean(self, *args, **kwargs):
-        super().clean(*args, **kwargs)
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
-        if self.start_date < date.today() and not request.user.has_perm('leave.add_leavereaquest'):
-            raise ValidationError(
-                _("Requests cannot be made for past dates.")
-            )
 
 
 class LeaverequestFile(models.Model):
@@ -914,7 +911,7 @@ class RestrictLeave(HorillaModel):
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(verbose_name=_("End Date"))
     department = models.ForeignKey(Department, verbose_name=_("Department"), on_delete=models.CASCADE)
-    jobposition = models.ManyToManyField(
+    job_position = models.ManyToManyField(
         JobPosition, verbose_name=_("Job Position"), blank=True, help_text = _('If no job positions are specifically selected, the system will consider all job positions under the selected department.')
         )
 

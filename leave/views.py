@@ -548,8 +548,9 @@ def leave_request_delete(request, id):
     """
     previous_data = request.GET.urlencode()
     try:
-        LeaveRequest.objects.get(id=id).delete()
+        leave_request = LeaveRequest.objects.get(id=id)
         messages.success(request, _("Leave request deleted successfully.."))
+        leave_request.delete()
     except (LeaveRequest.DoesNotExist, OverflowError, ValueError):
         messages.error(request, _("Leave request not found."))
     except ProtectedError:
@@ -1570,7 +1571,7 @@ def restrict_update(request, id):
     else:
         previous_data = unquote(query_string)
     restrictday = RestrictLeave.objects.get(id=id)
-    form = RestrictleaveForm(instance=restrictday)
+    form = RestrictLeaveForm(instance=restrictday)
     if request.method == "POST":
         form = RestrictLeaveForm(request.POST, instance=restrictday)
         if form.is_valid():
@@ -2490,17 +2491,19 @@ def employee_dashboard(request):
         start_date__month=today.month,
         start_date__year=today.year,
     ).order_by("start_date")[1:]
-
+    leave_requests = leave_requests.filter(
+        start_date__month=today.month, start_date__year=today.year
+    )
+    requests_ids = [request.id for request in leave_requests]
     context = {
-        "leave_requests": leave_requests.filter(
-            start_date__month=today.month, start_date__year=today.year
-        ),
+        "leave_requests": leave_requests,
         "requested": requested,
         "approved": approved,
         "rejected": rejected,
         "next_holiday": next_holiday,
         "holidays": holidays,
         "dashboard": "dashboard",
+        "requests_ids":requests_ids,
     }
     return render(request, "leave/employee_dashboard.html", context)
 
@@ -2523,10 +2526,11 @@ def dashboard_leave_request(request):
         leave_requests = LeaveRequest.objects.filter(
             employee_id=user, start_date__month=day.month, start_date__year=day.year
         )
+        requests_ids = [request.id for request in leave_requests]
     else:
         leave_requests = []
-    context = {"leave_requests": leave_requests, "dashboard": "dashboard"}
-    return render(request, "leave/leave_request/leave_requests.html", context)
+    context = {"leave_requests": leave_requests, "dashboard": "dashboard", "requests_ids":requests_ids}
+    return render(request, "leave/leave_request/dashboard_leave_requests.html", context)
 
 
 @login_required
@@ -2645,21 +2649,26 @@ def department_leave_chart(request):
     Returns:
     GET : return Json response of labels, dataset.
     """
-    today = date.today()
+    day = date.today()
+    if request.GET.get("date"):
+        day = request.GET.get("date")
+        day = datetime.strptime(day, "%Y-%m")
 
     departments = Department.objects.all()
     department_counts = {dep.department: 0 for dep in departments}
     leave_request = LeaveRequest.objects.filter(status="approved")
+    leave_request = leave_request.filter(
+        start_date__month=day.month, start_date__year=day.year
+    )
     leave_dates = []
     labels = []
     for leave in leave_request:
         for leave_date in leave.requested_dates():
             leave_dates.append(leave_date.strftime("%Y-%m-%d"))
 
-        if str(today) in leave_dates:
-            for dep in departments:
-                if dep == leave.employee_id.employee_work_info.department_id:
-                    department_counts[dep.department] += 1
+        for dep in departments:
+            if dep == leave.employee_id.employee_work_info.department_id:
+                department_counts[dep.department] += leave.requested_days
 
     for department, count in department_counts.items():
         if count != 0:
@@ -2675,6 +2684,7 @@ def department_leave_chart(request):
     response = {
         "labels": labels,
         "dataset": dataset,
+        "message": _("No leave requests for this month."),
     }
     return JsonResponse(response)
 
@@ -2690,9 +2700,17 @@ def leave_type_chart(request):
     Returns:
     GET : return Json response of labels, dataset.
     """
+    day = date.today()
+    if request.GET.get("date"):
+        day = request.GET.get("date")
+        day = datetime.strptime(day, "%Y-%m")
+
     leave_types = LeaveType.objects.all()
     leave_type_count = {types.name: 0 for types in leave_types}
     leave_request = LeaveRequest.objects.filter(status="approved")
+    leave_request = leave_request.filter(
+        start_date__month=day.month, start_date__year=day.year
+    )
     for leave in leave_request:
         for lev in leave_types:
             if lev == leave.leave_type_id:
@@ -2713,6 +2731,7 @@ def leave_type_chart(request):
                 "data": values,
             },
         ],
+        "message": _("No leave requests for any leave type this month.")
     }
     return JsonResponse(response)
 
@@ -3036,60 +3055,76 @@ def leave_allocation_request_create(request):
 
 @login_required
 def leave_allocation_request_filter(request):
-    """
-    function used to filter leave allocation request.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return leave allocation request view template
-    """
-    employee = request.user.employee_get
     field = request.GET.get("field")
-    queryset = LeaveAllocationRequest.objects.all()
-    queryset = sortby(request, queryset, "sortby")
+    employee = request.user.employee_get
+    page_number = request.GET.get("page")
+    my_page_number = request.GET.get("m_page")
+    previous_data = request.GET.urlencode()
+    template = "leave/leave_allocation_request/leave_allocation_request_list.html"
+
+    # Filter leave allocation requests
     leave_allocation_requests_filtered = LeaveAllocationRequestFilter(
-        request.GET, queryset
+        request.GET
+    ).qs.order_by("-id")
+    my_leave_allocation_requests_filtered = LeaveAllocationRequest.objects.filter(
+        employee_id=employee.id
+    ).order_by("-id")
+    my_leave_allocation_requests_filtered = LeaveAllocationRequestFilter(
+        request.GET, my_leave_allocation_requests_filtered
     ).qs
     leave_allocation_requests_filtered = filtersubordinates(
         request, leave_allocation_requests_filtered, "leave.view_leaveallocationrequest"
     )
-    my_leave_allocation_requests = LeaveAllocationRequest.objects.filter(
-        employee_id=employee.id
-    ).order_by("-id")
-    my_leave_allocation_requests = LeaveAllocationRequestFilter(
-        request.GET, my_leave_allocation_requests
-    ).qs
-    template = "leave/leave_allocation_request/leave_allocation_request_list.html"
-    if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        leave_allocation_requests_filtered = (
-            leave_allocation_requests_filtered.order_by(field_copy)
+
+    # Sort leave allocation requests if requested
+    if request.GET.get("sortby"):
+        leave_allocation_requests_filtered = sortby(
+            request, leave_allocation_requests_filtered, "sortby"
         )
-        my_leave_allocation_requests = my_leave_allocation_requests.order_by(field_copy)
+
+    # Group leave allocation requests if field parameter is provided
+    if field:
+        leave_allocation_requests = group_by_queryset(
+            leave_allocation_requests_filtered, field, page_number, "page"
+        )
+        my_leave_allocation_requests = group_by_queryset(
+            my_leave_allocation_requests_filtered, field, my_page_number, "m_page"
+        )
+
+        # Convert IDs to JSON format for details view
+        list_values = [entry["list"] for entry in leave_allocation_requests]
+        id_list = [
+            instance.id for value in list_values for instance in value.object_list
+        ]
+        requests_ids = json.dumps(list(id_list))
+
+        list_values = [entry["list"] for entry in my_leave_allocation_requests]
+        id_list = [
+            instance.id for value in list_values for instance in value.object_list
+        ]
+        my_requests_ids = json.dumps(list(id_list))
         template = (
             "leave/leave_allocation_request/leave_allocation_request_group_by.html"
         )
-    my_page_number = request.GET.get("m_page")
-    page_number = request.GET.get("page")
-    leave_allocation_requests = paginator_qry(
-        leave_allocation_requests_filtered, page_number
-    )
-    requests_ids = json.dumps(
-        list(leave_allocation_requests.object_list.values_list("id", flat=True))
-    )
-    my_requests_ids = json.dumps(
-        list(leave_allocation_requests.object_list.values_list("id", flat=True))
-    )
-    my_leave_allocation_requests = paginator_qry(
-        my_leave_allocation_requests, my_page_number
-    )
-    previous_data = request.GET.urlencode()
+    else:
+        leave_allocation_requests = paginator_qry(
+            leave_allocation_requests_filtered, page_number
+        )
+        my_leave_allocation_requests = paginator_qry(
+            my_leave_allocation_requests_filtered, my_page_number
+        )
+        requests_ids = json.dumps(
+            list(leave_allocation_requests.object_list.values_list("id", flat=True))
+        )
+        my_requests_ids = json.dumps(
+            list(my_leave_allocation_requests.object_list.values_list("id", flat=True))
+        )
+
+    # Parse previous data and construct context for filter tag
     data_dict = parse_qs(previous_data)
     data_dict = get_key_instances(LeaveAllocationRequest, data_dict)
-    if "m_page" in data_dict:
-        data_dict.pop("m_page")
+    data_dict.pop("m_page", None)
+
     context = {
         "leave_allocation_requests": leave_allocation_requests,
         "my_leave_allocation_requests": my_leave_allocation_requests,
