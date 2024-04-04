@@ -1,4 +1,4 @@
-{% load static %} {% load basefilters %} {% load recruitmentfilters %} {% load employee_filter %} {% load i18n %} {% load tz %} {% now "Y-m-d" as current_date %}
+{% load static basefilters recruitmentfilters employee_filter i18n %} {% load tz %} {% now "Y-m-d" as current_date %}
 <div id="mainNav"></div>
 <!-- End of Navigation -->
 <style>
@@ -1034,8 +1034,9 @@
         }
 
         // Clear the parent container
-        parentContainer.empty();
-
+        if (sortedElements.length) {
+          parentContainer.empty();
+        }
         // Append the sorted elements to the parent container
         for (const element of sortedElements) {
           parentContainer.append(element);

@@ -1453,9 +1453,11 @@ def holiday_view(request):
 
 
 def get_job_positions(request):
-    department_id = request.GET.get('department_id')
-    job_positions = JobPosition.objects.filter(department_id=department_id).values_list('id', 'job_position')
-    return JsonResponse({'job_positions': dict(job_positions)})
+    department_id = request.GET.get("department_id")
+    job_positions = JobPosition.objects.filter(department_id=department_id).values_list(
+        "id", "job_position"
+    )
+    return JsonResponse({"job_positions": dict(job_positions)})
 
 
 @login_required
@@ -1486,7 +1488,9 @@ def restrict_creation(request):
             form.save()
             messages.success(request, _("Restricted day created successfully.."))
     return render(
-        request, "leave/restrict/restrict_form.html", {"form": form, "pd": previous_data}
+        request,
+        "leave/restrict/restrict_form.html",
+        {"form": form, "pd": previous_data},
     )
 
 
@@ -2029,7 +2033,10 @@ def user_request_update(request, id):
     previous_data = request.GET.urlencode()
     leave_request = LeaveRequest.objects.get(id=id)
     try:
-        if request.user.employee_get == leave_request.employee_id and leave_request.status != "approved":
+        if (
+            request.user.employee_get == leave_request.employee_id
+            and leave_request.status != "approved"
+        ):
             form = UserLeaveRequestForm(instance=leave_request)
             if request.method == "POST":
                 form = UserLeaveRequestForm(
@@ -2363,8 +2370,10 @@ def employee_leave(request):
         if today in leave_request.requested_dates():
             leaves.append(leave_request)
             requests_ids.append(leave_request.employee_id.id)
-            
-    return render(request, "leave/on_leave.html", {"leaves": leaves,"requests_ids":requests_ids})
+
+    return render(
+        request, "leave/on_leave.html", {"leaves": leaves, "requests_ids": requests_ids}
+    )
 
 
 @login_required
@@ -2444,12 +2453,12 @@ def dashboard(request):
         "holidays": holidays,
         "leave_today_employees": leave_today,
         "dashboard": "dashboard",
-        "today":today,
+        "today": today,
         "first_day": today.replace(day=1).strftime("%Y-%m-%d"),
         "last_day": date(
             today.year, today.month, calendar.monthrange(today.year, today.month)[1]
         ).strftime("%Y-%m-%d"),
-        "requests_ids":requests_ids
+        "requests_ids": requests_ids,
     }
     return render(request, "leave/dashboard.html", context)
 
@@ -2578,12 +2587,8 @@ def employee_leave_chart(request):
     leave_requests = leave_requests.filter(
         start_date__month=day.month, start_date__year=day.year
     )
-    # leave_types = LeaveType.objects.filter(leaverequest__in=leave_requests.filter(
-    #     start_date__month=day.month, start_date__year=day.year
-    # )).distinct()
-    leave_types = leave_requests.values_list(
-        "leave_type_id__name", flat=True
-    ).distinct()
+
+    leave_types = leave_requests.values_list("leave_type_id__name", flat=True)
 
     labels = []
     dataset = []
@@ -2592,7 +2597,7 @@ def employee_leave_chart(request):
     ):
         labels.append(employee.employee_id)
 
-    for leave_type in leave_types:
+    for leave_type in list(set(leave_types)):
         dataset.append(
             {
                 "label": leave_type,
@@ -2621,7 +2626,6 @@ def employee_leave_chart(request):
         employee_label.append(
             f"{employee.employee_first_name} {employee.employee_last_name}"
         )
-
     response = {
         "labels": employee_label,
         "dataset": dataset,

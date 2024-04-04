@@ -8,10 +8,12 @@
             role="button"
         >
             <div class="oh-profile oh-profile--md"
+            {% if perms.leave.add_leaverequest %}
             onclick="$('#objectDetailsModalW25').addClass('oh-modal--show');"
             data-target="#objectDetailsModalW25"
             hx-get="{% url 'one-request-view' leave.id %}?instances_ids={{requests_ids}}"
             hx-target="#objectDetailsModalW25Target"
+            {% endif %}
 			>
                 <div class="oh-profile__avatar mr-1">
                     <img
