@@ -94,7 +94,7 @@
 						</div>
 					</div>
 				</span>
-				
+
 				<div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
                     <div class="oh-dropdown" x-data="{open: false}">
                         <button class="oh-btn oh-stop-prop oh-accordion-meta__btn" @click="open = !open" @click.outside="open = false" title="Action">
@@ -102,7 +102,7 @@
                             <ion-icon class="ms-2 oh-accordion-meta__btn-icon md hydrated" name="caret-down-outline" role="img" aria-label="caret down outline"></ion-icon>
                         </button>
                         <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
-                            <ul class="oh-dropdown__items">                                
+                            <ul class="oh-dropdown__items">
 								<li class="oh-dropdown__item">
 									<a class="oh-dropdown__link"
 									data-toggle="oh-modal-toggle"
@@ -159,16 +159,16 @@
 											class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
 											title="{% trans 'Rejected' %}"
 										>
-											<ion-icon name="alert"></ion-icon>									
+											<ion-icon name="alert"></ion-icon>
 										</span>
 										{% else %}
 										<span
 											class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
 											title="{% trans 'File Uploaded' %}"
 										>
-										<ion-icon name="image-outline"></ion-icon>									
+										<ion-icon name="image-outline"></ion-icon>
 										</span>
-										{% endif %}									
+										{% endif %}
 									{% else %}
 										<span
 											class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
@@ -210,6 +210,7 @@
                                         {% else %}
                                         <a
                                             type="submit"
+											hx-confirm="{% trans 'Do you want to approve this request' %}"
                                             hx-get="{% url 'document-approve' document.id %}"
                                             hx-target="#viewFile"
                                             title="{% trans 'Approve' %}"
@@ -223,7 +224,7 @@
 										<a class="oh-btn oh-btn--danger w-100 oh-btn--disabled"  onclick="event.stopPropagation()">
                                             <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
                                         </a>
-										{% else %}										
+										{% else %}
                                         <a
                                             type="submit"
                                             hx-get="{% url 'document-reject' document.id %}"

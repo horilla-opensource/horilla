@@ -184,17 +184,6 @@
 							style="display: none"
 						>
 							<ul class="oh-dropdown__items">
-								{% if perms.base.view_shiftrequest %}
-								<li class="oh-dropdown__item">
-									<a
-										href="#"
-										class="oh-dropdown__link"
-										data-toggle="oh-modal-toggle"
-										data-target="#shiftRequestsExport"
-										>{% trans "Export" %}</a
-									>
-								</li>
-								{% endif %} 
 								{% if perms.horilla_documnets.change_documentrequest or request.user|is_reportingmanager %}
 
 								<li class="oh-dropdown__item">
@@ -206,8 +195,8 @@
 								{% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
 
 								<li class="oh-dropdown__item">
-									<a class="oh-dropdown__link mb-2 " data-toggle="oh-modal-toggle" style="cursor: pointer;"
-										data-target="#BulkRejectModal"
+									<a class="oh-dropdown__link mb-2 " style="cursor: pointer;"
+										id="BulkRejectDocument"
 										>{% trans "Bulk Reject Requests" %}</a
 									>
 								</li>
@@ -290,10 +279,9 @@
 		</div>
 		<div class="oh-modal__dialog-body" id="BulkRejectForm">
 			<form id="bulk-reject-form"> 
-				<textarea name="rejection_reason" cols="40" rows="2" class="oh-input w-100" placeholder="Rejection reason" id="bulk_rejection_reason"></textarea>
-				
+				<textarea name="rejection_reason" cols="40" rows="2" class="oh-input w-100" placeholder="Rejection reason" id="bulk_rejection_reason" required></textarea>
 				<div class="d-flex flex-row-reverse w-100 align-items-center mt-4">
-					<button type="button" class="oh-btn oh-btn--secondary oh-btn--shadow bulk_reject">
+					<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow bulk_reject">
 						{% trans "Save" %}
 					</button>
 				</div>

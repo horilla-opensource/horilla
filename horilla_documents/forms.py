@@ -97,3 +97,7 @@ class DocumentRejectForm(ModelForm):
     class Meta:
         model = Document
         fields = ["reject_reason"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["reject_reason"].widget.attrs["required"]=True
