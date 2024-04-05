@@ -3839,6 +3839,10 @@ def shift_request_delete(request, id):
         messages.error(request, _("Shift request not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this shift request."))
+
+    hx_target = request.META.get("HTTP_HX_TARGET", None)
+    if hx_target and hx_target == "shift_target" and shift_request.employee_id:
+        return redirect(f"/employee/shift-tab/{shift_request.employee_id.id}")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -5440,7 +5444,7 @@ def employee_chart_show(request):
         ("asset_request_approve", _("Asset Request to Approve")),
     ]
     charts = check_permission(request, charts)
-    if request.POST:
+    if request.method == "POST":
         data = request.POST
         for chart in charts:
             if chart[0] not in data.keys() and chart[0] not in employee_charts.charts:

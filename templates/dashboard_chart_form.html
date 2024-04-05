@@ -11,6 +11,10 @@
 <!-- htmx form -->
 <div class="oh-modal__dialog-body">
     <div class="oh-modal__dialog-body" style="padding: 0">
+        <div class="oh-dropdown_btn-header">
+            <button class="oh-btn oh-btn--success-outline" id="select_all">{% trans "Select All Rows" %}</button>
+            <button class="oh-btn oh-btn--primary-outline" id="unselect_all">{% trans "Unselect All Rows" %}</button>
+        </div>
         <form
             hx-post="{% url 'employee-chart-show' %}"
             hx-target="#objectDetailsModalTarget"
@@ -73,3 +77,14 @@
         </form>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $("#select_all").on("click", function(){
+            $("#dashboardChartForm").find("[type=checkbox]").prop("checked",true).change();
+        })
+        $("#unselect_all").on("click", function(){
+            $("#dashboardChartForm").find("[type=checkbox]").prop("checked",false).change();
+        })
+    })
+</script>
