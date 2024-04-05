@@ -149,7 +149,7 @@
         {% endif %}
     </div>
     
-    {% if request.user|is_reportingmanager %}
+    {% if request.user|is_reportingmanager or perms.leave.view_leaveallocationrequest %}
         <div class="oh-tabs__content" id="tab_2">
             {% if leave_allocation_requests %}
                 <!-- start of sticky table -->
