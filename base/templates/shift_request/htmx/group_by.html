@@ -86,7 +86,7 @@
 											<div class="oh-sticky-table__td">{{shift_request.previous_shift_id}}</div>
 											<div class="oh-sticky-table__td dateformat_changer">{{shift_request.requested_date}}</div>
 											<div class="oh-sticky-table__td dateformat_changer">{{shift_request.requested_till}}</div>
-											<div class="oh-sticky-table__td">{{shift_request.description}}</div>
+											<div class="oh-sticky-table__td">{{shift_request.description|truncatechars:17}}</div>
 
 											<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 								
@@ -106,10 +106,10 @@
 												{% endif %}
 												<a class="oh-btn oh-btn--light-bkg w-50" 
                                                    data-toggle="oh-modal-toggle"
-                                                   data-target="#shiftRequestModal"
+                                                   data-target="#objectCreateModal"
                                                    hx-get="{% url 'shift-request-duplicate' shift_request.id %}?{{pg}}"
                                                    title="{% trans 'Duplicate' %}"
-                                                   hx-target="#shiftRequestTargetModal"
+                                                   hx-target="#objectCreateModalTarget"
                                                    style= "cursor: pointer;"
                                                    >
                                                    <ion-icon name="copy-outline"></ion-icon>
@@ -395,7 +395,7 @@
 											<div class="oh-sticky-table__td">{{shift_request.previous_shift_id}}</div>
 											<div class="oh-sticky-table__td dateformat_changer">{{shift_request.requested_date}}</div>
 											<div class="oh-sticky-table__td dateformat_changer">{{shift_request.requested_till}}</div>
-											<div class="oh-sticky-table__td">{{shift_request.description}}</div>
+											<div class="oh-sticky-table__td">{{shift_request.description|truncatechars:17}}</div>
 
 											<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 								
