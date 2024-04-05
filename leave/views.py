@@ -1406,9 +1406,8 @@ def holidays_info_import(request):
                 error_list.append(holiday)
         if error_list:
             response = generate_error_report(error_list, error_data, file_name)
-            return response
-        return redirect(holiday_view)
-    return redirect(holiday_view)
+        else:
+            return JsonResponse()
 
 
 @login_required
@@ -2503,7 +2502,7 @@ def employee_dashboard(request):
         "next_holiday": next_holiday,
         "holidays": holidays,
         "dashboard": "dashboard",
-        "requests_ids":requests_ids,
+        "requests_ids": requests_ids,
     }
     return render(request, "leave/employee_dashboard.html", context)
 
@@ -2529,7 +2528,11 @@ def dashboard_leave_request(request):
         requests_ids = [request.id for request in leave_requests]
     else:
         leave_requests = []
-    context = {"leave_requests": leave_requests, "dashboard": "dashboard", "requests_ids":requests_ids}
+    context = {
+        "leave_requests": leave_requests,
+        "dashboard": "dashboard",
+        "requests_ids": requests_ids,
+    }
     return render(request, "leave/leave_request/dashboard_leave_requests.html", context)
 
 
@@ -2731,7 +2734,7 @@ def leave_type_chart(request):
                 "data": values,
             },
         ],
-        "message": _("No leave requests for any leave type this month.")
+        "message": _("No leave requests for any leave type this month."),
     }
     return JsonResponse(response)
 
@@ -3633,7 +3636,7 @@ def cut_available_leave(request, instance_id):
     """
     previous_data = request.GET.urlencode()
     instance = LeaveRequest.objects.get(id=instance_id)
-    form = PenaltyAccountForm()
+    form = PenaltyAccountForm(employee=instance.employee_id)
     available = AvailableLeave.objects.filter(employee_id=instance.employee_id)
     if request.method == "POST":
         form = PenaltyAccountForm(request.POST)

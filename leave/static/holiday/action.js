@@ -330,7 +330,7 @@ $("#bulkHolidaysDelete").click(function (e) {
   });
 });
 
-$("#holidays-info-import").click(function (e) {
+$("#holidaysInfoImport").click(function (e) {
   e.preventDefault();
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
@@ -414,6 +414,8 @@ $("#holidaysImportForm").submit(function (e) {
         document.body.appendChild(link);
         link.click();
         window.location.href = "/leave/holiday-view";
+      } else {
+        window.location.reload();
       }
     })
     .catch((error) => {});
