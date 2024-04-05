@@ -53,6 +53,8 @@ from attendance.models import (
 )
 from django.utils.html import format_html
 
+from leave.models import LeaveType
+
 
 class ModelForm(forms.ModelForm):
     """
@@ -723,6 +725,17 @@ class PenaltyAccountForm(ModelForm):
     class Meta:
         model = PenaltyAccount
         fields = "__all__"
+        exclude = ["is_active"]
+
+    def __init__(self, *args, **kwargs):
+        employee = kwargs.pop("employee", None)
+        super().__init__(*args, **kwargs)
+        if employee:
+            available_leaves = employee.available_leave.all()
+            assigned_leave_types = LeaveType.objects.filter(
+                id__in=available_leaves.values_list("leave_type_id", flat=True)
+            )
+            self.fields["leave_type_id"].queryset = assigned_leave_types
 
 
 class LateComeEarlyOutExportForm(forms.Form):

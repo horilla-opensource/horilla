@@ -31,7 +31,7 @@ def cut_available_leave(request, instance_id):
     request_copy.pop("instances_ids", None)
     previous_data = request_copy.urlencode()
     instance = AttendanceLateComeEarlyOut.objects.get(id=instance_id)
-    form = PenaltyAccountForm()
+    form = PenaltyAccountForm(employee=instance.employee_id)
     available = AvailableLeave.objects.filter(employee_id=instance.employee_id)
     if request.method == "POST":
         form = PenaltyAccountForm(request.POST)
