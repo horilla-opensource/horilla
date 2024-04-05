@@ -53,8 +53,8 @@
             {% elif perms.recruitment.change_recruitment or request.user|recruitment_manages:rec %}
               <li class="oh-dropdown__item">
                 <a href="{% url 'recruitment-reopen-pipeline' rec.id %}" class="oh-dropdown__link"
-                onclick="return confirm('{% trans "Are you sure you want to re-open this recruitment?" %}');"
-                >{% trans "Re-open" %}</a
+                onclick="return confirm('{% trans "Are you sure you want to reopen this recruitment?" %}');"
+                >{% trans "Reopen" %}</a
                 >
               </li>
             {% endif %}
