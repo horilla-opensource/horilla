@@ -2224,7 +2224,7 @@ def user_request_view(request):
         queryset = user.leaverequest_set.all()
         previous_data = request.GET.urlencode()
         page_number = request.GET.get("page")
-        user_request_filter = LeaveRequestFilter(request.GET, queryset=queryset)
+        user_request_filter = UserLeaveRequestFilter(request.GET, queryset=queryset)
         page_obj = paginator_qry(user_request_filter.qs.order_by("-id"), page_number)
         request_ids = json.dumps(
             list(page_obj.object_list.values_list("id", flat=True))

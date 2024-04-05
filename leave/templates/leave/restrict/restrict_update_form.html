@@ -52,11 +52,11 @@
     >
     {{form.department}} {{form.department.errors}}
 
-    <label class="oh-label d-flex" for="{{ form.jobposition.id_for_label }}"
-      >{% trans "Job Position" %}<span class="oh-info ms-2" title = "{{ form.jobposition.help_text|safe }}">
+    <label class="oh-label d-flex" for="{{ form.job_position.id_for_label }}"
+      >{% trans "Job Position" %}<span class="oh-info ms-2" title = "{{ form.job_position.help_text|safe }}">
       </span></label
     >
-    {{form.jobposition}} {{form.jobposition.errors}}
+    {{form.job_position}} {{form.job_position.errors}}
 
     <label class="oh-label d-block" for="{{ form.description.id_for_label }}"
       >{% trans "Description" %}</label
@@ -75,7 +75,7 @@
   $(document).ready(function() {
     // Get the selected department ID and the initial selected job position
     var departmentId = $('#id_department').val();
-    var selectedJobPosition = $('#id_jobposition').val();
+    var selectedJobPosition = $('#id_job_position').val();
 
     // Make AJAX request to fetch available job positions for the selected department
     $.ajax({
@@ -86,11 +86,11 @@
       },
       success: function(data) {
         // Clear existing options in the Job Position dropdown
-        $('#id_jobposition').empty();
+        $('#id_job_position').empty();
 
         // Append new options based on the response
         $.each(data.job_positions, function(key, value) {
-          $('#id_jobposition').append($('<option>', {
+          $('#id_job_position').append($('<option>', {
             value: key,
             text: value
           }));
@@ -99,7 +99,7 @@
 
         // Set the selected job position back to the dropdown
         if (selectedJobPosition) {
-          $('#id_jobposition').val(selectedJobPosition);
+          $('#id_job_position').val(selectedJobPosition);
         }
       }
     });
@@ -118,11 +118,11 @@
         },
         success: function(data) {
           // Clear existing options in the Job Position dropdown
-          $('#id_jobposition').empty();
+          $('#id_job_position').empty();
           
           // Append new options based on the response
           $.each(data.job_positions, function(key, value) {
-            $('#id_jobposition').append($('<option>', {
+            $('#id_job_position').append($('<option>', {
               value: key,
               text: value
             }));

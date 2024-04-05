@@ -409,6 +409,17 @@ class UserLeaveRequestFilter(FilterSet):
             "status": ["exact"],
         }
 
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        from base.thread_local_middleware import _thread_locals
+
+        request = getattr(_thread_locals, "request", None)
+        leave_requests = request.user.employee_get.leaverequest_set.all()
+        assigned_leave_types = LeaveType.objects.filter(
+            id__in=leave_requests.values_list("leave_type_id", flat=True)
+        )
+        self.form.fields["leave_type_id"].queryset = assigned_leave_types
+
 
 class LeaveAllocationRequestFilter(FilterSet):
     """
@@ -554,7 +565,7 @@ class RestrictLeaveFilter(FilterSet):
         """
 
         model = RestrictLeave
-        fields = '__all__'
+        fields = "__all__"
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)

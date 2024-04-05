@@ -119,8 +119,8 @@
           {{day.department}}
         </div>
         <div class="oh-sticky-table__td">
-          {% if day.jobposition.all  %}
-            {% for i in  day.jobposition.all %}
+          {% if day.job_position.all  %}
+            {% for i in  day.job_position.all %}
               <span class="d-flex">{{forloop.counter}}. {{i}}</span>
             {% endfor %}
           {% else %}
