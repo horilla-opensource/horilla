@@ -215,7 +215,7 @@
                   <a href="#" class="oh-navbar__action-icons-link"  title="Languages">
                       <ion-icon name="globe-outline" class="oh-navbar__icon"></ion-icon>
                   </a>
-                  <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" @click.outside="open = false" style="display:none;">
+                  <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" @click.outside="open = false" style="display:none; margin-top:95%;">
                       <ul class="oh-dropdown__items">
                           {% get_available_languages as LANGUAGES %}
                           {% for language in LANGUAGES %}
@@ -247,7 +247,7 @@
                     <a href="#" class="oh-navbar__action-icons-link">
                       <ion-icon name="business"></ion-icon>
                     </a>
-                    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" @click.outside="open = false" style="display:none;">
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" @click.outside="open = false" style="display:none; margin-top:115%;">
                         <ul class="oh-dropdown__items">
                             {% for company in all_companies %}
                             <li class="oh-dropdown__item">
