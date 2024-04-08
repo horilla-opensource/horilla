@@ -82,7 +82,7 @@
                     </div>
                     <div class="oh-sticky-table__th oh-sticky-table__right">
                         {% trans "Actions" %}
-                    </div>                    
+                    </div>
                     <div class="oh-sticky-table__th oh-sticky-table__right">
                         {% trans "Confirmation" %}
                     </div>
@@ -109,7 +109,7 @@
                         {{letter.status}}
                     </div>
                     <div data-cell-index="4" class="oh-sticky-table__td">
-                        {{letter.description|safe|truncatechars:30}}
+                        {{letter.description|safe|truncatechars_html:30}}
                     </div>
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                         <div class="oh-btn-group">
