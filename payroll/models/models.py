@@ -1744,9 +1744,22 @@ class Reimbursement(HorillaModel):
                     self.allowance_id.delete()
 
     def delete(self, *args, **kwargs):
-        if self.allowance_id:
-            self.allowance_id.delete()
-        return super().delete(*args, **kwargs)
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        if self.status == 'approved':
+            message=messages.info(
+                request,
+                _(
+                    f"{self.title} is in approved state,\
+                    it cannot be deleted"
+                ),
+            )
+        else:
+            if self.allowance_id:
+                self.allowance_id.delete()
+                super().delete(*args, **kwargs)
+                message=messages.success(request, "Reimbursement deleted")
+
+        return message
     def __str__(self):
         return f"{self.title}"
 

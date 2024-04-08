@@ -1401,6 +1401,8 @@ def approve_reimbursements(request):
     """
     ids = request.GET.getlist("ids")
     status = request.GET["status"]
+    if status =='canceled':
+        status = 'rejected'
     amount = eval(request.GET.get("amount")) if request.GET.get("amount") else 0
     amount = max(0, amount)
     reimbursements = Reimbursement.objects.filter(id__in=ids)
@@ -1414,9 +1416,15 @@ def approve_reimbursements(request):
             emp = reimbursement.employee_id
             reimbursement.status = status
             reimbursement.save()
-            messages.success(
-                request, f"Request {reimbursement.get_status_display()} successfully"
-            )
+            if reimbursement.status == 'requested' :
+                if not (messages.get_messages(request)._queued_messages):
+                    messages.info(
+                        request, _("Please check the data you provided.")
+                    )
+            else:
+                messages.success(
+                    request,_(f"Request {reimbursement.get_status_display()} successfully")
+                )
         if status == "rejected":
             notify.send(
                 request.user.employee_get,
@@ -1455,7 +1463,7 @@ def delete_reimbursements(request):
     for reimbursement in reimbursements:
         user = reimbursement.employee_id.employee_user_id
         reimbursement.delete()
-    messages.success(request, "Reimbursements deleted")
+    # messages.success(request, "Reimbursements deleted")
     notify.send(
         request.user.employee_get,
         recipient=user,
