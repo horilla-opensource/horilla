@@ -675,14 +675,35 @@ class ReimbursementForm(ModelForm):
         if type =="leave_encashment":
             if self.instance.pk:
                 leave_type_id = self.instance.leave_type_id
+                cfd_to_encash = self.instance.cfd_to_encash
+                ad_to_encash = self.instance.ad_to_encash
             else:
                 leave_type_id=cleaned_data["leave_type_id"]
+                cfd_to_encash = cleaned_data["cfd_to_encash"]
+                ad_to_encash = cleaned_data["ad_to_encash"]
             encashable_leaves = self.get_encashable_leaves(employee_id)
             if (leave_type_id is None) or (leave_type_id not in encashable_leaves):
                 raise forms.ValidationError(
                     {"leave_type_id": "This leave type is not encashable"}
                 )
-            
+            else:
+                available_leave = AvailableLeave.objects.filter(leave_type_id=leave_type_id,employee_id=employee_id).first()
+                if cfd_to_encash < 0:
+                    raise forms.ValidationError(
+                        {"cfd_to_encash": _("Value can't be negative.")}
+                    )
+                if ad_to_encash < 0:
+                    raise forms.ValidationError(
+                        {"ad_to_encash": _("Value can't be negative.")}
+                    )
+                if cfd_to_encash > available_leave.carryforward_days:
+                    raise forms.ValidationError(
+                        {"cfd_to_encash": _("Not enough carryforward days to redeem")}
+                    )
+                if ad_to_encash > available_leave.available_days:
+                    raise forms.ValidationError(
+                        {"ad_to_encash": _("Not enough available days to redeem")}
+                    )
     def save(self, commit: bool = ...) -> Any:
         is_new = not self.instance.pk
         attachemnt = []
