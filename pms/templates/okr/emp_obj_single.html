@@ -114,7 +114,7 @@
     <div class="oh-modal__button-container text-center mt-3">
         <div class="oh-btn-group">
             
-            <a class="oh-btn oh-btn--info" hx-get='{% url "update-employee-objective" instance.id %}' hx-target="#objectivesTarget" data-toggle="oh-modal-toggle" data-target="#objectivesModal" style="width: 50%;">
+            <a class="oh-btn oh-btn--info" hx-get='{% url "update-employee-objective" instance.id %}' hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" style="width: 50%;">
                 <ion-icon name="create-outline">
                 </ion-icon>{% trans "Edit" %} 
             </a>
@@ -165,8 +165,8 @@
 </div>
 </div>
 
-<script>
+{% comment %} <script>
     function empObjStatusUpdate(element){
         alert('ssssssssssss')
     }
-</script>
+</script> {% endcomment %}

@@ -141,7 +141,14 @@
                             <ul class="oh-card-dashboard__user-list">
                             {% for okr in okr_at_risk %}
                                 <li class="oh-card-dashboard__user-item">
-                                    <a href="{%url 'objective-detailed-view'  emp_obj_id=okr.id %}">
+                                        <a 
+                                            hx-get='{% url "view-employee-objective" okr.id %}' 
+                                            hx-target="#objectDetailsModalTarget" 
+                                            data-toggle="oh-modal-toggle" 
+                                            data-target="#objectDetailsModal" 
+                                            type="button" title="{% trans 'View' %}" 
+                                            class="oh-btn oh-btn--light-bkg p-3 w-100"  onclick="event.stopPropagation()"
+                                        > 
                                         <div class="oh-profile oh-profile--md">
                                             <div class="oh-profile__avatar mr-1">
                                                 <img src="{{okr.employee_id.get_avatar}}"

@@ -976,7 +976,7 @@ def change_employee_objective_status(request, emp_obj):
         )
         notify.send(
             request.user.employee_get,
-            recipient=emp_objective.employee_id,
+            recipient=emp_objective.employee_id.employee_user_id,
             verb=f"The status of the objective '{emp_objective.objective_id}' has been changed to {emp_objective.status}.",
             verb_ar=f"تم تغيير حالة الهدف '{emp_objective.objective_id}' إلى {emp_objective.status}.",
             verb_de=f"Der Status des Ziels '{emp_objective.objective_id}' wurde zu {emp_objective.status} geändert.",
