@@ -226,7 +226,7 @@
 		
 		<div class="oh-table_sticky--wrapper">
 			{% if request.user.is_superuser or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-			<div class="oh-sticky-dropdown--header">
+			<div class="oh-sticky-dropdown--header" style="border:none;">
 				<div class="oh-dropdown" x-data="{open: false}">
 				<button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
 					role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
@@ -312,6 +312,18 @@
 								class="oh-general__tab-link"
 								role="button"
 								>{% trans "Allowance & Deduction" %}</a
+								>
+							</li>
+							{% endif %}
+							{% if perms.attendance.view_penaltyaccount or request.user == employee.employee_user_id %}
+							<li data-cell-index="23" data-cell-title="{% trans "Penalty Account" %}" class="oh-general__tab">
+								<a
+								data-action="general-tab"
+								data-target="#penaltyTarget"
+								id="penalty"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Penalty Account" %}</a
 								>
 							</li>
 							{% endif %}
@@ -409,6 +421,7 @@
 							  class="oh-general__tab-link"
 							  data-action="general-tab"
 							  data-target="#maillog"
+							  role="button"
 							  >{% trans "Mail Log" %}</a
 							  >
 							</li>
@@ -473,6 +486,13 @@
 						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 						id="allowance_deduction"
 						>
+						</div>
+
+						<div
+						class="oh-general__tab-target oh-profile__info-tab mb-4"
+						id="penaltyTarget"
+						>
+						{% include 'tabs/penalty_account.html' %}
 						</div>
 
 						<div
@@ -550,7 +570,11 @@
 			$("#view-container").find(".oh-general__tab-link")[0].click()
 		}
 	});
+
 	toggleColumns("employee-tab","fieldContainerTable")
+	if (!localStorage.getItem("employee_tab")) {
+		  $("#fieldContainerTable").find("[type=checkbox]").prop("checked",true).change()
+	  }
 
 </script>
 <script>

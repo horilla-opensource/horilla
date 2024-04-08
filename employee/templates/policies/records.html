@@ -23,9 +23,9 @@
         </h3>
         <div style="max-height: 350px;overflow: hidden;min-height:100px; overflow-y:auto;" class="truncated-text">{{ policy.body|safe }}</div>
       </div>
-      {% if perms.recruitment.change_recruitmentmailtemplate %}
-        <a hx-get="{% url 'view-policy' %}?instance_id={{ policy.id }}" hx-target="#policyModalBody" data-toggle="oh-modal-toggle" data-target="#policyModal" class="oh-btn oh-btn--secondary oh-btn--block">{% trans 'View policy' %}</a>
-      {% endif %}
+
+      <a hx-get="{% url 'view-policy' %}?instance_id={{ policy.id }}" hx-target="#policyModalBody" data-toggle="oh-modal-toggle" data-target="#policyModal" class="oh-btn oh-btn--secondary oh-btn--block">{% trans 'View policy' %}</a>
+
     </div>
   {% endfor %}
 </div>

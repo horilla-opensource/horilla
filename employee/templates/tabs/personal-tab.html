@@ -15,7 +15,12 @@
 							<ion-icon name="calendar-outline"></ion-icon>
 							<span>{% trans "Date of Birth" %}</span>
 						</span>
-						<span class="oh-profile__info-value dateformat_changer">{{employee.dob}}</span>
+						{% if employee.dob %}
+							<span class="oh-profile__info-value dateformat_changer">{{employee.dob}}</span>
+						{% else %}
+							<span class="oh-profile__info-value"
+							>{% trans "None" %}</span>
+						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
@@ -31,89 +36,131 @@
 							<ion-icon name="home-outline"></ion-icon>
 							<span>{% trans "Address" %}</span>
 						</span>
-						<p class="oh-profile__info-value mb-0">{{employee.address}}</p>
+						{% if employee.address %}
+							<span class="oh-profile__info-value mb-0">{{employee.address}}</span>
+						{% else %}
+							<span class="oh-profile__info-value"
+							>{% trans "None" %}</span>
+						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
 							<ion-icon name="flag-outline"></ion-icon>
 							<span>{% trans "Country" %}</span>
 						</span>
-						<span class="oh-profile__info-value"> {{employee.country}} </span>
+						{% if employee.country %}
+							<span class="oh-profile__info-value"> {{employee.country}} </span>
+						{% else %}
+							<span class="oh-profile__info-value"
+							>{% trans "None" %}</span>
+						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
 							<ion-icon name="compass-outline"></ion-icon>
 							<span>{% trans "State" %}</span>
 						</span>
-						<span class="oh-profile__info-value"> {{employee.state}} </span>
+						{% if employee.state %}
+							<span class="oh-profile__info-value"> {{employee.state}} </span>
+						{% else %}
+							<span class="oh-profile__info-value"
+							>{% trans "None" %}</span>
+						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
 							<ion-icon name="planet-outline"></ion-icon>
 							<span>{% trans "City" %}</span>
 						</span>
-						<span class="oh-profile__info-value"> {{employee.city}} </span>
+						{% if employee.city %}
+							<span class="oh-profile__info-value"> {{employee.city}}</span>
+						{% else %}
+							<span class="oh-profile__info-value"
+							>{% trans "None" %}</span>
+						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
 							<ion-icon name="book-outline"></ion-icon>
 							<span>{% trans "Qualification" %}</span>
 						</span>
-						<span class="oh-profile__info-value">
-							{{employee.qualification}}
-						</span>
+						{% if employee.qualification %}
+							<span class="oh-profile__info-value">{{employee.qualification}}</span>
+						{% else %}
+							<span class="oh-profile__info-value"
+							>{% trans "None" %}</span>
+						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
 							<ion-icon name="briefcase-outline"></ion-icon>
 							<span>{% trans "Experience" %}</span>
 						</span>
-						<span class="oh-profile__info-value">
-							{{employee.experience}}
-						</span>
+						{% if employee.experience %}
+							<span class="oh-profile__info-value">{{employee.experience}}</span>
+						{% else %}
+							<span class="oh-profile__info-value"
+							>{% trans "None" %}</span>
+						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
 							<ion-icon name="link-outline"></ion-icon>
 							<span>{% trans "Maritial Status" %}</span>
 						</span>
-						<span class="oh-profile__info-value"
-							>{{employee.get_marital_status_display}}</span
-						>
+						<span class="oh-profile__info-value">{{employee.get_marital_status_display}}</span>
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
 							<ion-icon name="person-circle-outline"></ion-icon>
 							<span>{% trans "Children" %}</span>
 						</span>
-						<span class="oh-profile__info-value"> {{employee.children}} </span>
+						{% if employee.children %}
+							<span class="oh-profile__info-value"> {{employee.children}} </span>
+						{% else %}
+							<span class="oh-profile__info-value"
+							>{% trans "None" %}</span>
+						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
 							<ion-icon name="call-outline"></ion-icon>
 							<span>{% trans "Emergency Contact" %}</span>
 						</span>
-						<span class="oh-profile__info-value">
-							{{employee.emergency_contact}}
-						</span>
+						{% if employee.emergency_contact %}
+							<span class="oh-profile__info-value">{{employee.emergency_contact}}</span>
+						{% else %}
+							<span class="oh-profile__info-value"
+							>{% trans "None" %}</span>
+						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
 							<ion-icon name="people-circle-outline"></ion-icon>
 							<span>{% trans "Emergency Contact Name" %}</span>
 						</span>
-						<span class="oh-profile__info-value">
-							{{employee.emergency_contact_name}}
-						</span>
+						{% if employee.emergency_contact_name %}
+							<span class="oh-profile__info-value">
+								{{employee.emergency_contact_name}}
+							</span>
+						{% else %}
+							<span class="oh-profile__info-value"
+							>{% trans "None" %}</span>
+						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
 							<ion-icon name="finger-print-outline"></ion-icon>
 							<span>{% trans "Emergency Contact Relation" %}</span>
 						</span>
-						<span class="oh-profile__info-value">
-							{{employee.emergency_contact_relation}}
-						</span>
+						{% if employee.emergency_contact_relation %}
+							<span class="oh-profile__info-value">
+								{{employee.emergency_contact_relation}}
+							</span>
+						{% else %}
+							<span class="oh-profile__info-value"
+							>{% trans "None" %}</span>
+						{% endif %}
 					</li>
 				</ul>
 			</div>
@@ -163,18 +210,28 @@
 												<ion-icon name="construct-outline"></ion-icon>
 												<span>{% trans "Department" %}</span>
 											</span>
-											<span class="oh-profile__info-value"
-												>{{employee.employee_work_info.department_id}}</span
-											>
+											{% if employee.employee_work_info.department_id %}
+												<span class="oh-profile__info-value"
+													>{{employee.employee_work_info.department_id}}</span
+												>
+											{% else %}
+												<span class="oh-profile__info-value"
+												>{% trans "None" %}</span>
+											{% endif %}
 										</li>
 										<li class="oh-profile__card-info-item">
 											<span class="oh-profile__info-label mb-1">
 												<ion-icon name="time-outline"></ion-icon>
 												<span>{% trans "Shift Information" %}</span>
 											</span>
-											<span class="oh-profile__info-value"
-												>{{employee.employee_work_info.shift_id}}</span
-											>
+											{% if employee.employee_work_info.shift_id %}
+												<span class="oh-profile__info-value"
+													>{{employee.employee_work_info.shift_id}}</span
+												>
+											{% else %}
+												<span class="oh-profile__info-value"
+												>{% trans "None" %}</span>
+											{% endif %}
 										</li>
 
 										<li class="oh-profile__card-info-item">
@@ -182,9 +239,14 @@
 												<ion-icon name="briefcase-outline"></ion-icon>
 												<span>{% trans "Employee Type" %}</span>
 											</span>
-											<span class="oh-profile__info-value"
-												>{{employee.employee_work_info.employee_type_id}}</span
-											>
+											{% if employee.employee_work_info.employee_type_id %}
+												<span class="oh-profile__info-value"
+													>{{employee.employee_work_info.employee_type_id}}</span
+												>
+											{% else %}
+												<span class="oh-profile__info-value"
+												>{% trans "None" %}</span>
+											{% endif %}
 										</li>
 
 										<li class="oh-profile__card-info-item">
@@ -192,9 +254,14 @@
 												<ion-icon name="person-circle-outline"></ion-icon>
 												<span>{% trans "Reporting Manager" %}</span>
 											</span>
-											<span class="oh-profile__info-value"
-												>{{employee.employee_work_info.reporting_manager_id}}</span
-											>
+											{% if employee.employee_work_info.reporting_manager_id %}
+												<span class="oh-profile__info-value"
+													>{{employee.employee_work_info.reporting_manager_id}}</span
+												>
+											{% else %}
+												<span class="oh-profile__info-value"
+												>{% trans "None" %}</span>
+											{% endif %}
 										</li>
 
 										<li class="oh-profile__card-info-item">
@@ -202,18 +269,28 @@
 												<ion-icon name="business-outline"></ion-icon>
 												<span>{% trans "Work Location" %}</span>
 											</span>
-											<span class="oh-profile__info-value"
-												>{{employee.employee_work_info.location}}</span
-											>
+											{% if employee.employee_work_info.location %}
+												<span class="oh-profile__info-value"
+													>{{employee.employee_work_info.location}}</span
+												>
+											{% else %}
+												<span class="oh-profile__info-value"
+												>{% trans "None" %}</span>
+											{% endif %}
 										</li>
 										<li class="oh-profile__card-info-item">
 											<span class="oh-profile__info-label mb-1">
 												<ion-icon name="calendar-outline"></ion-icon>
 												<span>{% trans "End Date" %}</span>
 											</span>
-											<span class="oh-profile__info-value dateformat_changer"
-												>{{employee.employee_work_info.contract_end_date}}</span
-											>
+											{% if employee.employee_work_info.contract_end_date %}
+												<span class="oh-profile__info-value dateformat_changer"
+													>{{employee.employee_work_info.contract_end_date}}</span
+												>
+											{% else %}
+												<span class="oh-profile__info-value"
+												>{% trans "None" %}</span>
+											{% endif %}
 										</li>
 									</ul>
 								</div>
@@ -225,42 +302,62 @@
 												<ion-icon name="briefcase-outline"></ion-icon>
 												<span>{% trans "Job Position" %}</span>
 											</span>
-											<span class="oh-profile__info-value"
-												>{{employee.employee_work_info.job_position_id}}</span
-											>
+											{% if employee.employee_work_info.job_position_id %}
+												<span class="oh-profile__info-value"
+													>{{employee.employee_work_info.job_position_id}}</span
+												>
+											{% else %}
+												<span class="oh-profile__info-value"
+												>{% trans "None" %}</span>
+											{% endif %}
 										</li>
 										<li class="oh-profile__card-info-item">
 											<span class="oh-profile__info-label mb-1">
 												<ion-icon name="time-outline"></ion-icon>
 												<span>{% trans "Work Type" %}</span>
 											</span>
-											<span class="oh-profile__info-value"
-												>{{employee.employee_work_info.work_type_id}}</span
-											>
+											{% if employee.employee_work_info.work_type_id %}
+												<span class="oh-profile__info-value"
+													>{{employee.employee_work_info.work_type_id}}</span
+												>
+											{% else %}
+												<span class="oh-profile__info-value"
+												>{% trans "None" %}</span>
+											{% endif %}
 										</li>
 										<li class="oh-profile__card-info-item">
 											<span class="oh-profile__info-label mb-1">
 												<ion-icon name="cash-outline"></ion-icon>
 												<span>{% trans "Salary" %}</span>
 											</span>
-											<span class="oh-profile__info-value"
+											{% if employee.employee_work_info.basic_salary %}
+												<span class="oh-profile__info-value"
+													>
+													{% if perms.employee.view_employee or request.user == employee.employee_user_id %}
+														{{employee.employee_work_info.basic_salary}}
+														{% else %}
+														**********
+													{% endif %}
+													</span
 												>
-												{% if perms.employee.view_employee or request.user == employee.employee_user_id %}
-													{{employee.employee_work_info.basic_salary}}
-													{% else %}
-													**********
-												{% endif %}
-												</span
-											>
+											{% else %}
+												<span class="oh-profile__info-value"
+												>{% trans "None" %}</span>
+											{% endif %}
 										</li>
 										<li class="oh-profile__card-info-item">
 											<span class="oh-profile__info-label mb-1">
 												<ion-icon name="business-outline"></ion-icon>
 												<span>{% trans "Company" %}</span>
 											</span>
-											<span class="oh-profile__info-value"
-												>{{employee.employee_work_info.company_id}}</span
-											>
+											{% if employee.employee_work_info.company_id %}
+												<span class="oh-profile__info-value"
+													>{{employee.employee_work_info.company_id}}</span
+												>
+											{% else %}
+												<span class="oh-profile__info-value"
+												>{% trans "None" %}</span>
+											{% endif %}
 										</li>
 
 										<li class="oh-profile__card-info-item">
@@ -268,9 +365,15 @@
 												<ion-icon name="calendar-outline"></ion-icon>
 												<span>{% trans "Joining Date" %}</span>
 											</span>
-											<span class="oh-profile__info-value dateformat_changer"
-												>{{employee.employee_work_info.date_joining}}</span
-											>
+											{% if employee.employee_work_info.date_joining %}
+												<span class="oh-profile__info-value dateformat_changer"
+													>{{employee.employee_work_info.date_joining}}</span
+												>
+											{% else %}
+												<span class="oh-profile__info-value"
+												>{% trans "None" %}</span>
+											{% endif %}
+
 										</li>
 
 										<li class="oh-profile__card-info-item">
@@ -279,13 +382,18 @@
 												<span>{% trans "Tags" %}</span>
 											</span>
 											<div style= "display: flex; flex-wrap: wrap;">
-												{% for i in employee.employee_work_info.tags.all %}
-													{% with tag_width=i.title|length %}
-														<span class="oh-profile__info-value mt-1 mb-1 mr-1" style="background-color: {{ i.color }};
-															font-size: .8rem; padding: 4px 10px; border-radius: 18px; font-weight: 600; width: {{ tag_width }}em;"
-														>{{ i.title }}</span>
-													{% endwith %}
-												{% endfor %}
+												{% if employee.employee_work_info.tags.all %}
+													{% for i in employee.employee_work_info.tags.all %}
+														{% with tag_width=i.title|length %}
+															<span class="oh-profile__info-value mt-1 mb-1 mr-1" style="background-color: {{ i.color }};
+																font-size: .8rem; padding: 4px 10px; border-radius: 18px; font-weight: 600; width: {{ tag_width }}em;"
+															>{{ i.title }}</span>
+														{% endwith %}
+													{% endfor %}
+												{% else %}
+													<span class="oh-profile__info-value dateformat_changer"
+													>{% trans "None" %}</span>
+												{% endif %}
 											</div>
 										</li>
 										
@@ -320,36 +428,56 @@
 									<ion-icon name="business-outline"></ion-icon>
 									<span>{% trans "Bank Name" %}</span>
 								</span>
-								<span class="oh-profile__info-value">
-									{{employee.employee_bank_details.bank_name}}
-								</span>
+								{% if employee.employee_bank_details.bank_name %}
+									<span class="oh-profile__info-value">
+										{{employee.employee_bank_details.bank_name}}
+									</span>
+								{% else %}
+									<span class="oh-profile__info-value"
+									>{% trans "None" %}</span>
+								{% endif %}
 							</li>
 							<li class="oh-profile__card-info-item">
 								<span class="oh-profile__info-label mb-1">
 									<ion-icon name="location-outline"></ion-icon>
 									<span>{% trans "Branch" %}</span>
 								</span>
-								<span class="oh-profile__info-value">
-									{{employee.employee_bank_details.branch}}
-								</span>
+								{% if employee.employee_bank_details.branch %}
+									<span class="oh-profile__info-value">
+										{{employee.employee_bank_details.branch}}
+									</span>
+								{% else %}
+									<span class="oh-profile__info-value"
+									>{% trans "None" %}</span>
+								{% endif %}
 							</li>
 							<li class="oh-profile__card-info-item">
 								<span class="oh-profile__info-label mb-1">
 									<ion-icon name="map-outline"></ion-icon>
 									<span>{% trans "Bank Address" %}</span>
 								</span>
-								<span class="oh-profile__info-value">
-									{{employee.employee_bank_details.address}}
-								</span>
+								{% if employee.employee_bank_details.address %}
+									<span class="oh-profile__info-value">
+										{{employee.employee_bank_details.address}}
+									</span>
+								{% else %}
+									<span class="oh-profile__info-value"
+									>{% trans "None" %}</span>
+								{% endif %}
 							</li>
 							<li class="oh-profile__card-info-item">
 								<span class="oh-profile__info-label mb-1">
 									<ion-icon name="information-outline"></ion-icon>
 									<span>{% trans "Bank Code" %} #1</span>
 								</span>
-								<span class="oh-profile__info-value">
-									{{employee.employee_bank_details.any_other_code1}}
-								</span>
+								{% if employee.employee_bank_details.any_other_code1 %}
+									<span class="oh-profile__info-value">
+										{{employee.employee_bank_details.any_other_code1}}
+									</span>
+								{% else %}
+									<span class="oh-profile__info-value"
+									>{% trans "None" %}</span>
+								{% endif %}
 							</li>
 						</ul>
 					</div>
@@ -360,27 +488,42 @@
 									<ion-icon name="information-circle-outline"></ion-icon>
 									<span>{% trans "Account Number" %}</span>
 								</span>
-								<span class="oh-profile__info-value">
-									{{employee.employee_bank_details.account_number}}
-								</span>
+								{% if employee.employee_bank_details.account_number %}
+									<span class="oh-profile__info-value">
+										{{employee.employee_bank_details.account_number}}
+									</span>
+								{% else %}
+									<span class="oh-profile__info-value"
+									>{% trans "None" %}</span>
+								{% endif %}
 							</li>
 							<li class="oh-profile__card-info-item">
 								<span class="oh-profile__info-label mb-1">
 									<ion-icon name="information-outline"></ion-icon>
 									<span>{% trans "Bank Code" %} #2</span>
 								</span>
-								<span class="oh-profile__info-value">
-									{{employee.employee_bank_details.any_other_code2}}
-								</span>
+								{% if employee.employee_bank_details.any_other_code2 %}
+									<span class="oh-profile__info-value">
+										{{employee.employee_bank_details.any_other_code2}}
+									</span>
+								{% else %}
+									<span class="oh-profile__info-value"
+									>{% trans "None" %}</span>
+								{% endif %}
 							</li>
 							<li class="oh-profile__card-info-item">
 								<span class="oh-profile__info-label mb-1">
 									<ion-icon name="flag-outline"></ion-icon>
 									<span>{% trans "Country" %}</span>
 								</span>
-								<span class="oh-profile__info-value">
-									{{employee.employee_bank_details.country}}
-								</span>
+								{% if employee.employee_bank_details.country %}
+									<span class="oh-profile__info-value">
+										{{employee.employee_bank_details.country}}
+									</span>
+								{% else %}
+									<span class="oh-profile__info-value"
+									>{% trans "None" %}</span>
+								{% endif %}
 							</li>
 						</ul>
 					</div>

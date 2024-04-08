@@ -671,9 +671,10 @@
     		    	        	</button>
     		    	        {% endif %} {% comment %} end of edit button {% endcomment %}
     		    	        {% if shift_request.approved == False %} 
-								<form action="{% url 'shift-request-delete' shift_request.id %}" 
-									onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');" 
-									method='post'
+								<form 
+									hx-confirm="{% trans "Are you sure you want to delete this shift request?" %}" 
+									hx-post="{% url 'shift-request-delete' shift_request.id %}"
+									hx-target="#shift_target" 
 									class="w-50"
 									> 
 									{% csrf_token %}
@@ -831,13 +832,21 @@
 
 <script>
   $(document).ready(function () {
-    $(".oh-tabs__tab[data-target]").click(function (e) {
-      e.preventDefault();
-      var newActiveTab = $(this).attr("data-target");
-      $(".oh-tabs__content--active").toggleClass("oh-tabs__content--active");
-      $(".oh-tabs__tab--active").toggleClass("oh-tabs__tab--active");
-      $(`[data-target="${newActiveTab}"]`).toggleClass("oh-tabs__tab--active");
-      $(newActiveTab).toggleClass("oh-tabs__content--active");
-    });
-  });
+	const activeTab = localStorage.getItem('EmployeeShiftActiveTab')
+	if (activeTab!=null) {
+		$(".oh-tabs__content--active").toggleClass('oh-tabs__content--active');
+		$(".oh-tabs__tab--active").toggleClass('oh-tabs__tab--active');
+		$(`[data-target="${activeTab}"]`).toggleClass("oh-tabs__tab--active");
+		$(activeTab).toggleClass("oh-tabs__content--active");
+	}
+	$(".oh-tabs__tab[data-target]").click(function (e) { 
+		e.preventDefault();
+		localStorage.setItem("EmployeeShiftActiveTab",$(this).attr('data-target'))
+		var newActiveTab = $(this).attr('data-target')
+		$(".oh-tabs__content--active").toggleClass('oh-tabs__content--active');
+		$(".oh-tabs__tab--active").toggleClass('oh-tabs__tab--active');
+		$(`[data-target="${newActiveTab}"]`).toggleClass("oh-tabs__tab--active");
+		$(newActiveTab).toggleClass("oh-tabs__content--active");
+	});
+});
 </script>

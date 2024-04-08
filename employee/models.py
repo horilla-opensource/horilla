@@ -209,7 +209,7 @@ class Employee(models.Model):
         elif self.employee_attendances.filter(
             attendance_date=today,
         ).exists():
-            status = "Working"
+            status = "On a break"
         return status
 
     def get_forecasted_at_work(self):
@@ -629,7 +629,7 @@ class EmployeeBankDetails(models.Model):
 
     def clean(self):
         if self.account_number is not None:
-            bank_details = EmployeeBankDetails.objects.filter(
+            bank_details = EmployeeBankDetails.objects.exclude(employee_id=self.employee_id).filter(
                 account_number=self.account_number
             )
             if bank_details:

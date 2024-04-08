@@ -247,7 +247,7 @@
             {% if perms.employee.delete_employee %} 
               {% if emp.is_active %}
                 <button hx-confirm="{% trans 'Do you want to archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}?{{pd}}" 
-                        hx-target="#relatedModel" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100">
+                        hx-target="#relatedModel" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
                   <ion-icon name="archive"></ion-icon>
                 </button>
               {% else %}

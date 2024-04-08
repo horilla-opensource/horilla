@@ -6,7 +6,9 @@
   <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
   {% endfor %}
 </div>
-{% endif %} 
+{% endif %}
+
+{% if perms.employee.view_employee or request.user|is_reportingmanager %}
 <div
   class="oh-checkpoint-badge text-success mb-2"
   id="selectAllEmployees"
@@ -28,6 +30,8 @@
 >
   {% trans "Export Employees" %}
 </div>
+{% endif %}
+
 <span name="" id="filterEmployee" style="display: none" hx-get="{% url 'employee-filter-view' %}?{{pd}}" hx-target="#view-container"></span>
 <div id="relatedModel"></div>
 <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow"></div>

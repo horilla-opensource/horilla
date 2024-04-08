@@ -81,6 +81,21 @@
           </div>
         </div>
         <div class="row">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label d-block" for="{{form.qualification.id_for_label}}"
+              >{% trans "Qualification" %}</label
+            >
+            {{form.qualification}}
+            {{form.qualification.errors}}
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label d-block" for="{{form.experience.id_for_label}}"
+              >{% trans "Experience" %}</label
+            >
+            {{form.experience}} {{form.experience.errors}}
+          </div>
+        </div>
+        <div class="row">
           <div class="col-12 col-sm-12 col-md-12 col-lg-12">
             <label class="oh-label" for="{{form.address.id_for_label}}">{% trans "Address" %}</label>
             {{form.address}} {{form.address.errors}}
@@ -157,28 +172,21 @@
             {{form.emergency_contact_relation.errors}}
           </div>
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-            <label class="oh-label d-block" for="{{form.experience.id_for_label}}"
-              >{% trans "Experience" %}</label
-            >
-            {{form.experience}} {{form.experience.errors}}
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <label class="oh-label d-block" for="{{form.marital_status.id_for_label}}"
               >{% trans "Maritial Status" %}</label
             >
             {{form.marital_status}} {{form.marital_status.errors}}
           </div>
+        </div>
+        <div class="row">
+          
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <label class="oh-label d-block" for="{{form.children.id_for_label}}"
               >{% trans "Children" %}</label
             >
             {{form.children}} {{form.children.errors}}
           </div>
-        </div>
-        <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-2">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <label class="oh-label me-2" for="{{form.is_active.id_for_label}}"
               >{% trans "Is Active" %}?</label
             >

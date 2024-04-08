@@ -116,9 +116,17 @@ class EmployeeFilter(FilterSet):
 
         # Getting the queryset for those employees dont have any attendance for the date
         # in value.
-        queryset = queryset.exclude(
+
+        queryset1 = queryset.exclude(
             employee_attendances__attendance_date=value,
         )
+        queryset2 = queryset.filter(
+            employee_attendances__attendance_date=value,
+            employee_attendances__attendance_clock_out__isnull=False,
+        )
+
+        queryset = (queryset1 | queryset2).distinct()
+
         return queryset
 
     def not_out_yet_func(self, queryset, _, value):
