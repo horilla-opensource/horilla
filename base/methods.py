@@ -2,6 +2,8 @@ from datetime import date, datetime, time
 import io
 import json
 import random
+import pandas as pd
+
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ForeignKey, ManyToManyField, OneToOneField
@@ -9,7 +11,10 @@ from django.forms.models import ModelChoiceField
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
-import pandas as pd
+from django.db import models
+from django.db.models import F
+from django.db.models.functions import Lower
+
 from xhtml2pdf import pisa
 from base.models import Company, DynamicPagination
 from employee.models import Employee, EmployeeWorkInformation
@@ -137,19 +142,39 @@ def sortby(request, queryset, key):
         }
         orderingList.append(ordering)
     sortby = request.GET.get(key)
+    sort_count = request.GET.getlist(key).count(sortby)
+    order = None
     if sortby is not None and sortby != "":
+
+        field_parts = sortby.split("__")
+
+        model_meta = queryset.model._meta
+
         # here will update the orderingList
         ordering["field"] = sortby
-        queryset = queryset.order_by(f'{ordering["ordering"]}{sortby}')
-        if ordering["ordering"] == "-":
-            ordering["ordering"] = ""
-        else:
+        if sort_count % 2 == 0:
             ordering["ordering"] = "-"
+            order = sortby
+        else:
+            ordering["ordering"] = ""
+            order = f"-{sortby}"
+
+        for part in field_parts:
+            field = model_meta.get_field(part)
+            if isinstance(field, models.ForeignKey):
+                model_meta = field.related_model._meta
+            else:
+                if isinstance(field, models.CharField):
+                    queryset = queryset.annotate(lower_title=Lower(sortby))
+                    queryset = queryset.order_by(f"{ordering['ordering']}lower_title")
+                else:
+                    queryset = queryset.order_by(f'{ordering["ordering"]}{sortby}')
+
         orderingList = [item for item in orderingList if item["id"] != id]
         orderingList.append(ordering)
-    order = f'{ordering["ordering"]}{sortby}'
     setattr(request, "sort_option", {})
     request.sort_option["order"] = order
+
     return queryset
 
 
@@ -307,7 +332,6 @@ def get_key_instances(model, data_dict):
         object = str(object)
         del data_dict["id"]
         data_dict["Object"] = [object]
-
     keys_to_remove = [
         key
         for key, value in data_dict.items()
@@ -327,6 +351,8 @@ def get_key_instances(model, data_dict):
             "opage",
             "click_id",
             "csrfmiddlewaretoken",
+            "assign_sortby",
+            "request_sortby",
         ]
         or "dynamic_page" in key
     ]
@@ -481,7 +507,9 @@ def export_data(request, model, form_class, filter_class, file_name):
                     }
 
                     # Convert the string to a datetime.time object
-                    check_in_time = datetime.strptime(str(value).split('.')[0], "%H:%M:%S").time()
+                    check_in_time = datetime.strptime(
+                        str(value).split(".")[0], "%H:%M:%S"
+                    ).time()
 
                     # Print the formatted time for each format
                     for format_name, format_string in time_formats.items():
