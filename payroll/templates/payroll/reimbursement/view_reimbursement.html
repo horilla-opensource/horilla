@@ -124,6 +124,10 @@
     function submitForm(elem) {
         $(elem).siblings(".add_more_submit").click();
     }
+    function inputAmount(elem) {
+      let amount=elem.val()
+      $(elem).parents().closest(".oh-sticky-table__tr").find('[name=amount]').val(amount);
+    }
 
   </script>
 {% endblock %}
