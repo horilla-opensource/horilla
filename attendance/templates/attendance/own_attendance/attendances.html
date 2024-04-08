@@ -106,16 +106,12 @@
           <div
             data-cell-index="2" data-cell-title='{% trans "Day" %}'
             class="oh-sticky-table__th"
-            hx-target="#attendance-container"
-            hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby="
           >
             {% trans "Day" %}
           </div>
           <div
             data-cell-index="3" data-cell-title='{% trans "Check-In" %}' 
             class="oh-sticky-table__th"
-            hx-target="#attendance-container"
-            hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby="
           >
             {% trans "Check-In" %}
           </div>
@@ -129,9 +125,9 @@
           </div>
           <div
             data-cell-index="5" data-cell-title='{% trans "Check-Out" %}' 
-            class="oh-sticky-table__th {% if request.sort_option.order == 'employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == '=' %}arrow-down {% else %} arrow-up-down {% endif %}"
+            class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out' %}arrow-down {% else %} arrow-up-down {% endif %}"
             hx-target="#attendance-container"
-            hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby="
+            hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_clock_out"
           >
             {% trans "Check-Out" %}
           </div>
@@ -146,24 +142,18 @@
           <div
             data-cell-index="7" data-cell-title='{% trans "Shift" %}' 
             class="oh-sticky-table__th"
-            hx-target="#attendance-container"
-            hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby="
           >
             {% trans "Shift" %}
           </div>
           <div
             data-cell-index="8" data-cell-title='{% trans "Work Type" %}' 
             class="oh-sticky-table__th"
-            hx-target="#attendance-container"
-            hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby="
           >
             {% trans "Work Type" %}
           </div>
           <div
             data-cell-index="9" data-cell-title='{% trans "Min Hour" %}' 
             class="oh-sticky-table__th"
-            hx-target="#attendance-container"
-            hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby="
           >
             {% trans "Min Hour" %}
           </div>
