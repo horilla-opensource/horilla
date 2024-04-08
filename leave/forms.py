@@ -269,7 +269,11 @@ class LeaveRequestCreationForm(ModelForm):
         if leave_type_id.require_attachment == "yes":
             if attachment is None:
                 raise forms.ValidationError(
-                    _("An attachment is required for this leave request")
+                    {
+                        "attachment": _(
+                            "An attachment is required for this leave request"
+                        )
+                    }
                 )
         if not start_date <= end_date:
             raise forms.ValidationError(
@@ -333,7 +337,9 @@ class LeaveRequestCreationForm(ModelForm):
         )
         self.fields["employee_id"].widget.attrs.update(
             {
-                "onchange": "employeeChange($(this))",
+                "hx-target": "#id_leave_type_id",
+                "hx-trigger": "change",
+                "hx-get": "/leave/get-employee-leave-types",
             }
         )
         self.fields["start_date"].widget.attrs.update(
@@ -359,8 +365,8 @@ class LeaveRequestCreationForm(ModelForm):
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
-            "description",
             "attachment",
+            "description",
         ]
 
 
@@ -439,7 +445,9 @@ class LeaveRequestUpdationForm(ModelForm):
         )
         self.fields["employee_id"].widget.attrs.update(
             {
-                "onchange": "employeeChange($(this))",
+                "hx-target": "#id_leave_type_id",
+                "hx-trigger": "change",
+                "hx-get": "/leave/get-employee-leave-types",
             }
         )
         self.fields["start_date"].widget.attrs.update(
@@ -465,8 +473,8 @@ class LeaveRequestUpdationForm(ModelForm):
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
-            "description",
             "attachment",
+            "description",
         ]
 
 
@@ -643,6 +651,21 @@ class UserLeaveRequestForm(ModelForm):
         overlapping_requests = LeaveRequest.objects.filter(
             employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
         ).exclude(id=self.instance.id)
+        assigned_leave_types = AvailableLeave.objects.filter(employee_id=employee_id)
+        if not assigned_leave_types:
+            raise forms.ValidationError(
+                _("You dont have enough leave days to update the request.")
+            )
+        if leave_type_id.require_attachment == "yes":
+            attachment = cleaned_data.get("attachment")
+            if attachment is None:
+                raise forms.ValidationError(
+                    {
+                        "attachment": _(
+                            "An attachment is required for this leave request"
+                        )
+                    }
+                )
         if start_date == end_date:
             if start_date_breakdown != end_date_breakdown:
                 raise forms.ValidationError(
@@ -677,9 +700,17 @@ class UserLeaveRequestForm(ModelForm):
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
         return cleaned_data
 
-    def __init__(self, *args, employee=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         leave_type = kwargs.pop("initial", None)
+        employee = kwargs.pop("employee", None)
         super(UserLeaveRequestForm, self).__init__(*args, **kwargs)
+
+        if employee:
+            available_leaves = employee.available_leave.all()
+            assigned_leave_types = LeaveType.objects.filter(
+                id__in=available_leaves.values_list("leave_type_id", flat=True)
+            )
+            self.fields["leave_type_id"].queryset = assigned_leave_types
         if leave_type:
             self.fields["leave_type_id"].queryset = LeaveType.objects.filter(
                 id=leave_type["leave_type_id"].id
@@ -708,8 +739,8 @@ class UserLeaveRequestForm(ModelForm):
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
-            "description",
             "attachment",
+            "description",
         ]
         widgets = {
             "employee_id": forms.HiddenInput(),
@@ -832,13 +863,20 @@ class UserLeaveRequestCreationForm(ModelForm):
         return table_html
 
     def __init__(self, *args, **kwargs):
-
+        employee = kwargs.pop("employee", None)
         super().__init__(*args, **kwargs)
+        if employee:
+            available_leaves = employee.available_leave.all()
+            assigned_leave_types = LeaveType.objects.filter(
+                id__in=available_leaves.values_list("leave_type_id", flat=True)
+            )
+            self.fields["leave_type_id"].queryset = assigned_leave_types
         self.fields["leave_type_id"].widget.attrs.update(
             {
                 "onchange": "typeChange($(this))",
             }
         )
+        self.fields["employee_id"].initial = employee
 
     def clean(self):
         cleaned_data = super().clean()
@@ -855,6 +893,16 @@ class UserLeaveRequestCreationForm(ModelForm):
             raise forms.ValidationError(
                 _("End date should not be less than start date.")
             )
+        if leave_type_id.require_attachment == "yes":
+            attachment = cleaned_data.get("attachment")
+            if attachment is None:
+                raise forms.ValidationError(
+                    {
+                        "attachment": _(
+                            "An attachment is required for this leave request"
+                        )
+                    }
+                )
         if start_date == end_date:
             if start_date_breakdown != end_date_breakdown:
                 raise forms.ValidationError(
@@ -899,8 +947,8 @@ class UserLeaveRequestCreationForm(ModelForm):
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
-            "description",
             "attachment",
+            "description",
             "requested_days",
         ]
         widgets = {
@@ -1200,4 +1248,3 @@ class RestrictLeaveForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(RestrictLeaveForm, self).__init__(*args, **kwargs)
         self.fields["title"].widget.attrs["autocomplete"] = "title"
-

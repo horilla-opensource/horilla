@@ -131,12 +131,12 @@ class LeaveRequestFilter(FilterSet):
 
     search = django_filters.CharFilter(method="filter_by_name")
     from_date = DateFilter(
-        field_name="start_date",
+        field_name="end_date",
         lookup_expr="gte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     to_date = DateFilter(
-        field_name="end_date",
+        field_name="start_date",
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
@@ -376,12 +376,12 @@ class UserLeaveRequestFilter(FilterSet):
         field_name="leave_type_id__name", lookup_expr="icontains"
     )
     from_date = DateFilter(
-        field_name="start_date",
+        field_name="end_date",
         lookup_expr="gte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     to_date = DateFilter(
-        field_name="end_date",
+        field_name="start_date",
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )

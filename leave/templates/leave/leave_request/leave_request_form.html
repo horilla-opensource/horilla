@@ -15,8 +15,7 @@
 </div>
 {% endif %}
 <div class="oh-modal__dialog-header">
-  <span class="oh-modal__dialog-title" id="editModal1ModalLabel"
-    >{% trans "Leave Request Create" %}</span
+  <span class="oh-modal__dialog-title" id="objectCreateModalLabel">{% trans "Leave Request" %}</span
   >
   <button
     class="oh-modal__close"
@@ -25,7 +24,7 @@
       hx-get="{% url 'request-filter' %}?{{pd}}"
       hx-target="#leaveRequest"
     {% endif %}
-  >
+    >
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
@@ -34,7 +33,15 @@
     hx-post="{% url 'request-creation' %}?{{pd}}"
     hx-encoding="multipart/form-data"
     hx-target="#objectCreateModalTarget"
-  >
+    >
     {{form.as_p}}
   </form>
 </div>
+<script>
+  $(document).ready(function () {
+    $("select").on("select2:select", function (e) {
+      $(".leave-message").hide()
+      $(this).closest("select")[0].dispatchEvent(new Event("change"));
+    });
+  });
+</script>

@@ -269,6 +269,29 @@ def leave_type_delete(request, id):
 @login_required
 @hx_request_required
 @manager_can_enter("leave.add_leaverequest")
+def get_employee_leave_types(request):
+    if request.GET.get("employee_id"):
+        employee = Employee.objects.get(id=request.GET.get("employee_id"))
+        available_leaves = employee.available_leave.all()
+        assigned_leave_types = LeaveType.objects.filter(
+            id__in=available_leaves.values_list("leave_type_id", flat=True)
+        )
+        form = LeaveRequestCreationForm()
+        form.fields["leave_type_id"].queryset = assigned_leave_types
+        leave_type_field_html = render_to_string(
+            "leave/leave_request/leave_type_field.html",
+            {
+                "form": form,
+                "field_name": "leave_type_id",
+                "field": form.fields["leave_type_id"],
+            },
+        )
+        return HttpResponse(f"{leave_type_field_html}")
+
+
+@login_required
+@hx_request_required
+@manager_can_enter("leave.add_leaverequest")
 def leave_request_creation(request, type_id=None, emp_id=None):
     """
     function used to create leave request.
@@ -285,6 +308,14 @@ def leave_request_creation(request, type_id=None, emp_id=None):
     ]
     previous_data = unquote(request.GET.urlencode())[len("pd=") :]
     form = LeaveRequestCreationForm()
+    if request:
+        employee = request.user.employee_get
+        if employee:
+            available_leaves = employee.available_leave.all()
+            assigned_leave_types = LeaveType.objects.filter(
+                id__in=available_leaves.values_list("leave_type_id", flat=True)
+            )
+            form.fields["leave_type_id"].queryset = assigned_leave_types
     if type_id and emp_id:
         initial_data = {
             "leave_type_id": type_id,
@@ -496,7 +527,19 @@ def leave_request_update(request, id):
     POST : return leave request view
     """
     leave_request = LeaveRequest.objects.get(id=id)
+    leave_type_id = leave_request.leave_type_id
+    employee = leave_request.employee_id
     form = LeaveRequestUpdationForm(instance=leave_request)
+    if employee:
+        available_leaves = employee.available_leave.all()
+        assigned_leave_types = LeaveType.objects.filter(
+            id__in=available_leaves.values_list("leave_type_id", flat=True)
+        )
+        if leave_type_id not in assigned_leave_types.values_list("id", flat=True):
+            assigned_leave_types = assigned_leave_types | LeaveType.objects.filter(
+                id=leave_type_id.id
+            )
+        form.fields["leave_type_id"].queryset = assigned_leave_types
     form = choosesubordinates(request, form, "leave.add_leaverequest")
     if request.method == "POST":
         form = LeaveRequestUpdationForm(
@@ -1893,10 +1936,9 @@ def user_leave_request(request, id):
         initial={"employee_id": employee, "leave_type_id": leave_type}
     )
     if request.method == "POST":
-        form = UserLeaveRequestForm(request.POST, request.FILES)
+        form = UserLeaveRequestForm(request.POST, request.FILES, employee=employee)
         start_date = datetime.strptime(request.POST.get("start_date"), "%Y-%m-%d")
         end_date = datetime.strptime(request.POST.get("end_date"), "%Y-%m-%d")
-        attachment = request.FILES.get("attachment")
         start_date_breakdown = request.POST.get("start_date_breakdown")
         end_date_breakdown = request.POST.get("end_date_breakdown")
         available_leave = AvailableLeave.objects.get(
@@ -1914,11 +1956,6 @@ def user_leave_request(request, id):
         holiday_dates = holiday_dates_list(holidays)
         company_leaves = CompanyLeave.objects.all()
         company_leave_dates = company_leave_dates_list(company_leaves, start_date)
-        if leave_type.require_attachment == "yes":
-            if attachment is None:
-                form.add_error(
-                    None, _("An attachment is required for this leave request")
-                )
         if (
             leave_type.exclude_company_leave == "yes"
             and leave_type.exclude_holiday == "yes"
@@ -2009,6 +2046,7 @@ def user_leave_request(request, id):
             form.add_error(
                 None, _("You dont have enough leave days to make the request..")
             )
+    form.fields["leave_type_id"].queryset = LeaveType.objects.filter(id=id)
     return render(
         request,
         "leave/user_leave/user_request_form.html",
@@ -2037,10 +2075,15 @@ def user_request_update(request, id):
             request.user.employee_get == leave_request.employee_id
             and leave_request.status != "approved"
         ):
-            form = UserLeaveRequestForm(instance=leave_request)
+            form = UserLeaveRequestForm(
+                employee=leave_request.employee_id, instance=leave_request
+            )
             if request.method == "POST":
                 form = UserLeaveRequestForm(
-                    request.POST, request.FILES, instance=leave_request
+                    request.POST,
+                    request.FILES,
+                    instance=leave_request,
+                    employee=leave_request.employee_id,
                 )
                 if form.is_valid():
                     leave_request = form.save(commit=False)
@@ -2110,6 +2153,11 @@ def user_request_update(request, id):
             return HttpResponse("<script>window.location.reload();</script>")
     except Exception as e:
         messages.error(request, _("User has no leave request.."))
+    return render(
+        request,
+        "leave/user_leave/user_request_update.html",
+        {"form": form, "id": id, "pd": previous_data},
+    )
 
 
 @login_required
@@ -2806,35 +2854,15 @@ def leave_request_create(request):
     POST : return leave request view
     """
     previous_data = unquote(request.GET.urlencode())[len("pd=") :]
-    employee = request.user.employee_get
-    emp_id = employee.id
-    emp = Employee.objects.get(id=emp_id)
-    leave = emp.available_leave.all()
-
-    leave_type = []
-    for i in leave:
-        a = i.leave_type_id
-        leave_type.append(a)
-
-    leave_ids = [leave.id for leave in leave_type]
-    q_object = Q(id__in=leave_ids)
-    queryset = LeaveType.objects.filter(q_object)
-
-    form = UserLeaveRequestCreationForm(initial={"employee_id": emp})
-    form.fields["leave_type_id"].queryset = queryset
+    emp = request.user.employee_get
+    emp_id = emp.id
+    form = UserLeaveRequestCreationForm(employee=emp)
     if request.method == "POST":
-        form = UserLeaveRequestCreationForm(request.POST, request.FILES)
+        form = UserLeaveRequestCreationForm(request.POST, request.FILES, employee=emp)
         if int(form.data["employee_id"]) == int(emp_id):
             if form.is_valid():
                 leave_request = form.save(commit=False)
-                attachment = leave_request.attachment
                 save = True
-                if leave_request.leave_type_id.require_attachment == "yes":
-                    if not attachment:
-                        save = False
-                        form.add_error(
-                            None, _("An attachment is required for this leave request")
-                        )
                 if leave_request.leave_type_id.require_approval == "no":
                     employee_id = leave_request.employee_id
                     leave_type_id = leave_request.leave_type_id
@@ -2885,7 +2913,7 @@ def leave_request_create(request):
                         request, leave_request, type="request"
                     )
                     mail_thread.start()
-                    form = UserLeaveRequestCreationForm(initial={"employee_id": emp})
+                    form = UserLeaveRequestCreationForm(employee=emp)
                     if len(LeaveRequest.objects.filter(employee_id=emp_id)) == 1:
                         return HttpResponse(
                             "<script>window.location.reload();</script>"

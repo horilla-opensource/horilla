@@ -140,8 +140,8 @@
                                                 </button>
                                               {% endif %}
                                               <button  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
-                                                  data-target="#editModal2" hx-get="{% url 'request-update' leave_request.id %}"
-                                                  hx-target="#updateForm"><ion-icon name="create-outline"></ion-icon></button>
+                                                  data-target="#objectUpdateModal" hx-get="{% url 'request-update' leave_request.id %}"
+                                                  hx-target="#objectUpdateModalTarget"><ion-icon name="create-outline"></ion-icon></button>
                                               {% endif %}
                                               {% if request.user|is_reportingmanager or perms.attendance.delete_leaverequest %}
                                               <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"

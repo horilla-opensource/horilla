@@ -239,28 +239,6 @@
   <!-- Sticky Table -->
 </div>
 
-
-
-<div
-  class="oh-modal"
-  id="editModal2"
-  role="dialog"
-  aria-labelledby="editModal2"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="editModal2ModalLabel">
-        {% trans "Leave Request Update" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div class="oh-modal__dialog-body" id="updateForm"></div>
-  </div>
-</div>
-
 <div
   class="oh-modal"
   id="tableTimeOff"
@@ -354,33 +332,6 @@
       scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
       // Append the script element to the head of the HTML document
       document.head.appendChild(scriptElement);
-  });
-
-  $(document).on('htmx:load', '#requestForm', function () {
-      {% include 'select2.js' %}
-      $('#leaveType #id_leave_type_id').select2();
-      $('#employee #id_employee_id').select2();
-      $('#startDate #id_start_date_breakdown').select2();
-      $('#endDate #id_end_date_breakdown').select2();
-  });
-  $(document).on('htmx:load', '#updateForm', function () {
-      {% include 'select2.js' %}
-      $('#updateLeaveType #id_leave_type_id').select2();
-      $('#updateEmployee #id_employee_id').select2();
-      $('#updateStartDate #id_start_date_breakdown').select2();
-      $('#updateEndDate #id_end_date_breakdown').select2();
-      $('#updateStatus #id_status').select2();
-  });
-
-  $('#delete-link').on('click', function (event) {
-      event.preventDefault(); // prevent the default behavior of the link
-
-      const link = $(this);
-      const confirmation = confirm('{% trans "Are you sure you want to delete?" %}');
-
-      if (confirmation) {
-          window.location.href = link.attr('href'); // execute the href if confirmed
-      }
   });
 
   $("#filterForm").submit(function (e) {

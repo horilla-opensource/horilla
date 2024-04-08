@@ -1,0 +1,8 @@
+{% load i18n %}
+<label
+  class="oh-label"
+  for="id_{{ form.leave_type_id.name }}"
+  title="{{ form.leave_type_id.help_text|safe }}"
+  >{% trans form.leave_type_id.label %}</label
+>
+{{form.leave_type_id}}

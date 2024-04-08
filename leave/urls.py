@@ -21,6 +21,7 @@ urlpatterns = [
     path("type-delete/<int:id>", views.leave_type_delete, name="type-delete"),
     path("type-filter", views.leave_type_filter, name="type-filter"),
     path("request-creation", views.leave_request_creation, name="request-creation"),
+    path("get-employee-leave-types", views.get_employee_leave_types, name="get-employee-leave-types"),
     path(
         "leave-request-creation/<int:type_id>/<int:emp_id>",
         views.leave_request_creation,

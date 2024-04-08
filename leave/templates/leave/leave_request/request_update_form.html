@@ -1,20 +1,26 @@
 {% load i18n %}
-{% if form.errors %}
-<!-- form errors  -->
-<div class="oh-wrapper">
-    <div class="oh-alert-container">
-
-        {% for error in form.non_field_errors %}
-        <div class="oh-alert oh-alert--animated oh-alert--danger">
-            {{ error }}
-        </div>
-        {% endfor %}
-    </div>
+<div class="oh-modal__dialog-header">
+  <h2 class="oh-modal__dialog-title" id="objectUpdateModalLabel">
+    {% trans "Leave Request" %}
+  </h2>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
 </div>
-{% endif %}
-
-
-<form  hx-post="{% url 'request-update' id %}"  hx-encoding="multipart/form-data">
-    {% csrf_token %}
-    {{form.as_p}}
- </form>
+<div class="oh-modal__dialog-body">
+  <form
+    hx-post="{% url 'request-update' id %}"
+    hx-encoding="multipart/form-data"
+    hx-target="#objectUpdateModalTarget"
+  >
+    {% csrf_token %} {{form.as_p}}
+  </form>
+</div>
+<script>
+  $(document).ready(function () {
+    $("select").on("select2:select", function (e) {
+      $(".leave-message").hide();
+      $(this).closest("select")[0].dispatchEvent(new Event("change"));
+    });
+  });
+</script>
