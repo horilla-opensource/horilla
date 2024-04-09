@@ -1364,7 +1364,7 @@ class DashboardEmployeeCharts(HorillaModel):
     from employee.models import Employee
     
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    charts = models.JSONField(blank=True, null=True)
+    charts = models.JSONField(default=list, blank=True, null=True)
 
     def __str__(self):
         return f"{self.employee} - charts"

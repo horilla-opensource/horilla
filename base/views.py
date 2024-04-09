@@ -5416,9 +5416,9 @@ def check_permission(request, charts):
 
 @login_required
 def employee_chart_show(request):
-    employee_charts = DashboardEmployeeCharts.objects.filter(
+    employee_charts = DashboardEmployeeCharts.objects.get_or_create(
         employee=request.user.employee_get
-    ).first()
+    )[0]
     charts = [
         ("offline_employees", _("Offline Employees")),
         ("online_employees", _("Online Employees")),
