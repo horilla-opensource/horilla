@@ -329,12 +329,12 @@ def contract_filter(request):
         template = "payroll/contract/group_by.html"
 
     else:
+        contracts = sortby(request, contracts, "orderby")
         contracts = paginator_qry(contracts, request.GET.get("page"))
         contract_ids_json = json.dumps(
             [instance.id for instance in contracts.object_list]
         )
 
-        contracts = sortby(request, contracts, "orderby")
     data_dict = parse_qs(query_string)
     get_key_instances(Contract, data_dict)
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]

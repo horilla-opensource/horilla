@@ -43,8 +43,8 @@
             </div>
             <div class="oh-sticky-table__th">{% trans "Contract" %}</div>
             <div data-cell-index="1" data-cell-title='{% trans "Employee" %}' 
-              class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id' %}arrow-up {% elif request.sort_option.order == 'employee_id' %}arrow-down {% else %} arrow-up-down {% endif %}"
-              hx-target="#payroll-contract-container" hx-get="{% url 'contract-filter' %}?{{pd}}&orderby=employee_id"
+              class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %} arrow-up-down {% endif %}"
+              hx-target="#payroll-contract-container" hx-get="{% url 'contract-filter' %}?{{pd}}&orderby=employee_id__employee_first_name"
             >{% trans "Employee" %}</div>
             <div data-cell-index="2" data-cell-title='{% trans "Start Date" %}' 
               class="oh-sticky-table__th {% if request.sort_option.order == '-contract_start_date' %}arrow-up {% elif request.sort_option.order == 'contract_start_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
