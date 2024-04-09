@@ -400,7 +400,7 @@
 								>
 							</li>
 							{% endif %}					
-							{% if perms.horilla_documents.view_document %}
+							{% if perms.horilla_documents.view_document or request.user == employee.employee_user_id %} 
 							<li data-cell-index="20" data-cell-title="{% trans 'Documents' %}" class="oh-general__tab">
 								<a
 								hx-get="{% url 'document-tab' employee.id %}?employee_view=true"
@@ -426,7 +426,7 @@
 							  >
 							</li>
 							{% endif %}
-							{% if perms.employee.view_employeenote or request.user|check_manager:employee %}
+							{% if perms.employee.view_employeenote or request.user|check_manager:employee or request.user == employee.employee_user_id %}
 							<li data-cell-index="21" data-cell-title="{% trans 'Bonus' %}" class="oh-general__tab">
 								<a
 								hx-get={% url 'bonus-points-tab' employee.id %}
@@ -541,7 +541,7 @@
 							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 							id="payroll"
 						>
-							{% if perms.view_payslip %}
+							{% if perms.view_payslip or request.user == employee.employee_user_id %}
 								{% include "tabs/payroll-tab.html" %}
 							{% endif %}
 						</div>

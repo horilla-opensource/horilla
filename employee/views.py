@@ -237,7 +237,7 @@ def employee_view_individual(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
     """
-    employee = Employee.objects.get(id=obj_id)
+    employee = Employee.objects.get(id=obj_id)        
     instances = LeaveRequest.objects.filter(employee_id=employee)
     leave_request_ids = json.dumps([instance.id for instance in instances])
     employee_leaves = employee.available_leave.all()
@@ -245,16 +245,22 @@ def employee_view_individual(request, obj_id, **kwargs):
         AccountBlockUnblock.objects.exists()
         and AccountBlockUnblock.objects.first().is_enabled
     )
-    return render(
-        request,
-        "employee/view/individual.html",
-        {
+    context={
             "employee": employee,
-            "employee_leaves": employee_leaves,
             "current_date": date.today(),
             "leave_request_ids": leave_request_ids,
             "enabled_block_unblock": enabled_block_unblock,
-        },
+        }
+    # if the requesting user opens own data
+    if request.user.employee_get == employee:
+        context['user_leaves']=employee_leaves
+    else:
+        context['employee_leaves']=employee_leaves
+
+    return render(
+        request,
+        "employee/view/individual.html",
+        context,
     )
 
 

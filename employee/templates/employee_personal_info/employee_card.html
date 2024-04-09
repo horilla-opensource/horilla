@@ -44,76 +44,73 @@
 <div class="oh-layout--grid-3">
   {% if data %}
     {% for emp in data %}
-    <div  class="oh-kanban-card" style="color: inherit;text-decoration: none;{% if emp.employee_work_info.reporting_manager_id == request.user.employee_get %} background-color: hsl(38.08deg 100% 50% / 8%);{% endif %}">
-      <a href="{% url 'employee-view-individual' emp.id %}" style="color: inherit;text-decoration: none; display: flex;">
-      <div class="oh-kanban-card__avatar">
-          <div class="oh-kanban-card__profile-container {% if emp.employee_profile %} profile-picture {% endif %}">
-            <img
-            src="{{emp.get_avatar}}"
-            class="oh-kanban-card__profile-image"
-            alt=""
-            />
+        <div  class="oh-kanban-card" style="color: inherit;text-decoration: none;{% if emp.employee_work_info.reporting_manager_id == request.user.employee_get %} background-color: hsl(38.08deg 100% 50% / 8%);{% endif %}"
+          onclick="window.location.href = `{% url 'employee-view-individual' emp.id %}`"
+        >
+          <div class="oh-kanban-card__avatar">
+            <div class="oh-kanban-card__profile-container {% if emp.employee_profile %} profile-picture {% endif %}">
+              <img
+              src="{{emp.get_avatar}}"
+              class="oh-kanban-card__profile-image"
+              alt=""
+              />
+            </div>
           </div>
-      </div>
-      
-      <div class="oh-kanban-card__details">
-        <span class="oh-kanban-card__title">{{emp}}</span>
-        <span class="oh-kanban-card__subtitle">{{emp.email}}</span><br>
-        <span class="oh-kanban-card__subtitle">{{emp.employee_work_info.job_position_id}}</span>
-        <div class="oh-kanban-card__subtitle">
-          {% if emp.check_online %}
-          <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span> {% trans "Online" %}
-          {% else %}
-          <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span> {% trans "Offline" %}
+          
+          <div class="oh-kanban-card__details">
+            <span class="oh-kanban-card__title">{{emp}}</span>
+            <span class="oh-kanban-card__subtitle">{{emp.email}}</span><br>
+            <span class="oh-kanban-card__subtitle">{{emp.employee_work_info.job_position_id}}</span>
+            <div class="oh-kanban-card__subtitle">
+              {% if emp.check_online %}
+              <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span> {% trans "Online" %}
+              {% else %}
+              <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span> {% trans "Offline" %}
+              {% endif %}
+            </div>
+          </div>
+        
+          {% if perms.employee.change_employee or perms.employee.delete_employee or request.user|check_manager:emp %}
+            <div class="oh-kanban-card__dots" onclick="event.stopPropagation()">
+              <div class="oh-dropdown" x-data="{show: false}">
+                <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" title='{% trans "Actions" %}'>
+                  <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
+                </button>
+                <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" @click.outside="show = false" style="display: none;">
+                  <ul class="oh-dropdown__items">
+                    {% if perms.employee.change_employee or request.user|check_manager:emp %}
+                      <li class="oh-dropdown__item">
+                        <a href="{% url 'employee-view-update' emp.id %}" class="oh-dropdown__link">{% trans "Edit" %}</a>
+                      </li>
+                    {% endif %}
+                    {% if perms.employee.delete_employee %}
+                      <li class="oh-dropdown__item">
+                        {% if emp.is_active %}
+                          <a hx-confirm="{% trans 'Do you want to archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}?{{pd}}" hx-target="#relatedModel" class="oh-dropdown__link">
+                            {% trans "Archive" %}
+                          </a>
+                          {% else %}
+                          <a hx-confirm="{% trans 'Do you want to un archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}" hx-target="#relatedModel" class="oh-dropdown__link">
+                            {% trans "Un-Archive" %}
+                          </a>
+                        {% endif %}
+                      </li>
+                    {% endif %}
+                    {% if perms.employee.delete_employee %}
+                      <li class="oh-dropdown__item">
+                        <form action="{% url 'employee-delete' emp.id %}?view=card" method="post" onsubmit="return confirm('{% trans "Do you want to delete this employee?" %}')">
+                          {% csrf_token %}
+                          <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</button>
+                        </form>
+                      </li>
+                    {% endif %}
+                  </ul>
+                </div>
+              </div>
+            </div>
           {% endif %}
         </div>
-      </div>
-    </a>
-    {% if perms.employee.change_employee or perms.employee.delete_employee or request.user|check_manager:emp %}
-      <div class="oh-kanban-card__dots">
-        <div class="oh-dropdown" x-data="{show: false}">
-          <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" title='{% trans "Actions" %}'>
-            <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
-          </button>
-          <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" @click.outside="show = false" style="display: none;">
-            <ul class="oh-dropdown__items">
-              {% if perms.employee.change_employee or request.user|check_manager:emp %}
-              <li class="oh-dropdown__item">
-                <a href="{% url 'employee-view-update' emp.id %}" class="oh-dropdown__link">{% trans "Edit" %}</a>
-
-              </li>
-              {% endif %}
-              {% if perms.employee.delete_employee %}
-              <li class="oh-dropdown__item">
-                {% if emp.is_active %}
-                  <a hx-confirm="{% trans 'Do you want to archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}?{{pd}}" hx-target="#relatedModel" class="oh-dropdown__link">
-                    {% trans "Archive" %}
-                  </a>
-                  {% else %}
-                  <a hx-confirm="{% trans 'Do you want to un archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}" hx-target="#relatedModel" class="oh-dropdown__link">
-                    {% trans "Un-Archive" %}
-                  </a>
-                  {% endif %}
-
-              </li>
-              {% endif %}
-              {% if perms.employee.delete_employee %}
-              <li class="oh-dropdown__item">
-                <form action="{% url 'employee-delete' emp.id %}?view=card" method="post" onsubmit="return confirm('{% trans "Do you want to delete this employee?" %}')">
-                  {% csrf_token %}
-                  <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</button>
-                </form>
-                
-              </li>
-              {% endif %}
-            </ul>
-          </div>
-        </div>
-      </div>
-    {% endif %}
-    </div>
     {% endfor %}
-  </div>
 
 
   <div class="oh-pagination">
@@ -159,17 +156,17 @@
     </nav>
   </div>
 {% else %}
-<!-- start of empty page -->
-<div class="oh-404">
-  <img
-    style="width: 150px; height: 150px"
-    src="{% static 'images/ui/no-results.png' %}"
-    class="oh-404__image mb-4"
-  />
-  <h5 class="oh-404__subtitle">
-    {% trans "No search result found!" %}
-  </h5>
-</div>
-<!-- end of empty page -->
+  <!-- start of empty page -->
+  <div class="oh-404">
+    <img
+      style="width: 150px; height: 150px"
+      src="{% static 'images/ui/no-results.png' %}"
+      class="oh-404__image mb-4"
+    />
+    <h5 class="oh-404__subtitle">
+      {% trans "No search result found!" %}
+    </h5>
+  </div>
+  <!-- end of empty page -->
 {% endif %}
 

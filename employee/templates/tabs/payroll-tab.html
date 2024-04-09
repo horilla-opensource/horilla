@@ -1,5 +1,4 @@
 {% load i18n %}
-
 <style>
     a:hover {
         text-decoration: none;
@@ -41,48 +40,47 @@
         </div>
         <div class="oh-sticky-table__tbody">
             {% for payslip in employee.payslip_set.all %}
-            
-            <a href="{% url 'view-created-payslip' payslip.id %}" class="oh-sticky-table__tr" >
-                <div class="oh-sticky-table__sd {% if payslip.status == "review_ongoing" %}row-status--orange {% elif payslip.status == "confirmed" %} row-status--blue {% elif payslip.status == "paid" %} row-status--yellow {% elif payslip.status == "draft" %} row-status--gray{% endif %}">
-                  <div class="d-flex">
-                  <div class="oh-profile oh-profile--md">
-                    <div class="oh-profile__avatar mr-1">
-                      <img
-                        src="https://ui-avatars.com/api/?name={{payslip.employee_id.employee_first_name}}+{{payslip.employee_id.employee_last_name}}&background=random"
-                        class="oh-profile__image"
-                        alt=""
-                      />
+              <a href="{% url 'view-created-payslip' payslip.id %}" class="oh-sticky-table__tr" >
+                  <div class="oh-sticky-table__sd {% if payslip.status == "review_ongoing" %}row-status--orange {% elif payslip.status == "confirmed" %} row-status--blue {% elif payslip.status == "paid" %} row-status--yellow {% elif payslip.status == "draft" %} row-status--gray{% endif %}">
+                    <div class="d-flex">
+                    <div class="oh-profile oh-profile--md">
+                      <div class="oh-profile__avatar mr-1">
+                        <img
+                          src="https://ui-avatars.com/api/?name={{payslip.employee_id.employee_first_name}}+{{payslip.employee_id.employee_last_name}}&background=random"
+                          class="oh-profile__image"
+                          alt=""
+                        />
+                      </div>
+                      <span class="oh-profile__name oh-text--dark">{{payslip.employee_id}}</span>
                     </div>
-                    <span class="oh-profile__name oh-text--dark">{{payslip.employee_id}}</span>
-                  </div>
-                
-                </div>
                   
-                </div>
-                <div class="oh-sticky-table__td dateformat_changer">
-                  {{payslip.start_date}}
-                </div>
-                <div class="oh-sticky-table__td dateformat_changer">
-                  {{payslip.end_date}}
-                </div>
-                <div class="oh-sticky-table__td">
-                  {{payslip.get_status_display}}
-                </div>
-                <div class="oh-sticky-table__td">
-                  {{currency}} {{payslip.gross_pay|floatformat:2}}
-                </div>
-                <div class="oh-sticky-table__td">
-                  {{currency}} {{payslip.deduction|floatformat:2}}
-                </div>
-                <div class="oh-sticky-table__td">
-                  {{currency}} {{payslip.net_pay|floatformat:2}}
-                </div>
-                <div class="oh-sticky-table__td">
-                  <div class="oh-btn-group">
-                    <div type="button" id="download" data-id={{payslip.id}} title="{% trans 'Download' %}" class="oh-btn oh-btn--light-bkg w-100"> <ion-icon name="download"></ion-icon></div>
                   </div>
-                </div>
-            </a>
+                    
+                  </div>
+                  <div class="oh-sticky-table__td dateformat_changer">
+                    {{payslip.start_date}}
+                  </div>
+                  <div class="oh-sticky-table__td dateformat_changer">
+                    {{payslip.end_date}}
+                  </div>
+                  <div class="oh-sticky-table__td">
+                    {{payslip.get_status_display}}
+                  </div>
+                  <div class="oh-sticky-table__td">
+                    {{currency}} {{payslip.gross_pay|floatformat:2}}
+                  </div>
+                  <div class="oh-sticky-table__td">
+                    {{currency}} {{payslip.deduction|floatformat:2}}
+                  </div>
+                  <div class="oh-sticky-table__td">
+                    {{currency}} {{payslip.net_pay|floatformat:2}}
+                  </div>
+                  <div class="oh-sticky-table__td">
+                    <div class="oh-btn-group">
+                      <div type="button" id="download" data-id={{payslip.id}} title="{% trans 'Download' %}" class="oh-btn oh-btn--light-bkg w-100"> <ion-icon name="download"></ion-icon></div>
+                    </div>
+                  </div>
+              </a>
             {% endfor %}
         </div>
     </div>
