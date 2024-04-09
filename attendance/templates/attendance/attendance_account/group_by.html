@@ -53,53 +53,55 @@
             </div>
             <div class="oh-sticky-table__tbody">
               {% for ot in attendance_list.list %}
-              <div
-                class="oh-sticky-table__tr" hx-get="{% url 'attendance-search' %}?employee_id={{ot.employee_id.id}}&attendance_validated=true&attendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}" hx-target="#ot-table" draggable="true" onclick="hiding()"
-              >
-                <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
-                  <div class="centered-div">
-                    <input
-                    type="checkbox"
-                    onchange="highlightRow($(this))"
-                    id="{{ot.id}}"
-                    class="form-check-input all-hour-account-row"
-                    />
-                  </div>
-							  </div>
-                <div class="oh-sticky-table__td">
-                  <div class="oh-profile oh-profile--md">
-                    <div class="oh-profile__avatar mr-1">
-                      <img
-                        src="{{ot.employee_id.get_avatar}}"
-                        class="oh-profile__image"
-                      />
+                {% with dates=ot.month_days %}
+                  <div
+                    class="oh-sticky-table__tr" {% if perms.attendance.view_attendance %} hx-get="{% url 'attendance-search' %}?employee_id={{ot.employee_id.id}}&attendance_validated=true&attendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}" hx-target="#ot-table" onclick="hiding()" {% else %} hx-get="{% url 'filter-own-attendance' %}?employee_id={{ot.employee_id.id}}&attendance_validated=true&attendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}" hx-target="#ot-table" onclick="hiding()" {% endif %} draggable="true"
+                  >
+                    <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+                      <div class="centered-div">
+                        <input
+                        type="checkbox"
+                        onchange="highlightRow($(this))"
+                        id="{{ot.id}}"
+                        class="form-check-input all-hour-account-row"
+                        />
+                      </div>
                     </div>
-                    <span class="oh-profile__name oh-text--dark"
-                      >{{ot.employee_id.get_full_name}}</span
-                    >
+                    <div class="oh-sticky-table__td">
+                      <div class="oh-profile oh-profile--md">
+                        <div class="oh-profile__avatar mr-1">
+                          <img
+                            src="{{ot.employee_id.get_avatar}}"
+                            class="oh-profile__image"
+                          />
+                        </div>
+                        <span class="oh-profile__name oh-text--dark"
+                          >{{ot.employee_id.get_full_name}}</span
+                        >
+                      </div>
+                    </div>
+                    <div class="oh-sticky-table__td">{% with  month=ot.month|capfirst  %}{% trans month %}{% endwith %}</div>
+                  <div class="oh-sticky-table__td">{{ot.year}}</div>
+                  <div class="oh-sticky-table__td">{{ot.worked_hours}}</div>
+                  <div class="oh-sticky-table__td">{{ot.pending_hours}}</div>
+                  <div class="oh-sticky-table__td">{{ot.overtime}}</div>
+                  {% if perms.attendance.change_attendanceovertime or perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %}
+                    <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
+                      <div class="oh-btn-group">
+                        {% if perms.recruitment.change_attendanceovertime or request.user|is_reportingmanager %}
+                          <a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+                        {% endif %}
+                        {% if perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %}
+                          <form hx-confirm="{% trans 'Are you sure want to delete this hour account?' %}" hx-post="{% url 'attendance-overtime-delete' ot.id %}?{{pd}}&page={{accounts.number}}" hx-target="#ot-table" class="w-50">
+                            {% csrf_token %}
+                            <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"   title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                          </form>
+                        {% endif %}
+                      </div>  
+                    </div>
+                  {% endif %}
                   </div>
-                </div>
-                <div class="oh-sticky-table__td">{% with  month=ot.month|capfirst  %}{% trans month %}{% endwith %}</div>
-              <div class="oh-sticky-table__td">{{ot.year}}</div>
-              <div class="oh-sticky-table__td">{{ot.worked_hours}}</div>
-              <div class="oh-sticky-table__td">{{ot.pending_hours}}</div>
-              <div class="oh-sticky-table__td">{{ot.overtime}}</div>
-              {% if perms.attendance.change_attendanceovertime or perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %}
-                <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                  <div class="oh-btn-group">
-                    {% if perms.recruitment.change_attendanceovertime or request.user|is_reportingmanager %}
-                      <a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
-                    {% endif %}
-                    {% if perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %}
-                      <form hx-confirm="{% trans 'Are you sure want to delete this hour account?' %}" hx-post="{% url 'attendance-overtime-delete' ot.id %}?{{pd}}&page={{accounts.number}}" hx-target="#ot-table" class="w-50">
-                        {% csrf_token %}
-                        <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"   title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-                      </form>
-                    {% endif %}
-                  </div>  
-                </div>
-              {% endif %}
-              </div>
+                {% endwith %}
               {% endfor %}
             </div>
           </div>

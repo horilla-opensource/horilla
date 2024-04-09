@@ -324,6 +324,17 @@ def filter_own_attendance(request):
     """
     This method is used to filter own attendances
     """
+    params = [
+        "employee_id",
+        "attendance_validated",
+        "attendance_date__gte",
+        "attendance_date__lte",
+    ]
+    remove_params = []
+    if params == list(request.GET.keys()):
+        remove_params = [param for param in params if param != "attendance_date__gte" and param != "attendance_date__lte"]
+
+
     attendances = Attendance.objects.filter(employee_id=request.user.employee_get)
     attendances = AttendanceFilters(request.GET, queryset=attendances).qs
     previous_data = request.GET.urlencode()
@@ -331,7 +342,7 @@ def filter_own_attendance(request):
     field = request.GET.get("field")
     template = "attendance/own_attendance/attendances.html"
     previous_data = request.GET.urlencode()
-    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
+    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"] or key in remove_params]
     for key in keys_to_remove:
         data_dict.pop(key)
     attendances_ids = json.dumps(
