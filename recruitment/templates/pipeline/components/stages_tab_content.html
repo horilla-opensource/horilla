@@ -62,22 +62,10 @@
                         {% endif %}
                         {% if perms.recruitment.delete_stage %}
                         <li class="oh-dropdown__item">
-                            <form method="post" action="{% url 'rec-stage-delete' stage.id %}">
+                            <form method="post" action="{% url 'rec-stage-delete' stage.id %}" 
+                            onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');">
                                 {% csrf_token %}
-                                <button onclick="
-                                Swal.fire({
-                                    title: '{% trans "Are you sure you want to delete this stage?" %}',
-                                    showCancelButton: true,
-                                    confirmButtonText: 'Delete',
-                                    confirmButtonColor: '#008000',
-                                    cancelButtonColor: '#d33',
-                                    confirmButtonText:'Confirm',
-                                  }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        $(this).closest('form').submit();
-                                      }
-                                  });
-                                " type="button" class="oh-dropdown__link oh-dropdown__link--danger">
+                                <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">
                                     {% trans "Delete" %}
                                 </button>
                             </form>

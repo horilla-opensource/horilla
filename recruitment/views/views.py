@@ -663,13 +663,13 @@ def recruitment_close_pipeline(request, rec_id):
 @recruitment_manager_can_enter(perm="recruitment.change_recruitment")
 def recruitment_reopen_pipeline(request, rec_id):
     """
-    This method is used to re-open recruitment from pipeline view
+    This method is used to reopen recruitment from pipeline view
     """
     recruitment_obj = Recruitment.objects.get(id=rec_id)
     recruitment_obj.closed = False
     recruitment_obj.save()
 
-    messages.success(request, "Recruitment re-opend successfully")
+    messages.success(request, "Recruitment reopend successfully")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
