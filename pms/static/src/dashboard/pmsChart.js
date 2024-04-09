@@ -30,20 +30,20 @@ if (objectiveChart != null) {
 				let label = e.chart.data.labels[dataIndex];
 				let params = "?status=" + label + "&archive=false" + "&dashboard=True";
 
-				$.ajax({
-					url: "/pms/objective-list-search" + params,
-					type: "GET",
-					headers: {
-						"X-Requested-With": "XMLHttpRequest",
-					},
-					success: (response) => {
-						$("#dashboard").html(response);
-					},
-					error: (error) => {
-						console.log("Error", error);
-					},
-				});
-				$("#back_button").removeClass("d-none");
+				// $.ajax({
+				// 	url: "/pms/objective-list-search" + params,
+				// 	type: "GET",
+				// 	headers: {
+				// 		"X-Requested-With": "XMLHttpRequest",
+				// 	},
+				// 	success: (response) => {
+				// 		$("#dashboard").html(response);
+				// 	},
+				// 	error: (error) => {
+				// 		console.log("Error", error);
+				// 	},
+				// });
+				// $("#back_button").removeClass("d-none");
 			},
 		},
 		plugins: [{
@@ -226,21 +226,7 @@ if (feedbackStatusChartCtx != null) {
 				let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
 				let label = e.chart.data.labels[dataIndex];
 				let params = "?status=" + label + "&archive=false";
-
-				$.ajax({
-					url: "/pms/feedback-list-search" + params,
-					type: "GET",
-					headers: {
-						"X-Requested-With": "XMLHttpRequest",
-					},
-					success: (response) => {
-						$("#dashboard").html(response);
-					},
-					error: (error) => {
-						console.log("Error", error);
-					},
-				});
-				$("#back_button").removeClass("d-none");
+				window.location.href = "/pms/feedback-view" + params;
 			},
 		},
 		plugins: [{
