@@ -48,7 +48,7 @@
                                 <div class="oh-progress-bar__state" role="progressbar" aria-valuemax="100" style="width:{{ record.installment_ratio }}%"></div>
                             </div>
                             <p class="oh-faq-card__desc">{{ record.description }}.</p>
-                            <a hx-get="{% url 'view-installments' %}?loan_id={{ record.id }}" hx-target="#viewInstallmentModalBody" data-target="#viewInstallmentModal" data-toggle="oh-modal-toggle" class="oh-btn oh-btn--secondary oh-btn--block">{% trans 'Installments' %}</a>
+                            <a hx-get="{% url 'view-installments' %}?loan_id={{ record.id }}&instances_ids={{loan_ids}}" hx-target="#objectDetailsModalTarget" data-target="#objectDetailsModal" data-toggle="oh-modal-toggle" class="oh-btn oh-btn--secondary oh-btn--block">{% trans 'Installments' %}</a>
                             </div>
                         {% endfor %}
                     </div>
@@ -130,7 +130,7 @@
                                 <div class="oh-progress-bar__state" role="progressbar" aria-valuemax="100" style="width:{{ record.installment_ratio }}%"></div>
                             </div>
                             <p class="oh-faq-card__desc">{{ record.description }}.</p>
-                            <a hx-get="{% url 'view-installments' %}?loan_id={{ record.id }}" hx-target="#viewInstallmentModalBody" data-target="#viewInstallmentModal" data-toggle="oh-modal-toggle" class="oh-btn oh-btn--secondary oh-btn--block">{% trans 'Installments' %}</a>
+                            <a hx-get="{% url 'view-installments' %}?loan_id={{ record.id }}&instances_ids={{adv_salary_ids}}" hx-target="#objectDetailsModalTarget" data-target="#objectDetailsModal" data-toggle="oh-modal-toggle" class="oh-btn oh-btn--secondary oh-btn--block">{% trans 'Installments' %}</a>
                             </div>
                         {% endfor %}
                     </div>
@@ -216,7 +216,7 @@
                                 <div class="oh-progress-bar__state" role="progressbar" aria-valuemax="100" style="width:{{ record.installment_ratio }}%"></div>
                             </div>
                             <p class="oh-faq-card__desc">{{ record.description }}.</p>
-                            <a hx-get="{% url 'view-installments' %}?loan_id={{ record.id }}" hx-target="#viewInstallmentModalBody" data-target="#viewInstallmentModal" data-toggle="oh-modal-toggle" class="oh-btn oh-btn--secondary oh-btn--block">{% trans 'Installments' %}</a>
+                            <a hx-get="{% url 'view-installments' %}?loan_id={{ record.id }}&instances_ids={{fine_ids}}" hx-target="#objectDetailsModalTarget" data-target="#objectDetailsModal" data-toggle="oh-modal-toggle" class="oh-btn oh-btn--secondary oh-btn--block">{% trans 'Installments' %}</a>
                             </div>
                         {% endfor %}
                     </div>
