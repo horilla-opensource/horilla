@@ -146,7 +146,7 @@ class Ticket(HorillaModel):
 
 
 class Comment(HorillaModel):
-    comment = models.TextField(null=True, blank=True, max_length=255)
+    comment = models.TextField(null=True, blank=True)
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="comment")
     employee_id = models.ForeignKey(
         Employee, on_delete=models.DO_NOTHING, related_name="employee_comment"
