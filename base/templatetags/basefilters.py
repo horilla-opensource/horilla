@@ -116,3 +116,18 @@ def abs_value(value):
     permission names return method
     """
     return abs(value)
+
+@register.filter(name="config_perms")
+def config_perms(user):
+    permissions = [
+        "leave.add_holiday",
+        "leave.change_holiday",
+        "leave.add_companyleaves",
+        "leave.change_companyleaves",
+        "leave.view_restrictleave",
+        "recruitment.add_recritmentmailtemplates",
+        "recruitment.view_recritmentmailtemplates",
+    ]
+    for perm in permissions:
+        if user.has_perm(perm):
+            return True

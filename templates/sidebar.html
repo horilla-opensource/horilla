@@ -651,8 +651,25 @@
                 >{% trans "Leave Allocation Requests" %}</a
               >
             </li>
-
-
+            {% if not perms.leave.add_holiday %}
+            
+              <li class="oh-sidebar__submenu-item">
+                <a
+                  href="{% url 'holiday-view' %}"
+                  class="oh-sidebar__submenu-link"
+                  >{% trans "Holidays" %}</a
+                >
+              </li>
+              {% endif %}
+              {% if not perms.leave.add_companyleave %}
+              <li class="oh-sidebar__submenu-item">
+                <a
+                  href="{% url 'company-leave-view' %}"
+                  class="oh-sidebar__submenu-link"
+                  >{% trans "Company Leaves" %}</a
+                >
+              </li>
+            {% endif %}
           </ul>
         </div>
       </li>
@@ -901,6 +918,7 @@
           </ul>
         </div>
       </li>
+      {% if request.user|config_perms %}
       <li
         class="oh-sidebar__menu-item"
         x-data="{ isOpen: getOpenState('configNav') }"
@@ -977,6 +995,7 @@
               >
             </li>
             {% endif %}
+            {% if perms.leave.add_holiday %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'holiday-view' %}"
@@ -984,14 +1003,16 @@
                 >{% trans "Holidays" %}</a
               >
             </li>
-
+            {% endif %}
+            {% if perms.leave.add_companyleave %}
             <li class="oh-sidebar__submenu-item">
               <a
-                href="{% url 'company-leave-view' %}"
-                class="oh-sidebar__submenu-link"
-                >{% trans "Company Leaves" %}</a
+              href="{% url 'company-leave-view' %}"
+              class="oh-sidebar__submenu-link"
+              >{% trans "Company Leaves" %}</a
               >
             </li>
+            {% endif %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'restrict-view' %}"
@@ -1002,6 +1023,7 @@
           </ul>
         </div>
       </li>
+      {% endif %}
     </ul>
   </div>
 </div>

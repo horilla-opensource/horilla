@@ -11,50 +11,11 @@
   </div>
 {% endif %}
 {% if holidays %}
-<!-- start of selection buttons -->
-{% if perms.leave.add_holiday %}
-<div
-  class="oh-checkpoint-badge text-success mb-2"
-  id="selectAllHolidays"
-  style="cursor: pointer"
->
-  {% trans "Select All Holidays" %}
-</div>
-<div
-  class="oh-checkpoint-badge text-secondary mb-2"
-  id="unselectAllHolidays"
-  style="cursor: pointer; display: none"
->
-  {% trans "Unselect All Holidays" %}
-</div>
-<div
-  class="oh-checkpoint-badge text-info mb-2"
-  id="exportHolidays"
-  style="cursor: pointer; display: none"
->
-  {% trans "Export Holidays" %}
-</div>
-<div
-  class="oh-checkpoint-badge text-danger mb-2"
-  id="selectedShowHolidays"
-  style="display: none"
-></div>
-{% endif %}
 <!-- end of selection buttons -->
 <div class="oh-sticky-table">
   <div class="oh-sticky-table__table">
     <div class="oh-sticky-table__thead">
       <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th" style="width: 10px">
-          <div class="centered-div">
-            <input
-              id="allHolidays"
-              type="checkbox"
-              title="{% trans 'Select All' %}"
-              class="oh-input oh-input__checkbox all-holidays"
-            />
-          </div>
-        </div>
         <div
           class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %}arrow-up-down {% endif %}"
           hx-get="{% url 'holiday-filter' %}?{{pd}}&sortby=name"
@@ -85,17 +46,7 @@
     <div class="oh-sticky-table__tbody">
       {% for holiday in holidays %}
       <div class="oh-sticky-table__tr" >
-        <div class="oh-sticky-table__sd">
-          <div class="centered-div">
-            <input
-              type="checkbox"
-              id="{{holiday.id}}"
-              onchange="highlightRow($(this))"
-              class="oh-input holiday-checkbox oh-input__checkbox all-holidays-row"
-            />
-          </div>
-        </div>
-        <div class="oh-sticky-table__td">{{holiday.name}}</div>
+        <div class="oh-sticky-table__sd ps-4">{{holiday.name}}</div>
         <div class="oh-sticky-table__td dateformat_changer">
           {{holiday.start_date}}
         </div>

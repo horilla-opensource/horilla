@@ -16,7 +16,7 @@
   <div class="oh-sticky-table__table">
       <div class="oh-sticky-table__thead">
           <div class="oh-sticky-table__tr">
-              <div class="oh-sticky-table__th">{% trans "Based On Week" %} </div>
+              <div class="oh-sticky-table__th ps-4">{% trans "Based On Week" %} </div>
               <div class="oh-sticky-table__th">{% trans "Based On Week Day" %}</div>
               {% if perms.leave.change_companyleave or perms.leave.delete_companyleave %}
                 <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
@@ -26,7 +26,7 @@
       <div class="oh-sticky-table__tbody">
           {% for company_leave in company_leaves %}
           <div class="oh-sticky-table__tr company_leave" style="height:60px;">
-              <div class="oh-sticky-table__sd">
+              <div class="oh-sticky-table__sd ps-4">
                     {% if company_leave.based_on_week != None %}
                         {% for week in weeks %}
                             {% if week.0 == company_leave.based_on_week %}
