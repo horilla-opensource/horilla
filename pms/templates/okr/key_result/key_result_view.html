@@ -10,7 +10,7 @@
         <div class="oh-main__titlebar oh-main__titlebar--left">
             <h1 class="oh-main__titlebar-title fw-bold">{% trans "Key Results" %}</h1>
         </div>
-        
+
     </section>
     <div class="oh-wrapper">
         <div class="row">
@@ -22,7 +22,7 @@
                             <li class="oh-list-cards__item">
                                 <div class="oh-list-card">
                                     <div class="oh-list-card__header d-flex align-content-center justify-content-between mb-2">
-                                        <span class="oh-list-card__title">{{employee_key_result.employee_objective_id.objective}} / {{employee_key_result.key_result}}</span>
+                                        <span class="oh-list-card__title">{{employee_key_result.employee_objective_id.objective_id}} / {{employee_key_result.key_result}}</span>
                                         <div class="d-flex align-items-center justify-content-between mb-2">
                                             <small class="oh-text--light">
                                                 <label class="fw-bold oh-text--dark">{% trans "Due" %}:</label>
@@ -33,7 +33,7 @@
                                             <button
                                                 class="oh-btn oh-btn--x-small d-flex align-items-center ms-2 "
                                                 data-toggle="oh-modal-toggle"
-                                                hx-get="{% url 'key-result-update' id=employee_key_result.id %}"
+                                                hx-get="{% url 'employee-key-result-update' employee_key_result.id %}"
                                                 hx-target="#ObjectiveModalFormTarget"
                                                 data-target="#objectiveModalpopup" 
                                                 onclick="$('#objectiveModalpopup').toggleClass('oh-modal--show')">
@@ -45,7 +45,7 @@
                                     </div>
                                     <div class="oh-list-card__body">
                                         <p class="oh-list-card__description oh-text--xs mt-3">
-                                            {{employee_key_result.key_result_description}}
+                                            {{employee_key_result.key_result_id.description}}
                                         </p>
                                         <div class="row mb-3">
                                             <div class="col-12 col-sm-12 col-md-6 col-lg-4">
@@ -53,9 +53,9 @@
                                                     <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
                                                         {% trans "Start Value" %} 
                                                     </label>
-                                                    <input 
+                                                    <input
                                                         class="oh-input oh-input--small oh-input--block px-0" min="0"
-                                                        value="{{employee_key_result.start_value}} {{employee_key_result.progress_type}}"
+                                                        value="{{employee_key_result.start_value}} {{employee_key_result.key_result_id.progress_type}}"
                                                         readonly />
                                                 </div>
                                             </div>
@@ -82,7 +82,7 @@
                                                     </label>
                                                     <input 
                                                         class="oh-input oh-input--small oh-input--block px-0" min="0"
-                                                        value=" {{employee_key_result.target_value}} {{employee_key_result.progress_type}}"
+                                                        value=" {{employee_key_result.target_value}} {{employee_key_result.key_result_id.progress_type}}"
                                                         readonly />
                                                 </div>
                                             </div>
@@ -108,10 +108,10 @@
                                         </div>
                                         <div class="oh-profile oh-profile--md">
                                             <div class="oh-profile__avatar mr-1">
-                                                <img src="https://ui-avatars.com/api/?name={{employee_key_result.employee_id}}&background=random"
+                                                <img src="{{employee_key_result.employee_objective_id.employee_id.get_avatar}}"
                                                     class="oh-profile__image" alt="Rosa Luxemburg" />
                                             </div>
-                                            <span class="oh-profile__name oh-text--dark">{{employee_key_result.employee_id}}</span>
+                                            <span class="oh-profile__name oh-text--dark">{{employee_key_result.employee_objective_id.employee_id}}</span>
                                         </div>
                                     </div>
                                 </div>

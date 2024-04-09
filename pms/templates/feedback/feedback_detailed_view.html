@@ -12,7 +12,7 @@
       <div class="d-flex align-items-center mt-3">
         <div class="oh-profile oh-profile--md" title="Owner">
           <div class="oh-profile__avatar mr-1">
-            <img src="https://ui-avatars.com/api/?name={{feedback.employee_id}}=random" class="oh-profile__image"
+            <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"
               alt="." />
           </div>
           <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
@@ -92,7 +92,7 @@
                         <li class="oh-sticky-table__profile-item">
                           <div class="oh-profile oh-profile--md">
                             <div class="oh-profile__avatar mr-1">
-                              <img src="https://ui-avatars.com/api/?name={{feedback.employee_id}}=random"
+                              <img src="{{feedback.employee_id.get_avatar}}"
                                 class="oh-profile__image" alt="{{feedback.employee_id}}" />
                             </div>
                             <span class="oh-profile__name oh-text--dark"> {{feedback.employee_id}}</span>
@@ -148,7 +148,7 @@
                         <li class="oh-sticky-table__profile-item">
                           <div class="oh-profile oh-profile--md">
                             <div class="oh-profile__avatar mr-1">
-                              <img src="https://ui-avatars.com/api/?name={{feedback.manager_id}}=random"
+                              <img src="{{feedback.manager_id.get_avatar}}"
                                 class="oh-profile__image" alt="{{feedback.employee_id}}" />
                             </div>
                             <span class="oh-profile__name oh-text--dark"> {{feedback.manager_id}}</span>
@@ -220,8 +220,8 @@
                         <li class="oh-sticky-table__profile-item">
                           <div class="oh-profile oh-profile--md">
                             <div class="oh-profile__avatar mr-1">
-                              <img src="https://ui-avatars.com/api/?name={{feedback.manager_id}}&background=random"
-                                class="oh-profile__image" alt="{{feedback.employee_id}}" />
+                              <img src="{{employee.get_avatar}}"
+                                class="oh-profile__image" alt="" />
                             </div>
                             <span class="oh-profile__name oh-text--dark"> {{employee}}</span>
                           </div>
@@ -277,8 +277,8 @@
                         <li class="oh-sticky-table__profile-item">
                           <div class="oh-profile oh-profile--md">
                             <div class="oh-profile__avatar mr-1">
-                              <img src="https://ui-avatars.com/api/?name={{feedback.manager_id}}&background=random"
-                                class="oh-profile__image" alt="{{feedback.employee_id}}" />
+                              <img src="{{employee.get_avatar}}"
+                                class="oh-profile__image" alt="" />
                             </div>
                             <span class="oh-profile__name oh-text--dark"> {{employee}}</span>
                           </div>

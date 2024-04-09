@@ -1004,6 +1004,7 @@ def key_result_view(request):
     """
     key_results = KeyResultFilter(request.GET).qs
     context = {
+        "current_date":datetime.date.today(),
         "key_results": key_results,
         "objective_key_result_status": EmployeeKeyResult.STATUS_CHOICES,
     }
