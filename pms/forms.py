@@ -671,13 +671,11 @@ class FeedbackForm(ModelForm):
                 attrs={
                     "class": "oh-select oh-select--lg oh-select-no-search",
                     "style": "width:100%; display:none;",
-                    "required": "false",
                 }
             ),
             "cyclic_feedback_days_count": forms.NumberInput(
                 attrs={
                     "class": "oh-input",
-                    "required": "false",
                 }
             ),
         }
