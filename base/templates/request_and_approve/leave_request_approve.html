@@ -24,7 +24,7 @@
                     </div>
                     <div class="oh-sticky-table__td"><span class="dateformat_changer">{{leave_request.start_date}}</span> {% trans "to" %} <span class="dateformat_changer">{{leave_request.end_date}}</span></div>
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                        <div class="oh-btn-group" >                        
+                        <div class="oh-btn-group" >
                             <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
                                 class="oh-btn oh-btn--success w-100"
                                 onclick="event.stopPropagation();return confirm('{% trans "Do you want to Approve this leave request?" %}')">
@@ -36,14 +36,14 @@
                                 <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
                             </a>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
     </div>
 {% else %}
-<div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+<div style="height: 100%; display:flex;align-items: center;justify-content: center;" class="">
     <div style="" class="">
         <img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt=""/>
 		<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No data Found..." %}</h3>
