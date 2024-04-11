@@ -811,6 +811,14 @@ def ticket_detail(request, ticket_id, **kwargs):
         remaining = "Due Today"
         color = "warning"
 
+    rating = ''
+    if ticket.priority == 'low':
+        rating = '1'
+    elif ticket.priority == 'medium':
+        rating = '2'
+    else:
+        rating = '3'
+
     context = {
         "ticket": ticket,
         "c_form": c_form,
@@ -822,6 +830,7 @@ def ticket_detail(request, ticket_id, **kwargs):
         "create_tag_f": TagsForm(),
         "color": color,
         "remaining": remaining,
+        "rating" : rating,
     }
     return render(request, "helpdesk/ticket/ticket_detail.html", context=context)
 
@@ -1207,4 +1216,24 @@ def delete_department_manager(request, dep_id):
     department_manager.delete()
     messages.error(request, _("The department manager has been deleted successfully"))
 
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def update_priority(request, ticket_id):
+    """
+       This function is used to update the priority 
+       from the detailed view
+    """
+    ti = Ticket.objects.get(id = ticket_id)
+    rating = request.POST.get("rating")
+    
+    if rating == '1':
+        ti.priority = 'low'
+    elif rating == '2':
+        ti.priority = 'medium'
+    else:
+        ti.priority = 'high'
+    ti.save()
+    messages.success(request, _("Priority updated successfully."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

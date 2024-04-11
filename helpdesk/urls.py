@@ -101,4 +101,9 @@ urlpatterns = [
         views.delete_department_manager,
         name="department-manager-delete",
     ),
+    path(
+        "update-priority/<int:ticket_id>",
+        views.update_priority,
+        name="update-priority",
+    ),
 ]
