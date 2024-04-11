@@ -550,7 +550,7 @@
               <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                 <div class="oh-btn-group">
                   <a class="oh-btn w-100" data-toggle="oh-modal-toggle" data-target="#anonymousFeedbackModal" hx-get="{% url 'edit-anonymous-feedback' feedback.id %}" title="{% trans 'Edit' %}" hx-target="#anonymousFeedbackFormModal"><ion-icon name="create-outline"></ion-icon></a>
-                  <form action="{% url 'archive-anonymous-feedback' id=feedback.id %}" method="post"  style="display: contents">
+                  <form action="{% url 'archive-anonymous-feedback' obj_id=feedback.id %}" method="post"  style="display: contents">
                     {% if feedback.archive == True %}
                       <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
                     {% else %}
@@ -561,7 +561,7 @@
                   </button>
                   </form>
                   {% if perms.pms.delete_feedback %} 
-                    <form action="{% url 'delete-anonymous-feedback' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
+                    <form action="{% url 'delete-anonymous-feedback' obj_id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
                       {% csrf_token %}
                       <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" > 
                           <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
