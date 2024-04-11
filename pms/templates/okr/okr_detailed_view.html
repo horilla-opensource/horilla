@@ -77,6 +77,7 @@
       width: 200px;
     }
 </style>
+{% include "okr/emp_objective/emp_objective_nav.html" %}
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
     <div class="oh-wrapper" style="margin-top: 50px;">
         <div class="oh-card">
@@ -127,7 +128,7 @@
                         <div class="d-flex justify-content-between custom-scroll">
                             <div class="avatars" id="avatarsContainer">
                             {% for manager in objective.managers.all %}
-                                <a href="#" class="avatars__item" title="{{manager}}"><img class="avatar" src="{{manager.get_avatar}}" alt=""></a>
+                                <a href="{% url 'employee-view-individual' manager.id %}" class="avatars__item" title="{{manager}}"><img class="avatar" src="{{manager.get_avatar}}" alt=""></a>
                             {% endfor %}
                             </div>
                         </div>

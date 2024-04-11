@@ -1,33 +1,38 @@
+"""
+views.py
+
+This module contains the view functions for handling HTTP requests and rendering
+responses in pms app.
+"""
 import json
 import datetime
 from urllib.parse import parse_qs
 from itertools import tee
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.db.utils import IntegrityError
 from django.db.models import Q
-from django.forms import modelformset_factory
 from django.contrib import messages
+from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
+from django.db.models import ProtectedError
 from django.core.paginator import Paginator
+from django.forms import modelformset_factory
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404, render, redirect
-from attendance.methods.group_by import group_by_queryset
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from horilla.decorators import manager_can_enter, permission_required
 from horilla.decorators import login_required, hx_request_required
 from notifications.signals import notify
 from base.methods import get_key_instances, get_pagination, sortby
 from base.views import paginator_qry
-from base.models import Department, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
 from pms.filters import (
     ActualKeyResultFilter,
     ActualObjectiveFilter,
+    EmployeeObjectiveFilter,
     KeyResultFilter,
     ObjectiveFilter,
     FeedbackFilter,
     ObjectiveReGroup,
 )
-from django.db.models import ProtectedError
 from pms.models import (
     AnonymousFeedback,
     EmployeeKeyResult,
@@ -58,7 +63,8 @@ from .forms import (
     QuestionTemplateForm,
 )
 
-# objectives 
+
+# objectives
 @login_required
 def objective_list_view(request):
     """
@@ -82,7 +88,7 @@ def objective_list_view(request):
 
     elif is_manager:
         # if user is a manager
-        employees_ids = [employee.id for employee in is_manager]        
+        employees_ids = [employee.id for employee in is_manager]
         objective_all = EmployeeObjective.objects.filter(employee_id__in=employees_ids)
         objective_all = objective_all.distinct()
         context = objective_filter_pagination(request, objective_own, objective_all)
@@ -94,7 +100,8 @@ def objective_list_view(request):
         context = objective_filter_pagination(request, objective_own, objective_all)
     return render(request, template, context)
 
-def obj_form_save(request,objective_form):
+
+def obj_form_save(request, objective_form):
     """
     This view is used to save objective form
     """
@@ -110,11 +117,14 @@ def obj_form_save(request,objective_form):
                 objective_id=objective, employee_id=emp, start_date=start_date
             )
             emp_objective.save()
-            # assiging default key result
+            # assigning default key result
             if default_krs:
-                for kr in default_krs:
-                    emp_kr=EmployeeKeyResult(
-                        employee_objective_id=emp_objective,key_result_id=kr,progress_type=kr.progress_type,target_value=kr.target_value
+                for key in default_krs:
+                    emp_kr = EmployeeKeyResult(
+                        employee_objective_id=emp_objective,
+                        key_result_id=key,
+                        progress_type=key.progress_type,
+                        target_value=key.target_value,
                     )
                     emp_kr.save()
             notify.send(
@@ -128,6 +138,7 @@ def obj_form_save(request,objective_form):
                 redirect=f"/pms/objective-detailed-view/{objective.id}",
             )
 
+
 @login_required
 @manager_can_enter(perm="pms.add_employeeobjective")
 def objective_creation(request):
@@ -137,21 +148,26 @@ def objective_creation(request):
         GET:
             objective form, period, department, job position, employee, department
         POST:
-            Objective created, and returnes to key result creation function
+            Objective created, and returns to key result creation function
     """
     employee = request.user.employee_get
     objective_form = ObjectiveForm(employee=employee)
 
-    if request.GET.get('key_result_id') is not None:
+    if request.GET.get("key_result_id") is not None:
         objective_form = ObjectiveForm(request.GET)
 
     if request.method == "POST":
         objective_form = ObjectiveForm(request.POST)
         if objective_form.is_valid():
-            obj_form_save(request,objective_form)
+            obj_form_save(request, objective_form)
             return HttpResponse("<script>window.location.reload()</script>")
-    context = {"objective_form": objective_form, "p_form": PeriodForm(),"k_form": KRForm()}
+    context = {
+        "objective_form": objective_form,
+        "p_form": PeriodForm(),
+        "k_form": KRForm(),
+    }
     return render(request, "okr/objective_creation.html", context=context)
+
 
 @login_required
 @hx_request_required
@@ -166,7 +182,7 @@ def objective_update(request, obj_id):
     """
     instance = Objective.objects.get(id=obj_id)
     objective_form = ObjectiveForm(instance=instance)
-    if request.GET.get('key_result_id') is not None:
+    if request.GET.get("key_result_id") is not None:
         objective_form = ObjectiveForm(request.GET)
     if request.method == "POST":
         objective_form = ObjectiveForm(request.POST, instance=instance)
@@ -204,14 +220,17 @@ def objective_update(request, obj_id):
                 emp_obj.save()
                 # assiging default key result
                 if default_krs:
-                    for kr in default_krs:
-                        if not EmployeeKeyResult.objects.filter(employee_objective_id=emp_obj, key_result_id=kr).exists():
+                    for key in default_krs:
+                        if not EmployeeKeyResult.objects.filter(
+                            employee_objective_id=emp_obj, key_result_id=key
+                        ).exists():
                             emp_kr = EmployeeKeyResult.objects.create(
                                 employee_objective_id=emp_obj,
-                                key_result_id=kr,
-                                progress_type=kr.progress_type,
-                                target_value=kr.target_value
+                                key_result_id=key,
+                                progress_type=key.progress_type,
+                                target_value=key.target_value,
                             )
+                            emp_kr.save()
 
                 notify.send(
                     request.user.employee_get,
@@ -228,9 +247,10 @@ def objective_update(request, obj_id):
                 _("Objective %(objective)s Updated") % {"objective": instance},
             )
             return HttpResponse("<script>window.location.reload()</script>")
-    context = {"objective_form": objective_form,"k_form": KRForm(), "update": True}
+    context = {"objective_form": objective_form, "k_form": KRForm(), "update": True}
 
     return render(request, "okr/objective_creation.html", context)
+
 
 # key result
 @login_required
@@ -239,12 +259,12 @@ def view_key_result(request):
     """
     This method is used render template to view all the key result instances
     """
-    krs=KeyResult.objects.all()
+    krs = KeyResult.objects.all()
     krs_filter = ActualKeyResultFilter(request.GET)
     krs = paginator_qry(krs, request.GET.get("page"))
     krs_ids = json.dumps([instance.id for instance in krs.object_list])
-    context={
-        'krs':krs,
+    context = {
+        "krs": krs,
         "f": krs_filter,
         "krs_ids": krs_ids,
     }
@@ -278,6 +298,7 @@ def filter_key_result(request):
         },
     )
 
+
 @login_required
 def key_result_create(request):
     """
@@ -291,35 +312,54 @@ def key_result_create(request):
             instance = form.save()
             messages.success(
                 request,
-                _("Key result %(key_result)s created successfully") % {"key_result": instance},
+                _("Key result %(key_result)s created successfully")
+                % {"key_result": instance},
             )
 
-            if request.POST.get('dynamic_create'):
+            if request.POST.get("dynamic_create"):
                 obj_data = request.POST.get("dyanamic_create")
                 obj_data = obj_data.replace("create_new_key_result", str(instance.id))
-                
+
                 # Redirect to the desired URL with encoded query parameters
-                redirect_url = f'/pms/objective-creation?{obj_data}'
+                redirect_url = f"/pms/objective-creation?{obj_data}"
                 form = KRForm()
-    return render(request,'okr/key_result/key_result_form.html',{'k_form':form,'redirect_url':redirect_url})
+    return render(
+        request,
+        "okr/key_result/key_result_form.html",
+        {"k_form": form, "redirect_url": redirect_url},
+    )
+
 
 @login_required
 @permission_required("payroll.add_key_result")
+def kr_create_or_update(request, kr_id=None):
+    """
+    View function for creating or updating a Key Result.
+
+    Parameters:
+    - request: HttpRequest object.
+    - kr_id: ID of the Key Result to update (optional).
+
+    Returns:
+    Renders a form to create or update a Key Result.
+    """
+    form = KRForm()
+    key_result = False
 def kr_create_or_update(request,kr_id=None):
-    print('----------kr_create_or_update-------------')
     form=KRForm()
     kr = False
     if kr_id is not None:
-        kr=KeyResult.objects.filter(id=kr_id).first()
-        form=KRForm(instance=kr)
+        key_result = KeyResult.objects.filter(id=kr_id).first()
+        form = KRForm(instance=key_result)
     if request.method == "POST":
-        if kr:
-            form = KRForm(request.POST, instance=kr)
+        if key_result:
+            form = KRForm(request.POST, instance=key_result)
             if form.is_valid():
                 instance = form.save()
                 messages.success(
                     request,
-                    _("Key result %(key_result)s updated successfully") % {"key_result": instance},
+                    _("Key result %(key_result)s updated successfully")
+                    % {"key_result": instance},
                 )
                 return HttpResponse("<script>window.location.reload()</script>")
 
@@ -329,15 +369,13 @@ def kr_create_or_update(request,kr_id=None):
                 instance = form.save()
                 messages.success(
                     request,
-                    _("Key result %(key_result)s created successfully") % {"key_result": instance},
+                    _("Key result %(key_result)s created successfully")
+                    % {"key_result": instance},
                 )
                 return HttpResponse("<script>window.location.reload()</script>")
 
-            else:
-                print('errors======',form.errors)
-    
-    print(form.instance)
-    print('-----------------------')
+    return render(request, "okr/key_result/real_kr_form.html", {"form": form})
+
     return render(request,'okr/key_result/real_kr_form.html',{'form':form})
 
 @login_required
@@ -368,14 +406,17 @@ def add_assignees(request, obj_id):
                 # assiging default key result
                 default_krs = objective.key_result_id.all()
                 if default_krs:
-                    for kr in default_krs:
-                        if not EmployeeKeyResult.objects.filter(employee_objective_id=emp_obj, key_result_id=kr).exists():
+                    for key_result in default_krs:
+                        if not EmployeeKeyResult.objects.filter(
+                            employee_objective_id=emp_obj, key_result_id=key_result
+                        ).exists():
                             emp_kr = EmployeeKeyResult.objects.create(
                                 employee_objective_id=emp_obj,
-                                key_result_id=kr,
-                                progress_type=kr.progress_type,
-                                target_value=kr.target_value
+                                key_result_id=key_result,
+                                progress_type=key_result.progress_type,
+                                target_value=key_result.target_value,
                             )
+                            emp_kr.save()
                 notify.send(
                     request.user.employee_get,
                     recipient=emp.employee_user_id,
@@ -396,6 +437,7 @@ def add_assignees(request, obj_id):
         "objective": objective,
     }
     return render(request, "okr/add_assignees.html", context)
+
 
 @login_required
 @manager_can_enter(perm="pms.delete_employeeobjective")
@@ -429,6 +471,17 @@ def objective_delete(request, obj_id):
 @login_required
 @permission_required("pms.change_objective")
 def objective_manager_remove(request, obj_id, manager_id):
+    """
+    Removes a manager from an objective.
+
+    Parameters:
+    - request: HttpRequest object.
+    - obj_id: ID of the Objective from which to remove the manager.
+    - manager_id: ID of the manager to be removed.
+
+    Returns:
+    HttpResponse indicating success.
+    """
     objective = get_object_or_404(Objective, id=obj_id)
     objective.managers.remove(manager_id)
     return HttpResponse("")
@@ -437,6 +490,17 @@ def objective_manager_remove(request, obj_id, manager_id):
 @login_required
 @permission_required("pms.delete_keyresult")
 def key_result_remove(request, obj_id, kr_id):
+    """
+    Removes a Key Result from an objective.
+
+    Parameters:
+    - request: HttpRequest object.
+    - obj_id: ID of the Objective from which to remove the Key Result.
+    - kr_id: ID of the Key Result to be removed.
+
+    Returns:
+    HttpResponse indicating success.
+    """
     objective = get_object_or_404(Objective, id=obj_id)
     objective.key_result_id.remove(kr_id)
     return HttpResponse("")
@@ -445,6 +509,17 @@ def key_result_remove(request, obj_id, kr_id):
 @login_required
 @manager_can_enter("pms.delete_employeeobjective")
 def assignees_remove(request, obj_id, emp_id):
+    """
+    Removes an assignee from an objective.
+
+    Parameters:
+    - request: HttpRequest object.
+    - obj_id: ID of the Objective from which to remove the assignee.
+    - emp_id: ID of the employee to be removed as an assignee.
+
+    Returns:
+    HttpResponse indicating success.
+    """
     objective = get_object_or_404(Objective, id=obj_id)
     get_object_or_404(
         EmployeeObjective, employee_id=emp_id, objective_id=obj_id
@@ -499,7 +574,7 @@ def objective_filter_pagination(request, objective_own, objective_all):
     data_dict = parse_qs(previous_data)
     get_key_instances(EmployeeObjective, data_dict)
     context = {
-        'manager':manager,
+        "manager": manager,
         "superuser": "true",
         "objectives": objectives,
         "own_objectives": objectives_own,
@@ -512,7 +587,6 @@ def objective_filter_pagination(request, objective_own, objective_all):
         "field": field,
     }
     return context
-
 
 
 @login_required
@@ -627,7 +701,9 @@ def objective_detailed_view(request, obj_id, **kwargs):
     """
 
     objective = Objective.objects.get(id=obj_id)
-    emp_objectives = EmployeeObjective.objects.filter(objective_id=objective)
+    emp_objectives = EmployeeObjective.objects.filter(objective_id=objective,archive=False)
+
+
     # key_results = EmployeeKeyResult.objects.filter(employee_objective_id=objective)
     # comments = Comment.objects.filter(employee_objective_id=emp_objectives)
     # key_results_all = objective.obj_id.all()
@@ -635,7 +711,7 @@ def objective_detailed_view(request, obj_id, **kwargs):
     # total_kr = key_results_all.count()
     # try:
     #     progress = int(
-    #         sum(kr.progress_percentage for kr in key_results_all) / (total_kr)
+    #         sum(key_result.progress_percentage for key_result in key_results_all) / (total_kr)
     #     )
     # except (ZeroDivisionError, TypeError):
     #     progress = 0
@@ -655,6 +731,7 @@ def objective_detailed_view(request, obj_id, **kwargs):
         "objective_key_result_status": EmployeeKeyResult.STATUS_CHOICES,
         "comment_form": ObjectiveCommentForm,
         "current_date": now,
+        'emp_obj_form':EmployeeObjectiveFilter(),
     }
     # return render(request, "okr/objective_detailed_view.html", context)
     return render(request, "okr/okr_detailed_view.html", context)
@@ -729,14 +806,49 @@ def objective_detailed_view_comment(request, id):
 
 
 @login_required
+# @hx_request_required
+def emp_objective_search(request,obj_id):
+    """
+    This view is used to to search employee objective,returns searched and filtered objects.
+    Returns:
+        All the filtered and searched object will based on userlevel.
+    """
+    objective= Objective.objects.get(id=obj_id)
+    emp_objectives=objective.employee_objective.all()
+    search_val = request.GET.get("search")
+    if search_val is None:
+        search_val = ""
+    emp_objectives = EmployeeObjectiveFilter(request.GET,emp_objectives).qs
+    previous_data = request.GET.urlencode()
+    data_dict = parse_qs(previous_data)
+    get_key_instances(EmployeeObjective, data_dict)
+    context={
+        'emp_objectives':emp_objectives,
+            "filter_dict": data_dict,
+    }
+    template = "okr/emp_objective/emp_objective_list.html"
+    if request.GET.get("field") != "" and request.GET.get("field") is not None:
+        template = "okr/group_by.html"
+    return render(request, template, context)
+
+@login_required
 def kr_table_view(request, emp_objective_id):
-    objective_id = request.GET.get("objective_id")
+    """
+    Renders a table view of Key Results associated with an employee objective.
+
+    Parameters:
+    - request: HttpRequest object.
+    - emp_objective_id: ID of the EmployeeObjective to display Key Results for.
+
+    Returns:
+    Renders the 'okr/kr_list.html' template with Key Results associated with the specified EmployeeObjective.
+    """
     emp_objective = EmployeeObjective.objects.get(id=emp_objective_id)
     krs = emp_objective.employee_key_result.all()
     context = {
         "krs": krs,
         "key_result_status": EmployeeKeyResult.STATUS_CHOICES,
-        'emp_objective':emp_objective
+        "emp_objective": emp_objective,
     }
     template = "okr/kr_list.html"
     return render(request, template, context)
@@ -746,9 +858,10 @@ def kr_table_view(request, emp_objective_id):
 @hx_request_required
 def objective_detailed_view_objective_status(request, id):
     """
-    This view is used to  update status of objective in objective detailed view,  redirect to objective_detailed_view_activity. using htmx
+    This view is used to  update status of objective in objective detailed view,
+    redirect to objective_detailed_view_activity. using htmx
     Args:
-        obj_id (int): Primarykey of EmployeeObjective.
+        obj_id (int): Primary key of EmployeeObjective.
     Returns:
         All the filtered and searched object will based on userlevel.
     """
@@ -769,7 +882,8 @@ def objective_detailed_view_objective_status(request, id):
 @hx_request_required
 def objective_detailed_view_key_result_status(request, obj_id, kr_id):
     """
-    This view is used to  update status of key result in objective detailed view,  redirect to objective_detailed_view_activity. using htmx
+    This view is used to  update status of key result in objective detailed view, 
+    redirect to objective_detailed_view_activity. using htmx
     Args:
         obj_id (int): Primarykey of EmployeeObjective.
         kr_id (int): Primarykey of EmployeeKeyResult.
@@ -862,7 +976,6 @@ def objective_archive(request, id):
         objective.save()
         messages.info(request, _("Objective archived successfully!."))
     return redirect(f"/pms/objective-list-view?{request.environ['QUERY_STRING']}")
-
 
 
 @login_required
@@ -970,18 +1083,27 @@ def change_employee_objective_status(request, emp_obj):
     status = request.POST.get("status")
     if emp_objective.status != status:
         emp_objective.status = status
-        emp_objective.save() 
+        emp_objective.save()
         messages.success(
-            request, _(f"The status of the objective '{emp_objective.objective_id}' has been changed to {emp_objective.status}.")
+            request,
+            _(
+                f"The status of the objective '{emp_objective.objective_id}'\
+                has been changed to {emp_objective.status}."
+            ),
         )
         notify.send(
             request.user.employee_get,
             recipient=emp_objective.employee_id.employee_user_id,
-            verb=f"The status of the objective '{emp_objective.objective_id}' has been changed to {emp_objective.status}.",
-            verb_ar=f"تم تغيير حالة الهدف '{emp_objective.objective_id}' إلى {emp_objective.status}.",
-            verb_de=f"Der Status des Ziels '{emp_objective.objective_id}' wurde zu {emp_objective.status} geändert.",
-            verb_es=f"El estado del objetivo '{emp_objective.objective_id}' ha sido cambiado a {emp_objective.status}.",
-            verb_fr=f"Le statut de l'objectif '{emp_objective.objective_id}' a été changé à {emp_objective.status}.",
+            verb=f"The status of the objective '{emp_objective.objective_id}'\
+                has been changed to {emp_objective.status}.",
+            verb_ar=f"تم تغيير حالة الهدف '{emp_objective.objective_id}'\
+                إلى {emp_objective.status}.",
+            verb_de=f"Der Status des Ziels '{emp_objective.objective_id}'\
+                wurde zu {emp_objective.status} geändert.",
+            verb_es=f"El estado del objetivo '{emp_objective.objective_id}'\
+                ha sido cambiado a {emp_objective.status}.",
+            verb_fr=f"Le statut de l'objectif '{emp_objective.objective_id}'\
+                a été changé à {emp_objective.status}.",
             redirect=f"/pms/objective-detailed-view/{emp_objective.objective_id.id}",
         )
     else:
@@ -1004,7 +1126,7 @@ def key_result_view(request):
     """
     key_results = KeyResultFilter(request.GET).qs
     context = {
-        "current_date":datetime.date.today(),
+        "current_date": datetime.date.today(),
         "key_results": key_results,
         "objective_key_result_status": EmployeeKeyResult.STATUS_CHOICES,
     }
@@ -2124,6 +2246,15 @@ def period_view(request):
 @manager_can_enter(perm="pms.view_period")
 @hx_request_required
 def period_hx_view(request):
+    """
+    Renders a view displaying periods used for tracking Key Results' completion time.
+
+    Parameters:
+    - request: HttpRequest object.
+
+    Returns:
+    Renders the 'period/period_list.html' template with a list of historical periods used for tracking Key Results.
+    """
     periods = Period.objects.all()
     context = {
         "periods": periods,
@@ -2198,7 +2329,10 @@ def period_delete(request, period_id):
 
 @login_required
 def period_change(request):
-    """this function is used to detect the period change and return the start and end date of that period"""
+    """ 
+        this function is used to detect the period change and 
+        return the start and end date of that period
+    """
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax:
         if request.method == "POST":
@@ -2549,6 +2683,19 @@ def objective_select_filter(request):
 
 @login_required
 def anonymous_feedback_add(request):
+    """
+    View function for adding anonymous feedback.
+
+    Parameters:
+    - request: HttpRequest object.
+
+    Returns:
+    - If request method is POST and form is valid:
+        Saves the submitted feedback and sends a notification if based on an employee.
+        Returns a JavaScript snippet to reload the page.
+    - If request method is GET or form is invalid:
+        Renders the 'anonymous/anonymous_feedback_form.html' template with the feedback form.
+    """
     if request.method == "POST":
         form = AnonymousFeedbackForm(request.POST)
         anonymous_id = request.user.id
@@ -2581,8 +2728,22 @@ def anonymous_feedback_add(request):
 
 
 @login_required
-def edit_anonymous_feedback(request, id):
-    feedback = AnonymousFeedback.objects.get(id=id)
+def edit_anonymous_feedback(request, obj_id):
+    """
+    View function for editing anonymous feedback.
+
+    Parameters:
+    - request: HttpRequest object.
+    - id: ID of the AnonymousFeedback instance to be edited.
+
+    Returns:
+    - If request method is POST and form is valid:
+        Saves the edited feedback.
+        Returns a JavaScript snippet to reload the page.
+    - If request method is GET or form is invalid:
+        Renders the 'anonymous/anonymous_feedback_form.html' template with the feedback form pre-filled with existing data.
+    """
+    feedback = AnonymousFeedback.objects.get(id=obj_id)
     form = AnonymousFeedbackForm(instance=feedback)
     anonymous_id = request.user.id
     if request.method == "POST":
@@ -2597,14 +2758,14 @@ def edit_anonymous_feedback(request, id):
 
 
 @login_required
-def archive_anonymous_feedback(request, id):
+def archive_anonymous_feedback(request, obj_id):
     """
     this function is used to archive the feedback for employee
     args:
         id(int): primarykey of feedback
     """
 
-    feedback = AnonymousFeedback.objects.get(id=id)
+    feedback = AnonymousFeedback.objects.get(id=obj_id)
     if feedback.archive:
         feedback.archive = False
         feedback.save()
@@ -2617,9 +2778,19 @@ def archive_anonymous_feedback(request, id):
 
 
 @login_required
-def delete_anonymous_feedback(request, id):
+def delete_anonymous_feedback(request, obj_id):
+    """
+    Deletes an anonymous feedback entry.
+
+    Parameters:
+    - request: HttpRequest object.
+    - id: ID of the AnonymousFeedback instance to be deleted.
+
+    Returns:
+    Redirects to the feedback list view after deleting the feedback.
+    """
     try:
-        feedback = AnonymousFeedback.objects.get(id=id)
+        feedback = AnonymousFeedback.objects.get(id=obj_id)
         feedback.delete()
         messages.success(request, _("Feedback deleted successfully!"))
 
@@ -2638,8 +2809,18 @@ def delete_anonymous_feedback(request, id):
 
 
 @login_required
-def view_single_anonymous_feedback(request, id):
-    feedback = AnonymousFeedback.objects.get(id=id)
+def view_single_anonymous_feedback(request, obj_id):
+    """
+    Renders a view to display a single anonymous feedback entry.
+
+    Parameters:
+    - request: HttpRequest object.
+    - id: ID of the AnonymousFeedback instance to be displayed.
+
+    Returns:
+    Renders the 'anonymous/single_view.html' template with the details of the specified anonymous feedback.
+    """
+    feedback = AnonymousFeedback.objects.get(id=obj_id)
     return render(request, "anonymous/single_view.html", {"feedback": feedback})
 
 
@@ -2664,9 +2845,9 @@ def employee_keyresult_creation(request, emp_obj_id):
         if emp_key_result.is_valid():
             emp_key_result.save()
             emp_objective.update_objective_progress()
-            kr = emp_key_result.cleaned_data["key_result_id"]
+            key_result = emp_key_result.cleaned_data["key_result_id"]
 
-            emp_objective.key_result_id.add(kr)
+            emp_objective.key_result_id.add(key_result)
             # assignees = emp_key_result.cleaned_data['assignees']
             # start_date =emp_key_result.cleaned_data['start_date']
 
@@ -2773,7 +2954,6 @@ def employee_keyresult_update_status(request, kr_id):
     return redirect(
         f"/pms/kr-table-view/{emp_kr.employee_objective_id.id}?&objective_id={emp_kr.employee_objective_id.objective_id.id}"
     )
-
 
 
 @login_required

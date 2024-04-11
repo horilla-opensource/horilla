@@ -265,3 +265,52 @@ class ObjectiveReGroup:
         ("employee_id", "Owner"),
         ("status", "Status"),
     ]
+
+class EmployeeObjectiveFilter(FilterSet):
+    """
+    Filter through EmployeeObjective model
+    """
+
+    search = django_filters.CharFilter(method="search_method")
+    start_date_from = django_filters.DateFilter(
+        field_name="start_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    start_date_till = django_filters.DateFilter(
+        field_name="start_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    end_date_from = django_filters.DateFilter(
+        field_name="end_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    end_date_till = django_filters.DateFilter(
+        field_name="end_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    class Meta:
+        model = EmployeeObjective
+        fields = [
+            "status",
+            "archive",
+            "key_result_id",
+            'start_date',
+            'end_date',
+            'employee_id',
+        ]
+
+    def search_method(self, queryset, _, value: str):
+        """
+        This method is used to search employees and objective
+        """
+        values = value.split(" ")
+        empty = queryset.model.objects.none()
+        for split in values:
+            empty = empty | (queryset.filter(employee_id__employee_first_name__icontains=split))|(queryset.filter(employee_id__employee_last_name__icontains=split))
+            
+
+        return empty.distinct()

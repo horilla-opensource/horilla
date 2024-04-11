@@ -1,12 +1,16 @@
 {% load static i18n %}
 {% load i18n %}
 {% load widget_tweaks %} {% load basefilters %} {% load pmsfilters %}
-
-{% for emp_objective in objective.employee_objective.all %}
+{% include "filter_tags.html" %}
+{% for emp_objective in emp_objectives %}
     {% if perms.pms.view_employeeobjective or emp_objective|is_manager_or_owner:request.user %}
         <div class="oh-accordion-meta">
             <div class="oh-accordion-meta__item">
-                <div class="oh-accordion-meta__header oh-accordion-meta__header--custom " onclick='$(this).toggleClass("oh-accordion-meta__header--show");'
+                <div class="oh-accordion-meta__header" 
+                    onclick="
+                        $(this).toggleClass('oh-accordion-meta__header--show');
+                        $(this).parent().find('.oh-accordion-meta__body').toggleClass('d-none');
+                        "
                     {% comment %} {% if perms.payroll.view_taxbracket %} {% endcomment %}
                         data-target="#krBody{{emp_objective.id}}" 
                         hx-get="{% url 'kr-table-view' emp_objective.id %}?{{request.GET.urlencode}}&objective_id={{objective.id}}"
@@ -56,7 +60,8 @@
                                             type="button" title="{% trans 'Activites' %}" 
                                             class="oh-btn oh-btn--light-bkg p-3 w-50 oh-activity-sidebar__open"  onclick="event.stopPropagation()"
                                         > 
-                                        <ion-icon name="newspaper-outline"></ion-icon>                                                    </a>
+                                            <ion-icon name="newspaper-outline"></ion-icon>                                                    
+                                        </a>
                                     {% endif %}
                                     {% if request.user|is_reportingmanager or perms.pms.add_employeekeyresult %}
                                         <button  style="border-right:1px solid hsl(8, 77%, 56%)" 

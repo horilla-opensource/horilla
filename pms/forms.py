@@ -115,27 +115,25 @@ class ObjectiveForm(BaseForm):
             "managers",
             "description",
             "duration",
-            'key_result_id',
+            "key_result_id",
             "add_assignees",
             "assignees",
-            # 'period',
             "start_date",
-            # 'end_date',
-            # 'archive',
         ]
+        exclude = ["is_active"]
         widgets = {
-            "key_result_id":forms.SelectMultiple(
+            "key_result_id": forms.SelectMultiple(
                 attrs={
                     "class": "oh-select oh-select-2 select2-hidden-accessible",
                     "onchange": "keyResultChange($(this))",
                 }
             ),
-        #     "start_date": forms.DateInput(
-        #         attrs={"class": "oh-input w-100", "type": "date"}
-        #     ),
-        #     "end_date": forms.DateInput(
-        #         attrs={"class": "oh-input w-100", "type": "date"}
-        #     ),
+            #     "start_date": forms.DateInput(
+            #         attrs={"class": "oh-input w-100", "type": "date"}
+            #     ),
+            #     "end_date": forms.DateInput(
+            #         attrs={"class": "oh-input w-100", "type": "date"}
+            #     ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -285,6 +283,7 @@ class EmployeeObjectiveForm(BaseForm):
             "status",
             "archive",
         ]
+        exclude = ["is_active"]
         widgets = {
             "objective_id": forms.HiddenInput(),
             "start_date": forms.DateInput(
@@ -302,7 +301,6 @@ class EmployeeObjectiveForm(BaseForm):
             del self.fields["key_result_id"]
         except Exception as _err:
             pass
-        
 
     def as_p(self):
         """
@@ -402,6 +400,7 @@ class KRForm(MF):
         exclude = [
             "history",
             "objects",
+            "is_active",
         ]
 
     def as_p(self):
@@ -411,33 +410,32 @@ class KRForm(MF):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
-    
+
     def clean(self):
         cleaned_data = super().clean()
-        duration = cleaned_data.get('duration')
-        target_value = cleaned_data.get('target_value')
-        progress_type = cleaned_data.get('progress_type')
+        duration = cleaned_data.get("duration")
+        target_value = cleaned_data.get("target_value")
+        progress_type = cleaned_data.get("progress_type")
 
-        if duration is None or duration == '':
-            raise ValidationError({
-                'duration':'This field is required'
-            })
-        if target_value is None or target_value == '':
-            raise ValidationError({
-                'target_value':'This field is required'
-            })
+        if duration is None or duration == "":
+            raise ValidationError({"duration": "This field is required"})
+        if target_value is None or target_value == "":
+            raise ValidationError({"target_value": "This field is required"})
         if duration <= 0:
-            raise ValidationError({
-                'duration':'Duration cannot be less than or equal to zero'
-            })
+            raise ValidationError(
+                {"duration": "Duration cannot be less than or equal to zero"}
+            )
         if target_value <= 0:
-            raise ValidationError({
-                'target_value':'Duration cannot be less than or equal to zero'
-            })
-        if progress_type == '%' and target_value > 100 :
-            raise ValidationError({
-                'target_value':'Target value cannot be greater than hundred for progress type "percentage"'
-            })
+            raise ValidationError(
+                {"target_value": "Duration cannot be less than or equal to zero"}
+            )
+        if progress_type == "%" and target_value > 100:
+            raise ValidationError(
+                {
+                    "target_value": 'Target value cannot be greater than hundred for progress type "percentage"'
+                }
+            )
+
 
 class KeyResultForm(ModelForm):
     """
@@ -615,7 +613,7 @@ class FeedbackForm(ModelForm):
 
         model = Feedback
         fields = "__all__"
-        exclude = ["status", "archive"]
+        exclude = ["status", "archive", "is_active"]
 
         widgets = {
             "review_cycle": forms.TextInput(
@@ -753,6 +751,7 @@ class QuestionTemplateForm(ModelForm):
 
         model = QuestionTemplate
         fields = "__all__"
+        exclude = ["is_active"]
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -816,7 +815,7 @@ class QuestionForm(ModelForm):
         """
 
         model = Question
-        exclude = ["question_option_id", "template_id"]
+        exclude = ["question_option_id", "template_id", "is_active"]
         widgets = {
             "question_type": forms.Select(
                 attrs={
@@ -890,6 +889,7 @@ class PeriodForm(ModelForm):
 
         model = Period
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "period_name": forms.TextInput(
                 attrs={"placeholder": "Q1.", "class": "oh-input w-100"}

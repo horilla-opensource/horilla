@@ -2,21 +2,19 @@ from django import forms
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from base.models import Company, Department, JobPosition
-from base.horilla_company_manager import HorillaCompanyManager
-from horilla_audit.methods import get_diff
-
-# importing simple history
-from simple_history.models import HistoricalRecords
-from employee.models import Employee
-from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from django.core.validators import MinValueValidator
 from dateutil.relativedelta import relativedelta
+from horilla.models import HorillaModel
+from horilla_audit.methods import get_diff
+from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
+from base.models import Company, Department, JobPosition
+from base.horilla_company_manager import HorillaCompanyManager
+from employee.models import Employee
 
 """Objectives and key result section"""
 
 
-class Period(models.Model):
+class Period(HorillaModel):
     """this is a period model used for creating period"""
 
     period_name = models.CharField(max_length=150, unique=True)
@@ -29,7 +27,7 @@ class Period(models.Model):
         return self.period_name
 
 
-class KeyResult(models.Model):
+class KeyResult(HorillaModel):
     """model used to create key results"""
 
     PROGRESS_CHOICES = (
@@ -71,7 +69,7 @@ class KeyResult(models.Model):
         return f"{self.title}"
 
 
-class Objective(models.Model):
+class Objective(HorillaModel):
     """Model used for creating objectives"""
 
     title = models.CharField(
@@ -96,7 +94,6 @@ class Objective(models.Model):
         verbose_name="Default Key results",
     )
     duration = models.IntegerField(default=1, validators=[MinValueValidator(0)])
-    created_at = models.DateField(auto_now_add=True)
     add_assignees = models.BooleanField(default=False)
     archive = models.BooleanField(default=False, null=True, blank=True)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
@@ -122,7 +119,7 @@ class Objective(models.Model):
         return f"{self.title}"
 
 
-class EmployeeObjective(models.Model):
+class EmployeeObjective(HorillaModel):
     """this is a EmployObjective model used for creating Employee objectives"""
 
     STATUS_CHOICES = (
@@ -236,7 +233,7 @@ class Comment(models.Model):
         return f"{self.employee_id.employee_first_name} - {self.comment} "
 
 
-class EmployeeKeyResult(models.Model):
+class EmployeeKeyResult(models.Model):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
     """employee key result creation"""
 
     PROGRESS_CHOICES = (
@@ -349,10 +346,10 @@ class EmployeeKeyResult(models.Model):
     #     unique_together = ("key_result_id", "employee_objective_id")
 
 
-"""360degree feedback section"""
+"""360degree feedback section""" 
 
 
-class QuestionTemplate(models.Model):
+class QuestionTemplate(HorillaModel):
     """question template creation"""
 
     question_template = models.CharField(
@@ -366,7 +363,7 @@ class QuestionTemplate(models.Model):
         return self.question_template
 
 
-class Question(models.Model):
+class Question(HorillaModel):
     """question creation"""
 
     QUESTION_TYPE_CHOICE = (
@@ -393,7 +390,7 @@ class Question(models.Model):
         return self.question
 
 
-class QuestionOptions(models.Model):
+class QuestionOptions(HorillaModel):
     """options for question"""
 
     question_id = models.ForeignKey(
@@ -410,7 +407,7 @@ class QuestionOptions(models.Model):
     objects = HorillaCompanyManager("question_id__template_id__company_id")
 
 
-class Feedback(models.Model):
+class Feedback(HorillaModel):
     """feedback model for creating feedback"""
 
     STATUS_CHOICES = (
@@ -456,7 +453,6 @@ class Feedback(models.Model):
     status = models.CharField(
         max_length=50, choices=STATUS_CHOICES, default="Not Started"
     )
-    created_at = models.DateField(auto_now_add=True)
     archive = models.BooleanField(null=True, blank=True, default=False)
     start_date = models.DateField(null=False, blank=False)
     end_date = models.DateField(null=True, blank=False)
@@ -549,6 +545,7 @@ class AnonymousFeedback(models.Model):
         max_length=10, null=True, blank=False, editable=False
     )
     feedback_description = models.TextField(null=True, blank=True, max_length=255)
+    objects = models.Manager()
 
     def __str__(self) -> str:
         return f"Feedback based on a {self.based_on}"

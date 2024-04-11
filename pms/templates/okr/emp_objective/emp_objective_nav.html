@@ -1,0 +1,227 @@
+{% load i18n %}{% load widget_tweaks %} {% load mathfilters %} {% load basefilters %}
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">
+            {% trans "Employee Objectives" %}
+        </h1>
+        <a
+            class="oh-main__titlebar-search-toggle"
+            role="button"
+            aria-label="Toggle Search"
+            @click="searchShow = !searchShow"
+        >
+            <ion-icon
+                name="search-outline"
+                class="oh-main__titlebar-serach-icon"
+            ></ion-icon>
+        </a>
+    </div>
+    <form
+        hx-get="{% url 'emp-objective-search' objective.id %}"
+        hx-target="#emp_objective_card"
+        hx-swap="innerHTML"
+        method="get"
+        id="filterForm"
+        onsubmit="event.preventDefault()"
+    >
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            <div
+                class="oh-input-group oh-input__search-group"
+                :class="searchShow ? 'oh-input__search-group--show' : ''"
+            >
+                <ion-icon
+                    name="search-outline"
+                    class="oh-input-group__icon oh-input-group__icon--left"
+                ></ion-icon>
+                <input
+                    name="search"
+                    type="text"
+                    class="oh-input oh-input__icon"
+                    aria-label="Search Input"
+                    placeholder="{% trans 'Search' %}"
+                    onkeyup="$('.filterButton').click()"
+                />
+            </div>
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button
+                        class="oh-btn ml-2"
+                        @click="open = !open"
+                        onclick="event.preventDefault()"
+                    >
+                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                        <div id="filterCount"></div>
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                        x-show="open"
+                        @click.outside="open = false"
+                        style="display: none"
+                    >
+                        <div class="oh-dropdown__filter-body">
+                            <div class="oh-accordion">
+                                <div class="oh-accordion-header">{% trans "Objective" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for=""
+                                                    >{% trans "Assignees" %}</label
+                                                >
+                                                {{emp_obj_form.form.employee_id}}
+                                            </div>
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="">{% trans "Start Date From" %}</label>
+                                                {{emp_obj_form.form.start_date_from}}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="">{% trans "Key Result" %}</label>
+                                                {{emp_obj_form.form.key_result_id}}
+                                            </div>
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="">{% trans "Start Date Till" %} </label>
+                                                {{emp_obj_form.form.start_date_till}}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for=""
+                                                    >{% trans "End Date From" %}</label
+                                                >
+                                                {{emp_obj_form.form.end_date_from}}
+                                            </div>
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="">{% trans "Archive" %}</label>
+                                                {{emp_obj_form.form.archive}}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="">{% trans "End Date Till" %}</label>
+                                                {{emp_obj_form.form.end_date_till}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="oh-dropdown__filter-footer">
+                            <button
+                                class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+                                id="objective-filter-form-submit"
+                            >
+                                {% trans "Filter" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {% comment %} <div
+                    class="oh-dropdown"
+                    x-data="{open: false}"
+                    onclick="event.preventDefault()"
+                >
+                    <button class="oh-btn ml-2" @click="open = !open">
+                        <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                        x-show="open"
+                        @click.outside="open = false"
+                        style="display: none"
+                    >
+                        <div class="oh-accordion">
+                            <label for="id_field">{% trans "Group By" %}</label>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="oh-input-group">
+                                        <label class="oh-label" for="id_field">{% trans "Field" %}</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="oh-input-group">
+                                        <select
+                                            class="oh-select mt-1 w-100"
+                                            id="id_field"
+                                            name="field"
+                                            class="select2-selection select2-selection--single"
+                                        >
+                                            {% for field in gp_fields %}
+                                            <option value="{{ field.0 }}">
+                                                {% trans field.1 %}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+
+                {% comment %} <div class="oh-btn-group ml-2">
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button
+                            class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
+                            @click="open = !open"
+                            @click.outside="open = false"
+                            onclick="event.preventDefault()"
+                        >
+                            {% trans "Actions" %}
+                        </button>
+                        <div
+                            class="oh-dropdown__menu oh-dropdown__menu--right"
+                            x-show="open"
+                            style="display: none"
+                        >
+                            <ul class="oh-dropdown__items">
+                                <li class="oh-dropdown__item">
+                                    <a href="#" class="oh-dropdown__link" id="archiveObjectives"
+                                        >{% trans "Archive" %}</a
+                                    >
+                                </li>
+
+                                <li class="oh-dropdown__item">
+                                    <a
+                                        href="#"
+                                        class="oh-dropdown__link"
+                                        id="unArchiveObjectives"
+                                        >{% trans "Un-Archive" %}</a
+                                    >
+                                </li>
+
+                                {% if perms.pms.delete_employeeobjective %}
+                                <li class="oh-dropdown__item">
+                                    <a
+                                        href="#"
+                                        class="oh-dropdown__link oh-dropdown__link--danger"
+                                        id="deleteObjectives"
+                                        >{% trans "Delete" %}</a
+                                    >
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+
+                <!-- checking  user permission for objective creation -->
+                {% comment %} {% if perms.pms.add_employeeobjective or request.user|filtersubordinates %}
+                    <button
+                        class="oh-btn oh-btn--secondary ml-2"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectivesModal"
+                        hx-get="{%url 'objective-creation' %}"
+                        hx-target="#objectivesTarget"
+                        onclick="event.preventDefault()"
+                    >
+                        <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
+                    </button>
+                {% endif %} {% endcomment %}
+            </div>
+        </div>
+    </form>
+</section>

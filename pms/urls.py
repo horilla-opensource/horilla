@@ -70,6 +70,11 @@ urlpatterns = [
         "objective-detailed-view-activity/<int:id>",
         views.objective_detailed_view_activity,
         name="objective-detailed-view-activity",
+    ), 
+    path(
+        "emp-objective-search/<int:obj_id>",
+        views.emp_objective_search,
+        name="emp-objective-search",
     ),
     path(
         "objective-manager-remove/<int:obj_id>/<int:manager_id>",
@@ -260,22 +265,22 @@ urlpatterns = [
         name="add-anonymous-feedback",
     ),
     path(
-        "edit-anonymous-feedback/<int:id>/",
+        "edit-anonymous-feedback/<int:obj_id>/",
         views.edit_anonymous_feedback,
         name="edit-anonymous-feedback",
     ),
     path(
-        "archive-anonymous-feedback/<int:id>/",
+        "archive-anonymous-feedback/<int:obj_id>/",
         views.archive_anonymous_feedback,
         name="archive-anonymous-feedback",
     ),
     path(
-        "delete-anonymous-feedback/<int:id>/",
+        "delete-anonymous-feedback/<int:obj_id>/",
         views.delete_anonymous_feedback,
         name="delete-anonymous-feedback",
     ),
     path(
-        "single-anonymous-feedback-view/<int:id>/",
+        "single-anonymous-feedback-view/<int:obj_id>/",
         views.view_single_anonymous_feedback,
         name="single-anonymous-feedback-view",
     ),
