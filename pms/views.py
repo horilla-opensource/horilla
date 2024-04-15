@@ -78,18 +78,18 @@ def objective_list_view(request):
         employee_work_info__reporting_manager_id=employee
     )
     template = "okr/okr_view.html"
-    objective_own = EmployeeObjective.objects.filter(employee_id=employee)
+    objective_own = EmployeeObjective.objects.filter(employee_id=employee, archive = False)
     objective_own = objective_own.distinct()
     if request.user.has_perm("pms.view_employeeobjective"):
         # objective_own = EmployeeObjective.objects.filter(employee_id=employee)
         # objective_own = objective_own.distinct()
-        objective_all = EmployeeObjective.objects.all()
+        objective_all = EmployeeObjective.objects.filter(archive = False)
         context = objective_filter_pagination(request, objective_own, objective_all)
 
     elif is_manager:
         # if user is a manager
         employees_ids = [employee.id for employee in is_manager]
-        objective_all = EmployeeObjective.objects.filter(employee_id__in=employees_ids)
+        objective_all = EmployeeObjective.objects.filter(employee_id__in=employees_ids, archive = False)
         objective_all = objective_all.distinct()
         context = objective_filter_pagination(request, objective_own, objective_all)
     else:
@@ -552,15 +552,18 @@ def objective_filter_pagination(request, objective_own, objective_all):
     objective_filter_all = ObjectiveFilter(
         request.GET or initial_data, queryset=objective_all
     ).qs
-    user = request.user
-    employee = Employee.objects.filter(employee_user_id=user).first()
+    employee = request.user.employee_get
     manager = False
+    objectives = Objective.objects.filter(Q(managers=employee) | Q(assignees=employee))
     if Objective.objects.filter(managers=employee).exists():
         manager = True
         objectives = Objective.objects.filter(managers=employee).distinct()
     if request.user.has_perm("pms.view_objective"):
         objectives = Objective.objects.all()
-    objectives = ActualObjectiveFilter(request.GET, queryset=objectives).qs
+    if Objective.objects.filter(assignees=employee).exists():
+        objectives = Objective.objects.filter(assignees=employee).distinct()
+
+    objectives = ActualObjectiveFilter(request.GET or initial_data, queryset=objectives).qs
     objectives = Paginator(objectives, get_pagination())
     objective_paginator_own = Paginator(objective_filter_own, get_pagination())
     objective_paginator_all = Paginator(objective_filter_all, get_pagination())
@@ -1040,10 +1043,11 @@ def archive_employee_objective(request, emp_obj_id):
         emp_objective.archive = True
         emp_objective.save()
         messages.success(request, _("Objective archived successfully!."))
-    if not single_view:
+    if single_view:
         return redirect(f"/pms/objective-detailed-view/{obj_id}")
     else:
-        return HttpResponse("<script>window.location.reload()</script>")
+        return redirect(objective_list_view)
+
 
 
 @login_required
