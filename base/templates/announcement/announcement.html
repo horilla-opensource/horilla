@@ -4,185 +4,23 @@
 {% load basefilters %}
 {% block content %}
 
-{% comment %} <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+
+
+  <section class="oh-wrapper oh-main__topbar oh-announcement_topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
-        <a href='{% url "announcement" %}' class="oh-main__titlebar-title fw-bold mb-0 text-dark" style='text-decoration: none;'>{% trans "Announcements" %} </a>
+        <h1 class="oh-main__titlebar-title fw-bold">{% trans "Announcements" %}</h1>
     </div>
-    
     {% if perms.announcemnt.add_announcemnt or request.user|is_reportingmanager %}
       <div class="oh-main__titlebar oh-main__titlebar--right">
-
-        <div class="oh-main__titlebar-button-container">
-      
-            <div class="oh-btn-group ml-2">
-                <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-get='{% url "create-announcement" %}' 
-                    hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal">
-                    <ion-icon class="me-1" name="add-outline"></ion-icon>{% trans "Create" %}</button>
-            </div>
-        </div>
+          <div class="oh-main__titlebar-button-container">
+              <div class="oh-btn-group ml-2">
+                  <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-get='{% url "create-announcement" %}' 
+                      hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal">
+                      <ion-icon class="me-1" name="add-outline"></ion-icon>{% trans "Create" %}</button>
+              </div>
+          </div>
       </div>
     {% endif %}
-
-</section>
-
-{% if perms.announcemnt.add_announcemnt or request.user|is_reportingmanager %}
-  <div class="card mx-auto p-3" style="max-width: 808px; margin-bottom: 30px;border-bottom: 1px solid grey;box-shadow: 0px 5px 5px grey;border-radius:10px;">
-      <div class="card-header d-flex align-items-center ms-2">
-          <a hx-get='{% url "create-announcement" %}' style="color:hsl(8,77%,56%); text-decoration:none; cursor:pointer;" 
-          hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal" >
-              <ion-icon name="send-sharp" class="mr-2"></ion-icon></a>
-          <a hx-get='{% url "create-announcement" %}' style="color:hsl(8,77%,56%); text-decoration:none; cursor:pointer;" 
-          hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal">
-              <h6 class="card-title fw-bold mt-1">{% trans "Create Announcements." %}</h6></a>
-      </div>
-  </div>
-{% endif %}
-
-<div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
-
-    {% for anoun in announcements %}
-        <div class="card mx-auto p-4" style="max-width: 800px; margin-bottom: 60px;
-                                         border-radius:10px; box-shadow: 2px 15px 15px 8px grey;">
-
-            {% if perms.announcemnt.add_announcemnt or request.user|is_reportingmanager %}
-                <div class="oh-dropdown float-end" x-data="{open: false}">
-                    <button
-                        class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
-                        @click="open = !open"
-                        @click.outside="open = false"
-                        title='{% trans "Actions" %}'
-                    >
-                        <ion-icon
-                        name="ellipsis-vertical"
-                        ></ion-icon>
-                    </button>
-                    <div
-                        class="oh-dropdown__menu oh-dropdown__menu--right"
-                        x-show="open"
-                        style="display: none;"
-                    >
-                        <ul class="oh-dropdown__items">
-
-                            <li class="oh-dropdown__item">
-                                <a hx-get='{% url "update-announcement" anoun.id %}' hx-target='#announcementUpdate' data-toggle='oh-modal-toggle' data-target="#announcementUpdateModal" class="oh-dropdown__link"
-                                style="cursor:pointer;" >{% trans "Edit" %}</a
-                                >
-                            </li>
-                            <li class="oh-dropdown__item">
-                                <form
-                                action = "{% url 'delete-announcement' anoun.id %}"
-                                onsubmit="return confirm('{% trans "Are you sure you want to delete this announcement?" %}');"
-                                method='post'
-                                action=""
-                                >
-                                {% csrf_token %}
-                                <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">
-                                    {% trans "Delete" %}
-                                </button>
-                            </form
-                            >
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            {% endif %}  
-
-            <div class="card-header mb-3">
-                <h5 class="card-title fw-bold">{{ anoun.title }}</h5>
-
-                <span class="text-muted fw-bold"><small>
-                    {% trans "Posted on" %} &nbsp<span class="dateformat_changer">{{ anoun.created_on|date:"F j, Y" }}</span> &nbsp 
-                    {% trans "at" %} &nbsp <span class="timeformat_changer">{{ anoun.created_on|time:"g:i A" }}</span></small>
-                </span>
-            </div>
-
-            <div class="card-body">
-                <p class="card-text">{{ anoun.description|safe }}</p>
-            </div>
-
-            {% if anoun.department.all %}
-                <div class="card-footer mb-3">
-                    <u><span class='card-text fw-bold mb-1'>{% trans "Departments" %}</span></u>
-                    <div style= "display: flex; flex-wrap: wrap;">
-                        {% for dep in anoun.department.all %}
-                            <i><span class="mr-2 fw-bold text-secondary">#{{ dep.department }}</span></i>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-
-            {% if anoun.job_position.all %}
-                <div class="card-footer mb-3">
-                    <u><span class='card-text fw-bold mb-1'>{% trans "Jobpositions" %}</span></u>
-                    <div style= "display: flex; flex-wrap: wrap;">
-                        {% for job in anoun.job_position.all %}
-                            <i><span class="mr-2 fw-bold text-secondary">#{{ job.job_position }}</span></i>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-
- 
-            <div class="card-footer">
-                {% for attachment in anoun.attachments.all %}
-                    {% if  anoun.attachments.all|length > 1 %}
-                        <hr>
-                    {% endif %}
-                    {% if attachment.file.url|slice:"-4:" == '.png' or attachment.file.url|slice:"-4:" == '.jpg' or attachment.file.url|slice:"-5:" == '.jpeg' or attachment.file.url|slice:"-4:" == '.gif' or attachment.file.url|slice:"-4:" == '.bmp' or attachment.file.url|slice:"-5:" == '.webp' or attachment.file.url|slice:"-5:" == '.tiff' or attachment.file.url|slice:"-4:" == '.tif' or attachment.file.url|slice:"-4:" == '.svg' %}                        <!-- If not a PDF, display the image -->
-                        <a href="{{ attachment.file.url }}" target="_blank">
-                            <img style="max-width: 484px;" src="{{ attachment.file.url }}" class="img-fluid rounded" alt="Attachment Image"></a>
-                    {% else %}
-                        <!-- If the file is a PDF or something, display a link to download -->
-                        <i><a href="{{ attachment.file.url }}" class='text-danger fw-bold' target="_blank">
-                            <span class="oh-file-icon  oh-file-icon--pdf"></span>{% trans "View Attachment" %}</a></i>
-                    {% endif %}
-                {% endfor %}
-            </div>
-
-
-            <div class="card-footer mt-2">
-                <div class="oh-btn-group" >
-                    <button hx-get='{% url "announcement-add-comment" anoun.id %}' type="button"  title="Add Comment" hx-target="#commentForm"
-                           hx-swap="innerHTML" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" data-target="#commentModal" 
-                           style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
-                           <ion-icon name="chatbubble" role="img" class="md hydrated"></ion-icon>
-                    </button>
-
-                    <button type="button" hx-get="{% url 'announcement-view-comment' anoun.id %}"  hx-target="#commentviewTarget" data-toggle='oh-modal-toggle' 
-                            data-target ='#commentviewModal' title="View Comment"  class="oh-btn oh-btn--light" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
-                      <ion-icon name="eye" role="img" class="md hydrated" aria-label="eye outline"></ion-icon>
-                    </button>
-                </div>
-            </div>
-
-
-        </div>
-    {% endfor %} {% endcomment %}
-
-
-    <!--********************************************************************************************************-->
-    <!--********************************************************************************************************-->
-    <!--********************************************************************************************************-->
-
-
-    <section class="oh-wrapper oh-main__topbar oh-announcement_topbar" x-data="{searchShow: false}">
-      <div class="oh-main__titlebar oh-main__titlebar--left">
-          <h1 class="oh-main__titlebar-title fw-bold">{% trans "Announcements" %}</h1>
-
-      </div>
-      {% if perms.announcemnt.add_announcemnt or request.user|is_reportingmanager %}
-        <div class="oh-main__titlebar oh-main__titlebar--right">
-
-            <div class="oh-main__titlebar-button-container">
-
-                <div class="oh-btn-group ml-2">
-                    <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-get='{% url "create-announcement" %}' 
-                        hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal">
-                        <ion-icon class="me-1" name="add-outline"></ion-icon>{% trans "Create" %}</button>
-                </div>
-            </div>
-        </div>
-      {% endif %}
   </section>
 
   <div class="oh-wrapper">
@@ -192,8 +30,8 @@
               <div>
                   <span class="oh-announcement-headline">{{ anoun.title }}</span><br>
                   <span class="oh-announcement-timing"><small>
-                    {% trans "Posted on" %} &nbsp<span class="dateformat_changer">{{ anoun.created_on|date:"F j, Y" }}</span> &nbsp 
-                    {% trans "at" %} &nbsp <span class="timeformat_changer">{{ anoun.created_on|time:"g:i A" }}</span></small>
+                    {% trans "Posted on" %} &nbsp<span class="dateformat_changer">{{ anoun.created_at|date:"F j, Y" }}</span> &nbsp 
+                    {% trans "at" %} &nbsp <span class="timeformat_changer">{{ anoun.created_at|time:"g:i A" }}</span></small>
                   </span>
 
               </div>

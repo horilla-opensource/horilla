@@ -323,4 +323,5 @@ _("cancelled"),
 _("rejected"),
 _("true"),
 _("false"),
+_("candidate-create"),
 

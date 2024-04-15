@@ -153,9 +153,9 @@ def check_candidate_self_tracking_rating(request):
     return {"check_candidate_self_tracking_rating": rating_option}
 
 
-def get_intial_prefix(request):
+def get_initial_prefix(request):
     """
-    This method is used to get the initial prefexi
+    This method is used to get the initial prefix
     """
     settings = EmployeeGeneralSetting.objects.first()
     instance_id = None
@@ -163,4 +163,4 @@ def get_intial_prefix(request):
     if settings:
         instance_id = settings.id
         prefix = settings.badge_id_prefix
-    return {"get_intial_prefix": prefix, "prefix_instance_id": instance_id}
+    return {"get_initial_prefix": prefix, "prefix_instance_id": instance_id}

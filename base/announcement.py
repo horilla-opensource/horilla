@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from base.forms import AnnouncementForm, AnnouncementcommentForm
+from base.forms import AnnouncementForm, AnnouncementCommentForm
 from base.methods import filter_own_records
 from base.models import Announcement, AnnouncementComment, AnnouncementView
 from employee.models import Employee
@@ -18,7 +18,7 @@ def announcement_view(request):
     This method is used to render all announcemnts.
     """
 
-    announcement_list = Announcement.objects.all().order_by("-created_on")
+    announcement_list = Announcement.objects.all().order_by("-created_at")
 
     # Set the number of items per page
     items_per_page = 10
@@ -195,7 +195,7 @@ def create_announcement_comment(request, anoun_id):
     """
     anoun = Announcement.objects.filter(id=anoun_id).first()
     emp = request.user.employee_get
-    form = AnnouncementcommentForm(
+    form = AnnouncementCommentForm(
         initial={"employee_id": emp.id, "request_id": anoun_id}
     )
     comments = AnnouncementComment.objects.filter(announcement_id=anoun_id)
@@ -206,12 +206,12 @@ def create_announcement_comment(request, anoun_id):
     unique_users = list(set(commentators))
 
     if request.method == "POST":
-        form = AnnouncementcommentForm(request.POST)
+        form = AnnouncementCommentForm(request.POST)
         if form.is_valid():
             form.instance.employee_id = emp
             form.instance.announcement_id = anoun
             form.save()
-            form = AnnouncementcommentForm(
+            form = AnnouncementCommentForm(
                 initial={"employee_id": emp.id, "request_id": anoun_id}
             )
             messages.success(request, _("You commented a post."))
@@ -290,4 +290,7 @@ def viewed_by(request):
     viewed_by = AnnouncementView.objects.filter(
         announcement_id__id=announcement_id, viewed=True
     )
+    print('_____________________________________________________________________________')
+    print(viewed_by.first().__dict__)
+    print('_____________________________________________________________________________')
     return render(request, "announcement/viewed_by.html", {"viewed_by": viewed_by})

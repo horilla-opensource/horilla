@@ -406,7 +406,7 @@ class CompanyForm(ModelForm):
 
         model = Company
         fields = "__all__"
-        excluded_fields = ["date_format", "time_format"]
+        excluded_fields = ["date_format", "time_format", "is_active"]
 
     def validate_image(self, file):
         max_size = 5 * 1024 * 1024
@@ -1690,6 +1690,7 @@ class DynamicMailConfForm(ModelForm):
     class Meta:
         model = DynamicEmailConfiguration
         fields = "__all__"
+        exclude = ["is_active"]
 
     def as_p(self):
         """
@@ -1778,6 +1779,7 @@ class AnnouncementForm(ModelForm):
 
         model = Announcement
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "description": forms.Textarea(attrs={"data-summernote": ""}),
             "expire_date": DateInput(attrs={"type": "date"}),
@@ -1808,7 +1810,7 @@ class AnnouncementForm(ModelForm):
         return instance, multiple_attachment_ids
 
 
-class AnnouncementcommentForm(ModelForm):
+class AnnouncementCommentForm(ModelForm):
     """
     Announcement comment form
     """
@@ -1819,7 +1821,7 @@ class AnnouncementcommentForm(ModelForm):
         """
 
         model = AnnouncementComment
-        fields = ("comment",)
+        fields = ["comment"]
 
 
 class AnnouncementExpireForm(ModelForm):

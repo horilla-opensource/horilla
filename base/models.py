@@ -40,7 +40,7 @@ def clear_messages(request):
         pass
 
 
-class Company(models.Model):
+class Company(HorillaModel):
     """
     Company model
     """
@@ -972,9 +972,9 @@ class Tags(HorillaModel):
         return self.title
 
 
-class DynamicEmailConfiguration(models.Model):
+class DynamicEmailConfiguration(HorillaModel):
     """
-    SingletoneModel to keep the mail server configurations
+    SingletonModel to keep the mail server configurations
     """
 
     is_primary = models.BooleanField(
@@ -1246,7 +1246,7 @@ class DynamicPagination(models.Model):
 
 class Attachment(models.Model):
     """
-    Attachment model for multiple attachments in announcemnts.
+    Attachment model for multiple attachments in announcements.
     """
 
     file = models.FileField(upload_to="attachments/")
@@ -1264,7 +1264,7 @@ class AnnouncementExpire(models.Model):
     objects = models.Manager()
 
 
-class Announcement(models.Model):
+class Announcement(HorillaModel):
     """
     Announcement Model for storing all announcements.
     """
@@ -1276,7 +1276,6 @@ class Announcement(models.Model):
     attachments = models.ManyToManyField(
         Attachment, related_name="announcement_attachments", blank=True
     )
-    created_on = models.DateTimeField(auto_now_add=True)
     expire_date = models.DateField(null=True, blank=True)
     employees = models.ManyToManyField(
         Employee, related_name="announcement_employees", blank=True
@@ -1295,7 +1294,7 @@ class Announcement(models.Model):
         return self.title
 
 
-class AnnouncementComment(models.Model):
+class AnnouncementComment(HorillaModel):
     """
     AnnouncementComment Model
     """
@@ -1305,16 +1304,11 @@ class AnnouncementComment(models.Model):
     announcement_id = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Created At"),
-        null=True,
-    )
 
 
 class AnnouncementView(models.Model):
     """
-    Announcemnt View Model
+    Announcement View Model
     """
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -429,7 +429,7 @@ def home(request):
     general_expire_date = 30 if not general_expire else general_expire.days
 
     for announcement in announcements.filter(expire_date__isnull=True):
-        calculated_expire_date = announcement.created_on + timedelta(
+        calculated_expire_date = announcement.created_at + timedelta(
             days=general_expire_date
         )
         announcement.expire_date = calculated_expire_date
@@ -445,7 +445,7 @@ def home(request):
 
     announcements = announcements.exclude(
         expire_date__lt=datetime.today().date()
-    ).order_by("-created_on")
+    ).order_by("-created_at")
 
     announcement_list = announcements.filter(employees=request.user.employee_get)
     announcement_list = announcement_list | announcements.filter(employees__isnull=True)
