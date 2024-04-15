@@ -3,6 +3,8 @@ from datetime import date, timedelta
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
+from horilla.models import HorillaModel
 from base import thread_local_middleware
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
@@ -16,18 +18,16 @@ from payroll.models.models import Contract
 # Create your models here.
 
 
-class Offboarding(models.Model):
+class Offboarding(HorillaModel):
     """
     Offboarding model
     """
 
-    statuses = [("ongoing", "Ongoing"), ("completed", "Completed")]
+    statuses = [("ongoing", _("Ongoing")), ("completed", _("Completed"))]
     title = models.CharField(max_length=20)
     description = models.TextField(max_length=255)
     managers = models.ManyToManyField(Employee)
-    created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=10, default="ongoing", choices=statuses)
-    is_active = models.BooleanField(default=True)
     company_id = models.ForeignKey(
         Company, on_delete=models.CASCADE, null=True, editable=False
     )
@@ -57,18 +57,18 @@ class Offboarding(models.Model):
         return
 
 
-class OffboardingStage(models.Model):
+class OffboardingStage(HorillaModel):
     """
     Offboarding model
     """
 
     types = [
-        ("notice_period", "Notice period"),
-        ("fnf", "FnF Settlement"),
-        ("other", "Other"),
-        ("interview", "Interview"),
-        ("handover", "Work handover"),
-        ("archived", "Archived"),
+        ("notice_period", _("Notice period")),
+        ("fnf", _("FnF Settlement")),
+        ("other", _("Other")),
+        ("interview", _("Interview")),
+        ("handover", _("Work handover")),
+        ("archived", _("Archived")),
     ]
 
     title = models.CharField(max_length=20)
@@ -76,7 +76,6 @@ class OffboardingStage(models.Model):
     offboarding_id = models.ForeignKey(Offboarding, on_delete=models.CASCADE)
     managers = models.ManyToManyField(Employee)
     sequence = models.IntegerField(default=0, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return str(self.title)
@@ -101,16 +100,15 @@ def create_initial_stage(sender, instance, created, **kwargs):
         initial_stage.save()
 
 
-class OffboardingStageMultipleFile(models.Model):
+class OffboardingStageMultipleFile(HorillaModel):
     """
     OffboardingStageMultipleFile
     """
 
     attachment = models.FileField(upload_to="offboarding/attachments")
-    created_at = models.DateTimeField(auto_now_add=True)
 
 
-class OffboardingEmployee(models.Model):
+class OffboardingEmployee(HorillaModel):
     """
     OffboardingEmployee model / Employee on stage
     """
@@ -126,7 +124,6 @@ class OffboardingEmployee(models.Model):
     unit = models.CharField(max_length=10, choices=units, default="month", null=True)
     notice_period_starts = models.DateField(null=True)
     notice_period_ends = models.DateField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
@@ -135,15 +132,15 @@ class OffboardingEmployee(models.Model):
         return self.employee_id.get_full_name()
 
 
-class ResignationLetter(models.Model):
+class ResignationLetter(HorillaModel):
     """
     Resignation Request Employee model
     """
 
     statuses = [
-        ("requested", "Requested"),
-        ("approved", "Approved"),
-        ("rejected", "Rejected"),
+        ("requested", _("Requested")),
+        ("approved", _("Approved")),
+        ("rejected", _("Rejected")),
     ]
     employee_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name="Employee"
@@ -155,8 +152,6 @@ class ResignationLetter(models.Model):
     offboarding_employee_id = models.ForeignKey(
         OffboardingEmployee, on_delete=models.CASCADE, editable=False, null=True
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
@@ -191,7 +186,8 @@ class ResignationLetter(models.Model):
         ).first()
         try:
             notice_period_ends = (
-                notice_period_starts + timedelta (contract_notice_end_date.notice_period_in_days)
+                notice_period_starts
+                + timedelta(contract_notice_end_date.notice_period_in_days)
                 if contract_notice_end_date
                 else notice_period_ends
             )
@@ -221,7 +217,7 @@ class ResignationLetter(models.Model):
         offboarding_employee.save()
 
 
-class OffboardingTask(models.Model):
+class OffboardingTask(HorillaModel):
     """
     OffboardingTask model
     """
@@ -239,22 +235,20 @@ class OffboardingTask(models.Model):
     class Meta:
         unique_together = ["title", "stage_id"]
 
-    created_at = models.DateTimeField(auto_now_add=True)
-
     def __str__(self) -> str:
         return self.title
 
 
-class EmployeeTask(models.Model):
+class EmployeeTask(HorillaModel):
     """
     EmployeeTask model
     """
 
     statuses = [
-        ("todo", "Todo"),
-        ("inprogress", "In progress"),
-        ("stuck", "Stuck"),
-        ("completed", "Completed"),
+        ("todo", _("Todo")),
+        ("in_progress", _("In progress")),
+        ("stuck", _("Stuck")),
+        ("completed", _("Completed")),
     ]
     employee_id = models.ForeignKey(
         OffboardingEmployee,
@@ -262,7 +256,7 @@ class EmployeeTask(models.Model):
         verbose_name="Employee",
         null=True,
     )
-    status = models.CharField(max_length=10, choices=statuses, default="todo")
+    status = models.CharField(max_length=20, choices=statuses, default="todo")
     task_id = models.ForeignKey(OffboardingTask, on_delete=models.CASCADE)
     description = models.TextField(null=True, editable=False, max_length=255)
     history = HorillaAuditLog(
@@ -271,7 +265,6 @@ class EmployeeTask(models.Model):
             HorillaAuditInfo,
         ],
     )
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ["employee_id", "task_id"]
@@ -282,7 +275,7 @@ class EmployeeTask(models.Model):
         notify.send(
             request.user.employee_get,
             recipient=self.employee_id.employee_id.employee_user_id,
-            verb=f'Offboarding task "{self.task_id.title}" has been assiged',
+            verb=f'Offboarding task "{self.task_id.title}" has been assigned',
             verb_ar=f"",
             verb_de=f"",
             verb_es=f"",
@@ -292,7 +285,7 @@ class EmployeeTask(models.Model):
         )
 
 
-class ExitReason(models.Model):
+class ExitReason(HorillaModel):
     """
     ExitReason model
     """
@@ -302,10 +295,10 @@ class ExitReason(models.Model):
     offboarding_employee_id = models.ForeignKey(
         OffboardingEmployee, on_delete=models.PROTECT
     )
-    attacments = models.ManyToManyField(OffboardingStageMultipleFile)
+    attachments = models.ManyToManyField(OffboardingStageMultipleFile)
 
 
-class OffboardingNote(models.Model):
+class OffboardingNote(HorillaModel):
     """
     OffboardingNote
     """
@@ -323,7 +316,6 @@ class OffboardingNote(models.Model):
     stage_id = models.ForeignKey(
         OffboardingStage, on_delete=models.PROTECT, null=True, editable=False
     )
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-created_at"]
@@ -338,7 +330,7 @@ class OffboardingNote(models.Model):
         return super().save(*args, **kwargs)
 
 
-class OffboardingGeneralSetting(models.Model):
+class OffboardingGeneralSetting(HorillaModel):
     """
     OffboardingGeneralSettings
     """

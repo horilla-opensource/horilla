@@ -35,6 +35,7 @@ class OffboardingForm(ModelForm):
     class Meta:
         model = Offboarding
         fields = "__all__"
+        exclude = ["is_active"]
 
     def as_p(self):
         """
@@ -55,9 +56,7 @@ class OffboardingStageForm(ModelForm):
     class Meta:
         model = OffboardingStage
         fields = "__all__"
-        exclude = [
-            "offboarding_id",
-        ]
+        exclude = ["offboarding_id", "is_active"]
 
     def as_p(self):
         """
@@ -78,7 +77,7 @@ class OffboardingEmployeeForm(ModelForm):
     class Meta:
         model = OffboardingEmployee
         fields = "__all__"
-        exclude = ["notice_period", "unit"]
+        exclude = ["notice_period", "unit" , "is_active"]
         widgets = {
             "notice_period_starts": forms.DateInput(attrs={"type": "date"}),
             "notice_period_ends": forms.DateInput(attrs={"type": "date"}),
@@ -95,7 +94,7 @@ class OffboardingEmployeeForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         attrs = self.fields["employee_id"].widget.attrs
-        attrs["onchange"] = "intialNoticePeriod($(this))"
+        attrs["onchange"] = "initialNoticePeriod($(this))"
         self.fields["employee_id"].widget.attrs.update(attrs)
         attrs = self.fields["notice_period_starts"].widget.attrs
         attrs["onchange"] = "noticePeriodUpdate($(this))"
@@ -145,6 +144,7 @@ class NoteForm(ModelForm):
     class Meta:
         model = OffboardingNote
         fields = "__all__"
+        exclude = ["is_active"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -161,20 +161,20 @@ class NoteForm(ModelForm):
 
     def save(self, commit: bool = ...) -> Any:
         multiple_attachment_ids = []
-        attachemnts = None
+        attachments = None
         if self.files.getlist("attachment"):
-            attachemnts = self.files.getlist("attachment")
-            self.instance.attachemnt = attachemnts[0]
+            attachments = self.files.getlist("attachment")
+            self.instance.attachment = attachments[0]
             multiple_attachment_ids = []
-            for attachemnt in attachemnts:
+            for attachment in attachments:
                 file_instance = OffboardingStageMultipleFile()
-                file_instance.attachment = attachemnt
+                file_instance.attachment = attachment
                 file_instance.save()
                 multiple_attachment_ids.append(file_instance.pk)
         instance = super().save(commit)
         if commit:
             instance.attachments.add(*multiple_attachment_ids)
-        return instance, attachemnts
+        return instance, attachments
 
 
 class TaskForm(ModelForm):
@@ -191,9 +191,7 @@ class TaskForm(ModelForm):
     class Meta:
         model = OffboardingTask
         fields = "__all__"
-        exclude = [
-            "status",
-        ]
+        exclude = ["status", "is_active"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -222,7 +220,7 @@ class TaskForm(ModelForm):
         if commit:
             employees = self.cleaned_data["tasks_to"]
             for employee in employees:
-                assinged_task = EmployeeTask.objects.get_or_create(
+                assigned_task = EmployeeTask.objects.get_or_create(
                     employee_id=employee,
                     task_id=self.instance,
                 )
@@ -242,6 +240,7 @@ class ResignationLetterForm(ModelForm):
     class Meta:
         model = ResignationLetter
         fields = "__all__"
+        exclude = ["is_active"]
 
     def as_p(self):
         """

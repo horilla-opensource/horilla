@@ -111,7 +111,7 @@ def pipeline_grouper(filters={}, offboardings=[]):
 )
 def pipeline(request):
     """
-    Offboarding pipleine view
+    Offboarding pipeline view
     """
     offboardings = PipelineFilter().qs
     groups = pipeline_grouper({}, offboardings)
@@ -280,21 +280,24 @@ def delete_employee(request):
     """
     employee_ids = request.GET.getlist("employee_ids")
     instances = OffboardingEmployee.objects.filter(id__in=employee_ids)
-    OffboardingEmployee.objects.filter(id__in=employee_ids).delete()
-    messages.success(request, _("Offboarding employee deleted"))
-    notify.send(
-        request.user.employee_get,
-        recipient=User.objects.filter(
-            id__in=instances.values_list("employee_id__employee_user_id", flat=True)
-        ),
-        verb=f"You have been removed from the offboarding",
-        verb_ar=f"",
-        verb_de=f"",
-        verb_es=f"",
-        verb_fr=f"",
-        redirect="offboarding/offboarding-pipeline",
-        icon="information",
-    )
+    if instances:
+        instances.delete()
+        messages.success(request, _("Offboarding employee deleted"))
+        notify.send(
+            request.user.employee_get,
+            recipient=User.objects.filter(
+                id__in=instances.values_list("employee_id__employee_user_id", flat=True)
+            ),
+            verb=f"You have been removed from the offboarding",
+            verb_ar=f"",
+            verb_de=f"",
+            verb_es=f"",
+            verb_fr=f"",
+            redirect="offboarding/offboarding-pipeline",
+            icon="information",
+        )
+    else:
+        messages.error(request, _("Employees note found"))
     return redirect(pipeline)
 
 
@@ -556,10 +559,10 @@ def task_assign(request):
     task = OffboardingTask.objects.get(id=task_id)
     for employee in employees:
         try:
-            assinged_task = EmployeeTask()
-            assinged_task.employee_id = employee
-            assinged_task.task_id = task
-            assinged_task.save()
+            assigned_task = EmployeeTask()
+            assigned_task.employee_id = employee
+            assigned_task.task_id = task
+            assigned_task.save()
         except:
             pass
     offboarding = employees.first().stage_id.offboarding_id
@@ -739,7 +742,9 @@ def delete_resignation_request(request):
     ids = request.GET.getlist("letter_ids")
     ResignationLetter.objects.filter(id__in=ids).delete()
     messages.success(request, _("Resignation letter deleted"))
-    if request.META.get("HTTP_REFERER") and request.META.get("HTTP_REFERER").endswith("employee-profile/"):
+    if request.META.get("HTTP_REFERER") and request.META.get("HTTP_REFERER").endswith(
+        "employee-profile/"
+    ):
         return redirect("/employee/employee-profile/")
     else:
         return redirect(request_view)
