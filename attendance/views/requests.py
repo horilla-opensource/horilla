@@ -4,6 +4,7 @@ requests.py
 This module is used to register the endpoints to the attendance requests
 """
 
+from datetime import date, datetime
 import json
 import copy
 from urllib.parse import parse_qs
@@ -11,6 +12,8 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
+from attendance.views.clock_in_out import late_come, early_out
+from base.models import EmployeeShiftDay
 from notifications.signals import notify
 from horilla.decorators import login_required, manager_can_enter
 from base.methods import (
@@ -20,10 +23,10 @@ from base.methods import (
     get_key_instances,
 )
 from employee.models import Employee
-from attendance.models import Attendance, AttendanceActivity
+from attendance.models import Attendance, AttendanceActivity, AttendanceLateComeEarlyOut
 from attendance.forms import AttendanceRequestForm, NewRequestForm
 from attendance.methods.differentiate import get_diff_dict
-from attendance.views.views import paginator_qry
+from attendance.views.views import paginator_qry, shift_schedule_today
 from attendance.filters import AttendanceFilters, AttendanceRequestReGroup
 from base.methods import closest_numbers
 
@@ -322,6 +325,7 @@ def approve_validate_attendance_request(request, attendance_id):
         # DUE TO AFFECT THE OVERTIME CALCULATION ON SAVE METHOD, SAVE THE INSTANCE ONCE MORE
         attendance = Attendance.objects.get(id=attendance_id)
         attendance.save()
+
     if (
         attendance.attendance_clock_out is None
         or attendance.attendance_clock_out_date is None
@@ -348,6 +352,18 @@ def approve_validate_attendance_request(request, attendance_id):
                 clock_in_date=attendance.attendance_clock_in_date,
                 clock_in=attendance.attendance_clock_in,
             )
+
+    # Create late come or early out objects
+    shift = attendance.shift_id
+    day = date.today().strftime("%A").lower()
+    day = EmployeeShiftDay.objects.get(day=day)
+
+    minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
+        day=day, shift=shift
+    )
+    late_come(attendance, start_time=start_time_sec, end_time=end_time_sec, shift=shift)
+    early_out(attendance, start_time=start_time_sec, end_time=end_time_sec)
+
     messages.success(request, _("Attendance request has been approved"))
     employee = attendance.employee_id
     notify.send(
