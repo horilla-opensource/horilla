@@ -337,7 +337,7 @@ class LeaveRequestCreationForm(ModelForm):
         )
         self.fields["employee_id"].widget.attrs.update(
             {
-                "hx-target": "#id_leave_type_id",
+                "hx-target": "#id_leave_type_id_parent_div",
                 "hx-trigger": "change",
                 "hx-get": "/leave/get-employee-leave-types",
             }
@@ -445,7 +445,7 @@ class LeaveRequestUpdationForm(ModelForm):
         )
         self.fields["employee_id"].widget.attrs.update(
             {
-                "hx-target": "#id_leave_type_id",
+                "hx-target": "#id_leave_type_id_parent_div",
                 "hx-trigger": "change",
                 "hx-get": "/leave/get-employee-leave-types",
             }
