@@ -5,12 +5,12 @@ employee/methods.py
 import re
 from employee.models import Employee
 from itertools import groupby
-from base.context_processors import get_intial_prefix
+from base.context_processors import get_initial_prefix
 
 
 def dynamic_prefix_sort(item):
     # Assuming the dynamic prefix length is 3
-    prefix = get_intial_prefix(None)["get_intial_prefix"]
+    prefix = get_initial_prefix(None)["get_initial_prefix"]
 
     prefix_length = len(prefix) if len(prefix) >= 3 else 3
     return item[:prefix_length]
@@ -28,7 +28,7 @@ def get_ordered_badge_ids():
     )
     if not data.first():
         data = [
-            f'{get_intial_prefix(None)["get_intial_prefix"]}0001',
+            f'{get_initial_prefix(None)["get_initial_prefix"]}0001',
         ]
     # Separate pure number strings and convert them to integers
     pure_numbers = [int(item) for item in data if item.isdigit()]

@@ -591,7 +591,7 @@ class EmployeeWorkInformation(models.Model):
         return self
 
 
-class EmployeeBankDetails(models.Model):
+class EmployeeBankDetails(HorillaModel):
     """
     EmployeeBankDetails model
     """
@@ -672,7 +672,7 @@ class EmployeeNote(HorillaModel):
         return f"{self.description}"
 
 
-class PolicyMultipleFile(models.Model):
+class PolicyMultipleFile(HorillaModel):
     """
     PoliciesMultipleFile model
     """
@@ -699,7 +699,7 @@ class Policy(HorillaModel):
         self.attachments.all().delete()
 
 
-class BonusPoint(models.Model):
+class BonusPoint(HorillaModel):
     """
     Model representing bonus points for employees with associated conditions.
     """
@@ -813,7 +813,7 @@ class DisciplinaryAction(HorillaModel):
         ordering = ["-id"]
 
 
-class EmployeeGeneralSetting(models.Model):
+class EmployeeGeneralSetting(HorillaModel):
     """
     EmployeeGeneralSetting
     """

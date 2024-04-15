@@ -179,10 +179,10 @@ class EmployeeForm(ModelForm):
         """
         This method is used to generate badge id
         """
-        from base.context_processors import get_intial_prefix
+        from base.context_processors import get_initial_prefix
         from employee.methods.methods import get_ordered_badge_ids
 
-        prefix = get_intial_prefix(None)["get_intial_prefix"]
+        prefix = get_initial_prefix(None)["get_initial_prefix"]
         data = get_ordered_badge_ids()
         result = []
         try:
@@ -223,7 +223,7 @@ class EmployeeForm(ModelForm):
                 prefix = "".join(prefix)
         except Exception as e:
             logger.exception(e)
-            prefix = get_intial_prefix(None)["get_intial_prefix"]
+            prefix = get_initial_prefix(None)["get_initial_prefix"]
         return prefix
 
     def clean_badge_id(self):
@@ -364,6 +364,7 @@ class EmployeeBankDetailsForm(ModelForm):
         fields = "__all__"
         exclude = [
             "employee_id",
+            "is_active",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -385,7 +386,10 @@ class EmployeeBankDetailsUpdateForm(ModelForm):
 
         model = EmployeeBankDetails
         fields = "__all__"
-        exclude = ("employee_id",)
+        exclude = [
+            "employee_id",
+            "is_active",
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
