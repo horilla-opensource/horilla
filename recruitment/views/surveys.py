@@ -300,7 +300,10 @@ def application_form(request):
             request.session["candidate"] = serializers.serialize(
                 "json", [candidate_obj]
             )
-            return redirect(candidate_survey)
+            if RecruitmentSurvey.objects.filter(recruitment_ids = recruitment_id).exists():
+                return redirect(candidate_survey)
+            candidate_obj.save()
+            return render(request, "candidate/success.html")
         form.fields["job_position_id"].queryset = (
             form.instance.recruitment_id.open_positions.all()
         )
