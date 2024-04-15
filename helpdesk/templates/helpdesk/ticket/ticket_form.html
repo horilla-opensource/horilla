@@ -58,7 +58,7 @@
 
             <button
                 style="
-                    order: none;
+                    border: none;
                     background: none;
                     font-size: 1.5rem;
                     opacity: 0.7;
@@ -189,7 +189,7 @@
 
 <script>
     $(document).ready(function () {
-        var assigning_type = $("#id_assigning_type").val();
+        var assigning_type = $(this).find(":selected").val();
         if (assigning_type) {
             $.ajax({
                 type: "GET",
@@ -220,15 +220,10 @@
                     });
                 },
             });
-        } else {
-            var options = $('<option value="" selected="selected">').text(
-                "---------"
-            );
-            $("#id_raised_on").append(options);
         }
 
         $("#id_assigning_type").change(function () {
-            var assigning_type = $("#id_assigning_type").val();
+            var assigning_type = $(this).find(":selected").val();
             $.ajax({
                 type: "GET",
                 url: "/helpdesk/get-raised-on",
@@ -237,6 +232,7 @@
                 },
                 success: function (response) {
                     var raised_on = response.raised_on;
+
                     // Clear the existing options
                     $("#id_raised_on").empty();
                     var options = $(
@@ -265,10 +261,14 @@
                 $("#createTagModal").addClass("oh-modal--show");
             }
         });
+
         $("#id_ticket_type").change(function () {
-            var selectedValues = $("#id_ticket_type").val();
+
+            var selectedValue = $(this).find(":selected").val(); // Get the selected value
+        
             // Check if 'create_new_ticket_type' is selected
-            if (selectedValues == "create_new_ticket_type") {
+            if (selectedValue == "create_new_ticket_type") {
+
                 $("#createTicketTypeModal").addClass("oh-modal--show");
             }
         });

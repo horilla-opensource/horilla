@@ -179,37 +179,72 @@
                                             >
                                         </div>
                                         <div title="{{ticket.priority}} priority" style="text-align:right">
-                                                {% if ticket.priority == 'high' %}
-                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>            
-                                                {% elif ticket.priority == 'medium' %}
-                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
-                                                {% elif ticket.priority == 'low' %}
-                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
-                                                <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
-                                                {% endif %}                                          
+                                            {% if ticket.priority == 'low' %}
+                                                <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
+                                                    {% csrf_token %}
+                                                    <div class="d-flex">                           
+                                                        <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                                                            {% for i in "321" %}
+                                                                <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '1' == i %} checked {% endif %}/>
+                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                                                        <span id="rating-radio-error"></span>
+                                                    </div>
+                                                </form>
+                                            {% elif ticket.priority == 'medium' %}
+                                                <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
+                                                    {% csrf_token %}
+                                                    <div class="d-flex">                           
+                                                        <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                                                            {% for i in "321" %}
+                                                                <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '2' == i %} checked {% endif %}/>
+                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                                                        <span id="rating-radio-error"></span>
+                                                    </div>
+                                                </form>
+                                            {% else %}
+                                                <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
+                                                    {% csrf_token %}
+                                                    <div class="d-flex">                           
+                                                        <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                                                            {% for i in "321" %}
+                                                                <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '3' == i %} checked {% endif %}/>
+                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                                                        <span id="rating-radio-error"></span>
+                                                    </div>
+                                                </form>
+                                            {% endif %}                                        
                                             <div>
                                                 <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="oh-kanban__card-footer" style="position:relative;padding-top:0">
-                                    <span
-                                        class="oh-kanban__card-footer-text oh-text" style="font-weight:600;"
-                                        >{% trans "Assignees" %}</span
-                                    >
-                                    <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
-                                    <div class="oh-kanban__card-content oh-kanban__card-content--hide">
-                                        <span class="oh-kanban__card-footer-text oh-text--light">
-                                            {{ticket.assigned_to.all|join:", "}} 
-                                        </span>
-                                    </div>                                    
-                                </div>
+                                {% if ticket.assigned_to.all %}
+                                    <div class="oh-kanban__card-footer" style="position:relative;padding-top:0">
+                                        <span
+                                            class="oh-kanban__card-footer-text oh-text" style="font-weight:600;"
+                                            >{% trans "Assignees" %}</span
+                                        >
+                                        <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
+                                        <div class="oh-kanban__card-content oh-kanban__card-content--hide">
+                                            <span class="oh-kanban__card-footer-text oh-text--light">
+                                                {{ticket.assigned_to.all|join:", "}} 
+                                            </span>
+                                        </div>                                    
+                                    </div>
+                                {% endif %}
                             </div>
                             {% endif %} {% endfor %}
                         </div>
@@ -422,38 +457,72 @@
                                             >
                                         </div>
                                         <div title="{{ticket.priority}} priority" style="text-align:right">
-                                                {% if ticket.priority == 'high' %}
-                                                    <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                    <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                    <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>            
-                                                    {% elif ticket.priority == 'medium' %}
-                                                    <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                    <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                    <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
-                                                    {% elif ticket.priority == 'low' %}
-                                                    <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                    <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
-                                                    <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
-                                                {% endif %}  
+                                            {% if ticket.priority == 'low' %}
+                                                <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
+                                                    {% csrf_token %}
+                                                    <div class="d-flex">                           
+                                                        <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                                                            {% for i in "321" %}
+                                                                <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '1' == i %} checked {% endif %}/>
+                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                                                        <span id="rating-radio-error"></span>
+                                                    </div>
+                                                </form>
+                                            {% elif ticket.priority == 'medium' %}
+                                                <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
+                                                    {% csrf_token %}
+                                                    <div class="d-flex">                           
+                                                        <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                                                            {% for i in "321" %}
+                                                                <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '2' == i %} checked {% endif %}/>
+                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                                                        <span id="rating-radio-error"></span>
+                                                    </div>
+                                                </form>
+                                            {% else %}
+                                                <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
+                                                    {% csrf_token %}
+                                                    <div class="d-flex">                           
+                                                        <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                                                            {% for i in "321" %}
+                                                                <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '3' == i %} checked {% endif %}/>
+                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                                                        <span id="rating-radio-error"></span>
+                                                    </div>
+                                                </form>
+                                            {% endif %} 
                                             <div>
                                                 <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
                                             </div>                                        
                                         </div>
                                     </div>
                                 </div>
-                                <div class="oh-kanban__card-footer" style="position:relative;padding-top:0">
-                                    <span
-                                        class="oh-kanban__card-footer-text oh-text" style="font-weight:600;"
-                                        >{% trans "Assignees" %}</span
-                                    >
-                                    <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
-                                    <div class="oh-kanban__card-content oh-kanban__card-content--hide">
-                                        <span class="oh-kanban__card-footer-text oh-text--light">
-                                            {{ticket.assigned_to.all|join:", "}} 
-                                        </span>
+                                {% if ticket.assigned_to.all %}
+                                    <div class="oh-kanban__card-footer" style="position:relative;padding-top:0">
+                                        <span
+                                            class="oh-kanban__card-footer-text oh-text" style="font-weight:600;"
+                                            >{% trans "Assignees" %}</span
+                                        >
+                                        <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
+                                        <div class="oh-kanban__card-content oh-kanban__card-content--hide">
+                                            <span class="oh-kanban__card-footer-text oh-text--light">
+                                                {{ticket.assigned_to.all|join:", "}} 
+                                            </span>
+                                        </div>
                                     </div>
-                                        
-                                </div>
+                                {% endif %}
                             </div>
                             {% endif %} {% endfor %}
                         </div>
@@ -649,38 +718,72 @@
                                             >
                                         </div>
                                         <div title="{{ticket.priority}} priority" style="text-align:right">
-                                            {% if ticket.priority == 'high' %}
-                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>            
-                                                {% elif ticket.priority == 'medium' %}
-                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
-                                                {% elif ticket.priority == 'low' %}
-                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
-                                                <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
-                                                <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
-                                            {% endif %}  
+                                            {% if ticket.priority == 'low' %}
+                                                <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
+                                                    {% csrf_token %}
+                                                    <div class="d-flex">                           
+                                                        <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                                                            {% for i in "321" %}
+                                                                <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '1' == i %} checked {% endif %}/>
+                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                                                        <span id="rating-radio-error"></span>
+                                                    </div>
+                                                </form>
+                                            {% elif ticket.priority == 'medium' %}
+                                                <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
+                                                    {% csrf_token %}
+                                                    <div class="d-flex">                           
+                                                        <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                                                            {% for i in "321" %}
+                                                                <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '2' == i %} checked {% endif %}/>
+                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                                                        <span id="rating-radio-error"></span>
+                                                    </div>
+                                                </form>
+                                            {% else %}
+                                                <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
+                                                    {% csrf_token %}
+                                                    <div class="d-flex">                           
+                                                        <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                                                            {% for i in "321" %}
+                                                                <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '3' == i %} checked {% endif %}/>
+                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                                                        <span id="rating-radio-error"></span>
+                                                    </div>
+                                                </form>
+                                            {% endif %} 
                                             <div>
                                                 <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="oh-kanban__card-footer" style="position:relative;padding-top:0">
-                                    <span
-                                        class="oh-kanban__card-footer-text oh-text" style="font-weight:600;"
-                                        >{% trans "Assignees" %}</span
-                                    >
-                                    <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
-                                    <div class="oh-kanban__card-content oh-kanban__card-content--hide">
-                                        <span class="oh-kanban__card-footer-text oh-text--light">
-                                            {{ticket.assigned_to.all|join:", "}} 
-                                        </span>
+                                {% if ticket.assigned_to.all %}
+                                    <div class="oh-kanban__card-footer" style="position:relative;padding-top:0">
+                                        <span
+                                            class="oh-kanban__card-footer-text oh-text" style="font-weight:600;"
+                                            >{% trans "Assignees" %}</span
+                                        >
+                                        <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
+                                        <div class="oh-kanban__card-content oh-kanban__card-content--hide">
+                                            <span class="oh-kanban__card-footer-text oh-text--light">
+                                                {{ticket.assigned_to.all|join:", "}} 
+                                            </span>
+                                        </div>
                                     </div>
-                                        
-                                </div>
+                                {% endif %}
                             </div>
                             {% endif %} {% endfor %}
                         </div>
