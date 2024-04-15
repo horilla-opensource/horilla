@@ -19,6 +19,7 @@ from simple_history.signals import (
 )
 
 # from employee.models import Employee
+from horilla.models import HorillaModel
 from horilla_audit.methods import remove_duplicate_history
 
 
@@ -120,19 +121,9 @@ def post_create_horilla_audit_log(sender, instance, *_args, **kwargs):
         pass
 
 
-class HistoryTrackingFields(models.Model):
+class HistoryTrackingFields(HorillaModel):
     tracking_fields = models.JSONField(null=True, blank=True, editable=False)
 
 
-# class HistoryComment(models.Model):
-#     """
-#     HistoryComment model
-#     """
-
-#     employee_id = models.ForeignKey("Employee", on_delete=models.PROTECT)
-#     history_id = models.ForeignKey(HorillaAuditLog, on_delete=models.PROTECT)
-#     message = models.TextField()
-
-
-class AccountBlockUnblock(models.Model):
+class AccountBlockUnblock(HorillaModel):
     is_enabled = models.BooleanField(default=False, null=True, blank=True)
