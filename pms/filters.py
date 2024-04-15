@@ -92,6 +92,7 @@ class ActualObjectiveFilter(FilterSet):
         model = Objective
         fields = [
             "managers",
+            "archive",
             "assignees",
             "duration",
             "employee_objective",

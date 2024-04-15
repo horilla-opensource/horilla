@@ -99,6 +99,14 @@
                                                     {{objective_filer_form.employee_objective__progress_percentage}}
                                                 </div>
                                             </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for=""
+                                                        >{% trans "Is Archived" %}</label
+                                                    >
+                                                    {{objective_filer_form.archive}}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -158,7 +166,7 @@
                         </div>
                     </div> {% endcomment %}
 
-                    <div class="oh-btn-group ml-2">
+                    {% comment %} <div class="oh-btn-group ml-2">
                         <div class="oh-dropdown" x-data="{open: false}">
                             <button
                                 class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
@@ -202,7 +210,7 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </div> {% endcomment %}
 
                     <!-- checking  user permission for objective creation -->
                     {% if perms.pms.add_employeeobjective or request.user|filtersubordinates %}
