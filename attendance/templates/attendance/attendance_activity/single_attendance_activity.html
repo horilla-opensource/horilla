@@ -147,7 +147,7 @@
       </div>
     </div>
     {% if perms.attendance.delete_attendanceactivity %}
-      <div class="oh-modal__button-container text-center w-50" style="position: inherit; left: 25%;">
+      <div class="oh-modal__button-container text-center w-100">
         <div class="oh-btn-group">
           {% if perms.attendance.delete_attendancelatecomeearlyout %}
             <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
