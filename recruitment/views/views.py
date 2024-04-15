@@ -48,6 +48,7 @@ from recruitment.models import (
     Recruitment,
     Candidate,
     RecruitmentGeneralSetting,
+    RecruitmentSurvey,
     RejectReason,
     SkillZone,
     SkillZoneCandidate,
@@ -199,8 +200,7 @@ def recruitment(request):
     if request.method == "POST":
         form = RecruitmentCreationForm(request.POST)
         if form.is_valid():
-            recruitment_obj = form.save(commit=False)
-            recruitment_obj.save()
+            recruitment_obj = form.save()
             recruitment_obj.recruitment_managers.set(
                 Employee.objects.filter(
                     id__in=form.data.getlist("recruitment_managers")
@@ -209,6 +209,9 @@ def recruitment(request):
             recruitment_obj.open_positions.set(
                 JobPosition.objects.filter(id__in=form.data.getlist("open_positions"))
             )
+            for survey in form.cleaned_data["survey_templates"]:
+                for sur in survey.recruitmentsurvey_set.all():
+                    sur.recruitment_ids.add(recruitment_obj)
             messages.success(request, _("Recruitment added."))
             with contextlib.suppress(Exception):
                 managers = recruitment_obj.recruitment_managers.select_related(
@@ -281,11 +284,21 @@ def recruitment_update(request, rec_id):
         id : recruitment_id
     """
     recruitment_obj = Recruitment.objects.get(id=rec_id)
-    form = RecruitmentCreationForm(instance=recruitment_obj)
+    survey_template_list=[]
+    survey_templates = RecruitmentSurvey.objects.filter(recruitment_ids=rec_id).distinct()
+    for survey in survey_templates:
+        survey_template_list.append(survey.template_id.all())
+    form = RecruitmentCreationForm(
+        instance=recruitment_obj
+    )
     if request.method == "POST":
         form = RecruitmentCreationForm(request.POST, instance=recruitment_obj)
         if form.is_valid():
-            recruitment_obj = form.save()
+            recruitment_obj = form.save(commit=False)
+            for survey in form.cleaned_data["survey_templates"]:
+                for sur in survey.recruitmentsurvey_set.all():
+                    sur.recruitment_ids.add(recruitment_obj)
+            recruitment_obj.save()
             messages.success(request, _("Recruitment Updated."))
             response = render(
                 request, "recruitment/recruitment_form.html", {"form": form}
@@ -472,13 +485,13 @@ def update_candidate_stage(request):
     return update_candidate_sequence(request)
 
 
-def limited_paginator_qry(querset, page):
+def limited_paginator_qry(queryset, page):
     """
     Limited pagination
     """
-    paginator = Paginator(querset, 10)
-    querset = paginator.get_page(page)
-    return querset
+    paginator = Paginator(queryset, 10)
+    queryset = paginator.get_page(page)
+    return queryset
 
 
 @login_required
@@ -510,9 +523,9 @@ def candidate_component(request):
 
 @login_required
 @manager_can_enter("recruitment.change_candidate")
-def change_candidsate_stage(request):
+def change_candidate_stage(request):
     """
-    This mehtod is used to update candidates stage
+    This method is used to update candidates stage
     """
     candidate_id = request.GET["candidate_id"]
     stage_id = request.GET["stage_id"]

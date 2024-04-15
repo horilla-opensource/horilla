@@ -105,7 +105,7 @@ urlpatterns = [
     ),
     path(
         "candidate-stage-change",
-        views.change_candidsate_stage,
+        views.change_candidate_stage,
         name="candidate-stage-change",
     ),
     path("pipeline-card", views.recruitment_pipeline_card, name="pipeline-card"),

@@ -220,12 +220,12 @@ class RecruitmentCreationForm(ModelForm):
     Form for Recruitment model
     """
 
-    survey_templates = forms.ModelMultipleChoiceField(
-        queryset=SurveyTemplate.objects.all(),
-        widget=forms.SelectMultiple(),
-        label=_("Survey Templates"),
-        required=False,
-    )
+    # survey_templates = forms.ModelMultipleChoiceField(
+    #     queryset=SurveyTemplate.objects.all(),
+    #     widget=forms.SelectMultiple(),
+    #     label=_("Survey Templates"),
+    #     required=False,
+    # )
 
     class Meta:
         """
@@ -340,7 +340,7 @@ class CandidateCreationForm(ModelForm):
 
         model = Candidate
         fields = "__all__"
-        exclude = (
+        exclude = [
             "confirmation",
             "scheduled_for",
             "schedule_date",
@@ -348,7 +348,7 @@ class CandidateCreationForm(ModelForm):
             "sequence",
             "stage_id",
             "offerletter_status",
-        )
+        ]
         widgets = {
             "scheduled_date": forms.DateInput(attrs={"type": "date"}),
             "dob": forms.DateInput(attrs={"type": "date"}),
@@ -592,17 +592,17 @@ class StageNoteForm(ModelForm):
         self.fields["stage_files"].required = False
 
     def save(self, commit: bool = ...) -> Any:
-        attachement = []
+        attachment = []
         multiple_attachment_ids = []
-        attachements = None
+        attachments = None
         if self.files.getlist("stage_files"):
-            attachements = self.files.getlist("stage_files")
-            self.instance.attachement = attachements[0]
+            attachments = self.files.getlist("stage_files")
+            self.instance.attachement = attachments[0]
             multiple_attachment_ids = []
 
-            for attachement in attachements:
+            for attachment in attachments:
                 file_instance = StageFiles()
-                file_instance.files = attachement
+                file_instance.files = attachment
                 file_instance.save()
                 multiple_attachment_ids.append(file_instance.pk)
         instance = super().save(commit)
@@ -805,6 +805,7 @@ class OfferLetterForm(ModelForm):
     class Meta:
         model = RecruitmentMailTemplate
         fields = "__all__"
+        # exclude = ["is_active"]
         widgets = {
             "body": forms.Textarea(
                 attrs={"data-summernote": "", "style": "display:none;"}

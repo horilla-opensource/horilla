@@ -63,7 +63,23 @@ def validate_image(value):
     return value
 
 
-class Recruitment(models.Model):
+class SurveyTemplate(HorillaModel):
+    """
+    SurveyTemplate Model
+    """
+
+    title = models.CharField(max_length=30, unique=True)
+    description = models.TextField(null=True, blank=True)
+    is_general_template = models.BooleanField(default=False, editable=False)
+    company_id = models.ForeignKey(
+        Company, on_delete=models.CASCADE, null=True, blank=True
+    )
+
+    def __str__(self) -> str:
+        return self.title
+
+
+class Recruitment(HorillaModel):
     """
     Recruitment model
     """
@@ -109,6 +125,7 @@ class Recruitment(models.Model):
     )
     vacancy = models.IntegerField(default=0, null=True)
     recruitment_managers = models.ManyToManyField(Employee)
+    survey_templates = models.ManyToManyField(SurveyTemplate, blank=True)
     company_id = models.ForeignKey(
         Company,
         on_delete=models.PROTECT,
@@ -174,7 +191,7 @@ class Recruitment(models.Model):
 
     def ordered_stages(self):
         """
-        This method will returns all the stage respectivly to the ascending order of stages
+        This method will returns all the stage respectively to the ascending order of stages
         """
         return self.stage_set.order_by("sequence")
     
@@ -241,7 +258,7 @@ class Stage(HorillaModel):
         }
 
 
-class Candidate(models.Model):
+class Candidate(HorillaModel):
     """
     Candidate model
     """
@@ -341,7 +358,6 @@ class Candidate(models.Model):
     start_onboard = models.BooleanField(default=False, verbose_name=_("Start Onboard"))
     hired = models.BooleanField(default=False, verbose_name=_("Hired"))
     canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
-    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     joining_date = models.DateField(
         blank=True, null=True, verbose_name=_("Joining Date")
     )
@@ -447,7 +463,7 @@ class Candidate(models.Model):
             raise ValidationError({"job_position_id": _("Choose valid choice")})
         if self.recruitment_id.is_event_based and self.job_position_id is None:
             raise ValidationError({"job_position_id": _("This field is required.")})
-        if self.stage_id.stage_type == "cancelled":
+        if self.stage_id and self.stage_id.stage_type == "cancelled":
             self.canceled = True
         if self.canceled:
             cancelled_stage = Stage.objects.filter(
@@ -526,7 +542,7 @@ class RejectedCandidate(HorillaModel):
         return super().__str__()
 
 
-class StageFiles(models.Model):
+class StageFiles(HorillaModel):
     files = models.FileField(upload_to="recruitment/stageFiles", blank=True, null=True)
 
     def __str__(self):
@@ -549,22 +565,6 @@ class StageNote(HorillaModel):
 
     def __str__(self) -> str:
         return f"{self.description}"
-
-
-class SurveyTemplate(HorillaModel):
-    """
-    SurveyTemplate Model
-    """
-
-    title = models.CharField(max_length=30, unique=True)
-    description = models.TextField(null=True, blank=True)
-    is_general_template = models.BooleanField(default=False, editable=False)
-    company_id = models.ForeignKey(
-        Company, on_delete=models.CASCADE, null=True, blank=True
-    )
-
-    def __str__(self) -> str:
-        return self.title
 
 
 class RecruitmentSurvey(HorillaModel):
@@ -632,9 +632,9 @@ class RecruitmentSurvey(HorillaModel):
         ]
 
 
-class QuestionOrdering(models.Model):
+class QuestionOrdering(HorillaModel):
     """
-    SurveryTemplate model
+    Survey Template model
     """
 
     question_id = models.ForeignKey(RecruitmentSurvey, on_delete=models.CASCADE)
@@ -643,7 +643,7 @@ class QuestionOrdering(models.Model):
     objects = HorillaCompanyManager(related_company_field="recruitment_ids__company_id")
 
 
-class RecruitmentSurveyAnswer(models.Model):
+class RecruitmentSurveyAnswer(HorillaModel):
     """
     RecruitmentSurveyAnswer
     """
@@ -682,7 +682,7 @@ class RecruitmentSurveyAnswer(models.Model):
         return f"{self.candidate_id.name}-{self.recruitment_id}"
 
 
-class RecruitmentMailTemplate(models.Model):
+class RecruitmentMailTemplate(HorillaModel):
     title = models.CharField(max_length=25, unique=True)
     body = models.TextField()
     company_id = models.ForeignKey(
@@ -782,7 +782,7 @@ class CandidateRating(HorillaModel):
         return f"{self.employee_id} - {self.candidate_id} rating {self.rating}"
 
 
-class RecruitmentGeneralSetting(models.Model):
+class RecruitmentGeneralSetting(HorillaModel):
     """
     RecruitmentGeneralSettings model
     """
