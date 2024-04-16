@@ -290,7 +290,4 @@ def viewed_by(request):
     viewed_by = AnnouncementView.objects.filter(
         announcement_id__id=announcement_id, viewed=True
     )
-    print('_____________________________________________________________________________')
-    print(viewed_by.first().__dict__)
-    print('_____________________________________________________________________________')
     return render(request, "announcement/viewed_by.html", {"viewed_by": viewed_by})
