@@ -721,9 +721,13 @@ def objective_detailed_view(request, obj_id, **kwargs):
 
     # objective_form = ObjectiveForm(instance=objective)
     # history = objective_history(emp_obj_id)
+    previous_data = request.GET.urlencode()
+    data_dict = parse_qs(previous_data)
     now = datetime.datetime.now()
     context = {
         "emp_objectives": emp_objectives,
+        "pd": previous_data,
+        "filter_dict": data_dict,
         # "employee_key_results": key_results,
         "objective": objective,
         # "comments": comments,

@@ -79,7 +79,7 @@
 </style>
 {% include "okr/emp_objective/emp_objective_nav.html" %}
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-    <div class="oh-wrapper" style="margin-top: 50px;">
+    <div class="oh-wrapper" style="margin-top: 5px;">
         <div class="oh-card">
             
             <div class="oh-helpdesk__header">
@@ -147,8 +147,7 @@
         </div>
             
         {% if objective.employee_objective.all %}
-            <div class="oh-card" id="emp_objective_card" >
-                {% include "okr/emp_objective/emp_objective_list.html" %}
+            <div class="oh-card" id="emp_objective_card" hx-get="{% url 'emp-objective-search' objective.id %}?{{request.GET.urlencode}}" hx-trigger="load">
             </div>
 
             {% comment %} <div class="oh-pagination">

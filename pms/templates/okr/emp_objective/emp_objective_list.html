@@ -8,6 +8,7 @@
             <div class="oh-accordion-meta__item">
                 <div class="oh-accordion-meta__header" 
                     onclick="
+                        {% comment %} event.stopPropagation(); {% endcomment %}
                         $(this).toggleClass('oh-accordion-meta__header--show');
                         $(this).parent().find('.oh-accordion-meta__body').toggleClass('d-none');
                         "
