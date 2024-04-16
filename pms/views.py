@@ -348,6 +348,7 @@ def kr_create_or_update(request, kr_id=None):
 def kr_create_or_update(request,kr_id=None):
     form=KRForm()
     kr = False
+    key_result = False
     if kr_id is not None:
         key_result = KeyResult.objects.filter(id=kr_id).first()
         form = KRForm(instance=key_result)
