@@ -338,6 +338,9 @@ def paginator_qry_recruitment_limited(qryset, page_number):
     return qryset
 
 
+user_recruitments = {}
+
+
 @login_required
 @manager_can_enter(perm="recruitment.view_recruitment")
 def recruitment_pipeline(request):
@@ -347,6 +350,9 @@ def recruitment_pipeline(request):
     view = request.GET.get("view")
     rec = Recruitment.objects.filter(is_active=True)
     filter_obj = RecruitmentFilter(request.GET, queryset=rec)
+    # user_recruitments[request.user.id] = {
+    #     "recruitments": rec,
+    # }
     if filter_obj.qs.exists() and view == "card":
         template = "pipeline/pipeline_card.html"
     elif rec.exists():
@@ -374,7 +380,7 @@ cache = {}
 
 
 @login_required
-@permission_required("recruitment.view_recruitment")
+@manager_can_enter(perm="recruitment.view_recruitment")
 def filter_pipeline(request):
     """
     This method is used to search/filter from pipeline
@@ -384,6 +390,12 @@ def filter_pipeline(request):
     candidate_filter = CandidateFilter(request.GET)
     view = request.GET.get("view")
     recruitments = filter_obj.qs.filter(is_active=True)
+    if not request.user.has_perm("recruitment.view_recruitment"):
+        recruitments = recruitments.filter(Q(recruitment_managers=request.user.employee_get))
+        stage_recruitment_ids = stage_filter.qs.filter(stage_managers=request.user.employee_get).values_list('recruitment_id', flat=True).distinct()
+        recruitments = recruitments | filter_obj.qs.filter(id__in=stage_recruitment_ids)
+        recruitments = recruitments.filter(is_active = True).distinct()
+
     closed = request.GET.get("closed")
     filter_dict = parse_qs(request.GET.urlencode())
     filter_dict = get_key_instances(Recruitment, filter_dict)

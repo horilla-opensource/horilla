@@ -11,7 +11,7 @@ from base.thread_local_middleware import _thread_locals
 from django.db import models
 
 
-def record_queryset_paginator(request, queryset, page_name, records_per_page=50):
+def record_queryset_paginator(request, queryset, page_name, records_per_page=10):
     """
     This method is used to return the paginator entries
     """

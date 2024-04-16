@@ -10,7 +10,7 @@
           {{grouper.grouper}}
           <div class="oh-tabs__input-badge-container">
             <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="recruitmentCandidateCount1" title="{{grouper.list|length}} {% trans "Questions" %}" onclick="event.stopPropagation()">
-              {{grouper.list|length}}
+              {{grouper.list.paginator.count}}
             </span>
           </div>
           </span

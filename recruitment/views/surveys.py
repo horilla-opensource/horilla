@@ -13,7 +13,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
-from base.methods import closest_numbers
+from base.methods import closest_numbers, get_pagination
 from horilla.decorators import login_required, permission_required
 from recruitment.models import Recruitment, SurveyTemplate
 from recruitment.forms import (
@@ -138,7 +138,7 @@ def view_question_template(request):
         "template_id__title",
         page=request.GET.get("template_page"),
         page_name="template_page",
-        records_per_page=50,
+        records_per_page=get_pagination(),
     )
     all_template_object_list = []
     for template in templates:

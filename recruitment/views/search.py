@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from horilla.decorators import login_required, permission_required
-from base.methods import sortby, get_key_instances
+from base.methods import get_pagination, sortby, get_key_instances
 from attendance.methods.group_by import group_by_queryset as general_group_by
 from recruitment.filters import (
     CandidateFilter,
@@ -185,7 +185,7 @@ def filter_survey(request):
         "template_id__title",
         page=request.GET.get("template_page"),
         page_name="template_page",
-        records_per_page=50,
+        records_per_page=get_pagination(),
     )
     all_template_object_list = []
     for template in templates:
