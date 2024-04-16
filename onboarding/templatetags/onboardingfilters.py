@@ -48,9 +48,12 @@ def task_manages(user, recruitment):
     """
     try:
         employee = user.employee_get
+        employee_tasks = employee.onboarding_task.all()
+        for task in employee_tasks:
+            if task.stage_id and task.stage_id.recruitment_id == recruitment:
+                return True
         return (
-            recruitment.onboarding_task.filter(employee_id=employee).exists()
-            or recruitment.onboardingstage_set.filter(employee_id=employee).exists()
+            recruitment.onboardingstage_set.filter(employee_id=employee).exists()
             or recruitment.recruitment_managers.filter(id=user.employee_get.id).exists()
         )
     except Exception:

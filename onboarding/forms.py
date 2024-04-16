@@ -409,4 +409,4 @@ class BankDetailsCreationForm(ModelForm):
 
         model = EmployeeBankDetails
         fields = "__all__"
-        exclude = ("employee_id", "additional_info")
+        exclude = ["employee_id", "additional_info", "is_active"]

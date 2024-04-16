@@ -783,8 +783,16 @@ def onboarding_view(request):
     """
     filter_obj = RecruitmentFilter(request.GET)
     # is active filteration not providing on pipeline
-    recruitments = filter_obj.qs.filter(is_active=True)
-
+    recruitments = filter_obj.qs
+    recruitments = recruitments.filter(
+        is_active=True, recruitment_managers__in=[request.user.employee_get]
+    ) | recruitments.filter(onboarding_stage__employee_id__in=[request.user.employee_get]
+    )
+    employee_tasks = request.user.employee_get.onboarding_task.all()
+    for task in employee_tasks:
+        if task.stage_id and task.stage_id.recruitment_id not in recruitments:
+            recruitments = recruitments | filter_obj.qs.filter(id=task.stage_id.recruitment_id.id)
+    recruitments = recruitments.filter(is_active =True).distinct()
     status = request.GET.get("closed")
 
     onboarding_stages = OnboardingStage.objects.all()
