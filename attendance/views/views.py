@@ -1681,9 +1681,6 @@ def update_grace_time(request, grace_id):
     GET : return grace time form template
     """
     grace_time = GraceTime.objects.get(id=grace_id)
-    print('_______________________________________________________________________')
-    print(grace_time.__dict__)
-    print('_______________________________________________________________________')
     form = GraceTimeForm(instance=grace_time)
     if request.method == "POST":
         form = GraceTimeForm(request.POST, instance=grace_time)
