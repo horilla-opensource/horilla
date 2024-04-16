@@ -1691,7 +1691,9 @@ class DynamicMailConfForm(ModelForm):
         model = DynamicEmailConfiguration
         fields = "__all__"
         exclude = ["is_active"]
-
+    # def clean(self):
+    #     from_mail = self.from_email
+    #     return super().clean()
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.

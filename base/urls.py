@@ -102,6 +102,7 @@ urlpatterns = [
         name="mail-server-create-update",
     ),
     path("mail-server-delete", views.mail_server_delete, name="mail-server-delete"),
+    path("replace-primary-mail", views.replace_primary_mail, name="replace-primary-mail"),
     path("settings/company-create/", views.company_create, name="company-create"),
     path("settings/company-view/", views.company_view, name="company-view"),
     path(

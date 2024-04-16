@@ -982,31 +982,31 @@ class DynamicEmailConfiguration(HorillaModel):
     )
 
     host = models.CharField(
-        blank=True, null=True, max_length=256, verbose_name=_("Email Host")
+         null=True, max_length=256, verbose_name=_("Email Host")
     )
 
-    port = models.SmallIntegerField(blank=True, null=True, verbose_name=_("Email Port"))
+    port = models.SmallIntegerField( null=True, verbose_name=_("Email Port"))
 
-    from_email = models.CharField(
-        blank=True, null=True, max_length=256, verbose_name=_("Default From Email")
+    from_email = models.EmailField(
+         null=True, max_length=256, verbose_name=_("Default From Email")
     )
 
     username = models.CharField(
-        blank=True,
+        
         null=True,
         max_length=256,
         verbose_name=_("Email Host Username"),
     )
 
     display_name = models.CharField(
-        blank=True,
+        
         null=True,
         max_length=256,
         verbose_name=_("Display Name"),
     )
 
     password = models.CharField(
-        blank=True,
+        
         null=True,
         max_length=256,
         verbose_name=_("Email Authentication Password"),
@@ -1019,7 +1019,7 @@ class DynamicEmailConfiguration(HorillaModel):
     fail_silently = models.BooleanField(default=False, verbose_name=_("Fail Silently"))
 
     timeout = models.SmallIntegerField(
-        blank=True, null=True, verbose_name=_("Email Send Timeout (seconds)")
+         null=True, verbose_name=_("Email Send Timeout (seconds)")
     )
     company_id = models.OneToOneField(
         Company, on_delete=models.CASCADE, null=True, blank=True
@@ -1033,8 +1033,8 @@ class DynamicEmailConfiguration(HorillaModel):
                     "so only set one of those settings to True."
                 )
             )
-        if not self.company_id:
-            raise ValidationError({"company_id": _("This field is required")})
+        if not self.company_id and not self.is_primary:
+                raise ValidationError({"company_id": _("This field is required")})
 
     def __str__(self):
         return self.username
@@ -1044,6 +1044,9 @@ class DynamicEmailConfiguration(HorillaModel):
             DynamicEmailConfiguration.objects.filter(is_primary=True).update(
                 is_primary=False
             )
+        if not DynamicEmailConfiguration.objects.exists():
+            self.is_primary = True
+
         super().save(*args, **kwargs)
         servers_same_company = DynamicEmailConfiguration.objects.filter(
             company_id=self.company_id

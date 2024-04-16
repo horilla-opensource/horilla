@@ -1,0 +1,142 @@
+
+{% load i18n %}
+<div
+  class="oh-modal oh-modal--show"
+  role="dialog"
+  id="confirmModal"
+  aria-labelledby="confirmModalLabel"
+  aria-hidden="true"
+>
+  <div
+    class="oh-modal__dialog oh-modal__dialog--confirm"
+    style="max-width: 510px"
+  >
+    <p class="swal2-close"></p>
+    <ul class="swal2-progress-steps" style="display: none"></ul>
+    <div class="swal2-icon swal2-warning swal2-icon-show" style="display: flex">
+      <div class="swal2-icon-content">!</div>
+    </div>
+    <h2 class="swal2-title" id="swal2-title">{{title}}</h2>
+    <form
+      action="{% url 'replace-primary-mail' %}" 
+      method="post"
+      id="replaceEmployeeForm"
+      data-id="{{employee.id}}"
+      >
+      {% csrf_token %}
+      <div
+        class="swal2-html-container"
+        id="swal2-html-container"
+        style="display: block"
+      >
+        {% trans "This mail is assigned as primary mail.Replace primary mail to delete" %}.
+        <p style="margin-left: 24px"></p>
+        <div class="oh-sticky-table">
+          <div class="oh-sticky-table__table oh-table--sortable">
+            {% comment %} <div class="oh-sticky-table__thead">
+              <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Assigned As" %}</div>
+                <div class="oh-sticky-table__th">
+                  {% trans "Replace Mail" %}
+                </div>
+              </div>
+            </div> {% endcomment %}
+            <div class="oh-sticky-table__tbody">
+              {% comment %} {% for related_model in related_models %} {% endcomment %}
+                <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__td">
+                    {% trans "Select mail" %}
+                  </div>
+                  <div class="oh-sticky-table__td">
+                    <select
+                      name="replace_mail"
+                      id="select{{forloop.counter}}"
+                      class="oh-table__editable-input w-100 oh-select oh-select-2 manager-select"
+                      data-error = "{{related_model.field_name}}_error"
+                      >
+                      {% for option in mails %} 
+                        <option value="{{option.id}}">{{option}}</option> 
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              {% comment %} {% endfor %} {% endcomment %}
+            </div>
+          </div>
+        </div>
+        {% comment %} <div
+          class="swal2-validation-message"
+          id="reporting_manager_id_error"
+          style="display: none"
+          >
+          <p>Replace {{employee}} from Reporting manager</p>
+        </div>
+        <div
+          class="swal2-validation-message"
+          id="recruitment_managers_error"
+          style="display: none"
+          >
+          <p>Replace {{employee}} from Recruitment manager</p>
+        </div>
+        <div
+          class="swal2-validation-message"
+          id="recruitment_stage_managers_error"
+          style="display: none"
+          >
+          <p>Replace {{employee}} from Recruitment stage manager</p>
+        </div>
+        <div
+          class="swal2-validation-message"
+          id="onboarding_stage_manager_error"
+          style="display: none"
+          >
+          <p>Replace {{employee}} from Onboarding stage manager</p>
+        </div>
+        <div
+          class="swal2-validation-message"
+          id="onboarding_task_manager_error"
+          style="display: none"
+          >
+          <p>Replace {{employee}} from Onboarding task manager</p>
+        </div> {% endcomment %}
+        <div class="swal2-actions" style="display: flex">
+          <div class="swal2-loader"></div>
+          <button
+            type="submit"
+            class="swal2-deny swal2-styled mb-4"
+            aria-label=""
+            style="display: inline-block;background-color:#008000;"
+          >
+            {% trans "Submit" %}
+          </button>
+          <button
+            type="button"
+            class="swal2-confirm swal2-styled oh-modal__cancel mb-4"
+            aria-label=""
+            style="display: inline-block;background-color:#d33;"
+          >
+            {% trans "Cancel" %}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% comment %} <script>
+  $(document).ready(function (e) {
+    $("#replaceEmployeeForm").submit(function (e) {
+      var empId = $("#replaceEmployeeForm").attr("data-id");
+      $(".manager-select").each(function () {
+        var selectElement = $(this);
+        var managerId = selectElement.val();
+        var errorElementId = selectElement.data("error");
+        if (empId === managerId) {
+          $("#" + errorElementId).css("display", "inline-flex");
+          event.preventDefault();
+        } else {
+          $("#" + errorElementId).css("display", "none");
+        }
+      });
+    });
+  });
+</script> {% endcomment %}

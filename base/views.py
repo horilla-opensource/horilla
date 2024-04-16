@@ -856,18 +856,59 @@ def object_duplicate(request, obj_id, **kwargs):
 @permission_required("base.view_dynamicemailconfiguration")
 def mail_server_conf(request):
     mail_servers = DynamicEmailConfiguration.objects.all()
+    primary_mail_not_exist = True
+    if DynamicEmailConfiguration.objects.filter(is_primary=True).exists():
+        primary_mail_not_exist = False
     return render(
-        request, "base/mail_server/mail_server.html", {"mail_servers": mail_servers}
+        request, "base/mail_server/mail_server.html", {"mail_servers": mail_servers,"primary_mail_not_exist":primary_mail_not_exist}
     )
 
 
 @login_required
 @permission_required("base.delete_dynamicemailconfiguration")
 def mail_server_delete(request):
+    """
+    This method is used to delete mail server
+    """
     ids = request.GET.getlist("ids")
-    DynamicEmailConfiguration.objects.filter(id__in=ids).delete()
-    messages.success(request, "Mail server configuration deleted")
-    return redirect(mail_server_conf)
+    # primary_mail_check
+    delete = True
+    for id in ids:
+        emailconfig = DynamicEmailConfiguration.objects.filter(id=id).first()
+        if emailconfig.is_primary:
+            delete = False
+    if delete:
+        DynamicEmailConfiguration.objects.filter(id__in=ids).delete()
+        messages.success(request, "Mail server configuration deleted")
+        return HttpResponse("<script>window.location.reload()</script>")
+    else:
+        if DynamicEmailConfiguration.objects.all().count() == 1:
+            messages.warning(request, "You have only 1 Mail server configuration that can't be deleted")
+            return HttpResponse("<script>window.location.reload()</script>")
+        else :
+            mails=DynamicEmailConfiguration.objects.all().exclude(is_primary=True)
+            return render(
+                request,
+                "base/mail_server/replace_mail.html",
+                {
+                    "mails": mails,
+                    'title':_("Can't Delete"),
+                },
+            )
+        
+def replace_primary_mail(request):
+    """
+    This method is used to replace primary mail server
+    """
+    emailconfig_id=request.POST.get('replace_mail')
+    email_config = DynamicEmailConfiguration.objects.get(id=emailconfig_id)
+    email_config.is_primary = True
+    email_config.save()
+    DynamicEmailConfiguration.objects.filter(is_primary=True).first().delete()
+
+    messages.success(request, "Primary Mail server configuration replaced")
+    return redirect("mail-server-conf")
+    # return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
