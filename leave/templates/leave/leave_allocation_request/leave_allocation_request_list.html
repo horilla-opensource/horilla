@@ -2,6 +2,17 @@
 {% load static %}
 {% load basefilters %}
 {% include 'filter_tags.html' %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 <div class="oh-tabs__contents" id="view-container">
     <div class="oh-tabs__content oh-tabs__content--active" id="tab_1">
         {% if my_leave_allocation_requests %}
@@ -78,8 +89,9 @@
                                         {% endif %}
                                         {% if leave_allocation_request.status !=  'approved' %}
                                             <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" id="delete-link"
-                                                href="{% url 'leave-allocation-request-delete' leave_allocation_request.id %}" 
-                                                onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" 
+                                                hx-confirm="{% trans 'Are you sure you want to delete ?' %}" 
+                                                hx-post="{% url 'leave-allocation-request-delete' leave_allocation_request.id %}?{{pd}}"
+                                                hx-target="#view-container"
                                                 title="{% trans 'Delete' %}">
                                                 <ion-icon name="trash-outline"></ion-icon>
                                             </a>
@@ -221,8 +233,9 @@
                                             {% endif %}
                                             {% if leave_allocation_request.status !=  'approved' %}
                                                 <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" id="delete-link"
-                                                    href="{% url 'leave-allocation-request-delete' leave_allocation_request.id %}" 
-                                                    onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" 
+                                                    hx-confirm="{% trans 'Are you sure you want to delete ?' %}" 
+                                                    hx-post="{% url 'leave-allocation-request-delete' leave_allocation_request.id %}?{{pd}}"
+                                                    hx-target="#view-container"
                                                     title="{% trans 'Delete' %}">
                                                     <ion-icon name="trash-outline"></ion-icon>
                                                 </a>

@@ -39,7 +39,6 @@ class HorillaModel(models.Model):
 
     @classmethod
     def find(cls, object_id):
-        # object_id = 1020
         return cls.objects.filter(id=object_id).first()
     
     @classmethod

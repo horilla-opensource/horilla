@@ -3379,7 +3379,10 @@ def leave_allocation_request_delete(request, req_id):
 
     except ProtectedError:
         messages.error(request, _("Related entries exist"))
-
+    hx_target = request.META.get("HTTP_HX_TARGET")
+    if hx_target and hx_target == "view-container":
+        previous_data = request.GET.urlencode()
+        return redirect(f"/leave/leave-allocation-request-filter?{previous_data}")
     return redirect(leave_allocation_request_view)
 
 
