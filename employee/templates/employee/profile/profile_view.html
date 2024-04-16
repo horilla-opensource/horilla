@@ -437,6 +437,8 @@
 <script src="{% static 'basedOn.js' %}"></script>
 <script>
 	toggleColumns("employee-tab-profile","fieldContainerTable")
+	if (!localStorage.getItem("employee_tab_profile")) {
+		  $("#fieldContainerTable").find("[type=checkbox]").prop("checked",true).change()
+	  }
 </script>
-
 {% endblock content %}
