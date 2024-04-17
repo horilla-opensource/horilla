@@ -428,6 +428,17 @@
               >
             </li>
             {% endif %}
+            {% if biometric_app_exists and is_installed %}
+              {% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
+                <li class="oh-sidebar__submenu-item">
+                  <a
+                    class="oh-sidebar__submenu-link"
+                    href="{% url 'view-biometric-devices' %}"
+                    >{% trans "Biometric Devices" %}</a
+                  >
+                </li>
+              {% endif %}
+            {% endif %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"

@@ -981,32 +981,27 @@ class DynamicEmailConfiguration(HorillaModel):
         default=False, verbose_name=_("Primary Mail Server")
     )
 
-    host = models.CharField(
-         null=True, max_length=256, verbose_name=_("Email Host")
-    )
+    host = models.CharField(null=True, max_length=256, verbose_name=_("Email Host"))
 
-    port = models.SmallIntegerField( null=True, verbose_name=_("Email Port"))
+    port = models.SmallIntegerField(null=True, verbose_name=_("Email Port"))
 
     from_email = models.EmailField(
-         null=True, max_length=256, verbose_name=_("Default From Email")
+        null=True, max_length=256, verbose_name=_("Default From Email")
     )
 
     username = models.CharField(
-        
         null=True,
         max_length=256,
         verbose_name=_("Email Host Username"),
     )
 
     display_name = models.CharField(
-        
         null=True,
         max_length=256,
         verbose_name=_("Display Name"),
     )
 
     password = models.CharField(
-        
         null=True,
         max_length=256,
         verbose_name=_("Email Authentication Password"),
@@ -1019,7 +1014,7 @@ class DynamicEmailConfiguration(HorillaModel):
     fail_silently = models.BooleanField(default=False, verbose_name=_("Fail Silently"))
 
     timeout = models.SmallIntegerField(
-         null=True, verbose_name=_("Email Send Timeout (seconds)")
+        null=True, verbose_name=_("Email Send Timeout (seconds)")
     )
     company_id = models.OneToOneField(
         Company, on_delete=models.CASCADE, null=True, blank=True
@@ -1034,7 +1029,7 @@ class DynamicEmailConfiguration(HorillaModel):
                 )
             )
         if not self.company_id and not self.is_primary:
-                raise ValidationError({"company_id": _("This field is required")})
+            raise ValidationError({"company_id": _("This field is required")})
 
     def __str__(self):
         return self.username
@@ -1359,10 +1354,19 @@ class DriverViewed(models.Model):
 
 class DashboardEmployeeCharts(HorillaModel):
     from employee.models import Employee
-    
+
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     charts = models.JSONField(default=list, blank=True, null=True)
 
     def __str__(self):
         return f"{self.employee} - charts"
-    
+
+
+class BiometricAttendance(models.Model):
+    is_installed = models.BooleanField(default=False)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT,related_name="biometric_enabled_company"
+    )
+
+    def __str__(self):
+        return f"{self.is_installed}"

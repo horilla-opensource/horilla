@@ -1,0 +1,202 @@
+
+{% load i18n %} {% load static %}
+<style>
+  @keyframes biometricPulse {
+    from {
+      transform: translateX(-10%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  #mask-biometric-animation {
+    animation: biometricPulse 2s linear 0.1s infinite;
+  }
+  .hr-biometric {
+    width: 200px;
+    height: auto;
+    object-fit: contain;
+  }
+  .hr-biometric-container {
+    position: absolute; /* or position: relative; */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+  .hr-biometric-message{
+    color: #303030;
+    display: block;
+    margin-top: 1.25rem;
+  }
+</style>
+    <div class="hr-biometric-container">
+   
+    <!-- SVG CODE -->
+    <svg
+      class="hr-biometric"
+      width="1102"
+      height="339"
+      viewBox="0 0 1102 339"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <rect
+        x="671.5"
+        y="5.5"
+        width="425"
+        height="328"
+        fill="white"
+        stroke="#999999"
+        stroke-width="11" />
+      <rect
+        x="694.5"
+        y="28.5"
+        width="185"
+        height="72"
+        fill="white"
+        stroke="#999999"
+        stroke-width="11" />
+      <rect
+        x="693.5"
+        y="128.5"
+        width="39"
+        height="39"
+        fill="white"
+        stroke="#999999"
+        stroke-width="11" />
+      <rect
+        x="694.5"
+        y="195.5"
+        width="39"
+        height="39"
+        fill="white"
+        stroke="#999999"
+        stroke-width="11" />
+      <rect
+        x="694.5"
+        y="262.5"
+        width="39"
+        height="39"
+        fill="white"
+        stroke="#999999"
+        stroke-width="11" />
+      <rect
+        x="765.5"
+        y="128.5"
+        width="39"
+        height="39"
+        fill="white"
+        stroke="#999999"
+        stroke-width="11" />
+      <rect
+        x="766.5"
+        y="195.5"
+        width="39"
+        height="39"
+        fill="white"
+        stroke="#999999"
+        stroke-width="11" />
+      <rect
+        x="766.5"
+        y="262.5"
+        width="39"
+        height="39"
+        fill="white"
+        stroke="#999999"
+        stroke-width="11" />
+      <rect
+        x="839.5"
+        y="128.5"
+        width="39"
+        height="39"
+        fill="white"
+        stroke="#999999"
+        stroke-width="11" />
+      <rect
+        x="840.5"
+        y="195.5"
+        width="39"
+        height="39"
+        fill="white"
+        stroke="#999999"
+        stroke-width="11" />
+      <rect
+        x="840.5"
+        y="262.5"
+        width="39"
+        height="39"
+        fill="white"
+        stroke="#999999"
+        stroke-width="11" />
+      <rect
+        x="908.5"
+        y="131.5"
+        width="155"
+        height="170"
+        fill="white"
+        stroke="#999999"
+        stroke-width="11" />
+      <line
+        x1="936"
+        y1="100.5"
+        x2="1036"
+        y2="100.5"
+        stroke="#999999"
+        stroke-width="7" />
+      <line
+        x1="936"
+        y1="32.5"
+        x2="1036"
+        y2="32.5"
+        stroke="#999999"
+        stroke-width="7" />
+      <line
+        x1="920"
+        y1="83.5"
+        x2="1053"
+        y2="83.5"
+        stroke="#999999"
+        stroke-width="7" />
+      <line
+        x1="919"
+        y1="49.5"
+        x2="1052"
+        y2="49.5"
+        stroke="#999999"
+        stroke-width="7" />
+      <line
+        x1="912.023"
+        y1="66.5001"
+        x2="1061.02"
+        y2="67.5001"
+        stroke="#999999"
+        stroke-width="7" />
+      <mask
+        id="mask0_703_126"
+        style="mask-type: alpha"
+        maskUnits="userSpaceOnUse"
+        x="0"
+        y="42"
+        width="606"
+        height="262">
+        <path
+          d="M0.5 221.5H225.5L322 135.5V301.5L407.5 60.5L434.5 221.5H606"
+          stroke="white"
+          stroke-width="9" />
+      </mask>
+      <g mask="url(#mask0_703_126)">
+        <rect
+          x="-561"
+          y="-262"
+          width="669"
+          height="686"
+          id="mask-biometric-animation"
+          fill="#E54F38" />
+      </g>
+    </svg>
+     <!-- END OF SVG CODE -->
+     <span class="hr-biometric-message">{% trans "Trying to connect..." %}</span>
+    </div>

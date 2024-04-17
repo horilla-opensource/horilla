@@ -103,6 +103,7 @@ sidebar_urls = [
     "resignation-requests-view",
     "action-type",
     "general-settings",
+    "view-biometric-devices",
 ]
 remove_urls = [
     "objective-detailed-view",

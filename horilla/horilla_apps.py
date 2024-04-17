@@ -3,7 +3,6 @@ horilla_apps
 
 This module is used to register horilla addons
 """
-
 from horilla.settings import INSTALLED_APPS
 from horilla import settings
 
@@ -15,4 +14,4 @@ INSTALLED_APPS.append("haystack")
 INSTALLED_APPS.append("helpdesk")
 INSTALLED_APPS.append("offboarding")
 
-setattr(settings, "EMAIL_BACKEND", "base.backends.ConfiguredEmailBackend")
+setattr(settings,"EMAIL_BACKEND","base.backends.ConfiguredEmailBackend")

@@ -25,6 +25,7 @@ from attendance.forms import AttendanceValidationConditionForm
 from attendance.methods.group_by import group_by_queryset
 from attendance.models import AttendanceValidationCondition, GraceTime
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
 from notifications.models import Notification
@@ -112,6 +113,7 @@ from base.models import (
     WorkTypeRequest,
     Tags,
     WorkTypeRequestComment,
+    BiometricAttendance,
 )
 from base.filters import (
     RotatingShiftRequestReGroup,
@@ -5499,3 +5501,35 @@ def employee_chart_show(request):
         return HttpResponse("<script>window.location.reload();</script>")
     context = {"dashboard_charts": charts, "employee_chart": employee_charts.charts}
     return render(request, "dashboard_chart_form.html", context)
+
+def enable_biometric_attendance_view(request):
+    biometric = BiometricAttendance.objects.first()
+    return render(
+        request,
+        "base/install_biometric_attendance.html",
+        {"biometric": biometric},
+    )
+
+
+def activate_biometric_attendance(request):
+    if request.method == "GET":
+        is_installed = request.GET.get("is_installed")
+        instance = BiometricAttendance.objects.first()
+        if not instance:
+            instance = BiometricAttendance.objects.create()
+        if is_installed == "true":
+            instance.is_installed = True
+            messages.success(
+                request,
+                _("The biometric attendance feature has been activated successfully."),
+            )
+        else:
+            instance.is_installed = False
+            messages.info(
+                request,
+                _(
+                    "The biometric attendance feature has been deactivated successfully."
+                ),
+            )
+        instance.save()
+    return JsonResponse({"message": "Success"})

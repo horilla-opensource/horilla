@@ -1,16 +1,16 @@
 import logging, os
 from urllib.parse import urlencode
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.translation import gettext as _
 from base.models import MultipleApprovalManagers
 from employee.models import Employee, EmployeeWorkInformation
 from django.contrib import messages
 from django.shortcuts import render
 from horilla.settings import TEMPLATES, BASE_DIR
 from horilla import settings
-from leave.models import LeaveRequestConditionApproval
+from base.models import BiometricAttendance
 
 
 logger = logging.getLogger(__name__)
@@ -101,14 +101,14 @@ def duplicate_permission(function):
         is_manager = EmployeeWorkInformation.objects.filter(
             reporting_manager_id=employee
         ).exists()
-        
+
         app_label = kwargs["model"]._meta.app_label
         model_name = kwargs["model"]._meta.model_name
         obj_id = kwargs["obj_id"]
-        object_instance =  kwargs["model"].objects.filter(pk=obj_id).first()
+        object_instance = kwargs["model"].objects.filter(pk=obj_id).first()
         try:
             if object_instance.employee_id == employee:
-                 return function(request, *args, **kwargs)
+                return function(request, *args, **kwargs)
         except:
             pass
         permission = f"{app_label}.add_{model_name}"
@@ -237,5 +237,22 @@ def owner_can_enter(function, perm: str, model: object, manager_access=False):
         if can_enter:
             return function(request, *args, **kwargs)
         return render(request, "no_perm.html")
+
+    return _function
+
+
+def install_required(function):
+    def _function(request, *args, **kwargs):
+        object = BiometricAttendance.objects.all().first()
+        if object.is_installed:
+            return function(request, *args, **kwargs)
+        else:
+            messages.info(
+                request,
+                _(
+                    "Please activate the biometric attendance feature in the settings menu."
+                ),
+            )
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
     return _function

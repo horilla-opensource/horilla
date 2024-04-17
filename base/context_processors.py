@@ -164,3 +164,10 @@ def get_initial_prefix(request):
         instance_id = settings.id
         prefix = settings.badge_id_prefix
     return {"get_initial_prefix": prefix, "prefix_instance_id": instance_id}
+
+
+def biometric_app_exists(request):
+    from django.conf import settings
+
+    biometric_app_exists = "biometric" in settings.INSTALLED_APPS
+    return {"biometric_app_exists": biometric_app_exists}
