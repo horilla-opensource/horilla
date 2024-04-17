@@ -50,22 +50,22 @@
                       <li class="oh-dropdown__item">
                         <a href="#" class="oh-dropdown__link asset-create" data-toggle="oh-modal-toggle"
                         onclick="event.stopPropagation()"
-                        data-target="#AssetCategoryModal" hx-get="{% url 'asset-creation' id=asset_category.id %}?{{pg}}"
-                        hx-target="#AssetModal" data-category-id="{{asset_category.id}}">{% trans "Create" %}</a>
+                        data-target="#objectCreateModal" hx-get="{% url 'asset-creation' id=asset_category.id %}?{{pg}}"
+                        hx-target="#objectCreateModalTarget" data-category-id="{{asset_category.id}}">{% trans "Create" %}</a>
                       </li>
                     {% endif %}
                     {% if perms.asset.change_assetcategory %}
                       <li class="oh-dropdown__item">
                         <a href="#" class="oh-dropdown__link " data-toggle="oh-modal-toggle"
                         onclick="event.stopPropagation()"
-                        data-target="#AssetCategoryModal" hx-get="{% url 'asset-category-duplicate' obj_id=asset_category.id %}?{{pg}}"
-                        hx-target="#AssetModal">{% trans "Duplicate" %}</a>
+                        data-target="#objectCreateModal" hx-get="{% url 'asset-category-duplicate' obj_id=asset_category.id %}?{{pg}}"
+                        hx-target="#objectCreateModalTarget">{% trans "Duplicate" %}</a>
                       </li>
                       <li class="oh-dropdown__item">
                         <a href="#" class="oh-dropdown__link " data-toggle="oh-modal-toggle"
                         onclick="event.stopPropagation()"
-                        data-target="#AssetCategoryModal" hx-get="{% url 'asset-category-update' cat_id=asset_category.id %}?{{pg}}"
-                        hx-target="#AssetModal">{% trans "Edit" %}</a>
+                        data-target="#objectUpdateModal" hx-get="{% url 'asset-category-update' cat_id=asset_category.id %}?{{pg}}"
+                        hx-target="#objectUpdateModalTarget">{% trans "Edit" %}</a>
                       </li>
                     {% endif %}
                     {% if perms.asset.delete_assetcategory %}

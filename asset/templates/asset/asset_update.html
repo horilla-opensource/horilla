@@ -79,7 +79,7 @@
   <span class="oh-modal__dialog-title " id="addEmployeeObjectiveModalLabel"> {% trans "Asset Update" %}</span>
 </div>
 <div class="oh-modal__dialog-body">
-  <form hx-post="{%url 'asset-update' asset_id=asset_form.instance.id %}?requests_ids={{requests_ids}}&{{pg}}" hx-target="#assetUpdateBody">
+  <form hx-post="{%url 'asset-update' asset_id=asset_form.instance.id %}?requests_ids={{requests_ids}}&{{pg}}" hx-target="#objectUpdateModalTarget">
     {% if asset_under == 'asset_filter' %}
     <input type="hidden" name="asset_under" value="asset_filter">
     {%endif %}

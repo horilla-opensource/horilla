@@ -57,25 +57,35 @@
             <a 
               class="oh-btn oh-btn--light-bkg w-100" 
               data-toggle="oh-modal-toggle" 
-              data-target="#assetUpdate"
+              data-target="#objectUpdateModal"
               hx-get="{% url 'asset-update'  asset_id=asset.id %}?asset_under=asset_filter&{{pg}}" 
               title="{% trans 'Update' %}"
-              hx-target="#assetUpdateBody" 
+              hx-target="#objectUpdateModalTarget" 
               onclick="event.stopPropagation()"
               id="oh-btn-asset-update-modal"> 
               <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
             </a>
-            <a 
+            {% if asset.assetassignment_set.all %}
+              <a 
               class="oh-btn oh-btn--light-bkg w-100" 
-              data-toggle="oh-modal-toggle" 
-              data-target="#AssetCategoryModal"
-              hx-get="{% url 'asset-update'  asset_id=asset.id %}?asset_under=asset_filter&{{pg}}" 
-              title="{% trans 'Update' %}"
-              hx-target="#AssetModal" 
-              onclick="event.stopPropagation()"
-              id="oh-btn-asset-update-modal"> 
-            <ion-icon name="document-attach-outline"></ion-icon>
+              onclick="event.preventDefault();event.stopPropagation()"
+              hx-get="{% url 'add-asset-report' asset.id %}?asset_list=true"
+              hx-target="#addAssetReportForm"
+              data-toggle="oh-modal-toggle"
+              data-target="#addAssetReport"
+              id="oh-btn-asset-update-modal"
+              title='{% trans "Asset Report" %}'> 
+              <ion-icon name="document-attach-outline"></ion-icon>
             </a>
+            {% else %}
+            <a 
+              class="oh-btn oh-btn--light-bkg w-100 oh-btn--disabled" 
+              onclick="event.stopPropagation()"
+              id="oh-btn-asset-update-modal"
+              title='{% trans "Asset Report" %}'> 
+              <ion-icon name="document-attach-outline"></ion-icon>
+            </a>
+            {% endif %}
             <form action="{% url 'asset-delete' asset.id %}?asset_list=asset_filter&{{pg}}" 
               onsubmit="return confirm('{% trans "Do you want to delete this asset?" %}')" 
               method="post" style="display: contents"> {% csrf_token %} 
@@ -88,10 +98,10 @@
               <a 
                 class="oh-btn oh-btn--light-bkg w-100 " 
                 data-toggle="oh-modal-toggle" 
-                data-target="#assetUpdate"
+                data-target="#objectUpdateModal"
                 hx-get="{% url 'asset-update'  asset_id=asset.id %}?{{pg}}" 
                 title="{% trans 'Update' %}" 
-                hx-target="#assetUpdateBody"
+                hx-target="#objectUpdateModalTarget"
                 onclick="event.stopPropagation()"
                 id="oh-btn-asset-update-modal"> 
                 <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
@@ -99,10 +109,10 @@
             <a 
               class="oh-btn oh-btn--light-bkg w-100" 
               data-toggle="oh-modal-toggle"
-              data-target="#AssetCategoryModal"
+              data-target="#objectCreateModal"
               hx-get="{% url 'duplicate-asset' asset.id %}?{{pg}}"
               title="{% trans 'Duplicate' %}"
-              hx-target="#AssetModal"
+              hx-target="#objectCreateModalTarget"
               onclick="event.stopPropagation()"
               style= "cursor: pointer;"
              >

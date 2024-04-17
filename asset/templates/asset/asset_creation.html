@@ -38,7 +38,7 @@
 <div class="oh-modal__dialog-body">
   <form
     hx-post="{%url 'asset-creation' id=asset_creation_form.asset_category_id.initial %}"
-    hx-target="#AssetModal"
+    hx-target="#objectCreateModalTarget"
   >
     {% csrf_token %} {{asset_creation_form.asset_category_id.as_hidden }}
     <div id="AssetCreationFormContainer">

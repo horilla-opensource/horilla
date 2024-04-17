@@ -1,13 +1,31 @@
 {% load static i18n %}
-
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+  <script>  
+      setTimeout(function () {
+        $('.oh-modal__close').click()
+      }, 1000);
+  </script>
+</div>
+{% endif %}
 <div class="oh-modal__dialog-header">
     <button 
     type="button" 
     class="oh-modal__close" 
     data-dismiss="oh-modal" 
     aria-label="Close"
-    hx-get="{%url 'asset-category-view-search-filter' %}" 
-    hx-target="#assetCategoryList">
+    {% if messages %}
+        hx-get="{%url 'asset-category-view-search-filter' %}" 
+        hx-target="#assetCategoryList"
+    {% endif %}
+    >
     <ion-icon name="close-outline"></ion-icon>
     </button>
     <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
@@ -15,7 +33,7 @@
     </span>
 </div>
 <div class="oh-modal__dialog-body">
-    <form hx-post="{%url 'asset-category-creation' %}" hx-target="#AssetModal">
+    <form hx-post="{%url 'asset-category-creation' %}" hx-target="#objectCreateModalTarget">
         {% csrf_token %}
         <div class="oh-input__group ">
             <label class="oh-input__label" for="{{asset_category_form.asset_category_name.id_for_label}}">{% trans "Name" %}</label>

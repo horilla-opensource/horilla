@@ -232,9 +232,9 @@
                         <div>
                             <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow" 
                             data-toggle="oh-modal-toggle"
-                            data-target="#AssetCategoryModal" 
+                            data-target="#objectCreateModal" 
                             hx-get="{%url 'asset-category-creation' %}"
-                            hx-target="#AssetModal"> 
+                            hx-target="#objectCreateModalTarget"> 
                             <ion-icon name="add-outline"></ion-icon>
                             {% trans "Create" %}
                             </a>
@@ -360,12 +360,6 @@
 </script>
 {% endif %}
 
-<div class="oh-modal" id="AssetCategoryModal" role="dialog" aria-labelledby="AssetCategoryModal" aria-hidden="true">
-    <div class="oh-modal__dialog" id="AssetModal">
-           
-    </div>
-</div>
-
 <div
   class="oh-modal"
   id="addAssetReport"
@@ -409,13 +403,6 @@
         </div>
     </div>
 </div>
-
-<div class="oh-modal" id="assetUpdate" role="dialog" aria-labelledby="assetModalLabel" aria-hidden="true">    
-    <div class="oh-modal__dialog" id="assetUpdateBody">
-        
-    </div>
-</div>
-
 
 <script src="{% static '/base/filter.js' %}"></script>
 <script src="{% static 'src/asset_category/assetCategoryView.js' %}"></script>

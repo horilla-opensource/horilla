@@ -30,7 +30,7 @@
 </div>
 <div class="oh-modal__dialog-body">
   <form hx-post="{%url 'asset-category-update' cat_id=asset_category_update_form.instance.id %}?{{pg}}"
-    hx-target="#AssetModal">
+    hx-target="#objectUpdateModalTarget">
     {% csrf_token %}
     <div class="oh-input__group ">
       <label class="oh-input__label" for="{{asset_category_update_form.asset_category_name.id_for_label}}">{% trans "Name" %}</label>

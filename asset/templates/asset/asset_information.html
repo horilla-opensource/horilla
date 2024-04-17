@@ -104,8 +104,8 @@
     <div class="oh-btn-group">
       <a hx-get="{% url 'asset-update' asset_id=asset.id %}?{{pg}}&requests_ids={{requests_ids}}" 
         data-toggle="oh-modal-toggle" 
-        data-target="#assetUpdate"
-        hx-target="#assetUpdateBody" 
+        data-target="#objectUpdateModal"
+        hx-target="#objectUpdateModalTarget" 
         class="oh-btn oh-btn--info" 
         style="width: 50%;"
       >
