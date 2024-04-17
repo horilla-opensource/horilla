@@ -63,9 +63,9 @@
             			    class="oh-btn oh-btn--secondary w-50"
             			    role="button"
             			    data-toggle="oh-modal-toggle"
-            			    data-target="#asset-return-allocation-modal"
+            			    data-target="#objectCreateModal"
             			    hx-get="{%url 'asset-allocate-return'  asset_id=asset.asset_id.id %}"
-            			    hx-target="#asset-return-allocation-modal-target"
+            			    hx-target="#objectCreateModalTarget"
 							onclick="event.stopPropagation();"
             			  >
             			    <ion-icon name="return-down-back-sharp"></ion-icon>{% trans	"Return" %}
