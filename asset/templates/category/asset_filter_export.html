@@ -1,0 +1,62 @@
+{% load i18n %}
+{% load widget_tweaks %}
+<div class="oh-modal__dialog-header">
+    <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
+        <h5>{% trans "Export Assets" %}</h5>
+    </span>
+</div>
+<div
+  class="oh-modal__dialog-body "
+  id="assetExportModalBody"
+    >
+    <form action="{% url 'asset-export-excel' %}" method="post">
+        {% csrf_token %}
+        <div class="oh-profile-section pt-0">
+        <div class="oh-accordion">
+            <div class="oh-accordion-header ">{% trans "Asset" %}</div>
+            <div class="oh-accordion-body">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{asset_export_filter.form.asset_name.id_for_label}}">{% trans "Asset Name" %}</label>
+                            {{asset_export_filter.form.asset_name}}
+                        </div>
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{asset_export_filter.form.asset_status.id_for_label}}">{% trans "Status" %}</label>
+                            {{asset_export_filter.form.asset_status}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{asset_export_filter.form.asset_tracking_id.id_for_label}}">{% trans "Tracking Id" %}</label>
+                            {{asset_export_filter.form.asset_tracking_id}}
+                        </div>
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{asset_export_filter.form.asset_purchase_date.id_for_label}}">{% trans "Purchased Date" %}</label>
+                            {{ asset_export_filter.form.asset_purchase_date | attr:"type:date"}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{asset_export_filter.form.asset_category_id.id_for_label}}">{% trans "Category" %}</label>
+                            {{asset_export_filter.form.asset_category_id}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{asset_export_filter.form.asset_lot_number_id.id_for_label}}">{% trans "Batch Number" %}</label>
+                            {{asset_export_filter.form.asset_lot_number_id}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="oh-modal__dialog-footer p-0 pt-3">
+            <button class="oh-btn oh-btn--secondary oh-btn--small ">{% trans "Export" %}</button>
+        </div>
+        </div>
+    </form>
+</div>

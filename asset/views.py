@@ -452,7 +452,6 @@ def filter_pagination_asset_category(request):
     asset_category_filtered = AssetCategoryFilter(
         request.GET, queryset=asset_category_queryset
     )
-    asset_export_filter = AssetExportFilter(request.GET, queryset=Asset.objects.all())
     asset_category_paginator = Paginator(asset_category_filtered.qs, get_pagination())
     page_number = request.GET.get("page")
     asset_categories = asset_category_paginator.get_page(page_number)
@@ -464,7 +463,6 @@ def filter_pagination_asset_category(request):
     return {
         "asset_creation_form": asset_creation_form,
         "asset_category_form": asset_category_form,
-        "asset_export_filter": asset_export_filter,
         "asset_categories": asset_categories,
         "asset_category_filter_form": asset_category_filtered.form,
         "asset_filter_form": asset_filter_form.form,
@@ -1060,113 +1058,116 @@ def asset_excel(_request):
 @permission_required(perm="asset.add_asset")
 def asset_export_excel(request):
     """asset export view"""
+    asset_export_filter = AssetExportFilter(request.GET, queryset=Asset.objects.all())
+    if request.method == "POST":
+        queryset_all = Asset.objects.all()
+        if not queryset_all:
+            messages.warning(request, _("There are no assets to export."))
+            return redirect("asset-category-view")  # or some other URL
 
-    queryset_all = Asset.objects.all()
-    if not queryset_all:
-        messages.warning(request, _("There are no assets to export."))
-        return redirect("asset-category-view")  # or some other URL
+        queryset = AssetExportFilter(request.POST, queryset=queryset_all).qs
 
-    queryset = AssetExportFilter(request.POST, queryset=queryset_all).qs
-
-    # Convert the queryset to a Pandas DataFrame
-    data = {
-        "asset_name": [],
-        "asset_description": [],
-        "asset_tracking_id": [],
-        "asset_purchase_date": [],
-        "asset_purchase_cost": [],
-        "asset_category_id": [],
-        "asset_status": [],
-        "asset_lot_number_id": [],
-    }
-
-    fields_to_check = [
-        "asset_name",
-        "asset_description",
-        "asset_tracking_id",
-        "asset_purchase_date",
-        "asset_purchase_cost",
-        "asset_category_id",
-        "asset_status",
-        "asset_lot_number_id",
-    ]
-
-    for asset in queryset:
-        for field in fields_to_check:
-            # Get the value of the field for the current asset
-            value = getattr(asset, field)
-
-            if type(value) == date:
-                user = request.user
-                emp = user.employee_get
-
-                # Taking the company_name of the user
-                info = EmployeeWorkInformation.objects.filter(employee_id=emp)
-                if info.exists():
-                    for i in info:
-                        employee_company = i.company_id
-                    company_name = Company.objects.filter(company=employee_company)
-                    emp_company = company_name.first()
-
-                    # Access the date_format attribute directly
-                    date_format = (
-                        emp_company.date_format if emp_company else "MMM. D, YYYY"
-                    )
-                else:
-                    date_format = "MMM. D, YYYY"
-                # Define date formats
-                date_formats = {
-                    "DD-MM-YYYY": "%d-%m-%Y",
-                    "DD.MM.YYYY": "%d.%m.%Y",
-                    "DD/MM/YYYY": "%d/%m/%Y",
-                    "MM/DD/YYYY": "%m/%d/%Y",
-                    "YYYY-MM-DD": "%Y-%m-%d",
-                    "YYYY/MM/DD": "%Y/%m/%d",
-                    "MMMM D, YYYY": "%B %d, %Y",
-                    "DD MMMM, YYYY": "%d %B, %Y",
-                    "MMM. D, YYYY": "%b. %d, %Y",
-                    "D MMM. YYYY": "%d %b. %Y",
-                    "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
-                }
-
-                # Convert the string to a datetime.date object
-                start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
-
-                # Print the formatted date for each format
-                for format_name, format_string in date_formats.items():
-                    if format_name == date_format:
-                        value = start_date.strftime(format_string)
-
-            # Append the value if it exists, or append None if it's None
-            data[field].append(value if value is not None else None)
-
-    # Fill any missing values with None
-    for key in data:
-        data[key] = data[key] + [None] * (len(queryset) - len(data[key]))
-
-    # Convert the data dictionary to a Pandas DataFrame
-    dataframe = pd.DataFrame(data)
-
-    # Convert any date fields to the desired format
-    # Rename the columns as needed
-    dataframe = dataframe.rename(
-        columns={
-            "asset_name": "Asset name",
-            "asset_description": "Description",
-            "asset_tracking_id": "Tracking id",
-            "asset_purchase_date": "Purchase date",
-            "asset_purchase_cost": "Purchase cost",
-            "asset_category_id": "Category",
-            "asset_status": "Status",
-            "asset_lot_number_id": "Batch number",
+        # Convert the queryset to a Pandas DataFrame
+        data = {
+            "asset_name": [],
+            "asset_description": [],
+            "asset_tracking_id": [],
+            "asset_purchase_date": [],
+            "asset_purchase_cost": [],
+            "asset_category_id": [],
+            "asset_status": [],
+            "asset_lot_number_id": [],
         }
-    )
 
-    # Write the DataFrame to an Excel file
-    response = HttpResponse(content_type="application/vnd.ms-excel")
-    response["Content-Disposition"] = 'attachment; filename="assets.xlsx"'
-    dataframe.to_excel(response, index=False)
-    return response
+        fields_to_check = [
+            "asset_name",
+            "asset_description",
+            "asset_tracking_id",
+            "asset_purchase_date",
+            "asset_purchase_cost",
+            "asset_category_id",
+            "asset_status",
+            "asset_lot_number_id",
+        ]
+
+        for asset in queryset:
+            for field in fields_to_check:
+                # Get the value of the field for the current asset
+                value = getattr(asset, field)
+
+                if type(value) == date:
+                    user = request.user
+                    emp = user.employee_get
+
+                    # Taking the company_name of the user
+                    info = EmployeeWorkInformation.objects.filter(employee_id=emp)
+                    if info.exists():
+                        for i in info:
+                            employee_company = i.company_id
+                        company_name = Company.objects.filter(company=employee_company)
+                        emp_company = company_name.first()
+
+                        # Access the date_format attribute directly
+                        date_format = (
+                            emp_company.date_format if emp_company else "MMM. D, YYYY"
+                        )
+                    else:
+                        date_format = "MMM. D, YYYY"
+                    # Define date formats
+                    date_formats = {
+                        "DD-MM-YYYY": "%d-%m-%Y",
+                        "DD.MM.YYYY": "%d.%m.%Y",
+                        "DD/MM/YYYY": "%d/%m/%Y",
+                        "MM/DD/YYYY": "%m/%d/%Y",
+                        "YYYY-MM-DD": "%Y-%m-%d",
+                        "YYYY/MM/DD": "%Y/%m/%d",
+                        "MMMM D, YYYY": "%B %d, %Y",
+                        "DD MMMM, YYYY": "%d %B, %Y",
+                        "MMM. D, YYYY": "%b. %d, %Y",
+                        "D MMM. YYYY": "%d %b. %Y",
+                        "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
+                    }
+
+                    # Convert the string to a datetime.date object
+                    start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
+
+                    # Print the formatted date for each format
+                    for format_name, format_string in date_formats.items():
+                        if format_name == date_format:
+                            value = start_date.strftime(format_string)
+
+                # Append the value if it exists, or append None if it's None
+                data[field].append(value if value is not None else None)
+
+        # Fill any missing values with None
+        for key in data:
+            data[key] = data[key] + [None] * (len(queryset) - len(data[key]))
+
+        # Convert the data dictionary to a Pandas DataFrame
+        dataframe = pd.DataFrame(data)
+
+        # Convert any date fields to the desired format
+        # Rename the columns as needed
+        dataframe = dataframe.rename(
+            columns={
+                "asset_name": "Asset name",
+                "asset_description": "Description",
+                "asset_tracking_id": "Tracking id",
+                "asset_purchase_date": "Purchase date",
+                "asset_purchase_cost": "Purchase cost",
+                "asset_category_id": "Category",
+                "asset_status": "Status",
+                "asset_lot_number_id": "Batch number",
+            }
+        )
+
+        # Write the DataFrame to an Excel file
+        response = HttpResponse(content_type="application/vnd.ms-excel")
+        response["Content-Disposition"] = 'attachment; filename="assets.xlsx"'
+        dataframe.to_excel(response, index=False)
+        return response
+    context = {"asset_export_filter": asset_export_filter}
+    return render(request, "category/asset_filter_export.html", context)
 
 
 @login_required

@@ -221,6 +221,8 @@
                               href="#"
                               data-toggle="oh-modal-toggle"
                               data-target="#assetExport"
+                              hx-get="{% url 'asset-export-excel' %}"
+                              hx-target="#assetExportTarget"
                               >{% trans "Export" %}</a
                             >
                           </li>
@@ -244,75 +246,8 @@
             </div>
         </div>
     </section>
-    <div
-    class="oh-modal"
-    id="assetExport"
-    role="dialog"
-    aria-labelledby="assetExport"
-    aria-hidden="true"
-  >
-    <div class="oh-modal__dialog">
-      <div class="oh-modal__dialog-header">
-        <h2 class="oh-modal__dialog-title" id="assetExport">
-          {% trans "Export Assets" %}
-        </h2>
-        <button class="oh-modal__close" aria-label="Close">
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-        <div
-          class="oh-modal__dialog-body p-0 pt-2"
-          id="assetExportModalBody"
-        >
-            <form action="{% url 'asset-export-excel' %}" method="post">
-                {% csrf_token %}
-                <div class="oh-dropdown__filter-body">
-                    <div class="oh-accordion">
-                        <div class="oh-accordion-header ">{% trans "Asset" %}</div>
-                        <div class="oh-accordion-body">
-                            <div class="row">
-                                <div class="col-sm-12 col-md-12 col-lg-6">
-                                    <div class="oh-input-group">
-                                        <label class="oh-label" for="{{asset_export_filter.form.asset_name.id_for_label}}">{% trans "Asset Name" %}</label>
-                                        {{asset_export_filter.form.asset_name}}
-                                    </div>
-                                    <div class="oh-input-group">
-                                        <label class="oh-label" for="{{asset_export_filter.form.asset_status.id_for_label}}">{% trans "Status" %}</label>
-                                        {{asset_export_filter.form.asset_status}}
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 col-md-12 col-lg-6">
-                                    <div class="oh-input-group">
-                                        <label class="oh-label" for="{{asset_export_filter.form.asset_tracking_id.id_for_label}}">{% trans "Tracking Id" %}</label>
-                                        {{asset_export_filter.form.asset_tracking_id}}
-                                    </div>
-                                    <div class="oh-input-group">
-                                        <label class="oh-label" for="{{asset_export_filter.form.asset_purchase_date.id_for_label}}">{% trans "Purchased Date" %}</label>
-                                        {{ asset_export_filter.form.asset_purchase_date | attr:"type:date"}}
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 col-md-12 col-lg-6">
-                                    <div class="oh-input-group">
-                                        <label class="oh-label" for="{{asset_export_filter.form.asset_category_id.id_for_label}}">{% trans "Category" %}</label>
-                                        {{asset_export_filter.form.asset_category_id}}
-                                    </div>
-
-                                </div>
-                                <div class="col-sm-12 col-md-12 col-lg-6">
-                                    <div class="oh-input-group">
-                                        <label class="oh-label" for="{{asset_export_filter.form.asset_lot_number_id.id_for_label}}">{% trans "Batch Number" %}</label>
-                                        {{asset_export_filter.form.asset_lot_number_id}}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="oh-dropdown__filter-footer">
-                    <button class="oh-btn oh-btn--secondary oh-btn--small ">{% trans "Export" %}</button>
-                </div>
-            </form>
-        </div>
-      </div>
+    <div class="oh-modal" id="assetExport" role="dialog" aria-labelledby="assetExport" aria-hidden="true">
+        <div class="oh-modal__dialog" id="assetExportTarget">
     </div>
 </div>
 <div class="oh-modal" id="assetImport" role="dialog" aria-labelledby="assetImport" aria-hidden="true">

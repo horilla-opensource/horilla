@@ -79,7 +79,7 @@
 												onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');"
 												>
 												{% csrf_token %}
-												<button type="submit" class="oh-btn oh-btn--secondary">
+												<button type="submit" class="oh-btn oh-btn--secondary" onclick="event.stopPropagation();">
 													<ion-icon name="return-down-back-sharp"></ion-icon>
 													{% trans "Return Request" %}
 												</button>

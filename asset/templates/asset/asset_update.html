@@ -84,7 +84,7 @@
     <input type="hidden" name="asset_under" value="asset_filter">
     {%endif %}
     {% csrf_token %}
-    <div class="oh-modal__dialog-body">
+    <div class="oh-profile-section pt-0">
       <section>
         <div id="ObjecitveContainer">
           <div class="my-3" id="keyResultCard">
@@ -178,21 +178,22 @@
           </div>
         </div>
       </section>
-    </div>
-    <div class="oh-modal__dialog-footer justify-content-between">
-      <button 
-        class=" oh-btn oh-btn--secondary oh-btn--shadow"
-        onclick="event.preventDefault();event.stopPropagation()"
-        hx-get="{% url "add-asset-report" asset_form.instance.id %}?asset_list=true"
-        hx-target="#addAssetReportForm"
-        data-toggle="oh-modal-toggle"
-        data-target="#addAssetReport"
-       >
-        {% trans "Add Report" %}
-      </button>
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-        {% trans "Save" %}
-      </button>
+      <div class="oh-btn-group flex-row-reverse mt-4" style="border:none;">
+        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+          {% trans "Save" %}
+        </button>
+        <button 
+          class=" oh-btn oh-btn--info oh-btn--shadow mr-2"
+          onclick="event.preventDefault();event.stopPropagation()"
+          hx-get="{% url "add-asset-report" asset_form.instance.id %}?asset_list=true"
+          hx-target="#addAssetReportForm"
+          data-toggle="oh-modal-toggle"
+          data-target="#addAssetReport"
+         >
+          {% trans "Add Report" %}
+        </button>
+        
+      </div>
     </div>
   </form>
 </div>

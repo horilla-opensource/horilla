@@ -41,7 +41,7 @@
     hx-target="#objectCreateModalTarget"
   >
     {% csrf_token %} {{asset_creation_form.asset_category_id.as_hidden }}
-    <div id="AssetCreationFormContainer">
+    <div class="oh-profile-section pt-0" id="AssetCreationFormContainer">
       <div class="oh-input__group">
         <label
           class="oh-input__label"
@@ -144,7 +144,7 @@
           </div>
         </div>
       </div>
-      <div class="oh-modal__dialog-footer">
+      <div class="oh-modal__dialog-footer p-0">
         <button
           type="submit"
           class="oh-btn oh-btn--secondary oh-btn--shadow mt-3"

@@ -35,24 +35,26 @@
 <div class="oh-modal__dialog-body">
     <form hx-post="{%url 'asset-category-creation' %}" hx-target="#objectCreateModalTarget">
         {% csrf_token %}
-        <div class="oh-input__group ">
-            <label class="oh-input__label" for="{{asset_category_form.asset_category_name.id_for_label}}">{% trans "Name" %}</label>
-            {{asset_category_form.asset_category_name}}
-            {{asset_category_form.asset_category_name.errors}}
-        </div>
-        <div class="oh-input__group ">
-            <label class="oh-input__label" for="{{asset_category_form.asset_category_description.id_for_label}}">{% trans "Description" %}</label>
-            {{asset_category_form.asset_category_description}}
-        </div>
-        <div class="oh-input__group ">
-            <label class="oh-input__label" for="{{asset_category_form.company_id.id_for_label}}">{% trans "Company" %}</label>
-            {{asset_category_form.company_id}}
-            {{asset_category_form.errors}}
-        </div>
-        <div class="oh-modal__dialog-footer pe-0 mt-2">
-            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" >
-                {% trans "Save" %}
-            </button>
+        <div class="oh-profile-section pt-0">
+            <div class="oh-input__group ">
+                <label class="oh-input__label" for="{{asset_category_form.asset_category_name.id_for_label}}">{% trans "Name" %}</label>
+                {{asset_category_form.asset_category_name}}
+                {{asset_category_form.asset_category_name.errors}}
+            </div>
+            <div class="oh-input__group ">
+                <label class="oh-input__label" for="{{asset_category_form.asset_category_description.id_for_label}}">{% trans "Description" %}</label>
+                {{asset_category_form.asset_category_description}}
+            </div>
+            <div class="oh-input__group ">
+                <label class="oh-input__label" for="{{asset_category_form.company_id.id_for_label}}">{% trans "Company" %}</label>
+                {{asset_category_form.company_id}}
+                {{asset_category_form.errors}}
+            </div>
+            <div class="oh-modal__dialog-footer p-0 mt-3">
+                <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" >
+                    {% trans "Save" %}
+                </button>
+            </div>
         </div>
     </form>
 </div>
