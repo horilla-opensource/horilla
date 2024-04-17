@@ -348,9 +348,9 @@
             role="button"
             data-toggle="oh-modal-toggle"
             onclick="event.stopPropagation()"
-            data-target="#asset-request-allocation-modal"
+            data-target="#objectCreateModal"
             hx-get="{% url 'asset-allocate-creation' %}"
-            hx-target="#asset-request-allocation-modal-target"
+            hx-target="#objectCreateModalTarget"
             title="{% trans 'Create allocation' %}"
             >
             <ion-icon
@@ -370,28 +370,7 @@
   </div>
 </main>
 
-<!-- asset request and allocation modal start -->
-<div
-  class="oh-modal"
-  id="asset-request-allocation-modal"
-  role="dialog"
-  aria-labelledby="AssetRequestModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 550px">
-    <div class="oh-modal__dialog-header">
-      <button type="button" class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-
-    <!-- htmx form -->
-    <div
-      class="oh-modal__dialog-body"
-      id="asset-request-allocation-modal-target"
-    ></div>
-  </div>
-</div>
+<!-- asset return modal start -->
 
 <div
   class="oh-modal"
@@ -421,7 +400,8 @@
   role="dialog"
   aria-labelledby="addAssetReport"
   aria-hidden="true"
->
+  style="z-index: 1022;"
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="addAssetReportLabel">
@@ -449,6 +429,7 @@
   role="dialog"
   aria-labelledby="assetFineModal"
   aria-hidden="true"
+  style="z-index: 1022;"
 >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">

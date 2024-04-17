@@ -5,7 +5,7 @@
   </button>
 </div>
 <!-- htmx form -->
-<div class="oh-modal__dialog-body" id="asset-request-allocation-modal-target">
+<div class="oh-modal__dialog-body">
 {% if request.GET.assets_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button hx-get="{% url 'own-asset-individual-view' previous %}?assets_ids={{assets_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
@@ -91,9 +91,9 @@
                 class="oh-btn oh-btn--secondary w-100"
                 role="button"
                 data-toggle="oh-modal-toggle"
-                data-target="#asset-return-allocation-modal"
+                data-target="#objectCreateModal"
                 hx-get="{%url 'asset-allocate-return'  asset_id=asset.id %}"
-                hx-target="#asset-return-allocation-modal-target"
+                hx-target="#objectCreateModalTarget"
               >
                 <ion-icon name="return-down-back-sharp"></ion-icon>{% trans	"Return" %}
             </button>
@@ -105,7 +105,7 @@
                   {% csrf_token %}
                   <button type="submit" class="oh-btn oh-btn--secondary w-100">
                       <ion-icon name="return-down-back-sharp"></ion-icon>
-                      {% trans "Return Request tets" %}
+                      {% trans "Return Request" %}
                   </button>
               </form>
             {% endif %}

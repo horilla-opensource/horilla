@@ -35,7 +35,7 @@
           </div>
             <div class="oh-sticky-table__td">
               <button href="#" class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
-                data-target="#asset-return-allocation-modal" hx-get="{%url 'asset-allocate-return'  asset_id=asset.asset_id.id %}" hx-target="#asset-return-allocation-modal-target"><ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
+                data-target="#objectCreateModal" hx-get="{%url 'asset-allocate-return'  asset_id=asset.asset_id.id %}" hx-target="#objectCreateModalTarget"><ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
             </div>
           </div>
           {% endfor %}
@@ -162,7 +162,7 @@
                           <div class="oh-sticky-table__td">
                             <div class="oh-btn-group"  >
                               <a class="oh-btn oh-btn--success w-50" role="button" data-toggle="oh-modal-toggle"
-                              data-target="#asset-request-allocation-modal" onclick="event.stopPropagation()" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" title="{% trans "Approve" %}" hx-target="#asset-request-allocation-modal-target" >
+                              data-target="#objectCreateModal" onclick="event.stopPropagation()" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" title="{% trans "Approve" %}" hx-target="#objectCreateModalTarget" >
                               <ion-icon name="checkmark-outline"></ion-icon>
                               
                               </a>
@@ -253,7 +253,7 @@
                           {% if perms.asset.add_assetassignment %} 
                             {% if asset_request.asset_request_status == 'Requested' %}
                                 <a class="oh-btn oh-btn--success w-100" role="button" data-toggle="oh-modal-toggle"
-                                  data-target="#asset-request-allocation-modal" title="{% trans 'Approve' %}" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" hx-target="#asset-request-allocation-modal-target">
+                                  data-target="#objectCreateModal" title="{% trans 'Approve' %}" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" hx-target="#objectCreateModalTarget">
                                   <ion-icon name="checkmark-outline"></ion-icon>
                                 </a>
                                 <form action="{% url 'asset-request-reject' req_id=asset_request.id %}" class="w-100" method="post" class="w-100"
@@ -410,7 +410,7 @@
                 <div class="oh-sticky-table__td">
                   <div class="oh-btn-group"  >
                     <a class="oh-btn oh-btn--success w-50" role="button" data-toggle="oh-modal-toggle"
-                      data-target="#asset-request-allocation-modal" onclick="event.stopPropagation()" title="{% trans "Approve" %}" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" hx-target="#asset-request-allocation-modal-target" >
+                      data-target="#objectCreateModal" onclick="event.stopPropagation()" title="{% trans "Approve" %}" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" hx-target="#objectCreateModalTarget" >
                       <ion-icon name="checkmark-outline"></ion-icon>
                     </a>
                     <form action="{% url 'asset-request-reject' req_id=asset_request.id %}"
@@ -500,7 +500,7 @@
                   {% if perms.asset.add_assetassignment %} 
                     {% if asset_request.asset_request_status == 'Requested' %}
                         <a class="oh-btn oh-btn--success w-100" role="button" data-toggle="oh-modal-toggle"
-                          data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" hx-target="#asset-request-allocation-modal-target"  title="{% trans 'Approve' %}">
+                          data-target="#objectCreateModal" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" hx-target="#objectCreateModalTarget"  title="{% trans 'Approve' %}">
                           <ion-icon name="checkmark-outline"></ion-icon>
                         </a>
                         <form action="{% url 'asset-request-reject' req_id=asset_request.id %}" class="w-100" method="post" class=""
@@ -617,7 +617,7 @@
                       {% if not asset_allocation.return_status %}
                       <div class="oh-sticky-table__td" >
                         <button href="#" class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
-                          data-target="#asset-return-allocation-modal" hx-get="{%url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}" hx-target="#asset-return-allocation-modal-target"><ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
+                          data-target="#objectCreateModal" hx-get="{%url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}" hx-target="#objectCreateModalTarget"><ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
                       </div>
                       {% else %}
                       <div class="oh-sticky-table__td" >
@@ -698,9 +698,9 @@
                           class="oh-btn oh-btn--secondary w-100" 
                           role="button" 
                           data-toggle="oh-modal-toggle"
-                          data-target="#asset-request-allocation-modal" 
+                          data-target="#objectCreateModal" 
                           hx-get="{%url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}" 
-                          hx-target="#asset-return-allocation-modal-target">
+                          hx-target="#objectCreateModalTarget">
                           <ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
                           {%endif %}
                         </div>
@@ -844,7 +844,7 @@
               {% if not asset_allocation.return_status %}
               <div class="oh-sticky-table__td" >
                 <button href="#" class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
-                  data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}" hx-target="#asset-request-allocation-modal-target"><ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
+                  data-target="#objectCreateModal" hx-get="{%url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}" hx-target="#objectCreateModalTarget"><ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
               </div>
               {% else %}
               <div class="oh-sticky-table__td" >
@@ -925,9 +925,9 @@
                   class="oh-btn oh-btn--secondary w-100" 
                   role="button" 
                   data-toggle="oh-modal-toggle"
-                  data-target="#asset-return-allocation-modal" 
+                  data-target="#objectCreateModal" 
                   hx-get="{%url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}" 
-                  hx-target="#asset-return-allocation-modal-target">
+                  hx-target="#objectCreateModalTarget">
                   <ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}</button>
                   {%endif %}
                 </div>

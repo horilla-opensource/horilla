@@ -62,9 +62,9 @@
                                     role="button"
                                     onclick="event.stopPropagation()"
                                     data-toggle="oh-modal-toggle"
-                                    data-target="#asset-request-allocation-modal"
+                                    data-target="#objectCreateModal"
                                     hx-get="{% url 'asset-request-approve' req_id=asset_request.id %}"
-                                    hx-target="#asset-request-allocation-modal-target"
+                                    hx-target="#objectCreateModalTarget"
                                     title="Approve request"
                                 >
                                     <ion-icon name="checkmark-outline"></ion-icon>

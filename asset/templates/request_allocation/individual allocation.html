@@ -29,7 +29,7 @@
 <div class="oh-modal__dialog-header">
     <span
       class="oh-modal__dialog-title"
-      id="objectCreateModalLabel"
+      id="objectDetailsModalLabel"
         >
       {% trans "Details" %}
     </span>
@@ -126,9 +126,9 @@
 				class="oh-btn oh-btn--secondary w-100"
 				role="button"
 				data-toggle="oh-modal-toggle"
-				data-target="#asset-return-allocation-modal"
+				data-target="#objectCreateModal"
 				hx-get="{% url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}"
-				hx-target="#asset-return-allocation-modal-target"
+				hx-target="#objectCreateModalTarget"
 			>
 				<ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}
 			</button>

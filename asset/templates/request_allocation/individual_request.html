@@ -98,11 +98,11 @@
             <div class="oh-btn-group">
                 <a
                     class="oh-btn oh-btn--success w-100"
-                    role="button"
+                    role="button123"
                     data-toggle="oh-modal-toggle"
-                    data-target="{% if dashboard == 'true' %}#editModal{% else %}#asset-request-allocation-modal{% endif %}"
+                    data-target="#objectCreateModal"
                     hx-get="{% url 'asset-request-approve' req_id=asset_request.id %}"
-                    hx-target="{% if dashboard == 'true' %}#editModalForm {% else %}#asset-request-allocation-modal-target{% endif %}"
+                    hx-target="#objectCreateModalTarget"
                 >
                     <ion-icon name="checkmark-outline"></ion-icon>{% trans 'Approve' %}
                 </a>
