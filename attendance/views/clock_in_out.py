@@ -174,13 +174,19 @@ def clock_in(request):
     """
     employee, work_info = employee_exists(request)
     datetime_now = datetime.now()
+    if request.__dict__.get("datetime"):
+        datetime_now = request.datetime
     if employee and work_info is not None:
         shift = work_info.shift_id
         date_today = date.today()
+        if request.__dict__.get("date"):
+            date_today = request.date
         attendance_date = date_today
         day = date_today.strftime("%A").lower()
         day = EmployeeShiftDay.objects.get(day=day)
         now = datetime.now().strftime("%H:%M")
+        if request.__dict__.get("time"):
+            now = request.time.strftime("%H:%M")
         now_sec = strtime_seconds(now)
         mid_day_sec = strtime_seconds("12:00")
         minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
@@ -363,9 +369,13 @@ def clock_out(request):
     This method is used to set the out date and time for attendance and attendance activity
     """
     datetime_now = datetime.now()
+    if request.__dict__.get("datetime"):
+        datetime_now = request.datetime
     employee, work_info = employee_exists(request)
     shift = work_info.shift_id
     date_today = date.today()
+    if request.__dict__.get("date"):
+        date_today = request.date
     day = date_today.strftime("%A").lower()
     day = EmployeeShiftDay.objects.get(day=day)
     attendance = (
@@ -376,6 +386,8 @@ def clock_out(request):
     if attendance is not None:
         day = attendance.attendance_day
     now = datetime.now().strftime("%H:%M")
+    if request.__dict__.get("time"):
+        now = request.time.strftime("%H:%M")
     minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
         day=day, shift=shift
     )
