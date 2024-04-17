@@ -389,13 +389,13 @@ def attendance_view(request):
         {
             "form": form,
             "export_form": export_form,
-            "validate_attendances": paginator_qry(
-                validate_attendances, request.GET.get("vpage")
-            ),
-            "attendances": paginator_qry(attendances, request.GET.get("page")),
-            "overtime_attendances": paginator_qry(
-                ot_attendances, request.GET.get("opage")
-            ),
+            # "validate_attendances": paginator_qry(
+            #     validate_attendances, request.GET.get("vpage")
+            # ),
+            # "attendances": paginator_qry(attendances, request.GET.get("page")),
+            # "overtime_attendances": paginator_qry(
+            #     ot_attendances, request.GET.get("opage")
+            # ),
             "validate_attendances_ids": validate_attendances_ids,
             "ot_attendances_ids": ot_attendances_ids,
             "attendances_ids": attendances_ids,

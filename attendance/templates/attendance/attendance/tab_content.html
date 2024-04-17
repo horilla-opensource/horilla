@@ -882,6 +882,12 @@
 {% endif %}
 
 <script>
+
+  window.addEventListener('load', function() {
+      // Trigger the click event on .filterButton ( only once at the first load )
+      $('.filterButton').click();
+  });
+
   function showSweetAlert(dataReqValue) {
     Swal.fire({
         title: 'Pending Attendance Update Request!',
