@@ -28,9 +28,21 @@
             <img src="{{leave_type.get_avatar}}" class="oh-kanban-card__profile-image" alt="Username" />
           </div>
         </div>
+
         <div class="oh-kanban-card__details">
-          <span class="oh-kanban-card__title">{{leave_type.name}}</span>
+          <span class="oh-card__title oh-card__title--sm fw-bold" style="font-size:18px;">{{leave_type.name}}</span>
+          <div class="oh-timeoff-modal__stats-container mb-1">
+            <div class="oh-timeoff-modal__stat mt-1">
+              <span class="oh-timeoff-modal__stat-title fw-bold text-dark ">{% trans "Payment" %}</span>
+              <span class="oh-timeoff-modal__stat-title">{{leave_type.get_payment_display}}</span>
+            </div>
+            <div class="oh-timeoff-modal__stat mt-1">
+              <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Total Days" %}</span>
+              <span class="oh-timeoff-modal__stat-title">{{leave_type.total_days}}</span>
+            </div>
+          </div>
         </div>
+
         {% if perms.leave.change_leavetype or perms.leave.delete_leavetype %}
           <div class="oh-kanban-card__dots" onclick="event.stopPropagation()">
             <div class="oh-dropdown" x-data="{show: false}">

@@ -307,15 +307,17 @@
 </div>
 
 
-<div class="oh-modal" id="clashViewModal" role="dialog" aria-hidden="true" style="z-index:50;">
-  <div class="oh-modal__dialog" style="max-width: 1200px;">
+{% comment %} <div class="oh-modal" id="clashViewModal" role="dialog" aria-hidden="true" style="z-index:99;">
+  <div class="oh-modal__dialog" style="max-width: 900px;">
     <div class="oh-modal__dialog-header">
       <h3 class="oh-main__titlebar-title fw-bold ">{% trans "Clashed Leave Requests" %}</h3>
-      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      <button class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
+        <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+      </button>
     </div>
     <div class="oh-modal__dialog-body" id="clashViewModalBody" style="overflow-x:auto;"></div>
   </div>
-</div>
+</div> {% endcomment %}
 
 <div class="oh-modal" id="penaltyViewModal" role="dialog" aria-hidden="true">
   <div class="oh-modal__dialog" style="max-width: 900px">
