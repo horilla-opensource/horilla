@@ -72,6 +72,7 @@
                 <div class="oh-sticky-table__th text-center">{% trans "Task Status" %}</div>
                 <div class="oh-sticky-table__th text-center" style="width: 250px;">{% trans "Actions" %}</div>
                 {% for task in stage.grouper.offboardingtask_set.all %}
+                {% if request.user.employee_get.offboardingemployee.employeetask_set.all|is_employee_tasks:task or perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}
                 <div class="oh-sticky-table__th" style="width: 200px;" >
                   <div class="d-flex justify-content-between align-items-center">
                     <span>
@@ -96,14 +97,15 @@
                     {% endif %}
                   </div>
                 </div>
+                {% endif %}
                 {% endfor %}
-                <div class="oh-sticky-table__th" style="width: 120px;">
-                  {% if perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}
+                {% if perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}
+                  <div class="oh-sticky-table__th" style="width: 120px;">
                     <button class="oh-checkpoint-badge text-success" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-get="{% url "offboarding-add-task" %}?stage_id={{stage.grouper.id}}" hx-target="#objectDetailsModalTarget">
                       {% trans "Add Task" %}
                     </button>
-                  {% endif %}
-                </div>
+                  </div>
+                {% endif %}
               </div>
             </div>
             <div class="oh-sticky-table__tbody" id="tableBody{{stage.grouper.id}}" data-stage-id="{{stage.grouper.id}}" data-archive-stage="{{stage.grouper.is_archived_stage|lower}}" data-offboarding-id="{{offboarding.offboarding.id}}">

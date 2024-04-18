@@ -154,8 +154,8 @@
                 </div>
             </div>
             {% for task in stage.grouper.offboardingtask_set.all %}
-            <div class="oh-sticky-table__td">
-                {% if task|have_task:employee %} 
+            {% if task|have_task:employee %} 
+                <div class="oh-sticky-table__td">
                 {% for assinged_tasks in employee|get_assigned_task:task %}
                 <select
                     hx-get="{% url "update-task-status" %}?stage_id={{stage.grouper.id}}&employee_ids={{employee.id}}&task_id={{assinged_tasks.task_id.id}}"
@@ -174,8 +174,11 @@
                     <option value="{{ assinged_task.0 }}">{{ assinged_task.1 }}</option>
                     {% endif %} {% endfor %}
                 </select>
-                {% endfor %} {% else %}
-                    {% if perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}
+                {% endfor %} 
+                </div>
+                {% else %}
+                {% if perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}
+                    <div class="oh-sticky-table__td">
                     <button
                         hx-get="{% url "offboarding-assign-task" %}?employee_ids={{employee.id}}&task_id={{task.id}}"
                         hx-target="#offboardingBody{{offboarding.offboarding.id}}"
@@ -185,11 +188,13 @@
                     >
                         {% trans 'Assign' %}
                     </button>
+                    </div>
                     {% endif %}
                 {% endif %}
-            </div>
             {% endfor %}
+            {% if perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}
             <div class="oh-sticky-table__td"></div>
+            {% endif %}
         </div>
     {% endif %}
 {% endfor %}

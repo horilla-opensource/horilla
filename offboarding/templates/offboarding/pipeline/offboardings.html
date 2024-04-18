@@ -106,10 +106,12 @@
         {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding.offboarding %}
           <div class="oh-tabs__content" id="Offboarding{{ offboarding.offboarding.id }}">
               {% if perms.offboarding.add_offboardingstage or request.user.employee_get|any_manager %}
+              <div class="d-flex flex-row-reverse">  
                 <a hx-get="{% url 'create-offboarding-stage' %}?offboarding_id={{offboarding.offboarding.id}}" style="width: 100px;" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" class="mb-3 oh-btn oh-btn--secondary">
                   <ion-icon name="add-outline"></ion-icon>
                   {% trans 'Stage' %}
                 </a>
+              </div>
               {% endif %}
               {% include "offboarding/stage/stages.html" %}
           </div>

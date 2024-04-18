@@ -143,3 +143,16 @@ def completed_tasks(tasks):
     This method is used to to check any stage manager
     """
     return tasks.filter(status="completed").count()
+
+@register.filter("is_employee_tasks")
+def is_employee_tasks(employee_tasks,task):
+    """
+    This method is used to to check any stage manager
+    """
+    try:
+        if task.title in employee_tasks.values_list("task_id__title", flat=True):
+            print("true")
+            return True
+        return False
+    except:
+        return False
