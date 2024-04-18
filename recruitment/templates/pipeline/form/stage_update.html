@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-  <h5 class="oh-modal__dialog-title" id="updateStageModalLabel">
+  <h5 class="oh-modal__dialog-title" id="objectUpdateModalLabel">
     {% trans "Edit Stage" %}
   </h5>
   <button class="oh-modal__close" aria-label="Close">
@@ -9,16 +9,13 @@
 </div>
 <div class="oh-modal__dialog-body">
   <form
-    action="{% url 'stage-update-pipeline' form.instance.id %}"
-    method="post"
+    hx-post="{% url 'stage-update-pipeline' form.instance.id %}"
+    hx-target="#objectUpdateModalTarget"
+    class="oh-profile-section"
   >
     <div>
       {% csrf_token %}
-      <div
-        class="row"
-        id="stageUpdateFormHx"
-        class="oh-general__tab-target oh-profile-section"
-      >
+      <div class="row" id="stageUpdateFormHx">
         <div class="col-12 col-sm-12 col-md-12 col-lg-6">
           <label class="oh-label" for="">{% trans "Stage" %} *</label>
           {{form.stage}} {{form.stage.errors}}

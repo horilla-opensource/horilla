@@ -623,7 +623,7 @@ def stage_update_pipeline(request, stage_id):
                     redirect="/recruitment/pipeline",
                 )
 
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HttpResponse("<script>window.location.reload()</script>")
 
     return render(request, "pipeline/form/stage_update.html", {"form": form})
 
