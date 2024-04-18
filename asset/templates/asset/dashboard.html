@@ -136,29 +136,6 @@
         </div>
     </div>
 </main>
-
-<div
-	class="oh-modal"
-	id="asset_dashboard_modal"
-	role="dialog"
-	aria-labelledby="AssetRequestModal"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog" style="max-width: 550px">
-		<div class="oh-modal__dialog-header">
-			<button type="button" class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-
-		<!-- htmx form -->
-		<div
-			class="oh-modal__dialog-body"
-			id="asset_dashboard_modal_target"
-		></div>
-	</div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'src/asset/dashboard.js' %}"></script>
 {% endblock content %}

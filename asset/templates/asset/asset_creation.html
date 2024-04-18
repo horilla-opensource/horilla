@@ -39,6 +39,7 @@
   <form
     hx-post="{%url 'asset-creation' id=asset_creation_form.asset_category_id.initial %}"
     hx-target="#objectCreateModalTarget"
+    data-id="{{asset_creation_form.asset_category_id.initial}}"
   >
     {% csrf_token %} {{asset_creation_form.asset_category_id.as_hidden }}
     <div class="oh-profile-section pt-0" id="AssetCreationFormContainer">

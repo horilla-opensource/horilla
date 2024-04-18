@@ -1,47 +1,6 @@
 
 {% load i18n %}
 {% load basefilters %}
-{% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager %}
-
-<div
-  class="oh-modal"
-  id="assetHistory"
-  role="dialog"
-  aria-labelledby="assetHistory"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="assetHistoryLavel">
-        {% trans "Export Hour Accounts" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-      <div
-        class="oh-modal__dialog-body p-0 pt-2"
-        id="assetHistoryModalBody"
-      >
-          {% comment %} <form
-          action="{%url 'attendance-account-info-export' %}"
-          method="get"
-          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-          id="assetHistoryForm"
-        >
-          {% csrf_token %} {% include 'attendance/attendance_account/attendance_account_export_filter.html'%}
-          <div class="oh-dropdown__filter-footer">
-            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
-              {% trans "Export" %}
-            </button>
-          </div>
-        </form> {% endcomment %}
-      </div>
-    </div>
-  </div>
-</div>
-{% endif %}
-
-
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
   <div class="oh-main__titlebar oh-main__titlebar--left">
     <h1 class="oh-main__titlebar-title fw-bold">

@@ -92,6 +92,7 @@ class AssetForm(ModelForm):
                 attrs={
                     "class": "oh-select oh-select-2 select2-hidden-accessible  ",
                     "placeholder": "LOT001",
+                    "onchange": "batchNoChange($(this))"
                 }
             ),
         }
@@ -107,6 +108,13 @@ class AssetForm(ModelForm):
             {"id": str(uuid.uuid4())}
         )
         self.fields["asset_status"].widget.attrs.update({"id": str(uuid.uuid4())})
+        
+        batch_no_choices = [("", _("---Choose Batch No.---"))] + list(
+            self.fields["asset_lot_number_id"].queryset.values_list("id", "lot_number")
+        )
+        self.fields["asset_lot_number_id"].choices = batch_no_choices
+        if self.instance.pk is None:
+            self.fields["asset_lot_number_id"].choices += [("create", _("Create new batch number"))]
 
     def clean(self):
         instance = self.instance

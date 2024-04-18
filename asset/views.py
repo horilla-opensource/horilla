@@ -8,6 +8,7 @@ import json
 from django.db.models import Q
 from urllib.parse import parse_qs
 import pandas as pd
+from django.urls import reverse
 from django.db.models import ProtectedError
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -95,7 +96,7 @@ def asset_creation(request, id):
         None
     """
     initial_data = {"asset_category_id": id}
-    form = AssetForm(initial=initial_data)
+    form = AssetForm(initial=request.GET.dict() if request.GET else initial_data)
     if request.method == "POST":
         form = AssetForm(request.POST, initial=initial_data)
         if form.is_valid():
@@ -1173,25 +1174,31 @@ def asset_export_excel(request):
 @login_required
 def asset_batch_number_creation(request):
     """asset batch number creation view"""
+    hx_vals = (
+        request.GET.get("data") if request.GET.get("data") else request.GET.urlencode()
+    )
     asset_batch_form = AssetBatchForm()
     context = {
         "asset_batch_form": asset_batch_form,
+        "hx_vals": hx_vals,
+        "hx_get": None,
+        "hx_target": None,
     }
     if request.method == "POST":
         asset_batch_form = AssetBatchForm(request.POST)
         if asset_batch_form.is_valid():
             asset_batch_form.save()
+            asset_batch_form = AssetBatchForm()
             messages.success(request, _("Batch number created successfully."))
-            response = render(
-                request, "batch/asset_batch_number_creation.html", context
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
-        context = {
-            "asset_batch_form": asset_batch_form,
-        }
-        return render(request, "batch/asset_batch_number_creation.html", context)
+            if hx_vals:
+                category_id = request.GET.get("asset_category_id")
+                url = reverse("asset-creation", args=[category_id])
+                instance = AssetLot.objects.all().order_by("-id").first()
+                mutable_get = request.GET.copy()
+                mutable_get["asset_lot_number_id"] = str(instance.id)
+                context["hx_get"] = f"{url}?{mutable_get.urlencode()}"
+                context["hx_target"] = "#objectCreateModalTarget"
+        context["asset_batch_form"] = asset_batch_form
     return render(request, "batch/asset_batch_number_creation.html", context)
 
 
@@ -1270,21 +1277,23 @@ def asset_batch_number_delete(request, batch_id):
     Returns:
     - message of the return
     """
+    previous_data = request.GET.urlencode()
     try:
         asset_batch_number = AssetLot.objects.get(id=batch_id)
+        assigned_batch_number = Asset.objects.filter(
+            asset_lot_number_id=asset_batch_number
+        )
+        if assigned_batch_number:
+            messages.error(request, _("Batch number in-use"))
+            return redirect(f"/asset/asset-batch-number-search?{previous_data}")
+        else:
+            asset_batch_number.delete()
+            messages.success(request, _("Batch number deleted"))
     except AssetLot.DoesNotExist:
         messages.error(request, _("Batch number not found"))
-        return redirect(asset_batch_view)
-    assigned_batch_number = Asset.objects.filter(asset_lot_number_id=asset_batch_number)
-    if assigned_batch_number:
-        messages.error(request, _("Batch number in-use"))
-        return redirect(asset_batch_view)
-    try:
-        asset_batch_number.delete()
-        messages.success(request, _("Batch number deleted"))
     except ProtectedError:
         messages.error(request, _("You cannot delete this Batch number."))
-    return redirect(asset_batch_view)
+    return redirect(f"/asset/asset-batch-number-search?{previous_data}")
 
 
 @login_required
@@ -1303,11 +1312,11 @@ def asset_batch_number_search(request):
     if asset_batch_number_search is None:
         asset_batch_number_search = ""
 
-    asset_batchs = AssetLot.objects.all().filter(
+    asset_batches = AssetLot.objects.all().filter(
         lot_number__icontains=asset_batch_number_search
     )
     previous_data = request.GET.urlencode()
-    asset_batch_numbers_search_paginator = Paginator(asset_batchs, 20)
+    asset_batch_numbers_search_paginator = Paginator(asset_batches, 20)
     page_number = request.GET.get("page")
     asset_batch_numbers = asset_batch_numbers_search_paginator.get_page(page_number)
 
@@ -1343,12 +1352,13 @@ def delete_asset_category(request, cat_id):
     """
     This method is used to delete asset category
     """
+    previous_data = request.GET.urlencode()
     try:
         AssetCategory.objects.get(id=cat_id).delete()
         messages.success(request, _("Asset category deleted."))
     except:
         messages.error(request, _("Assets are located within this category."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return redirect(f"/asset/asset-category-view-search-filter?{previous_data}")
 
 
 @login_required

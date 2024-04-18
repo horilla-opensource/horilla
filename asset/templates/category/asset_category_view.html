@@ -253,28 +253,28 @@
 <div class="oh-modal" id="assetImport" role="dialog" aria-labelledby="assetImport" aria-hidden="true">
     <div class="oh-modal__dialog">
         <div class="oh-modal__dialog-header">
-            <h2 class="oh-modal__dialog-title" id="assetImportLavel">
+            <h2 class="oh-modal__dialog-title m-0" id="assetImportLavel">
             {% trans "Import Assets" %}
             </h2>
             <button class="oh-modal__close" aria-label="Close">
                 <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
             </button>
-            <div class="oh-modal__dialog-body p-0 pt-2" id="assetImportModalBody">
-                <div id="AssetImportResponse"></div>
-                <form action="{%url 'asset-import' %}" enctype="multipart/form-data" method="post">
-                    {% csrf_token %}
-                    <div class="oh-dropdown__import-form">
-                        <label class="oh-dropdown__import-label" for="uploadFile">
-                            <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
-                            <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
-                            <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
-                        </label>
-                        <input type="file" name="asset_import" id="uploadFile" />
-                    </div>
-                    <button type="submit"
-                        class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3">{% trans "Upload" %}</button>
-                </form>
-            </div>
+        </div>
+        <div class="oh-modal__dialog-body" id="assetImportModalBody">
+            <div id="AssetImportResponse"></div>
+            <form action="{%url 'asset-import' %}" enctype="multipart/form-data" method="post" class="oh-profile-section">
+                {% csrf_token %}
+                <div class="oh-dropdown__import-form">
+                    <label class="oh-dropdown__import-label" for="uploadFile">
+                        <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
+                        <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
+                        <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
+                    </label>
+                    <input type="file" name="asset_import" id="uploadFile" />
+                </div>
+                <button type="submit"
+                    class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3">{% trans "Upload" %}</button>
+            </form>
         </div>
     </div>
 </div>
@@ -324,21 +324,10 @@
     </div>
 </div>
 
-<div class="oh-modal" id="assetInfoModal" role="dialog" aria-labelledby="assetModalLabel" aria-hidden="true">
-    <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="assetModalLabel">{{asset.asset_name}}</span>
-            <button class="oh-modal__close" aria-label="Close" style="top:17px" >
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-        <div class="oh-modal__dialog-body oh-modal__dialog-relative">
-            <section id="assetInfomation">
-            </section>
-        </div>
-    </div>
-</div>
 
+<div id="dynamicCreateModal" class="oh-modal" role="dialog" aria-hidden="true" style="z-index: 1022;">
+    <div id="dynamicCreateModalTarget" class="oh-modal__dialog" style="max-width: 550px"></div>
+</div>
 <script src="{% static '/base/filter.js' %}"></script>
 <script src="{% static 'src/asset_category/assetCategoryView.js' %}"></script>
 {% endblock %}

@@ -1,44 +1,37 @@
-{% load static i18n %}
-{% load i18n %}
+{% load static i18n %} {% load i18n %}
 <!-- start of messages -->
 {% if in_use_message %}
-<div class="oh-wrapper">
-    <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated oh-alert--warning">
-            {{ in_use_message }}
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated oh-alert--warning">
+                {{ in_use_message }}
+            </div>
         </div>
     </div>
-</div>
 {% endif %}
 <!-- end of messages -->
 
 <div class="oh-modal__dialog-header">
-    <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">{% trans "Batch Number Update" %}</span>
-    <button 
-    type="button" 
-    class="oh-modal__close" 
-    data-dismiss="oh-modal" 
-    aria-label="Close"
-    hx-get="{%url 'asset-batch-number-search'%}" 
-    hx-target=#AssetBatchList>
-    <ion-icon name="close-outline"></ion-icon>
+    <h5 class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">{% trans "Batch Number Update" %}</h5>
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close" hx-get="{%url 'asset-batch-number-search'%}" hx-target="#AssetBatchList">
+      <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
-<form hx-post="{%url 'asset-batch-update' batch_id=asset_batch_update_form.instance.id %}" hx-target="#AssetFormTarget">
-    {% csrf_token %}
-    <div class="oh-modal__dialog-body">
-        <div class="oh-input__group ">
+<div class="oh-modal__dialog-body">
+    <form hx-post="{%url 'asset-batch-update' batch_id=asset_batch_update_form.instance.id %}" hx-target="#objectUpdateModalTarget" class="oh-profile-section pt-1">
+        {% csrf_token %}
+        <div class="oh-input__group">
             <label class="oh-input__label" for="objective">{% trans "Batch Number" %}</label>
             {{asset_batch_update_form.lot_number}}
         </div>
-        <div class="oh-input__group ">
+        <div class="oh-input__group">
             <label class="oh-input__label" for="objective">{% trans "Description" %}</label>
             {{asset_batch_update_form.lot_description}}
         </div>
-    </div>
-    <div class="oh-modal__dialog-footer">
-        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
-            {% trans "Save" %}
-        </button>
-    </div>
-</form>
+        <div class="oh-modal__dialog-footer p-0 pt-2">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+</div>
