@@ -1,17 +1,17 @@
-{% load attendancefilters recruitmentfilters %} {% load basefilters %} {% load static %}
-{% load i18n %} {% include 'filter_tags.html' %} 
+{% load attendancefilters recruitmentfilters basefilters static i18n %}
+{% include 'filter_tags.html' %} 
 <div id="ohMessages"></div>
 <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
     {% trans "Select All Candidates" %}
-  </div>
-  <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;">
-    {% trans "Unselect All Candidates" %}
-  </div>
-  <div class="oh-checkpoint-badge text-info mb-2" id="exportCandidates" style="cursor: pointer;">
-      {% trans "Export Candidates" %}
-  </div>
-  <div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" >
-  </div>
+</div>
+<div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;">
+	{% trans "Unselect All Candidates" %}
+</div>
+<div class="oh-checkpoint-badge text-info mb-2" id="exportCandidates" style="cursor: pointer;">
+	{% trans "Export Candidates" %}
+</div>
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" >
+</div>
 <div class="oh-card">
     {% for candidate in candidates %}
     <div class="oh-accordion-meta">
@@ -533,6 +533,7 @@
                 <div class="oh-alert-container">
                     <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
                         ${response.message}
+					</div>
                 </div>`);
         }
         });
@@ -555,6 +556,7 @@
                 <div class="oh-alert-container">
                     <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
                         ${response.message}
+					</div>
                 </div>`);
             },
         });

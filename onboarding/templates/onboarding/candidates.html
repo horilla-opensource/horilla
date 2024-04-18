@@ -214,8 +214,9 @@
       success: function (response) {
         $("#ohMessages").append(`
             <div class="oh-alert-container">
-                  <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-                    ${response.message}
+				<div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+				${response.message}
+				</div>
             </div>`);
       }
     });
@@ -236,8 +237,9 @@
         success: function (response) {
           $("#ohMessages").append(`
             <div class="oh-alert-container">
-                  <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-                    ${response.message}
+				<div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+				${response.message}
+				</div>
             </div>`);
         },
       });
