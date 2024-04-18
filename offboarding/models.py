@@ -145,7 +145,7 @@ class ResignationLetter(HorillaModel):
     employee_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name="Employee"
     )
-    title = models.CharField(max_length=30, null=True)
+    title = models.CharField(max_length=100, null=True)
     description = models.TextField(null=True, max_length=255)
     planned_to_leave_on = models.DateField()
     status = models.CharField(max_length=10, choices=statuses, default="requested")
