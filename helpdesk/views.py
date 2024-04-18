@@ -522,11 +522,11 @@ def ticket_archive(request, ticket_id):
     if ticket.is_active:
         ticket.is_active = False
         ticket.save()
+        messages.success(request, _("The Ticket archived successfully."))
     else:
         ticket.is_active = True
         ticket.save()
-
-    messages.success(request, _("The Ticket updated successfully."))
+        messages.success(request, _("The Ticket un-archived successfully."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -694,7 +694,7 @@ def ticket_filter(request):
     tickets_items2 = []
 
     my_tickets = tickets.filter(
-        is_active=True, employee_id=request.user.employee_get
+        employee_id=request.user.employee_get
     ).order_by("-created_date")
 
     all_tickets = tickets.filter(is_active=True).order_by("-created_date")

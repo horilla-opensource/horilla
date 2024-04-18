@@ -155,6 +155,51 @@
 												>
 													<ion-icon name="create-outline"></ion-icon>
 												</button>
+
+												{% if ticket.is_active %}
+													<form
+													action="{% url 'ticket-archive' ticket.id %}"
+													class="w-50"
+													onsubmit="event.stopPropagation();return confirm('{% trans "Do you want to archive this ticket?" %}');"
+														method="post"
+														style="display: contents"
+													>
+														{% csrf_token %}
+														<button
+														class="oh-btn oh-btn--danger-outline p-3 w-50"
+														title="{% trans 'Archive' %}"
+														>
+														<ion-icon
+															name="archive-sharp"
+															role="img"
+															class="md hydrated"
+															aria-label="archive sharp"
+														></ion-icon>
+														</button>
+													</form>
+													{% else %}
+													<form
+														action="{% url 'ticket-archive' ticket.id %}"
+														class="w-50"
+														onsubmit="event.stopPropagation();return confirm('{% trans "Do you want to un-archive this ticket?" %}');"
+														method="post"
+														style="display: contents"
+													>
+														{% csrf_token %}
+														<button
+														class="oh-btn oh-btn--danger-outline p-3 w-50"
+														title="{% trans 'Un-archive' %}"
+														>
+														<ion-icon
+															name="archive-sharp"
+															role="img"
+															class="md hydrated"
+															aria-label="archive sharp"
+														></ion-icon>
+														</button>
+													</form>
+												{% endif %}
+													
 												<form 
 													action="{% url 'ticket-delete' ticket.id %}"
 													class="w-50"
@@ -682,6 +727,50 @@
 											>
 												<ion-icon name="create-outline"></ion-icon>
 											</button>
+
+											{% if ticket.is_active %}
+												<form
+												action="{% url 'ticket-archive' ticket.id %}"
+												class="w-50"
+												onsubmit="event.stopPropagation();return confirm('{% trans "Do you want to archive this ticket?" %}');"
+													method="post"
+													style="display: contents"
+												>
+													{% csrf_token %}
+													<button
+													class="oh-btn oh-btn--danger-outline p-3 w-50"
+													title="{% trans 'Archive' %}"
+													>
+													<ion-icon
+														name="archive-sharp"
+														role="img"
+														class="md hydrated"
+														aria-label="archive sharp"
+													></ion-icon>
+													</button>
+												</form>
+											{% else %}
+												<form
+													action="{% url 'ticket-archive' ticket.id %}"
+													class="w-50"
+													onsubmit="event.stopPropagation();return confirm('{% trans "Do you want to un-archive this ticket?" %}');"
+													method="post"
+													style="display: contents"
+												>
+													{% csrf_token %}
+													<button
+													class="oh-btn oh-btn--danger-outline p-3 w-50"
+													title="{% trans 'Un-archive' %}"
+													>
+													<ion-icon
+														name="archive-sharp"
+														role="img"
+														class="md hydrated"
+														aria-label="archive sharp"
+													></ion-icon>
+													</button>
+												</form>
+											{% endif %}
 											<form 
 												action="{% url 'ticket-delete' ticket.id %}"
 												class="w-50"
