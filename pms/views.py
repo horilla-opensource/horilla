@@ -2432,7 +2432,7 @@ def dashboard_key_result_status(request):
         for i in key_result_status:
             key_results = EmployeeKeyResult.objects.filter(status=i[0])
             key_results_count = filtersubordinates(
-                request, queryset=key_results, perm="pms.view_employeekeyresult"
+                request, queryset=key_results, perm="pms.view_employeekeyresult", field="employee_objective_id__employee_id"
             ).count()
             if key_results_count:
                 data.setdefault("key_result_label", []).append(i[1])
@@ -2458,7 +2458,7 @@ def dashboard_feedback_status(request):
         return JsonResponse(data)
 
 
-def filtersubordinates(request, queryset, perm=None):
+def filtersubordinates(request, queryset, perm=None, field = None):
     """
     This method is used to filter out subordinates queryset element.
     """
@@ -2467,9 +2467,14 @@ def filtersubordinates(request, queryset, perm=None):
         return queryset
     manager = Employee.objects.filter(employee_user_id=user).first()
     if manager:
-        queryset = queryset.filter(
-            employee_id__employee_work_info__reporting_manager_id=manager
-        ) | queryset.filter(employee_id=manager)
+        if field is not None:
+            queryset = queryset.filter(
+                **{f"{field}__employee_work_info__reporting_manager_id": manager}
+            ) | queryset.filter(**{field: manager})
+        else:
+            queryset = queryset.filter(
+                employee_id__employee_work_info__reporting_manager_id=manager
+            ) | queryset.filter(employee_id=manager)
         return queryset
     else:
         queryset = queryset.filter(employee_id=user.employee_get)
