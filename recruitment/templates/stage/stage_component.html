@@ -156,9 +156,9 @@
                         {% if perms.recruitment.change_stage %}
                           <a
                             hx-get="{% url 'rec-stage-duplicate' stage.id %}"
-                            hx-target="#addStageModalBody"
+                            hx-target="#objectCreateModalTarget"
                             data-toggle="oh-modal-toggle"
-                            data-target="#addStageModal"
+                            data-target="#objectCreateModal"
                             class="oh-btn oh-btn--light-bkg w-50"
                             title="{% trans 'Duplicate' %}"
                           >

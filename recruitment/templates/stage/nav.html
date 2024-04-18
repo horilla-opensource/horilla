@@ -60,11 +60,11 @@ x-data="{searchShow: false}"
       <div class="oh-dropdown" x-data="{open: false}">
         {% if perms.recruitment.add_stage %}
           <button 
-            data-target='#addStageModal'
+            data-target='#objectCreateModal'
             data-toggle='oh-modal-toggle'
             class="oh-btn oh-btn--secondary ml-2"
             hx-get="{% url 'rec-stage-create' %}" 
-            hx-target="#addStageModalBody"
+            hx-target="#objectCreateModalTarget"
             >
             <ion-icon name="add" class="mr-1"></ion-icon>{% trans "Create" %}
           </button>
@@ -74,24 +74,3 @@ x-data="{searchShow: false}"
   </div>
 </form>
 </section>
-
-
-<div
-  class="oh-modal"
-  id="addStageModal"
-  role="dialog"
-  aria-labelledby="addStageModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h5 class="oh-modal__dialog-title" id="addStageModalLabel"
-        >{% trans "Add Stage" %}</span
-      >
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div class="oh-modal__dialog-body" id="addStageModalBody"></div>
-  </div>
-</div>
