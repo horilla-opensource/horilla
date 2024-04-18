@@ -268,7 +268,6 @@ class ResignationLetterForm(ModelForm):
             exclude = exclude + [
                 "employee_id",
                 "status",
-                "is_active",
             ]
             self.instance.employee_id = request.user.employee_get
         exclude = list(set(exclude))
