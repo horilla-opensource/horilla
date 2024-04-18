@@ -1,4 +1,4 @@
-{% load onboardingfilters %} {% load i18n %} {% load static %}
+{% load onboardingfilters i18n static %}
 <style>
    .oh-accordion-meta__body .oh-sticky-table--no-overflow {
    height:300px;
@@ -14,7 +14,6 @@
 {% for stage in recruitment.stages %}
 <div class="oh-accordion-meta" >
  <div class="oh-accordion-meta__item" id="onboarding_stage{{stage.grouper.id}}">
-    {% comment %} fixed {% endcomment %}
     <div class="oh-accordion-meta__header oh-accordion-meta__header--show" 
     {% if request.user.employee_get in stage.grouper.employee_id.all %} 
     style="background-color: hsl(38.08deg 100% 50% / 8%);" 
@@ -275,7 +274,7 @@
                   </div>
                   {% for task in stage.grouper.onboarding_task.all %}
                   <div class="oh-sticky-table__td" onclick="event.stopPropagation()" id="task{{task.id}}{{candidate.candidate_id.id}}">
-                     {% if request.user|task_manager:task or perms.onboarding.change_candidatetask %}
+                     {% if request.user|stage_manages:stage or request.user|task_manager:task or perms.onboarding.change_candidatetask %}
                      {% include 'onboarding/candidate_task.html' %}
                      {% else %}
                      {% for choice in choices %}

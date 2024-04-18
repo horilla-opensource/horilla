@@ -7,6 +7,8 @@ This page is used to write custom template filters.
 from django.template.defaultfilters import register
 from django import template
 
+from onboarding.models import OnboardingStage
+
 
 # from django.forms.boundfield
 
@@ -74,6 +76,8 @@ def stage_manages(user, stage):
     """
     try:
         employee = user.employee_get
+        if not isinstance(stage, OnboardingStage):
+            stage = stage["grouper"]
         return (
             stage.employee_id.filter(id=employee.id).exists()
             or stage.recruitment_id.filter(recruitment_managers=employee).exists()
