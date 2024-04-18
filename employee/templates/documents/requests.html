@@ -280,8 +280,8 @@
                                 name="{{document_list.dynamic_name}}"
                                 class="oh-pagination__input"
                                 value="{{document_list.list.number}}"
-                                hx-get="{% url 'asset-history-search' %}?{{pd}}"
-                                hx-target="#historyTable"
+                                hx-get="{% url 'document-request-filter-view' %}?{{pd}}"
+                                hx-target="#view-container"
                                 min="1"
                             />
                             <span class="oh-pagination__label"
@@ -295,8 +295,8 @@
                                 class="oh-pagination__item oh-pagination__item--wide"
                             >
                                 <a
-                                    hx-target="#historyTable"
-                                    hx-get="{% url 'asset-history-search' %}?{{pd}}&{{document_list.dynamic_name}}=1"
+                                    hx-target="#view-container"
+                                    hx-get="{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}=1"
                                     class="oh-pagination__link"
                                     >{% trans "First" %}</a
                                 >
@@ -305,8 +305,8 @@
                                 class="oh-pagination__item oh-pagination__item--wide"
                             >
                                 <a
-                                    hx-target="#historyTable"
-                                    hx-get="{% url 'asset-history-search' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.previous_page_number }}"
+                                    hx-target="#view-container"
+                                    hx-get="{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.previous_page_number }}"
                                     class="oh-pagination__link"
                                     >{% trans "Previous" %}</a
                                 >
@@ -316,8 +316,8 @@
                                 class="oh-pagination__item oh-pagination__item--wide"
                             >
                                 <a
-                                    hx-target="#historyTable"
-                                    hx-get="{% url 'asset-history-search' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.next_page_number }}"
+                                    hx-target="#view-container"
+                                    hx-get="{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.next_page_number }}"
                                     class="oh-pagination__link"
                                     >{% trans "Next" %}</a
                                 >
@@ -326,8 +326,8 @@
                                 class="oh-pagination__item oh-pagination__item--wide"
                             >
                                 <a
-                                    hx-target="#historyTable"
-                                    hx-get="{% url 'asset-history-search' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.paginator.num_pages }}"
+                                    hx-target="#view-container"
+                                    hx-get="{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.paginator.num_pages }}"
                                     class="oh-pagination__link"
                                     >{% trans "Last" %}</a
                                 >
@@ -356,8 +356,8 @@
                     name="page"
                     class="oh-pagination__input"
                     value="{{documents.number}}"
-                    hx-get="{% url 'asset-history-search' %}?{{pd}}"
-                    hx-target="#historyTable"
+                    hx-get="{% url 'document-request-filter-view' %}?{{pd}}"
+                    hx-target="#view-container"
                     min="1"
                 />
                 <span class="oh-pagination__label"
@@ -369,16 +369,16 @@
                 {% if documents.has_previous %}
                 <li class="oh-pagination__item oh-pagination__item--wide">
                     <a
-                        hx-target="#historyTable"
-                        hx-get="{% url 'asset-history-search' %}?{{pd}}&page=1"
+                        hx-target="#view-container"
+                        hx-get="{% url 'document-request-filter-view' %}?{{pd}}&page=1"
                         class="oh-pagination__link"
                         >{% trans "First" %}</a
                     >
                 </li>
                 <li class="oh-pagination__item oh-pagination__item--wide">
                     <a
-                        hx-target="#historyTable"
-                        hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ documents.previous_page_number }}"
+                        hx-target="#view-container"
+                        hx-get="{% url 'document-request-filter-view' %}?{{pd}}&page={{ documents.previous_page_number }}"
                         class="oh-pagination__link"
                         >{% trans "Previous" %}</a
                     >
@@ -386,16 +386,16 @@
                 {% endif %} {% if documents.has_next %}
                 <li class="oh-pagination__item oh-pagination__item--wide">
                     <a
-                        hx-target="#historyTable"
-                        hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ documents.next_page_number }}"
+                        hx-target="#view-container"
+                        hx-get="{% url 'document-request-filter-view' %}?{{pd}}&page={{ documents.next_page_number }}"
                         class="oh-pagination__link"
                         >{% trans "Next" %}</a
                     >
                 </li>
                 <li class="oh-pagination__item oh-pagination__item--wide">
                     <a
-                        hx-target="#historyTable"
-                        hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ documents.paginator.num_pages }}"
+                        hx-target="#view-container"
+                        hx-get="{% url 'document-request-filter-view' %}?{{pd}}&page={{ documents.paginator.num_pages }}"
                         class="oh-pagination__link"
                         >{% trans "Last" %}</a
                     >
