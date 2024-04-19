@@ -30,20 +30,20 @@ if (objectiveChart != null) {
 				let label = e.chart.data.labels[dataIndex];
 				let params = "?status=" + label + "&archive=false" + "&dashboard=True";
 
-				// $.ajax({
-				// 	url: "/pms/objective-list-search" + params,
-				// 	type: "GET",
-				// 	headers: {
-				// 		"X-Requested-With": "XMLHttpRequest",
-				// 	},
-				// 	success: (response) => {
-				// 		$("#dashboard").html(response);
-				// 	},
-				// 	error: (error) => {
-				// 		console.log("Error", error);
-				// 	},
-				// });
-				// $("#back_button").removeClass("d-none");
+				$.ajax({
+					url: "/pms/objective-dashboard-view" + params,
+					type: "GET",
+					headers: {
+						"X-Requested-With": "XMLHttpRequest",
+					},
+					success: (response) => {
+						$("#dashboard").html(response);
+					},
+					error: (error) => {
+						console.log("Error", error);
+					},
+				});
+				$("#back_button").removeClass("d-none");
 			},
 		},
 		plugins: [{

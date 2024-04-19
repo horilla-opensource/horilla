@@ -38,6 +38,11 @@ urlpatterns = [
         views.objective_list_search,
         name="objective-list-search",
     ),
+    path(
+        "objective-dashboard-view",
+        views.objective_dashboard_view,
+        name="objective-dashboard-view",
+    ),
 
     path(
         "objective-delete/<int:obj_id>", views.objective_delete, name="objective-delete"

@@ -302,6 +302,7 @@ class EmployeeObjectiveFilter(FilterSet):
             'start_date',
             'end_date',
             'employee_id',
+            'status',
         ]
 
     def search_method(self, queryset, _, value: str):

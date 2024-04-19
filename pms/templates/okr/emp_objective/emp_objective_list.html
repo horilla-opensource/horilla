@@ -2,6 +2,15 @@
 {% load i18n %}
 {% load widget_tweaks %} {% load basefilters %} {% load pmsfilters %}
 {% include "filter_tags.html" %}
+{% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{ message }}
+        </div> 
+        {% endfor %}
+    </div>
+{% endif %}
 {% for emp_objective in emp_objectives %}
     {% if perms.pms.view_employeeobjective or emp_objective|is_manager_or_owner:request.user %}
         <div class="oh-accordion-meta">
@@ -91,7 +100,7 @@
                                                         <a 
                                                         class="fw-light"
                                                         data-toggle="oh-modal-toggle"
-                                                        data-target="#objectivesModal"
+                                                        data-target="#objectDetailsModal"
                                                         hx-get='{% url "update-employee-objective" emp_objective.id %}'
                                                         hx-target="#objectivesTarget"
                                                         >{% trans "Edit" %}</a>
@@ -100,22 +109,18 @@
                                                         <li class="oh-dropdown__item">
                                                             <a 
                                                             class="fw-light"
-                                                            data-toggle="oh-modal-toggle"
-                                                            data-target="#objectivesModal"
                                                             hx-confirm="{% trans 'Do you want to un-archive this employee objective?' %}"
-                                                            hx-get='{% url "archive-employee-objective" emp_objective.id %}?single_view="False"'
-                                                            hx-target="#objectivesTarget"
+                                                            hx-get='{% url "archive-employee-objective" emp_objective.id %}?single_view=False'
+                                                            hx-target="#emp_objective_card"
                                                             >{% trans "Unarchive" %}</a>
                                                         </li>
                                                     {% else %}
                                                         <li class="oh-dropdown__item">
                                                             <a 
                                                             class="fw-light"
-                                                            data-toggle="oh-modal-toggle"
-                                                            data-target="#objectivesModal"
                                                             hx-confirm="{% trans 'Do you want to archive this employee objective?' %}"
-                                                            hx-get='{% url "archive-employee-objective" emp_objective.id %}?single_view="False"'
-                                                            hx-target="#objectivesTarget"
+                                                            hx-get='{% url "archive-employee-objective" emp_objective.id %}?single_view=False'
+                                                            hx-target="#emp_objective_card"
                                                             >{% trans "Archive" %}</a>
                                                         </li>
                                                     {% endif %}
@@ -126,10 +131,10 @@
                                                         <a 
                                                         class="fw-light"
                                                         data-toggle="oh-modal-toggle"
-                                                        data-target="#objectivesModal"
+                                                        data-target="#objectDetailsModal"
                                                         hx-confirm="{% trans 'Do you want to delete this employee objective?' %}"
-                                                        hx-get='{% url "delete-employee-objective" emp_objective.id %}?single_view="False"'
-                                                        hx-target="#objectivesTarget"
+                                                        hx-get='{% url "delete-employee-objective" emp_objective.id %}?single_view="False'
+                                                        hx-target="#objectDetailsModalTarget"
                                                         >{% trans "Delete" %}</a>
                                                     </li>
                                                 {% endif %}

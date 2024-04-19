@@ -91,7 +91,7 @@
                             {% if perms.pms.change_objective %}
                                 <a 
                                     onclick="event.preventDefault();event.stopPropagation()"
-                                    hx-get="{% url 'objective-update' objective.id %}" hx-target='#objectivesTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectivesModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"
+                                    hx-get="{% url 'objective-update' objective.id %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"
                                 ><ion-icon name="create-outline"></ion-icon></a>
                             {% endif %}
                             {% if perms.pms.add_employeeobjective %}
