@@ -63,14 +63,20 @@
     </a>
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title me-3">{% trans "Status" %}</span>
-                <select name="status" id="{{instance.id}}" class="oh-table__editable-input p-3"
-                hx-trigger="change" hx-post="{% url 'change-employee-objective-status' instance.id %}" hx-target="#objectDetailsModalTarget"
-                >
-                    {% for status in objective_key_result_status %}
-                    <option value="{{status.0}}"  {% if status.0 == instance.status %} selected {% endif %}>
-                        <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span></option>
-                    {% endfor %}
-                </select> 
+                {% if perms.pms.change_employeeobjective or instance|is_manager:request.user %}        
+
+                    <select name="status" id="{{instance.id}}" class="oh-table__editable-input p-3"
+                    hx-trigger="change" hx-post="{% url 'change-employee-objective-status' instance.id %}" hx-target="#objectDetailsModalTarget"
+                    >
+                        {% for status in objective_key_result_status %}
+                        <option value="{{status.0}}"  {% if status.0 == instance.status %} selected {% endif %}>
+                            <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span></option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <span class="oh-timeoff-modal__stat-count">{{instance.get_status_display}}</span>
+                {% endif %} 
+
         </div>
 </div>
 <div class="" style="padding-top: 5px;">
@@ -111,62 +117,64 @@
             <span class="oh-timeoff-modal__stat-count dateformat_changer">{{instance.end_date}}</span>
         </div>
     </div>
-    <div class="oh-modal__button-container text-center mt-3">
-        <div class="oh-btn-group">
-            
-            <a class="oh-btn oh-btn--info" hx-get='{% url "update-employee-objective" instance.id %}' hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" style="width: 50%;">
-                <ion-icon name="create-outline">
-                </ion-icon>{% trans "Edit" %} 
-            </a>
-            {% if instance.archive %}
-                <form  class="oh-btn oh-btn--primary" style="width: 50%;" onsubmit="return confirm('Do you want to Unarchive this Employee objective?')"  action='{% url "archive-employee-objective" instance.id %}'>
-                    <input type="hidden" name="archive" value="False" id="">
-                    <button style="background: none;
-                        color: inherit;
-                        border: none;
-                        padding: 0;
-                        font: inherit;
-                        cursor: pointer;
-                        outline: inherit;">
-                        <ion-icon name="archive-outline"></ion-icon>
-                        {% trans "Unarchive" %} 
-                    </button>
-                 </form>
-            {% else %}
-                <form  class="oh-btn oh-btn--primary" style="width: 50%;" onsubmit="return confirm('Do you want to archive this Employee objective?')"  action='{% url "archive-employee-objective" instance.id %}'>
-                    <input type="hidden" name="archive" value="False" id="">
-                    <button style="background: none;
-                        color: inherit;
-                        border: none;
-                        padding: 0;
-                        font: inherit;
-                        cursor: pointer;
-                        outline: inherit;">
-                        <ion-icon name="archive-outline"></ion-icon>
-                        {% trans "Archive" %} 
-                    </button>
-                </form> 
-            {% endif %}
-            <form  class="oh-btn oh-btn--secondary" method="post" style="width: 50%;" onsubmit="return confirm('Do you Want to delete this employee objective?')"  action='{% url "delete-employee-objective" instance.id %}'>
-                {% csrf_token %}
-                <button style="background: none;
-                    color: inherit;
-                    border: none;
-                    padding: 0;
-                    font: inherit;
-                    cursor: pointer;
-                    outline: inherit;">
-                    <ion-icon name="trash-outline">
-                    </ion-icon>{% trans "Delete" %} 
-                </button>
-            </form>               
-        </div>
-    </div>
-</div>
-</div>
+    {% if perms.pms.change_employeeobjective or perms.pms.delete_employeeobjective or instance|is_manager:request.user %}        
+        <div class="oh-modal__button-container text-center mt-3">
+            <div class="oh-btn-group">
+                {% if perms.pms.change_employeeobjective or instance|is_manager:request.user %}        
+                    <a class="oh-btn oh-btn--info" hx-get='{% url "update-employee-objective" instance.id %}' hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" style="width: 50%;">
+                        <ion-icon name="create-outline">
+                        </ion-icon>{% trans "Edit" %} 
+                    </a>
+                {% endif %}
+                {% if perms.pms.delete_employeeobjective or instance|is_manager:request.user %}        
 
-{% comment %} <script>
-    function empObjStatusUpdate(element){
-        alert('ssssssssssss')
-    }
-</script> {% endcomment %}
+                    {% if instance.archive %}
+                        <form  class="oh-btn oh-btn--primary" style="width: 50%;" onsubmit="return confirm('Do you want to Unarchive this Employee objective?')"  action='{% url "archive-employee-objective" instance.id %}'>
+                            <input type="hidden" name="archive" value="False" id="">
+                            <input type="hidden" name="single_view" value="True">
+                            <button style="background: none;
+                                color: inherit;
+                                border: none;
+                                padding: 0;
+                                font: inherit;
+                                cursor: pointer;
+                                outline: inherit;">
+                                <ion-icon name="archive-outline"></ion-icon>
+                                {% trans "Unarchive" %} 
+                            </button>
+                        </form>
+                    {% else %}
+                        <form  class="oh-btn oh-btn--primary" style="width: 50%;" onsubmit="return confirm('Do you want to archive this Employee objective?')"  action='{% url "archive-employee-objective" instance.id %}'>
+                            <input type="hidden" name="archive" value="False" id="">
+                            <input type="hidden" name="single_view" value="True">
+                            <button style="background: none;
+                                color: inherit;
+                                border: none;
+                                padding: 0;
+                                font: inherit;
+                                cursor: pointer;
+                                outline: inherit;">
+                                <ion-icon name="archive-outline"></ion-icon>
+                                {% trans "Archive" %} 
+                            </button>
+                        </form> 
+                    {% endif %}
+                    <form  class="oh-btn oh-btn--secondary" method="post" style="width: 50%;" onsubmit="return confirm('Do you Want to delete this employee objective?')"  action='{% url "delete-employee-objective" instance.id %}'>
+                        {% csrf_token %}
+                        <button style="background: none;
+                            color: inherit;
+                            border: none;
+                            padding: 0;
+                            font: inherit;
+                            cursor: pointer;
+                            outline: inherit;">
+                            <ion-icon name="trash-outline">
+                            </ion-icon>{% trans "Delete" %} 
+                        </button>
+                    </form> 
+                {% endif %}             
+            </div>
+        </div>
+    {% endif %}
+</div>
+</div>

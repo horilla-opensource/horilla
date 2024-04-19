@@ -18,6 +18,7 @@ from django.forms import modelformset_factory
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from attendance.methods.group_by import group_by_queryset
 from horilla.decorators import manager_can_enter, permission_required
 from horilla.decorators import login_required, hx_request_required
 from notifications.signals import notify
@@ -33,6 +34,7 @@ from pms.filters import (
     FeedbackFilter,
     ObjectiveReGroup,
 )
+from pms.methods import pms_manager_can_enter, pms_owner_and_manager_can_enter
 from pms.models import (
     AnonymousFeedback,
     EmployeeKeyResult,
@@ -393,10 +395,11 @@ def add_assignees(request, obj_id):
     if request.method == "POST":
         form = AddAssigneesForm(request.POST, instance=objective)
         if form.is_valid():
-            objective = form.save()
+            objective = form.save(commit=False)
             assignees = form.cleaned_data["assignees"]
             start_date = form.cleaned_data["start_date"]
             for emp in assignees:
+                objective.assignees.add(emp)
                 if not EmployeeObjective.objects.filter(
                     employee_id=emp, objective_id=objective
                 ).exists():
@@ -428,6 +431,7 @@ def add_assignees(request, obj_id):
                     verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
                     redirect=f"/pms/objective-detailed-view/{objective.id}",
                 )
+            objective.save()
             messages.info(
                 request,
                 _("Objective %(objective)s Updated") % {"objective": objective},
@@ -642,6 +646,23 @@ def objective_list_search(request):
     if request.GET.get("field") != "" and request.GET.get("field") is not None:
         template = "okr/group_by.html"
     return render(request, template, context)
+
+@login_required
+# @hx_request_required
+def objective_dashboard_view(request):
+    """
+    This view is used to to search objective,  returns searched and filtered objects.
+    Returns:
+        All the filtered and searched object will based on userlevel.
+    """
+    emp_objectives = EmployeeObjectiveFilter(request.GET).qs
+    return render(
+        request,
+        "okr/emp_objective/emp_objective_dashboard_view.html",
+        {
+            'emp_objectives':emp_objectives
+        }
+    )
 
 
 def objective_history(emp_obj_id):
@@ -987,7 +1008,7 @@ def objective_archive(request, id):
 
 
 @login_required
-@manager_can_enter(perm="pms.view_employeeobjective")
+@pms_owner_and_manager_can_enter(perm="pms.view_employeeobjective")
 def view_employee_objective(request, emp_obj_id):
     """
     This function is used to render individual view of the employee objective
@@ -1039,7 +1060,7 @@ def archive_employee_objective(request, emp_obj_id):
     """
     emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
     obj_id = emp_objective.objective_id.id
-    single_view = request.GET.get("single_view")
+    single_view = eval(request.GET.get("single_view"))
     if emp_objective.archive:
         emp_objective.archive = False
         emp_objective.save()
@@ -1051,7 +1072,7 @@ def archive_employee_objective(request, emp_obj_id):
     if single_view:
         return redirect(f"/pms/objective-detailed-view/{obj_id}")
     else:
-        return redirect(objective_list_view)
+        return redirect(f"/pms/emp-objective-search/{obj_id}")
 
 
 
@@ -1133,13 +1154,15 @@ def key_result_view(request):
     Returns:
         if errorr occur it will return errorr message.
     """
-    key_results = KeyResultFilter(request.GET).qs
+    krs =KeyResultFilter(request.GET).qs
+    krs= group_by_queryset(
+            krs, 'employee_objective_id__employee_id', request.GET.get("page"), "page"
+        )
     context = {
-        "current_date": datetime.date.today(),
-        "key_results": key_results,
-        "objective_key_result_status": EmployeeKeyResult.STATUS_CHOICES,
+        "krs": krs,
+        "key_result_status": EmployeeKeyResult.STATUS_CHOICES,
     }
-    return render(request, "okr/key_result/key_result_view.html", context=context)
+    return render(request, "okr/key_result/kr_dashboard_view.html", context=context)
 
 
 @login_required
@@ -2412,7 +2435,7 @@ def dashboard_objective_status(request):
         objective_status = EmployeeObjective.STATUS_CHOICES
         data = {"message": _("No data Found...")}
         for status in objective_status:
-            objectives = EmployeeObjective.objects.filter(status=status[0])
+            objectives = EmployeeObjective.objects.filter(status=status[0],archive=False)
             objectives_count = filtersubordinates(
                 request, queryset=objectives, perm="pms.view_employeeobjective"
             ).count()
@@ -2948,6 +2971,8 @@ def delete_employee_keyresult(request, kr_id):
     emp_objective.update_objective_progress()
     # objective.assignees.remove(employee)
     messages.success(request, _("Objective deleted successfully!."))
+    if request.GET.get('dashboard'):
+        return redirect(f"/pms/dashboard-view")
     return redirect(f"/pms/objective-detailed-view/{objective.id}")
 
 
@@ -2979,7 +3004,7 @@ def key_result_current_value_update(request):
         current_value = eval(request.POST.get("current_value"))
         emp_kr_id = eval(request.POST.get("emp_key_result_id"))
         emp_kr = EmployeeKeyResult.objects.get(id=emp_kr_id)
-        if current_value < emp_kr.target_value:
+        if current_value <= emp_kr.target_value:
             emp_kr.current_value = current_value
             emp_kr.save()
             emp_kr.employee_objective_id.update_objective_progress()
