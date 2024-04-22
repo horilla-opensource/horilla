@@ -54,7 +54,7 @@
             <div class="oh-tabs__content" id="tab_{{recruitment.id}}">
                 <div class="oh-card">
                     {% if request.user|task_manages:recruitment or perms.onboarding.add_onboardingstage %}
-                    <div class="oh-tabs__action-bar">
+                    <div class="d-flex mb-3" style="flex-direction: row-reverse;">
                         <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
                             data-toggle="oh-modal-toggle" data-target="#editModal1"
                             hx-get="{% url 'stage-creation' recruitment.id %}" hx-target="#stageForm">
