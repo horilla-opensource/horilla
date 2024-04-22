@@ -138,13 +138,6 @@
 										<div data-cell-index="8" class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
 										<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
 											<div class="oh-btn-group">
-												<a 
-													href="{% url 'ticket-detail' ticket.id %}" 
-													type="button" title="{% trans 'View' %}" 
-													class="oh-btn oh-btn--light-bkg p-3 w-50"
-												> 
-													<ion-icon name="eye-outline"></ion-icon>
-												</a>
 												<button
 													class="oh-btn oh-btn--light-bkg p-3 w-50"
 													title="{% trans 'Edit' %}"
@@ -710,13 +703,6 @@
 									<div data-cell-index="28" class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
 									<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
 										<div class="oh-btn-group">
-											<a 
-												href="{% url 'ticket-detail' ticket.id %}" 
-												type="button" title="{% trans 'View' %}" 
-												class="oh-btn oh-btn--light-bkg p-3 w-50"
-											> 
-												<ion-icon name="eye-outline"></ion-icon>
-											</a>
 											<button
 												class="oh-btn oh-btn--light-bkg p-3 w-50"
 												title="{% trans 'Edit' %}"
