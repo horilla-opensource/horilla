@@ -14,6 +14,7 @@ from recruitment.models import (
     RecruitmentSurvey,
     RecruitmentSurveyAnswer,
     RecruitmentMailTemplate,
+    InterviewSchedule,
 )
 
 
@@ -28,3 +29,4 @@ admin.site.register(RecruitmentSurvey)
 admin.site.register(RecruitmentMailTemplate)
 admin.site.register(CandidateRating)
 admin.site.register(SkillZone)
+admin.site.register(InterviewSchedule)

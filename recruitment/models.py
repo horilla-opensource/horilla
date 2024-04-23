@@ -5,6 +5,7 @@ This module is used to register models for recruitment app
 
 """
 
+from datetime import date
 import re
 import os
 import json
@@ -790,3 +791,17 @@ class RecruitmentGeneralSetting(HorillaModel):
     candidate_self_tracking = models.BooleanField(default=False)
     show_overall_rating = models.BooleanField(default=False)
     company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+
+
+class InterviewSchedule(HorillaModel):
+    """
+    Interview Scheduling Model
+    """
+    candidate_id = models.ForeignKey(Candidate,verbose_name=_("Candidate"), related_name="candidate_interview", on_delete=models.CASCADE)
+    employee_id = models.ManyToManyField(Employee, verbose_name=_("interviewer"))
+    interview_date = models.DateField(verbose_name=_("Interview Date"))
+    interview_time = models.TimeField(verbose_name=_("Interview Time"))
+
+    def __str__(self) -> str:
+        return f"{self.candidate_id} -Interview."
+

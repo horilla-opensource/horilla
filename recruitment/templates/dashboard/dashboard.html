@@ -220,10 +220,10 @@
 											alt="{{cand}}"
 											/>
 										</div>
-										<span class="oh-profile__name oh-text--dark">{{cand}}</span>
+										<span class="oh-profile__name oh-text--dark">{{cand|truncatechars:15}}</span>
 										</div>
 										<p class="oh-profile__name float-end mt-1 me-3">
-											{{cand.job_position_id}}</p>
+											{{cand.job_position_id|truncatechars:15}}</p>
 									</li>
 									{% endfor %}
 								</ul>

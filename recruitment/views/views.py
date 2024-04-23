@@ -32,6 +32,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import gettext_lazy as _
+from itertools import chain
 from employee.models import Employee, EmployeeWorkInformation
 from notifications.signals import notify
 from horilla import settings
@@ -45,6 +46,7 @@ from horilla.decorators import (
 from base.methods import export_data, generate_pdf, get_key_instances
 from recruitment.views.paginator_qry import paginator_qry
 from recruitment.models import (
+    InterviewSchedule,
     Recruitment,
     Candidate,
     RecruitmentGeneralSetting,
@@ -77,6 +79,7 @@ from recruitment.forms import (
     RecruitmentCreationForm,
     CandidateCreationForm,
     RejectReasonForm,
+    ScheduleInterviewForm,
     SkillZoneCandidateForm,
     SkillZoneCreateForm,
     StageCreationForm,
@@ -1478,6 +1481,113 @@ def form_send_mail(request, cand_id=None):
             "stage_id": stage_id,
         },
     )
+
+
+@login_required
+@manager_can_enter(perm="recruitment.add_interviewschedule")
+def interview_schedule(request, cand_id):
+    """
+    This method is used to Schedule interview to candidate
+    Args:
+        cand_id : candidate instance id
+    """
+    candidate = Candidate.objects.get(id=cand_id)
+    candidates = Candidate.objects.filter(id=cand_id)
+    template = "pipeline/pipeline_components/schedule_interview.html"
+    form  = ScheduleInterviewForm(initial={"candidate_id": candidate})
+    form.fields["candidate_id"].queryset = candidates
+    if request.method == "POST":
+        form  = ScheduleInterviewForm(request.POST)
+        if form.is_valid():
+            form.save()
+            emp_ids = form.cleaned_data["employee_id"]
+            cand_id = form.cleaned_data["candidate_id"]
+            interview_date = form.cleaned_data["interview_date"]
+            interview_time = form.cleaned_data["interview_time"]
+            users = [employee.employee_user_id for employee in emp_ids]
+            notify.send(
+                request.user.employee_get,
+                recipient=users,
+                verb=f"You are scheduled as an interviewer for an interview with {cand_id.name} on {interview_date} at {interview_time}.",
+                verb_ar=f"أنت مجدول كمقابلة مع {cand_id.name} يوم {interview_date} في توقيت {interview_time}.",
+                verb_de=f"Sie sind als Interviewer für ein Interview mit {cand_id.name} am {interview_date} um {interview_time} eingeplant.",
+                verb_es=f"Estás programado como entrevistador para una entrevista con {cand_id.name} el {interview_date} a las {interview_time}.",
+                verb_fr=f"Vous êtes programmé en tant qu'intervieweur pour un entretien avec {cand_id.name} le {interview_date} à {interview_time}.",
+                icon="people-circle",
+                redirect=f"/recruitment/candidate-view/{cand_id.id}/",
+            )
+
+            messages.success(request, "Interview Scheduled successfully.")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request, template, {"form": form, "cand_id": cand_id})
+
+
+@login_required
+@manager_can_enter(perm="recruitment.delete_interviewschedule")
+def interview_delete(request, interview_id):
+    """
+    This method is used to delete interview 
+    Args:
+        interview_id : interview schedule instance id
+    """
+    interview = InterviewSchedule.objects.get(id=interview_id)
+    interview.delete()
+    messages.success(request, "Interview deleted successfully.")
+    return HttpResponse("<script>window.location.reload()</script>")
+
+
+@login_required
+@manager_can_enter(perm="recruitment.change_interviewschedule")
+def interview_edit(request, interview_id):
+    """
+    This method is used to Edit Schedule interview
+    Args:
+        interview_id : interview schedule instance id
+    """
+    interview = InterviewSchedule.objects.get(id=interview_id)
+    candidates = Candidate.objects.filter(id=interview.candidate_id.id)
+    template = "pipeline/pipeline_components/schedule_interview_update.html"
+    form  = ScheduleInterviewForm(instance=interview)
+    form.fields["candidate_id"].queryset = candidates
+    if request.method == "POST":
+        form  = ScheduleInterviewForm(request.POST, instance=interview)
+        if form.is_valid():
+            emp_ids = form.cleaned_data['employee_id']
+            cand_id = form.cleaned_data['candidate_id']
+            interview_date = form.cleaned_data['interview_date']
+            interview_time = form.cleaned_data['interview_time']
+            form.save()
+            users = [employee.employee_user_id for employee in emp_ids]
+            notify.send(
+                request.user.employee_get,
+                recipient=users,
+                verb=f"You are scheduled as an interviewer for an interview with {cand_id.name} on {interview_date} at {interview_time}.",
+                verb_ar=f"أنت مجدول كمقابلة مع {cand_id.name} يوم {interview_date} في توقيت {interview_time}.",
+                verb_de=f"Sie sind als Interviewer für ein Interview mit {cand_id.name} am {interview_date} um {interview_time} eingeplant.",
+                verb_es=f"Estás programado como entrevistador para una entrevista con {cand_id.name} el {interview_date} a las {interview_time}.",
+                verb_fr=f"Vous êtes programmé en tant qu'intervieweur pour un entretien avec {cand_id.name} le {interview_date} à {interview_time}.",
+                icon="people-circle",
+                redirect=f"/recruitment/candidate-view/{cand_id.id}/",
+            )
+            messages.success(request, "Interview updated successfully.")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request, template, {"form": form, "interview_id": interview_id})
+
+
+def get_managers(request):
+    cand_id = request.GET.get("cand_id")
+    candidate_obj = Candidate.objects.get(id=cand_id)
+    stage_obj = Stage.objects.filter(recruitment_id=candidate_obj.recruitment_id.id)
+
+    # Combine the querysets into a single iterable
+    all_managers = chain(candidate_obj.recruitment_id.recruitment_managers.all(), *[stage.stage_managers.all() for stage in stage_obj])
+
+    # Extract unique managers from the combined iterable
+    unique_managers = list(set(all_managers))
+
+    # Assuming you have a list of employee objects called 'unique_managers'
+    employees_dict = {employee.id: employee.get_full_name() for employee in unique_managers}
+    return JsonResponse({"employees": employees_dict})
 
 
 @login_required

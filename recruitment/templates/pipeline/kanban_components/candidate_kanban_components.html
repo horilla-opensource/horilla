@@ -81,6 +81,17 @@
 
             <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
                 <ul class="oh-dropdown__items">
+                    <li class="oh-dropdown__item">
+                        <a
+                        class="oh-dropdown__link oh-dropdown__link--secondary"
+                        hx-get='{% url "interview-schedule" cand.id %}' 
+                        hx-target="#createTarget" 
+                        hx-swap='innerHTML'
+                        style="cursor: pointer;"
+                        data-toggle='oh-modal-toggle'
+                        data-target="#createModal"
+                        >{% trans "Schedule Interview" %}</a>
+                    </li>
                 {% if perms.recruitment.change_candidate or request.user|is_stagemanager %}
                 <li class="oh-dropdown__item">
                     <a

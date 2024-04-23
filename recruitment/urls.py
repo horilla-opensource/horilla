@@ -199,6 +199,10 @@ urlpatterns = [
     ),
     path("send-mail/<int:cand_id>/", views.form_send_mail, name="send-mail"),
     path("send-mail/", views.form_send_mail, name="send-mail"),
+    path("interview-schedule/<int:cand_id>/", views.interview_schedule, name="interview-schedule"),
+    path("edit-interview/<int:interview_id>/", views.interview_edit, name="edit-interview"),
+    path("delete-interview/<int:interview_id>/", views.interview_delete, name="delete-interview"),
+    path("get_managers", views.get_managers, name="get_managers"),
     path("candidate-view/", views.candidate_view, name="candidate-view"),
     path(
         "candidate-filter-view",

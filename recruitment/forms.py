@@ -22,7 +22,7 @@ class YourForm(forms.Form):
 """
 
 from ast import Dict
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 import uuid
 from django import forms
@@ -36,6 +36,7 @@ from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelec
 from horilla.decorators import logger
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from recruitment.models import (
+    InterviewSchedule,
     RejectReason,
     RejectedCandidate,
     SkillZone,
@@ -1003,3 +1004,46 @@ class RejectedCandidateForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["reject_reason_id"].empty_label = None
         self.fields["candidate_id"].widget = self.fields["candidate_id"].hidden_widget()
+
+
+class ScheduleInterviewForm(ModelForm):
+    """
+    ScheduleInterviewForm
+    """
+
+    verbose_name = "Schedule Interview"
+
+    class Meta:
+        model = InterviewSchedule
+        fields = "__all__"
+        exclude = ["is_active"]
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['interview_date'].widget = forms.DateInput(attrs={'type': 'date', 'class':"oh-input w-100"})
+        self.fields['interview_time'].widget = forms.TimeInput(attrs={'type': 'time', 'class':"oh-input w-100"})
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+        interview_date = cleaned_data.get('interview_date')
+        interview_time = cleaned_data.get('interview_time')
+        
+        if interview_date and interview_date < date.today():
+            self.add_error('interview_date', _("Interview date cannot be in the past."))
+        
+        if interview_time:
+            now = datetime.now().time()
+            if interview_date == date.today() and interview_time < now:
+                self.add_error('interview_time', _("Interview time cannot be in the past."))
+        
+        return cleaned_data
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
