@@ -134,35 +134,8 @@
   role="dialog"
   aria-labelledby="attendanceExport"
   aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="attendanceExportLavel">
-        {% trans "Export Attendances" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-      <div
-        class="oh-modal__dialog-body p-0 pt-2"
-        id="attendanceExportModalBody"
-      >
-        <form
-          action="{%url 'attendance-info-export' %}"
-          method="get"
-          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-          id="attendanceExportForm"
-        >
-          {% csrf_token %} {% include 'attendance/attendance/export_filter.html'%}
-          <div class="oh-dropdown__filter-footer">
-            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
-              {% trans "Export" %}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+  >
+  <div class="oh-modal__dialog" id="attendanceExportModalBody"></div>
 </div>
 {% endif %}
 
@@ -291,7 +264,7 @@
         }
     </script> {% endcomment %}
     </form>
-      <div class="oh-dropdown ml-2" x-data="{open: false}">
+      <div class="oh-dropdown ml-2" x-data="{open: false}" on>
         <button
           onclick="event.stopPropagation();event.preventDefault()"
           class="oh-btn oh-btn--dropdown"
@@ -324,6 +297,8 @@
                   id="attendance-info-export"
                   data-toggle="oh-modal-toggle"
                   data-target="#attendanceExport"
+                  hx-get="{% url 'attendance-info-export-form' %}"
+                  hx-target="#attendanceExportModalBody"
                   >{% trans "Export" %}</a
                 >
               </li>

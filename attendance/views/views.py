@@ -307,6 +307,20 @@ def attendance_import(request):
 
 @login_required
 def attendance_export(request):
+    resolver_match = request.resolver_match
+    if (
+        resolver_match
+        and resolver_match.url_name
+        and resolver_match.url_name == "attendance-info-export-form"
+    ):
+        return render(
+            request,
+            "attendance/attendance/export_filter.html",
+            context={
+                "export": AttendanceFilters(queryset=Attendance.objects.all()),
+                "export_form": AttendanceExportForm(),
+            },
+        )
     return export_data(
         request=request,
         model=Attendance,
@@ -324,7 +338,6 @@ def attendance_view(request):
     """
     previous_data = request.GET.urlencode()
     form = AttendanceForm()
-    export_form = AttendanceExportForm()
     condition = AttendanceValidationCondition.objects.first()
     minot = strtime_seconds("00:00")
     if condition is not None and condition.minimum_overtime_to_approve is not None:
@@ -388,7 +401,6 @@ def attendance_view(request):
         template,
         {
             "form": form,
-            "export_form": export_form,
             # "validate_attendances": paginator_qry(
             #     validate_attendances, request.GET.get("vpage")
             # ),
@@ -400,7 +412,6 @@ def attendance_view(request):
             "ot_attendances_ids": ot_attendances_ids,
             "attendances_ids": attendances_ids,
             "f": filter_obj,
-            "export": AttendanceFilters(queryset=Attendance.objects.all()),
             "pd": previous_data,
             "gp_fields": AttendanceReGroup.fields,
         },

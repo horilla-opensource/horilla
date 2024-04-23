@@ -21,6 +21,9 @@ urlpatterns = [
         "attendance-info-import", views.attendance_import, name="attendance-info-import"
     ),
     path(
+        "attendance-info-export-form", views.attendance_export, name="attendance-info-export-form"
+    ),
+    path(
         "attendance-info-export", views.attendance_export, name="attendance-info-export"
     ),
     path("attendance-view/", views.attendance_view, name="attendance-view"),
