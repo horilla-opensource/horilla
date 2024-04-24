@@ -5,7 +5,7 @@
         <div class="oh-card__body">
             <!-- start of column toggle button-->
             <div class="oh-table_sticky--wrapper">
-                <div class="oh-sticky-dropdown--header">
+                <div class="oh-sticky-dropdown--header" style = "top: -1px;">
                     <div class="oh-dropdown" x-data="{open: false}">
                         <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
                             role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
@@ -33,7 +33,7 @@
                                 <div data-cell-index="3" data-cell-title='{% trans "Date" %}' 
                                     class="oh-sticky-table__th"
                                 >{% trans "Date" %}</div>
-                                <div data-cell-index="4" data-cell-title='{% trans "response" %}' 
+                                <div data-cell-index="4" data-cell-title='{% trans "MoM" %}' 
                                     class="oh-sticky-table__th"
                                 >{% trans "MoM" %}</div>
                                 <div class="oh-sticky-table__th oh-sticky-table__right" align="center" style="width: 220px;">{% trans "Actions" %}</div>
@@ -310,3 +310,18 @@
             <h5 class="oh-404__subtitle">{% trans "There is no meetings has been created." %}</h5>
         </div>
     {% endif %}
+
+    <script>
+        $(".oh-permission-table--toggle").on("click", function(){
+            $(this).siblings(".oh-sticky-table__td").children(".count-span").toggleClass("d-none")
+        })
+        // toggle columns //
+        toggleColumns("meeting-table", "meetingCells");
+        localStorageMeetingCells = localStorage.getItem(
+          "meeting_table"
+        );
+        if (!localStorageMeetingCells) {
+          $("#meetingCells").find("[type=checkbox]").prop("checked", true);
+        }
+        $("[type=checkbox]").change();
+      </script>
