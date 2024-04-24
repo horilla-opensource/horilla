@@ -649,6 +649,9 @@ class Meetings(HorillaModel):
     )
     response = models.TextField(null=True, blank=True)
     show_response = models.BooleanField(default=False)
+    
+    class Meta:
+        verbose_name = _("Meetings")
 
     def __str__(self):
         return self.title

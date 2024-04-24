@@ -272,7 +272,7 @@ def meeting_manager_can_enter(function, perm, answerable = False):
 
         if answerable:
             is_answer_employee = Employee.objects.filter(
-                    meeting_answer_employees=False,
+                    meeting_answer_employees__isnull=False,
             ).filter(id=employee.id).exists()
 
         if user.has_perm(perm) or is_manager or is_answer_employee:

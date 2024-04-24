@@ -3042,7 +3042,8 @@ def view_meetings(request):
     meetings = Meetings.objects.filter(is_active=True)
     if not request.user.has_perm("pms.view_meetings"):
         employee_id = request.user.employee_get
-        meetings = meetings.filter(Q(employee_id = employee_id) | Q(manager = employee_id)).distinct().order_by("-id")
+        meetings = meetings.filter(Q(employee_id = employee_id) | Q(manager = employee_id)).distinct()
+    meetings = meetings.order_by("-id")
     filter_form = MeetingsFilter()
 
     meetings = paginator_qry(meetings, request.GET.get("page"))
@@ -3154,7 +3155,9 @@ def filter_meetings(request):
 
     if not request.user.has_perm("pms.view_meetings"):
         employee_id = request.user.employee_get
-        filter_obj = filter_obj.filter(Q(employee_id = employee_id) | Q(manager = employee_id)).distinct().order_by("-id")
+        filter_obj = filter_obj.filter(Q(employee_id = employee_id) | Q(manager = employee_id)).distinct()
+    filter_obj = filter_obj.order_by("-id")
+
     filter_obj = sortby(request, filter_obj, "sortby")
     filter_obj = paginator_qry(filter_obj, request.GET.get("page"))
     requests_ids = json.dumps([instance.id for instance in filter_obj.object_list])
