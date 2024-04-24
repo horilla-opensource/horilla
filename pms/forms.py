@@ -936,6 +936,7 @@ class MeetingsForm(BaseForm):
     date = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={"class": "oh-input w-100", "type": "datetime-local"}),
     )
+
     class Meta:
         model = Meetings
         fields = "__all__"
@@ -951,9 +952,19 @@ class MeetingsForm(BaseForm):
     
     def clean(self):
         cleaned_data = super().clean()
+
         answerable_employees = self.data.getlist('answer_employees', [])
         employees = Employee.objects.filter(id__in=answerable_employees)
         cleaned_data["answer_employees"] = employees
+
+        employee_id = self.data.getlist('employee_id', [])
+        employees = Employee.objects.filter(id__in=employee_id)
+        cleaned_data["employee_id"] = employees
+        
+        if isinstance(self.fields["employee_id"], HorillaMultiSelectField):
+            ids = self.data.getlist("employee_id")
+            if ids:
+                self.errors.pop("employee_id", None)
         return cleaned_data
 
     def __init__(self, *args, **kwargs):
@@ -961,6 +972,17 @@ class MeetingsForm(BaseForm):
         if self.instance.pk:
             employees = Employee.objects.filter(id__in=self.instance.employee_id.all())
             self.fields["answer_employees"].queryset = employees
+        else:
+            self.fields["employee_id"] = HorillaMultiSelectField(
+                queryset=Employee.objects.filter(employee_work_info__isnull=False),
+                widget=HorillaMultiSelectWidget(
+                    filter_route_name="employee-widget-filter",
+                    filter_class=EmployeeFilter,
+                    filter_instance_contex_name="f",
+                    filter_template_path="employee_filters.html",
+                ),
+                label=_("Employees"),
+            )
         try:
             if self.data.getlist("employee_id"):
                 employees = Employee.objects.filter(id__in=self.data.getlist("employee_id"))
