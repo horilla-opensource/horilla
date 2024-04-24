@@ -1,0 +1,49 @@
+{% load static i18n %}
+<div class="oh-wrapper">
+    <div class="oh-activity-sidebar__header">
+        <a
+            style="cursor: pointer"
+            onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');"
+        >
+            <ion-icon
+                name="chevron-forward-outline"
+                class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"
+                data-target="#activitySidebar"
+                role="img"
+                aria-label="chevron forward outline"
+            ></ion-icon>
+        </a>
+        <h1 class="oh-main__titlebar-title fw-bold ml-3 mb-3 mt-3">
+            {% trans "Meeting Questions & Answer" %}
+        </h1>
+    </div>
+    <div class="oh-activity-sidebar__body">
+        <div
+            {% if request.user.employee_get in meeting.manager.all %} 
+                style="max-height: 50vh"
+            {% endif %}
+            hx-get="{% url 'meeting-answer-get' meeting.id %}"
+            hx-trigger="load"
+        ></div>
+    </div>
+    <hr class="line" />
+    {% if request.user.employee_get in meeting.manager.all %} 
+        <div class="mt-3 oh-card" >
+            {% for employee in meeting.answer_employees.all %}
+                <div class="oh-accordion">
+                    <div
+                        class="oh-accordion-header"
+                        hx-get="{% url 'meeting-answer-get' meeting.id %}?emp_id={{employee.id}}"
+                        hx-target="#employee_answers{{employee.id}}"
+                    >
+                        {{employee.get_full_name}}
+                    </div>
+                    <div
+                        class="oh-accordion-body"
+                        id="employee_answers{{employee.id}}"
+                    ></div>
+                </div>
+            {% endfor %} 
+        </div>
+    {% endif %}
+</div>

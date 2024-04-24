@@ -6,10 +6,18 @@ the PMS (Performance Management System) app.
 """
 
 import datetime
+import django
 import django_filters
 from django import forms
 from django_filters import DateFilter
-from pms.models import EmployeeKeyResult, EmployeeObjective, Feedback, KeyResult, Objective
+from pms.models import (
+    EmployeeKeyResult,
+    EmployeeObjective,
+    Feedback,
+    KeyResult,
+    Meetings,
+    Objective,
+)
 from base.methods import reload_queryset
 from base.filters import FilterSet
 
@@ -227,6 +235,7 @@ class KeyResultFilter(CustomFilterSet):
         model = EmployeeKeyResult
         fields = "__all__"
 
+
 class ActualKeyResultFilter(FilterSet):
     """
     Filter through KeyResult model
@@ -236,12 +245,7 @@ class ActualKeyResultFilter(FilterSet):
 
     class Meta:
         model = KeyResult
-        fields = [
-            "progress_type",
-            "target_value",
-            "duration",
-            'company_id'
-        ]
+        fields = ["progress_type", "target_value", "duration", "company_id"]
 
     def search_method(self, queryset, _, value: str):
         """
@@ -250,8 +254,7 @@ class ActualKeyResultFilter(FilterSet):
         values = value.split(" ")
         empty = queryset.model.objects.none()
         for split in values:
-            empty = empty | (queryset.filter(title__icontains=split)
-            )
+            empty = empty | (queryset.filter(title__icontains=split))
 
         return empty.distinct()
 
@@ -266,6 +269,7 @@ class ObjectiveReGroup:
         ("employee_id", "Owner"),
         ("status", "Status"),
     ]
+
 
 class EmployeeObjectiveFilter(FilterSet):
     """
@@ -293,16 +297,16 @@ class EmployeeObjectiveFilter(FilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+
     class Meta:
         model = EmployeeObjective
         fields = [
             "status",
             "archive",
             "key_result_id",
-            'start_date',
-            'end_date',
-            'employee_id',
-            'status',
+            "start_date",
+            "end_date",
+            "employee_id",
         ]
 
     def search_method(self, queryset, _, value: str):
@@ -312,7 +316,88 @@ class EmployeeObjectiveFilter(FilterSet):
         values = value.split(" ")
         empty = queryset.model.objects.none()
         for split in values:
-            empty = empty | (queryset.filter(employee_id__employee_first_name__icontains=split))|(queryset.filter(employee_id__employee_last_name__icontains=split))
-            
+            empty = (
+                empty
+                | (queryset.filter(employee_id__employee_first_name__icontains=split))
+                | (queryset.filter(employee_id__employee_last_name__icontains=split))
+            )
 
         return empty.distinct()
+
+
+class MeetingsFilter(FilterSet):
+
+    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+    date = django_filters.DateFilter(
+        field_name="date",
+        lookup_expr="date",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    date_greater = django_filters.DateFilter(
+        field_name="date",
+        lookup_expr="date__gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    date_less = django_filters.DateFilter(
+        field_name="date",
+        lookup_expr="date__lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+    class Meta:
+        model = Meetings
+        fields = [
+            "employee_id",
+            "manager",
+            "question_template",
+            "is_active",
+            "employee_id__employee_work_info__department_id",
+            "employee_id__employee_work_info__company_id",
+            "employee_id__employee_work_info__job_position_id",
+            "employee_id__employee_work_info__work_type_id",
+            "employee_id__employee_work_info__shift_id",
+            "employee_id__employee_work_info__reporting_manager_id",
+        ]
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     queryset = self.filters["question_template"].queryset
+    #     choices = [
+    #         ("not_set", "Not Set"),
+    #     ]
+    #     choices.extend([(obj.id, str(obj)) for obj in queryset])
+    #     self.form.fields["question_template"] = (
+    #         forms.MultipleChoiceField(
+    #             choices=choices,
+    #             required=False,
+    #             widget=forms.SelectMultiple(
+    #                 attrs={
+    #                     "class": "oh-select oh-select-2 select2-hidden-accessible",
+    #                 }
+    #             ),
+    #         )
+    #     )
+
+    # def filter_queryset(self, queryset):
+    #     """
+    #     Override the default filtering behavior to handle None option.
+    #     """
+    #     from django.db.models import Q
+
+    #     data = self.form.cleaned_data
+    #     not_set_dict = {}
+    #     for key, value in data.items():
+    #         if isinstance(value, (list, django.db.models.query.QuerySet)):
+    #             if value and "not_set" in value:
+    #                 not_set_dict[key] = value
+
+    #     if not_set_dict:
+    #         q_objects = Q()
+    #         for key, values in not_set_dict.items():
+    #             for value in values:
+    #                 if value == "not_set":
+    #                     q_objects |= Q(**{f"{key}__isnull": True})
+    #                 else:
+    #                     q_objects |= Q(**{key: value})
+    #         return queryset.filter(q_objects)
+    #     return super().filter_queryset(queryset)

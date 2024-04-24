@@ -1,0 +1,43 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="objectCreateModalLabel"
+      >{% trans "Meetings" %}</span
+    >
+    <button
+      class="oh-modal__close--custom"
+      onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
+      aria-label="Close"
+      {% if close_hx_url and messages %}
+        hx-get="{{close_hx_url}}"
+        hx-target="{{close_hx_target}}"
+      {% endif %}
+    >
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body" id="formBody">
+    <form
+        hx-post="{% url "create-meeting" %}?instance_id={{form.instance.id}}"
+        hx-target="#objectCreateModalTarget"
+    >
+        {{form.errors}}
+        {{form.as_p}}
+    </form>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $("#id_employee_id").on("change", function() {
+            var employees = $(this).find('option:selected');
+            values =  $("#id_answer_employees").val()
+            $("#id_answer_employees").empty();
+            employees.each(function() {
+                var value = $(this).val();
+                var text = $(this).text();
+                var option = `<option value="${value}"> ${text}</option>`;
+                $("#id_answer_employees").append(option);
+            });
+            $("#id_answer_employees").val(values).change()
+        })
+    })
+</script>

@@ -23,6 +23,7 @@ from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from pms.models import (
     AnonymousFeedback,
     KeyResult,
+    Meetings,
     Objective,
     Question,
     EmployeeObjective,
@@ -929,3 +930,41 @@ class AnonymousFeedbackForm(BaseForm):
         model = AnonymousFeedback
         fields = "__all__"
         exclude = ["status", "archive"]
+
+
+class MeetingsForm(BaseForm):
+    date = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={"class": "oh-input w-100", "type": "datetime-local"}),
+    )
+    class Meta:
+        model = Meetings
+        fields = "__all__"
+        exclude = ["response", "is_active"]
+        
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        answerable_employees = self.data.getlist('answer_employees', [])
+        employees = Employee.objects.filter(id__in=answerable_employees)
+        cleaned_data["answer_employees"] = employees
+        return cleaned_data
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            employees = Employee.objects.filter(id__in=self.instance.employee_id.all())
+            self.fields["answer_employees"].queryset = employees
+        try:
+            if self.data.getlist("employee_id"):
+                employees = Employee.objects.filter(id__in=self.data.getlist("employee_id"))
+                self.fields["answer_employees"].queryset = employees
+        except:
+            pass
+

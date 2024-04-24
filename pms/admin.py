@@ -22,6 +22,7 @@ from .models import (
     QuestionOptions,
     Objective,
     KeyResult,
+    Meetings,
 )
 
 
@@ -36,4 +37,5 @@ admin.site.register(feedback)
 admin.site.register(KeyResult)
 admin.site.register(Objective)
 admin.site.register(KeyResultFeedback)
+admin.site.register(Meetings)
 admin.site.register(Comment, SimpleHistoryAdmin)

@@ -734,6 +734,13 @@
                 >{% trans "360 Feedback" %}</a
               >
             </li>
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="{% url 'view-meetings'  %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Meetings" %}</a
+              >
+            </li>
             {% if perms.pms.view_period or request.user|is_reportingmanager %}
             <li class="oh-sidebar__submenu-item">
               <a

@@ -256,3 +256,34 @@ def install_required(function):
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
     return _function
+
+
+@decorator_with_arguments
+def meeting_manager_can_enter(function, perm, answerable = False):
+    def _function(request, *args, **kwargs):
+
+        user = request.user
+        employee = user.employee_get
+        is_answer_employee = False
+
+        is_manager = Employee.objects.filter(
+                meeting_manager__isnull=False,
+        ).filter(id=employee.id).exists()
+
+        if answerable:
+            is_answer_employee = Employee.objects.filter(
+                    meeting_answer_employees=False,
+            ).filter(id=employee.id).exists()
+
+        if user.has_perm(perm) or is_manager or is_answer_employee:
+            return function(request, *args, **kwargs)
+        else:
+            messages.info(request, "You dont have permission.")
+            previous_url = request.META.get("HTTP_REFERER", "/")
+            script = f'<script>window.location.href = "{previous_url}"</script>'
+            key = "HTTP_HX_REQUEST"
+            if key in request.META.keys():
+                return render(request, "decorator_404.html")
+            return HttpResponse(script)
+
+    return _function

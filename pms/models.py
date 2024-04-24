@@ -233,7 +233,7 @@ class Comment(models.Model):
         return f"{self.employee_id.employee_first_name} - {self.comment} "
 
 
-class EmployeeKeyResult(models.Model):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+class EmployeeKeyResult(models.Model):
     """employee key result creation"""
 
     PROGRESS_CHOICES = (
@@ -346,7 +346,7 @@ class EmployeeKeyResult(models.Model):
     #     unique_together = ("key_result_id", "employee_objective_id")
 
 
-"""360degree feedback section""" 
+"""360degree feedback section"""
 
 
 class QuestionTemplate(HorillaModel):
@@ -469,7 +469,7 @@ class Feedback(HorillaModel):
     cyclic_next_end_date = models.DateField(null=True, blank=True)
 
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
-    
+
     class Meta:
         ordering = ["-id"]
 
@@ -478,16 +478,28 @@ class Feedback(HorillaModel):
         end_date = self.end_date
         cyclic_feedback_period = self.cyclic_feedback_period
         cyclic_feedback_days_count = self.cyclic_feedback_days_count
-        
+
         if cyclic_feedback_period == "months":
-            self.cyclic_next_start_date = self.start_date + relativedelta(months=cyclic_feedback_days_count)
-            self.cyclic_next_end_date = end_date + relativedelta(months=cyclic_feedback_days_count)
+            self.cyclic_next_start_date = self.start_date + relativedelta(
+                months=cyclic_feedback_days_count
+            )
+            self.cyclic_next_end_date = end_date + relativedelta(
+                months=cyclic_feedback_days_count
+            )
         elif cyclic_feedback_period == "years":
-            self.cyclic_next_start_date = start_date + relativedelta(years=cyclic_feedback_days_count)
-            self.cyclic_next_end_date = end_date + relativedelta(years=cyclic_feedback_days_count)
+            self.cyclic_next_start_date = start_date + relativedelta(
+                years=cyclic_feedback_days_count
+            )
+            self.cyclic_next_end_date = end_date + relativedelta(
+                years=cyclic_feedback_days_count
+            )
         elif cyclic_feedback_period == "days":
-            self.cyclic_next_start_date = start_date + relativedelta(days=cyclic_feedback_days_count)
-            self.cyclic_next_end_date = end_date + relativedelta(days=cyclic_feedback_days_count)
+            self.cyclic_next_start_date = start_date + relativedelta(
+                days=cyclic_feedback_days_count
+            )
+            self.cyclic_next_end_date = end_date + relativedelta(
+                days=cyclic_feedback_days_count
+            )
 
         super().save(*args, **kwargs)
 
@@ -624,6 +636,50 @@ class KeyResultFeedback(models.Model):
         on_delete=models.DO_NOTHING,
     )
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+
+
+class Meetings(HorillaModel):
+    title = models.CharField(max_length=100)
+    date = models.DateTimeField(null=True, blank=True)
+    employee_id = models.ManyToManyField(Employee, related_name="meeting_employee",verbose_name="Employee")
+    manager = models.ManyToManyField(Employee, related_name="meeting_manager")
+    answer_employees = models.ManyToManyField(Employee,blank=True, related_name="meeting_answer_employees",verbose_name="Answerable Employees")
+    question_template = models.ForeignKey(
+        QuestionTemplate, on_delete=models.PROTECT, null=True, blank=True
+    )
+    response = models.TextField(null=True, blank=True)
+    show_response = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
+
+
+class MeetingsAnswer(models.Model):
+    """feedback answer model"""
+
+    answer = models.JSONField(max_length=200, null=True, blank=True)
+    question_id = models.ForeignKey(
+        Question,
+        on_delete=models.DO_NOTHING,
+        related_name="meeting_answer_question_id",
+        null=True,
+        blank=True,
+    )
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.DO_NOTHING,
+        related_name="employee_meeting_answer",
+        null=True,
+        blank=True,
+        verbose_name="Employee"
+    )
+    meeting_id = models.ForeignKey(
+        Meetings, on_delete=models.PROTECT, related_name="meeting_answer"
+    )
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+
+    def __str__(self):
+        return f"{self.employee_id.employee_first_name} - {self.answer}"
 
 
 def manipulate_existing_data():

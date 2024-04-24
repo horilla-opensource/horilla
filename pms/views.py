@@ -4,6 +4,7 @@ views.py
 This module contains the view functions for handling HTTP requests and rendering
 responses in pms app.
 """
+
 import json
 import datetime
 from urllib.parse import parse_qs
@@ -19,10 +20,10 @@ from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from attendance.methods.group_by import group_by_queryset
-from horilla.decorators import manager_can_enter, permission_required
+from horilla.decorators import manager_can_enter, meeting_manager_can_enter, permission_required
 from horilla.decorators import login_required, hx_request_required
 from notifications.signals import notify
-from base.methods import get_key_instances, get_pagination, sortby
+from base.methods import closest_numbers, get_key_instances, get_pagination, sortby
 from base.views import paginator_qry
 from employee.models import Employee, EmployeeWorkInformation
 from pms.filters import (
@@ -30,6 +31,7 @@ from pms.filters import (
     ActualObjectiveFilter,
     EmployeeObjectiveFilter,
     KeyResultFilter,
+    MeetingsFilter,
     ObjectiveFilter,
     FeedbackFilter,
     ObjectiveReGroup,
@@ -42,6 +44,8 @@ from pms.models import (
     Comment,
     Feedback,
     KeyResult,
+    Meetings,
+    MeetingsAnswer,
     Objective,
     QuestionTemplate,
     Question,
@@ -56,6 +60,7 @@ from .forms import (
     EmployeeObjectiveForm,
     EmployeekeyResultForm,
     KRForm,
+    MeetingsForm,
     QuestionForm,
     ObjectiveForm,
     KeyResultForm,
@@ -80,18 +85,22 @@ def objective_list_view(request):
         employee_work_info__reporting_manager_id=employee
     )
     template = "okr/okr_view.html"
-    objective_own = EmployeeObjective.objects.filter(employee_id=employee, archive = False)
+    objective_own = EmployeeObjective.objects.filter(
+        employee_id=employee, archive=False
+    )
     objective_own = objective_own.distinct()
     if request.user.has_perm("pms.view_employeeobjective"):
         # objective_own = EmployeeObjective.objects.filter(employee_id=employee)
         # objective_own = objective_own.distinct()
-        objective_all = EmployeeObjective.objects.filter(archive = False)
+        objective_all = EmployeeObjective.objects.filter(archive=False)
         context = objective_filter_pagination(request, objective_own, objective_all)
 
     elif is_manager:
         # if user is a manager
         employees_ids = [employee.id for employee in is_manager]
-        objective_all = EmployeeObjective.objects.filter(employee_id__in=employees_ids, archive = False)
+        objective_all = EmployeeObjective.objects.filter(
+            employee_id__in=employees_ids, archive=False
+        )
         objective_all = objective_all.distinct()
         context = objective_filter_pagination(request, objective_own, objective_all)
     else:
@@ -347,8 +356,10 @@ def kr_create_or_update(request, kr_id=None):
     """
     form = KRForm()
     key_result = False
-def kr_create_or_update(request,kr_id=None):
-    form=KRForm()
+
+
+def kr_create_or_update(request, kr_id=None):
+    form = KRForm()
     kr = False
     key_result = False
     if kr_id is not None:
@@ -379,7 +390,8 @@ def kr_create_or_update(request,kr_id=None):
 
     return render(request, "okr/key_result/real_kr_form.html", {"form": form})
 
-    return render(request,'okr/key_result/real_kr_form.html',{'form':form})
+    return render(request, "okr/key_result/real_kr_form.html", {"form": form})
+
 
 @login_required
 def add_assignees(request, obj_id):
@@ -568,7 +580,9 @@ def objective_filter_pagination(request, objective_own, objective_all):
     if Objective.objects.filter(assignees=employee).exists():
         objectives = Objective.objects.filter(assignees=employee).distinct()
 
-    objectives = ActualObjectiveFilter(request.GET or initial_data, queryset=objectives).qs
+    objectives = ActualObjectiveFilter(
+        request.GET or initial_data, queryset=objectives
+    ).qs
     objectives = Paginator(objectives, get_pagination())
     objective_paginator_own = Paginator(objective_filter_own, get_pagination())
     objective_paginator_all = Paginator(objective_filter_all, get_pagination())
@@ -726,8 +740,9 @@ def objective_detailed_view(request, obj_id, **kwargs):
     """
 
     objective = Objective.objects.get(id=obj_id)
-    emp_objectives = EmployeeObjective.objects.filter(objective_id=objective,archive=False)
-
+    emp_objectives = EmployeeObjective.objects.filter(
+        objective_id=objective, archive=False
+    )
 
     # key_results = EmployeeKeyResult.objects.filter(employee_objective_id=objective)
     # comments = Comment.objects.filter(employee_objective_id=emp_objectives)
@@ -760,7 +775,7 @@ def objective_detailed_view(request, obj_id, **kwargs):
         "objective_key_result_status": EmployeeKeyResult.STATUS_CHOICES,
         "comment_form": ObjectiveCommentForm,
         "current_date": now,
-        'emp_obj_form':EmployeeObjectiveFilter(),
+        "emp_obj_form": EmployeeObjectiveFilter(),
     }
     # return render(request, "okr/objective_detailed_view.html", context)
     return render(request, "okr/okr_detailed_view.html", context)
@@ -836,29 +851,30 @@ def objective_detailed_view_comment(request, id):
 
 @login_required
 # @hx_request_required
-def emp_objective_search(request,obj_id):
+def emp_objective_search(request, obj_id):
     """
     This view is used to to search employee objective,returns searched and filtered objects.
     Returns:
         All the filtered and searched object will based on userlevel.
     """
-    objective= Objective.objects.get(id=obj_id)
-    emp_objectives=objective.employee_objective.all()
+    objective = Objective.objects.get(id=obj_id)
+    emp_objectives = objective.employee_objective.all()
     search_val = request.GET.get("search")
     if search_val is None:
         search_val = ""
-    emp_objectives = EmployeeObjectiveFilter(request.GET,emp_objectives).qs
+    emp_objectives = EmployeeObjectiveFilter(request.GET, emp_objectives).qs
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(EmployeeObjective, data_dict)
-    context={
-        'emp_objectives':emp_objectives,
-            "filter_dict": data_dict,
+    context = {
+        "emp_objectives": emp_objectives,
+        "filter_dict": data_dict,
     }
     template = "okr/emp_objective/emp_objective_list.html"
     if request.GET.get("field") != "" and request.GET.get("field") is not None:
         template = "okr/group_by.html"
     return render(request, template, context)
+
 
 @login_required
 def kr_table_view(request, emp_objective_id):
@@ -911,7 +927,7 @@ def objective_detailed_view_objective_status(request, id):
 @hx_request_required
 def objective_detailed_view_key_result_status(request, obj_id, kr_id):
     """
-    This view is used to  update status of key result in objective detailed view, 
+    This view is used to  update status of key result in objective detailed view,
     redirect to objective_detailed_view_activity. using htmx
     Args:
         obj_id (int): Primarykey of EmployeeObjective.
@@ -1072,7 +1088,7 @@ def archive_employee_objective(request, emp_obj_id):
     if single_view:
         return redirect(f"/pms/objective-detailed-view/{obj_id}")
     else:
-        return redirect(f"/pms/emp-objective-search/{obj_id}")
+        return redirect(objective_list_view)
 
 
 
@@ -1738,7 +1754,6 @@ def feedback_answer_get(request, id, **kwargs):
         has_answer = Answer.objects.filter(
             employee_id=employee, feedback_id=feedback
         ).exists()
-        has_answer = has_answer and has_answer
     if has_answer:
         feedback.status = "Closed"
         feedback.save()
@@ -2361,9 +2376,9 @@ def period_delete(request, period_id):
 
 @login_required
 def period_change(request):
-    """ 
-        this function is used to detect the period change and 
-        return the start and end date of that period
+    """
+    this function is used to detect the period change and
+    return the start and end date of that period
     """
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax:
@@ -2455,7 +2470,10 @@ def dashboard_key_result_status(request):
         for i in key_result_status:
             key_results = EmployeeKeyResult.objects.filter(status=i[0])
             key_results_count = filtersubordinates(
-                request, queryset=key_results, perm="pms.view_employeekeyresult", field="employee_objective_id__employee_id"
+                request,
+                queryset=key_results,
+                perm="pms.view_employeekeyresult",
+                field="employee_objective_id__employee_id",
             ).count()
             if key_results_count:
                 data.setdefault("key_result_label", []).append(i[1])
@@ -2481,7 +2499,7 @@ def dashboard_feedback_status(request):
         return JsonResponse(data)
 
 
-def filtersubordinates(request, queryset, perm=None, field = None):
+def filtersubordinates(request, queryset, perm=None, field=None):
     """
     This method is used to filter out subordinates queryset element.
     """
@@ -3011,3 +3029,293 @@ def key_result_current_value_update(request):
             return JsonResponse({"type": "sucess"})
     except:
         return JsonResponse({"type": "error"})
+
+
+@login_required
+def view_meetings(request):
+    """
+    This view is used to view the meeting ,
+    Returns:
+        it will redirect to view_meetings.html .
+    """
+    previous_data = request.GET.urlencode()
+    meetings = Meetings.objects.filter(is_active=True)
+    if not request.user.has_perm("pms.view_meetings"):
+        employee_id = request.user.employee_get
+        meetings = meetings.filter(Q(employee_id = employee_id) | Q(manager = employee_id)).distinct().order_by("-id")
+    filter_form = MeetingsFilter()
+
+    meetings = paginator_qry(meetings, request.GET.get("page"))
+    requests_ids = json.dumps([instance.id for instance in meetings.object_list])
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Meetings, data_dict)
+
+    context = {
+        "meetings": meetings,
+        "filter_form": filter_form.form,
+        "requests_ids":requests_ids,
+    }
+    return render(request, "meetings/view_meetings.html", context)
+
+
+@login_required
+@permission_required("pms.add_meetings")
+def create_meetings(request):
+    """
+    This view is used to create the meeting ,
+    Returns:
+        Get:
+            it renders form.html to create the meeting.
+        Post:
+            it will redirect to view_meetings.html .
+    """
+    instance_id = eval(str(request.GET.get("instance_id")))
+    instance = None
+    initial = {"manager": request.user.employee_get,"employee_id":None}
+    if instance_id and isinstance(instance_id, int):
+        instance = Meetings.objects.filter(id=instance_id).first()
+        initial = {}
+    form = MeetingsForm(instance=instance, initial = initial)
+    if request.method == "POST":
+        form = MeetingsForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Meeting added successfully"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "meetings/form.html",
+        {
+            "form": form,
+        },
+    )
+
+
+@login_required
+@permission_required("pms.change_meetings")
+def archive_meetings(request, id):
+    """
+    This view is used to archive and unarchive the meeting ,
+    Args:
+        meet_id(int) : primarykey of the meeting.
+        employee_id(int) : primarykey of the employee
+    Returns:
+        it will redirect to view_meetings.html .
+    """
+    meeting = Meetings.objects.filter(id=id).first()
+    meeting.is_active = not meeting.is_active
+    meeting.save()
+
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+@permission_required("pms.change_meetings")
+def meeting_manager_remove(request,meet_id,manager_id):
+    """
+    This view is used to remove the manager from the meeting ,
+    Args:
+        meet_id(int) : primarykey of the meeting.
+        employee_id(int) : primarykey of the employee
+    Returns:
+        it will redirect to view_meetings.html .
+    """
+    meeting = Meetings.objects.filter(id=meet_id).first()
+    meeting.manager.remove(manager_id)
+    meeting.save()
+    return HttpResponse("")
+
+
+@login_required
+def meeting_employee_remove(request,meet_id,employee_id):
+    """
+    This view is used to remove the employees from the meeting ,
+    Args:
+        meet_id(int) : primarykey of the meeting.
+        employee_id(int) : primarykey of the employee
+    Returns:
+        it will redirect to view_meetings.html .
+    """
+    meeting = Meetings.objects.filter(id=meet_id).first()
+    meeting.employee_id.remove(employee_id)
+    meeting.save()
+    return HttpResponse("")
+
+
+@login_required
+def filter_meetings(request):
+    """
+    This view is used to filter the meeting ,
+    Returns:
+        it will render to meeting_list.html .
+    """
+    previous_data = request.GET.urlencode()
+    filter_obj = MeetingsFilter(request.GET).qs
+
+    if not request.user.has_perm("pms.view_meetings"):
+        employee_id = request.user.employee_get
+        filter_obj = filter_obj.filter(Q(employee_id = employee_id) | Q(manager = employee_id)).distinct().order_by("-id")
+    filter_obj = sortby(request, filter_obj, "sortby")
+    filter_obj = paginator_qry(filter_obj, request.GET.get("page"))
+    requests_ids = json.dumps([instance.id for instance in filter_obj.object_list])
+    
+    data_dict = parse_qs(previous_data)
+    get_key_instances(EmployeeObjective, data_dict)
+
+    return render(
+        request,
+        "meetings/meetings_list.html",
+        {
+            "meetings": filter_obj,
+            "pd": previous_data,
+            "filter_dict": data_dict,
+            "requests_ids":requests_ids,
+        },
+    )
+
+
+@login_required
+@meeting_manager_can_enter("pms.change_meetings")
+def add_response(request, id):
+    """
+    This view is used to add the MoM to the meeting ,
+    Args:
+        id(int) : primarykey of the meeting.
+    Returns:
+        it will redirect to view_meetings.html .
+    """
+    meeting = Meetings.objects.filter(id=id).first()
+    if request.method == "POST":
+        response = request.POST.get("response")
+        meeting.response = response
+        meeting.save()
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+@meeting_manager_can_enter("pms.change_meetings", answerable=True)
+def meeting_answer_get(request, id, **kwargs):
+    """
+    This view is used to render the Meeting questions ,
+    Args:
+        id(int) : primarykey of the meeting.
+    Returns:
+        it will redirect to meeting_answer.html .
+    """
+
+    employee = request.user.employee_get
+    if employee_id := request.GET.get('emp_id'):
+        employee = Employee.objects.filter(id = employee_id).first()
+    meeting = Meetings.objects.get(id=id)
+    answer = MeetingsAnswer.objects.filter(meeting_id=meeting, employee_id=employee)
+    questions = meeting.question_template.question.all()
+    options = QuestionOptions.objects.all()
+    meeting_employees = meeting.manager.all() | meeting.employee_id.all()
+
+
+    if answer or request.GET.get('emp_id'):
+        return redirect('meeting-answer-view',id=meeting.id, emp_id = employee.id)
+    
+    if not employee in meeting_employees:
+        messages.info(request, _("You are not allowed to answer"))
+        return redirect(view_meetings)
+
+    context = {
+        "questions": questions,
+        "options": options,
+        "meeting": meeting,
+    }
+
+    return render(request, "meetings/meeting_answer.html", context)
+
+
+@login_required
+@meeting_manager_can_enter("pms.change_meetings", answerable=True)
+def meeting_answer_post(request, id):
+    """
+    This view is used to create meeting answer ,
+    Args:
+        id(int) : primarykey of the meeting.
+    Returns:
+        it will redirect to view_meeting if the form was success full.
+    """
+
+    employee = request.user.employee_get
+    meeting = Meetings.objects.get(id=id)
+    question_template = meeting.question_template.question.all()
+
+    if request.method == "POST":
+        for question in question_template:
+            if request.POST.get(f"answer{question.id}"):
+                answer = request.POST.get(f"answer{question.id}")
+                MeetingsAnswer.objects.get_or_create(
+                    answer={"answer": answer},
+                    question_id=question,
+                    meeting_id=meeting,
+                    employee_id=employee,
+                )
+        messages.success(
+            request,
+            _("Questions for meeting %(meeting)s has been answered successfully!.")
+            % {"meeting": meeting.title},
+        )
+        return redirect(view_meetings)
+
+
+@login_required
+@meeting_manager_can_enter("pms.change_meetings", answerable=True)
+def meeting_answer_view(request, id,emp_id, **kwargs):
+    """
+    This view is used to view the meeting for employee.
+    Args:
+        id(int) : primarykey of the meeting.
+        emp_id(int) : id of the employee
+    Returns:
+        it will return meeting answer object to meeting_answer_view.
+    """
+
+    employee = Employee.objects.filter(id = emp_id).first()
+    meeting = Meetings.objects.get(id=id)
+    answers = MeetingsAnswer.objects.filter(meeting_id=meeting, employee_id=employee)
+
+    context = {
+        "answers": answers,
+        "meeting": meeting,
+    }
+    return render(request, "meetings/meeting_answer_view.html", context)
+
+
+@login_required
+@meeting_manager_can_enter("pms.change_meetings", answerable=True)
+def meeting_question_template_view(request, meet_id):
+    """
+    This view is used to view the activity sidebar page for employee.
+    Args:
+        id(int) : primarykey of the meeting.
+    Returns:
+        it will return meeting answer object to meeting_question_template_view.
+    """
+    employee = request.user.employee_get
+    meeting = Meetings.objects.get(id=meet_id)
+    answer = MeetingsAnswer.objects.filter(meeting_id=meeting, employee_id=employee)
+    is_answered = False
+    if answer:
+        is_answered = True
+    context = {
+        "is_answered": is_answered,
+        "meeting": meeting,
+    }
+    return render(request,"meetings/meeting_question_template_view.html",context)
+
+@login_required
+def meeting_single_view(request, id):
+    meeting = Meetings.objects.filter(id=id).first()
+    context = {"meeting":meeting}
+    requests_ids_json = request.GET.get("requests_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, id)
+        context["requests_ids"] = requests_ids_json
+        context["previous"] = previous_id
+        context["next"] = next_id
+    return render(request,"meetings/meeting_single_view.html",context)
