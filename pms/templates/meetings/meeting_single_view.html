@@ -44,18 +44,29 @@
     </a>
 
     <div class="oh-modal__dialog-header pt-0" >
+        <div class="oh-timeoff-modal__stats-container mt-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-count">{% trans "Date" %}</span>
+                <span class="oh-timeoff-modal__stat-title ">{{meeting.date}}</span>
+            </div>
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-count">{% trans "Question Template" %}</span>
+                <span class="oh-timeoff-modal__stat-title ">{{meeting.question_template}}</span>
+            </div>
+        </div>
+
         <div class="oh-timeoff-modal__stats-container">
             <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Employees" %}</span>
-                <span class="oh-timeoff-modal__stat-count">
+                <span class="oh-timeoff-modal__stat-count">{% trans "Employees" %}</span>
+                <span class="oh-timeoff-modal__stat-title">
                     {% for employee in meeting.employee_id.all %}
                     {{employee.get_full_name}}, 
                     {% endfor %}
                 </span>
             </div>
             <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Managers" %}</span>
-                <span class="oh-timeoff-modal__stat-count">
+                <span class="oh-timeoff-modal__stat-count">{% trans "Managers" %}</span>
+                <span class="oh-timeoff-modal__stat-title">
                     {% for manager in meeting.manager.all %}
                     {{manager.get_full_name}}, 
                     {% endfor %}
@@ -63,20 +74,10 @@
             </div>
         </div>
 
-        <div class="oh-timeoff-modal__stats-container mt-3">
+        <div class="oh-timeoff-modal__stats w-100 mt-3">
             <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Date" %}</span>
-                <span class="oh-timeoff-modal__stat-count ">{{meeting.date}}</span>
-            </div>
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Question Template" %}</span>
-                <span class="oh-timeoff-modal__stat-count ">{{meeting.question_template}}</span>
-            </div>
-        </div>
-        <div class="oh-timeoff-modal__stats-container w-100 mt-3">
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Answerable employees" %}</span>
-                <span class="oh-timeoff-modal__stat-description ">
+                <span class="oh-timeoff-modal__stat-count">{% trans "Answerable employees" %}</span>
+                <span class="oh-timeoff-modal__stat-title ">
                     {% for employee in meeting.answer_employees.all %}
                     {{employee.get_full_name}}, 
                     {% endfor %}
@@ -86,7 +87,7 @@
 
         <div class="oh-timeoff-modal__stats w-100 mt-3">
             <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Minutes of Meeting" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{% trans "Minutes of Meeting" %}</span>
                 <div class="oh-timeoff-modal__stat-description">{{meeting.response|default:""}}</div>
             </div>
         </div>
