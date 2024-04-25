@@ -88,7 +88,7 @@
         <div class="oh-timeoff-modal__stats w-100 mt-3">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-count">{% trans "Minutes of Meeting" %}</span>
-                <div class="oh-timeoff-modal__stat-description">{{meeting.response|default:""}}</div>
+                <div class="oh-timeoff-modal__stat-description">{{meeting.response|default:""|safe}}</div>
             </div>
         </div>
         
