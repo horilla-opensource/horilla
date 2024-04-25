@@ -4,13 +4,15 @@ email_backend.py
 This module is used to write email backends
 """
 
+import importlib
 from django.core.mail.backends.smtp import EmailBackend
 from base.models import EmailLog, DynamicEmailConfiguration
 from horilla import settings
 from base.thread_local_middleware import _thread_locals
+from django.core.mail.backends.smtp import EmailBackend
 
 
-class ConfiguredEmailBackend(EmailBackend):
+class DefaultHorillaMailBackend(EmailBackend):
     def __init__(
         self,
         host=None,
@@ -26,7 +28,6 @@ class ConfiguredEmailBackend(EmailBackend):
         **kwargs,
     ):
         self.configuration = self.get_dynamic_email_config()
-
         ssl_keyfile = (
             getattr(self.configuration, "ssl_keyfile", None)
             if self.configuration
@@ -38,7 +39,7 @@ class ConfiguredEmailBackend(EmailBackend):
             else ssl_keyfile or getattr(settings, "ssl_certfile", None)
         )
         self.mail_sent_from = self.dynamic_username
-        super(ConfiguredEmailBackend, self).__init__(
+        super().__init__(
             host=self.dynamic_host,
             port=self.dynamic_port,
             username=self.dynamic_username,
@@ -143,9 +144,25 @@ class ConfiguredEmailBackend(EmailBackend):
             else getattr(settings, "EMAIL_TIMEOUT", None)
         )
 
+
+EMAIL_BACKEND = getattr(settings, "EMAIL_BACKEND", "")
+
+
+BACKEND_CLASS: EmailBackend = DefaultHorillaMailBackend
+default = "base.backends.ConfiguredEmailBackend"
+
+setattr(BACKEND_CLASS, "send_messages", DefaultHorillaMailBackend.send_messages)
+
+if EMAIL_BACKEND and EMAIL_BACKEND != default:
+    module_path, class_name = EMAIL_BACKEND.rsplit(".", 1)
+    module = importlib.import_module(module_path)
+    BACKEND_CLASS = getattr(module, class_name)
+
+
+class ConfiguredEmailBackend(BACKEND_CLASS):
+
     def send_messages(self, email_messages):
-        response = super(ConfiguredEmailBackend, self).send_messages(email_messages)
-        # Save the email status in the EmailLog model
+        response = super(BACKEND_CLASS, self).send_messages(email_messages)
         for message in email_messages:
             email_log = EmailLog(
                 subject=message.subject,
@@ -156,6 +173,12 @@ class ConfiguredEmailBackend(EmailBackend):
             )
             email_log.save()
         return response
+
+
+if EMAIL_BACKEND != default:
+    from_mail = getattr(settings, "EMAIL_HOST_USER", "example@gmail.com")
+    ConfiguredEmailBackend.dynamic_username = from_mail
+    ConfiguredEmailBackend.dynamic_username_with_display_name = from_mail
 
 
 __all__ = ["ConfiguredEmailBackend"]

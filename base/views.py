@@ -269,7 +269,13 @@ def send_link(employee, request, id, user):
     url = request.build_absolute_uri("/") + "reset-password/" + id
     message = f"Reset Your Password {url}."
     email_backend = ConfiguredEmailBackend()
-    if not email_backend.configuration:
+    default = "base.backends.ConfiguredEmailBackend"
+    is_default_backend=True
+    EMAIL_BACKEND = getattr(settings, "EMAIL_BACKEND", "")
+    if EMAIL_BACKEND and default != EMAIL_BACKEND:
+        is_default_backend = False 
+    
+    if is_default_backend and not email_backend.configuration:
         messages.error(request, _("Primary mail server is not configured"))
         return
     reset_ids.append({"uuid": id, "user": user})
