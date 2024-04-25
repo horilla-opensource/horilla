@@ -106,7 +106,7 @@
                                                     >{{manager.get_full_name|truncatechars:15}}</span
                                                     >
                                                 </div>
-                                                {% if "perms.pms.add_meetings" %}
+                                                {% if perms.pms.add_meetings %}
                                                 <a 
                                                     hx-confirm="{% trans 'Are you sure to remove this manager?' %}"
                                                     hx-post="{% url 'meeting-manager-remove' meeting.id manager.id %}" 
@@ -127,7 +127,7 @@
                                         {{meeting.date}}
                                     </div>
                                     <div data-cell-index="4" class="oh-sticky-table__td ">
-                                        {{meeting.response|default:"-"}}
+                                        {{meeting.response|default:"-"|safe|truncatechars_html:30}}
                                     </div>
                                         <div class="oh-sticky-table__td oh-sticky-table__right">
                                             <div class="oh-btn-group" onclick="event.stopPropagation()">
@@ -312,9 +312,6 @@
     {% endif %}
 
     <script>
-        $(".oh-permission-table--toggle").on("click", function(){
-            $(this).siblings(".oh-sticky-table__td").children(".count-span").toggleClass("d-none")
-        })
         // toggle columns //
         toggleColumns("meeting-table", "meetingCells");
         localStorageMeetingCells = localStorage.getItem(

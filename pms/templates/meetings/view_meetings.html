@@ -20,5 +20,10 @@
 
 <script src="{% static 'src/feedback/action.js' %}"></script>
 <script src="{% static '/base/filter.js' %}"></script>
+<script>
+    $(".oh-permission-table--toggle").on("click", function(){
+        $(this).siblings(".oh-sticky-table__td").children(".count-span").toggleClass("d-none")
+    })
+</script>
 
 {% endblock content %}
