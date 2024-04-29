@@ -137,7 +137,7 @@
               <div class="oh-btn-group">
                 {% if cand.email in emp_list %}
                 <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
-                  <ion-icon name="person-circle-outline"></ion-icon>            </button>                
+                  <ion-icon name="person-circle-outline"></ion-icon></button>                
               {% else %}
                 <a href="{% url 'candidate-conversion' cand.id %}"
                   onclick="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
@@ -145,33 +145,43 @@
                   title='{% trans "To employee " %}'
                   style="padding:0.8rem 1rem"
                 >
-                  <ion-icon name="person-circle-outline"></ion-icon>            </a>
+                  <ion-icon name="person-circle-outline"></ion-icon></a>
               {% endif %}
+              {% if cand.email in emp_list %}
+                <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
+                  <ion-icon name="heart-circle-outline"></ion-icon></button> 
+              {% else %}
                 <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'To Skill zone' %}"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#createModal"
+                    hx-get="{% url 'to-skill-zone' cand.id %}"
+                    hx-target="#createTarget"
+                    style="padding:0.8rem 1rem"
+                  >
+                  <ion-icon name="heart-circle-outline"></ion-icon>
+                </button>
+              {% endif %}
+              {% if cand.email in emp_list %}
+                <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
+                  <ion-icon name="thumbs-down-outline"></ion-icon></button> 
+              {% else %}
+                {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
+                <button
+                  type="button"
+                  class="oh-btn oh-btn--light-bkg w-100"
+                  hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
+                  hx-target="#createTarget"
                   data-toggle="oh-modal-toggle"
                   data-target="#createModal"
-                  hx-get="{% url 'to-skill-zone' cand.id %}"
-                  hx-target="#createTarget"
-                  style="padding:0.8rem 1rem"
-                >
-                <ion-icon name="heart-circle-outline"></ion-icon>            
-              </button>
-              {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
-              <button
-                type="button"
-                class="oh-btn oh-btn--light-bkg w-100"
-                hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
-                hx-target="#createTarget"
-                data-toggle="oh-modal-toggle"
-                data-target="#createModal"
-                {% if cand.is_offer_rejected %} 
-                style="background: #ff4500a3 !important; color: white;"
-                title="{% trans "Added In Rejected Candidates" %}"
-                {% else %}
-                title="{% trans "Add To Rejected Candidates" %}"
-                {% endif %}>
-              <ion-icon name="thumbs-down-outline"></ion-icon>
-              </button>
+                  {% if cand.is_offer_rejected %} 
+                  style="background: #ff4500a3 !important; color: white;"
+                  title="{% trans "Added In Rejected Candidates" %}"
+                  {% else %}
+                  title="{% trans "Add To Rejected Candidates" %}"
+                  {% endif %}>
+                <ion-icon name="thumbs-down-outline"></ion-icon>
+                </button>
+                {% endif %}
               {% endif %}
               <button
                 type="button"

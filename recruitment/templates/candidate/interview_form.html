@@ -1,6 +1,6 @@
 {% load i18n %}
 <form  
-    hx-post='{% url "edit-interview" interview_id %}?view={{view}}'
+    hx-post='{% url "create-interview-schedule" %}'
     hx-target="#createTarget"
     hx-encoding="multipart/form-data"
     id="skillform"
@@ -24,7 +24,7 @@
             success: function(data) {
             // Clear existing options in the Managers dropdown
             $('[name=employee_id]').empty();
-    
+
             // Append new options based on the response
             $.each(data.employees, function(key, value) {
 
@@ -76,5 +76,6 @@
             }
         });
     });
-     
+
+
 </script>

@@ -14,6 +14,7 @@ provide the main entry points for interacting with the application's functionali
 import datetime
 from django import template
 from django.core.mail import EmailMessage
+from django.utils import timezone
 import os
 import json
 import contextlib
@@ -66,6 +67,7 @@ from recruitment.models import (
 from recruitment.filters import (
     CandidateFilter,
     CandidateReGroup,
+    InterviewFilter,
     RecruitmentFilter,
     SkillZoneCandFilter,
     SkillZoneFilter,
@@ -367,6 +369,8 @@ def recruitment_pipeline(request):
     recruitments = paginator_qry_recruitment_limited(
         filter_obj.qs, request.GET.get("page")
     )
+    now = timezone.now()
+
     return render(
         request,
         template,
@@ -375,6 +379,8 @@ def recruitment_pipeline(request):
             "recruitment": recruitments,
             "stage_filter_obj": stage_filter,
             "candidate_filter_obj": candidate_filter,
+            'now' : now,
+
         },
     )
 
@@ -523,6 +529,7 @@ def candidate_component(request):
     if cache[request.user.id]["filter_query"].get("view") == "card":
         template = "pipeline/kanban_components/candidate_kanban_components.html"
 
+    now = timezone.now()
     return render(
         request,
         template,
@@ -532,6 +539,7 @@ def candidate_component(request):
             ),
             "stage": stage,
             "rec": getattr(candidates.first(), "recruitment_id", {}),
+            "now" : now,
         },
     )
 
@@ -1244,6 +1252,82 @@ def candidate_view(request):
 
 
 @login_required
+def interview_filter_view(request):
+    """
+    This method is used to filter Disciplinary Action.
+    """
+
+    previous_data = request.GET.urlencode()
+
+    if request.user.has_perm("view_interviewschedule"):
+        interviews = InterviewSchedule.objects.all()
+    else:
+        interviews = InterviewSchedule.objects.filter(employee_id = request.user.employee_get.id)
+
+    dis_filter = InterviewFilter(request.GET, queryset = interviews).qs
+
+    page_number = request.GET.get("page")
+    page_obj = paginator_qry(dis_filter, page_number)
+    data_dict = parse_qs(previous_data)
+    get_key_instances(InterviewSchedule, data_dict)
+    now=timezone.now()
+    return render(
+        request,
+        "candidate/interview_list.html",
+        {
+            "data": page_obj,
+            "pd": previous_data,
+            "filter_dict": data_dict,
+            "now" : now,
+        },
+    )
+
+def interview_view(request):
+    """
+    This method render all interviews to the template
+    """
+    previous_data = request.GET.urlencode()
+
+    if request.user.has_perm("view_interviewschedule"):
+        interviews = InterviewSchedule.objects.all()
+    else:
+        interviews = InterviewSchedule.objects.filter(employee_id = request.user.employee_get.id)
+
+    form = InterviewFilter(request.GET, queryset=interviews)
+    page_number = request.GET.get("page")
+    page_obj = paginator_qry(form.qs, page_number)
+    previous_data = request.GET.urlencode()
+    template = "candidate/interview_view.html"
+    now=timezone.now()
+
+    return render(
+        request,
+        template,
+        {
+            "data": page_obj,
+            "pd": previous_data,
+            "f": form,
+            "now":now,
+        },
+    )
+
+
+@login_required
+def interview_employee_remove(request,interview_id,employee_id):
+    """
+    This view is used to remove the employees from the meeting ,
+    Args:
+        interview_id(int) : primarykey of the interview.
+        employee_id(int) : primarykey of the employee
+    """
+    interview = InterviewSchedule.objects.filter(id=interview_id).first()
+    interview.employee_id.remove(employee_id)
+    messages.success(request, "Interviewer removed succesfully.")
+    interview.save()
+    return HttpResponse("<script>window.location.reload()</script>")
+
+
+@login_required
 def candidate_export(request):
     """
     This method is used to Export candidate data
@@ -1320,6 +1404,8 @@ def candidate_view_individual(request, cand_id, **kwargs):
     if len(rating_list) != 0:
         avg_rate = round(sum(rating_list) / len(rating_list))
 
+    now = timezone.now()
+
     return render(
         request,
         "candidate/individual.html",
@@ -1327,6 +1413,8 @@ def candidate_view_individual(request, cand_id, **kwargs):
             "candidate": candidate_obj,
             "emp_list": existing_emails,
             "average_rate": avg_rate,
+            'now' : now,
+
         },
     )
 
@@ -1514,12 +1602,50 @@ def interview_schedule(request, cand_id):
                 verb_es=f"Estás programado como entrevistador para una entrevista con {cand_id.name} el {interview_date} a las {interview_time}.",
                 verb_fr=f"Vous êtes programmé en tant qu'intervieweur pour un entretien avec {cand_id.name} le {interview_date} à {interview_time}.",
                 icon="people-circle",
-                redirect=f"/recruitment/candidate-view/{cand_id.id}/",
+                redirect=f"/recruitment/interview-view/",
             )
 
             messages.success(request, "Interview Scheduled successfully.")
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, template, {"form": form, "cand_id": cand_id})
+
+
+@login_required
+@manager_can_enter(perm="recruitment.add_interviewschedule")
+def create_interview_schedule(request):
+    """
+    This method is used to Schedule interview to candidate
+    Args:
+        cand_id : candidate instance id
+    """
+    candidates = Candidate.objects.all()
+    template = "candidate/interview_form.html"
+    form  = ScheduleInterviewForm()
+    form.fields["candidate_id"].queryset = candidates
+    if request.method == "POST":
+        form  = ScheduleInterviewForm(request.POST)
+        if form.is_valid():
+            form.save()
+            emp_ids = form.cleaned_data["employee_id"]
+            cand_id = form.cleaned_data["candidate_id"]
+            interview_date = form.cleaned_data["interview_date"]
+            interview_time = form.cleaned_data["interview_time"]
+            users = [employee.employee_user_id for employee in emp_ids]
+            notify.send(
+                request.user.employee_get,
+                recipient=users,
+                verb=f"You are scheduled as an interviewer for an interview with {cand_id.name} on {interview_date} at {interview_time}.",
+                verb_ar=f"أنت مجدول كمقابلة مع {cand_id.name} يوم {interview_date} في توقيت {interview_time}.",
+                verb_de=f"Sie sind als Interviewer für ein Interview mit {cand_id.name} am {interview_date} um {interview_time} eingeplant.",
+                verb_es=f"Estás programado como entrevistador para una entrevista con {cand_id.name} el {interview_date} a las {interview_time}.",
+                verb_fr=f"Vous êtes programmé en tant qu'intervieweur pour un entretien avec {cand_id.name} le {interview_date} à {interview_time}.",
+                icon="people-circle",
+                redirect=f"/recruitment/interview-view/",
+            )
+
+            messages.success(request, "Interview Scheduled successfully.")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request, template, {"form": form})
 
 
 @login_required
@@ -1530,10 +1656,14 @@ def interview_delete(request, interview_id):
     Args:
         interview_id : interview schedule instance id
     """
+    view = request.GET['view']
     interview = InterviewSchedule.objects.get(id=interview_id)
     interview.delete()
     messages.success(request, "Interview deleted successfully.")
-    return HttpResponse("<script>window.location.reload()</script>")
+    if view == 'true':
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    else:
+        return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
@@ -1545,7 +1675,13 @@ def interview_edit(request, interview_id):
         interview_id : interview schedule instance id
     """
     interview = InterviewSchedule.objects.get(id=interview_id)
-    candidates = Candidate.objects.filter(id=interview.candidate_id.id)
+    view = request.GET['view']
+    if view == 'true':
+        candidates = Candidate.objects.all()
+        view = 'true'
+    else:
+        candidates = Candidate.objects.filter(id=interview.candidate_id.id)
+        view = 'false'
     template = "pipeline/pipeline_components/schedule_interview_update.html"
     form  = ScheduleInterviewForm(instance=interview)
     form.fields["candidate_id"].queryset = candidates
@@ -1567,11 +1703,11 @@ def interview_edit(request, interview_id):
                 verb_es=f"Estás programado como entrevistador para una entrevista con {cand_id.name} el {interview_date} a las {interview_time}.",
                 verb_fr=f"Vous êtes programmé en tant qu'intervieweur pour un entretien avec {cand_id.name} le {interview_date} à {interview_time}.",
                 icon="people-circle",
-                redirect=f"/recruitment/candidate-view/{cand_id.id}/",
+                redirect=f"/recruitment/interview-view/",
             )
             messages.success(request, "Interview updated successfully.")
             return HttpResponse("<script>window.location.reload()</script>")
-    return render(request, template, {"form": form, "interview_id": interview_id})
+    return render(request, template, {"form": form, "interview_id": interview_id, 'view' : view,})
 
 
 def get_managers(request):

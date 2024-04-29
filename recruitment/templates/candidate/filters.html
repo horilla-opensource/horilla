@@ -158,7 +158,7 @@
   </div>
 </div>
 <div class="oh-dropdown__filter-footer">
-  <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="#candidateFilter" >{% trans 'Filter' %}</button>
+  <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="#candidateFilter" onclick="event.stopPropagation()" >{% trans 'Filter' %}</button>
 </div>
 <script src="{% static '/base/filter.js' %}"></script>
 <script>

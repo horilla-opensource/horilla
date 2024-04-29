@@ -566,13 +566,13 @@
               {% for interview_schedule in candidate.candidate_interview.all %}
                 <li class="oh-activity-sidebar__qa-item">
                   <span class="oh-activity-sidebar__q" style="font-size:16px;">
-                    <span class="float-end" title="{% trans "Delete" %}" hx-get="{% url 'delete-interview' interview_schedule.id %}"
+                    <span class="float-end" title="{% trans "Delete" %}" hx-get="{% url 'delete-interview' interview_schedule.id %}?view=false"
                           data-target="#activitySidebar" 
                           hx-swap="innerHTML" hx-target="#interview">
                       <ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" 
                           aria-label="close outline"></ion-icon>
                     </span>
-                    <span class="float-end" title="{% trans "Edit" %}" hx-get="{% url 'edit-interview' interview_schedule.id %}"
+                    <span class="float-end" title="{% trans "Edit" %}" hx-get="{% url 'edit-interview' interview_schedule.id %}?view=false"
                           data-target="#createModal" hx-swap="innerHTML" hx-target="#createTarget" 
                           data-toggle="oh-modal-toggle">
                       <ion-icon name="create-outline" style="font-size: 19px" role="img" class="md hydrated" 
@@ -586,6 +586,27 @@
                       {% endfor %}
                       <br>
                   </span>
+                  {% if interview_schedule.completed %}
+                      <div class="d-flex" style="color:green;">
+                          <i id="fabIcon" style="font-size:18px;" class="material-icons ms-3 mt-2">check_circle</i>
+                          <span class="oh-activity-sidebar__q mt-2">{% trans "Interview Completed" %}</span>
+                      </div>
+                  {% elif interview_schedule.interview_date|date:"Y-m-d" < now|date:"Y-m-d" %}
+                      <div class="d-flex" style="color:red;">
+                          <i id="fabIcon" style="font-size:18px" class="material-icons ms-3 mt-2">dangerous</i>
+                          <span class="oh-activity-sidebar__q mt-2">{% trans "Expired Interview" %}</span>
+                      </div>
+                  {% elif interview_schedule.interview_date|date:"Y-m-d" > now|date:"Y-m-d" %}
+                      <div class="d-flex" style="color:orange;">
+                          <i id="fabIcon" title="{{interview_schedule.interview_date|timeuntil}}" style="font-size:18px;" class="material-icons ms-3 mt-2">schedule</i>
+                          <span class="oh-activity-sidebar__q mt-2">{% trans "Upcoming Interview" %}</span>
+                      </div>
+                  {% elif interview_schedule.interview_date|date:"Y-m-d" == now|date:"Y-m-d" and not interview_schedule.completed %}
+                      <div class="d-flex" style="color:blue;">
+                          <i id="fabIcon" style="font-size:18px;" class="material-symbols-outlined ms-3 mt-2">today</i>
+                          <span class="oh-activity-sidebar__q mt-2">{% trans "Interview Today" %}</span>
+                      </div>
+                  {% endif %}
 
                 </li>
                 

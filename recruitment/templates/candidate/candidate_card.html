@@ -48,40 +48,56 @@
           </button>
           <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" @click.outside="show = false" style="display: none;">
             <ul class="oh-dropdown__items">
-              {% if perms.recruitment.add_skillzonecandidate %}
-              <li class="oh-dropdown__item">
-                <a 
-                  data-toggle="oh-modal-toggle"
-                  data-target="#createModal"
-                  hx-get="{% url 'to-skill-zone' cand.id %}"
-                  hx-target="#createTarget"
-                >{% trans "Add to Skill Zone" %}</a>
-              </li>
+              {% if cand.email in emp_list %}
+              {% else %}
+                <li class="oh-dropdown__item">
+                  <a href="{% url 'candidate-conversion' cand.id %}"
+                    onclick="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
+                    style="text-decoration:none;"
+                  >
+                    {% trans "Convert to Employee" %}</a>
+                </li>
               {% endif %}
-              {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
-              <li class="oh-dropdown__item">
-                <a
-                        class="oh-dropdown__link oh-dropdown__link--secondary"
-                        hx-target="#createTarget"
-                          hx-swap="innerHTML"
-                          class="oh-btn oh-btn--light"
-                          data-toggle="oh-modal-toggle"
-                          data-target="#createModal"
-                          hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
-                          {% if cand.is_offer_rejected %}
-                          title="{% trans "Added In Rejected Candidates" %}"
+              {% if cand.email in emp_list %}
+              {% else %}
+                {% if perms.recruitment.add_skillzonecandidate %}
+                <li class="oh-dropdown__item">
+                  <a 
+                    data-toggle="oh-modal-toggle"
+                    data-target="#createModal"
+                    hx-get="{% url 'to-skill-zone' cand.id %}"
+                    hx-target="#createTarget"
+                  >{% trans "Add to Skill Zone" %}</a>
+                </li>
+                {% endif %}
+              {% endif %}
+              {% if cand.email in emp_list %}
+              {% else %}
+                {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
+                <li class="oh-dropdown__item">
+                  <a
+                          class="oh-dropdown__link oh-dropdown__link--secondary"
+                          hx-target="#createTarget"
+                            hx-swap="innerHTML"
+                            class="oh-btn oh-btn--light"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#createModal"
+                            hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
+                            {% if cand.is_offer_rejected %}
+                            title="{% trans "Added In Rejected Candidates" %}"
+                            {% else %}
+                            title="{% trans "Add To Rejected Candidates" %}"
+                            {% endif %}
+                          >
+                          {% if not cand.is_offer_rejected %}
+                          {% trans "Add to Rejected" %}
                           {% else %}
-                          title="{% trans "Add To Rejected Candidates" %}"
+                          {% trans "Edit Rejected Candidate" %}
                           {% endif %}
+                          </a
                         >
-                        {% if not cand.is_offer_rejected %}
-                        {% trans "Add to Rejected" %}
-                        {% else %}
-                        {% trans "Edit Rejected Candidate" %}
-                        {% endif %}
-                        </a
-                      >
-              </li>
+                </li>
+                {% endif %}
               {% endif %}
               {% if perms.recruitment.change_candidate %}
               <li class="oh-dropdown__item">

@@ -1,6 +1,6 @@
 {% load i18n %}
 <form  
-    hx-post='{% url "interview-schedule" cand_id %}'
+    hx-post='{% url "interview-schedule" cand_id %}?view={{view}}'
     hx-target="#createTarget"
     hx-encoding="multipart/form-data"
     id="skillform"
@@ -14,7 +14,7 @@
         var candidate_id = $('[name=candidate_id]').val();
         var selectedmanagers = $('[name=employee_id]').val();
 
-        // Make AJAX request to fetch available job positions for the selected department
+        // Make AJAX request to fetch available Managers for the selected Candidate
         $.ajax({
             url: '{% url "get_managers" %}',
             method: 'GET',
@@ -22,7 +22,7 @@
             'cand_id': candidate_id
             },
             success: function(data) {
-            // Clear existing options in the Job Position dropdown
+            // Clear existing options in the Managers dropdown
             $('[name=employee_id]').empty();
 
             // Append new options based on the response
@@ -35,7 +35,7 @@
     
             });
     
-            // Set the selected job position back to the dropdown
+            // Set the selected Managers back to the dropdown
             if (selectedmanagers) {
                 $('[name=employee_id]').val(selectedmanagers);
             }
@@ -43,5 +43,39 @@
         });
         
     })
+
+    $('[name=candidate_id]').change(function(){
+        var candidate_id = $('[name=candidate_id]').val();
+        var selectedmanagers = $('[name=employee_id]').val();
+
+        // Make AJAX request to fetch available Managers for the selected Candidate
+        $.ajax({
+            url: '{% url "get_managers" %}',
+            method: 'GET',
+            data: {
+            'cand_id': candidate_id
+            },
+            success: function(data) {
+            // Clear existing options in the Managers dropdown
+            $('[name=employee_id]').empty();
+    
+            // Append new options based on the response
+            $.each(data.employees, function(key, value) {
+
+                $('[name=employee_id]').append($('<option>', {
+                value: key,
+                text: value
+                }));
+    
+            });
+    
+            // Set the selected Managers back to the dropdown
+            if (selectedmanagers) {
+                $('[name=employee_id]').val(selectedmanagers);
+            }
+            }
+        });
+    });
+
 
 </script>

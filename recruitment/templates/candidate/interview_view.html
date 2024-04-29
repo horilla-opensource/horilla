@@ -1,0 +1,54 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+{% load i18n %}
+
+<div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px">
+      <div class="oh-modal__dialog-header">
+      <button onclick="$(this).closest('#createModal').removeClass('oh-modal--show');" type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+
+      <div class="oh-modal__dialog-body" id="createTarget"></div>
+  </div>
+</div>
+
+<style>
+  .to-employee{
+    background: #f1ffd5;
+  }
+  .to-employee:hover{
+    background-color: #f1ffd5 !important;
+  }
+  .oh-rate:not(:checked)>label:hover, .oh-rate:not(:checked)>label:hover~label{
+    color: #ccc
+  }
+  .diff-cell{
+    background: rgba(255, 166, 0, 0.158);
+  }
+</style>
+{% include 'candidate/interview_nav.html' %}
+<div class="oh-wrapper">
+  <div id="section" hx-target="#section" hx-swap="innerHTML">
+      {% include 'candidate/interview_list.html' %}
+  </div>
+</div>
+
+<div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+        <div class="oh-modal__dialog-header">
+        <button onclick="$(this).closest('#createModal').removeClass('oh-modal--show');" type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+
+        <div class="oh-modal__dialog-body" id="createTarget"></div>
+    </div>
+</div>
+    
+<script src="{% static '/candidate/bulk.js' %}"></script>
+<script>
+  $(".oh-permission-table--toggle").on("click", function(){
+      $(this).siblings(".oh-sticky-table__td").children(".count-span").toggleClass("d-none")
+  })
+</script>
+
+{% endblock %}

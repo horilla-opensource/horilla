@@ -90,6 +90,17 @@
                 </div>
                 <div class="oh-sticky-table__sd oh-table-config__td"
                     style="text-decoration: none;width: 400px !important;">
+                    {% for interview_schedule in cand.candidate_interview.all %}
+                        {% if interview_schedule.interview_date|date:"Y-m-d" == now|date:"Y-m-d" %}
+                            <div class="d-flex" style="flex-direction: row-reverse;">
+                                <span class="material-symbols-outlined text-success" 
+                                title="*Interview : Today at {{interview_schedule.interview_time}} with
+                                {% for emp in interview_schedule.employee_id.all %} {{emp}}, {% endfor %}">
+                                alarm_on
+                                </span>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                     <span title={% trans "Move" %}><ion-icon name="move"></ion-icon></span>
                     <div class="oh-profile oh-profile--md">
                         <div class="oh-profile__avatar mr-1">

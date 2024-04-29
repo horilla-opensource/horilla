@@ -10,6 +10,7 @@ import django_filters
 from django import forms
 from recruitment.models import (
     Candidate,
+    InterviewSchedule,
     Recruitment,
     SkillZone,
     SkillZoneCandidate,
@@ -135,6 +136,7 @@ class CandidateFilter(FilterSet):
             "rejected_candidate__reject_reason_id",
             "offer_letter_status",
             "candidate_rating__rating",
+            "candidate_interview__employee_id",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -536,3 +538,73 @@ class SkillZoneCandFilter(FilterSet):
             queryset.filter(candidate_id__name__icontains=value)
             | queryset.filter(skill_zone_id__title__icontains=value)
         ).distinct()
+
+
+class InterviewFilter(FilterSet):
+    """
+    Filter set class for Candidate model
+
+    Args:
+        FilterSet (class): custom filter set class to apply styling
+    """
+
+    search = django_filters.CharFilter(field_name="candidate_id__name", lookup_expr="icontains")
+
+    scheduled_from = django_filters.DateFilter(
+        field_name="interview_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    # schedule_date = django_filters.DateFilter(
+    #     field_name="interview_date",
+    #     widget=forms.DateInput(attrs={"type": "date"}),
+    # )
+    scheduled_till = django_filters.DateFilter(
+        field_name="interview_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+    class Meta:
+        """
+        Meta class to add the additional info
+        """
+
+        model = InterviewSchedule
+        fields = [
+            "candidate_id",
+            "employee_id",
+            "interview_date",
+            # "recruitment",
+            # "recruitment_id",
+            # "stage_id",
+            # "schedule_date",
+            # "email",
+            # "mobile",
+            # "country",
+            # "state",
+            # "city",
+            # "zip",
+            # "gender",
+            # "start_onboard",
+            # "hired",
+            # "canceled",
+            # "is_active",
+            # "recruitment_id__company_id",
+            # "job_position_id",
+            # "recruitment_id__closed",
+            # "recruitment_id__is_active",
+            # "job_position_id__department_id",
+            # "recruitment_id__recruitment_managers",
+            # "stage_id__stage_managers",
+            # "stage_id__stage_type",
+            # "joining_date",
+            # "skillzonecandidate_set__skill_zone_id",
+            # "skillzonecandidate_set__candidate_id",
+            # "portal_sent",
+            # "joining_set",
+            # "rejected_candidate__reject_reason_id",
+            # "offer_letter_status",
+            # "candidate_rating__rating",
+            # "candidate_interview__employee_id",
+        ]

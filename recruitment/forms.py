@@ -1026,16 +1026,17 @@ class ScheduleInterviewForm(ModelForm):
 
 
     def clean(self):
+        instance = self.instance
         cleaned_data = super().clean()
         interview_date = cleaned_data.get('interview_date')
         interview_time = cleaned_data.get('interview_time')
         
-        if interview_date and interview_date < date.today():
+        if not instance.pk and interview_date and interview_date < date.today():
             self.add_error('interview_date', _("Interview date cannot be in the past."))
         
-        if interview_time:
+        if not instance.pk and interview_time:
             now = datetime.now().time()
-            if interview_date == date.today() and interview_time < now:
+            if not instance.pk and interview_date == date.today() and interview_time < now:
                 self.add_error('interview_time', _("Interview time cannot be in the past."))
         
         return cleaned_data
