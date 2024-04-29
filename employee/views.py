@@ -21,6 +21,7 @@ import pandas as pd
 from urllib.parse import parse_qs
 from collections import defaultdict
 from datetime import datetime, timedelta, date
+from django.utils import timezone
 from django.db import models
 from django.db.models import Q
 from django.db.models import F, ProtectedError
@@ -115,7 +116,7 @@ from payroll.models.models import (
     Reimbursement,
 )
 from pms.models import Feedback
-from recruitment.models import Candidate, Recruitment, Stage
+from recruitment.models import Candidate, InterviewSchedule, Recruitment, Stage
 from horilla_documents.models import Document, DocumentRequest
 
 
@@ -179,7 +180,9 @@ def employee_profile(request):
     employee = Employee.objects.filter(employee_user_id=user).first()
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=employee)
     feedback_own = Feedback.objects.filter(employee_id=employee, archive=False)
+    interviews = InterviewSchedule.objects.filter(employee_id = employee).order_by("-interview_date")
     today = datetime.today()
+    now = timezone.now()
     return render(
         request,
         "employee/profile/profile_view.html",
@@ -190,6 +193,8 @@ def employee_profile(request):
             "leave_request_ids": leave_request_ids,
             "self_feedback": feedback_own,
             "current_date": today,
+            "interviews" : interviews,
+            "now" : now,
         },
     )
 
