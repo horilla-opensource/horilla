@@ -33,22 +33,28 @@ class DateRangeFilter(django_filters.Filter):
     def filter(self, qs, value):
         if value:
             if value == "today":
-                today = datetime.date.today()
-                qs = qs.filter(created_at=today)
+                today = datetime.datetime.now().date()
+                formatted_date = today.strftime('%Y-%m-%d')
+                qs = qs.filter(created_at__startswith=formatted_date)
+
             if value == "yesterday":
                 today = datetime.date.today()
                 yesterday = today - datetime.timedelta(days=1)
-                qs = qs.filter(created_at=yesterday)
+                formatted_date = yesterday.strftime('%Y-%m-%d')
+                qs = qs.filter(created_at__startswith=formatted_date)
+
             if value == "week":
                 today = datetime.date.today()
                 start_of_week = today - datetime.timedelta(days=today.weekday())
                 end_of_week = start_of_week + datetime.timedelta(days=6)
                 qs = qs.filter(created_at__range=[start_of_week, end_of_week])
+
             elif value == "month":
                 today = datetime.date.today()
                 start_of_month = datetime.date(today.year, today.month, 1)
                 end_of_month = start_of_month + datetime.timedelta(days=31)
                 qs = qs.filter(created_at__range=[start_of_month, end_of_month])
+
         return qs
 
 
@@ -103,9 +109,7 @@ class ActualObjectiveFilter(FilterSet):
             "archive",
             "assignees",
             "duration",
-            "employee_objective",
             "employee_objective__key_result_id",
-            "employee_objective__progress_percentage",
         ]
 
     def search_method(self, queryset, _, value: str):
