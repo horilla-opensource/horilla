@@ -4,7 +4,9 @@
 
 {% include 'filter_tags.html' %}
 <!--start of quick  filter  -->
-<div class="d-flex flex-row-reverse mb-2">
+
+
+{% comment %} <div class="d-flex flex-row-reverse mb-2">
     <span class="me-3 review_ongoing" onclick="$('[name=status]').val('At Risk');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
         <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
         {% trans "At Risk" %}
@@ -25,7 +27,9 @@
       <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
       {% trans "On Track" %}
     </span>
-</div>
+</div> {% endcomment %}
+
+
 <!--end of quick  filter  -->
 
 {% if not request.GET.dashboard %}

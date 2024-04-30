@@ -70,7 +70,7 @@
                                             type="button" title="{% trans 'Activites' %}" 
                                             class="oh-btn oh-btn--light-bkg p-3 w-50 oh-activity-sidebar__open"  onclick="event.stopPropagation()"
                                         > 
-                                            <ion-icon name="newspaper-outline"></ion-icon>                                                    
+                                            <ion-icon name="newspaper-outline"></ion-icon>
                                         </a>
                                     {% endif %}
                                     {% if request.user|is_reportingmanager or perms.pms.add_employeekeyresult %}
@@ -109,8 +109,8 @@
                                                         <li class="oh-dropdown__item">
                                                             <a 
                                                             class="fw-light"
-                                                            hx-confirm="{% trans 'Do you want to un-archive this employee objective?' %}"
-                                                            hx-get='{% url "archive-employee-objective" emp_objective.id %}?single_view=False'
+                                                            onclick="return confirm(`{% trans 'Do you want to un-archive this employee objective?' %}`)"
+                                                            href='{% url "archive-employee-objective" emp_objective.id %}?single_view=False'
                                                             hx-target="#emp_objective_card"
                                                             >{% trans "Unarchive" %}</a>
                                                         </li>
@@ -118,8 +118,8 @@
                                                         <li class="oh-dropdown__item">
                                                             <a 
                                                             class="fw-light"
-                                                            hx-confirm="{% trans 'Do you want to archive this employee objective?' %}"
-                                                            hx-get='{% url "archive-employee-objective" emp_objective.id %}?single_view=False'
+                                                            onclick="return confirm(`{% trans 'Do you want to archive this employee objective?' %}`)"
+                                                            href='{% url "archive-employee-objective" emp_objective.id %}?single_view=False'
                                                             hx-target="#emp_objective_card"
                                                             >{% trans "Archive" %}</a>
                                                         </li>
