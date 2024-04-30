@@ -682,7 +682,11 @@ class ReimbursementForm(ModelForm):
                 cfd_to_encash = cleaned_data["cfd_to_encash"]
                 ad_to_encash = cleaned_data["ad_to_encash"]
             encashable_leaves = self.get_encashable_leaves(employee_id)
-            if (leave_type_id is None) or (leave_type_id not in encashable_leaves):
+            if (leave_type_id is None):
+                raise forms.ValidationError(
+                    {"leave_type_id": "This field is required"}
+                )
+            elif (leave_type_id not in encashable_leaves):
                 raise forms.ValidationError(
                     {"leave_type_id": "This leave type is not encashable"}
                 )

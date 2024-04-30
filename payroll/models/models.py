@@ -1602,7 +1602,7 @@ class Reimbursement(HorillaModel):
         ReimbursementMultipleAttachment, blank=True, editable=False
     )
     leave_type_id = models.ForeignKey(
-        LeaveType, on_delete=models.PROTECT, null=True, verbose_name="Leave type"
+        LeaveType, on_delete=models.PROTECT, blank=True, null=True, verbose_name="Leave type"
     )
     ad_to_encash = models.FloatField(
         default=0, help_text="Available Days to encash", verbose_name="Available days"
@@ -1633,6 +1633,9 @@ class Reimbursement(HorillaModel):
         Allowance, on_delete=models.SET_NULL, null=True, editable=False
     )
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+    
+    class Meta:
+        ordering=["-id"]
 
     def save(self, *args, **kwargs) -> None:
         request = getattr(thread_local_middleware._thread_locals, "request", None)
