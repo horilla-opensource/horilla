@@ -116,7 +116,7 @@
                 </div>
               </div>
             </div>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__sd">
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
                   <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"/>
@@ -254,7 +254,7 @@
                 </div>
               </div>
             </div>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__sd">
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
                   <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"/>
@@ -396,7 +396,7 @@
                 </div>
               </div>
             </div>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__sd">
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
                   <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"/>
@@ -525,14 +525,16 @@
                       type="checkbox"
                       id="{{feedback.id}}"
                       value="{{feedback.id}}"
+                      data-anounymous = "true"
+                      onclick = "event.stopPropagation()"
                       class="oh-input feedback-checkbox oh-input__checkbox requested-feedback-row ms-2"
                     />
                   </div>
               </div>
-              <div class="oh-sticky-table__sd" >
+              <div class="oh-sticky-table__td" >
                 {{feedback.feedback_subject}}
               </div>
-              <div class="oh-sticky-table__sd">
+              <div class="oh-sticky-table__td">
                 {% trans "Based on" %} : 
                     {% if feedback.based_on == "employee" %}
                       {{feedback.employee_id}}
@@ -544,10 +546,10 @@
                       {{feedback.get_based_on_display}}
                     {% endif %}
               </div>
-              <div class="oh-sticky-table__sd">
+              <div class="oh-sticky-table__td">
                 {{feedback.created_at}}
               </div>
-              <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+              <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                 <div class="oh-btn-group">
                   <a class="oh-btn w-100" data-toggle="oh-modal-toggle" data-target="#anonymousFeedbackModal" hx-get="{% url 'edit-anonymous-feedback' feedback.id %}" title="{% trans 'Edit' %}" hx-target="#anonymousFeedbackFormModal"><ion-icon name="create-outline"></ion-icon></a>
                   <form action="{% url 'archive-anonymous-feedback' obj_id=feedback.id %}" method="post"  style="display: contents">

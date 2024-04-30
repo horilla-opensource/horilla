@@ -125,16 +125,24 @@ $("#archiveFeedback").click(function (e) {
         if (result.isConfirmed) {
           e.preventDefault();
           ids = [];
+          announy_ids = []
           checkedRows.each(function () {
-            ids.push($(this).attr("id"));
+            console.log(typeof($(this).data("anounymous")))
+            if($(this).data("anounymous")) {
+              announy_ids.push($(this).attr("id"))
+            } else {
+              ids.push($(this).attr("id"));
+            }
           });
-
+          console.log("ids", ids)
+          console.log("announy_ids", announy_ids)
           $.ajax({
             type: "POST",
             url: "/pms/feedback-bulk-archive?is_active=False",
             data: {
               csrfmiddlewaretoken: getCookie("csrftoken"),
               ids: JSON.stringify(ids),
+              announy_ids : JSON.stringify(announy_ids),
             },
             success: function (response, textStatus, jqXHR) {
               if (jqXHR.status === 200) {
@@ -177,8 +185,13 @@ $("#unArchiveFeedback").click(function (e) {
         if (result.isConfirmed) {
           e.preventDefault();
           ids = [];
+          announy_ids = []
           checkedRows.each(function () {
-            ids.push($(this).attr("id"));
+            if($(this).data("anounymous")) {
+              announy_ids.push($(this).attr("id"))
+            } else {
+              ids.push($(this).attr("id"));
+            }
           });
 
           $.ajax({
@@ -187,6 +200,7 @@ $("#unArchiveFeedback").click(function (e) {
             data: {
               csrfmiddlewaretoken: getCookie("csrftoken"),
               ids: JSON.stringify(ids),
+              announy_ids : JSON.stringify(announy_ids),
             },
             success: function (response, textStatus, jqXHR) {
               if (jqXHR.status === 200) {
