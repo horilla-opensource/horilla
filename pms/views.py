@@ -265,7 +265,7 @@ def objective_update(request, obj_id):
 
 # key result
 @login_required
-@permission_required("pms.view_keyresult")
+@manager_can_enter("pms.view_keyresult")
 def view_key_result(request):
     """
     This method is used render template to view all the key result instances
@@ -561,28 +561,31 @@ def objective_filter_pagination(request, objective_own, objective_all):
     if request.GET.get("status") != "Closed":
         objective_own = objective_own
         objective_all = objective_all
+
     objective_filter_own = ObjectiveFilter(
         request.GET or initial_data, queryset=objective_own
     )
     objective_filer_form = objective_filter_own.form
     objective_filter_own = objective_filter_own.qs.order_by("-id")
+
     objective_filter_all = ObjectiveFilter(
         request.GET or initial_data, queryset=objective_all
     ).qs
+
     employee = request.user.employee_get
     manager = False
+
     objectives = Objective.objects.filter(Q(managers=employee) | Q(assignees=employee))
-    if Objective.objects.filter(managers=employee).exists():
-        manager = True
-        objectives = Objective.objects.filter(managers=employee).distinct()
+
     if request.user.has_perm("pms.view_objective"):
         objectives = Objective.objects.all()
-    if Objective.objects.filter(assignees=employee).exists():
-        objectives = Objective.objects.filter(assignees=employee).distinct()
+    elif Objective.objects.filter(managers=employee).exists():
+        manager = True
 
     objectives = ActualObjectiveFilter(
         request.GET or initial_data, queryset=objectives
     ).qs
+
     objectives = Paginator(objectives, get_pagination())
     objective_paginator_own = Paginator(objective_filter_own, get_pagination())
     objective_paginator_all = Paginator(objective_filter_all, get_pagination())
@@ -634,8 +637,6 @@ def objective_list_search(request):
         objective_own = EmployeeObjective.objects.filter(employee_id=employee)
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.all()
-        context = objective_filter_pagination(request, objective_own, objective_all)
-
         context = objective_filter_pagination(request, objective_own, objective_all)
 
     elif is_manager:
@@ -863,6 +864,8 @@ def emp_objective_search(request, obj_id):
     if search_val is None:
         search_val = ""
     emp_objectives = EmployeeObjectiveFilter(request.GET, emp_objectives).qs
+    if not request.GET.get("archive") == "true":
+        emp_objectives = emp_objectives.filter(archive=False)
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(EmployeeObjective, data_dict)
@@ -1076,7 +1079,7 @@ def archive_employee_objective(request, emp_obj_id):
     """
     emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
     obj_id = emp_objective.objective_id.id
-    single_view = eval(request.GET.get("single_view"))
+    
     if emp_objective.archive:
         emp_objective.archive = False
         emp_objective.save()
@@ -1085,10 +1088,8 @@ def archive_employee_objective(request, emp_obj_id):
         emp_objective.archive = True
         emp_objective.save()
         messages.success(request, _("Objective archived successfully!."))
-    if single_view:
-        return redirect(f"/pms/objective-detailed-view/{obj_id}")
-    else:
-        return redirect(objective_list_view)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
 
 
 
@@ -2404,25 +2405,22 @@ def dashboard_view(request):
     is_manager = Employee.objects.filter(
         employee_work_info__reporting_manager_id=employee
     )
+    count_key_result = KeyResult.objects.all().count()
 
     if user.has_perm("pms.view_employeeobjective") and user.has_perm(
         "pms.view_feedback"
     ):
         count_objective = EmployeeObjective.objects.all().count()
-        count_key_result = EmployeeKeyResult.objects.all().count()
         count_feedback = Feedback.objects.all().count()
         okr_at_risk = EmployeeObjective.objects.filter(status="At Risk")
     elif is_manager:
         employees_ids = [employee.id for employee in is_manager]
         count_objective = EmployeeObjective.objects.filter(
-            employee_idemployee_objective_id__employee_id__in=employees_ids
-        ).count()
-        count_key_result = EmployeeObjective.objects.filter(
-            emp_obj_id__employee_id__in=employees_ids
+            employee_id__in=employees_ids
         ).count()
         count_feedback = Feedback.objects.filter(employee_id__in=employees_ids).count()
         okr_at_risk = EmployeeObjective.objects.filter(
-            employee_objective_id__employee_id__in=employees_ids
+            employee_id__in=employees_ids
         ).filter(status="At Risk")
     else:
         count_objective = EmployeeObjective.objects.filter(employee_id=employee).count()
@@ -2612,7 +2610,9 @@ def feedback_bulk_archive(request):
     This method is used to archive/un-archive bulk feedbacks
     """
     ids = request.POST["ids"]
+    announy_ids = request.POST["announy_ids"]
     ids = json.loads(ids)
+    announy_ids = json.loads(announy_ids)
     is_active = False
     message = _("un-archived")
     if request.GET.get("is_active") == "False":
@@ -2625,6 +2625,15 @@ def feedback_bulk_archive(request):
         messages.success(
             request,
             _("{feedback} is {message}").format(feedback=feedback_id, message=message),
+        )
+
+    for feedback_id in announy_ids:
+        feedback_id = AnonymousFeedback.objects.get(id=feedback_id)
+        feedback_id.archive = is_active
+        feedback_id.save()
+        messages.success(
+            request,
+            _("{feedback} is {message}").format(feedback=feedback_id.feedback_subject, message=message),
         )
     return JsonResponse({"message": "Success"})
 
