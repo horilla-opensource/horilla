@@ -355,7 +355,7 @@ def approve_validate_attendance_request(request, attendance_id):
 
     # Create late come or early out objects
     shift = attendance.shift_id
-    day = date.today().strftime("%A").lower()
+    day = attendance.attendance_date.strftime("%A").lower()
     day = EmployeeShiftDay.objects.get(day=day)
 
     minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(

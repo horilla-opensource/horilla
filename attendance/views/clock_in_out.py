@@ -36,7 +36,15 @@ def late_come_create(attendance):
         attendance : attendance object
     """
 
-    late_come_obj = AttendanceLateComeEarlyOut()
+    if AttendanceLateComeEarlyOut.objects.filter(
+        type="late_come", attendance_id=attendance
+    ).exists():
+        late_come_obj = AttendanceLateComeEarlyOut.objects.filter(
+            type="late_come", attendance_id=attendance
+        ).first()
+    else:
+        late_come_obj = AttendanceLateComeEarlyOut()
+
     late_come_obj.type = "late_come"
     late_come_obj.attendance_id = attendance
     late_come_obj.employee_id = attendance.employee_id
@@ -54,8 +62,7 @@ def late_come(attendance, start_time, end_time, shift):
 
     """
     request = getattr(_thread_locals, "request", None)
-
-    now_sec = strtime_seconds(datetime.now().strftime("%H:%M"))
+    now_sec = strtime_seconds(attendance.attendance_clock_in.strftime("%H:%M"))
     mid_day_sec = strtime_seconds("12:00")
 
     # Checking gracetime allowance before creating late come
@@ -152,6 +159,8 @@ def clock_in_attendance_and_activity(
         attendance.minimum_hour = minimum_hour
         attendance.save()
         # check here late come or not
+
+        attendance = Attendance.find(attendance.id)
         late_come(
             attendance=attendance, start_time=start_time, end_time=end_time, shift=shift
         )
@@ -309,7 +318,7 @@ def clock_out_attendance_and_activity(employee, date_today, now, out_datetime=No
     attendance = Attendance.objects.filter(employee_id=employee).order_by(
         "-attendance_date", "-id"
     )[0]
-    attendance.attendance_clock_out = now
+    attendance.attendance_clock_out = now + ":00"
     attendance.attendance_clock_out_date = date_today
     attendance.attendance_worked_hour = duration
     attendance.save()
@@ -329,8 +338,14 @@ def early_out_create(attendance):
     args:
         attendance : attendance obj
     """
-
-    late_come_obj = AttendanceLateComeEarlyOut()
+    if AttendanceLateComeEarlyOut.objects.filter(
+        type="early_out", attendance_id=attendance
+    ).exists():
+        late_come_obj = AttendanceLateComeEarlyOut.objects.filter(
+            type="early_out", attendance_id=attendance
+        ).first()
+    else:
+        late_come_obj = AttendanceLateComeEarlyOut()
     late_come_obj.type = "early_out"
     late_come_obj.attendance_id = attendance
     late_come_obj.employee_id = attendance.employee_id
@@ -347,7 +362,7 @@ def early_out(attendance, start_time, end_time):
         start_end : attendance day shift end time
     """
 
-    now_sec = strtime_seconds(datetime.now().strftime("%H:%M"))
+    now_sec = strtime_seconds(attendance.attendance_clock_out.strftime("%H:%M"))
     mid_day_sec = strtime_seconds("12:00")
     if start_time > end_time:
         # Early out condition for night shift
@@ -391,15 +406,21 @@ def clock_out(request):
     minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
         day=day, shift=shift
     )
+
+    clock_out_attendance_and_activity(
+        employee=employee, date_today=date_today, now=now, out_datetime=datetime_now
+    )
+    attendance = (
+        Attendance.objects.filter(employee_id=employee)
+        .order_by("id", "attendance_date")
+        .last()
+    )
     early_out_instance = attendance.late_come_early_out.filter(type="early_out")
     if not early_out_instance.exists():
         early_out(
             attendance=attendance, start_time=start_time_sec, end_time=end_time_sec
         )
 
-    clock_out_attendance_and_activity(
-        employee=employee, date_today=date_today, now=now, out_datetime=datetime_now
-    )
     script = ""
     hidden_label = ""
     time_runner_enabled = timerunner_enabled(request)["enabled_timerunner"]
