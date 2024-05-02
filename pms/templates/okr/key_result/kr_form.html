@@ -64,7 +64,9 @@
     </div>
     <div class="oh-modal__dialog-body" id="kRModalTarget">
        <form
-       onsubmit="saveKeyResult();event.preventDefault();"
+       {% comment %} onsubmit="saveKeyResult();event.preventDefault();" {% endcomment %}
+       hx-post='{% url "key-result-creation" %}'
+       hx-target="#kRModal"
        >
           {% csrf_token %}
           {{k_form.as_p}}

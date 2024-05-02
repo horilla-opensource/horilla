@@ -46,7 +46,6 @@
                             {% elif ticket.priority == 'medium' %}row-status--orange 
                             {% elif ticket.priority == 'low' %}row-status--blue{% endif %}"
                             onclick="event.stopPropagation()"
-                                            
                         >
                             <div class="centered-div">
                                 <input
@@ -84,7 +83,7 @@
                                 hx-trigger="change"
                                 hx-target="#emp_objective_card"  {% endcomment %}
                                 name="current_value"
-                                onchange="progress(this)"
+                                onchange="delayedProgress(this)"
                             />
                         </div>
                         <div class="oh-sticky-table__td " data-value="{{kr.target_value}}" >{{kr.target_value}}</div>
@@ -92,23 +91,19 @@
                         <div class="oh-sticky-table__td">{{kr.start_date}}</div>
                         <div class="oh-sticky-table__td">{{kr.end_date}}</div>
                         <div class="oh-sticky-table__td">
-                            {% if perms.pms.change_employeeobjective or kr.employee_objective_id|is_manager:request.user %}
-                                <select 
-                                    id="keyResultStatus" name="key_result_status"
-                                    hx-post="{% url 'employee-keyresult-update-status'  kr.id %}"
-                                    hx-trigger="change" class="oh-table__editable-input w-100"
-                                    hx-target="#krData{{kr.employee_objective_id.id}}">
-                                        {% for value,label in key_result_status %}
-                                            {% if kr.status != value %}
-                                                <option value="{{value}}">{{label}}</option>
-                                            {% else %}
-                                                <option value="{{value}}" selected>{{label}}</option>
-                                            {% endif%}
-                                        {% endfor %}
-                                </select>
-                            {% else %}
-                                {{kr.get_status_display}}
-                            {% endif %}
+                            <select 
+                                id="keyResultStatus" name="key_result_status"
+                                hx-post="{% url 'employee-keyresult-update-status'  kr.id %}"
+                                hx-trigger="change" class="oh-table__editable-input w-100"
+                                hx-target="#krData{{kr.employee_objective_id.id}}">
+                                    {% for value,label in key_result_status %}
+                                        {% if kr.status != value %}
+                                            <option value="{{value}}">{{label}}</option>
+                                        {% else %}
+                                            <option value="{{value}}" selected>{{label}}</option>
+                                        {% endif%}
+                                    {% endfor %}
+                            </select>
                         </div>
                         {% if perms.pms.change_employeeobjective or kr.employee_objective_id|is_manager:request.user %}
                             <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">

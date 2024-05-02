@@ -432,7 +432,13 @@
       }
         
 		}
-        
+    var timer;
+    function delayedProgress(element) {
+      clearTimeout(timer)
+        timer = setTimeout(function() {
+            progress(element);
+        }, 300);
+    }
         $(document).on('click', function(event){
             if (!$(event.target).closest('#enlargeImageContainer').length) {
                 hideEnlargeImage();
