@@ -46,7 +46,7 @@
     </div>
   </div>
   <div class="oh-modal" id="reimbursementAttachementModal" role="dialog" aria-hidden="true">
-    <div class="oh-modal__dialog" style="max-width: 550px">
+    <div class="oh-modal__dialog">
       <div class="oh-modal__dialog-header">
         <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
       </div>
@@ -128,6 +128,33 @@
       let amount=elem.val()
       $(elem).parents().closest(".oh-sticky-table__tr").find('[name=amount]').val(amount);
     }
+    function enlargeattachment(src,$element) {
+      $("#enlargeattachmentContainer").empty()
+      var enlargeattachmentContainer = $("#enlargeattachmentContainer")
+      enlargeattachmentContainer.empty()
+      style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
+      var enlargedImage = $('<iframe>').attr({ src: src, style: style })
+      var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
+      enlargeattachmentContainer.append(enlargedImage)
+      enlargeattachmentContainer.append(name)
+      setTimeout(function () {
+          enlargeattachmentContainer.show()
 
+          const iframe = document.querySelector('iframe').contentWindow
+          var iframe_document = iframe.document
+          iframe_image = iframe_document.getElementsByTagName('img')[0]
+          $(iframe_image).attr('style', 'width:100%; height:100%;')
+      }, 100)
+  }
+
+  function hideEnlargeattachment() {
+      var enlargeattachmentContainer = $('#enlargeattachmentContainer')
+      enlargeattachmentContainer.empty()
+  }
+  $(document).on('click', function (event) {
+    if (!$(event.target).closest('#enlargeattachmentContainer').length) {
+      hideEnlargeattachment()
+    }
+  })  
   </script>
 {% endblock %}

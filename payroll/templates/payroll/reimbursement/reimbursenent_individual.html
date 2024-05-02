@@ -80,6 +80,26 @@
                     <span class="oh-timeoff-modal__stat-count">{{reimbursement.description}}</span>
                 </div>
             </div>
+            <div class="oh-timeoff-modal__stats-container mb-3">
+                <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Attachments" %}</span>
+                    <span class="oh-timeoff-modal__stat-count">
+                        {% for doc in reimbursement.other_attachments.all %}
+                        <a
+                            href="{{doc.attachment.url}}"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            ><span
+                                class="oh-file-icon oh-file-icon--pdf"
+                                onmouseover="enlargeattachment('{{doc.attachment.url}}')"
+                                style="width:40px;height:40px"
+                            ></span
+                        ></a>
+                    {% endfor %}
+                    </span>
+                </div>
+            </div>
+            <div class="m-3 " id="enlargeattachmentContainer"></div>
             <!-- end of reimbursement details -->
         {% elif reimbursement.type == 'leave_encashment' %}
             <!-- start of leave encashment details -->
@@ -166,3 +186,6 @@
     </div>
 
 </div>
+<script>
+        
+</script>
