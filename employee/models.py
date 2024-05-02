@@ -732,7 +732,7 @@ class BonusPoint(HorillaModel):
             HorillaAuditInfo,
         ],
     )
-    objects = HorillaCompanyManager()
+    objects = HorillaCompanyManager(related_company_field="employee_id__employee_work_info__company_id")
 
     def __str__(self):
         return f"{self.employee_id} - {self.points} Points"
