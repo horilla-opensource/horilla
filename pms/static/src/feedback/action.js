@@ -127,15 +127,12 @@ $("#archiveFeedback").click(function (e) {
           ids = [];
           announy_ids = []
           checkedRows.each(function () {
-            console.log(typeof($(this).data("anounymous")))
             if($(this).data("anounymous")) {
               announy_ids.push($(this).attr("id"))
             } else {
               ids.push($(this).attr("id"));
             }
           });
-          console.log("ids", ids)
-          console.log("announy_ids", announy_ids)
           $.ajax({
             type: "POST",
             url: "/pms/feedback-bulk-archive?is_active=False",

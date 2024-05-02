@@ -92,7 +92,6 @@
 $(document).ready(function () {
     var activeTab = localStorage.getItem('activeTabRecruitment')
     
-    console.log($(`[data-target="${activeTab}"]`))
     if (activeTab != null && $(`[data-target="${activeTab}"]`).length) {
       var tab  = $(`[data-target="${activeTab}"]`)  
       var tabContent = $(activeTab)

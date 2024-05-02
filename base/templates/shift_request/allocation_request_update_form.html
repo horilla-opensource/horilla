@@ -12,7 +12,6 @@
       var selectedElement = $("#id_shift_id")
       var selectElement = $("#id_shift_id").val();
       let parentForm = selectedElement.parents().closest("form")
-      console.log(selectElement)
       $.ajax({
         type: "post",
         url: "{% url 'update-employee-allocation' %}",
@@ -29,7 +28,6 @@
               var employee = response.employee_data[i];
       
               // Log the values being added
-              console.log('Adding option:', employee[0], employee[1]);
       
               reallocateToSelect.append('<option value="' + employee[0] + '">' + employee[1] + ' ' + employee[2] + '</option>');
           }

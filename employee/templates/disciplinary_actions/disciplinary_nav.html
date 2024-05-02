@@ -162,7 +162,6 @@
                   "action_type": selectedActiontype,
               },
               success: function (response) {
-                  console.log(response.action_type);
                   if (response.action_type === "suspension") {
                       parentForm.find('#daysDiv').show();
                       parentForm.find('[name=days]').prop('required', true);

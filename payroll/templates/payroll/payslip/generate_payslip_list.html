@@ -234,7 +234,6 @@
           url: `/payroll/payslip-status-update/${instanceId}/`,
           data: {"status":status},
           success: function (response) {
-            console.log($element);
             var color = "gray"
             if (status == "review_ongoing") {
               color = "orange"

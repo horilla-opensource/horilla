@@ -102,7 +102,6 @@
     var idsArray = $("#candidateContainer{{stage_id}}")
     .find(".candidate-checkbox[type=checkbox]:checked")
     .map(function() {
-      console.log($(this))
         return this.id;
     }).get();
     $("#candidates").val(idsArray).change()
@@ -152,7 +151,6 @@
           data: { "candidate_id": "{{cand.id}}" },
           dataType: "Json",
           success: function (response) {
-            console.log(response.body);
             $('#ack-form-{{cand.id}} [name="body"]').html(response.body).change()
             $('#ack-form-{{cand.id}} [class="note-editable"]').html(response.body)
           }

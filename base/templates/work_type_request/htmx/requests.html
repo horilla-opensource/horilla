@@ -445,7 +445,6 @@
   // toggle columns //
   toggleColumns("work-type-request-table", "workTypeRequestCells");
   localStorageWorkTypeReqCells = localStorage.getItem("work_type_request_tab");
-  console.log("localStorageWorkTypeReqCells==", localStorageWorkTypeReqCells);
   if (!localStorageWorkTypeReqCells) {
     $("#workTypeRequestCells").find("[type=checkbox]").prop("checked", true);
   }
