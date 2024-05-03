@@ -109,7 +109,14 @@
             $("#id_period").val(data.id).trigger("change");
           // Close the second modal and reset the form
           $('#PeriodModal').removeClass('oh-modal--show');
-          
+          var message = `
+            <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated oh-alert--success">
+                Period created successfully
+              </div>
+            </div>
+            `
+          $("#message").html(message);
           document.periodForm.reset();
         }
         },
