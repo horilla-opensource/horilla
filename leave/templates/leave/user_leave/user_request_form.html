@@ -30,7 +30,7 @@
   </button>
 </div>
 <form
-  hx-post="{% url 'user-request' id %}?{{pd}}"
+  hx-post="{% url 'user-request' id %}?confirm={{confirm}}&{{pd}}"
   hx-target="#objectCreateModalTarget"
   hx-encoding="multipart/form-data"
 >

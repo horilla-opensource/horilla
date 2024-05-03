@@ -30,7 +30,7 @@
 </div>
 <div class="oh-modal__dialog-body">
   <form
-    hx-post="{% url 'request-creation' %}?{{pd}}"
+    hx-post="{% url 'request-creation' %}?confirm={{confirm}}&{{pd}}"
     hx-encoding="multipart/form-data"
     hx-target="#objectCreateModalTarget"
     >

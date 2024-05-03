@@ -93,6 +93,19 @@
                                         </div>
                                     </div>
                                     <div class="oh-sticky-table__td">
+
+                                        {% if leave_request in leave_requests_with_interview %}
+                                            <div class="d-flex" style="flex-direction: row-reverse; margin-bottom:-30px;">
+                                                <span class="tooltip">
+                                                    <span class="material-symbols-outlined" style="flex-direction: row-reverse;color:#ff9146;">
+                                                        warning
+                                                    </span>
+                                                    <span class="tooltiptext fw-bold">
+                                                    You have an interview in this requested date range.
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        {% endif %}
                                         <div class="oh-profile oh-profile--md">
                                             <div class="oh-profile__avatar mr-1">
                                                 <img src="{{leave_request.leave_type_id.get_avatar}}" class="oh-profile__image"

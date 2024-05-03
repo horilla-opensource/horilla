@@ -29,7 +29,7 @@
 </div>
 <div class="oh-modal__dialog-body">
   <form
-    hx-post="{% url 'user-request-update' id %}?{{pd}}"
+    hx-post="{% url 'user-request-update' id %}?confirm={{confirm}}&{{pd}}"
     hx-encoding="multipart/form-data"
     hx-target="#objectUpdateModalTarget"
   >
