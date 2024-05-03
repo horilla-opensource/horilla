@@ -419,15 +419,16 @@
                                                         <div data-cell-index="4" data-cell-title='{% trans "Description" %}' 
                                                             class="oh-sticky-table__th"
                                                         >{% trans "Description" %}</div>
-                                                    
-                                                        <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 150px;">{% trans "Actions" %}</div>
+                                                        {% if perms.pms.change_objective or perms.pms.delete_objective %}
+                                                            <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 150px;">{% trans "Actions" %}</div>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                                 <div class="oh-sticky-table__tbody">
                                                     {% for objective in own_objectives %}
                                                         <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
                                                             onclick="window.location.href = `{% url 'objective-detailed-view' objective.objective_id.id %}`" 
-                                                        >                                         
+                                                        >
                                                             <div class="oh-sticky-table__sd oh-permission-table--toggle" 
                                                             >
                                                                 <div class="d-flex align-items-center">
@@ -486,6 +487,7 @@
                                                             <div data-cell-index="4" class="oh-sticky-table__td">
                                                                 {{objective.objective_id.description}}
                                                             </div>
+                                                            {% if perms.pms.change_objective or perms.pms.delete_objective %}
                                                             <div class="oh-sticky-table__td oh-sticky-table__right">
                                                                 <div class="oh-btn-group" onclick="event.stopPropagation()">
                                                                     {% if perms.pms.change_objective %}
@@ -533,6 +535,7 @@
                                                                     {% endif %}
                                                                 </div>
                                                             </div>
+                                                            {% endif %}
                                                         </div>
                                                     {% endfor %} 
                                                 </div>
