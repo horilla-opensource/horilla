@@ -89,17 +89,23 @@
                 </div>
                 <div class="oh-sticky-table__sd oh-table-config__td"
                     style="text-decoration: none;width: 400px !important;">
+
                     {% for interview_schedule in cand.candidate_interview.all %}
                         {% if interview_schedule.interview_date|date:"Y-m-d" == now|date:"Y-m-d" %}
-                            <div class="d-flex" style="flex-direction: row-reverse;">
-                                <span class="material-symbols-outlined text-success" 
-                                title="*Interview : Today at {{interview_schedule.interview_time}} with
-                                {% for emp in interview_schedule.employee_id.all %} {{emp}}, {% endfor %}">
-                                alarm_on
+                            <div class="d-flex" style="flex-direction: row-reverse; margin-bottom:-30px;">
+                                <span class="tooltip">
+                                    <span class="material-symbols-outlined" style="flex-direction: row-reverse;color:green;">
+                                        alarm_on
+                                    </span>
+                                    <span class="tooltiptext fw-bold">
+                                        {% trans "INTERVIEW : Today at" %} {{interview_schedule.interview_time}} {% trans "with" %}
+                                        {% for emp in interview_schedule.employee_id.all %} {{emp}}, {% endfor %}
+                                    </span>
                                 </span>
                             </div>
                         {% endif %}
                     {% endfor %}
+
                     <span title={% trans "Move" %}><ion-icon name="move"></ion-icon></span>
                     <div class="oh-profile oh-profile--md">
                         <div class="oh-profile__avatar mr-1">
@@ -129,25 +135,6 @@
                 <div class="oh-sticky-table__td oh-table-config__td">
                     {{cand.mobile}}
                 </div>
-
-                {% comment %} <div class="oh-sticky-table__td oh-table-config__td">
-                    <span>
-                        {% if cand.candidate_interview.exists %}
-                            {% for interview_schedule in cand.candidate_interview.all %}
-                                {{forloop.counter}}. {% trans "Date" %}: <span class="dateformat_changer">{{ interview_schedule.interview_date }}</span> &nbsp
-                                <span class="d-flex">{% trans "Time" %}: <span class="timeformat_changer">{{ interview_schedule.interview_time }}</span> &nbsp</span>
-                                {% trans "Interviewer" %}:<span class="d-block mb-2">
-                                {% for interviewer in  interview_schedule.employee_id.all %}
-                                    <i id="fabIcon" style="font-size:12px;" class="material-icons">radio_button_checked</i>{{ interviewer }} &nbsp
-                                {% endfor %}
-                                </span>
-                                <br>
-                            {% endfor %}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </span>
-                </div> {% endcomment %}
 
                 <div class="oh-sticky-table__td oh-table-config__td">
                     {% trans "Interviews Scheduled" %} : {{cand.candidate_interview.count}}

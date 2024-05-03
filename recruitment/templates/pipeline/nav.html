@@ -4,7 +4,40 @@
   .note-modal-backdrop{
     z-index: 998 !important;
   }
+  
+  .tooltip {
+      position: relative;
+      display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
+  }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: auto; /* Allow the tooltip width to adjust based on content */
+      max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
+      background-color: green;
+      color: white;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(5%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      white-space: nowrap; /* Prevents the text from wrapping */
+      overflow: hidden; /* Hides any overflowed content */
+      font-size:15px;
+  }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+  }
+
 </style>
+
   {% if recruitment_form.errors %}
   <!-- form errors  -->
   <div class="oh-wrapper">

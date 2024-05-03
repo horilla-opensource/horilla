@@ -81,10 +81,14 @@
             {% for interview_schedule in cand.candidate_interview.all %}
                 {% if interview_schedule.interview_date|date:"Y-m-d" == now|date:"Y-m-d" %}
                     <div class="d-flex ms-3">
-                        <span class="material-symbols-outlined text-success fw-bold"
-                        title="*Interview : Today at {{interview_schedule.interview_time}} with
-                        {% for emp in interview_schedule.employee_id.all %} {{emp}}, {% endfor %}">
-                        alarm_on
+                        <span class="tooltip">
+                            <span class="material-symbols-outlined" style="flex-direction: row-reverse;color:green;">
+                                alarm_on
+                            </span>
+                            <span class="tooltiptext fw-bold">
+                                {% trans "INTERVIEW : Today at" %} {{interview_schedule.interview_time}} {% trans "with" %}
+                                {% for emp in interview_schedule.employee_id.all %} {{emp}}, {% endfor %}
+                            </span>
                         </span>
                     </div>
                 {% endif %}
