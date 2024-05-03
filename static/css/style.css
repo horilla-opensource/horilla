@@ -468,3 +468,35 @@ form label {
 .oh-card-dashboard:hover .chart_close_button {
     display: block;
 }
+
+
+.animated-background {
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeHolderShimmer;
+    animation-timing-function: linear;
+    background-color: #f6f7f8;
+    background: linear-gradient(to right, #eeeeee9c -58%, #e4e4e496 18%, #eeeeee61 33%);
+    background-size: 800px 64px;
+    height: 300px;
+    position: relative;
+}
+
+
+@keyframes placeHolderShimmer {
+    0% {
+      background-position: -800px 0
+    }
+    100% {
+      background-position: 800px 0
+    }
+  }
+
+.d-inline{
+    display: inline !important;
+}
+
+.d-none{
+    display: none !important;
+}
