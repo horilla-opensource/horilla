@@ -14,17 +14,17 @@
           </div>
       <div class="card-body pl-5 pr-5 pb-5 pt-5">
         <h3 class="mb-4">{{form.instance.employee_first_name}}'s {% trans "Info" %}</h3>
-        
+
         <div class="row">
             <div class="col-md-6 ">
               {{form.employee_first_name.errors}}
                 <div class="form-outline mb-4">{{form.employee_first_name}}</div>
             </div>
-            
+
             <div class="col-md-6">
               {{form.employee_last_name.errors}}
 
-              <div class="form-outline mb-4">{{form.employee_last_name}}</div>            
+              <div class="form-outline mb-4">{{form.employee_last_name}}</div>
           </div>
           <div class="col-md-6">
             {{form.email.errors}}
@@ -44,14 +44,14 @@
           </div>
         </div>
         <div>
-            
-            
+
+
             {{form.address.errors}}
             <div class="form-outline mb-4">{{form.address}}</div>
             {{form.country.errors}}
             <div class="form-outline mb-4">{{form.country}}</div>
-            
-            
+
+
             {{form.qualification.errors}}
             <div class="form-outline mb-4">{{form.qualification}}</div>
             {{form.experience.errors}}
@@ -80,7 +80,7 @@
         >
         {% trans "Submit" %}
       </button>
-      {% endif %}        
+      {% endif %}
       </div>
       </div>
   </form>

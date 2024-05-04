@@ -25,7 +25,7 @@
             </button>
         </form>
     </div>
-    
+
   </section>
 
   <div class="oh-wrapper d-flex justify-content-center">
@@ -216,8 +216,8 @@
       const element = hiddenLabelsFields[index];
       var id = $(element).attr('id');
       var label = $('label[for="' + id + '"]');
-      label.hide();      
-    }  
+      label.hide();
+    }
 
     // Check value of reset change field and trigger action
     reset.change(function () {
@@ -277,8 +277,8 @@
         (carryforward_expire_in_label.hide(), carryforward_expire_in.hide().prop('required', false), carryforward_expire_in.val(''), carryforward_expire_period_label.hide(), carryforward_expire_period.hide().prop('required', false), carryforward_expire_period.val(''));
     })
 
-   
-   
+
+
 
     // leave total days calculation
     $('#id_period_in, #id_count').change(function () {
@@ -298,8 +298,8 @@
       }
       $('#id_total_days').val(totalDays);
     });
-   
-  });  
+
+  });
 </script>
 
 {% endblock %}

@@ -5,6 +5,11 @@ This module is used to map url path with view methods.
 """
 
 from django.urls import path
+
+import recruitment.views.actions
+import recruitment.views.dashboard
+import recruitment.views.search
+import recruitment.views.surveys
 from base.views import object_duplicate
 from recruitment.forms import (
     OfferLetterForm,
@@ -20,16 +25,12 @@ from recruitment.models import (
     Stage,
 )
 from recruitment.views import views
-import recruitment.views.actions
-import recruitment.views.dashboard
-import recruitment.views.search
-import recruitment.views.surveys
 from recruitment.views.mail_templates import (
-    view_letter,
-    view_mail_templates,
     create_letter,
     delete_mail_templates,
     get_template,
+    view_letter,
+    view_mail_templates,
 )
 
 urlpatterns = [
@@ -199,14 +200,34 @@ urlpatterns = [
     ),
     path("send-mail/<int:cand_id>/", views.form_send_mail, name="send-mail"),
     path("send-mail/", views.form_send_mail, name="send-mail"),
-    path("interview-schedule/<int:cand_id>/", views.interview_schedule, name="interview-schedule"),
-    path("create-interview-schedule", views.create_interview_schedule, name="create-interview-schedule"),
-    path("edit-interview/<int:interview_id>/", views.interview_edit, name="edit-interview"),
-    path("delete-interview/<int:interview_id>/", views.interview_delete, name="delete-interview"),
+    path(
+        "interview-schedule/<int:cand_id>/",
+        views.interview_schedule,
+        name="interview-schedule",
+    ),
+    path(
+        "create-interview-schedule",
+        views.create_interview_schedule,
+        name="create-interview-schedule",
+    ),
+    path(
+        "edit-interview/<int:interview_id>/",
+        views.interview_edit,
+        name="edit-interview",
+    ),
+    path(
+        "delete-interview/<int:interview_id>/",
+        views.interview_delete,
+        name="delete-interview",
+    ),
     path("get_managers", views.get_managers, name="get_managers"),
     path("candidate-view/", views.candidate_view, name="candidate-view"),
     path("interview-view/", views.interview_view, name="interview-view"),
-    path("interview-filter-view/", views.interview_filter_view, name="interview-filter-view"),
+    path(
+        "interview-filter-view/",
+        views.interview_filter_view,
+        name="interview-filter-view",
+    ),
     path(
         "interview-employee-remove/<int:interview_id>/<int:employee_id>",
         views.interview_employee_remove,

@@ -1,27 +1,36 @@
 import calendar
-from collections.abc import Iterable
-from datetime import date, datetime, timedelta
 import math
 import operator
 import sys
-from django.db.models import Q
-from django.db import models
-from django.utils import timezone
-from django.core.exceptions import ValidationError
+from collections.abc import Iterable
+from datetime import date, datetime, timedelta
+
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
+from django.contrib import messages
+from django.core.exceptions import ValidationError
+from django.core.files.storage import default_storage
+from django.db import models
+from django.db.models import Q
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
 from base import thread_local_middleware
-from base.models import Company, Department, JobPosition, MultipleApprovalCondition, clear_messages
 from base.horilla_company_manager import HorillaCompanyManager
+from base.models import (
+    Company,
+    Department,
+    JobPosition,
+    MultipleApprovalCondition,
+    clear_messages,
+)
 from employee.models import Employee
 from horilla.models import HorillaModel
+from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.threading import LeaveClashThread
+
 from .methods import calculate_requested_days
-from django.core.files.storage import default_storage
-from django.conf import settings
-from horilla_audit.methods import get_diff
-from django.contrib import messages
 
 operator_mapping = {
     "equal": operator.eq,
@@ -421,7 +430,7 @@ class AvailableLeave(HorillaModel):
 def restrict_leaves(restri):
 
     restricted_dates = []
-    restricted_days = RestrictLeave.objects.filter(id = restri)
+    restricted_days = RestrictLeave.objects.filter(id=restri)
     for i in restricted_days:
         restrict_start_date = i.start_date
         restrict_end_date = i.end_date
@@ -430,6 +439,7 @@ def restrict_leaves(restri):
             date = restrict_start_date + timedelta(i)
             restricted_dates.append(date)
     return restricted_dates
+
 
 class LeaveRequest(HorillaModel):
     employee_id = models.ForeignKey(
@@ -584,7 +594,7 @@ class LeaveRequest(HorillaModel):
         return company_leave_dates
 
     def save(self, *args, **kwargs):
-        
+
         self.requested_days = calculate_requested_days(
             self.start_date,
             self.end_date,
@@ -638,7 +648,6 @@ class LeaveRequest(HorillaModel):
                     manager_id=manager,
                 )
 
-
     def clean(self):
         cleaned_data = super().clean()
         restricted_leave = RestrictLeave.objects.all()
@@ -648,32 +657,37 @@ class LeaveRequest(HorillaModel):
 
         request = getattr(thread_local_middleware._thread_locals, "request", None)
 
-        if self.start_date < date.today() and not request.user.has_perm('leave.add_leavereaquest'):
-            raise ValidationError(
-                _("Requests cannot be made for past dates.")
-            )
+        if self.start_date < date.today() and not request.user.has_perm(
+            "leave.add_leavereaquest"
+        ):
+            raise ValidationError(_("Requests cannot be made for past dates."))
 
-        if request.user.has_perm('leave.add_restrictleave') == False:
+        if request.user.has_perm("leave.add_restrictleave") == False:
             for restrict in restricted_leave:
                 restri = restrict.id
                 requ_days = self.requested_dates()
-                restri_days  = restrict_leaves(restri)
-                if restrict.department == emp_dep and len(restrict.job_position.all()) == 0:
+                restri_days = restrict_leaves(restri)
+                if (
+                    restrict.department == emp_dep
+                    and len(restrict.job_position.all()) == 0
+                ):
 
                     # Check if any date in requ_days is present in restri_days
                     if any(date in restri_days for date in requ_days):
-                        raise ValidationError("You cannot request leave for this date range. The requestesd dates are restricted, Please contact admin.")
+                        raise ValidationError(
+                            "You cannot request leave for this date range. The requestesd dates are restricted, Please contact admin."
+                        )
                 elif restrict.job_position.all():
-                    if emp_job in restrict.job_position.all(): 
+                    if emp_job in restrict.job_position.all():
                         if any(date in restri_days for date in requ_days):
-                            raise ValidationError("You cannot request leave for this date range. The requestesd dates are restricted, Please contact admin.")
+                            raise ValidationError(
+                                "You cannot request leave for this date range. The requestesd dates are restricted, Please contact admin."
+                            )
                 else:
-                    print('NO PROBS')
+                    print("NO PROBS")
                     pass
 
         return cleaned_data
-                
-
 
     def exclude_all_leaves(self):
         requested_dates = self.requested_dates()
@@ -772,7 +786,10 @@ class LeaveRequest(HorillaModel):
         else:
             if request:
                 clear_messages(request)
-                messages.warning(request, _("The {} leave request cannot be deleted !").format(self.status))
+                messages.warning(
+                    request,
+                    _("The {} leave request cannot be deleted !").format(self.status),
+                )
 
     def update_leave_clashes_count(self):
         """
@@ -907,15 +924,24 @@ class LeaveRequestConditionApproval(models.Model):
 
 
 class RestrictLeave(HorillaModel):
-    title = models.CharField(max_length = 20)
+    title = models.CharField(max_length=20)
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(verbose_name=_("End Date"))
-    department = models.ForeignKey(Department, verbose_name=_("Department"), on_delete=models.CASCADE)
+    department = models.ForeignKey(
+        Department, verbose_name=_("Department"), on_delete=models.CASCADE
+    )
     job_position = models.ManyToManyField(
-        JobPosition, verbose_name=_("Job Position"), blank=True, help_text = _('If no job positions are specifically selected, the system will consider all job positions under the selected department.')
-        )
+        JobPosition,
+        verbose_name=_("Job Position"),
+        blank=True,
+        help_text=_(
+            "If no job positions are specifically selected, the system will consider all job positions under the selected department."
+        ),
+    )
 
-    description = models.TextField(null=True, verbose_name=_("Description"), max_length=255)
- 
+    description = models.TextField(
+        null=True, verbose_name=_("Description"), max_length=255
+    )
+
     def __str__(self) -> str:
         return f"{self.title}"

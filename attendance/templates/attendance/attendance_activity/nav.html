@@ -1,4 +1,4 @@
-{% load i18n %} {% load basefilters %} 
+{% load i18n %} {% load basefilters %}
 <section class="oh-wrapper oh-main__topbar " x-data="{searchShow: false}">
 <div
   class="oh-modal"
@@ -80,7 +80,7 @@
           onkeyup="$('.filterButton')[0].click()"
         />
       </div>
-      
+
       <div class="oh-main__titlebar-button-container">
         <div class="oh-dropdown" x-data="{open: false}">
           <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
@@ -106,7 +106,7 @@
         x-show="open"
         @click.outside="open = false"
         style="display: none"
-        >            
+        >
         <div class="oh-accordion">
           <label for="id_field">{% trans "Group By" %}</label>
             <div class="row">
@@ -158,8 +158,8 @@
                     data-target="#attendanceExport"
                     >{% trans "Export" %}</a
                   >
-                </li> 
-              {% endif %} 
+                </li>
+              {% endif %}
               {% if perms.attendance.delete_attendancelatecomeearlyout %}
                 <li class="oh-dropdown__item">
                   <a
@@ -177,7 +177,7 @@
     </div>
   </form>
   <script>
-    $('#attendance-search').keydown(function (e) { 
+    $('#attendance-search').keydown(function (e) {
       var val = $(this).val();
       $('.pg').attr('hx-vals', `{"search":${val}}`);
     });

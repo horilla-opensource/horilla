@@ -46,13 +46,13 @@
       $(this).toggleClass("tag-badge--outline");
       updateSelectedCount()
     });
-    $("#selectSelected").click(function (e) { 
+    $("#selectSelected").click(function (e) {
         e.preventDefault();
         $(".tag-badge").removeClass("tag-badge--outline");
         updateSelectedCount()
     });
 
-    $("#unselectSelected").click(function (e) { 
+    $("#unselectSelected").click(function (e) {
         e.preventDefault();
         $(".tag-badge").addClass("tag-badge--outline");
         updateSelectedCount()

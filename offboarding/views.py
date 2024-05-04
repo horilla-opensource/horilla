@@ -1,15 +1,20 @@
-from datetime import datetime, timedelta
 import json
+from datetime import datetime, timedelta
 from urllib.parse import parse_qs
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect, render
+
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect, render
+from django.utils.translation import gettext_lazy as _
+
+from attendance.methods.group_by import group_by_queryset as group_by
 from base.context_processors import intial_notice_period
 from base.methods import closest_numbers, sortby
+from base.views import paginator_qry
 from employee.models import Employee
 from horilla.decorators import login_required, manager_can_enter, permission_required
-from base.views import paginator_qry
+from notifications.signals import notify
 from offboarding.decorators import (
     any_manager_can_enter,
     check_feature_enabled,
@@ -43,12 +48,8 @@ from offboarding.models import (
     OffboardingTask,
     ResignationLetter,
 )
-from notifications.signals import notify
-from django.utils.translation import gettext_lazy as _
 from onboarding.filters import OnboardingStageFilter
-
 from payroll.models.models import Contract, PayrollGeneralSetting
-from attendance.methods.group_by import group_by_queryset as group_by
 from recruitment.pipeline_grouper import group_by_queryset
 
 

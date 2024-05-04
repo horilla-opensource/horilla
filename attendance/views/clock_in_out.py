@@ -5,13 +5,11 @@ This module is used register endpoints to the check-in check-out functionalities
 """
 
 from datetime import date, datetime, timedelta
+
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
-from base.context_processors import timerunner_enabled
-from base.models import EmployeeShiftDay
-from horilla.decorators import login_required
-from base.thread_local_middleware import _thread_locals
+
 from attendance.models import (
     Attendance,
     AttendanceActivity,
@@ -27,6 +25,10 @@ from attendance.views.views import (
     shift_schedule_today,
     strtime_seconds,
 )
+from base.context_processors import timerunner_enabled
+from base.models import EmployeeShiftDay
+from base.thread_local_middleware import _thread_locals
+from horilla.decorators import login_required
 
 
 def late_come_create(attendance):
@@ -264,7 +266,7 @@ def clock_in(request):
                     text-warning"
                         name="exit-outline"></ion-icon>
                <span {hidden_label} class="hr-check-in-out-text">{check_out}</span>
-                <div class="time-runner"></div>  
+                <div class="time-runner"></div>
               </button>
               {script}
             """.format(
@@ -447,13 +449,13 @@ def clock_out(request):
         mouse_out = """onmouseleave="$(this).find('div.at-work-seconds').show();$(this).find('span').hide();" """
     return HttpResponse(
         """
-              <button class="oh-btn oh-btn--success-outline mr-2" 
+              <button class="oh-btn oh-btn--success-outline mr-2"
               {mouse_in}
               {mouse_out}
-              hx-get="/attendance/clock-in" 
-              hx-target='#attendance-activity-container' 
+              hx-get="/attendance/clock-in"
+              hx-target='#attendance-activity-container'
               hx-swap='innerHTML'>
-              <ion-icon class="oh-navbar__clock-icon mr-2 text-success" 
+              <ion-icon class="oh-navbar__clock-icon mr-2 text-success"
               name="enter-outline"></ion-icon>
                <span class="hr-check-in-out-text" {hidden_label} >{check_in}</span>
                <div class="at-work-seconds"></div>

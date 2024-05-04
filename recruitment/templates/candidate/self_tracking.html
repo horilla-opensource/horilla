@@ -21,7 +21,7 @@
               <span class="oh-job_post--posteddate">
                 {% if check_candidate_self_tracking_rating %}
                 <form>
-                  <div class="d-block mb-0">                           
+                  <div class="d-block mb-0">
                     <div class="oh-rate" onmouseenter="event.stopPropagation()">
                       {% for i in "54321" %}
                       <input type="radio" id="star{{i}}{{candidate.id}}" name="rating" class="rating-radio" value="{{i}}" disabled {% if candidate.candidate_rating.all|avg_rating:candidate == i %} checked {% endif %} />

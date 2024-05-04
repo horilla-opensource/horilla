@@ -1,4 +1,4 @@
-{% load attendancefilters %} {% load basefilters %} {% load static %} 
+{% load attendancefilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %}
 
 <!-- filter items showing here -->
@@ -91,7 +91,7 @@
                         </div>
                         <div class="oh-accordion-meta__body d-none">
                           <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
-            
+
                             <div class="oh-sticky-table">
                                 <div class="oh-sticky-table__table">
                                 <div class="oh-sticky-table__thead">
@@ -116,8 +116,8 @@
                                 <div class="oh-sticky-table__tbody">
                                     {% for own_objective in okr_list.list %}
                                     <div class="oh-sticky-table__tr" draggable="true">
-                                    <div class="oh-sticky-table__sd {% if own_objective.status == 'Closed' %}row-status--blue 
-                                        {% elif own_objective.status == 'On Track' %}row-status--yellow {% elif own_objective.status == 'Not Started' %}row-status--gray 
+                                    <div class="oh-sticky-table__sd {% if own_objective.status == 'Closed' %}row-status--blue
+                                        {% elif own_objective.status == 'On Track' %}row-status--yellow {% elif own_objective.status == 'Not Started' %}row-status--gray
                                         {% elif own_objective.status == 'Behind' %}row-status--orange {% elif own_objective.status == 'At Risk' %}row-status--red{% endif %}">
                                         <div class="centered-div">
                                         <input
@@ -240,7 +240,7 @@
                         </div>
                         <div class="oh-pagination">
                             <span class="oh-pagination__page">
-                                {% trans "Page" %} {{ okr_list.list.number }} 
+                                {% trans "Page" %} {{ okr_list.list.number }}
                                 {%trans "of" %} {{okr_list.list.paginator.num_pages }}.
                             </span>
                             <nav class="oh-pagination__nav">
@@ -313,8 +313,8 @@
                 </div>
             {% endfor %}
         </div>
-    
-            
+
+
 
       <!-- pagination start -->
       <div class="oh-pagination">
@@ -412,7 +412,7 @@
                             </div>
                             <div class="oh-accordion-meta__body d-none">
                                 <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
-                
+
                                     <div class="oh-sticky-table">
                                         <div class="oh-sticky-table__table">
                                             <div class="oh-sticky-table__thead">
@@ -437,8 +437,8 @@
                                             <div class="oh-sticky-table__tbody">
                                                 {% for all_objective in okr_list.list %}
                                                 <div class="oh-sticky-table__tr" draggable="true">
-                                                    <div class="oh-sticky-table__sd {% if all_objective.status == 'Closed' %}row-status--blue 
-                                                        {% elif all_objective.status == 'On Track' %}row-status--yellow {% elif all_objective.status == 'Not Started' %}row-status--gray 
+                                                    <div class="oh-sticky-table__sd {% if all_objective.status == 'Closed' %}row-status--blue
+                                                        {% elif all_objective.status == 'On Track' %}row-status--yellow {% elif all_objective.status == 'Not Started' %}row-status--gray
                                                         {% elif all_objective.status == 'Behind' %}row-status--orange {% elif all_objective.status == 'At Risk' %}row-status--red{% endif %}">
                                                         <div class="centered-div">
                                                         <input
@@ -558,12 +558,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
-                                
+
                                 <div class="oh-pagination">
                                   <span class="oh-pagination__page">
-                                      {% trans "Page" %} {{ okr_list.list.number }} 
+                                      {% trans "Page" %} {{ okr_list.list.number }}
                                       {%trans "of" %} {{okr_list.list.paginator.num_pages }}.
                                   </span>
                                   <nav class="oh-pagination__nav">
@@ -704,7 +704,7 @@
                 <h5 class="oh-404__subtitle">{% trans "There are no Objectives available." %}</h5>
             </div>
         {% endif %}
-        
+
     </div>
   </div>
 </div>
@@ -774,5 +774,5 @@
         .removeClass("highlight-selected");
       }
   });
-    
+
 </script>

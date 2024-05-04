@@ -27,7 +27,7 @@ i18n %} {% load widget_tweaks %}
                 {% if perms.asset.add_assetlot %}
                     <div class="oh-btn-group ml-2">
                         <div>
-                            <a class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" 
+                            <a class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
                                 hx-get="{% url 'asset-batch-number-creation' %}" hx-target="#objectCreateModalTarget">
                                 <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans "Create" %}
                             </a>

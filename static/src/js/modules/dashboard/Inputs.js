@@ -111,7 +111,7 @@ class Inputs {
       let closestTargetEl = e.target.closest(".oh-btn--section-edit");
       let targetEl = closestTargetEl.dataset.target;
       let parentEl = closestTargetEl.parentElement;
-  
+
       // Hide Edit Button
       closestTargetEl.classList.add('d-none');
       // Inputs
@@ -123,7 +123,7 @@ class Inputs {
       let selectEl = parentEl.querySelectorAll(`${targetEl} select`);
       selectEl.forEach(function (element) {
         element.disabled = false;
-      });  
+      });
       // Hide/Show Actions Detail
       let parentContainerEl = closestTargetEl.closest('.oh-section-edit');
       let actionsContainerEl = parentContainerEl.querySelector('.oh-list__actions');
@@ -175,7 +175,7 @@ class Inputs {
     let selectEl = parentEl.querySelectorAll(`select`);
     selectEl.forEach(function (element) {
       element.disabled = true;
-    });  
+    });
     // Hide/Show Actions Detail
     let actionsContainerEl = parentEl.querySelector('.oh-list__actions');
     actionsContainerEl.classList.add('d-none');

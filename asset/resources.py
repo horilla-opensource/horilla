@@ -4,6 +4,7 @@ This module defines classes for handling resources related to assets.
 """
 
 from import_export import resources
+
 from .models import Asset
 
 

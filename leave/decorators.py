@@ -5,8 +5,9 @@ decorator functions for leave
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
-from .models import LeaveAllocationRequest
 from django.utils.translation import gettext_lazy as _
+
+from .models import LeaveAllocationRequest
 
 decorator_with_arguments = (
     lambda decorator: lambda *args, **kwargs: lambda func: decorator(

@@ -13,22 +13,22 @@ function getCookie(name) {
     }
     return cookieValue;
   }
-  
-  
+
+
   var candidateId = null
-  
+
   $(".candidate").mousedown(function(){
     window['candidateId'] = $(this).attr('data-candidate-id');
   });
-  
-  
+
+
   var stageSequence = null
   var recruitmentId = null
   var oldSequences = []
   var stages = []
   var elements = []
-  
-  $('.stage').mousedown(function () { 
+
+  $('.stage').mousedown(function () {
     window['stageSequence'] = $(this).attr('data-stage-sequence');
     window['recruitmentId'] = $(this).attr('data-recruitment-id');
     $('.stage').each(function(i, obj) {
@@ -38,26 +38,26 @@ function getCookie(name) {
       }
     });
   });
-  
-  $('.stage').mouseup(function () { 
+
+  $('.stage').mouseup(function () {
     var newSequences = []
     $('.stage').each(function(i, obj) {
       if (recruitmentId == $(obj).attr('data-recruitment-id') || $(obj).attr('data-recruitment-id') == undefined ) {
-        
+
         newSequences.push($(obj).attr('data-stage-sequence'))
         if ($(obj).attr('data-recruitment-id') != undefined) {
           window['elements'].push(obj)
         }
-  
+
       }
     });
-  
+
     if (newSequences.includes(undefined)) {
       var newSequences = newSequences.filter(e => e !== stageSequence )
       var newSequences = newSequences.map(elem => elem === undefined ? stageSequence : elem);
     }
-  
-  
+
+
     oldSequences =JSON.stringify(oldSequences)
     stages = JSON.stringify(stages)
     if (oldSequences !== JSON.stringify(newSequences)) {
@@ -73,38 +73,38 @@ function getCookie(name) {
         success: function (response) {
           // console.log(response);
         }
-      });    
+      });
     }
-  
-    
+
+
     elements.forEach(function(element) {
       for (let index = 0; index < newSequences.length; index++) {
         const sequence = newSequences[index];
         if (sequence==$(element).attr('data-stage-sequence')) {
           $(element).attr('data-stage-sequence',`${index+1}`)
           return
-        }    
+        }
       }
     });
-  
-    
-  
+
+
+
     window['stageSequence'] = null
     window['recruitmentId'] = null
     window['oldSequences'] = []
     window['elements'] = []
     window['stages'] = []
-  
+
   });
-  
-  $("[data-container='candidate']").on('DOMNodeInserted', function (e) { 
+
+  $("[data-container='candidate']").on('DOMNodeInserted', function (e) {
     var candidate = $(e.target);
     console.log("--------------------------------------------------------------");
     console.log(candidate);
     console.log("--------------------------------------------------------------");
     var stageId = $(this).attr('data-stage-id');
     candidateId = $(candidate).attr('data-candidate-id');
-    if (candidateId != null) {  
+    if (candidateId != null) {
       $.ajax({
         type: "post",
         url: `/recruitment/candidate-stage-update/${candidateId}/`,
@@ -124,13 +124,13 @@ function getCookie(name) {
          }
        });
      }
-  
+
   });
-  
- 
-  
-  
-  $('.schedule').change(function (e) { 
+
+
+
+
+  $('.schedule').change(function (e) {
     date = this.value
     candidateId = $(this).data('candidate-id');
     $.ajax({
@@ -145,5 +145,5 @@ function getCookie(name) {
         // console.log(response);
       }
     });
-    
+
   });

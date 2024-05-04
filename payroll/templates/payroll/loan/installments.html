@@ -11,21 +11,21 @@
 <div class="oh-modal__dialog-body oh-modal__dialog-relative">
   {% if instances_ids %}
       <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-          <button 
-          hx-get="{% url 'view-installments' %}?loan_id={{ previous }}&instances_ids={{instances_ids}}" hx-target="#objectDetailsModalTarget" 
+          <button
+          hx-get="{% url 'view-installments' %}?loan_id={{ previous }}&instances_ids={{instances_ids}}" hx-target="#objectDetailsModalTarget"
               class="oh-modal__diaglog-nav oh-modal__nav-prev">
               <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
               aria-label="chevron back outline"></ion-icon>
           </button>
-          <button  
-              hx-get="{% url 'view-installments' %}?loan_id={{ next }}&instances_ids={{instances_ids}}" hx-target="#objectDetailsModalTarget" 
+          <button
+              hx-get="{% url 'view-installments' %}?loan_id={{ next }}&instances_ids={{instances_ids}}" hx-target="#objectDetailsModalTarget"
               class="oh-modal__diaglog-nav oh-modal__nav-next">
               <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
               aria-label="chevron forward outline"></ion-icon>
           </button>
       </div>
-  {% endif %} 
-    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+  {% endif %}
+    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;"
         href ="{% url 'employee-view-individual' loan.employee_id.id %}">
         <div class="oh-profile mb-2">
             <div class="oh-profile__avatar mr-1">

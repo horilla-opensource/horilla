@@ -153,7 +153,7 @@
             <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
                 hx-post="{% url 'attendance-activity-delete' activity.id  %}?{{pd}}&instances_ids={{instance_ids_json}}"
                 hx-target="#objectDetailsModalW25Target"
-                onclick="event.stopPropagation()"  
+                onclick="event.stopPropagation()"
                 class="w-100"
               >
               {% csrf_token %}

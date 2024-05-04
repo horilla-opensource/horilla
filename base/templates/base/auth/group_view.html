@@ -73,11 +73,11 @@
 										>
 											<ion-icon name="create-outline"></ion-icon
 										></a>
-										{% endif %} 
-										{% if perms.delete_group %} 
-										<form action="{% url 'user-group-delete' gp.id %}" 
+										{% endif %}
+										{% if perms.delete_group %}
+										<form action="{% url 'user-group-delete' gp.id %}"
                           onsubmit="return confirm('{% trans "Are you sure you want to delete this group?" %}');"
-											    class="w-50" method='post'> 
+											    class="w-50" method='post'>
 											{% csrf_token %}
 											<button
 												type="submit"

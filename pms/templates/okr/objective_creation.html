@@ -17,7 +17,7 @@
     }, 1000);
   </script> {% endcomment %}
 </div>
-{% endif %} 
+{% endif %}
 <!-- end of messages -->
 
 {% if objective_form.non_field_errors %}
@@ -31,7 +31,7 @@
         {% endfor %}
     </div>
 </div>
-{% endif %} 
+{% endif %}
 
 <div class="oh-modal__dialog-header">
   {% if update %}
@@ -43,25 +43,25 @@
       {% trans "Create Objective" %}
     </h2>
   {% endif %}
-  
+
   <button type="button" class="oh-modal__close--custom" onclick="$('#objectDetailsModal').removeClass('oh-modal--show');">
     <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
   </button>
 </div>
 <div class="oh-modal__dialog-body">
   {% if update %}
-    <form 
+    <form
       hx-post="{%url 'objective-update' objective_form.instance.id %}"
       hx-target="#objectDetailsModalTarget"
       id="objectiveForm"
     >
   {% else %}
-    <form 
+    <form
       hx-post="{%url 'objective-creation' %}"
       hx-target="#objectDetailsModalTarget"
       id="objectiveForm"
     >
-  {% endif %}  
+  {% endif %}
     {% csrf_token %}
     {{objective_form.as_p}}
   </form>
@@ -101,8 +101,8 @@
 </div>
 <!-- end of key result modal -->
 
-<script src="{% static 'src/okr/objective_creation.js' %}"></script> 
-<script src="{% static 'src/period/period.js' %}"></script> 
+<script src="{% static 'src/okr/objective_creation.js' %}"></script>
+<script src="{% static 'src/period/period.js' %}"></script>
 
 
 <script>
@@ -121,7 +121,7 @@ $('#id_add_assignees').change(function(){
 function addAssignees(){
   if ($('#id_add_assignees').is(":checked")){
     $('[id="id_start_date"]').parent().show();
-    {% comment %} $('label[for="id_assignees"]').show(); 
+    {% comment %} $('label[for="id_assignees"]').show();
     $('#id_assignees').next('span').show();  {% endcomment %}
     $('#id_assignees').closest('div.col-12').show();
 
@@ -132,11 +132,6 @@ function addAssignees(){
     {% comment %} $('label[for="id_assignees"]').hide();  {% endcomment %}
     $('#id_assignees').closest('div.col-12').hide();
 
-  } 
+  }
 }
 </script>
-
-
-
-
-

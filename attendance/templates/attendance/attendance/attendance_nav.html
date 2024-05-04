@@ -1,4 +1,4 @@
-{% load static %} {% load i18n %} {% load basefilters %} 
+{% load static %} {% load i18n %} {% load basefilters %}
 {% if perms.attendance.add_attendance or request.user|is_reportingmanager %}
 <style>
   .loader-container {
@@ -219,7 +219,7 @@
         x-show="open"
         @click.outside="open = false"
         style="display: none"
-        >            
+        >
         <div class="oh-accordion">
           <label>{% trans "Group By" %}</label>
             <div class="row">
@@ -302,7 +302,7 @@
                   >{% trans "Export" %}</a
                 >
               </li>
-            {% endif %} 
+            {% endif %}
             {% if perms.attendance.delete_attendance %}
               <li class="oh-dropdown__item">
                 <a

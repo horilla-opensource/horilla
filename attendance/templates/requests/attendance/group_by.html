@@ -145,14 +145,14 @@
 											{{attendance.attendance_overtime}}
 										</div>
 
-										<div class="oh-sticky-table__td" onclick="event.stopPropagation();">								  
+										<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 											<button type="button" hx-get="{% url 'attendance-request-view-comment' attendance.id %}?{{pd}}" hx-target="#commentContainer"
 												data-target = '#activitySidebar' title='{% trans "Add / View Comment" %}'  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
 												<ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
 											</button>
 										</div>
 
-											
+
 										<div class="oh-sticky-table__td oh-sticky-table__right">
 											<div class="oh-btn-group">
 												<a
@@ -166,9 +166,9 @@
 												></a>
 
 												<a type="submit" class="oh-btn oh-btn--danger-outline
-												oh-btn--light-bkg w-100" 
-												title="{% trans 'Re-validate Request' %}" 
-												onclick="return confirm('{% trans "Are you sure want to cancel the request?" %}')" 
+												oh-btn--light-bkg w-100"
+												title="{% trans 'Re-validate Request' %}"
+												onclick="return confirm('{% trans "Are you sure want to cancel the request?" %}')"
 												href="{% url 'cancel-validate-attendance-request' attendance.id	%}" >
 												<ion-icon name="close-circle-outline"></ion-icon>
 												</a>
@@ -543,7 +543,7 @@
 								>{% trans "Previous" %}</a
 							>
 						</li>
-						{% endif %} 
+						{% endif %}
 						{% if attendances.has_next %}
 						<li class="oh-pagination__item oh-pagination__item--wide">
 							<a

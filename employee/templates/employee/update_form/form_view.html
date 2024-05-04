@@ -28,16 +28,16 @@
 <script>
     {% include 'country.js' %}
     $(document).ready(function() {
-      $('#id_profile').change(function (e) { 
+      $('#id_profile').change(function (e) {
 
         const file = this.files[0];
         const reader = new FileReader();
-    
+
         reader.addEventListener("load", function() {
           const imageUrl = reader.result;
           $(".preview").attr("src", imageUrl);
         });
-    
+
         reader.readAsDataURL(file);
       });
 
@@ -55,14 +55,13 @@
         }
       }
       activeCandTab()
-      $("[data-action=general-tab]").on("click",function (e) { 
+      $("[data-action=general-tab]").on("click",function (e) {
         e.preventDefault();
         const targetId = $(this).attr('data-target');
         localStorage.setItem("activeCandTab",targetId)
       });
-      
+
     });
   </script>
 
 {% endblock content %}
-

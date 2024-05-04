@@ -74,7 +74,7 @@
 .oh-sticky-table__sd{
   display: table-cell;
   padding: 8px 10px;
-  // white-space:nowrap; 
+  // white-space:nowrap;
   border-bottom: 0.2px solid $border-light-color;
   border-right: 0.2px solid #fff;
   vertical-align: middle;
@@ -131,8 +131,8 @@
 .oh-sticky-table__sd, .oh-sticky-table__td, .oh-sticky-table__th{
   padding: 0.6rem;
 }
-.oh-sticky-table--fit .oh-sticky-table__sd, 
-.oh-sticky-table--fit .oh-sticky-table__td, 
+.oh-sticky-table--fit .oh-sticky-table__sd,
+.oh-sticky-table--fit .oh-sticky-table__td,
 .oh-sticky-table--fit .oh-sticky-table__th{
   padding: 0.6rem;
   width: fit-content;

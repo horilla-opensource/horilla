@@ -1,6 +1,6 @@
 {% load i18n %}
 {% load static %}
-<form hx-post="{% url 'shift-allocation-request-update' form.instance.id %}" 
+<form hx-post="{% url 'shift-allocation-request-update' form.instance.id %}"
     hx-target="#shiftRequestModalUpdateBody">
         {{form.as_p}}
 </form>
@@ -20,21 +20,21 @@
           "shift_id":selectElement
         },
         success: function (response) {
-  
+
           var reallocateToSelect = parentForm.find("[name=reallocate_to]");
           reallocateToSelect.empty(); // Clear existing options
-      
+
           for (var i = 0; i < response.employee_data.length; i++) {
               var employee = response.employee_data[i];
-      
+
               // Log the values being added
-      
+
               reallocateToSelect.append('<option value="' + employee[0] + '">' + employee[1] + ' ' + employee[2] + '</option>');
           }
-  
+
         }
       });
-  
+
     });
-  
+
   </script>

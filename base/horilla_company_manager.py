@@ -3,7 +3,9 @@ horilla_company_manager.py
 """
 
 import threading
+
 from django.db import models
+
 from base.thread_local_middleware import _thread_locals
 
 

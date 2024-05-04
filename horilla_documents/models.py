@@ -1,17 +1,16 @@
-from datetime import date
 import os
+from datetime import date
+
 from django.db import models
+from django.db.models.signals import m2m_changed, post_save
+from django.dispatch import receiver
 from django.forms import ValidationError
 from django.utils.translation import gettext as _
+
 from asset.models import Asset, AssetCategory
 from base.horilla_company_manager import HorillaCompanyManager
-
 from employee.models import Employee
-from django.db.models.signals import post_save, m2m_changed
-from django.dispatch import receiver
-
 from horilla.models import HorillaModel
-
 
 STATUS = [
     ("requested", "Requested"),
@@ -49,7 +48,7 @@ class DocumentRequest(HorillaModel):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
-    
+
     def __str__(self):
         return self.title
 

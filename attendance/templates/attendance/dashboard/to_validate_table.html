@@ -4,7 +4,7 @@
 >
     <div
         class="oh-card-dashboard__header oh-card-dashboard__header--divider"
-    >        
+    >
         {% if validate_attendances.has_previous %}
             <span class="oh-card-dashboard__title" id="department-previous" style="cursor: pointer;" hx-target="#validateTableCard"
             hx-get="{% url 'attendance-validate-table' %}?{{pd}}&page={{ validate_attendances.previous_page_number }}">
@@ -13,8 +13,8 @@
         {% endif %}
 
         <span class="oh-card-dashboard__title">{% trans 'Attendance To Validate' %} </span>
-        
-        {% if validate_attendances.has_next %}        
+
+        {% if validate_attendances.has_next %}
             <span class="oh-card-dashboard__title float-end" id="department-previous" style="cursor: pointer;" hx-target="#validateTableCard"
             hx-get="{% url 'attendance-validate-table' %}?{{pd}}&page={{ validate_attendances.next_page_number }}">
             <ion-icon name="caret-forward-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
@@ -75,7 +75,7 @@
                         hx-target="#objectDetailsModalW25Target"
                         hx-get="{% url 'user-request-one-view' attendance.id %}?validate=true&instances_ids={{validate_attendances_ids}}"
                         >
-                            
+
                             <div class="oh-sticky-table__sd">
                                 <div class="oh-profile oh-profile--md">
                                     <div class="oh-profile__avatar mr-1">
@@ -123,13 +123,13 @@
                                     </a>
                                 {% endif %}
                             </div>
-                            
+
                         </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
-                
+
         {% else %}
             <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
             <div style="" class="">

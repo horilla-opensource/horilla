@@ -53,7 +53,7 @@ style="cursor: pointer; display: none"
 				</span>
 			</div>
 			<div class="oh-accordion-meta__body d-none">
-				<div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">					
+				<div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
 					<div class="oh-sticky-table">
 						<div class="oh-sticky-table__table oh-table--sortable">
 						  <div class="oh-sticky-table__thead">
@@ -116,15 +116,15 @@ style="cursor: pointer; display: none"
 								{% trans "Weekly every" %} {{rwork_type.rotate_every_weekend}}
 								{% elif rwork_type.based_on == "monthly" %}
 								{% if rwork_type.rotate_every == "1" %}
-								{% trans "Rotate every" %} {{rwork_type.rotate_every}}{% trans "st day of month" %} 
+								{% trans "Rotate every" %} {{rwork_type.rotate_every}}{% trans "st day of month" %}
 								{% elif rwork_type.rotate_every == "2" %}
-								{% trans "Rotate every" %} {{rwork_type.rotate_every}}{% trans "nd day of month" %} 
+								{% trans "Rotate every" %} {{rwork_type.rotate_every}}{% trans "nd day of month" %}
 								{% elif rwork_type.rotate_every == "3" %}
-								{% trans "Rotate every" %} {{rwork_type.rotate_every}}{% trans "rd day of month" %} 
+								{% trans "Rotate every" %} {{rwork_type.rotate_every}}{% trans "rd day of month" %}
 								{% elif rwork_type.rotate_every == "last" %}
-								{% trans "Rotate every last day of month" %} 
+								{% trans "Rotate every last day of month" %}
 								{% else %}
-								{% trans "Rotate every" %} {{rwork_type.rotate_every}}{% trans "th day of month" %} 
+								{% trans "Rotate every" %} {{rwork_type.rotate_every}}{% trans "th day of month" %}
 								{% endif %}
 								{% endif %}
 							  </div>
@@ -146,13 +146,13 @@ style="cursor: pointer; display: none"
 								  >
 									<ion-icon name="create-outline"></ion-icon
 								  ></a>
-								  <a 
+								  <a
 									hx-get="{% url 'rotating-work-type-assign-duplicate' rwork_type.id %}"
 									hx-target="#objectCreateModalTarget"
 									data-target="#objectCreateModal"
 									data-toggle="oh-modal-toggle"
 									type="button"
-									class="oh-btn oh-btn--light-bkg w-50" 
+									class="oh-btn oh-btn--light-bkg w-50"
 									title="{% trans 'Duplicate' %}"
 								>
 									<ion-icon name="copy-outline"></ion-icon>
@@ -192,7 +192,7 @@ style="cursor: pointer; display: none"
 				</div>
 				<div class="oh-pagination">
                     <span class="oh-pagination__page">
-                        {% trans "Page" %} {{ rwork_type_list.list.number }} 
+                        {% trans "Page" %} {{ rwork_type_list.list.number }}
                         {%trans "of" %} {{rwork_type_list.list.paginator.num_pages }}.
                     </span>
                     <nav class="oh-pagination__nav">

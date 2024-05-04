@@ -1,13 +1,13 @@
 {% load i18n %}{% load basefilters %} {% load static %}
-{% if messages %} 
+{% if messages %}
     {% for message in messages %}
         <div class="oh-wrapper">
           <div class="oh-alert-container">
             <div class="oh-alert oh-alert--animated {{message.tags}} ">{{message}}</div>
           </div>
         </div>
-    {% endfor %} 
-{% endif%} 
+    {% endfor %}
+{% endif%}
 {% if periods %}
 <div class="oh-sticky-table">
   <div class="oh-sticky-table__table">

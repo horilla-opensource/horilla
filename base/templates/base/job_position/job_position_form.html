@@ -13,9 +13,9 @@
   {% else %}
     hx-post="{% url 'job-position-creation' %}?dynamic={{dynamic}}"
   {% endif %}
-  {% if dynamic%} 
-    hx-target="#dynamicCreateModalBody" 
-  {% else %} 
+  {% if dynamic%}
+    hx-target="#dynamicCreateModalBody"
+  {% else %}
     hx-target="#jobPositionForm"
   {% endif %}
   method="post"

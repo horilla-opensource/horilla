@@ -1,5 +1,6 @@
 import datetime
 from datetime import timedelta
+
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
@@ -20,8 +21,8 @@ def block_unblock_disciplinary():
     """
     This scheduled task to trigger the Disciplinary action and take the suspens
     """
-    from employee.models import DisciplinaryAction
     from base.models import EmployeeShiftSchedule
+    from employee.models import DisciplinaryAction
     from employee.policies import employee_account_block_unblock
 
     dis_action = DisciplinaryAction.objects.all()

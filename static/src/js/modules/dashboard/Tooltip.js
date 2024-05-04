@@ -7,18 +7,18 @@ import 'jquery-ui/themes/base/tooltip.css';
 
 class Tooltip {
 
-  constructor() { 
+  constructor() {
     this.events();
   }
 
   // Events
-  events() { 
+  events() {
     // Initialize tooltip.
     $( document ).tooltip();
   }
- 
+
   // Methods
-  
+
 
 }
 

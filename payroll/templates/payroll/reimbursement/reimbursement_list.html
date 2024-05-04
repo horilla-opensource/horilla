@@ -33,7 +33,7 @@
         ></span>
         {% trans "Requested" %}
     </span>
-    
+
 </div>
 
 <div class="oh-tabs oh-wrapper">
@@ -84,23 +84,23 @@
                                     </div> {% endcomment %}
                                     <div
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id' %}arrow-up {% elif request.sort_option.order == 'employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=employee_id" 
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=employee_id"
                                         hx-target="#reimbursementContainer"
                                     >
                                         {% trans "Employee" %}
                                     </div>
-                                    <div data-cell-index="1" data-cell-title='{% trans "Date" %}' 
+                                    <div data-cell-index="1" data-cell-title='{% trans "Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-created_at' %}arrow-up {% elif request.sort_option.order == 'created_at' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=created_at" 
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=created_at"
                                         hx-target="#reimbursementContainer"
-                                        
+
                                     >
                                         {% trans "Date" %}
                                     </div>
                                     <div data-cell-index="2" data-cell-title='{% trans "Title" %}' class="oh-sticky-table__th">{% trans "Title" %}</div>
-                                    <div data-cell-index="3" data-cell-title='{% trans "Amount" %}' 
+                                    <div data-cell-index="3" data-cell-title='{% trans "Amount" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-amount' %}arrow-up {% elif request.sort_option.order == 'amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=amount" 
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=amount"
                                         hx-target="#reimbursementContainer"
                                     >{% trans "Amount" %}
                                     </div>
@@ -118,8 +118,8 @@
                             <div class="oh-sticky-table__tbody">
                                 {% for req in reimbursements %}
                                 <div class="oh-sticky-table__tr" id="requestCard{{ req.id }}"
-                                    hx-get="{% url 'reimbursement-individual-view' req.id %}?instances_ids={{reimbursements_ids}}" 
-                                    hx-target="#objectDetailsModalTarget" 
+                                    hx-get="{% url 'reimbursement-individual-view' req.id %}?instances_ids={{reimbursements_ids}}"
+                                    hx-target="#objectDetailsModalTarget"
                                     data-target="#objectDetailsModal"  data-toggle="oh-modal-toggle"
                                 >
                                     {% comment %} <form
@@ -135,10 +135,10 @@
                                         />
                                         </div> {% endcomment %}
                                         <div class="oh-sticky-table__sd
-                                            {% if req.status == 'rejected' %} row-status--red 
-                                            {% elif  req.status == 'approved' %} row-status--yellow 
-                                            {% else %} row-status--purple 
-                                            {% endif %}"  
+                                            {% if req.status == 'rejected' %} row-status--red
+                                            {% elif  req.status == 'approved' %} row-status--yellow
+                                            {% else %} row-status--purple
+                                            {% endif %}"
                                         >
                                             <div class="d-flex">
                                                 <div class="oh-profile oh-profile--md">
@@ -171,7 +171,7 @@
                                                     data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
                                                     <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
                                             </button>
-                                        </div>  
+                                        </div>
                                         <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                             <div class="oh-btn-group"  >
                                                 {% if perms.payroll.change_reimbursement or request.user == req.employee_id.employee_user_id %}
@@ -188,30 +188,30 @@
                                                         <ion-icon name="create-outline"></ion-icon>
                                                         </a>
                                                     {% else %}
-                                                        <button                                                            
+                                                        <button
                                                             class="oh-btn oh-btn--light-bkg w-100"
                                                             disabled
                                                         >
                                                             <ion-icon name="create-outline"></ion-icon>
                                                         </button>
                                                     {% endif %}
-                                                {% endif %} 
+                                                {% endif %}
                                                 {% if perms.payroll.delete_reimbursement %}
-                                                    <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="event.stopPropagation();return confirm('Do you want to delete this record?')" 
-                                                        class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'> 
-                                                                                     
+                                                    <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="event.stopPropagation();return confirm('Do you want to delete this record?')"
+                                                        class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'>
+
                                                         <ion-icon name="trash-outline"></ion-icon>
                                                     </a>
                                                 {% endif %}
                                             </div>
-                                        </div> 
+                                        </div>
 
                                         <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
                                             <form
                                                 action="{% url 'approve-reimbursements' %}"
-                                            > 
+                                            >
                                                 <div class="oh-btn-group" onclick="event.stopPropagation();">
-                                                
+
                                                     {% if req.status == 'requested' %}
                                                         <button
                                                             type="button"
@@ -221,7 +221,7 @@
                                                         >
                                                             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                                         </button>
-                                                       
+
                                                     {% else %}
                                                         <button class='oh-btn oh-btn--success w-100' disabled onclick="event.preventDefault();">
                                                             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
@@ -251,16 +251,16 @@
                                                     id="requestCard{{ req.id }}Button"
                                                 />
                                             </form>
-                                            
+
                                             {% comment %} <input
                                                 onclick="event.stopPropagation()"
                                                 type="submit"
                                                 hidden
                                                 id="requestCard{{ req.id }}Button"
                                             /> {% endcomment %}
-                                            
+
                                         </div>
-                                        
+
                                     {% comment %} </form> {% endcomment %}
                                 </div>
                                 {% endfor %}
@@ -398,34 +398,34 @@
                                     </div> {% endcomment %}
                                     <div
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id' %}arrow-up {% elif request.sort_option.order == 'employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=employee_id" 
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=employee_id"
                                         hx-target="#reimbursementContainer"
                                         >
                                         {% trans "Employee" %}
                                     </div>
                                     <div
-                                        data-cell-index="11" data-cell-title='{% trans "Date" %}' 
+                                        data-cell-index="11" data-cell-title='{% trans "Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-created_at' %}arrow-up {% elif request.sort_option.order == 'created_at' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=created_at" 
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=created_at"
                                         hx-target="#reimbursementContainer"
                                     >
                                         {% trans "Date" %}
                                     </div>
                                     <div data-cell-index="12" data-cell-title='{% trans "Title" %}' class="oh-sticky-table__th">{% trans "Title" %}</div>
-                                    <div data-cell-index="13" data-cell-title='{% trans "Amount" %}' 
+                                    <div data-cell-index="13" data-cell-title='{% trans "Amount" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-amount' %}arrow-up {% elif request.sort_option.order == 'amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=amount" 
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=amount"
                                         hx-target="#reimbursementContainer"
                                     >{% trans "Amount" %}</div>
                                     <div data-cell-index="14" data-cell-title='{% trans "Leave type" %}' class="oh-sticky-table__th">{% trans "Leave type" %}</div>
-                                    <div data-cell-index="15" data-cell-title='{% trans "Available days to encash" %}' 
+                                    <div data-cell-index="15" data-cell-title='{% trans "Available days to encash" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-ad_to_encash' %}arrow-up {% elif request.sort_option.order == 'ad_to_encash' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=ad_to_encash" 
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=ad_to_encash"
                                         hx-target="#reimbursementContainer"
                                     >{% trans "Available days to encash" %}</div>
-                                    <div data-cell-index="16" data-cell-title='{% trans "carryforward to encash" %}' 
+                                    <div data-cell-index="16" data-cell-title='{% trans "carryforward to encash" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-cfd_to_encash' %}arrow-up {% elif request.sort_option.order == 'cfd_to_encash' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=cfd_to_encash" 
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=cfd_to_encash"
                                         hx-target="#reimbursementContainer"
                                     >{% trans "Carryforward to encash" %}</div>
                                     <div data-cell-index="17" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
@@ -439,14 +439,14 @@
                                     <div class="oh-sticky-table__th oh-sticky-table__right" style="width:180px">{% trans "Confirmation" %}</div>
                                 </div>
                             </div>
-                            <div class="oh-sticky-table__tbody"> 
+                            <div class="oh-sticky-table__tbody">
                                 {% for req in leave_encashments %}
                                     <div class="oh-sticky-table__tr" id="requestCard{{ req.id }}"
-                                        hx-get="{% url 'reimbursement-individual-view' req.id %}?instances_ids={{leave_encashments_ids}}" 
-                                        hx-target="#objectDetailsModalTarget" 
+                                        hx-get="{% url 'reimbursement-individual-view' req.id %}?instances_ids={{leave_encashments_ids}}"
+                                        hx-target="#objectDetailsModalTarget"
                                         data-target="#objectDetailsModal"  data-toggle="oh-modal-toggle"
                                     >
-                                        
+
                                             {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                                                 <input
                                                 type="checkbox"
@@ -455,10 +455,10 @@
                                                 />
                                             </div> {% endcomment %}
                                             <div class="oh-sticky-table__sd
-                                                {% if req.status == 'rejected' %} row-status--red 
-                                                {% elif  req.status == 'approved' %} row-status--yellow 
-                                                {% else %} row-status--purple 
-                                                {% endif %}" 
+                                                {% if req.status == 'rejected' %} row-status--red
+                                                {% elif  req.status == 'approved' %} row-status--yellow
+                                                {% else %} row-status--purple
+                                                {% endif %}"
                                             >
                                                 <div class="d-flex">
                                                     <div class="oh-profile oh-profile--md">
@@ -505,7 +505,7 @@
                                                         data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
                                                         <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
                                                 </button>
-                                            </div>  
+                                            </div>
 
                                             <div class="oh-sticky-table__td" onclick="event.stopPropagation()" >
                                                 <div class="oh-btn-group" onclick="event.stopPropagation()">
@@ -523,28 +523,28 @@
                                                             <ion-icon name="create-outline"></ion-icon>
                                                             </a>
                                                         {% else %}
-                                                            <button                                                            
+                                                            <button
                                                                 class="oh-btn oh-btn--light-bkg w-100"
                                                                 disabled
                                                             >
                                                                 <ion-icon name="create-outline"></ion-icon>
                                                             </button>
                                                         {% endif %}
-                                                    {% endif %} 
+                                                    {% endif %}
                                                     {% if perms.payroll.delete_reimbursement %}
-                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
-                                                            class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'> 
-                                                            
+                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')"
+                                                            class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'>
+
                                                             <ion-icon name="trash-outline"></ion-icon>
                                                         </a>
                                                     {% endif %}
                                                 </div>
-                                            </div> 
+                                            </div>
                                             <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
                                                 <form
                                                     action="{% url 'approve-reimbursements' %}"
-                                                    
-                                                > 
+
+                                                >
                                                     <input type="hidden" name="ids" value="{{ req.id }}" />
                                                     <input type="hidden" name="status" />
                                                     <input type="hidden" name="amount" default="0" min="0" />
@@ -575,7 +575,7 @@
                                                                 class="oh-btn oh-btn--danger w-100"
                                                             >
                                                                 <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                                            </button> 
+                                                            </button>
                                                         {% else %}
                                                             <button class="oh-btn oh-btn--danger w-100" disabled onclick="event.preventDefault();">
                                                                 <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
@@ -587,7 +587,7 @@
                                                             id="requestCard{{ req.id }}Button"
                                                         />
                                                     </div>
-                                                    
+
                                                 </form>
                                             </div>
                                     </div>
@@ -603,7 +603,7 @@
                                 class="oh-pagination__page"
                                 data-toggle="modal"
                                 data-target="#addEmployeeModal"
-                                >{% trans 'Page' %} {{ leave_encashments.number }} {% trans 'of' %} 
+                                >{% trans 'Page' %} {{ leave_encashments.number }} {% trans 'of' %}
                                 {{ leave_encashments.paginator.num_pages }}.</span
                             >
 
@@ -727,28 +727,28 @@
                                     </div> {% endcomment %}
                                     <div
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id' %}arrow-up {% elif request.sort_option.order == 'employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=employee_id" 
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=employee_id"
                                         hx-target="#reimbursementContainer"
                                         >
                                         {% trans "Employee" %}
                                     </div>
                                     <div
-                                        data-cell-index="21" data-cell-title='{% trans "Date" %}' 
+                                        data-cell-index="21" data-cell-title='{% trans "Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-created_at' %}arrow-up {% elif request.sort_option.order == 'created_at' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=created_at" 
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=created_at"
                                         hx-target="#reimbursementContainer"
                                         >
                                         {% trans "Date" %}
                                     </div>
                                     <div data-cell-index="22" data-cell-title='{% trans "Title" %}' class="oh-sticky-table__th">{% trans "Title" %}</div>
-                                    <div data-cell-index="23" data-cell-title='{% trans "Amount" %}' 
+                                    <div data-cell-index="23" data-cell-title='{% trans "Amount" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-amount' %}arrow-up {% elif request.sort_option.order == 'amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=amount" 
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=amount"
                                         hx-target="#reimbursementContainer"
                                     >{% trans "Amount" %}</div>
-                                    <div data-cell-index="24" data-cell-title='{% trans "Bonus to encash" %}' 
+                                    <div data-cell-index="24" data-cell-title='{% trans "Bonus to encash" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-bonus_to_encash' %}arrow-up {% elif request.sort_option.order == 'bonus_to_encash' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=bonus_to_encash" 
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=bonus_to_encash"
                                         hx-target="#reimbursementContainer"
                                     >{% trans "Bonus to encash" %}</div>
                                     <div data-cell-index="25" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
@@ -765,8 +765,8 @@
                             <div class="oh-sticky-table__tbody">
                                 {% for req in bonus_encashments %}
                                     <div class="oh-sticky-table__tr" id="requestCard{{ req.id }}"
-                                        hx-get="{% url 'reimbursement-individual-view' req.id %}?instances_ids={{bonus_encashment_ids}}" 
-                                        hx-target="#objectDetailsModalTarget" 
+                                        hx-get="{% url 'reimbursement-individual-view' req.id %}?instances_ids={{bonus_encashment_ids}}"
+                                        hx-target="#objectDetailsModalTarget"
                                         data-target="#objectDetailsModal"  data-toggle="oh-modal-toggle"
                                     >
                                         {% comment %} <form
@@ -782,10 +782,10 @@
                                                 />
                                             </div> {% endcomment %}
                                             <div class="oh-sticky-table__sd
-                                                {% if req.status == 'rejected' %} row-status--red 
-                                                {% elif  req.status == 'approved' %} row-status--yellow 
-                                                {% else %} row-status--purple 
-                                                {% endif %}" 
+                                                {% if req.status == 'rejected' %} row-status--red
+                                                {% elif  req.status == 'approved' %} row-status--yellow
+                                                {% else %} row-status--purple
+                                                {% endif %}"
                                             >
                                                 <div class="d-flex">
                                                     <div class="oh-profile oh-profile--md">
@@ -843,27 +843,27 @@
                                                             <ion-icon name="create-outline"></ion-icon>
                                                             </a>
                                                         {% else %}
-                                                            <button                                                            
+                                                            <button
                                                                 class="oh-btn oh-btn--light-bkg w-100"
                                                                 disabled
                                                             >
                                                                 <ion-icon name="create-outline"></ion-icon>
                                                             </button>
                                                         {% endif %}
-                                                    {% endif %} 
+                                                    {% endif %}
                                                     {% if perms.payroll.delete_reimbursement %}
-                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
-                                                            class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'> 
-                                                            
+                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')"
+                                                            class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'>
+
                                                             <ion-icon name="trash-outline"></ion-icon>
                                                         </a>
                                                     {% endif %}
                                                 </div>
-                                            </div> 
+                                            </div>
                                             <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
                                                 <form
                                                     action="{% url 'approve-reimbursements' %}"
-                                                > 
+                                                >
                                                 <input type="hidden" name="ids" value="{{ req.id }}" />
                                                 <input type="hidden" name="status" />
                                                 <input type="hidden" name="amount" default="0" min="0" />
@@ -906,10 +906,10 @@
                                                             id="requestCard{{ req.id }}Button"
                                                         />
                                                 </div>
-                                                
+
                                             </form>
                                             </div>
-                                            
+
                                         </div>
                                 {% endfor %}
                             </div>
@@ -1102,5 +1102,5 @@
             $("#BonusEncashmentCells").find("[type=checkbox]").prop("checked",true)
         }
         $("[type=checkbox]").change()
-    </script>      
+    </script>
 </div>

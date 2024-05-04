@@ -244,7 +244,7 @@ $(document).ready(function () {
           });
         } else {
           $("#department_total").hide()
-          $("#department_total_empty").show() 
+          $("#department_total_empty").show()
           $("#department_total_empty").html(
             `<div style="display:flex;align-items: center;justify-content: center; padding-top:50px" class="">
                         <div style="" class="">
@@ -337,7 +337,7 @@ $(document).ready(function () {
   payslip_details();
   department_chart_view();
   contract_ending(initialLoad);
-  
+
   $("#monthYearField").on("change", function () {
     initialLoad = false
     employee_chart_view();

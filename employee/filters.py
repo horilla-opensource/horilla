@@ -6,22 +6,21 @@ This page is used to register filter for employee models
 """
 
 import datetime
+import uuid
 
 import django
-from attendance.models import Attendance
-from employee.models import DisciplinaryAction, Policy
-import uuid
-from django import forms
 import django_filters
-from django.contrib.auth.models import Permission, Group
 from django import forms
+from django.contrib.auth.models import Group, Permission
 from django.utils.translation import gettext as _
+from django_filters import CharFilter, DateFilter
+
+from attendance.models import Attendance
 from base.methods import reload_queryset
 from base.models import WorkType
+from employee.models import DisciplinaryAction, Employee, Policy
 from horilla.filters import FilterSet, filter_by_name
-from employee.models import Employee
 from horilla_documents.models import Document
-from django_filters import CharFilter, DateFilter
 
 
 class EmployeeFilter(FilterSet):

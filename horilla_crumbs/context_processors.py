@@ -1,7 +1,9 @@
 from urllib.parse import urlparse
+
 from django.shortcuts import redirect
-from horilla.urls import urlpatterns
 from django.urls import Resolver404, path, resolve, reverse
+
+from horilla.urls import urlpatterns
 
 
 def _split_path(self, path=None):

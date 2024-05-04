@@ -34,7 +34,7 @@
         {{asset_return_form.return_images}}
       </div>
       <div class="oh-btn-group mt-4">
-        <button 
+        <button
           class=" oh-btn oh-btn--info oh-btn--shadow w-100"
           type="button"
           hx-get="{% url "add-asset-report" asset_id %}"
@@ -43,9 +43,9 @@
           data-target="#addAssetReport"
           >
           {% trans "Add Report" %}
-        </button>  
+        </button>
         {% if perms.payroll.add_loanaccount %}
-        <button 
+        <button
         class="oh-btn oh-btn--primary oh-btn--shadow w-100 ml-2"
         type="button"
         hx-get="{% url "asset-fine" %}?employee_id={{asset_alocation.assigned_to_employee_id.id}}&asset_id={{asset_id}}"
@@ -54,7 +54,7 @@
         data-target="#assetFineModal"
         >
         {% trans "Add Fine" %}
-        </button>  
+        </button>
         {% endif %}
         <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow w-100 ml-2">
           {% trans "Save" %}

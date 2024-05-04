@@ -5,8 +5,9 @@ This module is used to bind the urls related to payslip and its pay-heads method
 """
 
 from django.urls import path
-from payroll.views import component_views
+
 from payroll.models.models import Allowance, Deduction
+from payroll.views import component_views
 
 urlpatterns = [
     path("create-allowance", component_views.create_allowance, name="create-allowance"),

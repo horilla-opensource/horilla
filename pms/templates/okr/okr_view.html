@@ -62,7 +62,7 @@
     max-height: 70px !important;
     overflow: hidden;
     overflow-y: scroll;
-  } 
+  }
   .search-highlight{
     background-color: rgba(255, 68, 0, 0.076);
   }
@@ -102,7 +102,7 @@
   function switchTab(e) {
     let parentContainerEl = e.target.closest(".oh-tabs");
     let tabElement = e.target.closest(".oh-tabs__tab");
-    
+
 
     let targetSelector = e.target.dataset.target;
     let targetEl = parentContainerEl
@@ -135,7 +135,7 @@
 
   //create key result dynamically
   function keyResultChange(element) {
-    
+
     var kr = $(element).val();
     // Check if 'create_new_key_result' exists in the list
     if (kr.includes('create_new_key_result')) {
@@ -146,7 +146,7 @@
 
 
   }
-    
+
     function removeCreateKR(){
       $("#id_key_result_id option[value='create_new_key_result']").prop('selected',false)
       // Select the li element

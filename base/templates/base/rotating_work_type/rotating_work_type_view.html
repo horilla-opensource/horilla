@@ -32,13 +32,13 @@
 							>
 								<ion-icon name="create-outline"></ion-icon
 							></a>
-							{% endif %} 
-							{% if perms.base.delete_rotatingworktype %} 
+							{% endif %}
+							{% if perms.base.delete_rotatingworktype %}
 							<form
-								action="{% url 'rotating-work-type-delete' rwork.id %}" 
+								action="{% url 'rotating-work-type-delete' rwork.id %}"
 								class="w-50"
-								onsubmit="return confirm('{% trans "Are you sure you want to delete this rotating work type?" %}');" 
-								method="post" > 
+								onsubmit="return confirm('{% trans "Are you sure you want to delete this rotating work type?" %}');"
+								method="post" >
 								{% csrf_token %}
 								<button
 									type="submit"

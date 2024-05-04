@@ -122,10 +122,10 @@
 
   $('#delete-link').on('click', function(event) {
     event.preventDefault(); // prevent the default behavior of the link
-    
+
     const link = $(this);
     const confirmation = confirm('{% trans "Are you sure you want to delete?" %}');
-    
+
     if (confirmation) {
       window.location.href = link.attr('href'); // execute the href if confirmed
     }

@@ -4,24 +4,26 @@ forms.py
 
 from datetime import date
 from typing import Any
+
 from django import forms
 from django.forms import widgets
-from django.utils.translation import gettext_lazy as trans
 from django.template.loader import render_to_string
+from django.utils.translation import gettext_lazy as trans
+
 from base import thread_local_middleware
 from base.forms import Form
+from base.methods import reload_queryset
 from employee.forms import MultipleFileField
 from employee.models import Employee
 from payroll.context_processors import get_active_employees
 from payroll.models.models import (
+    Contract,
     EncashmentGeneralSettings,
     PayrollGeneralSetting,
     ReimbursementFile,
     ReimbursementrequestComment,
     WorkRecord,
 )
-from payroll.models.models import Contract
-from base.methods import reload_queryset
 
 
 class ModelForm(forms.ModelForm):

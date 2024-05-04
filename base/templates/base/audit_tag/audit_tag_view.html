@@ -5,7 +5,7 @@
 			<div class="oh-sticky-table__tr">
 				<div class="oh-sticky-table__th">{% trans "Title" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Highlight" %}</div>
-				{% if perms.horilla_audit.delete_audittag or perms.horilla_audit.delete_audittag %} 
+				{% if perms.horilla_audit.delete_audittag or perms.horilla_audit.delete_audittag %}
 					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 				{% endif %}
 			</div>
@@ -19,12 +19,12 @@
                 {% else %}
                     <div class="oh-sticky-table__td">{% trans "No" %}</div>
                 {% endif %}
-				{% if perms.horilla_audit.delete_audittag or perms.horilla_audit.delete_audittag %} 
+				{% if perms.horilla_audit.delete_audittag or perms.horilla_audit.delete_audittag %}
 					<div class="oh-sticky-table__td">
 						<div class="oh-btn-group">
 							{% if perms.horilla_audit.change_audittag %}
 							<a
-								hx-get="{% url 'audit-tag-update' tag.id %}" 
+								hx-get="{% url 'audit-tag-update' tag.id %}"
 								hx-target="#audittagEditForm"
 								data-toggle="oh-modal-toggle"
 								data-target="#audittagEditModal"
@@ -34,13 +34,13 @@
 							>
 								<ion-icon name="create-outline"></ion-icon
 							></a>
-							{% endif %} 
-							{% if perms.horilla_audit.delete_audittag %} 
-							<form 
-								action="{% url 'audit-tag-delete' tag.id %}"  
-								class="w-50" 
-								onsubmit="return confirm('{% trans "Are you sure you want to delete this audit tag ?" %}');" 
-								method='post'> 
+							{% endif %}
+							{% if perms.horilla_audit.delete_audittag %}
+							<form
+								action="{% url 'audit-tag-delete' tag.id %}"
+								class="w-50"
+								onsubmit="return confirm('{% trans "Are you sure you want to delete this audit tag ?" %}');"
+								method='post'>
 								{% csrf_token %}
 								<button
 									type="submit"

@@ -47,40 +47,40 @@
                                     </div> {% endcomment %}
                                     <div
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id' %}arrow-up {% elif request.sort_option.order == 'employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=employee_id" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=employee_id"
                                         hx-target="#loanContainer"
                                     >
                                         {% trans "Employee" %}
                                     </div>
                                     <div data-cell-index="1" data-cell-title='{% trans "Title" %}' class="oh-sticky-table__th">{% trans "Title" %}</div>
 
-                                    <div data-cell-index="2" data-cell-title='{% trans "Provided Date" %}' 
+                                    <div data-cell-index="2" data-cell-title='{% trans "Provided Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-provided_date' %}arrow-up {% elif request.sort_option.order == 'provided_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=provided_date" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=provided_date"
                                         hx-target="#loanContainer"
-                                        
+
                                     >
                                         {% trans "Provided Date" %}
                                     </div>
-                                    <div data-cell-index="3" data-cell-title='{% trans "Installment Start Date" %}' 
+                                    <div data-cell-index="3" data-cell-title='{% trans "Installment Start Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-installment_start_date' %}arrow-up {% elif request.sort_option.order == 'installment_start_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=installment_start_date" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=installment_start_date"
                                         hx-target="#loanContainer"
-                                        
+
                                     >
                                         {% trans "Installment Start Date" %}
                                     </div>
-                                    <div data-cell-index="4" data-cell-title='{% trans "Total Installments" %}' 
+                                    <div data-cell-index="4" data-cell-title='{% trans "Total Installments" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-installments' %}arrow-up {% elif request.sort_option.order == 'installments' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=installments" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=installments"
                                         hx-target="#loanContainer"
-                                        
+
                                     >
                                         {% trans "Total Installments" %}
                                     </div>
-                                    <div data-cell-index="5" data-cell-title='{% trans "Amount" %}' 
+                                    <div data-cell-index="5" data-cell-title='{% trans "Amount" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-loan_amount' %}arrow-up {% elif request.sort_option.order == 'loan_amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=loan_amount" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=loan_amount"
                                         hx-target="#loanContainer"
                                     >{% trans "Amount" %}
                                     </div>
@@ -134,20 +134,20 @@
                                         </div>
                                         <div data-cell-index="6" class="oh-sticky-table__td">
                                         {{req.description}}
-                                        </div>  
+                                        </div>
                                         <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                             <div class="oh-btn-group">
                                                 {% if perms.payroll.change_loanaccount or request.user %}
                                                     <a class="oh-btn oh-btn--light-bkg w-100" hx-get="{% url 'create-loan' %}?instance_id={{ req.id }}" hx-target="#loanModalBody" data-toggle="oh-modal-toggle" data-target="#loanModal" title='{% trans "Edit" %}'>
                                                         <ion-icon class="text-dark" name="create-outline"></ion-icon></a>
-                                                {% endif %} 
+                                                {% endif %}
                                                 {% if perms.payroll.delete_loanaccount %}
                                                     <a class="oh-btn oh-btn--light-bkg w-100" href="{% url 'delete-loan' %}?ids={{ req.id }}" onclick="return confirm('Do you want to delete this record?')" title='{% trans "Delete" %}'>
                                                         <ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
                                                 {% endif %}
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 {% endfor %}
                             </div>
@@ -284,40 +284,40 @@
                                     </div> {% endcomment %}
                                     <div
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id' %}arrow-up {% elif request.sort_option.order == 'employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=employee_id" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=employee_id"
                                         hx-target="#loanContainer"
                                     >
                                         {% trans "Employee" %}
                                     </div>
                                     <div data-cell-index="1" data-cell-title='{% trans "Title" %}' class="oh-sticky-table__th">{% trans "Title" %}</div>
 
-                                    <div data-cell-index="2" data-cell-title='{% trans "Provided Date" %}' 
+                                    <div data-cell-index="2" data-cell-title='{% trans "Provided Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-provided_date' %}arrow-up {% elif request.sort_option.order == 'provided_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=provided_date" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=provided_date"
                                         hx-target="#loanContainer"
-                                        
+
                                     >
                                         {% trans "Provided Date" %}
                                     </div>
-                                    <div data-cell-index="3" data-cell-title='{% trans "Installment Start Date" %}' 
+                                    <div data-cell-index="3" data-cell-title='{% trans "Installment Start Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-installment_start_date' %}arrow-up {% elif request.sort_option.order == 'installment_start_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=installment_start_date" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=installment_start_date"
                                         hx-target="#loanContainer"
-                                        
+
                                     >
                                         {% trans "Installment Start Date" %}
                                     </div>
-                                    <div data-cell-index="4" data-cell-title='{% trans "Total Installments" %}' 
+                                    <div data-cell-index="4" data-cell-title='{% trans "Total Installments" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-installments' %}arrow-up {% elif request.sort_option.order == 'installments' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=installments" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=installments"
                                         hx-target="#loanContainer"
-                                        
+
                                     >
                                         {% trans "Total Installments" %}
                                     </div>
-                                    <div data-cell-index="5" data-cell-title='{% trans "Amount" %}' 
+                                    <div data-cell-index="5" data-cell-title='{% trans "Amount" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-loan_amount' %}arrow-up {% elif request.sort_option.order == 'loan_amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=loan_amount" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=loan_amount"
                                         hx-target="#loanContainer"
                                     >{% trans "Amount" %}
                                     </div>
@@ -371,20 +371,20 @@
                                         </div>
                                         <div data-cell-index="6" class="oh-sticky-table__td">
                                         {{req.description}}
-                                        </div>  
+                                        </div>
                                         <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                             <div class="oh-btn-group">
                                                 {% if perms.payroll.change_loanaccount or request.user %}
                                                     <a class="oh-btn oh-btn--light-bkg w-100" hx-get="{% url 'create-loan' %}?instance_id={{ req.id }}" hx-target="#loanModalBody" data-toggle="oh-modal-toggle" data-target="#loanModal" title='{% trans "Edit" %}'>
                                                         <ion-icon class="text-dark" name="create-outline"></ion-icon></a>
-                                                {% endif %} 
+                                                {% endif %}
                                                 {% if perms.payroll.delete_loanaccount %}
                                                     <a class="oh-btn oh-btn--light-bkg w-100" href="{% url 'delete-loan' %}?ids={{ req.id }}" onclick="return confirm('Do you want to delete this record?')" title='{% trans "Delete" %}'>
                                                         <ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
                                                 {% endif %}
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 {% endfor %}
                             </div>
@@ -521,40 +521,40 @@
                                     </div> {% endcomment %}
                                     <div
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id' %}arrow-up {% elif request.sort_option.order == 'employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=employee_id" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=employee_id"
                                         hx-target="#loanContainer"
                                     >
                                         {% trans "Employee" %}
                                     </div>
                                     <div data-cell-index="1" data-cell-title='{% trans "Title" %}' class="oh-sticky-table__th">{% trans "Title" %}</div>
 
-                                    <div data-cell-index="2" data-cell-title='{% trans "Provided Date" %}' 
+                                    <div data-cell-index="2" data-cell-title='{% trans "Provided Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-provided_date' %}arrow-up {% elif request.sort_option.order == 'provided_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=provided_date" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=provided_date"
                                         hx-target="#loanContainer"
-                                        
+
                                     >
                                         {% trans "Provided Date" %}
                                     </div>
-                                    <div data-cell-index="3" data-cell-title='{% trans "Installment Start Date" %}' 
+                                    <div data-cell-index="3" data-cell-title='{% trans "Installment Start Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-installment_start_date' %}arrow-up {% elif request.sort_option.order == 'installment_start_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=installment_start_date" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=installment_start_date"
                                         hx-target="#loanContainer"
-                                        
+
                                     >
                                         {% trans "Installment Start Date" %}
                                     </div>
-                                    <div data-cell-index="4" data-cell-title='{% trans "Total Installments" %}' 
+                                    <div data-cell-index="4" data-cell-title='{% trans "Total Installments" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-installments' %}arrow-up {% elif request.sort_option.order == 'installments' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=installments" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=installments"
                                         hx-target="#loanContainer"
-                                        
+
                                     >
                                         {% trans "Total Installments" %}
                                     </div>
-                                    <div data-cell-index="5" data-cell-title='{% trans "Amount" %}' 
+                                    <div data-cell-index="5" data-cell-title='{% trans "Amount" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-loan_amount' %}arrow-up {% elif request.sort_option.order == 'loan_amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=loan_amount" 
+                                        hx-get="{% url 'search-loan' %}?{{pd}}&sortby=loan_amount"
                                         hx-target="#loanContainer"
                                     >{% trans "Amount" %}
                                     </div>
@@ -608,20 +608,20 @@
                                         </div>
                                         <div data-cell-index="6" class="oh-sticky-table__td">
                                         {{req.description}}
-                                        </div>  
+                                        </div>
                                         <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                             <div class="oh-btn-group">
                                                 {% if perms.payroll.change_loanaccount or request.user %}
                                                     <a class="oh-btn oh-btn--light-bkg w-100" hx-get="{% url 'create-loan' %}?instance_id={{ req.id }}" hx-target="#loanModalBody" data-toggle="oh-modal-toggle" data-target="#loanModal" title='{% trans "Edit" %}'>
                                                         <ion-icon class="text-dark" name="create-outline"></ion-icon></a>
-                                                {% endif %} 
+                                                {% endif %}
                                                 {% if perms.payroll.delete_loanaccount %}
                                                     <a class="oh-btn oh-btn--light-bkg w-100" href="{% url 'delete-loan' %}?ids={{ req.id }}" onclick="return confirm('Do you want to delete this record?')" title='{% trans "Delete" %}'>
                                                         <ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
                                                 {% endif %}
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 {% endfor %}
                             </div>
@@ -778,14 +778,14 @@
         </div>
     </div>
 
-    
-{% comment %} 
+
+{% comment %}
     <div class="oh-modal" id="loanModal" role="dialog" aria-hidden="true">
         <div class="oh-modal__dialog" style="max-width: 550px">
           <div class="oh-modal__dialog-header">
             <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
           </div>
-    
+
           <div class="oh-modal__dialog-body" id="loanModalBody"></div>
         </div>
       </div>
@@ -794,7 +794,7 @@
           <div class="oh-modal__dialog-header">
             <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
           </div>
-    
+
           <div class="oh-modal__dialog oh-modal__dialog-relative" id="viewInstallmentModalBody"></div>
         </div>
       </div> {% endcomment %}
@@ -875,5 +875,5 @@
             $("#BonusEncashmentCells").find("[type=checkbox]").prop("checked",true)
         }
         $("[type=checkbox]").change()
-    </script>      
+    </script>
 </div>

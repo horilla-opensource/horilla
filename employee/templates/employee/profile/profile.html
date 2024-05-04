@@ -35,14 +35,14 @@
 	</div>
 </section>
 <div class="oh-wrapper">
-	{% include 'employee/profile/personal_info.html' %} 
+	{% include 'employee/profile/personal_info.html' %}
     {% include 'employee/profile/bank_info.html' %}
 </div>
 
 <script>
 	{% include 'country.js' %}
 	$(document).ready(function() {
-  
+
 		  // Active tab script
 		function activeCandTab() {
 		  var activeTab = localStorage.getItem("activeCandTab")
@@ -59,14 +59,14 @@
 		  }
 		}
 		activeCandTab()
-		$("[data-action=general-tab]").on("click",function (e) { 
+		$("[data-action=general-tab]").on("click",function (e) {
 		  e.preventDefault();
 		  const targetId = $(this).attr('data-target');
 		  localStorage.setItem("activeCandTab",targetId)
 		});
-		
+
 	  });
-  
+
 </script>
 
 {% endblock content %}

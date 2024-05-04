@@ -1,10 +1,10 @@
-{% extends 'index.html' %} 
+{% extends 'index.html' %}
 {% load static i18n %}
 {% load widget_tweaks %}
 {% load basefilters %}
 {% load static %}
 
-  
+
 {% block styles %}
 <link rel="stylesheet" href="{% static 'css/pms.css' %}" />
 
@@ -17,11 +17,11 @@
     <div class="oh-main__titlebar oh-main__titlebar--left">
       <h1 class="oh-main__titlebar-title fw-bold">{% trans "Feedbacks" %}</h1>
     </div>
- 
+
     <div class="oh-main__titlebar oh-main__titlebar--right">
 
       <div class="oh-main__titlebar-button-container">
-        
+
         <!-- checking  user permission for objective creation -->
         {% if perms.pms.add_feedback or request.user|filtersubordinates %}
         <div class="oh-btn-group ml-2">
@@ -29,7 +29,7 @@
               <a  href="{% url 'feedback-creation' %}" class="oh-btn oh-btn--secondary" role="button">
                 <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
                 {% trans "Create" %}</a>
-           
+
           </div>
         </div>
       {% endif %}
@@ -44,7 +44,7 @@
 class="oh-wrapper-main"
 >
   <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-    
+
     <div class="oh-wrapper">
       <div class="oh-404">
           <img style="    width: 190px;height: 190px;" src="{% static 'images/ui/feedback.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
@@ -57,4 +57,3 @@ class="oh-wrapper-main"
 
 
 {% endblock content %}
-

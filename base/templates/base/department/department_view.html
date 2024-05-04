@@ -28,12 +28,12 @@
 							>
 								<ion-icon name="create-outline"></ion-icon
 							></a>
-							{% endif %} 
-							{% if perms.base.delete_deaprtment %} 
-							<form action="{% url 'department-delete' dep.id %}" 
-								class="w-50" 
-								onsubmit="return confirm('{% trans "Are you sure you want to delete this department?" %}');" 
-								method='post'> 
+							{% endif %}
+							{% if perms.base.delete_deaprtment %}
+							<form action="{% url 'department-delete' dep.id %}"
+								class="w-50"
+								onsubmit="return confirm('{% trans "Are you sure you want to delete this department?" %}');"
+								method='post'>
 								{% csrf_token %}
 								<button
 									type="submit"

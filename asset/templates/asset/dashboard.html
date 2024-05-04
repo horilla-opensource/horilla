@@ -1,4 +1,4 @@
-{% extends 'index.html' %} 
+{% extends 'index.html' %}
 {% block content %}
 {% load static i18n %}
 {% load i18n %}
@@ -70,10 +70,10 @@
                             </div>
                         </div>
                     </div>
-                </div>                
+                </div>
             </div>
             <div class="oh-dashboard__movable-cards row mt-4 mb-4">
-    
+
                 <div class="col-12 col-sm-12 col-md-12 col-lg-3 mt-2">
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
@@ -83,7 +83,7 @@
                             <canvas id="assetAvailableChart" ></canvas>
                         </div>
                     </div>
-                </div> 
+                </div>
 
                 <div class="col-12 col-sm-12 col-md-12 col-lg-9">
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
@@ -102,7 +102,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-3">
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
@@ -112,8 +112,8 @@
                             <canvas id="assetCategoryChart" ></canvas>
                         </div>
                     </div>
-                </div> 
-                
+                </div>
+
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-3">
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
@@ -122,12 +122,12 @@
                         <div class="oh-card-dashboard__body" id="leaveRequest" style="height:350px;overflow-y:auto">
                             {% if asset_allocations %}
                                 {% include "asset/dashboard_allocated_assets.html" %}
-                            {% else %}  
+                            {% else %}
                                 <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
                                     <img style="display: block; width:10%; margin: 20px auto;" src="{% static 'images/ui/asset.png' %}" class="" alt="Page not found. 404." />
                                     <h5 class="oh-404__subtitle">{% trans "There is no asset allocation at this moment." %}</h5>
                                 </div>
-                            
+
                             {% endif %}
                         </div>
                     </div>

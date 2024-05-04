@@ -4,8 +4,8 @@ methods.py
 This module is used to write methods related to the history
 """
 
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 
 
 class Bot:
@@ -139,6 +139,7 @@ def get_diff(instance):
         )
     if instance._meta.model_name == "employeeworkinformation":
         from .models import HistoryTrackingFields
+
         history_tracking_instance = HistoryTrackingFields.objects.first()
         if history_tracking_instance:
             track_fields = history_tracking_instance.tracking_fields["tracking_fields"]

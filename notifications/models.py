@@ -1,5 +1,6 @@
-from swapper import swappable_setting
 from django.db import models
+from swapper import swappable_setting
+
 from .base.models import AbstractNotification, notify_handler  # noqa
 
 

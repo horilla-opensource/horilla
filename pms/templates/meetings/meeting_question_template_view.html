@@ -19,7 +19,7 @@
     </div>
     <div class="oh-activity-sidebar__body">
         <div
-            {% if request.user.employee_get in meeting.manager.all %} 
+            {% if request.user.employee_get in meeting.manager.all %}
                 style="max-height: 50vh"
             {% endif %}
             hx-get="{% url 'meeting-answer-get' meeting.id %}"
@@ -27,7 +27,7 @@
         ></div>
     </div>
     <hr class="line" />
-    {% if request.user.employee_get in meeting.manager.all and meeting.answer_employees.all %} 
+    {% if request.user.employee_get in meeting.manager.all and meeting.answer_employees.all %}
         <div class="mt-3 oh-card" >
             {% for employee in meeting.answer_employees.all %}
                 <div class="oh-accordion">
@@ -43,7 +43,7 @@
                         id="employee_answers{{employee.id}}"
                     ></div>
                 </div>
-            {% endfor %} 
+            {% endfor %}
         </div>
     {% endif %}
 </div>

@@ -61,13 +61,13 @@
           <span class="oh-payslip__netpay-title">
               {% trans "Updated Basic Pay" %}
               <small style="margin-left:20px;font-weight:bold;">: {{currency}} {{basic_pay|floatformat:2}}
-                
+
                 <br><i style="font-style: italic; margin-left: 10px; font-weight: normal;"><ion-icon name="information-circle-outline" style="color:blue;"></ion-icon>{% trans "The payslip is calculated based on the updated basic pay" %}</i>
-                  
+
               </small>
           </span>
       </div>
-    </div>    
+    </div>
   </div>
   <!-- End of Payslip Table -->
 
@@ -80,14 +80,14 @@
           <th class="oh-payslip__table-th">{% trans "Amount" %}</th>
           <th class="oh-payslip__table-th">
             {% if perms.payroll.add_allowance and instance.status != "paid"  %}
-                <button title="{% trans 'Add Allowance' %}" class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" 
-                        hx-get="{% url "add-bonus" %}?employee_id={{employee.id}}&payslip_id={{instance.id}}" hx-target="#addBonusModalBody" 
+                <button title="{% trans 'Add Allowance' %}" class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
+                        hx-get="{% url "add-bonus" %}?employee_id={{employee.id}}&payslip_id={{instance.id}}" hx-target="#addBonusModalBody"
                         data-target="#addBonusModal" data-toggle="oh-modal-toggle"
                         >
                     <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
                 </button>
             {% endif %}
-          </th>   
+          </th>
         </tr>
       </thead>
       <tbody class="oh-payslip__table-tbody">
@@ -133,14 +133,14 @@
           <th class="oh-payslip__table-th">{% trans "Amount" %}</th>
           <th class="oh-payslip__table-th">
             {% if perms.payroll.add_deduction and instance.status != "paid" %}
-                <button title="{% trans 'Add Deduction' %}" class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" 
-                        hx-get="{% url "add-payslip-deduction" %}?employee_id={{employee.id}}&payslip_id={{instance.id}}" hx-target="#addDeductionFormModal" 
+                <button title="{% trans 'Add Deduction' %}" class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
+                        hx-get="{% url "add-payslip-deduction" %}?employee_id={{employee.id}}&payslip_id={{instance.id}}" hx-target="#addDeductionFormModal"
                         data-target="#addDeductionModal" data-toggle="oh-modal-toggle"
                         >
                     <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
                 </button>
             {% endif %}
-          </th> 
+          </th>
         </tr>
       </thead>
       <tbody class="oh-payslip__table-tbody">
@@ -240,7 +240,7 @@
 <div class="oh-modal" id="addBonusModal" role="dialog" aria-labelledby="addBonusModalLabel" aria-hidden="true">
     <div class="oh-modal__dialog" id="addBonusModalBody"> </div>
   </div>
-  
+
   <div class="oh-modal" id="addDeductionModal" aria-labelledby="addDeductionModalLabel" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
       <div class="oh-modal__dialog-header">

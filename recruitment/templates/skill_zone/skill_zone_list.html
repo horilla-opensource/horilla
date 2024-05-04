@@ -18,7 +18,7 @@
                         </div>
                     </span>
                     <div class="oh-btn-group">
-                        <a                              
+                        <a
                             class="oh-btn oh-btn--light-bkg w-100"
                             onclick="event.stopPropagation();"
                             data-toggle="oh-modal-toggle"
@@ -40,13 +40,13 @@
                           ><ion-icon name="create-outline"></ion-icon
                         ></a>
                         {% if skill_zone.grouper.is_active %}
-                        <form 
-                            action="{% url 'skill-zone-archive' skill_zone.grouper.id %}"  
-                            onsubmit="return confirm('{% trans "Do you want to archive this skill zone ?" %}')" method="post" > 
+                        <form
+                            action="{% url 'skill-zone-archive' skill_zone.grouper.id %}"
+                            onsubmit="return confirm('{% trans "Do you want to archive this skill zone ?" %}')" method="post" >
                           {% csrf_token %}
                           <button
                             onclick="event.stopPropagation();"
-                            
+
                             type="submit"
                             class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                             title="{% trans 'Archive' %}"
@@ -55,9 +55,9 @@
                           </button>
                         </form>
                         {% else %}
-                        <form 
-                        action="{% url 'skill-zone-archive' skill_zone.grouper.id %}"  
-                        onsubmit="return confirm('{% trans "Do you want to un archive this skill zone?" %}')" method="post" > 
+                        <form
+                        action="{% url 'skill-zone-archive' skill_zone.grouper.id %}"
+                        onsubmit="return confirm('{% trans "Do you want to un archive this skill zone?" %}')" method="post" >
                             {% csrf_token %}
                             <button
                                 onclick="event.stopPropagation();"
@@ -68,9 +68,9 @@
                               <ion-icon name="archive"></ion-icon>
                             </button>
                           </form>
-                        {% endif %} 
-                        <form 
-                        action="{% url 'skill-zone-delete' skill_zone.grouper.id %}?view=list"  
+                        {% endif %}
+                        <form
+                        action="{% url 'skill-zone-delete' skill_zone.grouper.id %}?view=list"
                         onsubmit="return confirm('{% trans "Are you sure want to delete this skill zone?" %}')" method="post" > {% csrf_token %}
                           <button
                             onclick="event.stopPropagation();"
@@ -99,7 +99,7 @@
                                     </div>
                                 </div>
                                 {% for sz_candidate in skill_zone.list %}
-                                    <div class="oh-sticky-table__tbody" 
+                                    <div class="oh-sticky-table__tbody"
                                         onclick="window.location.href = `{% url 'candidate-view-individual' sz_candidate.candidate_id.id %}` "
                                     >
                                         <div class="oh-sticky-table__tr" draggable="true">
@@ -108,7 +108,7 @@
                                                     <div class="oh-profile__avatar mr-1">
                                                         {% if sz_candidate.candidate_id.profile %}
                                                             <img src="{{sz_candidate.candidate_id.get_avatar}}" class="oh-profile__image"
-                                                            alt="" /> 
+                                                            alt="" />
                                                         {% else %}
                                                         <img src="https://ui-avatars.com/api/?name={{sz_candidate.candidate_id}}&background=random"
                                                             class="oh-profile__image" alt="" />
@@ -132,12 +132,12 @@
                                                   </a>
                                             </div>
                                             <div class="oh-sticky-table__td " onclick="event.stopPropagation()">
-                                                <div class="oh-btn-group">                                                  
-                                                    <button  
-                                                        class="oh-btn oh-btn--light-bkg w-50" 
-                                                        title="{% trans 'Edit' %}" 
+                                                <div class="oh-btn-group">
+                                                    <button
+                                                        class="oh-btn oh-btn--light-bkg w-50"
+                                                        title="{% trans 'Edit' %}"
                                                         data-toggle="oh-modal-toggle"
-                                                        data-target="#editCandModal" 
+                                                        data-target="#editCandModal"
                                                         hx-get="{% url 'skill-zone-cand-edit' sz_candidate.id %}"
                                                         hx-target="#editCandTarget">
                                                         <ion-icon name="create-outline"></ion-icon>
@@ -157,21 +157,21 @@
                                                                 ><ion-icon name="archive"></ion-icon></button>
                                                         </form>
                                                     {% endif %} {% endcomment %}
-                                                    
+
                                                     <form action="{% url 'skill-zone-cand-delete' sz_candidate.id  %}" onsubmit="return confirm('{% trans "Do you want to remove this candidate" %}')" method='post'
                                                         onsubmit="Are you sure want to delete this candidate?" class="w-50">
                                                         {% csrf_token %}
                                                         <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                                             title="Remove"><ion-icon name="trash-outline"></ion-icon></button>
                                                     </form>
-                        
+
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                                                        
+
                                 {% endfor %}
-                                
+
                             </div>
                         </div>
                         <!-- end of sticky table -->
@@ -238,10 +238,10 @@
                     </div>
                     {% endif %}
                 </div>
-            </div> 
+            </div>
         </div>
     {% endfor %}
-</div> 
+</div>
 
 <div class="oh-pagination">
     <span
@@ -280,10 +280,10 @@
           <a hx-target='#skill_zone_container' hx-get="{% url 'skill-zone-filter' %}?{{pd}}&view=list&page={{ skill_zones.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
         </li>
         {% endif %}
-  
+
       </ul>
     </nav>
-</div> 
+</div>
 {% else %}
 <div class="oh-404">
   <img

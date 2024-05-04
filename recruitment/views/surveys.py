@@ -6,31 +6,34 @@ This module is used to write views related to the survey features
 
 import json
 from datetime import datetime
-from django.core.files.storage import default_storage
-from django.core import serializers
-from django.db.models import ProtectedError
-from django.shortcuts import render, redirect
+
 from django.contrib import messages
+from django.core import serializers
+from django.core.files.storage import default_storage
+from django.db.models import ProtectedError
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
+
 from base.methods import closest_numbers, get_pagination
 from horilla.decorators import login_required, permission_required
-from recruitment.models import Recruitment, SurveyTemplate
+from recruitment.filters import SurveyFilter
 from recruitment.forms import (
     AddQuestionForm,
     ApplicationForm,
-    SurveyForm,
     QuestionForm,
+    SurveyForm,
     TemplateForm,
 )
 from recruitment.models import (
-    RecruitmentSurvey,
     Candidate,
     JobPosition,
-    Stage,
+    Recruitment,
+    RecruitmentSurvey,
     RecruitmentSurveyAnswer,
+    Stage,
+    SurveyTemplate,
 )
-from recruitment.filters import SurveyFilter
 from recruitment.pipeline_grouper import group_by_queryset
 from recruitment.views.paginator_qry import paginator_qry
 
@@ -300,7 +303,9 @@ def application_form(request):
             request.session["candidate"] = serializers.serialize(
                 "json", [candidate_obj]
             )
-            if RecruitmentSurvey.objects.filter(recruitment_ids = recruitment_id).exists():
+            if RecruitmentSurvey.objects.filter(
+                recruitment_ids=recruitment_id
+            ).exists():
                 return redirect(candidate_survey)
             candidate_obj.save()
             return render(request, "candidate/success.html")

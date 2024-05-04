@@ -2,7 +2,9 @@
 init.py
 """
 
-from horilla import haystack_configuration
-from horilla import horilla_apps
-from horilla import horilla_middlewares
-from horilla import horilla_context_processors
+from horilla import (
+    haystack_configuration,
+    horilla_apps,
+    horilla_context_processors,
+    horilla_middlewares,
+)

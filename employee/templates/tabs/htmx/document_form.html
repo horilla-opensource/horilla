@@ -1,4 +1,4 @@
-{% load i18n %} {% load widget_tweaks %} 
+{% load i18n %} {% load widget_tweaks %}
 
 <form
 	id="file-form"
@@ -12,7 +12,7 @@
 	<input type="hidden" name="title" value="{{form.instance.title}}">
 	<input type="hidden" name="rejection_reason" value="{{form.rejection_reason.value}}">
 	<input type="hidden" name="document_request_id" value="{{form.document_request_id.value}}">
-	{{form.non_field_errors}} 
+	{{form.non_field_errors}}
 	{{form.document}}
 	{{form.document.errors}}
 	<div class="row">
@@ -61,5 +61,5 @@
 		$(".notify").removeClass('d-none');
 	  })
 	});
-  
+
 </script>

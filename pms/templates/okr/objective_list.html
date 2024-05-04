@@ -96,8 +96,8 @@
           <div class="oh-sticky-table__tbody">
             {% for own_objective in own_objectives.object_list %}
             <div class="oh-sticky-table__tr" draggable="true">
-              <div class="oh-sticky-table__sd {% if own_objective.status == 'Closed' %}row-status--blue 
-                {% elif own_objective.status == 'On Track' %}row-status--yellow {% elif own_objective.status == 'Not Started' %}row-status--gray 
+              <div class="oh-sticky-table__sd {% if own_objective.status == 'Closed' %}row-status--blue
+                {% elif own_objective.status == 'On Track' %}row-status--yellow {% elif own_objective.status == 'Not Started' %}row-status--gray
                 {% elif own_objective.status == 'Behind' %}row-status--orange {% elif own_objective.status == 'At Risk' %}row-status--red{% endif %}">
                 <div class="centered-div">
                   <input
@@ -315,8 +315,8 @@
           <div class="oh-sticky-table__tbody">
             {% for all_objective in all_objectives.object_list %}
             <div class="oh-sticky-table__tr" draggable="true">
-              <div class="oh-sticky-table__sd {% if all_objective.status == 'Closed' %}row-status--blue 
-                {% elif all_objective.status == 'On Track' %}row-status--yellow {% elif all_objective.status == 'Not Started' %}row-status--gray 
+              <div class="oh-sticky-table__sd {% if all_objective.status == 'Closed' %}row-status--blue
+                {% elif all_objective.status == 'On Track' %}row-status--yellow {% elif all_objective.status == 'Not Started' %}row-status--gray
                 {% elif all_objective.status == 'Behind' %}row-status--orange {% elif all_objective.status == 'At Risk' %}row-status--red{% endif %}">
                   <div class="centered-div">
                     <input
@@ -504,7 +504,7 @@
           <img style="display: block; width: 100px; margin: 20px auto;" src="{% static 'images/ui/goal.png' %}" class="" alt="Page not found. 404." /><br>
           <h5 class="oh-404__subtitle">{% trans "There are no Objectives available." %}</h5>
         </div>
-    
+
       {% endif %}
     </div>
   </div>
@@ -552,7 +552,7 @@
         .removeClass("highlight-selected");
       }
     });
-    
+
     $("#Ownobjectives").click(function (e) {
       var is_checked = $(this).is(":checked");
       if (is_checked) {

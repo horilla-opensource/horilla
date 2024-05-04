@@ -20,5 +20,3 @@ $(function () {
     $(".sortable").sortable();
 
 });
-
-

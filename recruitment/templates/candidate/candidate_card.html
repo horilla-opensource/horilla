@@ -10,11 +10,11 @@
     z-index:9999
     ;
   }
-  
+
   .profile-picture:hover {
       transform: scale(2.4);
   }
-  
+
 </style>
 
 {% include 'filter_tags.html' %}
@@ -34,7 +34,7 @@
               />
           </div>
       </div>
-      
+
       <div class="oh-kanban-card__details">
         <span class="oh-kanban-card__title">{{cand.name}}</span>
         <span class="oh-kanban-card__subtitle">{{cand.email}}</span><br>
@@ -62,7 +62,7 @@
               {% else %}
                 {% if perms.recruitment.add_skillzonecandidate %}
                 <li class="oh-dropdown__item">
-                  <a 
+                  <a
                     data-toggle="oh-modal-toggle"
                     data-target="#createModal"
                     hx-get="{% url 'to-skill-zone' cand.id %}"
@@ -195,4 +195,3 @@
   </div>
   <!-- end of empty page -->
 {% endif %}
-

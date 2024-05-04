@@ -87,8 +87,8 @@
             aria-label="caret back outline"
         ></ion-icon>
     </span>
-    {% endif %}   
-    {% if validate_attendances.has_next or validate_attendances.has_previous %}     
+    {% endif %}
+    {% if validate_attendances.has_next or validate_attendances.has_previous %}
     <span class="oh-pagination__page float-end fw-bold">
         {% trans "Page" %} {{ validate_attendances.number }} {%trans "of" %}
         {{validate_attendances.paginator.num_pages }}

@@ -28,7 +28,7 @@ $(document).on('htmx:load',function () {
     }
     var basedOn = $("#id_based_on");
     hidBasedOn(basedOn.val());
-    
+
 
     basedOn.on('change',function (e) {
 

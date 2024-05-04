@@ -17,7 +17,7 @@
         data-target="#filingStatus{{filing_status.id}}"
         hx-get="{%url 'tax-bracket-list' filing_status_id=filing_status.id %}"
         hx-target="#taxbracketList{{filing_status.id}}"
-        {% endif %} 
+        {% endif %}
       >
         <div class="d-flex">
           <span class="oh-accordion-meta__title" style="padding: 0.8rem 1.25rem;">{{filing_status}}</span>
@@ -73,9 +73,9 @@
                   {% endif %}
                   {% if perms.payroll.delete_filingstatus %}
                   <li class="oh-dropdown__item">
-                    <form 
+                    <form
                       hx-confirm="{% trans 'Are you sure to delete this status ?' %}"
-                      hx-post="{% url 'filing-status-delete' filing_status_id=filing_status.id %}" 
+                      hx-post="{% url 'filing-status-delete' filing_status_id=filing_status.id %}"
                       hx-target="#FilingStatusList"
                       style="display: contents">
                       {% csrf_token %}

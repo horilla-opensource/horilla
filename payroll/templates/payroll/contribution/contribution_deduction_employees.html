@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="oh-sticky-table__tbody">
-        {% for employee_contribution in employee_contribution_list %} 
+        {% for employee_contribution in employee_contribution_list %}
           {% for employee in employee_contribution.employee_id.all %}
             <div class="oh-sticky-table__tr" draggable="true">
               <div class="oh-sticky-table__td">{{employee}}</div>
@@ -45,7 +45,7 @@
                 </div>
               </div>
             </div>
-          {% endfor %} 
+          {% endfor %}
         {% endfor %}
       </div>
     </div>

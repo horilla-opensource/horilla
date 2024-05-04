@@ -33,7 +33,7 @@
         ></span>
         {% trans "Requested" %}
     </span>
-    
+
 </div>
 
 <div class="oh-tabs oh-wrapper">
@@ -62,9 +62,9 @@
                                     <div class="loan-type" style="display: inline; background:hsl(58.85deg 100% 80.93%);">
                                         {{ req.get_type_display }}
                                     </div>
-                                    <div class="loan-type" 
+                                    <div class="loan-type"
                                         style="display: inline;
-                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %} 
+                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
                                         background:#ff45002e;{% endif %}">
                                         {{ req.get_status_display }}
                                     </div>
@@ -99,7 +99,7 @@
                                     ></a>
                                     {% endif %}
                                 </div>
-                            
+
                             </div>
                             <div class="oh-timeoff-modal__profile-content">
                                 <div class="oh-profile mb-2">
@@ -117,7 +117,7 @@
                                             class="oh-timeoff-modal__user m-0"
                                             style="font-size: 12px; color: #4d4a4a"
                                         >
-                                            {{req.employee_id.get_department }} / 
+                                            {{req.employee_id.get_department }} /
                                             {{ req.employee_id.get_job_position }}</span
                                         >
                                     </div>
@@ -349,9 +349,9 @@
                                     <div class="loan-type" style="display: inline; background:hsl(58.85deg 100% 80.93%);">
                                         {{ req.get_type_display }}
                                     </div>
-                                    <div class="loan-type" 
+                                    <div class="loan-type"
                                         style="display: inline;
-                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %} 
+                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
                                         background:#ff45002e;{% endif %}">
                                         {{ req.get_status_display }}
                                     </div>
@@ -403,7 +403,7 @@
                                             class="oh-timeoff-modal__user m-0"
                                             style="font-size: 12px; color: #4d4a4a"
                                         >
-                                            {{req.employee_id.get_department }} / 
+                                            {{req.employee_id.get_department }} /
                                             {{ req.employee_id.get_job_position }}</span
                                         >
                                     </div>
@@ -534,7 +534,7 @@
                                 class="oh-pagination__page"
                                 data-toggle="modal"
                                 data-target="#addEmployeeModal"
-                                >{% trans 'Page' %} {{ leave_encashments.number }} {% trans 'of' %} 
+                                >{% trans 'Page' %} {{ leave_encashments.number }} {% trans 'of' %}
                                 {{ leave_encashments.paginator.num_pages }}.</span
                             >
 
@@ -632,9 +632,9 @@
                                     <div class="loan-type" style="display: inline; background:hsl(58.85deg 100% 80.93%);">
                                         {{ req.get_type_display }}
                                     </div>
-                                    <div class="loan-type" 
+                                    <div class="loan-type"
                                         style="display: inline;
-                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %} 
+                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
                                         background:#ff45002e;{% endif %}">
                                         {{ req.get_status_display }}
                                     </div>
@@ -685,7 +685,7 @@
                                             class="oh-timeoff-modal__user m-0"
                                             style="font-size: 12px; color: #4d4a4a"
                                         >
-                                            {{req.employee_id.get_department }} / 
+                                            {{req.employee_id.get_department }} /
                                             {{ req.employee_id.get_job_position }}</span
                                         >
                                     </div>
@@ -966,5 +966,5 @@
                 localStorage.setItem("activeTabReimbursment", activeTab);
             });
         });
-    </script>      
+    </script>
 </div>

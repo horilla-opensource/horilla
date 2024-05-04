@@ -4,7 +4,7 @@ const _parenSuffix = ")(?:\\(((?:\\([^)(]*\\)|[^)(]*)+?)\\))?([^,{]*)", _cssColo
  return o.escapedString.replace(_ruleRe, ((...e) => {
   const c = e[2];
   let r = "", n = e[4], l = "";
-  n && n.startsWith("{%BLOCK%") && (r = o.blocks[s++], n = n.substring("%BLOCK%".length + 1), 
+  n && n.startsWith("{%BLOCK%") && (r = o.blocks[s++], n = n.substring("%BLOCK%".length + 1),
   l = "{");
   const a = t({
    selector: c,
@@ -17,7 +17,7 @@ const _parenSuffix = ")(?:\\(((?:\\([^)(]*\\)|[^)(]*)+?)\\))?([^,{]*)", _cssColo
  let c = 0, r = [];
  for (let e = 0; e < t.length; e++) {
   const n = t[e];
-  "}" === n && c--, c > 0 ? r.push(n) : (r.length > 0 && (s.push(r.join("")), o.push("%BLOCK%"), 
+  "}" === n && c--, c > 0 ? r.push(n) : (r.length > 0 && (s.push(r.join("")), o.push("%BLOCK%"),
   r = []), o.push(n)), "{" === n && c++;
  }
  return r.length > 0 && (s.push(r.join("")), o.push("%BLOCK%")), {
@@ -37,7 +37,7 @@ const _parenSuffix = ")(?:\\(((?:\\([^)(]*\\)|[^)(]*)+?)\\))?([^,{]*)", _cssColo
  return "-shadowcsshost-no-combinator" + e[3];
 })), colonHostPartReplacer = (e, t, o) => e + t.replace("-shadowcsshost", "") + o, colonHostContextPartReplacer = (e, t, o) => t.indexOf("-shadowcsshost") > -1 ? colonHostPartReplacer(e, t, o) : e + t + o + ", " + t + " " + e + o, injectScopingSelector = (e, t) => e.replace(_selectorPartsRe, ((e, o = "", s, c = "", r = "") => o + t + c + r)), scopeSelectors = (e, t, o, s, c) => processRules(e, (e => {
  let c = e.selector, r = e.content;
- return "@" !== e.selector[0] ? c = ((e, t, o, s) => e.split(",").map((e => s && e.indexOf("." + s) > -1 ? e.trim() : ((e, t) => !(e => (e = e.replace(/\[/g, "\\[").replace(/\]/g, "\\]"), 
+ return "@" !== e.selector[0] ? c = ((e, t, o, s) => e.split(",").map((e => s && e.indexOf("." + s) > -1 ? e.trim() : ((e, t) => !(e => (e = e.replace(/\[/g, "\\[").replace(/\]/g, "\\]"),
  new RegExp("^(" + e + ")([>\\s~+[.,{:][\\s\\S]*)?$", "m")))(t).test(e))(e, t) ? ((e, t, o) => {
   const s = "." + (t = t.replace(/\[is=([^\]]*)\]/g, ((e, ...t) => t[0]))), c = e => {
    let c = e.trim();
@@ -72,14 +72,14 @@ const _parenSuffix = ")(?:\\(((?:\\([^)(]*\\)|[^)(]*)+?)\\))?([^,{]*)", _cssColo
   let p = !((e = r.content).indexOf("-shadowcsshost-no-combinator") > -1);
   for (;null !== (n = i.exec(e)); ) {
    const t = n[1], o = e.slice(a, n.index).trim();
-   p = p || o.indexOf("-shadowcsshost-no-combinator") > -1, l += `${p ? c(o) : o} ${t} `, 
+   p = p || o.indexOf("-shadowcsshost-no-combinator") > -1, l += `${p ? c(o) : o} ${t} `,
    a = i.lastIndex;
   }
   const h = e.substring(a);
-  return p = p || h.indexOf("-shadowcsshost-no-combinator") > -1, l += p ? c(h) : h, 
+  return p = p || h.indexOf("-shadowcsshost-no-combinator") > -1, l += p ? c(h) : h,
   u = r.placeholders, l.replace(/__ph-(\d+)__/g, ((e, t) => u[+t]));
   var u;
- })(e, t, o).trim() : e.trim())).join(", "))(e.selector, t, o, s) : (e.selector.startsWith("@media") || e.selector.startsWith("@supports") || e.selector.startsWith("@page") || e.selector.startsWith("@document")) && (r = scopeSelectors(e.content, t, o, s)), 
+ })(e, t, o).trim() : e.trim())).join(", "))(e.selector, t, o, s) : (e.selector.startsWith("@media") || e.selector.startsWith("@supports") || e.selector.startsWith("@page") || e.selector.startsWith("@document")) && (r = scopeSelectors(e.content, t, o, s)),
  {
   selector: c.replace(/\s{2,}/g, " ").trim(),
   content: r
@@ -98,7 +98,7 @@ exports.scopeCss = (e, t, o) => {
     comment: o
    }), e.selector = t + e.selector, e;
   };
-  e = processRules(e, (e => "@" !== e.selector[0] ? t(e) : e.selector.startsWith("@media") || e.selector.startsWith("@supports") || e.selector.startsWith("@page") || e.selector.startsWith("@document") ? (e.content = processRules(e.content, t), 
+  e = processRules(e, (e => "@" !== e.selector[0] ? t(e) : e.selector.startsWith("@media") || e.selector.startsWith("@supports") || e.selector.startsWith("@page") || e.selector.startsWith("@document") ? (e.content = processRules(e.content, t),
   e) : e));
  }
  const l = ((e, t, o, s, c) => {
@@ -129,7 +129,7 @@ exports.scopeCss = (e, t, o) => {
     cssText: e
    };
   })(e = (e => convertColonRule(e, _cssColonHostContextRe, colonHostContextPartReplacer))(e = (e => convertColonRule(e, _cssColonHostRe, colonHostPartReplacer))(e = e.replace(_colonHostContextRe, "-shadowcsscontext").replace(_colonHostRe, "-shadowcsshost").replace(_colonSlottedRe, "-shadowcssslotted"))), s);
-  return e = (e => _shadowDOMSelectorsRe.reduce(((e, t) => e.replace(t, " ")), e))(e = r.cssText), 
+  return e = (e => _shadowDOMSelectorsRe.reduce(((e, t) => e.replace(t, " ")), e))(e = r.cssText),
   t && (e = scopeSelectors(e, t, o, s)), {
    cssText: (e = (e = e.replace(/-shadowcsshost-no-combinator/g, `.${o}`)).replace(/>\s*\*\s+([^{, ]+)/gm, " $1 ")).trim(),
    slottedSelectors: r.selectors

@@ -1,5 +1,5 @@
 {% extends 'index.html' %}{% load static %} {% block content %} {% load i18n %}
-{% load static %} 
+{% load static %}
 {% load basefilters %}
 {% comment %} {% include 'employee_nav.html' %} {% endcomment %}
 <style>
@@ -38,7 +38,7 @@
   }
   .oh-sticky-table__sd{
     z-index: 11 !important;
-  
+
   }
   .oh-sticky-table__right{
     position: sticky;
@@ -79,7 +79,7 @@
 	  padding: 15px;
 	  border: 1px solid transparent;
 	  border-radius: 4px;
-  
+
   }
   .oh-not-found {
 	  display: flex;
@@ -223,7 +223,7 @@
 				</ul>
 			</div>
 		</div>
-		
+
 		<div class="oh-table_sticky--wrapper">
 			{% if request.user.is_superuser or request.user|check_manager:employee or request.user == employee.employee_user_id %}
 			<div class="oh-sticky-dropdown--header" style="border:none;">
@@ -237,12 +237,12 @@
 				</div>
 			</div>
 			{% endif %}
-			<div id="employee-tab" data-table-name="employee_tab">  
+			<div id="employee-tab" data-table-name="employee_tab">
 				<div class="row">
 					<div class="col-sm-12 col-md-12 col lg-12">
 						<ul
 						class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
-						>	
+						>
 							<li class="oh-general__tab">
 								<a
 								hx-get={% url 'contract-tab' employee.id %}
@@ -348,7 +348,7 @@
 							</li>
 							{% endif %}
 							{% if perms.asset.view_asset or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-							
+
 							<li data-cell-index="16" data-cell-title="{% trans 'Assets' %}" class="oh-general__tab">
 								<a
 								hx-get={% url 'asset-tab' employee.id %}
@@ -399,8 +399,8 @@
 								>{% trans "Note" %}</a
 								>
 							</li>
-							{% endif %}					
-							{% if perms.horilla_documents.view_document or request.user == employee.employee_user_id %} 
+							{% endif %}
+							{% if perms.horilla_documents.view_document or request.user == employee.employee_user_id %}
 							<li data-cell-index="20" data-cell-title="{% trans 'Documents' %}" class="oh-general__tab">
 								<a
 								hx-get="{% url 'document-tab' employee.id %}?employee_view=true"
@@ -506,7 +506,7 @@
 							id="asset_target"
 						>
 						</div>
-					
+
 						<div
 						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 						id="document_target"
@@ -591,19 +591,19 @@
 	  enlargeDocContainer.append(name)
 	  setTimeout(function () {
 		  enlargeDocContainer.show()
-  
+
 		  const iframe = document.querySelector('iframe').contentWindow
 		  var iframe_document = iframe.document
 		  iframe_image = iframe_document.getElementsByTagName('img')[0]
 		  $(iframe_image).attr('style', 'width:100%; height:100%;')
 	  }, 100)
   }
-  
+
   function hideEnlargeDoc() {
 	  var enlargeDocContainer = $('.enlargeDocContainer')
 	  enlargeDocContainer.empty()
   }
-  
+
   $(document).on('click', function (event) {
 	  if (!$(event.target).closest('#enlargeDocContainer').length) {
 		  hideEnlargeDoc()

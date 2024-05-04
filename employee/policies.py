@@ -5,13 +5,18 @@ This module is used to write operation related to policies
 """
 
 import datetime
-from datetime import timedelta
 import json
-from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect, render, get_object_or_404
-from base.views import paginator_qry
+from datetime import timedelta
 from urllib.parse import parse_qs
+
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext_lazy as _
+
+from base.methods import filtersubordinates, get_key_instances
+from base.views import paginator_qry
 from employee.filters import DisciplinaryActionFilter, PolicyFilter
 from employee.forms import DisciplinaryActionForm, PolicyForm
 from employee.models import (
@@ -21,14 +26,8 @@ from employee.models import (
     Policy,
     PolicyMultipleFile,
 )
-from horilla.decorators import permission_required, login_required
-from django.contrib.auth.models import User
-from django.utils.translation import gettext_lazy as _
+from horilla.decorators import login_required, permission_required
 from notifications.signals import notify
-from base.methods import (
-    filtersubordinates,
-    get_key_instances,
-)
 
 
 @login_required

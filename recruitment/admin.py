@@ -5,18 +5,18 @@ This page is used to register the model with admins site.
 """
 
 from django.contrib import admin
+
 from recruitment.models import (
-    CandidateRating,
-    SkillZone,
-    Stage,
-    Recruitment,
     Candidate,
+    CandidateRating,
+    InterviewSchedule,
+    Recruitment,
+    RecruitmentMailTemplate,
     RecruitmentSurvey,
     RecruitmentSurveyAnswer,
-    RecruitmentMailTemplate,
-    InterviewSchedule,
+    SkillZone,
+    Stage,
 )
-
 
 # Register your models here.
 

@@ -1,5 +1,7 @@
+from django.contrib.auth.models import Group
 from django.urls import path
-from base import request_and_approve, views, announcement
+
+from base import announcement, request_and_approve, views
 from base.forms import (
     RotatingShiftAssignForm,
     RotatingWorkTypeAssignForm,
@@ -24,8 +26,6 @@ from base.models import (
     WorkType,
     WorkTypeRequest,
 )
-from django.contrib.auth.models import Group
-
 from employee.models import EmployeeTag
 from horilla_audit.models import AuditTag
 
@@ -102,7 +102,9 @@ urlpatterns = [
         name="mail-server-create-update",
     ),
     path("mail-server-delete", views.mail_server_delete, name="mail-server-delete"),
-    path("replace-primary-mail", views.replace_primary_mail, name="replace-primary-mail"),
+    path(
+        "replace-primary-mail", views.replace_primary_mail, name="replace-primary-mail"
+    ),
     path("settings/company-create/", views.company_create, name="company-create"),
     path("settings/company-view/", views.company_view, name="company-view"),
     path(

@@ -1,7 +1,7 @@
 {% extends 'settings.html' %} {% block settings %}
 
 <script>
-  
+
   function checkSelected(names, target, initial = false) {
     names = JSON.parse(`${names}`);
     $.each(names, function (indexInArray, valueOfElement) {

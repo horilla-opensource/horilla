@@ -5,11 +5,12 @@ This module is used to write email backends
 """
 
 import importlib
+
 from django.core.mail.backends.smtp import EmailBackend
-from base.models import EmailLog, DynamicEmailConfiguration
-from horilla import settings
+
+from base.models import DynamicEmailConfiguration, EmailLog
 from base.thread_local_middleware import _thread_locals
-from django.core.mail.backends.smtp import EmailBackend
+from horilla import settings
 
 
 class DefaultHorillaMailBackend(EmailBackend):

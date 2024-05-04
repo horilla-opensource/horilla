@@ -19,22 +19,22 @@ x-data="{searchShow: false}"
 </div>
 
 <div class="oh-main__titlebar oh-main__titlebar--right">
-  
+
   <div class="oh-main__titlebar-button-container">
     <div class="oh-dropdown" x-data="{open: false}">
       {% if perms.recruitment.add_recruitment %}
-      <a 
+      <a
       href='#'
       data-toggle="oh-modal-toggle"
       data-target="#addRecruitmentModal"
-      class="oh-btn oh-btn--secondary ml-2" 
+      class="oh-btn oh-btn--secondary ml-2"
       >
         <ion-icon name="add" class="mr-1"></ion-icon>{% trans "Create" %}
       </a>
       {% endif %}
 
       </div>
-    
+
   </div>
 </div>
 </section>
@@ -55,7 +55,7 @@ x-data="{searchShow: false}"
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
-    
+
     <div class="oh-modal__dialog-body" id="addRecruitmentModalBody">
       {% if perms.recruitment.add_recruitment %}
         {% include 'recruitment/recruitment_form.html' %}
@@ -68,7 +68,7 @@ x-data="{searchShow: false}"
 class="oh-wrapper-main"
 >
   <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-    
+
     <div class="oh-wrapper">
       <div class="oh-404">
           <img style="    width: 190px;height: 190px;" src="{% static 'images/ui/recruitment.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>

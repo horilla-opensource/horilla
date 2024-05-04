@@ -18,7 +18,7 @@
   >
     {% trans "Details" %}
   </h2>
-  <button class="oh-modal__close" aria-label="Close" hx-get="{% url 'late-come-early-out-search' %}?{{pd}}" 
+  <button class="oh-modal__close" aria-label="Close" hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
           hx-swap="innerHTML" hx-target="#report-container" >
     <ion-icon name="close-outline"></ion-icon>
   </button>
@@ -176,14 +176,14 @@
             <span class="oh-timeoff-modal__stat-count"
             >{% trans "No penalties found." %}</span
           >
-            {% endif %} 
+            {% endif %}
         </div>
     </div>
     {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or perms.attendance.delete_attendancelatecomeearlyout %}
         <div class="oh-modal__button-container text-center">
             <div class="oh-btn-group">
                 {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount %}
-                    <a 
+                    <a
                         class="oh-btn oh-btn--warning"
                         data-toggle="oh-modal-toggle"
                         data-target="#penaltyModal"
@@ -191,7 +191,7 @@
                         hx-get="{% url "cut-penalty" late_in_early_out.id %}?{{pd}}&instances_ids={{instance_ids_json}}"
                         style="width: 50%;"
                         >
-                        <ion-icon name="information-circle-outline" role="img" 
+                        <ion-icon name="information-circle-outline" role="img"
                             class="md hydrated" aria-label="information circle outline">
                         </ion-icon>{% trans "Penalty" %}
                     </a>
@@ -200,7 +200,7 @@
                     <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
                         hx-post="{% url 'late-come-early-out-delete' late_in_early_out.id  %}?{{pd}}&instances_ids={{instance_ids_json}}"
                         hx-target="#objectDetailsModalTarget"
-                        onclick="event.stopPropagation()"  
+                        onclick="event.stopPropagation()"
                         class="w-50"
                     >
                     {% csrf_token %}

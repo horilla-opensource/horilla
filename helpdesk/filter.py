@@ -7,6 +7,7 @@ This page is used to register filter for employee models
 
 from django import forms
 from django_filters import CharFilter, DateFilter
+
 from helpdesk.models import FAQ, FAQCategory, Ticket
 from horilla.filters import FilterSet
 

@@ -211,7 +211,7 @@
                 </div>
               </div>
               {% endif %}
-            {% endif %} 
+            {% endif %}
             {% if perms.recruitment.view_candidate or request.user|is_stagemanager %}
               {% if not 'hired_candidates' in charts %}
                 <div
@@ -264,7 +264,7 @@
                   </div>
                 </div>
               {% endif %}
-            {% endif %} 
+            {% endif %}
             {% if not 'recruitment_analytics' in charts %}
               {% if request.user|is_stagemanager or perms.recruitment.view_recruitment %}
                 <div
@@ -293,7 +293,7 @@
                     </div>
                   </div>
               {% endif %}
-            {% endif %} 
+            {% endif %}
             {% if not 'attendance_analytic' in charts %}
               {% if request.user|is_reportingmanager or perms.attendance.view_attendance %}
                 <div
@@ -343,7 +343,7 @@
                   </div>
                 </div>
               {% endif %}
-            {% endif %} 
+            {% endif %}
             {% if not 'hours_chart' in charts %}
               {% if request.user|is_reportingmanager or perms.attendance.view_attendance %}
                 <div
@@ -480,7 +480,7 @@
                   </div>
                 </div>
               {% endif %}
-            {% endif %} 
+            {% endif %}
             {% if not 'key_result_status' in charts %}
               {% if perms.pms.view_employeekeyresult or request.user|is_reportingmanager %}
                 <div
@@ -506,7 +506,7 @@
                   </div>
                 </div>
               {% endif %}
-            {% endif %} 
+            {% endif %}
             {% if not 'feedback_status' in charts %}
               {% if perms.pms.view_feedback or request.user|is_reportingmanager %}
                 <div
@@ -601,7 +601,7 @@
                   class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart" id="OTApprove"
                 >
                   <div
-                    class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" 
+                    class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
                     hx-get="{% url "dashboard-overtime-approve" %}"
                     hx-trigger="load"
                     style="height:425px"
@@ -771,15 +771,15 @@
                         align-items: center;
                         justify-content: center;
                         width: 50px;
-                        height: 28px;" 
-                        class="oh-btn oh-btn--secondary-outline float-end ms-3" hx-get='{% url "create-announcement" %}' 
+                        height: 28px;"
+                        class="oh-btn oh-btn--secondary-outline float-end ms-3" hx-get='{% url "create-announcement" %}'
                         hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal" title='{% trans "Create Announcement." %}'>
                         <ion-icon name="add-outline" class="m-0"></ion-icon>
                     </button>
                 </span>
               {% endif %}
           </div>
-        
+
           <hr>
 
           <div class="oh-card-dashboard__body">
@@ -811,7 +811,7 @@
                                   </span>
                                   {% if i.created_at|date:"Y-m-d" == current_date and not i.has_viewed %}
                                       <span class="oh-profile__info-value ms-2" id="newTab" style="background-color: hsl(8,77%,56%); color:white;
-                                          font-size: 0.7rem; padding: 3px 8px; border-radius: 15px; font-weight: 800; width:auto;" 
+                                          font-size: 0.7rem; padding: 3px 8px; border-radius: 15px; font-weight: 800; width:auto;"
                                       >NEW</span>
                                   {% endif %}
                               </a>
@@ -833,8 +833,8 @@
         >
           <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
         </div>
-        <div class="oh-card-dashboard__body" 
-        hx-get="{% url 'employee-leave' %}" 
+        <div class="oh-card-dashboard__body"
+        hx-get="{% url 'employee-leave' %}"
         hx-trigger="load">
         </div>
       </div>
@@ -842,17 +842,17 @@
         {% if perms.leave.view_leaverequest or request.user|is_reportingmanager%}
         <div
           class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
-        > 
-        
+        >
+
           <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
             <span class="oh-card-dashboard__title">{% trans "Employee Work Information" %}</span>
           </div>
-          
+
           <!-- Search bar -->
           <div class="oh-search-bar mb-3">
             <input type="text" id="employeeSearch" placeholder="Search Employee">
           </div>
-          
+
           <div class="oh-table" style="max-height: 425px; overflow-y: auto;">
             <table>
                 <thead>
@@ -1000,7 +1000,7 @@
       var storedIds = JSON.parse(localStorage.getItem("tileOrder"))
       var existingElements = $(".oh-card-dashboard--moveable[id]")
       var existingElementsIds = [];
-      $.each(existingElements, function (indexInArray, valueOfElement) { 
+      $.each(existingElements, function (indexInArray, valueOfElement) {
         existingElementsIds.push($(this).attr("id"))
       });
       var newOrderIds = [...storedIds ,...setDifference(storedIds,existingElementsIds)]

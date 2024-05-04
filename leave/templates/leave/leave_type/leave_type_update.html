@@ -47,7 +47,7 @@
           <div class="col-sm-12 col-md-12 col-lg-12">
               <div class="oh-input-group">
                   <label for="" class="oh-label">{% trans "Is Paid" %}</label>
-                  {{form.payment}}   
+                  {{form.payment}}
                   {{form.payment.errors}}
               </div>
           </div>
@@ -55,9 +55,9 @@
               <div class="oh-input-group">
                   <label for="" class="oh-label">{% trans "Total Days" %}</label>
                   {{form.count}}
-                  {{form.count.errors}} 
+                  {{form.count.errors}}
               </div>
-          </div> 
+          </div>
           <div class="col-sm-12 col-md-12 col-lg-4">
               <div class="oh-input-group">
                   {% comment %} <label for="" class="oh-label">{% trans "Period In" %}</label> {% endcomment %}
@@ -273,7 +273,7 @@
     }
     else{
       reset_based_span.hide()
-    } 
+    }
 
 
     // Check value of reset change field and trigger action
@@ -395,25 +395,25 @@
     });
 
     //check the yes or no fields
-    if ($('#id_require_approval').val() == 'no') { 
+    if ($('#id_require_approval').val() == 'no') {
       $('#id_approval').prop('checked', false);
     }
     else{
       $('#id_approval').prop('checked', true);
     }
-    if ($('#id_require_attachment').val() == 'no') { 
+    if ($('#id_require_attachment').val() == 'no') {
       $('#id_attachment').prop('checked', false);
     }
     else{
       $('#id_attachment').prop('checked', true);
     }
-    if ($('#id_exclude_company_leave').val() == 'no') { 
+    if ($('#id_exclude_company_leave').val() == 'no') {
       $('#id_exclude_comp_leave').prop('checked', false);
     }
     else{
       $('#id_exclude_comp_leave').prop('checked', true);
     }
-    if ($('#id_exclude_holiday').val() == 'no') { 
+    if ($('#id_exclude_holiday').val() == 'no') {
       $('#id_exclude_public_leave').prop('checked', false);
     }
     else{
@@ -422,25 +422,25 @@
   });
   function checkYesOrNoFields(){
 
-    if ($('#id_approval').is(":checked")) { 
+    if ($('#id_approval').is(":checked")) {
         $('#id_require_approval').val('yes');
     }
     else{
         $('#id_require_approval').val('no') ;
     }
-    if ($('#id_attachment').is(":checked")) { 
+    if ($('#id_attachment').is(":checked")) {
         $('#id_require_attachment').val('yes');
     }
     else{
         $('#id_require_attachment').val('no');
     }
-    if ($('#id_exclude_comp_leave').is(":checked")) { 
+    if ($('#id_exclude_comp_leave').is(":checked")) {
         $('#id_exclude_company_leave').val('yes');
     }
     else{
         $('#id_exclude_company_leave').val('no')
     }
-    if ($('#id_exclude_public_leave').is(":checked")) { 
+    if ($('#id_exclude_public_leave').is(":checked")) {
         $('#id_exclude_holiday').val('yes');
     }
     else{

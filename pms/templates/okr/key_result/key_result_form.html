@@ -15,7 +15,7 @@
     }, 1000);
   </script>
 </div>
-{% endif %} 
+{% endif %}
 <!-- end of messages -->
 
 <div class="oh-modal__dialog">
@@ -24,7 +24,7 @@
       <h2 class="oh-modal__dialog-title" >
         {% trans "Create Key Result" %}
       </h2>
-      <button type="button" class="oh-modal__close--custom" 
+      <button type="button" class="oh-modal__close--custom"
         onclick="removeCreateKR();$('#kRModal').hide();"
         {% if messages %}
         hx-get="{{redirect_url}}"
@@ -36,7 +36,7 @@
       </button>
     </div>
     <div class="oh-modal__dialog-body" >
-        <form 
+        <form
             hx-target = "#kRModal"
             hx-post="{% url 'key-result-creation' %}"
             id ="krForm"

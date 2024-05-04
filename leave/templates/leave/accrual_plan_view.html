@@ -3,7 +3,7 @@
   <a href="{% url 'accrual-plan-creation' %}" class="btn btn-primary">{% trans "Create" %}</a> {% trans "Accrual Plan" %}
 </p>
 <table class="table table-striped">
-  <thead>           
+  <thead>
     <tr>
       <th scope="col">{% trans "Accrual" %}</th>
       <th scope="col">{% trans "Leave Type" %}</th>
@@ -20,7 +20,7 @@
       <td>{{choice.1}}</td>
       {% endif %} {% endfor %}
       <td>{{accrual_plan.extra_leave}} {{accrual_plan.extra_leave_in}}</td>
-    
+
       <td>
         <a href="{% url 'accrual-plan-update' accrual_plan.id %}" class="btn btn-warning"
           >{% trans "Edit" %}</a

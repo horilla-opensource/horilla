@@ -5,7 +5,9 @@ This module is used to register scheduled tasks
 """
 
 from datetime import date
+
 from apscheduler.schedulers.background import BackgroundScheduler
+
 from .models.models import Contract
 
 

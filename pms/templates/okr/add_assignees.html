@@ -13,23 +13,23 @@
         {% endfor %}
     </div>
 </div>
-{% endif %} 
+{% endif %}
 <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" >
         {% trans "Add assignees" %}
       </h2>
-    
+
     <button type="button" class="oh-modal__close--custom" onclick="$('#objectDetailsModal').removeClass('oh-modal--show');">
       <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
     </button>
   </div>
   <div class="oh-modal__dialog-body">
-      <form 
+      <form
         hx-post="{%url 'add-assignees' objective.id %}"
         hx-target="#objectDetailsModalTarget"
         id="objectiveForm"
       >
-    
+
       {% csrf_token %}
       {{form.as_p}}
     </form>

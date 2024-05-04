@@ -7,7 +7,7 @@
 	hx-encoding="multipart/form-data"
 >
 	{% csrf_token %}
-	{{form.non_field_errors}} 
+	{{form.non_field_errors}}
 	{{form.reject_reason}}
 	{{form.reject_reason.errors}}
     <div class="d-flex flex-row-reverse">

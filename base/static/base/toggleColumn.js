@@ -6,7 +6,7 @@ function toggleColumns(tableId, fieldContainer) {
     $.each($(`[data-table-name=${tableTitle}] [data-cell-title]`), function (indexInArray, valueOfElement) {
         trs.push(`
             <li class="oh-dropdown__item oh-sticy-dropdown-item">
-                <span>${$(valueOfElement).attr("data-cell-title")}</span> 
+                <span>${$(valueOfElement).attr("data-cell-title")}</span>
                 <span class="oh-table__checkbox">
                     <input type="checkbox" name="showTableColumn" onchange="hideCells($(this),'${tableTitle}','${fieldContainer}')" value="${$(valueOfElement).attr("data-cell-index")}"/>
                 </span>

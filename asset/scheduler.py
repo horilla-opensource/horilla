@@ -5,7 +5,9 @@ This module is used to register scheduled tasks
 """
 
 from datetime import date, timedelta
+
 from apscheduler.schedulers.background import BackgroundScheduler
+
 from notifications.signals import notify
 
 
@@ -14,6 +16,7 @@ def notify_expiring_assets():
     Finds all Expiring Assets and send a notification on the notify_before date.
     """
     from django.contrib.auth.models import User
+
     from asset.models import Asset
 
     today = date.today()
@@ -45,6 +48,7 @@ def notify_expiring_documents():
     Finds all Expiring Documents and send a notification on the notify_before date.
     """
     from django.contrib.auth.models import User
+
     from horilla_documents.models import Document
 
     today = date.today()

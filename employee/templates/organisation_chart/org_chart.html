@@ -24,15 +24,15 @@
                     border: 1px solid #aaa;
                     border-radius: 2px;
                 "
-                name="manager_id"   
+                name="manager_id"
                 title="Reporting Managers"
                 hx-post="{% url 'organisation-chart' %}"
-                hx-target="#chart_target" 
+                hx-target="#chart_target"
               >
                 {% for manager_id, values in reporting_manager_dict.items %}
                   <option value="{{ manager_id }}" {% if act_manager_id == manager_id %} selected {% endif %}>{{ values }}</option>
                 {% endfor %}
-                            
+
              </select>
             </div>
             <div class="oh-main__titlebar oh-main__titlebar--right"></div>
@@ -44,4 +44,3 @@
 
   </body>
 {% endblock %}
-

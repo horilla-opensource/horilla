@@ -27,7 +27,7 @@
 		display: block;
 		margin-top:80px;
 	}
-	
+
 </style>
 <div class="oh-wrapper">
 	<div class="oh-dashboard row">
@@ -81,7 +81,7 @@
 								</div>
 							</div>
 						</div>
-					</a> 
+					</a>
 				</div>
 
 				<div class="col-12 col-sm-12 col-md-6 col-lg-3">
@@ -147,7 +147,7 @@
 									</div>
 								</div>
 							{% endif %}
-							
+
 						</div>
 					</div>
 
@@ -170,7 +170,7 @@
 								</div>
 								<h3 style="font-size:16px; margin-bottom:69px;" class="oh-404__subtitle">{% trans "No department-specific vacancies currently." %}</h3>
 								{% endif %}
-					
+
 							</div>
 						</div>
 					</div> {% endcomment %}
@@ -197,7 +197,7 @@
 								</div>
 								<h3 style="font-size:16px; margin-bottom:69px;" class="oh-404__subtitle">{% trans "No Candidates available." %}</h3>
 								{% endif %}
-					
+
 							</div>
 						</div>
 					</div>
@@ -290,7 +290,7 @@
 							class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
 						>
 							<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-							
+
 								<span class="oh-card-dashboard__title">{% trans "Joinings Per Month" %}</span>
 								<span class="oh-card-dashboard__title float-end" id="chart2"><ion-icon name="caret-forward"></ion-icon></span>
 
@@ -309,7 +309,7 @@
 							</div>
 							{% endif %}
 						</div>
-						
+
 						{% if ongoing_recruitments %}
 							<div class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable">
 								<div>
@@ -329,9 +329,9 @@
 											</div>
 										</div>
 										<div class="oh-sticky-table__tbody">
-		
+
 											{% for job_item in job_data %}
-											
+
 											<div class="oh-sticky-table__tr">
 											<div class="oh-sticky-table__sd">{{ job_item.0 }}</div>
 											<div class="oh-sticky-table__td">{{ job_item.1 }}</div>
@@ -340,7 +340,7 @@
 											<div class="oh-sticky-table__td">{{ job_item.4 }}</div>
 											<div class="oh-sticky-table__td">{{ job_item.5 }}</div>
 											</div>
-		
+
 											{% endfor %}
 										</div>
 									</div>
@@ -367,14 +367,14 @@
 										</div>
 									</div>
 									<div class="oh-sticky-table__tbody">
-		
+
 										{% for recruitment_title, managers in recruitment_manager_mapping.items %}
-										
+
 										<div class="oh-sticky-table__tr">
 											<div class="oh-sticky-table__sd">{{ recruitment_title }}</div>
 											<div class="oh-sticky-table__td">{{ managers|join:",  " }}</div>
 										</div>
-		
+
 										{% endfor %}
 									</div>
 								</div>
@@ -382,7 +382,7 @@
 						</div>
 					{% endif %}
 				</div>
-										
+
 		</div>
 	</div>
 </div>

@@ -1,4 +1,4 @@
-{% load i18n %} {% load basefilters %} 
+{% load i18n %} {% load basefilters %}
 <section class="oh-wrapper oh-main__topbar "  x-data="{searchShow: false}">
   <div
       class="oh-modal"
@@ -41,9 +41,9 @@
         <a href="{% url 'late-come-early-out-view' %}" class='text-dark'>
             {% trans "Late Come/Early Out" %}
         </a>
-        
+
       </h1>
-      <a class="oh-main__titlebar-search-toggle" role="button" 
+      <a class="oh-main__titlebar-search-toggle" role="button"
         aria-label="Toggle Search" @click="searchShow = !searchShow">
         <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
       </a>
@@ -92,7 +92,7 @@
             x-show="open"
             @click.outside="open = false"
             style="display: none"
-            >            
+            >
             <div class="oh-accordion">
               <label for="id_field">{% trans "Group By" %}</label>
                 <div class="row">
@@ -146,8 +146,8 @@
                     data-target="#attendanceExport"
                     >{% trans "Export" %}</a
                   >
-                </li> 
-              {% endif %} 
+                </li>
+              {% endif %}
               {% if perms.attendance.delete_attendancelatecomeearlyout %}
                 <li class="oh-dropdown__item">
                   <a
@@ -165,7 +165,7 @@
     </div>
   </form>
   <script>
-    $('#attendance-search').keydown(function (e) { 
+    $('#attendance-search').keydown(function (e) {
       var val = $(this).val();
       $('.pg').attr('hx-vals', `{"search":${val}}`);
     });

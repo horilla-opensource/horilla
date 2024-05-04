@@ -148,8 +148,8 @@
 
 <!--start of holiday display  -->
 <div class="oh-wrapper" id="holidays">
-  {% if holidays %} 
-    {% include 'leave/holiday/holiday.html' %} 
+  {% if holidays %}
+    {% include 'leave/holiday/holiday.html' %}
   {% else %}
   <!--start of empty page  -->
     <div
@@ -271,7 +271,7 @@
           onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
           id="holidayExportForm"
         >
-          {% csrf_token %} 
+          {% csrf_token %}
           {% include "leave/holiday/holiday_export_filter.html" %}
           <div class="oh-dropdown__filter-footer">
             <button class="oh-btn oh-btn--secondary oh-btn--small w-100">

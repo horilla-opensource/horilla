@@ -135,7 +135,7 @@
 									>{% trans "Previous" %}</a
 								>
 							</li>
-							{%endif %} 
+							{%endif %}
 							{% if assets.has_next %}
 							<li class="oh-pagination__item oh-pagination__item--wide">
 								<a
@@ -169,7 +169,7 @@
 		>
 			<img style="width: 190px; height: 190px;" src="{% static 'images/ui/asset.png' %}" class="oh-404__image" alt="Page not found. 404."/>
 			<h5 class="oh-404__subtitle">{% trans "No assets have been assigned to you." %}</h5>
-		</div>		
+		</div>
 		{% endif %}
 	</div>
 
@@ -201,7 +201,7 @@
 								hx-target="#asset_request_allocation_list" data-cell-index="102" data-cell-title='{% trans "Request Date" %}' >{% trans "Request Date" %}</div>
 								<div class="oh-sticky-table__th {% if request.sort_option.order == '-asset_request_status' %}arrow-up {% elif request.sort_option.order == 'asset_request_status' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&request_sortby=asset_request_status"
 								hx-target="#asset_request_allocation_list" data-cell-index="103" data-cell-title='{% trans "Status" %}' >{% trans "Status" %}</div>
-								{% if perms.asset.add_assetassignment %} 
+								{% if perms.asset.add_assetassignment %}
 									<div class="oh-sticky-table__th" style="width:120px">{% trans "Confirmation" %}</div>
 								{% endif %}
 							</div>
@@ -249,7 +249,7 @@
 										>
 									</div>
 								</div>
-								{% if perms.asset.add_assetassignment %} 
+								{% if perms.asset.add_assetassignment %}
 									{% if asset_request.asset_request_status == 'Requested' %}
 										<div class="oh-sticky-table__td">
 											<div class="oh-btn-group">
@@ -264,7 +264,7 @@
 													title="{% trans 'Approve' %}"
 												>
 													<ion-icon name="checkmark-outline"></ion-icon>
-													
+
 												</a>
 												<form
 													action="{% url 'asset-request-reject' req_id=asset_request.id %}"
@@ -290,7 +290,7 @@
 													onclick="event.stopPropagation()"
 													title='{% trans "Approve" %}'
 												>
-													<ion-icon name="checkmark-outline"></ion-icon>													
+													<ion-icon name="checkmark-outline"></ion-icon>
 												</a>
 												<a
 													href="#"
@@ -353,7 +353,7 @@
 									>{% trans "Previous" %}</a
 								>
 							</li>
-							{% endif %} 
+							{% endif %}
 							{% if asset_requests.has_next %}
 							<li class="oh-pagination__item oh-pagination__item--wide">
 								<a
@@ -470,7 +470,7 @@
 											<span class="link-warning"> {% trans "Allocated" %} </span>
 										</div>
 									{% endif %}
-								{% endif %} 
+								{% endif %}
 								{% if not asset_allocation.return_status %}
 								<div class="oh-sticky-table__td">
 									<button
@@ -525,7 +525,7 @@
 						<!-- end asset return form start -->
 					</div>
 				</div>
-				
+
 				<!-- pagination start -->
 				<div class="oh-pagination">
 					<span
@@ -567,7 +567,7 @@
 										>{% trans "Previous" %}</a
 									>
 								</li>
-							{%endif %} 
+							{%endif %}
 							{% if asset_allocations.has_next %}
 								<li class="oh-pagination__item oh-pagination__item--wide">
 									<a

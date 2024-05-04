@@ -12,10 +12,10 @@
         </div>
         <div class="oh-sticky-table__tbody">
             {% for leave_allocation_request in allocation_reqests %}
-                <div class="oh-sticky-table__tr" draggable="true"  
+                <div class="oh-sticky-table__tr" draggable="true"
                     data-toggle="oh-modal-toggle"
                     data-target="#objectDetailsModalW25"
-                    hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?instances_ids={{reqests_ids}}" 
+                    hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?instances_ids={{reqests_ids}}"
                     hx-target="#objectDetailsModalW25Target">
                     <div class="oh-sticky-table__sd" >
                         <div class="oh-profile oh-profile--md">
@@ -31,7 +31,7 @@
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                         <div class="oh-btn-group">
                             {% if leave_allocation_request.status == 'requested' %}
-                                <a type="submit" href="{% url 'leave-allocation-request-approve' leave_allocation_request.id %}" 
+                                <a type="submit" href="{% url 'leave-allocation-request-approve' leave_allocation_request.id %}"
                                     title="{% trans 'Approve' %}"
                                     class="oh-btn oh-btn--success w-100"
                                     onclick="event.stopPropagation();return confirm('{% trans "Do you want to Approve this leave allocation request?" %}')">
@@ -40,8 +40,8 @@
                             {% endif %}
                             {% if leave_allocation_request.status == 'requested' or leave_allocation_request.status == 'approved' %}
                                 <a type="submit" data-toggle="oh-modal-toggle"
-                                    data-target="#bigModal" 
-                                    hx-get="{% url 'leave-allocation-request-reject' leave_allocation_request.id %}" 
+                                    data-target="#bigModal"
+                                    hx-get="{% url 'leave-allocation-request-reject' leave_allocation_request.id %}"
                                     hx-target="#bigModalTarget"
                                     title="{% trans 'Reject' %}"
                                     class="oh-btn oh-btn--danger w-100">

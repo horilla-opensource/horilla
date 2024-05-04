@@ -18,7 +18,7 @@
     </div>
     <h2 class="swal2-title" id="swal2-title">{{title}}</h2>
     <form
-      action="{% url 'replace-primary-mail' %}" 
+      action="{% url 'replace-primary-mail' %}"
       method="post"
       id="replaceEmployeeForm"
       data-id="{{employee.id}}"
@@ -54,8 +54,8 @@
                       class="oh-table__editable-input w-100 oh-select oh-select-2 manager-select"
                       data-error = "{{related_model.field_name}}_error"
                       >
-                      {% for option in mails %} 
-                        <option value="{{option.id}}">{{option}}</option> 
+                      {% for option in mails %}
+                        <option value="{{option.id}}">{{option}}</option>
                       {% endfor %}
                     </select>
                   </div>

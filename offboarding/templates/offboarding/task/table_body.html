@@ -31,12 +31,12 @@
                 </div>
             </div>
             <div class="oh-sticky-table__td">
-                {% if employee.notice_period_ends == today %} 
+                {% if employee.notice_period_ends == today %}
                     {% trans "today" %}
-                {% elif employee.notice_period_ends < today %} 
-                    {% trans "Notice period ended" %} 
-                {% else %} 
-                    {% if employee.notice_period_ends|sub:today %} 
+                {% elif employee.notice_period_ends < today %}
+                    {% trans "Notice period ended" %}
+                {% else %}
+                    {% if employee.notice_period_ends|sub:today %}
                         {% trans 'In' %} {{employee.notice_period_ends|timeuntil}}
                     {% endif %}
                 {% endif %}
@@ -154,7 +154,7 @@
                 </div>
             </div>
             {% for task in stage.grouper.offboardingtask_set.all %}
-            {% if task|have_task:employee %} 
+            {% if task|have_task:employee %}
                 <div class="oh-sticky-table__td">
                 {% for assinged_tasks in employee|get_assigned_task:task %}
                 <select
@@ -174,7 +174,7 @@
                     <option value="{{ assinged_task.0 }}">{{ assinged_task.1 }}</option>
                     {% endif %} {% endfor %}
                 </select>
-                {% endfor %} 
+                {% endfor %}
                 </div>
                 {% else %}
                 {% if perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}

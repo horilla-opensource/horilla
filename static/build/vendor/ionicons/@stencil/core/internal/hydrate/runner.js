@@ -23,7 +23,7 @@ function inspectElement(e, t, r) {
 
   case "link":
    const s = collectAttributes(n);
-   s.href = n.href, "string" == typeof s.rel && "stylesheet" === s.rel.toLowerCase() && "string" == typeof s.href && (e.styles.some((e => e.link === s.href)) || (delete s.rel, 
+   s.href = n.href, "string" == typeof s.rel && "stylesheet" === s.rel.toLowerCase() && "string" == typeof s.href && (e.styles.some((e => e.link === s.href)) || (delete s.rel,
    delete s.type, e.styles.push(s)));
    break;
 
@@ -55,9 +55,9 @@ function collectAttributes(e) {
 
 function patchDomImplementation(e, t) {
  let r;
- if (null != e.defaultView ? (t.destroyWindow = !0, patchWindow(e.defaultView), r = e.defaultView) : (t.destroyWindow = !0, 
- t.destroyDocument = !1, r = new MockWindow(!1)), r.document !== e && (r.document = e), 
- e.defaultView !== r && (e.defaultView = r), "function" != typeof e.documentElement.constructor.prototype.getRootNode && (e.createElement("unknown-element").constructor.prototype.getRootNode = getRootNode), 
+ if (null != e.defaultView ? (t.destroyWindow = !0, patchWindow(e.defaultView), r = e.defaultView) : (t.destroyWindow = !0,
+ t.destroyDocument = !1, r = new MockWindow(!1)), r.document !== e && (r.document = e),
+ e.defaultView !== r && (e.defaultView = r), "function" != typeof e.documentElement.constructor.prototype.getRootNode && (e.createElement("unknown-element").constructor.prototype.getRootNode = getRootNode),
  "function" == typeof e.createEvent) {
   const t = e.createEvent("CustomEvent").constructor;
   r.CustomEvent !== t && (r.CustomEvent = t);
@@ -88,11 +88,11 @@ function normalizeHydrateOptions(e) {
   destroyWindow: !1,
   destroyDocument: !1
  }, e || {});
- return "boolean" != typeof t.clientHydrateAnnotations && (t.clientHydrateAnnotations = !0), 
- "boolean" != typeof t.constrainTimeouts && (t.constrainTimeouts = !0), "number" != typeof t.maxHydrateCount && (t.maxHydrateCount = 300), 
- "boolean" != typeof t.runtimeLogging && (t.runtimeLogging = !1), "number" != typeof t.timeout && (t.timeout = 15e3), 
- Array.isArray(t.excludeComponents) ? t.excludeComponents = t.excludeComponents.filter(filterValidTags).map(mapValidTags) : t.excludeComponents = [], 
- Array.isArray(t.staticComponents) ? t.staticComponents = t.staticComponents.filter(filterValidTags).map(mapValidTags) : t.staticComponents = [], 
+ return "boolean" != typeof t.clientHydrateAnnotations && (t.clientHydrateAnnotations = !0),
+ "boolean" != typeof t.constrainTimeouts && (t.constrainTimeouts = !0), "number" != typeof t.maxHydrateCount && (t.maxHydrateCount = 300),
+ "boolean" != typeof t.runtimeLogging && (t.runtimeLogging = !1), "number" != typeof t.timeout && (t.timeout = 15e3),
+ Array.isArray(t.excludeComponents) ? t.excludeComponents = t.excludeComponents.filter(filterValidTags).map(mapValidTags) : t.excludeComponents = [],
+ Array.isArray(t.staticComponents) ? t.staticComponents = t.staticComponents.filter(filterValidTags).map(mapValidTags) : t.staticComponents = [],
  t;
 }
 
@@ -130,7 +130,7 @@ function generateHydrateResults(e) {
  };
  try {
   const r = new URL(e.url, "https://hydrate.stenciljs.com/");
-  t.url = r.href, t.host = r.host, t.hostname = r.hostname, t.href = r.href, t.port = r.port, 
+  t.url = r.href, t.host = r.host, t.hostname = r.hostname, t.href = r.href, t.port = r.port,
   t.pathname = r.pathname, t.search = r.search, t.hash = r.hash;
  } catch (e) {
   renderCatchError(t, e);
@@ -148,7 +148,7 @@ function renderBuildDiagnostic(e, t, r, s) {
   absFilePath: null,
   lines: []
  };
- return e.pathname ? "/" !== e.pathname && (n.header += ": " + e.pathname) : e.url && (n.header += ": " + e.url), 
+ return e.pathname ? "/" !== e.pathname && (n.header += ": " + e.pathname) : e.url && (n.header += ": " + e.url),
  e.diagnostics.push(n), n;
 }
 
@@ -158,7 +158,7 @@ function renderBuildError(e, t) {
 
 function renderCatchError(e, t) {
  const r = renderBuildError(e, null);
- return null != t && (null != t.stack ? r.messageText = t.stack.toString() : null != t.message ? r.messageText = t.message.toString() : r.messageText = t.toString()), 
+ return null != t && (null != t.stack ? r.messageText = t.stack.toString() : null != t.message ? r.messageText = t.message.toString() : r.messageText = t.toString()),
  r;
 }
 
@@ -179,7 +179,7 @@ function renderToString(e, t) {
    r.destroyDocument = !1, s = patchDomImplementation(e, r), render(s, r, n, t);
   } catch (e) {
    s && s.close && s.close(), s = null, renderCatchError(n, e), t(n);
-  } else renderBuildError(n, 'Invalid html or document. Must be either a valid "html" string, or DOM "document".'), 
+  } else renderBuildError(n, 'Invalid html or document. Must be either a valid "html" string, or DOM "document".'),
   t(n);
  }));
 }
@@ -197,7 +197,7 @@ function hydrateDocument(e, t) {
    r.destroyDocument = !1, s = patchDomImplementation(e, r), render(s, r, n, t);
   } catch (e) {
    s && s.close && s.close(), s = null, renderCatchError(n, e), t(n);
-  } else renderBuildError(n, 'Invalid html or document. Must be either a valid "html" string, or DOM "document".'), 
+  } else renderBuildError(n, 'Invalid html or document. Must be either a valid "html" string, or DOM "document".'),
   t(n);
  }));
 }
@@ -305,7 +305,7 @@ function finalizeHydrate(e, t, r, s, n) {
        absFilePath: null,
        lines: []
       };
-      null != t && (null != t.stack ? s.messageText = t.stack.toString() : null != t.message ? s.messageText = t.message.length ? t.message : "UNKNOWN ERROR" : s.messageText = t.toString()), 
+      null != t && (null != t.stack ? s.messageText = t.stack.toString() : null != t.message ? s.messageText = t.message.length ? t.message : "UNKNOWN ERROR" : s.messageText = t.toString()),
       null == e || shouldIgnoreError(s.messageText) || e.push(s);
      })(t, e);
     }
@@ -322,7 +322,7 @@ function finalizeHydrate(e, t, r, s, n) {
   try {
    ((e, t) => {
     let r = e.head.querySelector('link[rel="canonical"]');
-    "string" == typeof t ? (null == r && (r = e.createElement("link"), r.setAttribute("rel", "canonical"), 
+    "string" == typeof t ? (null == r && (r = e.createElement("link"), r.setAttribute("rel", "canonical"),
     e.head.appendChild(r)), r.setAttribute("href", t)) : null != r && (r.getAttribute("href") || r.parentNode.removeChild(r));
    })(t, r.canonicalUrl);
   } catch (e) {
@@ -332,7 +332,7 @@ function finalizeHydrate(e, t, r, s, n) {
    (e => {
     const t = e.head;
     let r = t.querySelector("meta[charset]");
-    null == r ? (r = e.createElement("meta"), r.setAttribute("charset", "utf-8")) : r.remove(), 
+    null == r ? (r = e.createElement("meta"), r.setAttribute("charset", "utf-8")) : r.remove(),
     t.insertBefore(r, t.firstChild);
    })(t);
   } catch (e) {}
@@ -442,7 +442,7 @@ const templateWindows = new Map, isPromise = e => !!e && ("object" == typeof e |
  }, d = () => {
   let t;
   const r = [];
-  for (m(), h(r); e.length && "}" !== e.charAt(0) && (t = w() || A()); ) r.push(t), 
+  for (m(), h(r); e.length && "}" !== e.charAt(0) && (t = w() || A()); ) r.push(t),
   h(r);
   return r;
  }, m = () => u(/^\s*/), h = e => {
@@ -637,9 +637,9 @@ const templateWindows = new Map, isPromise = e => !!e && ("object" == typeof e |
 }, commentre = /\/\*[^*]*\*+([^/*][^*]*\*+)*\//g, getCssSelectors = e => {
  SELECTORS.all.length = SELECTORS.tags.length = SELECTORS.classNames.length = SELECTORS.ids.length = SELECTORS.attrs.length = 0;
  const t = (e = e.replace(/\./g, " .").replace(/\#/g, " #").replace(/\[/g, " [").replace(/\>/g, " > ").replace(/\+/g, " + ").replace(/\~/g, " ~ ").replace(/\*/g, " * ").replace(/\:not\((.*?)\)/g, " ")).split(" ");
- for (let e = 0, r = t.length; e < r; e++) t[e] = t[e].split(":")[0], 0 !== t[e].length && ("." === t[e].charAt(0) ? SELECTORS.classNames.push(t[e].slice(1)) : "#" === t[e].charAt(0) ? SELECTORS.ids.push(t[e].slice(1)) : "[" === t[e].charAt(0) ? (t[e] = t[e].slice(1).split("=")[0].split("]")[0].trim(), 
+ for (let e = 0, r = t.length; e < r; e++) t[e] = t[e].split(":")[0], 0 !== t[e].length && ("." === t[e].charAt(0) ? SELECTORS.classNames.push(t[e].slice(1)) : "#" === t[e].charAt(0) ? SELECTORS.ids.push(t[e].slice(1)) : "[" === t[e].charAt(0) ? (t[e] = t[e].slice(1).split("=")[0].split("]")[0].trim(),
  SELECTORS.attrs.push(t[e].toLowerCase())) : /[a-z]/g.test(t[e].charAt(0)) && SELECTORS.tags.push(t[e].toLowerCase()));
- return SELECTORS.classNames = SELECTORS.classNames.sort(((e, t) => e.length < t.length ? -1 : e.length > t.length ? 1 : 0)), 
+ return SELECTORS.classNames = SELECTORS.classNames.sort(((e, t) => e.length < t.length ? -1 : e.length > t.length ? 1 : 0)),
  SELECTORS;
 }, SELECTORS = {
  all: [],
@@ -704,7 +704,7 @@ const templateWindows = new Map, isPromise = e => !!e && ("object" == typeof e |
  return r;
 }, removeSelectorWhitespace = e => {
  let t = "", r = "", s = !1;
- for (let n = 0, o = (e = e.trim()).length; n < o; n++) if (r = e[n], "[" === r && "\\" !== t[t.length - 1] ? s = !0 : "]" === r && "\\" !== t[t.length - 1] && (s = !1), 
+ for (let n = 0, o = (e = e.trim()).length; n < o; n++) if (r = e[n], "[" === r && "\\" !== t[t.length - 1] ? s = !0 : "]" === r && "\\" !== t[t.length - 1] && (s = !1),
  !s && CSS_WS_REG.test(r)) {
   if (CSS_NEXT_CHAR_REG.test(e[n + 1])) continue;
   if (CSS_PREV_CHAR_REG.test(t[t.length - 1])) continue;

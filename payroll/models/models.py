@@ -5,37 +5,33 @@ Used to register models
 
 import calendar
 from datetime import date, datetime, timedelta
+
 from django import forms
-from django.db import models
-from django.dispatch import receiver
 from django.contrib import messages
-from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
-from django.db.models.signals import pre_save, pre_delete
+from django.db import models
+from django.db.models.signals import post_save, pre_delete, pre_save
+from django.dispatch import receiver
 from django.http import QueryDict
-from horilla.models import HorillaModel
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
 from asset.models import Asset
+from attendance.models import Attendance, strtime_seconds, validate_time_format
 from base import thread_local_middleware
+from base.horilla_company_manager import HorillaCompanyManager
 from base.models import (
     Company,
-    EmployeeShift,
-    WorkType,
-    JobRole,
     Department,
+    EmployeeShift,
     JobPosition,
+    JobRole,
+    WorkType,
 )
-from base.horilla_company_manager import HorillaCompanyManager
-from employee.models import BonusPoint, EmployeeWorkInformation, Employee
-from attendance.models import (
-    Attendance,
-    strtime_seconds,
-    validate_time_format,
-)
+from employee.models import BonusPoint, Employee, EmployeeWorkInformation
+from horilla.models import HorillaModel
+from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.models import LeaveRequest, LeaveType
-
 
 # Create your models here.
 
@@ -1602,7 +1598,11 @@ class Reimbursement(HorillaModel):
         ReimbursementMultipleAttachment, blank=True, editable=False
     )
     leave_type_id = models.ForeignKey(
-        LeaveType, on_delete=models.PROTECT, blank=True, null=True, verbose_name="Leave type"
+        LeaveType,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        verbose_name="Leave type",
     )
     ad_to_encash = models.FloatField(
         default=0, help_text="Available Days to encash", verbose_name="Available days"
@@ -1633,9 +1633,9 @@ class Reimbursement(HorillaModel):
         Allowance, on_delete=models.SET_NULL, null=True, editable=False
     )
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
-    
+
     class Meta:
-        ordering=["-id"]
+        ordering = ["-id"]
 
     def save(self, *args, **kwargs) -> None:
         request = getattr(thread_local_middleware._thread_locals, "request", None)
@@ -1748,8 +1748,8 @@ class Reimbursement(HorillaModel):
 
     def delete(self, *args, **kwargs):
         request = getattr(thread_local_middleware._thread_locals, "request", None)
-        if self.status == 'approved':
-            message=messages.info(
+        if self.status == "approved":
+            message = messages.info(
                 request,
                 _(
                     f"{self.title} is in approved state,\
@@ -1760,11 +1760,13 @@ class Reimbursement(HorillaModel):
             if self.allowance_id:
                 self.allowance_id.delete()
                 super().delete(*args, **kwargs)
-                message=messages.success(request, "Reimbursement deleted")
+                message = messages.success(request, "Reimbursement deleted")
 
         return message
+
     def __str__(self):
         return f"{self.title}"
+
 
 # changing status canceled to reject for existing reimbursement
 try:

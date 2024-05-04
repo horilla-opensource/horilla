@@ -11,14 +11,14 @@
         </div>
     </div>
 {% endif %}
-<form  
+<form
     {% if tag_id %}
     hx-post="{% url 'tag-update' tag_id %}"
     {% else	%}
     hx-post="{% url 'tag-create' %}"
     {% endif %}
     hx-target="#tagForm"
-    method="post" 
+    method="post"
     hx-encoding="multipart/form-data">
     {% csrf_token %}
     {{form.as_p}}

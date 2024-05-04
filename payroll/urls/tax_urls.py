@@ -5,8 +5,8 @@ This module is used to bind url patterns with django views that related to feder
 """
 
 from django.urls import path
-from payroll.views import tax_views
 
+from payroll.views import tax_views
 
 urlpatterns = [
     path("filing-status-view", tax_views.filing_status_view, name="filing-status-view"),

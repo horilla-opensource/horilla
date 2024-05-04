@@ -12,7 +12,7 @@
     <tr>
         <td style="width:12%">{{ employee_data.employee }}</td>
 
-        {% for date in current_month_dates_list %} 
+        {% for date in current_month_dates_list %}
             {% with work_record=employee_data.work_record|get_item:forloop.counter0 %}
 
             <td class="days"
@@ -47,7 +47,7 @@
 
 <div class="oh-pagination">
     <span class="oh-pagination__page">
-        {% trans "Page" %} {{ data.number }} {% trans "of" %} 
+        {% trans "Page" %} {{ data.number }} {% trans "of" %}
         {{ data.paginator.num_pages }}.
     </span>
     <nav class="oh-pagination__nav">

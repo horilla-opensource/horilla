@@ -1,18 +1,20 @@
 from collections.abc import Iterable
 from datetime import date, timedelta
+
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
-from horilla.models import HorillaModel
+
 from base import thread_local_middleware
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
+from base.thread_local_middleware import _thread_locals
 from employee.models import Employee
+from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from notifications.signals import notify
-from django.contrib.auth.models import User
-from base.thread_local_middleware import _thread_locals
 from payroll.models.models import Contract
 
 # Create your models here.

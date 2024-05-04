@@ -12,7 +12,7 @@
         padding: 10px;
         height: 50px !important; /* Adjust the height value as needed */
     }
-        
+
     .oh-dot--color-done {
         background-color: hsl(148deg, 71%, 44%)
     }
@@ -33,14 +33,14 @@
     .oh-dot--color-None {
         background-color: hsla(270, 5%, 48%, 0.709)
     }
-    
+
     .oh-dot--color- {
         background-color: hsla(270, 5%, 48%, 0.709)
     }
 
 </style>
 <div class="oh-alert-container messages" >
-        
+
 </div>
 {% include "onboarding/onboarding_view_nav.html" %}
 <div class="oh-wrapper oh-filter-tag-container filter-value"></div>
@@ -50,7 +50,7 @@
         {% include "onboarding/tabs.html" %}
         <div class="oh-tabs__contents">
             {% for recruitment in recruitments %}
-            {% if request.user|task_manages:recruitment or perms.onboarding.view_candidatestage %} 
+            {% if request.user|task_manages:recruitment or perms.onboarding.view_candidatestage %}
             <div class="oh-tabs__content" id="tab_{{recruitment.id}}">
                 <div class="oh-card">
                     {% if request.user|task_manages:recruitment or perms.onboarding.add_onboardingstage %}
@@ -82,11 +82,11 @@
           {% trans "Page" %} {{ recruitments.number }} {% trans "of" %} {{ recruitments.paginator.num_pages }}.
           </span
           >
-          
+
         <nav class="oh-pagination__nav">
           <div class="oh-pagination__input-container me-3">
               <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-              
+
               <input
               type="number"
               name="page"
@@ -97,7 +97,7 @@
               />
               <span class="oh-pagination__label">{% trans "of" %} {{recruitments.paginator.num_pages}}</span>
             </div>
-            
+
             <ul class="oh-pagination__items">
               {% if recruitments.has_previous %}
               <li class="oh-pagination__item oh-pagination__item--wide">
@@ -115,7 +115,7 @@
                   <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
                 </li>
               {% endif %}
-              
+
             </ul>
           </nav>
         </div>
@@ -137,8 +137,8 @@
         {% endif %}
         {% endif %}
 
-   
-    
+
+
 </div>
 <!-- stage-form -->
 <div class="oh-modal" id="editModal1" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
@@ -216,7 +216,7 @@
             </button>
         </div>
         <div id="sendMailModalBody" class="p-3 ">
-                        
+
         </div>
     </div>
 </div>
@@ -234,7 +234,7 @@
         <div class="oh-modal__dialog-relative" id="singleView">
 
         </div>
-        
+
     </div>
 </div>
 
@@ -245,20 +245,20 @@
         let currentStage =$(element).data("stage")
         let checkbox = $(currentStage).find("input[type='checkbox']:checked");
 
-        let ids =[] 
+        let ids =[]
         let recruitment = $(element).data("recruitment")
-        let target = "#onboardingTable"+recruitment 
+        let target = "#onboardingTable"+recruitment
         checkbox.each(function(index){
             ids.push(parseInt($(this).val()))
         })
         $.ajax({
             type: "POST",
             url: '/onboarding/candidate-stage-bulk-update',
-            data: { 
+            data: {
                 "ids": JSON.stringify(ids),
                 "stage": NewStage,
                 "recruitment": recruitment,
-                
+
                 csrfmiddlewaretoken: getCookie("csrftoken"),
 
              },
@@ -268,10 +268,10 @@
             error: () => {
                 console.log("error")
             }
-              
+
         })
     }
-        
+
     function select_all(element) {
         let isChecked = $(element).prop("checked");
         let stage = $(element).data("stage");
@@ -292,12 +292,12 @@
         }
         return cookieValue;
       }
- 
-    
+
+
 
     $(document).ready(function() {
         $("#search").on("htmx:afterRequest", function(event, xhr, data) {
-            
+
             alertContainer.append(alertDiv);
             $("#messages").html(alertContainer);
         });

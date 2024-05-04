@@ -2,7 +2,7 @@
 <div id="table{{recruitment.id}}">
     {% for onboarding_stage in onboarding_stages %}
     {% if recruitment in onboarding_stage.recruitment_id.all %}
-   
+
         <h1>{{onboarding_stage}}</h1>
         <table class="table ">
             <thead class="thead-dark">

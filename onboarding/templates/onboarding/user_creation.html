@@ -13,14 +13,14 @@
     ul.errorlist {
       color: #d9534f;
       background-color: #f0d8d8;
-      border-color: #d6e9c6;padding: 15px; 
+      border-color: #d6e9c6;padding: 15px;
       margin-top: 20px;
       border: 1px solid transparent;
       border-radius: 4px;
-      
+
     }
     ul{
-      list-style-type: none; 
+      list-style-type: none;
     }
   </style>
 </head>
@@ -39,7 +39,7 @@
       {% endfor %}
   </div>
   {% endif %}
-  
+
 {% if form.errors %}
 <!-- form errors  -->
 <div class="oh-wrapper">
@@ -54,7 +54,7 @@
 </div>
 {% endif %}
 
-  <div id="main"> 
+  <div id="main">
     <main class="oh-onboarding">
       <div class="oh-onboarding-card">
         <div class="oh-onboarding-card__header">
@@ -99,7 +99,7 @@
               <div class="oh-password-input-container">
                 {{form.password2}}
                 <button class="oh-btn oh-btn--transparent oh-password-input--toggle">
-                  <ion-icon class="oh-passowrd-input__show-icon" title="Show Password" name="eye-outline"></ion-icon>  
+                  <ion-icon class="oh-passowrd-input__show-icon" title="Show Password" name="eye-outline"></ion-icon>
                   <ion-icon class="oh-passowrd-input__hide-icon d-none" title="Hide Password"
                     name="eye-off-outline"></ion-icon>
                 </button>

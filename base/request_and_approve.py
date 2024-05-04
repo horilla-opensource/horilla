@@ -4,9 +4,13 @@ views.py
 This module is used to map url patterns with request and approve methods in Dashboard.
 """
 
-from datetime import date
 import json
+from datetime import date
+
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import render
+
 from asset.models import AssetRequest
 from attendance.models import Attendance, AttendanceValidationCondition
 from attendance.views.views import strtime_seconds
@@ -15,8 +19,6 @@ from base.models import ShiftRequest, WorkTypeRequest
 from horilla.decorators import login_required
 from leave.models import LeaveAllocationRequest, LeaveRequest
 from pms.models import Feedback
-from django.db.models import Q
-from django.core.paginator import Paginator
 
 
 def paginator_qry(qryset, page_number):
@@ -122,7 +124,7 @@ def leave_request_and_approve(request):
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     leave_requests = LeaveRequest.objects.filter(
-        status="requested", employee_id__is_active=True, start_date__gte = date.today()
+        status="requested", employee_id__is_active=True, start_date__gte=date.today()
     )
     leave_requests = filtersubordinates(
         request, leave_requests, "leave.change_leaverequest"

@@ -4,143 +4,143 @@ views.py
 This module is used to map url pattens with django views or methods
 """
 
+import json
+import uuid
+from datetime import datetime, timedelta
+from urllib.parse import parse_qs, unquote, urlencode
+
 from django import forms
 from django.apps import apps
-from datetime import timedelta, datetime
-from urllib.parse import parse_qs, urlencode, unquote
-import uuid
-import json
-from django.db.models import ProtectedError
-from django.shortcuts import get_object_or_404, render, redirect
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
-from django.views.decorators.http import require_http_methods
-from django.core.paginator import Paginator
-from django.core.mail import send_mail
-from django.utils.translation import gettext as _
-from django.db.models import Q
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import Group, User, Permission
+from django.contrib.auth.models import Group, Permission, User
+from django.core.mail import send_mail
+from django.core.paginator import Paginator
+from django.db.models import F, ProtectedError, Q
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext as _
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+
 from attendance.forms import AttendanceValidationConditionForm
 from attendance.methods.group_by import group_by_queryset
 from attendance.models import AttendanceValidationCondition, GraceTime
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
-from horilla_audit.forms import HistoryTrackingFieldsForm
-from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
-from notifications.models import Notification
-from notifications.base.models import AbstractNotification
-from notifications.signals import notify
-from horilla.decorators import (
-    delete_permission,
-    duplicate_permission,
-    permission_required,
-    login_required,
-    manager_can_enter,
-)
-from employee.models import Actiontype, Employee, EmployeeTag, EmployeeWorkInformation
-from employee.forms import ActiontypeForm
-from employee.filters import EmployeeFilter
 from base.backends import ConfiguredEmailBackend
 from base.decorators import (
     shift_request_change_permission,
     work_type_request_change_permission,
 )
+from base.filters import (
+    RotatingShiftAssignFilters,
+    RotatingShiftRequestReGroup,
+    RotatingWorkTypeAssignFilter,
+    RotatingWorkTypeRequestReGroup,
+    ShiftRequestFilter,
+    ShiftRequestReGroup,
+    WorkTypeRequestFilter,
+    WorkTypeRequestReGroup,
+)
 from base.forms import (
     AnnouncementExpireForm,
+    AssignPermission,
+    AssignUserGroup,
     AuditTagForm,
+    ChangePasswordForm,
     CompanyForm,
     DepartmentForm,
     DriverForm,
     DynamicMailConfForm,
     DynamicPaginationForm,
-    EmployeeTagForm,
-    JobPositionForm,
-    JobRoleForm,
     EmployeeShiftForm,
     EmployeeShiftScheduleForm,
+    EmployeeShiftScheduleUpdateForm,
+    EmployeeTagForm,
     EmployeeTypeForm,
+    JobPositionForm,
+    JobRoleForm,
+    MultipleApproveConditionForm,
+    ResetPasswordForm,
+    RotatingShiftAssign,
     RotatingShiftAssignExportForm,
+    RotatingShiftAssignForm,
+    RotatingShiftAssignUpdateForm,
+    RotatingShiftForm,
     RotatingWorkTypeAssignExportForm,
+    RotatingWorkTypeAssignForm,
+    RotatingWorkTypeAssignUpdateForm,
+    RotatingWorkTypeForm,
     ShiftAllocationForm,
     ShiftRequestColumnForm,
     ShiftRequestCommentForm,
-    WorkTypeForm,
-    UserGroupForm,
-    RotatingShiftForm,
-    RotatingShiftAssign,
-    RotatingWorkTypeForm,
-    RotatingWorkTypeAssignForm,
-    RotatingShiftAssignForm,
     ShiftRequestForm,
-    WorkTypeRequestColumnForm,
-    WorkTypeRequestForm,
-    RotatingShiftAssignUpdateForm,
-    RotatingWorkTypeAssignUpdateForm,
-    EmployeeShiftScheduleUpdateForm,
-    AssignUserGroup,
-    AssignPermission,
-    ResetPasswordForm,
-    ChangePasswordForm,
     TagsForm,
-    MultipleApproveConditionForm,
+    UserGroupForm,
+    WorkTypeForm,
+    WorkTypeRequestColumnForm,
     WorkTypeRequestCommentForm,
+    WorkTypeRequestForm,
+)
+from base.methods import (
+    choosesubordinates,
+    closest_numbers,
+    export_data,
+    filtersubordinates,
+    get_key_instances,
+    get_pagination,
+    sortby,
 )
 from base.models import (
     Announcement,
     AnnouncementExpire,
     AnnouncementView,
     BaserequestFile,
+    BiometricAttendance,
     Company,
     DashboardEmployeeCharts,
+    Department,
     DynamicEmailConfiguration,
     DynamicPagination,
-    JobPosition,
-    JobRole,
-    Department,
-    MultipleApprovalCondition,
-    MultipleApprovalManagers,
-    ShiftRequestComment,
-    WorkType,
     EmployeeShift,
     EmployeeShiftDay,
     EmployeeShiftSchedule,
     EmployeeType,
+    JobPosition,
+    JobRole,
+    MultipleApprovalCondition,
+    MultipleApprovalManagers,
+    RotatingShift,
     RotatingWorkType,
     RotatingWorkTypeAssign,
-    RotatingShift,
     ShiftRequest,
-    WorkTypeRequest,
+    ShiftRequestComment,
     Tags,
+    WorkType,
+    WorkTypeRequest,
     WorkTypeRequestComment,
-    BiometricAttendance,
 )
-from base.filters import (
-    RotatingShiftRequestReGroup,
-    RotatingWorkTypeRequestReGroup,
-    ShiftRequestFilter,
-    ShiftRequestReGroup,
-    WorkTypeRequestFilter,
-    RotatingShiftAssignFilters,
-    RotatingWorkTypeAssignFilter,
-    WorkTypeRequestReGroup,
+from employee.filters import EmployeeFilter
+from employee.forms import ActiontypeForm
+from employee.models import Actiontype, Employee, EmployeeTag, EmployeeWorkInformation
+from helpdesk.forms import TicketTypeForm
+from helpdesk.models import DepartmentManager, TicketType
+from horilla.decorators import (
+    delete_permission,
+    duplicate_permission,
+    login_required,
+    manager_can_enter,
+    permission_required,
 )
-from base.methods import (
-    choosesubordinates,
-    filtersubordinates,
-    get_key_instances,
-    sortby,
-    closest_numbers,
-    export_data,
-    get_pagination,
-)
+from horilla_audit.forms import HistoryTrackingFieldsForm
+from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
+from notifications.base.models import AbstractNotification
+from notifications.models import Notification
+from notifications.signals import notify
 from payroll.forms.component_forms import PayrollSettingsForm
 from payroll.models.models import EncashmentGeneralSettings
 from payroll.models.tax_models import PayrollSettings
-from helpdesk.models import DepartmentManager, TicketType
-from helpdesk.forms import TicketTypeForm
 from recruitment.models import RejectReason
-from django.db.models import F
 
 
 def custom404(request):
@@ -270,11 +270,11 @@ def send_link(employee, request, id, user):
     message = f"Reset Your Password {url}."
     email_backend = ConfiguredEmailBackend()
     default = "base.backends.ConfiguredEmailBackend"
-    is_default_backend=True
+    is_default_backend = True
     EMAIL_BACKEND = getattr(settings, "EMAIL_BACKEND", "")
     if EMAIL_BACKEND and default != EMAIL_BACKEND:
-        is_default_backend = False 
-    
+        is_default_backend = False
+
     if is_default_backend and not email_backend.configuration:
         messages.error(request, _("Primary mail server is not configured"))
         return
@@ -868,7 +868,12 @@ def mail_server_conf(request):
     if DynamicEmailConfiguration.objects.filter(is_primary=True).exists():
         primary_mail_not_exist = False
     return render(
-        request, "base/mail_server/mail_server.html", {"mail_servers": mail_servers,"primary_mail_not_exist":primary_mail_not_exist}
+        request,
+        "base/mail_server/mail_server.html",
+        {
+            "mail_servers": mail_servers,
+            "primary_mail_not_exist": primary_mail_not_exist,
+        },
     )
 
 
@@ -891,24 +896,28 @@ def mail_server_delete(request):
         return HttpResponse("<script>window.location.reload()</script>")
     else:
         if DynamicEmailConfiguration.objects.all().count() == 1:
-            messages.warning(request, "You have only 1 Mail server configuration that can't be deleted")
+            messages.warning(
+                request,
+                "You have only 1 Mail server configuration that can't be deleted",
+            )
             return HttpResponse("<script>window.location.reload()</script>")
-        else :
-            mails=DynamicEmailConfiguration.objects.all().exclude(is_primary=True)
+        else:
+            mails = DynamicEmailConfiguration.objects.all().exclude(is_primary=True)
             return render(
                 request,
                 "base/mail_server/replace_mail.html",
                 {
                     "mails": mails,
-                    'title':_("Can't Delete"),
+                    "title": _("Can't Delete"),
                 },
             )
-        
+
+
 def replace_primary_mail(request):
     """
     This method is used to replace primary mail server
     """
-    emailconfig_id=request.POST.get('replace_mail')
+    emailconfig_id = request.POST.get("replace_mail")
     email_config = DynamicEmailConfiguration.objects.get(id=emailconfig_id)
     email_config.is_primary = True
     email_config.save()
@@ -5397,8 +5406,8 @@ def employee_charts(request):
 
 def check_permission(request, charts):
     from recruitment.templatetags.recruitmentfilters import (
-        is_stagemanager,
         is_recruitmentmangers,
+        is_stagemanager,
     )
 
     permissions = {
@@ -5507,6 +5516,7 @@ def employee_chart_show(request):
         return HttpResponse("<script>window.location.reload();</script>")
     context = {"dashboard_charts": charts, "employee_chart": employee_charts.charts}
     return render(request, "dashboard_chart_form.html", context)
+
 
 def enable_biometric_attendance_view(request):
     biometric = BiometricAttendance.objects.first()

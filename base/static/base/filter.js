@@ -8,7 +8,7 @@ function filterFormSubmit(formId) {
       if (value && value !== "unknown") {
         count++;
       }
-    } 
+    }
   });
   $("#filterCount").empty();
   if (count > 0) {

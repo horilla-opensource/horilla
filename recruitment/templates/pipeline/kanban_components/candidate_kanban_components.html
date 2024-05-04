@@ -29,7 +29,7 @@
             <input type="text" name="order" value="{{cand.id}}" hidden>
             <select name="stage_id" id="" hidden>
                 {% for stage in cand.recruitment_id.stage_set.all %}
-                <option value="{{stage.id}}" 
+                <option value="{{stage.id}}"
                 {% if stage == cand.stage_id %}
                 selected
                 {% endif %}
@@ -40,10 +40,10 @@
             >
             {% if request.user|stage_manages:rec or perms.recruitment.add_candidaterating %}
             {% with request.user.employee_get.candidate_rating.all as candidate_ratings  %}
-                {% if candidate_ratings|has_candidate_rating:cand %} 
+                {% if candidate_ratings|has_candidate_rating:cand %}
                 <form hx-swap="none" hx-post='{% url "update-candidate-rating" cand.id %}' method="post">
                 {% csrf_token %}
-                <div class="d-block mb-0">                           
+                <div class="d-block mb-0">
                     <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                     {% for i in "54321" %}
                     <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" {% if candidate_ratings|rating:cand == i %} checked {% endif %} />
@@ -57,7 +57,7 @@
                 {% else %}
                 <form hx-swap="none" hx-post='{% url "create-candidate-rating" cand.id %}' method="post">
                 {% csrf_token %}
-                <div class="d-block mb-0">                           
+                <div class="d-block mb-0">
                     <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                     {% for i in "54321" %}
                     <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" />
@@ -98,8 +98,8 @@
                     <li class="oh-dropdown__item">
                         <a
                         class="oh-dropdown__link oh-dropdown__link--secondary"
-                        hx-get='{% url "interview-schedule" cand.id %}' 
-                        hx-target="#createTarget" 
+                        hx-get='{% url "interview-schedule" cand.id %}'
+                        hx-target="#createTarget"
                         hx-swap='innerHTML'
                         style="cursor: pointer;"
                         data-toggle='oh-modal-toggle'
@@ -110,8 +110,8 @@
                 <li class="oh-dropdown__item">
                     <a
                     class="oh-dropdown__link oh-dropdown__link--secondary"
-                    hx-get='{% url "send-mail" cand.id %}' 
-                    hx-target='#objectDetailsModalTarget' 
+                    hx-get='{% url "send-mail" cand.id %}'
+                    hx-target='#objectDetailsModalTarget'
                     hx-swap='innerHTML'
                     style="cursor: pointer;"
                     data-toggle='oh-modal-toggle'
@@ -161,9 +161,9 @@
                 <li class="oh-dropdown__item">
                     <a
                     class="oh-dropdown__link oh-dropdown__link--secondary oh-activity-sidebar__open"
-                    hx-get='{% url "view-note" cand.id %}' 
-                    hx-target='#activitySidebar' 
-                    hx-swap="innerHTML" 
+                    hx-get='{% url "view-note" cand.id %}'
+                    hx-target='#activitySidebar'
+                    hx-swap="innerHTML"
                     data-target="#activitySidebar"
                     >{% trans "Notes" %}</a
                     >
@@ -192,12 +192,12 @@
                 </form>
                 </li>
                 {% endif %}
-                
+
                 </ul>
             </div>
         </div>
         </div>
-        <div class="oh-kanban__card-footer" 
+        <div class="oh-kanban__card-footer"
         {% if cand.is_offer_rejected %}
         style="border-left: solid orangered;"
         {% endif %}
@@ -205,13 +205,13 @@
         <span class="oh-kanban__card-footer-text oh-text--light"
             >{{cand.email}}</span
         ></br>
-        
+
         <span class="oh-kanban__card-footer-text oh-text--light"
             >{{cand.job_position_id}}</span
         >
         </div>
     </div>
-    
+
     <script>
         $("#stageCount{{stage.id}}").text({{candidates.paginator.count}})
         $("#stageCount{{stage.id}}").attr("title",'{{candidates.paginator.count}} {% trans "Candidates" %}')

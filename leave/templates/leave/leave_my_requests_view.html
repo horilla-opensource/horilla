@@ -14,7 +14,7 @@
       <th scope="col">{% trans "Extra Days" %}</th>
       <th scope="col">{% trans "Status" %}</th>
     </tr>
-  </thead>    
+  </thead>
   <tbody>
     {% for leave_req in data %}
     <tr>
@@ -48,17 +48,17 @@
       </td>
       {% endif %}
       {% endif %}
-      {% endif %} 
-      {% if leave_req.leave_status == 'approved_with_extra_days' or leave_req.leave_status == 'approved'%}      
+      {% endif %}
+      {% if leave_req.leave_status == 'approved_with_extra_days' or leave_req.leave_status == 'approved'%}
       <td>
         <a href="{% url 'request-cancel' leave_req.id%}" class="btn btn-primary"
           >{% trans "Cancel" %}</a
         >
       </td>
       {% endif %}
-      
-      
-      
+
+
+
       {% if leave_req.leave_status != 'rejected' and leave_req.leave_status != 'cancel'%}
       <td>
         <a href="{% url 'request-reject' leave_req.id %}" class="btn btn-danger"

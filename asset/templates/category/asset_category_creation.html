@@ -8,7 +8,7 @@
     </div>
   </div>
   {% endfor %}
-  <script>  
+  <script>
       setTimeout(function () {
         $('.oh-modal__close').click()
       }, 1000);
@@ -16,13 +16,13 @@
 </div>
 {% endif %}
 <div class="oh-modal__dialog-header">
-    <button 
-    type="button" 
-    class="oh-modal__close" 
-    data-dismiss="oh-modal" 
+    <button
+    type="button"
+    class="oh-modal__close"
+    data-dismiss="oh-modal"
     aria-label="Close"
     {% if messages %}
-        hx-get="{%url 'asset-category-view-search-filter' %}" 
+        hx-get="{%url 'asset-category-view-search-filter' %}"
         hx-target="#assetCategoryList"
     {% endif %}
     >

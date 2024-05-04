@@ -50,7 +50,7 @@
 
           // Clear existing options in the Job Position dropdown
           $('#id_job_position_id').empty();
-          
+
           // Append new options based on the response
           $.each(data.job_positions, function(key, value) {
             $('#id_job_position_id').append($('<option>', {
@@ -78,7 +78,7 @@
       success: function(data) {
         // Clear existing options in the Job role dropdown
         $('#id_job_role_id').empty();
-        
+
         // Append new options based on the response
         $.each(data.job_roles, function(key, value) {
           $('#id_job_role_id').append($('<option>', {

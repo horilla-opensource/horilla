@@ -34,7 +34,7 @@ This should output the version number of Python that you just installed.
 
 To install Python on Windows, follow these steps:
 1. Download the latest version of Python from the official website: https://www.python.org/downloads/windows/ .
-2. Run the installer and select "Add Python to PATH" during the installation process. 
+2. Run the installer and select "Add Python to PATH" during the installation process.
 3. Choose the installation directory and complete the installation process.
 4. To check if Python is installed correctly, open the Command Prompt and type the following command:
 ```bash
@@ -44,7 +44,7 @@ This should output the version number of Python that you just installed.
 
 **macOS**
 
-macOS comes with Python pre-installed, but if you need to install a specific version or if Python is not installed, you can use Homebrew to install it. 
+macOS comes with Python pre-installed, but if you need to install a specific version or if Python is not installed, you can use Homebrew to install it.
 
 Follow these steps:
 1. Install Homebrew by running the following command in the terminal:
@@ -67,12 +67,12 @@ Congratulations, you have successfully installed Python on Ubuntu, Windows, or m
 ### **Installing Django**
 ___
 
-Before installing Django, you must have Python installed on your machine. 
+Before installing Django, you must have Python installed on your machine.
 
 To install Django, follow the following steps:
 1. Create a virtual environment:
 
-It is highly recommended to create a virtual environment before installing Django. 
+It is highly recommended to create a virtual environment before installing Django.
 
 A virtual environment allows you to isolate your Python environment and avoid conflicts with other Python packages that may be installed on your machine.
 
@@ -109,7 +109,7 @@ python -m django --version
 ```
 This should output the version number of Django that you just installed.
 
-Congratulations, you have successfully installed Django on your machine! 
+Congratulations, you have successfully installed Django on your machine!
 You can now start building web applications using Django.
 
 ### **Installing Horilla**
@@ -163,12 +163,12 @@ python manage.py runserver
 ```
 If everything is configured correctly, you should be able to access your Horilla app at http://localhost:8000.
 
->Note: 
+>Note:
 >>If you wish to run the Horilla application to any other port, you can specify the port number after the runserver command.
 
 >>eg: *python  manage.py runserver <port_number>*
 
->Note: 
+>Note:
 >>By default a SQLite database will be setup for the project with demo data already loaded.
 
 >>If you wish to start with a fresh database, remove the db.sqlite3 file from the project directory and run the migrate command followed by the createhorillauser command to start with a fresh database.
@@ -271,7 +271,7 @@ python manage.py migrate
 >*Note that SQLite has some limitations compared to other databases, so you may need to consider these limitations if you have a large amount of data or a high level of concurrency in your application.*
 
 For more details:
-[Django SQLite Database](https://docs.djangoproject.com/en/4.2/ref/databases/#sqlite-notes) 
+[Django SQLite Database](https://docs.djangoproject.com/en/4.2/ref/databases/#sqlite-notes)
 
 **Oracle**
 

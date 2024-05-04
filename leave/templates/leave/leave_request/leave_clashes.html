@@ -1,4 +1,4 @@
-{% load static %} {% load i18n %} 
+{% load static %} {% load i18n %}
 {% if records %}
   <div class="oh-sticky-table__table mt-3">
     <div class="oh-sticky-table__thead">
@@ -17,7 +17,7 @@
       {% for leave in records %}
         <div class="oh-sticky-table__tr" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25" hx-get="{% url 'one-request-view' leave.id %}?instances_ids={{requests_ids}}" hx-target="#objectDetailsModalW25Target">
           <div class="oh-sticky-table__td">
-            
+
             <div class="oh-profile oh-profile--md">
                   <div class="oh-profile__avatar mr-1">
                       <img src="{{leave.employee_id.get_avatar}}" class="oh-profile__image"
@@ -111,5 +111,5 @@
         </h5>
       </div>
     </div>
-    
+
 {% endif %}

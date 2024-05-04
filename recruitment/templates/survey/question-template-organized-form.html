@@ -17,7 +17,7 @@
 
         {{ field|add_class:"form-control" }}
       </div>
-      
+
       {% else %}
       <div class="col-12 col-md-6">
         <label
@@ -31,8 +31,8 @@
             {{ field|add_class:"oh-switch__checkbox" }}
 
           </div>
-          {% else %} 
-          {{ field|add_class:"form-control" }} 
+          {% else %}
+          {{ field|add_class:"form-control" }}
           {% endif %}
           {{field.errors}}
       </div>

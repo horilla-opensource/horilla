@@ -43,7 +43,7 @@
     </div>
   </div>
   <!-- end of column toggle button -->
-  <div id="candidate-toggle-table" data-table-name="candidate_toggle_tab"> 
+  <div id="candidate-toggle-table" data-table-name="candidate_toggle_tab">
     <!-- start of sticky table -->
     <div class="oh-sticky-table">
       <div class="oh-sticky-table__table oh-table--sortable">
@@ -71,21 +71,21 @@
         <div class="oh-sticky-table__tbody ui-sortable {% if cand.email in emp_list %} to-employee {% endif %}">
           <div class="oh-sticky-table__tr ui-sortable-handle">
             <div class="oh-sticky-table__sd {% if cand.canceled %} row-status--red
-            {% elif cand.hired %} row-status--yellow  
+            {% elif cand.hired %} row-status--yellow
             {% else %} row-status--purple
             {% endif %}">
               <div class="centered-div">
                 <input
                   type="checkbox"
-                  id="{{cand.id}}"  
-                  onchange="highlightRow($(this))"                
+                  id="{{cand.id}}"
+                  onchange="highlightRow($(this))"
                   class="oh-input candidate-checkbox oh-input__checkbox all-candidate-row"
                 />
               </div>
             </div>
             <div class="oh-sticky-table__td candidate {% if cand.hired %}hired-cand{% endif %}">
               <div class="d-flex">
-                <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;" 
+                <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;"
                 class="oh-profile oh-profile--md">
                   <div class="oh-profile__avatar mr-1">
                     <img src="{{cand.get_avatar}}"
@@ -102,7 +102,7 @@
             <a data-cell-index="3" href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
               {% with request.user.employee_get.candidate_rating.all as candidate_ratings  %}
                 <form >
-                  <div class="d-block mb-0">                           
+                  <div class="d-block mb-0">
                     <div class="oh-rate" onmouseenter="event.stopPropagation()">
                       {% for i in "54321" %}
                       <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" disabled {% if cand.candidate_rating.all|avg_rating:cand == i %} checked {% endif %} />
@@ -137,7 +137,7 @@
               <div class="oh-btn-group">
                 {% if cand.email in emp_list %}
                 <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
-                  <ion-icon name="person-circle-outline"></ion-icon></button>                
+                  <ion-icon name="person-circle-outline"></ion-icon></button>
               {% else %}
                 <a href="{% url 'candidate-conversion' cand.id %}"
                   onclick="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
@@ -149,7 +149,7 @@
               {% endif %}
               {% if cand.email in emp_list %}
                 <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
-                  <ion-icon name="heart-circle-outline"></ion-icon></button> 
+                  <ion-icon name="heart-circle-outline"></ion-icon></button>
               {% else %}
                 <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'To Skill zone' %}"
                     data-toggle="oh-modal-toggle"
@@ -163,7 +163,7 @@
               {% endif %}
               {% if cand.email in emp_list %}
                 <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
-                  <ion-icon name="thumbs-down-outline"></ion-icon></button> 
+                  <ion-icon name="thumbs-down-outline"></ion-icon></button>
               {% else %}
                 {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
                 <button
@@ -173,7 +173,7 @@
                   hx-target="#createTarget"
                   data-toggle="oh-modal-toggle"
                   data-target="#createModal"
-                  {% if cand.is_offer_rejected %} 
+                  {% if cand.is_offer_rejected %}
                   style="background: #ff4500a3 !important; color: white;"
                   title="{% trans "Added In Rejected Candidates" %}"
                   {% else %}
@@ -213,7 +213,7 @@
                   ><ion-icon name="archive" title="Archive"></ion-icon></button>
                 </form>
                 {% else %}
-                
+
                 <form action="{% url 'rec-candidate-archive' cand.id  %}"  title="Un Archive" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate?" %}')" method='post'
                   class="w-100">
                   {% csrf_token %}

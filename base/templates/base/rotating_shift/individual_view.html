@@ -97,23 +97,23 @@
       <div class="oh-timeoff-modal__stat">
         <span class="oh-timeoff-modal__stat-title">{% trans "Rotate" %}</span>
         <span class="oh-timeoff-modal__stat-count">
-          {% if instance.based_on == 'after' %} 
-            {% trans "Rotate after" %} 
-              {{instance.rotate_after_day}} {% trans "days" %} 
-            {% elif instance.based_on == "weekly" %} 
-              {% trans "Weekly every" %} {{instance.rotate_every_weekend}} 
-            {% elif instance.based_on == "monthly" %} 
-              {% if instance.rotate_every == "1" %} 
-                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "st day of month" %} 
+          {% if instance.based_on == 'after' %}
+            {% trans "Rotate after" %}
+              {{instance.rotate_after_day}} {% trans "days" %}
+            {% elif instance.based_on == "weekly" %}
+              {% trans "Weekly every" %} {{instance.rotate_every_weekend}}
+            {% elif instance.based_on == "monthly" %}
+              {% if instance.rotate_every == "1" %}
+                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "st day of month" %}
               {% elif instance.rotate_every == "2" %} {% trans "Rotate every" %}
-                {{instance.rotate_every}}{% trans "nd day of month" %} 
+                {{instance.rotate_every}}{% trans "nd day of month" %}
               {% elif instance.rotate_every == "3" %} {% trans "Rotate every" %}
-                {{instance.rotate_every}}{% trans "rd day of month" %} 
-              {% elif instance.rotate_every == "last" %} 
-                {% trans "Rotate every last day of month" %} 
-              {% else %} 
-                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "th day of month" %} 
-              {% endif %} 
+                {{instance.rotate_every}}{% trans "rd day of month" %}
+              {% elif instance.rotate_every == "last" %}
+                {% trans "Rotate every last day of month" %}
+              {% else %}
+                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "th day of month" %}
+              {% endif %}
           {% endif %}
         </span>
       </div>
@@ -172,15 +172,15 @@
             <a class="oh-btn oh-btn--info" data-toggle="oh-modal-toggle"
               data-target="#objectUpdateModal"
               hx-get="{% url "rotating-shift-assign-update" instance.id %}"
-              hx-target="#objectUpdateModalTarget" 
+              hx-target="#objectUpdateModalTarget"
               style="width: 50%;">
-              <ion-icon name="create-outline"> </ion-icon>{% trans "Edit" %} 
+              <ion-icon name="create-outline"> </ion-icon>{% trans "Edit" %}
             </a>
-            <form class="oh-btn oh-btn--primary" style="width: 50%;" 
-                  hx-confirm="{% if instance.is_active %}  
-                                {% trans 'Do you want to archive this rotating shift assign?' %}  
-                              {% else %} 
-                                {% trans 'Do you want to un-archive this rotating shift assign?' %} 
+            <form class="oh-btn oh-btn--primary" style="width: 50%;"
+                  hx-confirm="{% if instance.is_active %}
+                                {% trans 'Do you want to archive this rotating shift assign?' %}
+                              {% else %}
+                                {% trans 'Do you want to un-archive this rotating shift assign?' %}
                               {% endif %}
                             "
                   hx-get="{% url "rotating-shift-assign-archive" instance.id %}?{{pd}}&instances_ids={{assign_ids}}"
@@ -197,10 +197,10 @@
                 "
                 >
                 <ion-icon name="archive-outline"> </ion-icon>
-                {% if instance.is_active %} 
-                  {% trans "Archive" %} 
-                {% else %} 
-                  {% trans "Un-archive" %} 
+                {% if instance.is_active %}
+                  {% trans "Archive" %}
+                {% else %}
+                  {% trans "Un-archive" %}
                 {% endif %}
               </button>
             </form>
@@ -209,7 +209,7 @@
             <form class="oh-btn oh-btn--secondary" style="width: 50%;"
                 hx-confirm="{% trans 'Are you sure you want to delete this rotating shift assign?' %}"
                 hx-post="{% url 'rotating-shift-assign-delete' instance.id %}?{{pd}}&instances_ids={{assign_ids}}" hx-target="#objectDetailsModalTarget"
-              > 
+              >
               {% csrf_token %}
               <button
                 style="

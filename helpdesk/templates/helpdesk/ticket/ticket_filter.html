@@ -63,7 +63,7 @@
                 <div class="oh-accordion oh-accordion--show">
                     <div
                         class="oh-accordion-header"
-                        
+
                     >
                         {% trans "Tickets" %}
                     </div>
@@ -125,7 +125,7 @@
                                     {{f.form.status}}
                                 </div>
                             </div>
-                        </div> 
+                        </div>
                     </div>
                 </div>
             </div>
@@ -173,7 +173,7 @@
                                 >
                                     {% for field in gp_fields %}
                                         <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                                    {% endfor %} 
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -182,12 +182,12 @@
             </div>
         </div>
     {% endif %}
-    
+
 </form>
 <!-- end of filter  -->
 <script>
 	$(document).ready(function () {
-        
+
 		$("#id_field").on("change", function () {
 			$(".filterButton")[0].click();
 		});

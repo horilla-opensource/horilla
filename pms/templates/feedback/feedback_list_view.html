@@ -1,9 +1,9 @@
-{% extends 'index.html' %} 
+{% extends 'index.html' %}
 {% load static i18n %}
 {% load widget_tweaks %}
 {% load basefilters %}
 
-  
+
 {% block styles %}
 <link rel="stylesheet" href="{% static 'css/pms.css' %}" />
 
@@ -25,7 +25,7 @@
 
     <form hx-get="{% url 'feedback-list-search' %}" hx-target="#feedback_list" hx-swap="innerHTML"
                 method="get" id="filterForm" onsubmit="event.preventDefault()">
- 
+
       <div class="oh-main__titlebar oh-main__titlebar--right">
         <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
           <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
@@ -33,17 +33,17 @@
           placeholder="{% trans 'Search' %}" />
         </div>
         <div class="oh-main__titlebar-button-container">
-          
+
             <div class="oh-dropdown" x-data="{open: false}">
               <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
                 <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
               </button>
               <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
                 @click.outside="open = false" style="display: none;">
-                
-    
+
+
                   <div class="oh-dropdown__filter-body">
-    
+
                     <div class="oh-accordion">
                       <div class="oh-accordion-header">{% trans "Feedback" %}</div>
                       <div class="oh-accordion-body">
@@ -87,15 +87,15 @@
                               <label class="oh-label" for="{{feedback_filter_form.end_date.id_for_label}}">{% trans "End Date" %}</label>
                               {{feedback_filter_form.end_date}}
                             </div>
-    
+
                           </div>
                           <div class="col-sm-12 col-md-12 col-lg-6">
                             <div class="oh-input-group">
                               <label class="oh-label" for="{{feedback_filter_form.archive.id_for_label}}">{% trans "Archive" %}</label>
                               {{feedback_filter_form.archive}}
                             </div>
-                          
-    
+
+
                           </div>
                         </div>
                       </div>
@@ -133,7 +133,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="oh-btn-group ml-2">
                 <div class="oh-dropdown" x-data="{open: false}">
                   <button
@@ -144,14 +144,14 @@
                   >
                     {% trans "Actions" %}
                   </button>
-                  <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" 
+                  <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
                   style="display: none;"
                 >
                     <ul class="oh-dropdown__items">
-        
+
                       <li class="oh-dropdown__item">
                         <a href="#" class="oh-dropdown__link " id="archiveFeedback"
-        
+
                           >{% trans "Archive" %}</a
                         >
                       </li>
@@ -173,7 +173,7 @@
                         >
                       </li>
                       {% endif %}
-        
+
                     </ul>
                   </div>
                 </div>
@@ -202,7 +202,7 @@
     id="anonymousFeedbackModal"
     role="dialog"
     aria-labelledby="anonymousFeedbackModal"
-    aria-hidden="true" 
+    aria-hidden="true"
     >
     <div class="oh-modal__dialog">
       <div class="oh-modal__dialog-header">
@@ -221,7 +221,7 @@
     id="FeedbackModal"
     role="dialog"
     aria-labelledby="FeedbackModal"
-    aria-hidden="true" 
+    aria-hidden="true"
     >
     <div class="oh-modal__dialog">
       <div class="oh-modal__dialog-body" id="OneFeedbackTarget"></div>
@@ -229,7 +229,7 @@
   </div>
 </main>
 
-<script src="{% static 'src/feedback/action.js' %}"></script> 
+<script src="{% static 'src/feedback/action.js' %}"></script>
 <script src="{% static '/base/filter.js' %}"></script>
 <script>
 
@@ -240,4 +240,3 @@ $(".fil").click(function() {
 </script>
 
 {% endblock content %}
-

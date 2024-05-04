@@ -90,7 +90,7 @@
 					onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
 					id="assignedLeavesExportForm"
 				>
-					{% csrf_token %} 
+					{% csrf_token %}
 					{% include "leave/leave_assign/assigned_leaves_export_filter.html" %}
 					<div class="oh-dropdown__filter-footer">
 						<button class="oh-btn oh-btn--secondary oh-btn--small w-100">
@@ -156,7 +156,7 @@
 					{% include "leave/leave_assign/assigned_leaves_filter.html" %}
 				</div>
 				{% endif %}
-				
+
 				<div class="oh-dropdown" x-data="{open: false}">
 					<button
 					  class="oh-btn ml-2"
@@ -309,13 +309,13 @@
 {% endif %}
 
 <div class="oh-wrapper" id="assignedLeaves">
-	{% if available_leaves %} 
+	{% if available_leaves %}
 	{% if not request.GET.field %}
-	{% include 'leave/leave_assign/assigned_leave.html'%} 
+	{% include 'leave/leave_assign/assigned_leave.html'%}
 	{% else %}
 	{% include "leave/leave_assign/group_by.html" %}
 	{% endif %}
-	{% else %} 
+	{% else %}
 	<div
 		style="
 			height: 70vh;
@@ -350,8 +350,8 @@
   aria-labelledby="assignLeaveUpdateModalLabel"
   aria-hidden="true"
   >
-  <div class="oh-modal__dialog oh-modal__dialog--timeoff" 
-  	id="assignLeaveUpdateFormModal"> 
+  <div class="oh-modal__dialog oh-modal__dialog--timeoff"
+  	id="assignLeaveUpdateFormModal">
   </div>
 </div>
 
@@ -359,7 +359,7 @@
 	$(document).ready(function(){
 		$("#id_field").on("change", function () {
 			$(".filterButton")[0].click();
-		});	
+		});
 	})
 </script>
 <script>

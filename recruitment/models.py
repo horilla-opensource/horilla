@@ -5,28 +5,29 @@ This module is used to register models for recruitment app
 
 """
 
-from datetime import date
-import re
-import os
 import json
-from django import forms
+import os
+import re
+from datetime import date
+
 import django
+from django import forms
 from django.conf import settings
-from django.db import models
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
+from django.core.files.storage import default_storage
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from horilla.models import HorillaModel
-from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
-from horilla_audit.methods import get_diff
-from horilla.decorators import logger
-from employee.models import Employee
-from base.models import EmailLog, JobPosition, Company
-from django.core.files.storage import default_storage
-from base.horilla_company_manager import HorillaCompanyManager
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils.translation import gettext_lazy as _
 
+from base.horilla_company_manager import HorillaCompanyManager
+from base.models import Company, EmailLog, JobPosition
+from employee.models import Employee
+from horilla.decorators import logger
+from horilla.models import HorillaModel
+from horilla_audit.methods import get_diff
+from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # Create your models here.
 
@@ -195,7 +196,8 @@ class Recruitment(HorillaModel):
         This method will returns all the stage respectively to the ascending order of stages
         """
         return self.stage_set.order_by("sequence")
-    
+
+
 @receiver(post_save, sender=Recruitment)
 def create_initial_stage(sender, instance, created, **kwargs):
     """
@@ -797,12 +799,19 @@ class InterviewSchedule(HorillaModel):
     """
     Interview Scheduling Model
     """
-    candidate_id = models.ForeignKey(Candidate,verbose_name=_("Candidate"), related_name="candidate_interview", on_delete=models.CASCADE)
+
+    candidate_id = models.ForeignKey(
+        Candidate,
+        verbose_name=_("Candidate"),
+        related_name="candidate_interview",
+        on_delete=models.CASCADE,
+    )
     employee_id = models.ManyToManyField(Employee, verbose_name=_("interviewer"))
     interview_date = models.DateField(verbose_name=_("Interview Date"))
     interview_time = models.TimeField(verbose_name=_("Interview Time"))
-    completed = models.BooleanField(default=False, verbose_name=_("Is Interview Completed"))
+    completed = models.BooleanField(
+        default=False, verbose_name=_("Is Interview Completed")
+    )
 
     def __str__(self) -> str:
         return f"{self.candidate_id} -Interview."
-

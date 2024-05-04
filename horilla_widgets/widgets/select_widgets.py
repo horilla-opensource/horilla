@@ -5,6 +5,7 @@ This module is used to write horilla form select widgets
 """
 
 import datetime
+
 from django import forms
 
 from base import thread_local_middleware

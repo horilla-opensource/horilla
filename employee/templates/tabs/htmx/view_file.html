@@ -5,14 +5,14 @@
 			type="submit"
 			hx-get="{% url 'file-upload' document.id %}"
 			hx-target="#uploadFileForm" data-toggle="oh-modal-toggle"
-			data-target="#uploadFileModal" 
+			data-target="#uploadFileModal"
 			title="Upload file"
 			class="oh-btn oh-btn--warning w-100"
 		>
 			<ion-icon name="attach-outline"></ion-icon>
 		</a>
 		{% if document.document %}
-		{% if perms.horilla_document.change_documentrequest %} 
+		{% if perms.horilla_document.change_documentrequest %}
 			{% if document.status == "approved" %}
 				<a class="oh-btn oh-btn--success w-100 oh-btn--disabled" title="{% trans 'Approved' %}">
 					<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
@@ -27,7 +27,7 @@
 				>
 					<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
 				</a>
-			{% endif %} 
+			{% endif %}
 			{% if document.status == "rejected" %}
 				<a class="oh-btn oh-btn--danger w-100 oh-btn--disabled" title="{% trans 'Rejected' %}">
 					<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
@@ -44,7 +44,7 @@
 				>
 					<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
 				</a>
-			{% endif %} 
+			{% endif %}
 		{% endif %}
 		<a
 			href="data:{{ content_type }};base64,{{ file_content|base64_encode }}"

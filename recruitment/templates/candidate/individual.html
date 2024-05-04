@@ -137,7 +137,7 @@
         </ul>
         {% with request.user.employee_get.candidate_rating.all as candidate_ratings  %}
             <form >
-              <div class="d-block mb-0">                           
+              <div class="d-block mb-0">
                 <div class="oh-rate" style="pointer-events:none;">
                   {% for i in "54321" %}
                   <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" disabled {% if candidate.candidate_rating.all|avg_rating:candidate == i %} checked {% endif %} />
@@ -418,13 +418,13 @@
                   width: 400px;
               }
           </style>
-          
+
           {% if candidate.stagenote_set.all %}
             <form method="post"
             hx-target="#note"
             hx-post="{% url 'add-note' candidate.id %}" id="commentForm">
             {% csrf_token %}
-            
+
             <div>
                 <div class="mt-4">
                   <span class="oh-activity-sidebar__title fw-bold">{{candidate}}'s {% trans "Notes" %}</span>
@@ -511,7 +511,7 @@
                     <div id="enlargeDocContainer" class="enlargeDocContainer"></div>
                   </div>
                 </li>
-                
+
               {% endfor %}
             </ol>
           {% else %}
@@ -519,7 +519,7 @@
               hx-target="#note"
               hx-post="{% url 'add-note' candidate.id %}" id="commentForm">
               {% csrf_token %}
-              
+
                 <div>
                   <div class="mt-4">
                     <span class="oh-activity-sidebar__title fw-bold">{{candidate}}'s {% trans "Notes" %}</span>
@@ -552,7 +552,7 @@
             <button type="button" hx-get='{% url "interview-schedule" candidate.id %}' title="{% trans "Schedule Interview" %}"
                   hx-target="#createTarget"
                   hx-swap="innerHTML"
-                  data-target="#createModal" 
+                  data-target="#createModal"
                   class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
                   data-toggle="oh-modal-toggle"
                   onclick="$('#objectDetailsModal').addClass('oh-modal--show')">
@@ -566,15 +566,15 @@
                 <li class="oh-activity-sidebar__qa-item">
                   <span class="oh-activity-sidebar__q" style="font-size:16px;">
                     <span class="float-end" title="{% trans "Delete" %}" hx-get="{% url 'delete-interview' interview_schedule.id %}?view=false"
-                          data-target="#activitySidebar" 
+                          data-target="#activitySidebar"
                           hx-swap="innerHTML" hx-target="#interview">
-                      <ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" 
+                      <ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated"
                           aria-label="close outline"></ion-icon>
                     </span>
                     <span class="float-end" title="{% trans "Edit" %}" hx-get="{% url 'edit-interview' interview_schedule.id %}?view=false"
-                          data-target="#createModal" hx-swap="innerHTML" hx-target="#createTarget" 
+                          data-target="#createModal" hx-swap="innerHTML" hx-target="#createTarget"
                           data-toggle="oh-modal-toggle">
-                      <ion-icon name="create-outline" style="font-size: 19px" role="img" class="md hydrated" 
+                      <ion-icon name="create-outline" style="font-size: 19px" role="img" class="md hydrated"
                           aria-label="create outline"></ion-icon>
                     </span>
                     {{forloop.counter}}.<span class="ms-1 mb-2"> {% trans "Date" %} :</span> <span class="ms-2 dateformat_changer">{{ interview_schedule.interview_date }}</span>
@@ -608,7 +608,7 @@
                   {% endif %}
 
                 </li>
-                
+
               {% endfor %}
             </ol>
           {% else %}
@@ -619,7 +619,7 @@
               <button type="button" hx-get='{% url "interview-schedule" candidate.id %}' title="{% trans "Schedule Interview" %}"
                     hx-target="#createTarget"
                     hx-swap="innerHTML"
-                    data-target="#createModal" 
+                    data-target="#createModal"
                     class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
                     data-toggle="oh-modal-toggle"
                     onclick="$('#objectDetailsModal').addClass('oh-modal--show')">
@@ -652,7 +652,7 @@
                 <div class="oh-modal__dialog-header">
                 <button onclick="$(this).closest('#createModal').removeClass('oh-modal--show');" type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
                 </div>
-          
+
                 <div class="oh-modal__dialog-body" id="createTarget"></div>
             </div>
           </div>
@@ -715,12 +715,12 @@
           {% if candidate.recruitmentsurveyanswer_set.all %}
             {% for surveys in candidate.recruitmentsurveyanswer_set.all %}
             <div class="oh-survey__table">
-              {% for question, answer_list in surveys.answer.items %} 
+              {% for question, answer_list in surveys.answer.items %}
               {% if question != "csrfmiddlewaretoken" %}
                   <div class="oh-survey__table-row">
                     <div class="oh-survey__table-col">
                       {% if question|slice:"0:11" == "percentage_" %}
-                        {{ question|slice:"11:" }} 
+                        {{ question|slice:"11:" }}
                       {% elif question|slice:"0:7" == "rating_" %}
                         {{ question|slice:"7:" }}
                       {% elif question|slice:"0:5" == "file_" %}
@@ -732,8 +732,8 @@
                     <div class="oh-survey__table-col">
                       {% if answer_list|length > 1 %}
                         {{ answer_list|join:", " }}
-                      {% else %} 
-                        {% if answer_list.0 == "on" or answer_list.0 == "off"%} 
+                      {% else %}
+                        {% if answer_list.0 == "on" or answer_list.0 == "off"%}
                           {{ answer_list.0|on_off }}
                         {% elif question|slice:"0:11" == "percentage_" %}
                           {{ answer_list.0 }}%
@@ -752,9 +752,9 @@
                               <input type="radio" id="star1{{question.id}}" value="1" disabled  {% if answer_list.0 == '1' %} checked {% endif %} />
                               <label for="star1{{question.id}}" title="1 Star">1 {% trans "Star" %}</label>
                             </div>
-                        {% else %} 
-                          {{ answer_list.0 }} 
-                        {% endif %} 
+                        {% else %}
+                          {{ answer_list.0 }}
+                        {% endif %}
                       {% endif %}
                     </div>
                   </div>
@@ -820,7 +820,7 @@
                       </div>
                       <span class="oh-recuritment_tag  {% if task.status == 'done' %} done-task {% elif task.status == 'scheduled' %} scheduled-task{% elif task.status == 'ongoing' %} ongoing-task{% elif task.status == 'stuck' %} dd stuck-task {% elif task.status == 'todo' %} todo-task{% endif %}">
                         <select hx-swap="none" hx-get="{% url 'change-task-status' %}?task_id={{task.id}}"
-                        name="status" 
+                        name="status"
                         style="width: 150px;"
                         id="task_status{{task.id}}">
                             {% for status in task.choice %}

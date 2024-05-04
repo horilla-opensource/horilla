@@ -3,6 +3,7 @@ models.py
 """
 
 from collections.abc import Iterable
+
 from django.db import models
 from django.dispatch import receiver
 from simple_history.models import (
@@ -11,17 +12,14 @@ from simple_history.models import (
     _history_user_getter,
     _history_user_setter,
 )
-from simple_history.signals import (
+from simple_history.signals import (  # pre_create_historical_m2m_records,; post_create_historical_m2m_records,
     post_create_historical_record,
     pre_create_historical_record,
-    # pre_create_historical_m2m_records,
-    # post_create_historical_m2m_records,
 )
 
 # from employee.models import Employee
 from horilla.models import HorillaModel
 from horilla_audit.methods import remove_duplicate_history
-
 
 # Create your models here.
 

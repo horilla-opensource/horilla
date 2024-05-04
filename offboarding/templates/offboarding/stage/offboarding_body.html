@@ -38,7 +38,7 @@
                 {% endif %}
                 {% if perms.offboarding.change_offboardingstage or request.user.employee_get|is_offboarding_manager %}
                   <li class="oh-dropdown__item">
-                    <a 
+                    <a
                       hx-get="{% url "create-offboarding-stage" %}?offboarding_id={{offboarding.offboarding.id}}&instance_id={{stage.grouper.id}}"
                       data-target="#objectDetailsModal"
                       data-toggle="oh-modal-toggle" hx-target="#objectDetailsModalTarget" class="oh-dropdown__link">{% trans "Edit" %}</a>

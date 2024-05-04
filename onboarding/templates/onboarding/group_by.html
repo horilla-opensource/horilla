@@ -1,5 +1,5 @@
 {% load attendancefilters recruitmentfilters basefilters static i18n %}
-{% include 'filter_tags.html' %} 
+{% include 'filter_tags.html' %}
 <div id="ohMessages"></div>
 <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
     {% trans "Select All Candidates" %}
@@ -133,7 +133,7 @@
                               </div>
 							{% endfor %}
 						</div>
-					
+
 					</div>
 				</div>
                 <div class="oh-pagination">
@@ -198,7 +198,7 @@
 		</div>
 	</div>
     {% endfor %}
-    
+
 	<div class="oh-pagination">
         {% if data.number %}
 		<span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal">
@@ -206,11 +206,11 @@
 		</span>
 		<nav class="oh-pagination__nav">
 			<div class="oh-pagination__input-container me-3">
-				<span class="oh-pagination__label me-1">{% trans "Page" %}</span>		
+				<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
 				<input type="number" name="page" class="oh-pagination__input" value="{{data.number}}"
 				hx-get="{% url 'search-candidate' %}?{{pd}}&view=list" hx-target="#section" min="1" />
 				<span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
-			</div>		
+			</div>
 			<ul class="oh-pagination__items">
 				{% if data.has_previous %}
 				<li class="oh-pagination__item oh-pagination__item--wide">
@@ -237,7 +237,7 @@
 						class="oh-pagination__link" onclick=tickCandidateCheckboxes()>{% trans "Last" %}
 					</a>
 				</li>
-				{% endif %}		
+				{% endif %}
 			</ul>
 		</nav>
         {% endif %}
@@ -262,7 +262,7 @@
       en: "Do you really want to archive all the selected candidates?",
       fr: "Voulez-vous vraiment archiver tous les candidats sélectionnés?",
     };
-  
+
     var unarchive_CanMessages = {
       ar: "هل ترغب حقًا في إلغاء أرشفة جميع المرشحين المحددين؟",
       de: "Möchten Sie wirklich alle ausgewählten Kandidaten aus der Archivierung nehmen?",
@@ -270,7 +270,7 @@
       en: "Do you really want to unarchive all the selected candidates?",
       fr: "Voulez-vous vraiment désarchiver tous les candidats sélectionnés?",
     };
-  
+
     var delete_CanMessages = {
       ar: "هل ترغب حقًا في حذف جميع المرشحين المحددين؟",
       de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
@@ -278,7 +278,7 @@
       en: "Do you really want to delete all the selected candidates?",
       fr: "Voulez-vous vraiment supprimer tous les candidats sélectionnés?",
     };
-  
+
     var noRowMessages = {
       ar: "لم يتم تحديد أي صفوف.",
       de: "Es wurden keine Zeilen ausgewählt.",
@@ -286,7 +286,7 @@
       en: "No rows have been selected.",
       fr: "Aucune ligne n'a été sélectionnée.",
     };
-  
+
     var rowMessages = {
       ar: " تم الاختيار",
       de: " Ausgewählt",
@@ -300,10 +300,10 @@
     function arrayDifference(arr1, arr2) {
       return arr1.filter(element => !arr2.includes(element));
     }
-  
+
     function removeElementFromArray(array, elementToRemove) {
       const indexToRemove = array.indexOf(elementToRemove);
-  
+
       if (indexToRemove !== -1) {
         array.splice(indexToRemove, 1);
       }
@@ -312,22 +312,22 @@
     function addingCandidateIds() {
       var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
       var domNotCheckedIds = []
-  
+
       var selectedCount = 0;
-  
+
       $(".all-candidate-row:checked").each(function () {
         ids.push(this.id);
       });
-  
+
       $.each($(".candidate-checkbox:checked").not(), function (indexInArray, valueOfElement) {
         domNotCheckedIds.push($(valueOfElement).attr("id"))
       });
-  
+
       ids = makeListUnique1(ids);
       ids = arrayDifference(ids, domNotCheckedIds)
       var selectedCount = ids.length;
     }
-  
+
     function tickCandidateCheckboxes() {
       var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
       var uniqueIds = makeListUnique1(ids);
@@ -335,10 +335,10 @@
         checkbox = $("#" + valueOfElement)
         checkbox.prop("checked", true).change()
       });
-  
+
       addingCandidateIds()
     }
-  
+
     function updateCount() {
       var ids = makeListUnique1(JSON.parse($("#selectedInstances").attr("data-ids") || "[]"));
       $("#unselectAllInstances, #selectedCandidate, #exportCandidates").hide();
@@ -347,7 +347,7 @@
         $("#selectedCandidate").text("{% trans "Selected" %}" + " -" + ids.length);
       }
     }
-  
+
     $(".all-candidate-row").change(function (e) {
       var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
       if ($(this).is(":checked")) {
@@ -361,8 +361,8 @@
       $("#hired_candidates").val(ids)
       updateCount()
     });
-  
-  
+
+
     function getCurrentLanguageCode(callback) {
       var languageCode = $("#main-section-data").attr("data-lang");
       var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
@@ -387,7 +387,7 @@
         });
       }
     }
-  
+
     $(document).ready(function () {
       var excelMessages = {
         ar: "هل ترغب في تنزيل ملف Excel؟",
@@ -414,9 +414,9 @@
               var employeeIds = response.employee_ids;
               var selectedCount = employeeIds.length;
               var selectedCount = employeeIds.length;
-  
+
               var selectedCount = employeeIds.length;
-  
+
               for (var i = 0; i < employeeIds.length; i++) {
                 var empId = employeeIds[i];
                 $("#" + empId).prop("checked", true).change();
@@ -424,7 +424,7 @@
               var previousIds = $("#selectedInstances").attr("data-ids")
               $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))));
               tickCandidateCheckboxes();
-              
+
             },
             error: function (xhr, status, error) {
               console.error("Error:", error);
@@ -514,7 +514,7 @@
     if (!localStorageCandidateCells) {
       $("#CandidateCells").find("[type=checkbox]").prop("checked", true)
     }
-  
+
     updateCount()
     tickCandidateCheckboxes()
 
@@ -561,7 +561,6 @@
             },
         });
         });
-    
+
     });
   </script>
-  

@@ -7,9 +7,10 @@ Custom decorators for permission and manager checks in the application.
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+
 from employee.models import Employee
+from onboarding.models import OnboardingStage, OnboardingTask
 from recruitment.models import Recruitment
-from onboarding.models import OnboardingTask, OnboardingStage
 
 
 def decorator_with_arguments(decorator):

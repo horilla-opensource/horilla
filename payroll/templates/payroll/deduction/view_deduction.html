@@ -173,12 +173,12 @@
   </div>
   <!-- end of quick filters  -->
   <div id="payroll-deduction-container">
-    {% if deductions %} 
-      {% if request.GET.view == "list" %} 
-        {% include 'payroll/deduction/list_deduction.html' %} 
-      {% else %} 
-        {% include 'payroll/deduction/card_deduction.html' %} 
-      {% endif %} 
+    {% if deductions %}
+      {% if request.GET.view == "list" %}
+        {% include 'payroll/deduction/list_deduction.html' %}
+      {% else %}
+        {% include 'payroll/deduction/card_deduction.html' %}
+      {% endif %}
     {% else %}
     <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
       <div class="oh-wrapper">

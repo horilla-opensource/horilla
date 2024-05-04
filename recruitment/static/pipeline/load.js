@@ -18,4 +18,3 @@ $(document).on("htmx:load", "#modalContent", function () {
     $("#updateNoteModal").removeClass("oh-modal--show");
   });
 });
-

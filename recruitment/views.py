@@ -13,35 +13,37 @@ provide the main entry points for interacting with the application's functionali
 
 import contextlib
 import json
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
+
+from django.contrib import messages
 from django.contrib.auth.models import Permission
 from django.core import serializers
-from django.contrib import messages
-from django.views.decorators.http import require_http_methods
-from django.core.paginator import Paginator
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
-from notifications.signals import notify
-from horilla import settings
-from horilla.decorators import permission_required, login_required, hx_request_required
-from base.methods import sortby
+from django.views.decorators.http import require_http_methods
+
 from base.backends import ConfiguredEmailBackend
+from base.methods import sortby
 from employee.models import Employee
-from recruitment.models import Recruitment, Candidate, Stage, StageNote
-from recruitment.filters import CandidateFilter, RecruitmentFilter, StageFilter
-from recruitment.methods import recruitment_manages
+from horilla import settings
+from horilla.decorators import hx_request_required, login_required, permission_required
+from notifications.signals import notify
 from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
+from recruitment.filters import CandidateFilter, RecruitmentFilter, StageFilter
 from recruitment.forms import (
-    RecruitmentCreationForm,
-    CandidateCreationForm,
-    StageCreationForm,
     ApplicationForm,
-    RecruitmentDropDownForm,
-    StageDropDownForm,
+    CandidateCreationForm,
     CandidateDropDownForm,
+    RecruitmentCreationForm,
+    RecruitmentDropDownForm,
+    StageCreationForm,
+    StageDropDownForm,
     StageNoteForm,
 )
+from recruitment.methods import recruitment_manages
+from recruitment.models import Candidate, Recruitment, Stage, StageNote
 
 
 def is_stagemanager(request, stage_id=False):

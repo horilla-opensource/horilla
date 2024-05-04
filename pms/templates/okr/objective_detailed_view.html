@@ -16,7 +16,7 @@
                 {% csrf_token %}
                 <button class="oh-btn  w-100 "style="background-color: white;!important" title="{% trans 'Archive' %}" ><ion-icon name="archive-sharp"></ion-icon></button>
             </form>
-            {% if perms.pms.delete_employeeobjective %} 
+            {% if perms.pms.delete_employeeobjective %}
                 <form action="{% url 'objective-delete' obj_id=employee_objective.id %}" onsubmit="return confirmSubmit('{% trans "Do you want Delete this Objective ?" %}')" method="post">
                     {% csrf_token %}
                     <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" style="background-color: white;!important">
@@ -115,12 +115,12 @@
                         <!-- checking userlevel   -->
                         {% if perms.pms.add_employeekeyresult or request.user|filtersubordinates %}
                         <div>
-                            <a 
+                            <a
                             href="#" class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
                             data-target="#objectiveModalpopup"
                             hx-get="{% url 'key-result-creation-htmx' id=employee_objective.id %}"
                             hx-target="#ObjectiveModalFormTarget">
-                            <ion-icon name="add-circle-outline" class="me-1"></ion-icon>{% trans "Add New" %} 
+                            <ion-icon name="add-circle-outline" class="me-1"></ion-icon>{% trans "Add New" %}
                             </a>
                         </div>
                         {% endif %}
@@ -167,9 +167,9 @@
                                             <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                                                 <div class="oh-container oh-container--outline">
                                                     <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1" for="startValue">
-                                                        {% trans "Start Value" %} 
+                                                        {% trans "Start Value" %}
                                                     </label>
-                                                    <input 
+                                                    <input
                                                         id="startValue"
                                                         class="oh-input oh-input--small oh-input--block px-0" min="0"
                                                         value="{{employee_key_result.start_value}} {{employee_key_result.progress_type}}"
@@ -181,7 +181,7 @@
                                                     <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1" for="{{employee_key_result.id}}">
                                                         {% trans "Current Value" %}
                                                     </label>
-                                                    <input 
+                                                    <input
                                                     id = {{employee_key_result.id}}
                                                     type="number" class="oh-table__editable-input "  min="0"
                                                     max="{{employee_key_result.target_value}}"
@@ -191,7 +191,7 @@
                                                     hx-target="#objective_detailed_view_activity"
                                                     name="current_value" readonly
                                                     onchange="progress(this)"/>
-                                                  
+
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-12 col-md-6 col-lg-4">
@@ -212,7 +212,7 @@
                                     <div class="oh-list-card__footer d-flex align-items-center justify-content-between flex-wrap">
                                         <div class="oh-input-group">
                                             <label class="oh-label my-2 my-2 me-2" for="keyResultStatus">{% trans "Status" %}</label>
-                                            <select 
+                                            <select
                                                 id="keyResultStatus" name="key_result_status"
                                                 hx-post="{%url 'objective-detailed-view-key-result-status'  obj_id=employee_objective.id kr_id=employee_key_result.id %}"
                                                 hx-trigger="change" class="oh-select oh-select--sm"
@@ -256,7 +256,7 @@
                         <div class="oh-input-group mt-4">
                             <form hx-post="{%url 'objective-detailed-view-comment' id=employee_objective.id %}" id="commentForm"
                                 hx-target="#objective_detailed_view_activity" onsubmit="clearComment()">
-                                
+
                                 {{comment_form.comment}}
                                 <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary ms-auto" >
                                     <ion-icon name="chatbox-outline" class="me-2" ></ion-icon>{% trans "Comment" %}
@@ -283,7 +283,7 @@
             // Add a new placeholder
             $("#id_comment").attr("placeholder", "Add a comment...");
         }, 0);
-   
+
     }
 
     function progress (element) {
@@ -307,9 +307,9 @@
         $('[name = key_result_percentage]').each(function() {
             strPercentage =  $(this).text();
             numPercentage = parseFloat(strPercentage.replace(/[^\d.]/g, ''));
-            total_percentage += numPercentage 
-            total_kr += 1  
-        }); 
+            total_percentage += numPercentage
+            total_kr += 1
+        });
         totalProgress = parseInt( total_percentage/total_kr)
         obhectiveProgressContainer = $(element).closest('.oh-wrapper').find('[name=objective_progress_container]')
         obhectiveProgressContainer.html(
@@ -317,11 +317,9 @@
                 '<div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc(' + totalProgress + '%)"></div>' +
             '</div>' +
             '<span class="oh-progress-container__percentage" name="key_result_percentage">' + totalProgress + '%</span>'
-        )   
+        )
     }
 
 </script>
 
 {% endblock %}
-
-

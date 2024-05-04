@@ -1,5 +1,5 @@
-{% extends 'index.html' %} 
-{% block content %} 
+{% extends 'index.html' %}
+{% block content %}
 {% load static %}
 {% load i18n %}
 {% load recruitmentfilters %}
@@ -20,7 +20,7 @@
   height:auto;
 }
 </style>
-{% include 'pipeline/nav.html'%} 
+{% include 'pipeline/nav.html'%}
 <div class="oh-wrapper oh-tabs">
 
 {% include 'pipeline/pipeline_tabs.html' %}
@@ -60,7 +60,7 @@
       </span>
         </div>
 
-        <div class="oh-kanban__head-actions oh-kanban__dropdown" >          
+        <div class="oh-kanban__head-actions oh-kanban__dropdown" >
           <div class="oh-kanban__head-actions oh-kanban__dropdown">
             <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle" title = {% trans "Actions" %}>
               <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
@@ -86,24 +86,24 @@
             </div>
             {% if perms.recruitment.add_candidate or request.user|is_stagemanager %}
             <div class="oh-dropdown" x-data="{open: false}">
-              <a class="" hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.grouper.id}}" 
-              hx-target="#createTarget" 
-              data-toggle="oh-modal-toggle" 
+              <a class="" hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.grouper.id}}"
+              hx-target="#createTarget"
+              data-toggle="oh-modal-toggle"
               data-target="#createModal" @click="open = !open" title="Add Candidates">
                 <ion-icon name="add-sharp" role="img" class="md hydrated mt-1" aria-label="add sharp"></ion-icon>
               </a>
             </div>
             {% endif %}
           </div>
-          
+
         </div>
       </div>
 
-      <div 
-          class="oh-kanban__section-body ui-sortable candidate-container" 
-          data-stage-id='{{stage.grouper.id}}' 
+      <div
+          class="oh-kanban__section-body ui-sortable candidate-container"
+          data-stage-id='{{stage.grouper.id}}'
           data-recruitment-id="{{rec.id}}">
-        
+
         {% for cand in stage.list %}
         {% if cand.is_active %}
         <div
@@ -135,10 +135,10 @@
               >
               {% if request.user|stage_manages:rec or perms.recruitment.add_candidaterating %}
                 {% with request.user.employee_get.candidate_rating.all as candidate_ratings  %}
-                  {% if candidate_ratings|has_candidate_rating:cand %} 
+                  {% if candidate_ratings|has_candidate_rating:cand %}
                   <form hx-swap="none" hx-post='{% url "update-candidate-rating" cand.id %}' method="post">
                     {% csrf_token %}
-                    <div class="d-block mb-0">                           
+                    <div class="d-block mb-0">
                       <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                         {% for i in "54321" %}
                         <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" {% if candidate_ratings|rating:cand == i %} checked {% endif %} />
@@ -152,7 +152,7 @@
                   {% else %}
                   <form hx-swap="none" hx-post='{% url "create-candidate-rating" cand.id %}' method="post">
                     {% csrf_token %}
-                    <div class="d-block mb-0">                           
+                    <div class="d-block mb-0">
                       <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                         {% for i in "54321" %}
                         <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" />
@@ -191,8 +191,8 @@
                     <li class="oh-dropdown__item">
                       <a
                         class="oh-dropdown__link oh-dropdown__link--secondary"
-                        hx-get='{% url "send-mail" cand.id %}' 
-                        hx-target='#objectDetailsModalTarget' 
+                        hx-get='{% url "send-mail" cand.id %}'
+                        hx-target='#objectDetailsModalTarget'
                         hx-swap='innerHTML'
                         style="cursor: pointer;"
                         data-toggle='oh-modal-toggle'
@@ -242,9 +242,9 @@
                     <li class="oh-dropdown__item">
                       <a
                         class="oh-dropdown__link oh-dropdown__link--secondary oh-activity-sidebar__open"
-                        hx-get='{% url "view-note" cand.id %}' 
-                        hx-target='#activitySidebar' 
-                        hx-swap="innerHTML" 
+                        hx-get='{% url "view-note" cand.id %}'
+                        hx-target='#activitySidebar'
+                        hx-swap="innerHTML"
                         data-target="#activitySidebar"
                         >{% trans "Notes" %}</a
                       >
@@ -273,13 +273,13 @@
                     </form>
                   </li>
                   {% endif %}
-                    
+
                   </ul>
                 </div>
               </div>
             </div>
           </div>
-          <div class="oh-kanban__card-footer" 
+          <div class="oh-kanban__card-footer"
           {% if cand.is_offer_rejected %}
           style="border-left: solid orangered;"
           {% endif %}
@@ -287,13 +287,13 @@
             <span class="oh-kanban__card-footer-text oh-text--light"
               >{{cand.email}}</span
             ></br>
-            
+
             <span class="oh-kanban__card-footer-text oh-text--light"
               >{{cand.job_position_id}}</span
             >
           </div>
         </div>
-        
+
         {% endif %}
         {% endfor %}
         {% comment %} {% if stage.list.number %}
@@ -354,13 +354,13 @@
     </div>
     {% endfor %}
 
-    
+
     {% if perms.recruitment.add_stage or request.user|recruitment_manages:rec %}
     <div class="oh-kanban__add-container">
       <button class="oh-btn oh-btn--x-small oh-kanban__add-section" data-target="#objectCreateModal" data-toggle="oh-modal-toggle" hx-get="{% url "rec-stage-create" %}?recruitment_id={{rec.id}}" hx-target="#objectCreateModalTarget">
           <ion-icon class="me-1 md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
           {% trans "Stage" %}
-      </button>                        
+      </button>
     </div>
     {% endif %}
   </div>

@@ -3,18 +3,50 @@ asset.py
 
 This module is used to """
 
-from datetime import date, datetime
 import json
-from django.db.models import Q
+from datetime import date, datetime
 from urllib.parse import parse_qs
+
 import pandas as pd
-from django.urls import reverse
-from django.db.models import ProtectedError
-from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db.models import ProtectedError, Q
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+
+from asset.filters import (
+    AssetAllocationFilter,
+    AssetAllocationReGroup,
+    AssetCategoryFilter,
+    AssetExportFilter,
+    AssetFilter,
+    AssetHistoryFilter,
+    AssetHistoryReGroup,
+    AssetRequestFilter,
+    AssetRequestReGroup,
+    CustomAssetFilter,
+)
+from asset.forms import (
+    AssetAllocationForm,
+    AssetBatchForm,
+    AssetCategoryForm,
+    AssetForm,
+    AssetReportForm,
+    AssetRequestForm,
+    AssetReturnForm,
+    DocumentForm,
+)
+from asset.models import (
+    Asset,
+    AssetAssignment,
+    AssetCategory,
+    AssetDocuments,
+    AssetLot,
+    AssetRequest,
+    ReturnImages,
+)
 from attendance.methods.group_by import group_by_queryset
 from base.methods import (
     closest_numbers,
@@ -26,40 +58,13 @@ from base.methods import (
 from base.models import Company
 from base.views import paginator_qry
 from employee.models import EmployeeWorkInformation
+from horilla.decorators import (
+    hx_request_required,
+    login_required,
+    manager_can_enter,
+    permission_required,
+)
 from notifications.signals import notify
-from horilla.decorators import login_required, hx_request_required, manager_can_enter
-from horilla.decorators import permission_required
-from asset.models import (
-    Asset,
-    AssetDocuments,
-    AssetRequest,
-    AssetAssignment,
-    AssetCategory,
-    AssetLot,
-    ReturnImages,
-)
-from asset.forms import (
-    AssetBatchForm,
-    AssetForm,
-    AssetReportForm,
-    AssetRequestForm,
-    AssetAllocationForm,
-    AssetCategoryForm,
-    AssetReturnForm,
-    DocumentForm,
-)
-from asset.filters import (
-    AssetAllocationFilter,
-    AssetAllocationReGroup,
-    AssetHistoryFilter,
-    AssetHistoryReGroup,
-    AssetRequestFilter,
-    AssetRequestReGroup,
-    CustomAssetFilter,
-    AssetCategoryFilter,
-    AssetExportFilter,
-    AssetFilter,
-)
 
 
 def asset_del(request, asset):

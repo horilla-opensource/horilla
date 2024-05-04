@@ -120,7 +120,7 @@ function getSrcAbsPath(e, t) {
 
 async function processCopyTask(e, t, r) {
  try {
-  r.src = normalizePath(r.src), r.dest = normalizePath(r.dest), (await stat(r.src)).isDirectory() ? (e.dirPaths.includes(r.dest) || e.dirPaths.push(r.dest), 
+  r.src = normalizePath(r.src), r.dest = normalizePath(r.dest), (await stat(r.src)).isDirectory() ? (e.dirPaths.includes(r.dest) || e.dirPaths.push(r.dest),
   await async function n(e, t, r) {
    try {
     const n = await readdir(r.src);
@@ -156,7 +156,7 @@ function asyncGlob(e, t) {
 
 function Yallist(e) {
  var t, r, n = this;
- if (n instanceof Yallist || (n = new Yallist), n.tail = null, n.head = null, n.length = 0, 
+ if (n instanceof Yallist || (n = new Yallist), n.tail = null, n.head = null, n.length = 0,
  e && "function" == typeof e.forEach) e.forEach((function(e) {
   n.push(e);
  })); else if (arguments.length > 0) for (t = 0, r = arguments.length; t < r; t++) n.push(arguments[t]);
@@ -165,7 +165,7 @@ function Yallist(e) {
 
 function insert(e, t, r) {
  var n = t === e.head ? new Node(r, null, t, e) : new Node(r, t, t.next, e);
- return null === n.next && (e.tail = n), null === n.prev && (e.head = n), e.length++, 
+ return null === n.next && (e.tail = n), null === n.prev && (e.head = n), e.length++,
  n;
 }
 
@@ -179,7 +179,7 @@ function unshift(e, t) {
 
 function Node(e, t, r, n) {
  if (!(this instanceof Node)) return new Node(e, t, r, n);
- this.list = n, this.value = e, t ? (t.next = this, this.prev = t) : this.prev = null, 
+ this.list = n, this.value = e, t ? (t.next = this, this.prev = t) : this.prev = null,
  r ? (r.prev = this, this.next = r) : this.next = null;
 }
 
@@ -240,7 +240,7 @@ async function checkVersion(e, t) {
     for (;l.length <= s + 2 * PADDING; ) l += BOX_HORIZONTAL;
     l += BOX_BOTTOM_RIGHT, o.push(l);
     let c = `${INDENT}${o.join(`\n${INDENT}`)}\n`;
-    c = c.replace(t, e.red(t)), c = c.replace(r, e.green(r)), c = c.replace(n, e.cyan(n)), 
+    c = c.replace(t, e.red(t)), c = c.replace(r, e.green(r)), c = c.replace(n, e.cyan(n)),
     c = c.replace(CHANGELOG, e.dim(CHANGELOG)), console.log(c);
    }(e, t, r) : console.debug(`${e.cyan("@stencil/core")} version ${e.green(t)} is the latest version`);
   };
@@ -375,27 +375,27 @@ const ANSI_REGEX = /[\u001b\u009b][[\]#;?()]*(?:(?:(?:[^\W_]*;?[^\W_]*)\u0007)|(
    },
    get() {
     let n = e => r(e, n.stack);
-    return Reflect.setPrototypeOf(n, e), n.stack = this.stack ? this.stack.concat(t) : [ t ], 
+    return Reflect.setPrototypeOf(n, e), n.stack = this.stack ? this.stack.concat(t) : [ t ],
     n;
    }
   });
  };
- return n("reset", [ 0, 0 ], "modifier"), n("bold", [ 1, 22 ], "modifier"), n("dim", [ 2, 22 ], "modifier"), 
- n("italic", [ 3, 23 ], "modifier"), n("underline", [ 4, 24 ], "modifier"), n("inverse", [ 7, 27 ], "modifier"), 
- n("hidden", [ 8, 28 ], "modifier"), n("strikethrough", [ 9, 29 ], "modifier"), n("black", [ 30, 39 ], "color"), 
- n("red", [ 31, 39 ], "color"), n("green", [ 32, 39 ], "color"), n("yellow", [ 33, 39 ], "color"), 
- n("blue", [ 34, 39 ], "color"), n("magenta", [ 35, 39 ], "color"), n("cyan", [ 36, 39 ], "color"), 
- n("white", [ 37, 39 ], "color"), n("gray", [ 90, 39 ], "color"), n("grey", [ 90, 39 ], "color"), 
- n("bgBlack", [ 40, 49 ], "bg"), n("bgRed", [ 41, 49 ], "bg"), n("bgGreen", [ 42, 49 ], "bg"), 
- n("bgYellow", [ 43, 49 ], "bg"), n("bgBlue", [ 44, 49 ], "bg"), n("bgMagenta", [ 45, 49 ], "bg"), 
- n("bgCyan", [ 46, 49 ], "bg"), n("bgWhite", [ 47, 49 ], "bg"), n("blackBright", [ 90, 39 ], "bright"), 
- n("redBright", [ 91, 39 ], "bright"), n("greenBright", [ 92, 39 ], "bright"), n("yellowBright", [ 93, 39 ], "bright"), 
- n("blueBright", [ 94, 39 ], "bright"), n("magentaBright", [ 95, 39 ], "bright"), 
- n("cyanBright", [ 96, 39 ], "bright"), n("whiteBright", [ 97, 39 ], "bright"), n("bgBlackBright", [ 100, 49 ], "bgBright"), 
- n("bgRedBright", [ 101, 49 ], "bgBright"), n("bgGreenBright", [ 102, 49 ], "bgBright"), 
- n("bgYellowBright", [ 103, 49 ], "bgBright"), n("bgBlueBright", [ 104, 49 ], "bgBright"), 
- n("bgMagentaBright", [ 105, 49 ], "bgBright"), n("bgCyanBright", [ 106, 49 ], "bgBright"), 
- n("bgWhiteBright", [ 107, 49 ], "bgBright"), e.ansiRegex = ANSI_REGEX, e.hasColor = e.hasAnsi = t => (e.ansiRegex.lastIndex = 0, 
+ return n("reset", [ 0, 0 ], "modifier"), n("bold", [ 1, 22 ], "modifier"), n("dim", [ 2, 22 ], "modifier"),
+ n("italic", [ 3, 23 ], "modifier"), n("underline", [ 4, 24 ], "modifier"), n("inverse", [ 7, 27 ], "modifier"),
+ n("hidden", [ 8, 28 ], "modifier"), n("strikethrough", [ 9, 29 ], "modifier"), n("black", [ 30, 39 ], "color"),
+ n("red", [ 31, 39 ], "color"), n("green", [ 32, 39 ], "color"), n("yellow", [ 33, 39 ], "color"),
+ n("blue", [ 34, 39 ], "color"), n("magenta", [ 35, 39 ], "color"), n("cyan", [ 36, 39 ], "color"),
+ n("white", [ 37, 39 ], "color"), n("gray", [ 90, 39 ], "color"), n("grey", [ 90, 39 ], "color"),
+ n("bgBlack", [ 40, 49 ], "bg"), n("bgRed", [ 41, 49 ], "bg"), n("bgGreen", [ 42, 49 ], "bg"),
+ n("bgYellow", [ 43, 49 ], "bg"), n("bgBlue", [ 44, 49 ], "bg"), n("bgMagenta", [ 45, 49 ], "bg"),
+ n("bgCyan", [ 46, 49 ], "bg"), n("bgWhite", [ 47, 49 ], "bg"), n("blackBright", [ 90, 39 ], "bright"),
+ n("redBright", [ 91, 39 ], "bright"), n("greenBright", [ 92, 39 ], "bright"), n("yellowBright", [ 93, 39 ], "bright"),
+ n("blueBright", [ 94, 39 ], "bright"), n("magentaBright", [ 95, 39 ], "bright"),
+ n("cyanBright", [ 96, 39 ], "bright"), n("whiteBright", [ 97, 39 ], "bright"), n("bgBlackBright", [ 100, 49 ], "bgBright"),
+ n("bgRedBright", [ 101, 49 ], "bgBright"), n("bgGreenBright", [ 102, 49 ], "bgBright"),
+ n("bgYellowBright", [ 103, 49 ], "bgBright"), n("bgBlueBright", [ 104, 49 ], "bgBright"),
+ n("bgMagentaBright", [ 105, 49 ], "bgBright"), n("bgCyanBright", [ 106, 49 ], "bgBright"),
+ n("bgWhiteBright", [ 107, 49 ], "bgBright"), e.ansiRegex = ANSI_REGEX, e.hasColor = e.hasAnsi = t => (e.ansiRegex.lastIndex = 0,
  "string" == typeof t && "" !== t && e.ansiRegex.test(t)), e.alias = (t, n) => {
   let i = "string" == typeof n ? e[n] : n;
   if ("function" != typeof i) throw new TypeError("Expected alias to be the name of an existing color (string) or a function");
@@ -409,7 +409,7 @@ const ANSI_REGEX = /[\u001b\u009b][[\]#;?()]*(?:(?:(?:[^\W_]*;?[^\W_]*)\u0007)|(
    },
    get() {
     let t = e => r(e, t.stack);
-    return Reflect.setPrototypeOf(t, e), t.stack = this.stack ? this.stack.concat(i.stack) : i.stack, 
+    return Reflect.setPrototypeOf(t, e), t.stack = this.stack ? this.stack.concat(i.stack) : i.stack,
     t;
    }
   });
@@ -418,8 +418,8 @@ const ANSI_REGEX = /[\u001b\u009b][[\]#;?()]*(?:(?:(?:[^\W_]*;?[^\W_]*)\u0007)|(
   var r;
   for (let r of Object.keys(t)) e.alias(r, t[r]);
   return e;
- }, e.alias("unstyle", (t => "string" == typeof t && "" !== t ? (e.ansiRegex.lastIndex = 0, 
- t.replace(e.ansiRegex, "")) : "")), e.alias("noop", (e => e)), e.none = e.clear = e.noop, 
+ }, e.alias("unstyle", (t => "string" == typeof t && "" !== t ? (e.ansiRegex.lastIndex = 0,
+ t.replace(e.ansiRegex, "")) : "")), e.alias("noop", (e => e)), e.none = e.clear = e.noop,
  e.stripColor = e.unstyle, e.symbols = symbols, e.define = n, e;
 };
 
@@ -457,7 +457,7 @@ const LOG_LEVELS = [ "debug", "info", "warn", "error" ], createTerminalLogger = 
   }
  }, u = (t, r, n) => {
   let i = t.length - r + n - 1;
-  for (;t.length + INDENT$1.length > e.getColumns(); ) if (r > t.length - r + n && r > 5) t = t.slice(1), 
+  for (;t.length + INDENT$1.length > e.getColumns(); ) if (r > t.length - r + n && r > 5) t = t.slice(1),
   r--; else {
    if (!(i > 1)) break;
    t = t.slice(0, -1), i--;
@@ -484,10 +484,10 @@ const LOG_LEVELS = [ "debug", "info", "warn", "error" ], createTerminalLogger = 
     finish: (r, o, f, h) => {
      const p = u();
      let d;
-     return d = p > 1e3 ? "in " + (p / 1e3).toFixed(2) + " s" : parseFloat(p.toFixed(3)) > 0 ? "in " + p + " ms" : "in less than 1 ms", 
+     return d = p > 1e3 ? "in " + (p / 1e3).toFixed(2) + " s" : parseFloat(p.toFixed(3)) > 0 ? "in " + p + " ms" : "in less than 1 ms",
      ((r, n, s, o, u, f, h) => {
       let p = r;
-      if (s && (p = ansiColors[s](r)), o && (p = ansiColors.bold(p)), p += " " + ansiColors.dim(n), 
+      if (s && (p = ansiColors[s](r)), o && (p = ansiColors.bold(p)), p += " " + ansiColors.dim(n),
       f) {
        if (shouldLog(t, "debug")) {
         const t = [ p ];
@@ -556,23 +556,23 @@ const LOG_LEVELS = [ "debug", "info", "warn", "error" ], createTerminalLogger = 
     l = l.concat(((r, n) => {
      const l = wordWrap([ r.messageText ], e.getColumns());
      let c = "";
-     r.header && "Build Error" !== r.header && (c += r.header), "string" == typeof r.absFilePath && "string" != typeof r.relFilePath && ("string" != typeof n && (n = e.cwd()), 
+     r.header && "Build Error" !== r.header && (c += r.header), "string" == typeof r.absFilePath && "string" != typeof r.relFilePath && ("string" != typeof n && (n = e.cwd()),
      r.relFilePath = e.relativePath(n, r.absFilePath), r.relFilePath.includes("/") || (r.relFilePath = "./" + r.relFilePath));
      let p = r.relFilePath;
-     return "string" != typeof p && (p = r.absFilePath), "string" == typeof p && (c.length > 0 && (c += ": "), 
-     c += ansiColors.cyan(p), "number" == typeof r.lineNumber && r.lineNumber > -1 && (c += ansiColors.dim(":"), 
-     c += ansiColors.yellow(`${r.lineNumber}`), "number" == typeof r.columnNumber && r.columnNumber > -1 && (c += ansiColors.dim(":"), 
-     c += ansiColors.yellow(`${r.columnNumber}`)))), c.length > 0 && l.unshift(INDENT$1 + c), 
+     return "string" != typeof p && (p = r.absFilePath), "string" == typeof p && (c.length > 0 && (c += ": "),
+     c += ansiColors.cyan(p), "number" == typeof r.lineNumber && r.lineNumber > -1 && (c += ansiColors.dim(":"),
+     c += ansiColors.yellow(`${r.lineNumber}`), "number" == typeof r.columnNumber && r.columnNumber > -1 && (c += ansiColors.dim(":"),
+     c += ansiColors.yellow(`${r.columnNumber}`)))), c.length > 0 && l.unshift(INDENT$1 + c),
      l.push(""), r.lines && r.lines.length && (removeLeadingWhitespace(r.lines).forEach((e => {
       if (!isMeaningfulLine(e.text)) return;
       let t = "";
       for (e.lineNumber > -1 && (t = `L${e.lineNumber}:  `); t.length < INDENT$1.length; ) t = " " + t;
       let n = e.text;
-      e.errorCharStart > -1 && (n = u(n, e.errorCharStart, e.errorLength)), t = ansiColors.dim(t), 
-      "typescript" === r.language || "javascript" === r.language ? t += f(n) : "scss" === r.language || "css" === r.language ? t += h(n) : t += n, 
+      e.errorCharStart > -1 && (n = u(n, e.errorCharStart, e.errorLength)), t = ansiColors.dim(t),
+      "typescript" === r.language || "javascript" === r.language ? t += f(n) : "scss" === r.language || "css" === r.language ? t += h(n) : t += n,
       l.push(t);
-     })), l.push("")), "error" === r.level ? o(l) : "warn" === r.level ? s(l) : "debug" === r.level ? a(l) : i(l), 
-     null != r.debugText && "debug" === t && (l.push(r.debugText), a(wordWrap([ r.debugText ], e.getColumns()))), 
+     })), l.push("")), "error" === r.level ? o(l) : "warn" === r.level ? s(l) : "debug" === r.level ? a(l) : i(l),
+     null != r.debugText && "debug" === t && (l.push(r.debugText), a(wordWrap([ r.debugText ], e.getColumns()))),
      l;
     })(r, n));
    })), console.log(l.join("\n"));
@@ -616,16 +616,16 @@ const LOG_LEVELS = [ "debug", "info", "warn", "error" ], createTerminalLogger = 
  }));
  let i = INDENT$1;
  return n.forEach((e => {
-  r.length > 25 || ("function" == typeof e ? (i.trim().length && r.push(i), r.push(e()), 
-  i = INDENT$1) : INDENT$1.length + e.length > t - 1 ? (i.trim().length && r.push(i), 
-  r.push(INDENT$1 + e), i = INDENT$1) : e.length + i.length > t - 1 ? (r.push(i), 
+  r.length > 25 || ("function" == typeof e ? (i.trim().length && r.push(i), r.push(e()),
+  i = INDENT$1) : INDENT$1.length + e.length > t - 1 ? (i.trim().length && r.push(i),
+  r.push(INDENT$1 + e), i = INDENT$1) : e.length + i.length > t - 1 ? (r.push(i),
   i = INDENT$1 + e + " ") : i += e + " ");
  })), i.trim().length && r.push(i), r.map((e => e.trimRight()));
 }, removeLeadingWhitespace = e => {
  const t = JSON.parse(JSON.stringify(e));
  for (let e = 0; e < 100; e++) {
   if (!eachLineHasLeadingWhitespace(t)) return t;
-  for (let e = 0; e < t.length; e++) if (t[e].text = t[e].text.slice(1), t[e].errorCharStart--, 
+  for (let e = 0; e < t.length; e++) if (t[e].text = t[e].text.slice(1), t[e].errorCharStart--,
   !t[e].text.length) return t;
  }
  return t;
@@ -658,7 +658,7 @@ const LOG_LEVELS = [ "debug", "info", "warn", "error" ], createTerminalLogger = 
   absFilePath: null,
   lines: []
  };
- return isString(r) ? n.messageText = r.length ? r : "UNKNOWN ERROR" : null != t && (null != t.stack ? n.messageText = t.stack.toString() : null != t.message ? n.messageText = t.message.length ? t.message : "UNKNOWN ERROR" : n.messageText = t.toString()), 
+ return isString(r) ? n.messageText = r.length ? r : "UNKNOWN ERROR" : null != t && (null != t.stack ? n.messageText = t.stack.toString() : null != t.message ? n.messageText = t.message.length ? t.message : "UNKNOWN ERROR" : n.messageText = t.toString()),
  null == e || shouldIgnoreError(n.messageText) || e.push(n), n;
 }, shouldIgnoreError = e => e === TASK_CANCELED_MSG, TASK_CANCELED_MSG = "task canceled", normalizePath = e => {
  if ("string" != typeof e) throw new Error("invalid path to normalize");
@@ -864,7 +864,7 @@ lockfile = createCommonjsModule((function(e) {
    let w = (_ = (0, (d || n()).default)((function*(n) {
     var s, a, l, u, f, h, p, d, m, g, y, E;
     const b = n.src, _ = n.dest, w = n.type, C = n.onFresh || de, T = n.onDone || de;
-    if (O.has(_.toLowerCase()) ? i.verbose(`The case-insensitive file ${_} shouldn't be copied twice in one bulk copy`) : O.add(_.toLowerCase()), 
+    if (O.has(_.toLowerCase()) ? i.verbose(`The case-insensitive file ${_} shouldn't be copied twice in one bulk copy`) : O.add(_.toLowerCase()),
     "symlink" === w) return yield se((v || o()).default.dirname(_)), C(), A.symlink.push({
      dest: _,
      linkname: b
@@ -881,7 +881,7 @@ lockfile = createCommonjsModule((function(e) {
     if (x) {
      const e = L.isSymbolicLink() && x.isSymbolicLink(), t = L.isDirectory() && x.isDirectory(), n = L.isFile() && x.isFile();
      if (n && k.has(_)) return T(), void i.verbose(i.lang("verboseFileSkipArtifact", b));
-     if (n && L.size === x.size && (0, (S || c()).fileDatesEqual)(L.mtime, x.mtime)) return T(), 
+     if (n && L.size === x.size && (0, (S || c()).fileDatesEqual)(L.mtime, x.mtime)) return T(),
      void i.verbose(i.lang("verboseFileSkip", b, _, L.size, +L.mtime));
      if (e) {
       const e = yield te(b);
@@ -1207,7 +1207,7 @@ lockfile = createCommonjsModule((function(e) {
    const l = s.link;
    var u;
    yield (b || a()).queue(l, (u = (0, (d || n()).default)((function*(e) {
-    t.verbose(t.lang("verboseFileLink", e.src, e.dest)), e.removeDest && (yield (0, 
+    t.verbose(t.lang("verboseFileLink", e.src, e.dest)), e.removeDest && (yield (0,
     (S || c()).unlink)(e.dest)), yield le(e.src, e.dest);
    })), function(e) {
     return u.apply(this, arguments);
@@ -1409,14 +1409,14 @@ lockfile = createCommonjsModule((function(e) {
   t.lockQueue = new ((E || function Q() {
    return E = u(r(84));
   }()).default)("fs lock");
-  const J = t.readFileBuffer = (0, (_ || l()).promisify)((m || i()).default.readFile), Z = t.open = (0, 
-  (_ || l()).promisify)((m || i()).default.open), ee = t.writeFile = (0, (_ || l()).promisify)((m || i()).default.writeFile), te = t.readlink = (0, 
-  (_ || l()).promisify)((m || i()).default.readlink), re = t.realpath = (0, (_ || l()).promisify)((m || i()).default.realpath), ne = t.readdir = (0, 
+  const J = t.readFileBuffer = (0, (_ || l()).promisify)((m || i()).default.readFile), Z = t.open = (0,
+  (_ || l()).promisify)((m || i()).default.open), ee = t.writeFile = (0, (_ || l()).promisify)((m || i()).default.writeFile), te = t.readlink = (0,
+  (_ || l()).promisify)((m || i()).default.readlink), re = t.realpath = (0, (_ || l()).promisify)((m || i()).default.realpath), ne = t.readdir = (0,
   (_ || l()).promisify)((m || i()).default.readdir);
   t.rename = (0, (_ || l()).promisify)((m || i()).default.rename);
   const ie = t.access = (0, (_ || l()).promisify)((m || i()).default.access);
   t.stat = (0, (_ || l()).promisify)((m || i()).default.stat);
-  const se = t.mkdirp = (0, (_ || l()).promisify)(r(116)), oe = t.exists = (0, (_ || l()).promisify)((m || i()).default.exists, !0), ae = t.lstat = (0, 
+  const se = t.mkdirp = (0, (_ || l()).promisify)(r(116)), oe = t.exists = (0, (_ || l()).promisify)((m || i()).default.exists, !0), ae = t.lstat = (0,
   (_ || l()).promisify)((m || i()).default.lstat);
   t.chmod = (0, (_ || l()).promisify)((m || i()).default.chmod);
   const le = t.link = (0, (_ || l()).promisify)((m || i()).default.link);
@@ -1439,26 +1439,26 @@ lockfile = createCommonjsModule((function(e) {
   const i = r(36), s = r(0), o = r(45).default;
   var a = r(171);
   const l = a.getCacheDir, c = a.getConfigDir, u = a.getDataDir, f = r(227), h = t.DEPENDENCY_TYPES = [ "devDependencies", "dependencies", "optionalDependencies", "peerDependencies" ], p = t.RESOLUTIONS = "resolutions";
-  t.MANIFEST_FIELDS = [ p, ...h ], t.SUPPORTED_NODE_VERSIONS = "^4.8.0 || ^5.7.0 || ^6.2.2 || >=8.0.0", 
-  t.YARN_REGISTRY = "https://registry.yarnpkg.com", t.YARN_DOCS = "https://yarnpkg.com/en/docs/cli/", 
-  t.YARN_INSTALLER_SH = "https://yarnpkg.com/install.sh", t.YARN_INSTALLER_MSI = "https://yarnpkg.com/latest.msi", 
-  t.SELF_UPDATE_VERSION_URL = "https://yarnpkg.com/latest-version", t.CACHE_VERSION = 2, 
-  t.LOCKFILE_VERSION = 1, t.NETWORK_CONCURRENCY = 8, t.NETWORK_TIMEOUT = 3e4, t.CHILD_CONCURRENCY = 5, 
+  t.MANIFEST_FIELDS = [ p, ...h ], t.SUPPORTED_NODE_VERSIONS = "^4.8.0 || ^5.7.0 || ^6.2.2 || >=8.0.0",
+  t.YARN_REGISTRY = "https://registry.yarnpkg.com", t.YARN_DOCS = "https://yarnpkg.com/en/docs/cli/",
+  t.YARN_INSTALLER_SH = "https://yarnpkg.com/install.sh", t.YARN_INSTALLER_MSI = "https://yarnpkg.com/latest.msi",
+  t.SELF_UPDATE_VERSION_URL = "https://yarnpkg.com/latest-version", t.CACHE_VERSION = 2,
+  t.LOCKFILE_VERSION = 1, t.NETWORK_CONCURRENCY = 8, t.NETWORK_TIMEOUT = 3e4, t.CHILD_CONCURRENCY = 5,
   t.REQUIRED_PACKAGE_KEYS = [ "name", "version", "_uid" ], t.PREFERRED_MODULE_CACHE_DIRECTORIES = function d() {
    const e = [ l() ];
-   return process.getuid && e.push(s.join(i.tmpdir(), `.yarn-cache-${process.getuid()}`)), 
+   return process.getuid && e.push(s.join(i.tmpdir(), `.yarn-cache-${process.getuid()}`)),
    e.push(s.join(i.tmpdir(), ".yarn-cache")), e;
   }(), t.CONFIG_DIRECTORY = c();
   const m = t.DATA_DIRECTORY = u();
-  t.LINK_REGISTRY_DIRECTORY = s.join(m, "link"), t.GLOBAL_MODULE_DIRECTORY = s.join(m, "global"), 
+  t.LINK_REGISTRY_DIRECTORY = s.join(m, "link"), t.GLOBAL_MODULE_DIRECTORY = s.join(m, "global"),
   t.NODE_BIN_PATH = process.execPath, t.YARN_BIN_PATH = function g() {
    return f ? __filename : s.join(__dirname, "..", "bin", "yarn.js");
-  }(), t.NODE_MODULES_FOLDER = "node_modules", t.NODE_PACKAGE_JSON = "package.json", 
-  t.POSIX_GLOBAL_PREFIX = `${process.env.DESTDIR || ""}/usr/local`, t.FALLBACK_GLOBAL_PREFIX = s.join(o, ".yarn"), 
-  t.META_FOLDER = ".yarn-meta", t.INTEGRITY_FILENAME = ".yarn-integrity", t.LOCKFILE_FILENAME = "yarn.lock", 
-  t.METADATA_FILENAME = ".yarn-metadata.json", t.TARBALL_FILENAME = ".yarn-tarball.tgz", 
-  t.CLEAN_FILENAME = ".yarnclean", t.NPM_LOCK_FILENAME = "package-lock.json", t.NPM_SHRINKWRAP_FILENAME = "npm-shrinkwrap.json", 
-  t.DEFAULT_INDENT = "  ", t.SINGLE_INSTANCE_PORT = 31997, t.SINGLE_INSTANCE_FILENAME = ".yarn-single-instance", 
+  }(), t.NODE_MODULES_FOLDER = "node_modules", t.NODE_PACKAGE_JSON = "package.json",
+  t.POSIX_GLOBAL_PREFIX = `${process.env.DESTDIR || ""}/usr/local`, t.FALLBACK_GLOBAL_PREFIX = s.join(o, ".yarn"),
+  t.META_FOLDER = ".yarn-meta", t.INTEGRITY_FILENAME = ".yarn-integrity", t.LOCKFILE_FILENAME = "yarn.lock",
+  t.METADATA_FILENAME = ".yarn-metadata.json", t.TARBALL_FILENAME = ".yarn-tarball.tgz",
+  t.CLEAN_FILENAME = ".yarnclean", t.NPM_LOCK_FILENAME = "package-lock.json", t.NPM_SHRINKWRAP_FILENAME = "npm-shrinkwrap.json",
+  t.DEFAULT_INDENT = "  ", t.SINGLE_INSTANCE_PORT = 31997, t.SINGLE_INSTANCE_FILENAME = ".yarn-single-instance",
   t.ENV_PATH_KEY = n(process.platform, process.env), t.VERSION_COLOR_SCHEME = {
    major: "red",
    premajor: "red",
@@ -1475,7 +1475,7 @@ lockfile = createCommonjsModule((function(e) {
   e.exports = function(e, t, r, i, s, o, a, l) {
    var c, u, f;
    if ("production" !== n && void 0 === t) throw new Error("invariant requires an error message argument");
-   if (!e) throw void 0 === t ? c = new Error("Minified exception occurred; use the non-minified dev environment for the full error message and additional helpful warnings.") : (u = [ r, i, s, o, a, l ], 
+   if (!e) throw void 0 === t ? c = new Error("Minified exception occurred; use the non-minified dev environment for the full error message and additional helpful warnings.") : (u = [ r, i, s, o, a, l ],
    f = 0, (c = new Error(t.replace(/%s/g, (function() {
     return u[f++];
    })))).name = "Invariant Violation"), c.framesToPop = 1, c;
@@ -1566,8 +1566,8 @@ lockfile = createCommonjsModule((function(e) {
    return n && (a.integrity = n), a;
   }
   function c(e, t) {
-   t.optionalDependencies = t.optionalDependencies || {}, t.dependencies = t.dependencies || {}, 
-   t.uid = t.uid || t.version, t.permissions = t.permissions || {}, t.registry = t.registry || "npm", 
+   t.optionalDependencies = t.optionalDependencies || {}, t.dependencies = t.dependencies || {},
+   t.uid = t.uid || t.version, t.permissions = t.permissions || {}, t.registry = t.registry || "npm",
    t.name = t.name || s(e);
    const r = t.integrity;
    return r && r.isIntegrity && (t.integrity = b.parse(r)), t;
@@ -1608,10 +1608,10 @@ lockfile = createCommonjsModule((function(e) {
       return g = r(6);
      }()).LOCKFILE_FILENAME);
      let a, l, c = "";
-     return (yield (y || n()).exists(s)) ? (c = yield (y || n()).readFile(s), l = (0, 
+     return (yield (y || n()).exists(s)) ? (c = yield (y || n()).readFile(s), l = (0,
      (m || function u() {
       return m = i(r(81));
-     }()).default)(c, s), t && ("merge" === l.type ? t.info(t.lang("lockfileMerged")) : "conflict" === l.type && t.warn(t.lang("lockfileConflict"))), 
+     }()).default)(c, s), t && ("merge" === l.type ? t.info(t.lang("lockfileMerged")) : "conflict" === l.type && t.warn(t.lang("lockfileConflict"))),
      a = l.object) : t && t.info(t.lang("noLockfileFound")), new _({
       cache: a,
       source: c,
@@ -1684,7 +1684,7 @@ lockfile = createCommonjsModule((function(e) {
      s = i.value;
     }
     e(s);
-   } else if ((null !== t && "object" == typeof t || "function" == typeof t) && (Object.setPrototypeOf(t, null), 
+   } else if ((null !== t && "object" == typeof t || "function" == typeof t) && (Object.setPrototypeOf(t, null),
    "object" == typeof t)) for (const r in t) e(t[r]);
    return t;
   };
@@ -1708,7 +1708,7 @@ lockfile = createCommonjsModule((function(e) {
    let t = !1, r = "latest", n = e, i = !1;
    "@" === n[0] && (i = !0, n = n.slice(1));
    const s = n.split("@");
-   return s.length > 1 && (n = s.shift(), r = s.join("@"), r ? t = !0 : r = "*"), i && (n = `@${n}`), 
+   return s.length > 1 && (n = s.shift(), r = s.join("@"), r ? t = !0 : r = "*"), i && (n = `@${n}`),
    {
     name: n,
     range: r,
@@ -1730,14 +1730,14 @@ lockfile = createCommonjsModule((function(e) {
    return o(e, t, r);
   }
   var s = r(63), o = s.Buffer;
-  o.from && o.alloc && o.allocUnsafe && o.allocUnsafeSlow ? e.exports = s : (n(s, t), 
+  o.from && o.alloc && o.allocUnsafe && o.allocUnsafeSlow ? e.exports = s : (n(s, t),
   t.Buffer = i), n(o, i), i.from = function(e, t, r) {
    if ("number" == typeof e) throw new TypeError("Argument must not be a number");
    return o(e, t, r);
   }, i.alloc = function(e, t, r) {
    if ("number" != typeof e) throw new TypeError("Argument must be a number");
    var n = o(e);
-   return void 0 !== t ? "string" == typeof r ? n.fill(t, r) : n.fill(t) : n.fill(0), 
+   return void 0 !== t ? "string" == typeof r ? n.fill(t, r) : n.fill(t) : n.fill(0),
    n;
   }, i.allocUnsafe = function(e) {
    if ("number" != typeof e) throw new TypeError("Argument must be a number");
@@ -1795,7 +1795,7 @@ lockfile = createCommonjsModule((function(e) {
  }, function(e, t, r) {
   var n = r(11), i = r(23), s = r(48), o = r(31), a = r(49), l = "prototype", c = function(e, t, r) {
    var u, f, h, p = e & c.F, d = e & c.G, m = e & c.S, g = e & c.P, y = e & c.B, v = e & c.W, E = d ? i : i[t] || (i[t] = {}), b = E[l], _ = d ? n : m ? n[t] : (n[t] || {})[l];
-   for (u in d && (r = t), r) (f = !p && _ && void 0 !== _[u]) && a(E, u) || (h = f ? _[u] : r[u], 
+   for (u in d && (r = t), r) (f = !p && _ && void 0 !== _[u]) && a(E, u) || (h = f ? _[u] : r[u],
    E[u] = d && "function" != typeof _[u] ? r[u] : y && f ? s(h, n) : v && _[u] == h ? function(e) {
     var t = function(t, r, n) {
      if (this instanceof e) {
@@ -1814,7 +1814,7 @@ lockfile = createCommonjsModule((function(e) {
      return e.apply(this, arguments);
     };
     return t[l] = e[l], t;
-   }(h) : g && "function" == typeof h ? s(Function.call, h) : h, g && ((E.virtual || (E.virtual = {}))[u] = h, 
+   }(h) : g && "function" == typeof h ? s(Function.call, h) : h, g && ((E.virtual || (E.virtual = {}))[u] = h,
    e & c.R && b && !b[u] && o(b, u, h)));
   };
   c.F = 1, c.G = 2, c.S = 4, c.P = 8, c.B = 16, c.W = 32, c.U = 64, c.R = 128, e.exports = c;
@@ -1925,7 +1925,7 @@ lockfile = createCommonjsModule((function(e) {
      r.code = "EBADSIZE", r.found = l, r.expected = e.size, r.sri = t, f.emit("error", r);
     } else if (e.integrity && !h) {
      const e = new Error(`${t} integrity checksum failed when using ${i}: wanted ${s} but got ${u}. (${l} bytes)`);
-     e.code = "EINTEGRITY", e.found = u, e.expected = s, e.algorithm = i, e.sri = t, 
+     e.code = "EINTEGRITY", e.found = u, e.expected = s, e.algorithm = i, e.sri = t,
      f.emit("error", e);
     } else f.emit("size", l), f.emit("integrity", u), h && f.emit("verified", h);
    }));
@@ -2030,7 +2030,7 @@ lockfile = createCommonjsModule((function(e) {
    }
    {
     const r = new Error(`Integrity checksum failed when using ${i}: Wanted ${t}, but got ${s}. (${e.length} bytes)`);
-    throw r.code = "EINTEGRITY", r.found = s, r.expected = t, r.algorithm = i, r.sri = t, 
+    throw r.code = "EINTEGRITY", r.found = s, r.expected = t, r.algorithm = i, r.sri = t,
     r;
    }
   }, e.exports.checkStream = function w(e, t, r) {
@@ -2079,8 +2079,8 @@ lockfile = createCommonjsModule((function(e) {
   function s(e, t) {
    if (!(this instanceof s)) return new s(e, t);
    if ("string" != typeof e) throw new TypeError("glob pattern string required");
-   t || (t = {}), e = e.trim(), "/" !== a.sep && (e = e.split(a.sep).join("/")), this.options = t, 
-   this.set = [], this.pattern = e, this.regexp = null, this.negate = !1, this.comment = !1, 
+   t || (t = {}), e = e.trim(), "/" !== a.sep && (e = e.split(a.sep).join("/")), this.options = t,
+   this.set = [], this.pattern = e, this.regexp = null, this.negate = !1, this.comment = !1,
    this.empty = !1, this.make();
   }
   function o(e, t) {
@@ -2134,8 +2134,8 @@ lockfile = createCommonjsModule((function(e) {
    return e && Object.keys(e).length ? i.defaults(e).Minimatch : s;
   }, s.prototype.debug = function() {}, s.prototype.make = function v() {
    var e, t, r;
-   this._made || (e = this.pattern, (t = this.options).nocomment || "#" !== e.charAt(0) ? e ? (this.parseNegate(), 
-   r = this.globSet = this.braceExpand(), t.debug && (this.debug = console.error), 
+   this._made || (e = this.pattern, (t = this.options).nocomment || "#" !== e.charAt(0) ? e ? (this.parseNegate(),
+   r = this.globSet = this.braceExpand(), t.debug && (this.debug = console.error),
    this.debug(this.pattern, r), r = this.globParts = r.map((function(e) {
     return e.split(d);
    })), this.debug(this.pattern, r), r = r.map((function(e, t, r) {
@@ -2173,8 +2173,8 @@ lockfile = createCommonjsModule((function(e) {
    if (e.length > 65536) throw new TypeError("pattern is too long");
    if (!(n = this.options).noglobstar && "**" === e) return l;
    if ("" === e) return "";
-   for (i = "", s = !!n.nocase, o = !1, a = [], c = [], g = !1, y = -1, v = -1, E = "." === e.charAt(0) ? "" : n.dot ? "(?!(?:^|\\/)\\.{1,2}(?:$|\\/))" : "(?!\\.)", 
-   b = this, _ = 0, w = e.length; _ < w && (S = e.charAt(_)); _++) if (this.debug("%s\t%s %s %j", e, _, i, S), 
+   for (i = "", s = !!n.nocase, o = !1, a = [], c = [], g = !1, y = -1, v = -1, E = "." === e.charAt(0) ? "" : n.dot ? "(?!(?:^|\\/)\\.{1,2}(?:$|\\/))" : "(?!\\.)",
+   b = this, _ = 0, w = e.length; _ < w && (S = e.charAt(_)); _++) if (this.debug("%s\t%s %s %j", e, _, i, S),
    o && p[S]) i += "\\" + S, o = !1; else switch (S) {
    case "/":
     return !1;
@@ -2247,7 +2247,7 @@ lockfile = createCommonjsModule((function(e) {
      try {
       RegExp("[" + O + "]");
      } catch (e) {
-      A = this.parse(O, m), i = i.substr(0, y) + "\\[" + A[0] + "\\]", s = s || A[1], 
+      A = this.parse(O, m), i = i.substr(0, y) + "\\[" + A[0] + "\\]", s = s || A[1],
       g = !1;
       continue;
      }
@@ -2258,11 +2258,11 @@ lockfile = createCommonjsModule((function(e) {
    default:
     r(), o ? o = !1 : !p[S] || "^" === S && g || (i += "\\"), i += S;
    }
-   for (g && (O = e.substr(v + 1), A = this.parse(O, m), i = i.substr(0, y) + "\\[" + A[0], 
-   s = s || A[1]), k = a.pop(); k; k = a.pop()) C = i.slice(k.reStart + k.open.length), 
+   for (g && (O = e.substr(v + 1), A = this.parse(O, m), i = i.substr(0, y) + "\\[" + A[0],
+   s = s || A[1]), k = a.pop(); k; k = a.pop()) C = i.slice(k.reStart + k.open.length),
    this.debug("setting tail", i, k), C = C.replace(/((?:\\{2}){0,64})(\\?)\|/g, (function(e, t, r) {
     return r || (r = "\\"), t + t + r + "|";
-   })), this.debug("tail=%j\n   %s", C, C, k, i), T = "*" === k.type ? h : "?" === k.type ? f : "\\" + k.type, 
+   })), this.debug("tail=%j\n   %s", C, C, k, i), T = "*" === k.type ? h : "?" === k.type ? f : "\\" + k.type,
    s = !0, i = i.slice(0, k.reStart) + T + "\\(" + C;
    switch (r(), o && (i += "\\\\"), L = !1, i.charAt(0)) {
    case ".":
@@ -2271,7 +2271,7 @@ lockfile = createCommonjsModule((function(e) {
     L = !0;
    }
    for ($ = c.length - 1; $ > -1; $--) {
-    for (x = c[$], R = i.slice(0, x.reStart), N = i.slice(x.reStart, x.reEnd - 8), I = i.slice(x.reEnd - 8, x.reEnd), 
+    for (x = c[$], R = i.slice(0, x.reStart), N = i.slice(x.reStart, x.reEnd - 8), I = i.slice(x.reEnd - 8, x.reEnd),
     I += P = i.slice(x.reEnd), j = R.split("(").length - 1, D = P, _ = 0; _ < j; _++) D = D.replace(/\)[+*?]?/, "");
     F = "", "" === (P = D) && t !== m && (F = "$"), i = R + N + P + F + I;
    }
@@ -2292,7 +2292,7 @@ lockfile = createCommonjsModule((function(e) {
    var e, t, r, n, i;
    if (this.regexp || !1 === this.regexp) return this.regexp;
    if (!(e = this.set).length) return this.regexp = !1, this.regexp;
-   t = this.options, r = t.noglobstar ? h : t.dot ? "(?:(?!(?:\\/|^)(?:\\.{1,2})($|\\/)).)*?" : "(?:(?!(?:\\/|^)\\.).)*?", 
+   t = this.options, r = t.noglobstar ? h : t.dot ? "(?:(?!(?:\\/|^)(?:\\.{1,2})($|\\/)).)*?" : "(?:(?!(?:\\/|^)\\.).)*?",
    n = t.nocase ? "i" : "", i = "^(?:" + (i = e.map((function(e) {
     return e.map((function(e) {
      return e === l ? r : "string" == typeof e ? function t(e) {
@@ -2316,10 +2316,10 @@ lockfile = createCommonjsModule((function(e) {
    if (this.debug("match", e, this.pattern), this.comment) return !1;
    if (this.empty) return "" === e;
    if ("/" === e && t) return !0;
-   for (r = this.options, "/" !== a.sep && (e = e.split(a.sep).join("/")), e = e.split(d), 
-   this.debug(this.pattern, "split", e), n = this.set, this.debug(this.pattern, "set", n), 
+   for (r = this.options, "/" !== a.sep && (e = e.split(a.sep).join("/")), e = e.split(d),
+   this.debug(this.pattern, "split", e), n = this.set, this.debug(this.pattern, "set", n),
    s = e.length - 1; s >= 0 && !(i = e[s]); s--) ;
-   for (s = 0; s < n.length; s++) if (o = n[s], l = e, r.matchBase && 1 === o.length && (l = [ i ]), 
+   for (s = 0; s < n.length; s++) if (o = n[s], l = e, r.matchBase && 1 === o.length && (l = [ i ]),
    this.matchOne(l, o, t)) return !!r.flipNegate || !this.negate;
    return !r.flipNegate && this.negate;
   }, s.prototype.matchOne = function(e, t, r) {
@@ -2328,7 +2328,7 @@ lockfile = createCommonjsModule((function(e) {
     this: this,
     file: e,
     pattern: t
-   }), this.debug("matchOne", e.length, t.length), n = 0, i = 0, s = e.length, o = t.length; n < s && i < o; n++, 
+   }), this.debug("matchOne", e.length, t.length), n = 0, i = 0, s = e.length, o = t.length; n < s && i < o; n++,
    i++) {
     if (this.debug("matchOne loop"), a = t[i], c = e[n], this.debug(t, a, c), !1 === a) return !1;
     if (a === l) {
@@ -2337,7 +2337,7 @@ lockfile = createCommonjsModule((function(e) {
       return !0;
      }
      for (;u < s; ) {
-      if (h = e[u], this.debug("\nglobstar while", e, u, t, f, h), this.matchOne(e.slice(u), t.slice(f), r)) return this.debug("globstar found match!", u, s, h), 
+      if (h = e[u], this.debug("\nglobstar while", e, u, t, f, h), this.matchOne(e.slice(u), t.slice(f), r)) return this.debug("globstar found match!", u, s, h),
       !0;
       if ("." === h || ".." === h || !d.dot && "." === h.charAt(0)) {
        this.debug("dot detected!", e, u, t, f);
@@ -2347,8 +2347,8 @@ lockfile = createCommonjsModule((function(e) {
      }
      return !(!r || (this.debug("\n>>> no match, partial?", e, u, t, f), u !== s));
     }
-    if ("string" == typeof a ? (p = d.nocase ? c.toLowerCase() === a.toLowerCase() : c === a, 
-    this.debug("string match", a, c, p)) : (p = c.match(a), this.debug("pattern match", a, c, p)), 
+    if ("string" == typeof a ? (p = d.nocase ? c.toLowerCase() === a.toLowerCase() : c === a,
+    this.debug("string match", a, c, p)) : (p = c.match(a), this.debug("pattern match", a, c, p)),
     !p) return !1;
    }
    if (n === s && i === o) return !0;
@@ -2453,19 +2453,19 @@ lockfile = createCommonjsModule((function(e) {
     return new _(e, t);
    }
    if (!(this instanceof i)) return new i(e, t, r);
-   if (m(this, e, t), this._didRealPath = !1, s = this.minimatch.set.length, this.matches = new Array(s), 
+   if (m(this, e, t), this._didRealPath = !1, s = this.minimatch.set.length, this.matches = new Array(s),
    "function" == typeof r && (r = b(r), this.on("error", r), this.on("end", (function(e) {
     r(null, e);
-   }))), o = this, this._processing = 0, this._emitQueue = [], this._processQueue = [], 
+   }))), o = this, this._processing = 0, this._emitQueue = [], this._processQueue = [],
    this.paused = !1, this.noprocess) return this;
    if (0 === s) return n();
    for (a = !0, l = 0; l < s; l++) this._process(this.minimatch.set[l], l, !1, n);
    a = !1;
   }
   var s, o, a, l, c, u, f, h, p, d, m, g, y, v, E, b, _;
-  e.exports = n, s = r(3), o = r(114), a = r(60), l = r(42), c = r(54).EventEmitter, 
-  u = r(0), f = r(22), h = r(76), p = r(218), d = r(115), m = d.setopts, g = d.ownProp, 
-  y = r(223), r(2), v = d.childrenIgnored, E = d.isIgnored, b = r(61), n.sync = p, 
+  e.exports = n, s = r(3), o = r(114), a = r(60), l = r(42), c = r(54).EventEmitter,
+  u = r(0), f = r(22), h = r(76), p = r(218), d = r(115), m = d.setopts, g = d.ownProp,
+  y = r(223), r(2), v = d.childrenIgnored, E = d.isIgnored, b = r(61), n.sync = p,
   _ = n.GlobSync = p.GlobSync, n.glob = n, n.hasMagic = function(e, t) {
    var r, n, s = function o(e, t) {
     var r, n;
@@ -2493,10 +2493,10 @@ lockfile = createCommonjsModule((function(e) {
    }
   }, i.prototype._realpathSet = function(e, t) {
    var r, n, i, s, a = this.matches[e];
-   return a ? (r = Object.keys(a), n = this, 0 === (i = r.length) ? t() : (s = this.matches[e] = Object.create(null), 
+   return a ? (r = Object.keys(a), n = this, 0 === (i = r.length) ? t() : (s = this.matches[e] = Object.create(null),
    void r.forEach((function(r, a) {
     r = n._makeAbs(r), o.realpath(r, n.realpathCache, (function(o, a) {
-     o ? "stat" === o.syscall ? s[r] = !0 : n.emit("error", o) : s[a] = !0, 0 == --i && (n.matches[e] = s, 
+     o ? "stat" === o.syscall ? s[r] = !0 : n.emit("error", o) : s[a] = !0, 0 == --i && (n.matches[e] = s,
      t());
     }));
    })))) : t();
@@ -2511,14 +2511,14 @@ lockfile = createCommonjsModule((function(e) {
   }, i.prototype.resume = function() {
    var e, t, r, n, i;
    if (this.paused) {
-    if (this.emit("resume"), this.paused = !1, this._emitQueue.length) for (e = this._emitQueue.slice(0), 
+    if (this.emit("resume"), this.paused = !1, this._emitQueue.length) for (e = this._emitQueue.slice(0),
     this._emitQueue.length = 0, t = 0; t < e.length; t++) r = e[t], this._emitMatch(r[0], r[1]);
-    if (this._processQueue.length) for (n = this._processQueue.slice(0), this._processQueue.length = 0, 
+    if (this._processQueue.length) for (n = this._processQueue.slice(0), this._processQueue.length = 0,
     t = 0; t < n.length; t++) i = n[t], this._processing--, this._process(i[0], i[1], i[2], i[3]);
    }
   }, i.prototype._process = function(e, t, r, n) {
    var s, o, l, c, u;
-   if (f(this instanceof i), f("function" == typeof n), !this.aborted) if (this._processing++, 
+   if (f(this instanceof i), f("function" == typeof n), !this.aborted) if (this._processing++,
    this.paused) this._processQueue.push([ e, t, r, n ]); else {
     for (s = 0; "string" == typeof e[s]; ) s++;
     switch (s) {
@@ -2532,7 +2532,7 @@ lockfile = createCommonjsModule((function(e) {
     default:
      o = e.slice(0, s).join("/");
     }
-    if (l = e.slice(s), null === o ? c = "." : h(o) || h(e.join("/")) ? (o && h(o) || (o = "/" + o), 
+    if (l = e.slice(s), null === o ? c = "." : h(o) || h(e.join("/")) ? (o && h(o) || (o = "/" + o),
     c = o) : c = o, u = this._makeAbs(c), v(this, c)) return n();
     l[0] === a.GLOBSTAR ? this._processGlobStar(o, c, u, l, t, r, n) : this._processReaddir(o, c, u, l, t, r, n);
    }
@@ -2544,22 +2544,22 @@ lockfile = createCommonjsModule((function(e) {
   }, i.prototype._processReaddir2 = function(e, t, r, n, i, s, o, a) {
    var l, c, f, h, p, d, m, g;
    if (!o) return a();
-   for (l = n[0], c = !!this.minimatch.negate, f = l._glob, h = this.dot || "." === f.charAt(0), 
+   for (l = n[0], c = !!this.minimatch.negate, f = l._glob, h = this.dot || "." === f.charAt(0),
    p = [], d = 0; d < o.length; d++) ("." !== (m = o[d]).charAt(0) || h) && (c && !e ? !m.match(l) : m.match(l)) && p.push(m);
    if (0 === (g = p.length)) return a();
    if (1 === n.length && !this.mark && !this.stat) {
-    for (this.matches[i] || (this.matches[i] = Object.create(null)), d = 0; d < g; d++) m = p[d], 
-    e && (m = "/" !== e ? e + "/" + m : e + m), "/" !== m.charAt(0) || this.nomount || (m = u.join(this.root, m)), 
+    for (this.matches[i] || (this.matches[i] = Object.create(null)), d = 0; d < g; d++) m = p[d],
+    e && (m = "/" !== e ? e + "/" + m : e + m), "/" !== m.charAt(0) || this.nomount || (m = u.join(this.root, m)),
     this._emitMatch(i, m);
     return a();
    }
-   for (n.shift(), d = 0; d < g; d++) m = p[d], e && (m = "/" !== e ? e + "/" + m : e + m), 
+   for (n.shift(), d = 0; d < g; d++) m = p[d], e && (m = "/" !== e ? e + "/" + m : e + m),
    this._process([ m ].concat(n), i, s, a);
    a();
   }, i.prototype._emitMatch = function(e, t) {
    var r, n, i;
-   this.aborted || E(this, t) || (this.paused ? this._emitQueue.push([ e, t ]) : (r = h(t) ? t : this._makeAbs(t), 
-   this.mark && (t = this._mark(t)), this.absolute && (t = r), this.matches[e][t] || this.nodir && ("DIR" === (n = this.cache[r]) || Array.isArray(n)) || (this.matches[e][t] = !0, 
+   this.aborted || E(this, t) || (this.paused ? this._emitQueue.push([ e, t ]) : (r = h(t) ? t : this._makeAbs(t),
+   this.mark && (t = this._mark(t)), this.absolute && (t = r), this.matches[e][t] || this.nodir && ("DIR" === (n = this.cache[r]) || Array.isArray(n)) || (this.matches[e][t] = !0,
    (i = this.statCache[r]) && this.emit("stat", t, i), this.emit("match", t))));
   }, i.prototype._readdirInGlobStar = function(e, t) {
    var r, n;
@@ -2568,7 +2568,7 @@ lockfile = createCommonjsModule((function(e) {
     r = this, (n = y("lstat\0" + e, (function i(n, s) {
      if (n && "ENOENT" === n.code) return t();
      var o = s && s.isSymbolicLink();
-     r.symlinks[e] = o, o || !s || s.isDirectory() ? r._readdir(e, !1, t) : (r.cache[e] = "FILE", 
+     r.symlinks[e] = o, o || !s || s.isDirectory() ? r._readdir(e, !1, t) : (r.cache[e] = "FILE",
      t());
     }))) && s.lstat(e, n);
    }
@@ -2589,7 +2589,7 @@ lockfile = createCommonjsModule((function(e) {
   }, i.prototype._readdirEntries = function(e, t, r) {
    var n, i;
    if (!this.aborted) {
-    if (!this.mark && !this.stat) for (n = 0; n < t.length; n++) i = t[n], i = "/" === e ? e + i : e + "/" + i, 
+    if (!this.mark && !this.stat) for (n = 0; n < t.length; n++) i = t[n], i = "/" === e ? e + i : e + "/" + i,
     this.cache[i] = !0;
     return this.cache[e] = t, r(null, t);
    }
@@ -2599,7 +2599,7 @@ lockfile = createCommonjsModule((function(e) {
     switch (t.code) {
     case "ENOTSUP":
     case "ENOTDIR":
-     n = this._makeAbs(e), this.cache[n] = "FILE", n === this.cwdAbs && ((i = new Error(t.code + " invalid cwd " + this.cwd)).path = this.cwd, 
+     n = this._makeAbs(e), this.cache[n] = "FILE", n === this.cwdAbs && ((i = new Error(t.code + " invalid cwd " + this.cwd)).path = this.cwd,
      i.code = t.code, this.emit("error", i), this.abort());
      break;
 
@@ -2611,7 +2611,7 @@ lockfile = createCommonjsModule((function(e) {
      break;
 
     default:
-     this.cache[this._makeAbs(e)] = !1, this.strict && (this.emit("error", t), this.abort()), 
+     this.cache[this._makeAbs(e)] = !1, this.strict && (this.emit("error", t), this.abort()),
      this.silent || console.error("glob error", t);
     }
     return r();
@@ -2624,9 +2624,9 @@ lockfile = createCommonjsModule((function(e) {
   }, i.prototype._processGlobStar2 = function(e, t, r, n, i, s, o, a) {
    var l, c, u, f, h, p, d, m;
    if (!o) return a();
-   if (l = n.slice(1), u = (c = e ? [ e ] : []).concat(l), this._process(u, i, !1, a), 
+   if (l = n.slice(1), u = (c = e ? [ e ] : []).concat(l), this._process(u, i, !1, a),
    f = this.symlinks[r], h = o.length, f && s) return a();
-   for (p = 0; p < h; p++) ("." !== o[p].charAt(0) || this.dot) && (d = c.concat(o[p], l), 
+   for (p = 0; p < h; p++) ("." !== o[p].charAt(0) || this.dot) && (d = c.concat(o[p], l),
    this._process(d, i, !0, a), m = c.concat(o[p], n), this._process(m, i, !0, a));
    a();
   }, i.prototype._processSimple = function(e, t, r) {
@@ -2640,7 +2640,7 @@ lockfile = createCommonjsModule((function(e) {
     var s = /[\/\\]$/.test(e);
     "/" === e.charAt(0) ? e = u.join(this.root, e) : (e = u.resolve(this.root, e), s && (e += "/"));
    }
-   "win32" === process.platform && (e = e.replace(/\\/g, "/")), this._emitMatch(t, e), 
+   "win32" === process.platform && (e = e.replace(/\\/g, "/")), this._emitMatch(t, e),
    i();
   }, i.prototype._stat = function(e, t) {
    var r, n, i, o, a, l = this._makeAbs(e), c = "/" === e.slice(-1);
@@ -2649,7 +2649,7 @@ lockfile = createCommonjsModule((function(e) {
     if (r = this.cache[l], Array.isArray(r) && (r = "DIR"), !c || "DIR" === r) return t(null, r);
     if (c && "FILE" === r) return t();
    }
-   if (void 0 !== (n = this.statCache[l])) return !1 === n ? t(null, n) : (i = n.isDirectory() ? "DIR" : "FILE", 
+   if (void 0 !== (n = this.statCache[l])) return !1 === n ? t(null, n) : (i = n.isDirectory() ? "DIR" : "FILE",
    c && "FILE" === i ? t() : t(null, i, n));
    o = this, a = y("stat\0" + l, (function u(r, n) {
     if (n && n.isSymbolicLink()) return s.stat(l, (function(r, i) {
@@ -2659,9 +2659,9 @@ lockfile = createCommonjsModule((function(e) {
    })), a && s.lstat(l, a);
   }, i.prototype._stat2 = function(e, t, r, n, i) {
    var s, o;
-   return !r || "ENOENT" !== r.code && "ENOTDIR" !== r.code ? (s = "/" === e.slice(-1), 
-   this.statCache[t] = n, "/" === t.slice(-1) && n && !n.isDirectory() ? i(null, !1, n) : (o = !0, 
-   n && (o = n.isDirectory() ? "DIR" : "FILE"), this.cache[t] = this.cache[t] || o, 
+   return !r || "ENOENT" !== r.code && "ENOTDIR" !== r.code ? (s = "/" === e.slice(-1),
+   this.statCache[t] = n, "/" === t.slice(-1) && n && !n.isDirectory() ? i(null, !1, n) : (o = !0,
+   n && (o = n.isDirectory() ? "DIR" : "FILE"), this.cache[t] = this.cache[t] || o,
    s && "FILE" === o ? i() : i(null, o, n))) : (this.statCache[t] = !1, i());
   };
  }, function(e, t, r) {
@@ -2782,8 +2782,8 @@ lockfile = createCommonjsModule((function(e) {
        let r = "";
        for (let t = 0; /^[0-9]$/.test(e[t]); t++) r += e[t];
        s = r.length, yield t(_, +r);
-      } else if (/^true/.test(e)) yield t(d, !0), s = 4; else if (/^false/.test(e)) yield t(d, !1), 
-      s = 5; else if (":" === e[0]) yield t(g), s++; else if ("," === e[0]) yield t(w), 
+      } else if (/^true/.test(e)) yield t(d, !0), s = 4; else if (/^false/.test(e)) yield t(d, !1),
+      s = 5; else if (":" === e[0]) yield t(g), s++; else if ("," === e[0]) yield t(w),
       s++; else if (/^[a-zA-Z\/-]/g.test(e)) {
        let r = "";
        for (let t = 0; t < e.length; t++) {
@@ -2793,7 +2793,7 @@ lockfile = createCommonjsModule((function(e) {
        }
        s = r.length, yield t(m, r);
       } else yield t(b);
-      s || (yield t(b)), i += s, r = "\n" === e[0] || "\r" === e[0] && "\n" === e[1], 
+      s || (yield t(b)), i += s, r = "\n" === e[0] || "\r" === e[0] && "\n" === e[1],
       e = e.slice(s);
      }
      yield t("EOF");
@@ -2906,12 +2906,12 @@ lockfile = createCommonjsModule((function(e) {
   const s = r(212)("yarn");
   t.default = class o {
    constructor(e, t = 1 / 0) {
-    this.concurrencyQueue = [], this.maxConcurrency = t, this.runningCount = 0, this.warnedStuck = !1, 
-    this.alias = e, this.first = !0, this.running = (0, (i || n()).default)(), this.queue = (0, 
+    this.concurrencyQueue = [], this.maxConcurrency = t, this.runningCount = 0, this.warnedStuck = !1,
+    this.alias = e, this.first = !0, this.running = (0, (i || n()).default)(), this.queue = (0,
     (i || n()).default)(), this.stuckTick = this.stuckTick.bind(this);
    }
    stillActive() {
-    this.stuckTimer && clearTimeout(this.stuckTimer), this.stuckTimer = setTimeout(this.stuckTick, 5e3), 
+    this.stuckTimer && clearTimeout(this.stuckTimer), this.stuckTimer = setTimeout(this.stuckTick, 5e3),
     this.stuckTimer.unref && this.stuckTimer.unref();
    }
    stuckTick() {
@@ -2927,7 +2927,7 @@ lockfile = createCommonjsModule((function(e) {
     }));
    }
    shift(e) {
-    this.running[e] && (delete this.running[e], this.runningCount--, this.stuckTimer && (clearTimeout(this.stuckTimer), 
+    this.running[e] && (delete this.running[e], this.runningCount--, this.stuckTimer && (clearTimeout(this.stuckTimer),
     this.stuckTimer = null), this.warnedStuck && (this.warnedStuck = !1, s(`${JSON.stringify(this.alias)} blocking queue finally resolved. Nothing to worry about.`)));
     const t = this.queue[e];
     if (!t) return;
@@ -3002,9 +3002,9 @@ lockfile = createCommonjsModule((function(e) {
     return function t() {
      return new r(this, e);
     };
-   }, _ = t + " Iterator", w = y == d, S = !1, k = e.prototype, A = (O = k[f] || k["@@iterator"] || y && k[y]) || b(y), 
-   C = y ? w ? b("entries") : A : void 0, (T = "Array" == t && k.entries || O) && (x = u(T.call(new e))) !== Object.prototype && x.next && (c(x, _, !0), 
-   n || "function" == typeof x[f] || o(x, f, m)), w && O && O.name !== d && (S = !0, 
+   }, _ = t + " Iterator", w = y == d, S = !1, k = e.prototype, A = (O = k[f] || k["@@iterator"] || y && k[y]) || b(y),
+   C = y ? w ? b("entries") : A : void 0, (T = "Array" == t && k.entries || O) && (x = u(T.call(new e))) !== Object.prototype && x.next && (c(x, _, !0),
+   n || "function" == typeof x[f] || o(x, f, m)), w && O && O.name !== d && (S = !0,
    A = function e() {
     return O.call(this);
    }), n && !E || !h && !S && k[f] || o(k, f, A), a[t] = A, a[_] = m, y) if (L = {
@@ -3103,11 +3103,11 @@ lockfile = createCommonjsModule((function(e) {
    function r() {
     var e, i, s, o, a, l;
     if (r.enabled) {
-     for (e = r, s = (i = +new Date) - (n || i), e.diff = s, e.prev = n, e.curr = i, 
+     for (e = r, s = (i = +new Date) - (n || i), e.diff = s, e.prev = n, e.curr = i,
      n = i, o = new Array(arguments.length), a = 0; a < o.length; a++) o[a] = arguments[a];
      o[0] = t.coerce(o[0]), "string" != typeof o[0] && o.unshift("%O"), l = 0, o[0] = o[0].replace(/%([a-zA-Z%])/g, (function(r, n) {
       var i, s;
-      return "%%" === r || (l++, "function" == typeof (i = t.formatters[n]) && (s = o[l], 
+      return "%%" === r || (l++, "function" == typeof (i = t.formatters[n]) && (s = o[l],
       r = i.call(e, s), o.splice(l, 1), l--)), r;
      })), t.formatArgs.call(e, o), (r.log || t.log || console.log.bind(console)).apply(e, o);
     }
@@ -3117,7 +3117,7 @@ lockfile = createCommonjsModule((function(e) {
     var r, n = 0;
     for (r in e) n = (n << 5) - n + e.charCodeAt(r), n |= 0;
     return t.colors[Math.abs(n) % t.colors.length];
-   }(e), r.destroy = i, "function" == typeof t.init && t.init(r), t.instances.push(r), 
+   }(e), r.destroy = i, "function" == typeof t.init && t.init(r), t.instances.push(r),
    r;
   }
   function i() {
@@ -3130,7 +3130,7 @@ lockfile = createCommonjsModule((function(e) {
    t.enable("");
   }, t.enable = function a(e) {
    var r, n, i, s;
-   for (t.save(e), t.names = [], t.skips = [], i = (n = ("string" == typeof e ? e : "").split(/[\s,]+/)).length, 
+   for (t.save(e), t.names = [], t.skips = [], i = (n = ("string" == typeof e ? e : "").split(/[\s,]+/)).length,
    r = 0; r < i; r++) n[r] && ("-" === (e = n[r].replace(/\*/g, ".*?"))[0] ? t.skips.push(new RegExp("^" + e.substr(1) + "$")) : t.names.push(new RegExp("^" + e + "$")));
    for (r = 0; r < t.instances.length; r++) (s = t.instances[r]).enabled = t.enabled(s.namespace);
   }, t.enabled = function l(e) {
@@ -3164,7 +3164,7 @@ lockfile = createCommonjsModule((function(e) {
    o.realpath = i, o.realpathSync = s;
   }, i.unmonkeypatch = function p() {
    o.realpath = a, o.realpathSync = l;
-  }, o = r(3), a = o.realpath, l = o.realpathSync, c = process.version, u = /^v[0-5]\./.test(c), 
+  }, o = r(3), a = o.realpath, l = o.realpathSync, c = process.version, u = /^v[0-5]\./.test(c),
   f = r(217);
  }, function(e, t, r) {
   function n(e, t) {
@@ -3189,7 +3189,7 @@ lockfile = createCommonjsModule((function(e) {
   }
   function a(e, t) {
    var r = t;
-   return r = "/" === t.charAt(0) ? c.join(e.root, t) : f(t) || "" === t ? t : e.changedCwd ? c.resolve(e.cwd, t) : c.resolve(t), 
+   return r = "/" === t.charAt(0) ? c.join(e.root, t) : f(t) || "" === t ? t : e.changedCwd ? c.resolve(e.cwd, t) : c.resolve(t),
    "win32" === process.platform && (r = r.replace(/\\/g, "/")), r;
   }
   function l(e, t) {
@@ -3203,25 +3203,25 @@ lockfile = createCommonjsModule((function(e) {
     if (r.noglobstar) throw new Error("base matching requires globstar");
     t = "**/" + t;
    }
-   e.silent = !!r.silent, e.pattern = t, e.strict = !1 !== r.strict, e.realpath = !!r.realpath, 
-   e.realpathCache = r.realpathCache || Object.create(null), e.follow = !!r.follow, 
-   e.dot = !!r.dot, e.mark = !!r.mark, e.nodir = !!r.nodir, e.nodir && (e.mark = !0), 
-   e.sync = !!r.sync, e.nounique = !!r.nounique, e.nonull = !!r.nonull, e.nosort = !!r.nosort, 
-   e.nocase = !!r.nocase, e.stat = !!r.stat, e.noprocess = !!r.noprocess, e.absolute = !!r.absolute, 
-   e.maxLength = r.maxLength || 1 / 0, e.cache = r.cache || Object.create(null), e.statCache = r.statCache || Object.create(null), 
+   e.silent = !!r.silent, e.pattern = t, e.strict = !1 !== r.strict, e.realpath = !!r.realpath,
+   e.realpathCache = r.realpathCache || Object.create(null), e.follow = !!r.follow,
+   e.dot = !!r.dot, e.mark = !!r.mark, e.nodir = !!r.nodir, e.nodir && (e.mark = !0),
+   e.sync = !!r.sync, e.nounique = !!r.nounique, e.nonull = !!r.nonull, e.nosort = !!r.nosort,
+   e.nocase = !!r.nocase, e.stat = !!r.stat, e.noprocess = !!r.noprocess, e.absolute = !!r.absolute,
+   e.maxLength = r.maxLength || 1 / 0, e.cache = r.cache || Object.create(null), e.statCache = r.statCache || Object.create(null),
    e.symlinks = r.symlinks || Object.create(null), function i(e, t) {
-    e.ignore = t.ignore || [], Array.isArray(e.ignore) || (e.ignore = [ e.ignore ]), 
+    e.ignore = t.ignore || [], Array.isArray(e.ignore) || (e.ignore = [ e.ignore ]),
     e.ignore.length && (e.ignore = e.ignore.map(o));
    }(e, r), e.changedCwd = !1;
    var s = process.cwd();
-   n(r, "cwd") ? (e.cwd = c.resolve(r.cwd), e.changedCwd = e.cwd !== s) : e.cwd = s, 
-   e.root = r.root || c.resolve(e.cwd, "/"), e.root = c.resolve(e.root), "win32" === process.platform && (e.root = e.root.replace(/\\/g, "/")), 
-   e.cwdAbs = f(e.cwd) ? e.cwd : a(e, e.cwd), "win32" === process.platform && (e.cwdAbs = e.cwdAbs.replace(/\\/g, "/")), 
-   e.nomount = !!r.nomount, r.nonegate = !0, r.nocomment = !0, e.minimatch = new h(t, r), 
+   n(r, "cwd") ? (e.cwd = c.resolve(r.cwd), e.changedCwd = e.cwd !== s) : e.cwd = s,
+   e.root = r.root || c.resolve(e.cwd, "/"), e.root = c.resolve(e.root), "win32" === process.platform && (e.root = e.root.replace(/\\/g, "/")),
+   e.cwdAbs = f(e.cwd) ? e.cwd : a(e, e.cwd), "win32" === process.platform && (e.cwdAbs = e.cwdAbs.replace(/\\/g, "/")),
+   e.nomount = !!r.nomount, r.nonegate = !0, r.nocomment = !0, e.minimatch = new h(t, r),
    e.options = e.minimatch.options;
   }, t.ownProp = n, t.makeAbs = a, t.finish = function d(e) {
    var t, r, n, o, c, u = e.nounique, f = u ? [] : Object.create(null);
-   for (t = 0, r = e.matches.length; t < r; t++) (n = e.matches[t]) && 0 !== Object.keys(n).length ? (c = Object.keys(n), 
+   for (t = 0, r = e.matches.length; t < r; t++) (n = e.matches[t]) && 0 !== Object.keys(n).length ? (c = Object.keys(n),
    u ? f.push.apply(f, c) : c.forEach((function(e) {
     f[e] = !0;
    }))) : e.nonull && (o = e.minimatch.globSet[t], u ? f.push(o) : f[o] = !0);
@@ -3237,8 +3237,8 @@ lockfile = createCommonjsModule((function(e) {
    }))), e.found = f;
   }, t.mark = function m(e, t) {
    var r, n, i, s = a(e, t), o = e.cache[s], l = t;
-   return o && (r = "DIR" === o || Array.isArray(o), n = "/" === t.slice(-1), r && !n ? l += "/" : !r && n && (l = l.slice(0, -1)), 
-   l !== t && (i = a(e, l), e.statCache[i] = e.statCache[s], e.cache[i] = e.cache[s])), 
+   return o && (r = "DIR" === o || Array.isArray(o), n = "/" === t.slice(-1), r && !n ? l += "/" : !r && n && (l = l.slice(0, -1)),
+   l !== t && (i = a(e, l), e.statCache[i] = e.statCache[s], e.cache[i] = e.cache[s])),
    l;
   }, t.isIgnored = l, t.childrenIgnored = function g(e, t) {
    return !!e.ignore.length && e.ignore.some((function(e) {
@@ -3250,7 +3250,7 @@ lockfile = createCommonjsModule((function(e) {
    var l, c, u;
    "function" == typeof t ? (r = t, t = {}) : t && "object" == typeof t || (t = {
     mode: t
-   }), l = t.mode, c = t.fs || s, void 0 === l && (l = o & ~process.umask()), a || (a = null), 
+   }), l = t.mode, c = t.fs || s, void 0 === l && (l = o & ~process.umask()), a || (a = null),
    u = r || function() {}, e = i.resolve(e), c.mkdir(e, l, (function(r) {
     if (!r) return u(null, a = a || e);
     "ENOENT" === r.code ? n(i.dirname(e), t, (function(r, i) {
@@ -3265,7 +3265,7 @@ lockfile = createCommonjsModule((function(e) {
    var a, l, c;
    r && "object" == typeof r || (r = {
     mode: r
-   }), a = r.mode, l = r.fs || s, void 0 === a && (a = o & ~process.umask()), n || (n = null), 
+   }), a = r.mode, l = r.fs || s, void 0 === a && (a = o & ~process.umask()), n || (n = null),
    t = i.resolve(t);
    try {
     l.mkdirSync(t, a), n = n || t;
@@ -3505,7 +3505,7 @@ lockfile = createCommonjsModule((function(e) {
    });
    if (t) return i;
    const s = [];
-   return s.push("# THIS IS AN AUTOGENERATED FILE. DO NOT EDIT THIS FILE DIRECTLY."), 
+   return s.push("# THIS IS AN AUTOGENERATED FILE. DO NOT EDIT THIS FILE DIRECTLY."),
    s.push(`# yarn lockfile v${(l || function a() {
     return l = r(6);
    }()).LOCKFILE_VERSION}`), n && (s.push(`# yarn v${(c || function u() {
@@ -3566,9 +3566,9 @@ lockfile = createCommonjsModule((function(e) {
   })), function e(t, r, n) {
    return u.apply(this, arguments);
   });
-  const m = (0, (c || s()).promisify)((l || i()).default.readFile), g = (0, (c || s()).promisify)((l || i()).default.close), y = (0, 
-  (c || s()).promisify)((l || i()).default.lstat), v = (0, (c || s()).promisify)((l || i()).default.open), E = (0, 
-  (c || s()).promisify)((l || i()).default.futimes), b = (0, (c || s()).promisify)((l || i()).default.write), _ = t.unlink = (0, 
+  const m = (0, (c || s()).promisify)((l || i()).default.readFile), g = (0, (c || s()).promisify)((l || i()).default.close), y = (0,
+  (c || s()).promisify)((l || i()).default.lstat), v = (0, (c || s()).promisify)((l || i()).default.open), E = (0,
+  (c || s()).promisify)((l || i()).default.futimes), b = (0, (c || s()).promisify)((l || i()).default.write), _ = t.unlink = (0,
   (c || s()).promisify)(r(233));
   t.copyFile = (f = (0, (a || n()).default)((function*(e, t) {
    try {
@@ -3656,7 +3656,7 @@ lockfile = createCommonjsModule((function(e) {
   function s(e, t, r) {
    var n, i, s, o, a, l = r.indexOf(e), c = r.indexOf(t, l + 1), u = l;
    if (l >= 0 && c > 0) {
-    for (n = [], s = r.length; u >= 0 && !a; ) u == l ? (n.push(u), l = r.indexOf(e, u + 1)) : 1 == n.length ? a = [ n.pop(), c ] : ((i = n.pop()) < s && (s = i, 
+    for (n = [], s = r.length; u >= 0 && !a; ) u == l ? (n.push(u), l = r.indexOf(e, u + 1)) : 1 == n.length ? a = [ n.pop(), c ] : ((i = n.pop()) < s && (s = i,
     o = c), c = r.indexOf(t, u + 1)), u = l < c && l >= 0 ? l : c;
     n.length && (a = [ s, o ]);
    }
@@ -3672,8 +3672,8 @@ lockfile = createCommonjsModule((function(e) {
   }
   function s(e) {
    var t, r, n, i, o, a, l;
-   return e ? (t = [], (r = y("{", "}", e)) ? (n = r.pre, i = r.body, o = r.post, (a = n.split(","))[a.length - 1] += "{" + i + "}", 
-   l = s(o), o.length && (a[a.length - 1] += l.shift(), a.push.apply(a, l)), t.push.apply(t, a), 
+   return e ? (t = [], (r = y("{", "}", e)) ? (n = r.pre, i = r.body, o = r.post, (a = n.split(","))[a.length - 1] += "{" + i + "}",
+   l = s(o), o.length && (a[a.length - 1] += l.shift(), a.push.apply(a, l)), t.push.apply(t, a),
    t) : e.split(",")) : [ "" ];
   }
   function o(e) {
@@ -3691,19 +3691,19 @@ lockfile = createCommonjsModule((function(e) {
   function u(e, t) {
    var r, i, f, h, d, m, v, E, b, _, w, S, k, O, A, C, T, L, $, x, R, N = [], I = y("{", "}", e);
    if (!I || /\$$/.test(I.pre)) return [ e ];
-   if (r = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(I.body), i = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(I.body), 
+   if (r = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(I.body), i = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(I.body),
    f = r || i, h = I.body.indexOf(",") >= 0, !f && !h) return I.post.match(/,.*\}/) ? u(e = I.pre + "{" + I.body + p + I.post) : [ e ];
    if (f) d = I.body.split(/\.\./); else if (1 === (d = s(I.body)).length && 1 === (d = u(d[0], !1).map(o)).length) return (m = I.post.length ? u(I.post, !1) : [ "" ]).map((function(e) {
     return I.pre + d[0] + e;
    }));
-   if (v = I.pre, m = I.post.length ? u(I.post, !1) : [ "" ], f) for (b = n(d[0]), 
-   _ = n(d[1]), w = Math.max(d[0].length, d[1].length), S = 3 == d.length ? Math.abs(n(d[2])) : 1, 
-   k = l, _ < b && (S *= -1, k = c), O = d.some(a), E = [], A = b; k(A, _); A += S) i ? "\\" === (C = String.fromCharCode(A)) && (C = "") : (C = String(A), 
-   O && (T = w - C.length) > 0 && (L = new Array(T + 1).join("0"), C = A < 0 ? "-" + L + C.slice(1) : L + C)), 
+   if (v = I.pre, m = I.post.length ? u(I.post, !1) : [ "" ], f) for (b = n(d[0]),
+   _ = n(d[1]), w = Math.max(d[0].length, d[1].length), S = 3 == d.length ? Math.abs(n(d[2])) : 1,
+   k = l, _ < b && (S *= -1, k = c), O = d.some(a), E = [], A = b; k(A, _); A += S) i ? "\\" === (C = String.fromCharCode(A)) && (C = "") : (C = String(A),
+   O && (T = w - C.length) > 0 && (L = new Array(T + 1).join("0"), C = A < 0 ? "-" + L + C.slice(1) : L + C)),
    E.push(C); else E = g(d, (function(e) {
     return u(e, !1);
    }));
-   for ($ = 0; $ < E.length; $++) for (x = 0; x < m.length; x++) R = v + E[$] + m[x], 
+   for ($ = 0; $ < E.length; $++) for (x = 0; x < m.length; x++) R = v + E[$] + m[x],
    (!t || f || R) && N.push(R);
    return N;
   }
@@ -3712,15 +3712,15 @@ lockfile = createCommonjsModule((function(e) {
    return e ? ("{}" === e.substr(0, 2) && (e = "\\{\\}" + e.substr(2)), u(function t(e) {
     return e.split("\\\\").join(f).split("\\{").join(h).split("\\}").join(p).split("\\,").join(d).split("\\.").join(m);
    }(e), !0).map(i)) : [];
-  }, f = "\0SLASH" + Math.random() + "\0", h = "\0OPEN" + Math.random() + "\0", p = "\0CLOSE" + Math.random() + "\0", 
+  }, f = "\0SLASH" + Math.random() + "\0", h = "\0OPEN" + Math.random() + "\0", p = "\0CLOSE" + Math.random() + "\0",
   d = "\0COMMA" + Math.random() + "\0", m = "\0PERIOD" + Math.random() + "\0";
  }, function(e, t, r) {
   function n(e) {
    let t = !1, r = !1, n = !1;
    for (let i = 0; i < e.length; i++) {
     const s = e[i];
-    t && /[a-zA-Z]/.test(s) && s.toUpperCase() === s ? (e = e.substr(0, i) + "-" + e.substr(i), 
-    t = !1, n = r, r = !0, i++) : r && n && /[a-zA-Z]/.test(s) && s.toLowerCase() === s ? (e = e.substr(0, i - 1) + "-" + e.substr(i - 1), 
+    t && /[a-zA-Z]/.test(s) && s.toUpperCase() === s ? (e = e.substr(0, i) + "-" + e.substr(i),
+    t = !1, n = r, r = !0, i++) : r && n && /[a-zA-Z]/.test(s) && s.toLowerCase() === s ? (e = e.substr(0, i - 1) + "-" + e.substr(i - 1),
     n = r, r = !1, t = !0) : (t = s.toLowerCase() === s, n = r, r = s.toUpperCase() === s);
    }
    return e;
@@ -3873,7 +3873,7 @@ lockfile = createCommonjsModule((function(e) {
    };
    return l ? r = function() {
     o.nextTick(h);
-   } : !s || n.navigator && n.navigator.standalone ? a && a.resolve ? (f = a.resolve(void 0), 
+   } : !s || n.navigator && n.navigator.standalone ? a && a.resolve ? (f = a.resolve(void 0),
    r = function() {
     f.then(h);
    }) : r = function() {
@@ -3893,7 +3893,7 @@ lockfile = createCommonjsModule((function(e) {
  }, function(e, t, r) {
   var n = r(27), i = r(193), s = r(101), o = r(72)("IE_PROTO"), a = function() {}, l = "prototype", c = function() {
    var e, t = r(68)("iframe"), n = s.length;
-   for (t.style.display = "none", r(102).appendChild(t), t.src = "javascript:", (e = t.contentWindow.document).open(), 
+   for (t.style.display = "none", r(102).appendChild(t), t.src = "javascript:", (e = t.contentWindow.document).open(),
    e.write("<script>document.F=Object<\/script>"), e.close(), c = e.F; n--; ) delete c[l][s[n]];
    return c();
   };
@@ -3998,7 +3998,7 @@ lockfile = createCommonjsModule((function(e) {
      for (var n = e._v, i = 1 == e._s, s = 0, o = function(t) {
       var r, s, o, a = i ? t.ok : t.fail, l = t.resolve, c = t.reject, u = t.domain;
       try {
-       a ? (i || (2 == e._h && D(e), e._h = 1), !0 === a ? r = n : (u && u.enter(), r = a(n), 
+       a ? (i || (2 == e._h && D(e), e._h = 1), !0 === a ? r = n : (u && u.enter(), r = a(n),
        u && (u.exit(), o = !0)), r === t.promise ? c(k("Promise-chain cycle")) : (s = N(r)) ? s.call(r, l, c) : l(r)) : c(n);
       } catch (e) {
        u && !o && u.exit(), c(e);
@@ -4029,7 +4029,7 @@ lockfile = createCommonjsModule((function(e) {
    }));
   }, F = function(e) {
    var t = this;
-   t._d || (t._d = !0, (t = t._w || t)._v = e, t._s = 2, t._a || (t._a = t._c.slice()), 
+   t._d || (t._d = !0, (t = t._w || t)._v = e, t._s = 2, t._a || (t._a = t._c.slice()),
    I(t, !0));
   }, M = function(e) {
    var t, r = this;
@@ -4064,13 +4064,13 @@ lockfile = createCommonjsModule((function(e) {
     F.call(this, e);
    }
   }, (n = function e(t) {
-   this._c = [], this._a = void 0, this._s = 0, this._d = !1, this._v = void 0, this._h = 0, 
+   this._c = [], this._a = void 0, this._s = 0, this._d = !1, this._v = void 0, this._h = 0,
    this._n = !1;
   }).prototype = r(196)(T.prototype, {
    then: function e(t, r) {
     var n = x(g(this, T));
-    return n.ok = "function" != typeof t || t, n.fail = "function" == typeof r && r, 
-    n.domain = L ? O.domain : void 0, this._c.push(n), this._a && this._a.push(n), this._s && I(this, !1), 
+    return n.ok = "function" != typeof t || t, n.fail = "function" == typeof r && r,
+    n.domain = L ? O.domain : void 0, this._c.push(n), this._a && this._a.push(n), this._s && I(this, !1),
     n.promise;
    },
    catch: function(e) {
@@ -4156,8 +4156,8 @@ lockfile = createCommonjsModule((function(e) {
   });
  }, function(e, t, r) {
   var n, i, s, o, a, l, c, u, f;
-  for (r(204), n = r(11), i = r(31), s = r(35), o = r(13)("toStringTag"), a = "CSSRuleList,CSSStyleDeclaration,CSSValueList,ClientRectList,DOMRectList,DOMStringList,DOMTokenList,DataTransferItemList,FileList,HTMLAllCollection,HTMLCollection,HTMLFormElement,HTMLSelectElement,MediaList,MimeTypeArray,NamedNodeMap,NodeList,PaintRequestList,Plugin,PluginArray,SVGLengthList,SVGNumberList,SVGPathSegList,SVGPointList,SVGStringList,SVGTransformList,SourceBufferList,StyleSheetList,TextTrackCueList,TextTrackList,TouchList".split(","), 
-  l = 0; l < a.length; l++) (f = (u = n[c = a[l]]) && u.prototype) && !f[o] && i(f, o, c), 
+  for (r(204), n = r(11), i = r(31), s = r(35), o = r(13)("toStringTag"), a = "CSSRuleList,CSSStyleDeclaration,CSSValueList,ClientRectList,DOMRectList,DOMStringList,DOMTokenList,DataTransferItemList,FileList,HTMLAllCollection,HTMLCollection,HTMLFormElement,HTMLSelectElement,MediaList,MimeTypeArray,NamedNodeMap,NodeList,PaintRequestList,Plugin,PluginArray,SVGLengthList,SVGNumberList,SVGPathSegList,SVGPointList,SVGStringList,SVGTransformList,SourceBufferList,StyleSheetList,TextTrackCueList,TextTrackList,TouchList".split(","),
+  l = 0; l < a.length; l++) (f = (u = n[c = a[l]]) && u.prototype) && !f[o] && i(f, o, c),
   s[c] = s.Array;
  }, function(e, t, r) {
   function n() {
@@ -4165,15 +4165,15 @@ lockfile = createCommonjsModule((function(e) {
    try {
     e = t.storage.debug;
    } catch (e) {}
-   return !e && "undefined" != typeof process && "env" in process && (e = process.env.DEBUG), 
+   return !e && "undefined" != typeof process && "env" in process && (e = process.env.DEBUG),
    e;
   }
   (t = e.exports = r(112)).log = function i() {
    return "object" == typeof console && console.log && Function.prototype.apply.call(console.log, console, arguments);
   }, t.formatArgs = function s(e) {
    var r, n, i, s = this.useColors;
-   e[0] = (s ? "%c" : "") + this.namespace + (s ? " %c" : " ") + e[0] + (s ? "%c " : " ") + "+" + t.humanize(this.diff), 
-   s && (r = "color: " + this.color, e.splice(1, 0, r, "color: inherit"), n = 0, i = 0, 
+   e[0] = (s ? "%c" : "") + this.namespace + (s ? " %c" : " ") + e[0] + (s ? "%c " : " ") + "+" + t.humanize(this.diff),
+   s && (r = "color: " + this.color, e.splice(1, 0, r, "color: inherit"), n = 0, i = 0,
    e[0].replace(/%[a-zA-Z%]/g, (function(e) {
     "%%" !== e && (n++, "%c" === e && (i = n));
    })), e.splice(i, 0, r));
@@ -4187,7 +4187,7 @@ lockfile = createCommonjsModule((function(e) {
    try {
     return window.localStorage;
    } catch (e) {}
-  }(), t.colors = [ "#0000CC", "#0000FF", "#0033CC", "#0033FF", "#0066CC", "#0066FF", "#0099CC", "#0099FF", "#00CC00", "#00CC33", "#00CC66", "#00CC99", "#00CCCC", "#00CCFF", "#3300CC", "#3300FF", "#3333CC", "#3333FF", "#3366CC", "#3366FF", "#3399CC", "#3399FF", "#33CC00", "#33CC33", "#33CC66", "#33CC99", "#33CCCC", "#33CCFF", "#6600CC", "#6600FF", "#6633CC", "#6633FF", "#66CC00", "#66CC33", "#9900CC", "#9900FF", "#9933CC", "#9933FF", "#99CC00", "#99CC33", "#CC0000", "#CC0033", "#CC0066", "#CC0099", "#CC00CC", "#CC00FF", "#CC3300", "#CC3333", "#CC3366", "#CC3399", "#CC33CC", "#CC33FF", "#CC6600", "#CC6633", "#CC9900", "#CC9933", "#CCCC00", "#CCCC33", "#FF0000", "#FF0033", "#FF0066", "#FF0099", "#FF00CC", "#FF00FF", "#FF3300", "#FF3333", "#FF3366", "#FF3399", "#FF33CC", "#FF33FF", "#FF6600", "#FF6633", "#FF9900", "#FF9933", "#FFCC00", "#FFCC33" ], 
+  }(), t.colors = [ "#0000CC", "#0000FF", "#0033CC", "#0033FF", "#0066CC", "#0066FF", "#0099CC", "#0099FF", "#00CC00", "#00CC33", "#00CC66", "#00CC99", "#00CCCC", "#00CCFF", "#3300CC", "#3300FF", "#3333CC", "#3333FF", "#3366CC", "#3366FF", "#3399CC", "#3399FF", "#33CC00", "#33CC33", "#33CC66", "#33CC99", "#33CCCC", "#33CCFF", "#6600CC", "#6600FF", "#6633CC", "#6633FF", "#66CC00", "#66CC33", "#9900CC", "#9900FF", "#9933CC", "#9933FF", "#99CC00", "#99CC33", "#CC0000", "#CC0033", "#CC0066", "#CC0099", "#CC00CC", "#CC00FF", "#CC3300", "#CC3333", "#CC3366", "#CC3399", "#CC33CC", "#CC33FF", "#CC6600", "#CC6633", "#CC9900", "#CC9933", "#CCCC00", "#CCCC33", "#FF0000", "#FF0033", "#FF0066", "#FF0099", "#FF00CC", "#FF00FF", "#FF3300", "#FF3333", "#FF3366", "#FF3399", "#FF33CC", "#FF33FF", "#FF6600", "#FF6633", "#FF9900", "#FF9933", "#FFCC00", "#FFCC33" ],
   t.formatters.j = function(e) {
    try {
     return JSON.stringify(e);
@@ -4209,7 +4209,7 @@ lockfile = createCommonjsModule((function(e) {
    return process.stderr.write(o.format.apply(o, arguments) + "\n");
   }, t.formatArgs = function c(e) {
    var r, n, i, s = this.namespace;
-   this.useColors ? (i = "  " + (n = "[3" + ((r = this.color) < 8 ? r : "8;5;" + r)) + ";1m" + s + " [0m", 
+   this.useColors ? (i = "  " + (n = "[3" + ((r = this.color) < 8 ? r : "8;5;" + r)) + ";1m" + s + " [0m",
    e[0] = i + e[0].split("\n").join("\n" + i), e.push(n + "m+" + t.humanize(this.diff) + "[0m")) : e[0] = function o() {
     return t.inspectOpts.hideDate ? "" : (new Date).toISOString() + " ";
    }() + s + " " + e[0];
@@ -4227,7 +4227,7 @@ lockfile = createCommonjsModule((function(e) {
    var r = t.substring(6).toLowerCase().replace(/_([a-z])/g, (function(e, t) {
     return t.toUpperCase();
    })), n = process.env[t];
-   return n = !!/^(yes|on|true|enabled)$/i.test(n) || !/^(no|off|false|disabled)$/i.test(n) && ("null" === n ? null : Number(n)), 
+   return n = !!/^(yes|on|true|enabled)$/i.test(n) || !/^(no|off|false|disabled)$/i.test(n) && ("null" === n ? null : Number(n)),
    e[r] = n, e;
   }), {}), t.formatters.o = function(e) {
    return this.inspectOpts.colors = this.useColors, o.inspect(e, this.inspectOpts).split("\n").map((function(e) {
@@ -4238,7 +4238,7 @@ lockfile = createCommonjsModule((function(e) {
   }, t.enable(n());
  }, , , , function(e, t, r) {
   var n, i, s = r(0), o = "win32" === process.platform, a = r(3), l = process.env.NODE_DEBUG && /fs/.test(process.env.NODE_DEBUG);
-  n = o ? /(.*?)(?:[\/\\]+|$)/g : /(.*?)(?:[\/]+|$)/g, i = o ? /^(?:[a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/][^\\\/]+)?[\\\/]*/ : /^[\/]*/, 
+  n = o ? /(.*?)(?:[\/\\]+|$)/g : /(.*?)(?:[\/]+|$)/g, i = o ? /^(?:[a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/][^\\\/]+)?[\\\/]*/ : /^[\/]*/,
   t.realpathSync = function e(t, r) {
    function l() {
     var e = i.exec(t);
@@ -4246,15 +4246,15 @@ lockfile = createCommonjsModule((function(e) {
    }
    var c, u, f, h, p, d, m, g, y, v, E, b;
    if (t = s.resolve(t), r && Object.prototype.hasOwnProperty.call(r, t)) return r[t];
-   for (c = t, u = {}, f = {}, l(); h < t.length; ) if (n.lastIndex = h, g = n.exec(t), 
+   for (c = t, u = {}, f = {}, l(); h < t.length; ) if (n.lastIndex = h, g = n.exec(t),
    m = p, p += g[0], d = m + g[1], h = n.lastIndex, !(f[d] || r && r[d] === d)) {
     if (r && Object.prototype.hasOwnProperty.call(r, d)) y = r[d]; else {
      if (!(v = a.lstatSync(d)).isSymbolicLink()) {
       f[d] = !0, r && (r[d] = d);
       continue;
      }
-     E = null, o || (b = v.dev.toString(32) + ":" + v.ino.toString(32), u.hasOwnProperty(b) && (E = u[b])), 
-     null === E && (a.statSync(d), E = a.readlinkSync(d)), y = s.resolve(m, E), r && (r[d] = y), 
+     E = null, o || (b = v.dev.toString(32) + ":" + v.ino.toString(32), u.hasOwnProperty(b) && (E = u[b])),
+     null === E && (a.statSync(d), E = a.readlinkSync(d)), y = s.resolve(m, E), r && (r[d] = y),
      o || (u[b] = E);
     }
     t = s.resolve(y, t.slice(h)), l();
@@ -4331,8 +4331,8 @@ lockfile = createCommonjsModule((function(e) {
    this._finish();
   }
   var s, o, a, l, c, u, f, h, p, d, m;
-  e.exports = n, n.GlobSync = i, s = r(3), o = r(114), a = r(60), r(75).Glob, r(2), 
-  l = r(0), c = r(22), u = r(76), f = r(115), h = f.setopts, p = f.ownProp, d = f.childrenIgnored, 
+  e.exports = n, n.GlobSync = i, s = r(3), o = r(114), a = r(60), r(75).Glob, r(2),
+  l = r(0), c = r(22), u = r(76), f = r(115), h = f.setopts, p = f.ownProp, d = f.childrenIgnored,
   m = f.isIgnored, i.prototype._finish = function() {
    if (c(this instanceof i), this.realpath) {
     var e = this;
@@ -4361,22 +4361,22 @@ lockfile = createCommonjsModule((function(e) {
    default:
     s = e.slice(0, n).join("/");
    }
-   o = e.slice(n), null === s ? l = "." : u(s) || u(e.join("/")) ? (s && u(s) || (s = "/" + s), 
+   o = e.slice(n), null === s ? l = "." : u(s) || u(e.join("/")) ? (s && u(s) || (s = "/" + s),
    l = s) : l = s, f = this._makeAbs(l), d(this, l) || (o[0] === a.GLOBSTAR ? this._processGlobStar(s, l, f, o, t, r) : this._processReaddir(s, l, f, o, t, r));
   }, i.prototype._processReaddir = function(e, t, r, n, i, s) {
    var o, a, c, u, f, h, p, d, m, g = this._readdir(r, s);
    if (g) {
-    for (o = n[0], a = !!this.minimatch.negate, c = o._glob, u = this.dot || "." === c.charAt(0), 
+    for (o = n[0], a = !!this.minimatch.negate, c = o._glob, u = this.dot || "." === c.charAt(0),
     f = [], h = 0; h < g.length; h++) ("." !== (p = g[h]).charAt(0) || u) && (a && !e ? !p.match(o) : p.match(o)) && f.push(p);
-    if (0 !== (d = f.length)) if (1 !== n.length || this.mark || this.stat) for (n.shift(), 
-    h = 0; h < d; h++) p = f[h], m = e ? [ e, p ] : [ p ], this._process(m.concat(n), i, s); else for (this.matches[i] || (this.matches[i] = Object.create(null)), 
-    h = 0; h < d; h++) p = f[h], e && (p = "/" !== e.slice(-1) ? e + "/" + p : e + p), 
+    if (0 !== (d = f.length)) if (1 !== n.length || this.mark || this.stat) for (n.shift(),
+    h = 0; h < d; h++) p = f[h], m = e ? [ e, p ] : [ p ], this._process(m.concat(n), i, s); else for (this.matches[i] || (this.matches[i] = Object.create(null)),
+    h = 0; h < d; h++) p = f[h], e && (p = "/" !== e.slice(-1) ? e + "/" + p : e + p),
     "/" !== p.charAt(0) || this.nomount || (p = l.join(this.root, p)), this._emitMatch(i, p);
    }
   }, i.prototype._emitMatch = function(e, t) {
    var r, n;
-   m(this, t) || (r = this._makeAbs(t), this.mark && (t = this._mark(t)), this.absolute && (t = r), 
-   this.matches[e][t] || this.nodir && ("DIR" === (n = this.cache[r]) || Array.isArray(n)) || (this.matches[e][t] = !0, 
+   m(this, t) || (r = this._makeAbs(t), this.mark && (t = this._mark(t)), this.absolute && (t = r),
+   this.matches[e][t] || this.nodir && ("DIR" === (n = this.cache[r]) || Array.isArray(n)) || (this.matches[e][t] = !0,
    this.stat && this._stat(t)));
   }, i.prototype._readdirInGlobStar = function(e) {
    var t, r, n;
@@ -4386,7 +4386,7 @@ lockfile = createCommonjsModule((function(e) {
    } catch (e) {
     if ("ENOENT" === e.code) return null;
    }
-   return n = r && r.isSymbolicLink(), this.symlinks[e] = n, n || !r || r.isDirectory() ? t = this._readdir(e, !1) : this.cache[e] = "FILE", 
+   return n = r && r.isSymbolicLink(), this.symlinks[e] = n, n || !r || r.isDirectory() ? t = this._readdir(e, !1) : this.cache[e] = "FILE",
    t;
   }, i.prototype._readdir = function(e, t) {
    if (t && !p(this.symlinks, e)) return this._readdirInGlobStar(e);
@@ -4402,7 +4402,7 @@ lockfile = createCommonjsModule((function(e) {
    }
   }, i.prototype._readdirEntries = function(e, t) {
    var r, n;
-   if (!this.mark && !this.stat) for (r = 0; r < t.length; r++) n = t[r], n = "/" === e ? e + n : e + "/" + n, 
+   if (!this.mark && !this.stat) for (r = 0; r < t.length; r++) n = t[r], n = "/" === e ? e + n : e + "/" + n,
    this.cache[n] = !0;
    return this.cache[e] = t, t;
   }, i.prototype._readdirError = function(e, t) {
@@ -4410,7 +4410,7 @@ lockfile = createCommonjsModule((function(e) {
    switch (t.code) {
    case "ENOTSUP":
    case "ENOTDIR":
-    if (r = this._makeAbs(e), this.cache[r] = "FILE", r === this.cwdAbs) throw (n = new Error(t.code + " invalid cwd " + this.cwd)).path = this.cwd, 
+    if (r = this._makeAbs(e), this.cache[r] = "FILE", r === this.cwdAbs) throw (n = new Error(t.code + " invalid cwd " + this.cwd)).path = this.cwd,
     n.code = t.code, n;
     break;
 
@@ -4427,13 +4427,13 @@ lockfile = createCommonjsModule((function(e) {
    }
   }, i.prototype._processGlobStar = function(e, t, r, n, i, s) {
    var o, a, l, c, u, f, h, p = this._readdir(r, s);
-   if (p && (o = n.slice(1), l = (a = e ? [ e ] : []).concat(o), this._process(l, i, !1), 
-   c = p.length, !this.symlinks[r] || !s)) for (u = 0; u < c; u++) ("." !== p[u].charAt(0) || this.dot) && (f = a.concat(p[u], o), 
+   if (p && (o = n.slice(1), l = (a = e ? [ e ] : []).concat(o), this._process(l, i, !1),
+   c = p.length, !this.symlinks[r] || !s)) for (u = 0; u < c; u++) ("." !== p[u].charAt(0) || this.dot) && (f = a.concat(p[u], o),
    this._process(f, i, !0), h = a.concat(p[u], n), this._process(h, i, !0));
   }, i.prototype._processSimple = function(e, t) {
    var r, n = this._stat(e);
-   this.matches[t] || (this.matches[t] = Object.create(null)), n && (e && u(e) && !this.nomount && (r = /[\/\\]$/.test(e), 
-   "/" === e.charAt(0) ? e = l.join(this.root, e) : (e = l.resolve(this.root, e), r && (e += "/"))), 
+   this.matches[t] || (this.matches[t] = Object.create(null)), n && (e && u(e) && !this.nomount && (r = /[\/\\]$/.test(e),
+   "/" === e.charAt(0) ? e = l.join(this.root, e) : (e = l.resolve(this.root, e), r && (e += "/"))),
    "win32" === process.platform && (e = e.replace(/\\/g, "/")), this._emitMatch(t, e));
   }, i.prototype._stat = function(e) {
    var t, r, n, i = this._makeAbs(e), o = "/" === e.slice(-1);
@@ -4446,7 +4446,7 @@ lockfile = createCommonjsModule((function(e) {
     try {
      n = s.lstatSync(i);
     } catch (e) {
-     if (e && ("ENOENT" === e.code || "ENOTDIR" === e.code)) return this.statCache[i] = !1, 
+     if (e && ("ENOENT" === e.code || "ENOTDIR" === e.code)) return this.statCache[i] = !1,
      !1;
     }
     if (n && n.isSymbolicLink()) try {
@@ -4455,7 +4455,7 @@ lockfile = createCommonjsModule((function(e) {
      r = n;
     } else r = n;
    }
-   return this.statCache[i] = r, t = !0, r && (t = r.isDirectory() ? "DIR" : "FILE"), 
+   return this.statCache[i] = r, t = !0, r && (t = r.isDirectory() ? "DIR" : "FILE"),
    this.cache[i] = this.cache[i] || t, (!o || "FILE" !== t) && t;
   }, i.prototype._mark = function(e) {
    return f.mark(this, e);
@@ -4465,7 +4465,7 @@ lockfile = createCommonjsModule((function(e) {
  }, , , function(e, t, r) {
   e.exports = function(e, t) {
    var r, n, i;
-   return r = (t = t || process.argv).indexOf("--"), n = /^--/.test(e) ? "" : "--", 
+   return r = (t = t || process.argv).indexOf("--"), n = /^--/.test(e) ? "" : "--",
    -1 !== (i = t.indexOf(n + e)) && (-1 === r || i < r);
   };
  }, , function(e, t, r) {
@@ -4516,7 +4516,7 @@ lockfile = createCommonjsModule((function(e) {
    var a = typeof e;
    if ("string" === a && e.length > 0) return function l(e) {
     var t, r;
-    if (!((e = String(e)).length > 100) && (t = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(e))) switch (r = parseFloat(t[1]), 
+    if (!((e = String(e)).length > 100) && (t = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(e))) switch (r = parseFloat(t[1]),
     (t[2] || "ms").toLowerCase()) {
     case "years":
     case "year":
@@ -4573,7 +4573,7 @@ lockfile = createCommonjsModule((function(e) {
   function n(e) {
    [ "unlink", "chmod", "stat", "lstat", "rmdir", "readdir" ].forEach((function(t) {
     e[t] = e[t] || p[t], e[t += "Sync"] = e[t] || p[t];
-   })), e.maxBusyTries = e.maxBusyTries || 3, e.emfileWait = e.emfileWait || 1e3, !1 === e.glob && (e.disableGlob = !0), 
+   })), e.maxBusyTries = e.maxBusyTries || 3, e.emfileWait = e.emfileWait || 1e3, !1 === e.glob && (e.disableGlob = !0),
    e.disableGlob = e.disableGlob || !1, e.glob = e.glob || g;
   }
   function i(e, t, r) {
@@ -4581,7 +4581,7 @@ lockfile = createCommonjsModule((function(e) {
     return e ? r(e) : 0 === (l = n.length) ? r() : void n.forEach((function(e) {
      s(e, t, (function n(i) {
       if (i) {
-       if (("EBUSY" === i.code || "ENOTEMPTY" === i.code || "EPERM" === i.code) && o < t.maxBusyTries) return o++, 
+       if (("EBUSY" === i.code || "ENOTEMPTY" === i.code || "EPERM" === i.code) && o < t.maxBusyTries) return o++,
        setTimeout((function() {
         s(e, t, n);
        }), 100 * o);
@@ -4597,9 +4597,9 @@ lockfile = createCommonjsModule((function(e) {
     }));
    }
    var o, a, l;
-   if ("function" == typeof t && (r = t, t = {}), f(e, "rimraf: missing path"), f.equal(typeof e, "string", "rimraf: path should be a string"), 
-   f.equal(typeof r, "function", "rimraf: callback function required"), f(t, "rimraf: invalid options argument provided"), 
-   f.equal(typeof t, "object", "rimraf: options should be object"), n(t), o = 0, a = null, 
+   if ("function" == typeof t && (r = t, t = {}), f(e, "rimraf: missing path"), f.equal(typeof e, "string", "rimraf: path should be a string"),
+   f.equal(typeof r, "function", "rimraf: callback function required"), f(t, "rimraf: invalid options argument provided"),
+   f.equal(typeof t, "object", "rimraf: options should be object"), n(t), o = 0, a = null,
    l = 0, t.disableGlob || !d.hasMagic(e)) return i(null, [ e ]);
    t.lstat(e, (function(r, n) {
     if (!r) return i(null, [ e ]);
@@ -4608,7 +4608,7 @@ lockfile = createCommonjsModule((function(e) {
   }
   function s(e, t, r) {
    f(e), f(t), f("function" == typeof r), t.lstat(e, (function(n, i) {
-    return n && "ENOENT" === n.code ? r(null) : (n && "EPERM" === n.code && v && o(e, t, n, r), 
+    return n && "ENOENT" === n.code ? r(null) : (n && "EPERM" === n.code && v && o(e, t, n, r),
     i && i.isDirectory() ? l(e, t, n, r) : void t.unlink(e, (function(n) {
      if (n) {
       if ("ENOENT" === n.code) return r(null);
@@ -4658,8 +4658,8 @@ lockfile = createCommonjsModule((function(e) {
   }
   function c(e, t) {
    var r, i, s;
-   if (n(t = t || {}), f(e, "rimraf: missing path"), f.equal(typeof e, "string", "rimraf: path should be a string"), 
-   f(t, "rimraf: missing options"), f.equal(typeof t, "object", "rimraf: options should be object"), 
+   if (n(t = t || {}), f(e, "rimraf: missing path"), f.equal(typeof e, "string", "rimraf: path should be a string"),
+   f(t, "rimraf: missing options"), f.equal(typeof t, "object", "rimraf: options should be object"),
    t.disableGlob || !d.hasMagic(e)) r = [ e ]; else try {
     t.lstatSync(e), r = [ e ];
    } catch (n) {
@@ -4706,13 +4706,13 @@ lockfile = createCommonjsModule((function(e) {
    }
   }
   var f, h, p, d, m, g, y, v;
-  e.exports = i, i.sync = c, f = r(22), h = r(0), p = r(3), d = r(75), m = parseInt("666", 8), 
+  e.exports = i, i.sync = c, f = r(22), h = r(0), p = r(3), d = r(75), m = parseInt("666", 8),
   g = {
    nosort: !0,
    silent: !0
   }, y = 0, v = "win32" === process.platform;
  }, , , , , , function(e, t, r) {
-  var n, i = r(221), s = i("no-color") || i("no-colors") || i("color=false") ? 0 : i("color=16m") || i("color=full") || i("color=truecolor") ? 3 : i("color=256") ? 2 : i("color") || i("colors") || i("color=true") || i("color=always") ? 1 : process.stdout && !process.stdout.isTTY ? 0 : "win32" === process.platform ? 1 : "CI" in process.env ? "TRAVIS" in process.env || "Travis" === process.env.CI ? 1 : 0 : "TEAMCITY_VERSION" in process.env ? null === process.env.TEAMCITY_VERSION.match(/^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/) ? 0 : 1 : /^(screen|xterm)-256(?:color)?/.test(process.env.TERM) ? 2 : /^screen|^xterm|^vt100|color|ansi|cygwin|linux/i.test(process.env.TERM) || "COLORTERM" in process.env ? 1 : (process.env.TERM, 
+  var n, i = r(221), s = i("no-color") || i("no-colors") || i("color=false") ? 0 : i("color=16m") || i("color=full") || i("color=truecolor") ? 3 : i("color=256") ? 2 : i("color") || i("colors") || i("color=true") || i("color=always") ? 1 : process.stdout && !process.stdout.isTTY ? 0 : "win32" === process.platform ? 1 : "CI" in process.env ? "TRAVIS" in process.env || "Travis" === process.env.CI ? 1 : 0 : "TEAMCITY_VERSION" in process.env ? null === process.env.TEAMCITY_VERSION.match(/^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/) ? 0 : 1 : /^(screen|xterm)-256(?:color)?/.test(process.env.TERM) ? 2 : /^screen|^xterm|^vt100|color|ansi|cygwin|linux/i.test(process.env.TERM) || "COLORTERM" in process.env ? 1 : (process.env.TERM,
   0);
   0 === s && "FORCE_COLOR" in process.env && (s = 1), e.exports = process && (0 !== (n = s) && {
    level: n,
@@ -4758,29 +4758,29 @@ constants = {
   const a = o++;
   debug_1(e, a, t), s[e] = a, i[a] = t, n[a] = new RegExp(t, r ? "g" : void 0);
  };
- a("NUMERICIDENTIFIER", "0|[1-9]\\d*"), a("NUMERICIDENTIFIERLOOSE", "[0-9]+"), a("NONNUMERICIDENTIFIER", "\\d*[a-zA-Z-][a-zA-Z0-9-]*"), 
- a("MAINVERSION", `(${i[s.NUMERICIDENTIFIER]})\\.(${i[s.NUMERICIDENTIFIER]})\\.(${i[s.NUMERICIDENTIFIER]})`), 
- a("MAINVERSIONLOOSE", `(${i[s.NUMERICIDENTIFIERLOOSE]})\\.(${i[s.NUMERICIDENTIFIERLOOSE]})\\.(${i[s.NUMERICIDENTIFIERLOOSE]})`), 
- a("PRERELEASEIDENTIFIER", `(?:${i[s.NUMERICIDENTIFIER]}|${i[s.NONNUMERICIDENTIFIER]})`), 
- a("PRERELEASEIDENTIFIERLOOSE", `(?:${i[s.NUMERICIDENTIFIERLOOSE]}|${i[s.NONNUMERICIDENTIFIER]})`), 
- a("PRERELEASE", `(?:-(${i[s.PRERELEASEIDENTIFIER]}(?:\\.${i[s.PRERELEASEIDENTIFIER]})*))`), 
- a("PRERELEASELOOSE", `(?:-?(${i[s.PRERELEASEIDENTIFIERLOOSE]}(?:\\.${i[s.PRERELEASEIDENTIFIERLOOSE]})*))`), 
- a("BUILDIDENTIFIER", "[0-9A-Za-z-]+"), a("BUILD", `(?:\\+(${i[s.BUILDIDENTIFIER]}(?:\\.${i[s.BUILDIDENTIFIER]})*))`), 
- a("FULLPLAIN", `v?${i[s.MAINVERSION]}${i[s.PRERELEASE]}?${i[s.BUILD]}?`), a("FULL", `^${i[s.FULLPLAIN]}$`), 
- a("LOOSEPLAIN", `[v=\\s]*${i[s.MAINVERSIONLOOSE]}${i[s.PRERELEASELOOSE]}?${i[s.BUILD]}?`), 
- a("LOOSE", `^${i[s.LOOSEPLAIN]}$`), a("GTLT", "((?:<|>)?=?)"), a("XRANGEIDENTIFIERLOOSE", `${i[s.NUMERICIDENTIFIERLOOSE]}|x|X|\\*`), 
- a("XRANGEIDENTIFIER", `${i[s.NUMERICIDENTIFIER]}|x|X|\\*`), a("XRANGEPLAIN", `[v=\\s]*(${i[s.XRANGEIDENTIFIER]})(?:\\.(${i[s.XRANGEIDENTIFIER]})(?:\\.(${i[s.XRANGEIDENTIFIER]})(?:${i[s.PRERELEASE]})?${i[s.BUILD]}?)?)?`), 
- a("XRANGEPLAINLOOSE", `[v=\\s]*(${i[s.XRANGEIDENTIFIERLOOSE]})(?:\\.(${i[s.XRANGEIDENTIFIERLOOSE]})(?:\\.(${i[s.XRANGEIDENTIFIERLOOSE]})(?:${i[s.PRERELEASELOOSE]})?${i[s.BUILD]}?)?)?`), 
- a("XRANGE", `^${i[s.GTLT]}\\s*${i[s.XRANGEPLAIN]}$`), a("XRANGELOOSE", `^${i[s.GTLT]}\\s*${i[s.XRANGEPLAINLOOSE]}$`), 
- a("COERCE", `(^|[^\\d])(\\d{1,${r}})(?:\\.(\\d{1,${r}}))?(?:\\.(\\d{1,${r}}))?(?:$|[^\\d])`), 
- a("COERCERTL", i[s.COERCE], !0), a("LONETILDE", "(?:~>?)"), a("TILDETRIM", `(\\s*)${i[s.LONETILDE]}\\s+`, !0), 
- t.tildeTrimReplace = "$1~", a("TILDE", `^${i[s.LONETILDE]}${i[s.XRANGEPLAIN]}$`), 
- a("TILDELOOSE", `^${i[s.LONETILDE]}${i[s.XRANGEPLAINLOOSE]}$`), a("LONECARET", "(?:\\^)"), 
- a("CARETTRIM", `(\\s*)${i[s.LONECARET]}\\s+`, !0), t.caretTrimReplace = "$1^", a("CARET", `^${i[s.LONECARET]}${i[s.XRANGEPLAIN]}$`), 
- a("CARETLOOSE", `^${i[s.LONECARET]}${i[s.XRANGEPLAINLOOSE]}$`), a("COMPARATORLOOSE", `^${i[s.GTLT]}\\s*(${i[s.LOOSEPLAIN]})$|^$`), 
- a("COMPARATOR", `^${i[s.GTLT]}\\s*(${i[s.FULLPLAIN]})$|^$`), a("COMPARATORTRIM", `(\\s*)${i[s.GTLT]}\\s*(${i[s.LOOSEPLAIN]}|${i[s.XRANGEPLAIN]})`, !0), 
- t.comparatorTrimReplace = "$1$2$3", a("HYPHENRANGE", `^\\s*(${i[s.XRANGEPLAIN]})\\s+-\\s+(${i[s.XRANGEPLAIN]})\\s*$`), 
- a("HYPHENRANGELOOSE", `^\\s*(${i[s.XRANGEPLAINLOOSE]})\\s+-\\s+(${i[s.XRANGEPLAINLOOSE]})\\s*$`), 
+ a("NUMERICIDENTIFIER", "0|[1-9]\\d*"), a("NUMERICIDENTIFIERLOOSE", "[0-9]+"), a("NONNUMERICIDENTIFIER", "\\d*[a-zA-Z-][a-zA-Z0-9-]*"),
+ a("MAINVERSION", `(${i[s.NUMERICIDENTIFIER]})\\.(${i[s.NUMERICIDENTIFIER]})\\.(${i[s.NUMERICIDENTIFIER]})`),
+ a("MAINVERSIONLOOSE", `(${i[s.NUMERICIDENTIFIERLOOSE]})\\.(${i[s.NUMERICIDENTIFIERLOOSE]})\\.(${i[s.NUMERICIDENTIFIERLOOSE]})`),
+ a("PRERELEASEIDENTIFIER", `(?:${i[s.NUMERICIDENTIFIER]}|${i[s.NONNUMERICIDENTIFIER]})`),
+ a("PRERELEASEIDENTIFIERLOOSE", `(?:${i[s.NUMERICIDENTIFIERLOOSE]}|${i[s.NONNUMERICIDENTIFIER]})`),
+ a("PRERELEASE", `(?:-(${i[s.PRERELEASEIDENTIFIER]}(?:\\.${i[s.PRERELEASEIDENTIFIER]})*))`),
+ a("PRERELEASELOOSE", `(?:-?(${i[s.PRERELEASEIDENTIFIERLOOSE]}(?:\\.${i[s.PRERELEASEIDENTIFIERLOOSE]})*))`),
+ a("BUILDIDENTIFIER", "[0-9A-Za-z-]+"), a("BUILD", `(?:\\+(${i[s.BUILDIDENTIFIER]}(?:\\.${i[s.BUILDIDENTIFIER]})*))`),
+ a("FULLPLAIN", `v?${i[s.MAINVERSION]}${i[s.PRERELEASE]}?${i[s.BUILD]}?`), a("FULL", `^${i[s.FULLPLAIN]}$`),
+ a("LOOSEPLAIN", `[v=\\s]*${i[s.MAINVERSIONLOOSE]}${i[s.PRERELEASELOOSE]}?${i[s.BUILD]}?`),
+ a("LOOSE", `^${i[s.LOOSEPLAIN]}$`), a("GTLT", "((?:<|>)?=?)"), a("XRANGEIDENTIFIERLOOSE", `${i[s.NUMERICIDENTIFIERLOOSE]}|x|X|\\*`),
+ a("XRANGEIDENTIFIER", `${i[s.NUMERICIDENTIFIER]}|x|X|\\*`), a("XRANGEPLAIN", `[v=\\s]*(${i[s.XRANGEIDENTIFIER]})(?:\\.(${i[s.XRANGEIDENTIFIER]})(?:\\.(${i[s.XRANGEIDENTIFIER]})(?:${i[s.PRERELEASE]})?${i[s.BUILD]}?)?)?`),
+ a("XRANGEPLAINLOOSE", `[v=\\s]*(${i[s.XRANGEIDENTIFIERLOOSE]})(?:\\.(${i[s.XRANGEIDENTIFIERLOOSE]})(?:\\.(${i[s.XRANGEIDENTIFIERLOOSE]})(?:${i[s.PRERELEASELOOSE]})?${i[s.BUILD]}?)?)?`),
+ a("XRANGE", `^${i[s.GTLT]}\\s*${i[s.XRANGEPLAIN]}$`), a("XRANGELOOSE", `^${i[s.GTLT]}\\s*${i[s.XRANGEPLAINLOOSE]}$`),
+ a("COERCE", `(^|[^\\d])(\\d{1,${r}})(?:\\.(\\d{1,${r}}))?(?:\\.(\\d{1,${r}}))?(?:$|[^\\d])`),
+ a("COERCERTL", i[s.COERCE], !0), a("LONETILDE", "(?:~>?)"), a("TILDETRIM", `(\\s*)${i[s.LONETILDE]}\\s+`, !0),
+ t.tildeTrimReplace = "$1~", a("TILDE", `^${i[s.LONETILDE]}${i[s.XRANGEPLAIN]}$`),
+ a("TILDELOOSE", `^${i[s.LONETILDE]}${i[s.XRANGEPLAINLOOSE]}$`), a("LONECARET", "(?:\\^)"),
+ a("CARETTRIM", `(\\s*)${i[s.LONECARET]}\\s+`, !0), t.caretTrimReplace = "$1^", a("CARET", `^${i[s.LONECARET]}${i[s.XRANGEPLAIN]}$`),
+ a("CARETLOOSE", `^${i[s.LONECARET]}${i[s.XRANGEPLAINLOOSE]}$`), a("COMPARATORLOOSE", `^${i[s.GTLT]}\\s*(${i[s.LOOSEPLAIN]})$|^$`),
+ a("COMPARATOR", `^${i[s.GTLT]}\\s*(${i[s.FULLPLAIN]})$|^$`), a("COMPARATORTRIM", `(\\s*)${i[s.GTLT]}\\s*(${i[s.LOOSEPLAIN]}|${i[s.XRANGEPLAIN]})`, !0),
+ t.comparatorTrimReplace = "$1$2$3", a("HYPHENRANGE", `^\\s*(${i[s.XRANGEPLAIN]})\\s+-\\s+(${i[s.XRANGEPLAIN]})\\s*$`),
+ a("HYPHENRANGELOOSE", `^\\s*(${i[s.XRANGEPLAINLOOSE]})\\s+-\\s+(${i[s.XRANGEPLAINLOOSE]})\\s*$`),
  a("STAR", "(<|>)?=?\\s*\\*"), a("GTE0", "^\\s*>=\\s*0\\.0\\.0\\s*$"), a("GTE0PRE", "^\\s*>=\\s*0\\.0\\.0-0\\s*$");
 }));
 
@@ -4824,7 +4824,7 @@ class SemVer {
   })) : this.prerelease = [], this.build = r[5] ? r[5].split(".") : [], this.format();
  }
  format() {
-  return this.version = `${this.major}.${this.minor}.${this.patch}`, this.prerelease.length && (this.version += `-${this.prerelease.join(".")}`), 
+  return this.version = `${this.major}.${this.minor}.${this.patch}`, this.prerelease.length && (this.version += `-${this.prerelease.join(".")}`),
   this.version;
  }
  toString() {
@@ -4883,12 +4883,12 @@ class SemVer {
    break;
 
   case "major":
-   0 === this.minor && 0 === this.patch && 0 !== this.prerelease.length || this.major++, 
+   0 === this.minor && 0 === this.patch && 0 !== this.prerelease.length || this.major++,
    this.minor = 0, this.patch = 0, this.prerelease = [];
    break;
 
   case "minor":
-   0 === this.patch && 0 !== this.prerelease.length || this.minor++, this.patch = 0, 
+   0 === this.patch && 0 !== this.prerelease.length || this.minor++, this.patch = 0,
    this.prerelease = [];
    break;
 
@@ -4899,7 +4899,7 @@ class SemVer {
   case "pre":
    if (0 === this.prerelease.length) this.prerelease = [ 0 ]; else {
     let e = this.prerelease.length;
-    for (;--e >= 0; ) "number" == typeof this.prerelease[e] && (this.prerelease[e]++, 
+    for (;--e >= 0; ) "number" == typeof this.prerelease[e] && (this.prerelease[e]++,
     e = -2);
     -1 === e && this.prerelease.push(0);
    }
@@ -4913,8 +4913,8 @@ class SemVer {
  }
 }
 
-semver = SemVer, compare_1 = (e, t, r) => new semver(e, r).compare(new semver(t, r)), 
-lte_1 = (e, t, r) => compare_1(e, t, r) <= 0, major_1 = (e, t) => new semver(e, t).major, 
+semver = SemVer, compare_1 = (e, t, r) => new semver(e, r).compare(new semver(t, r)),
+lte_1 = (e, t, r) => compare_1(e, t, r) <= 0, major_1 = (e, t) => new semver(e, t).major,
 iterator = function(e) {
  e.prototype[Symbol.iterator] = function*() {
   for (let e = this.head; e; e = e.next) yield e.value;
@@ -4922,21 +4922,21 @@ iterator = function(e) {
 }, yallist = Yallist, Yallist.Node = Node, Yallist.create = Yallist, Yallist.prototype.removeNode = function(e) {
  var t, r;
  if (e.list !== this) throw new Error("removing node which does not belong to this list");
- return t = e.next, r = e.prev, t && (t.prev = r), r && (r.next = t), e === this.head && (this.head = t), 
- e === this.tail && (this.tail = r), e.list.length--, e.next = null, e.prev = null, 
+ return t = e.next, r = e.prev, t && (t.prev = r), r && (r.next = t), e === this.head && (this.head = t),
+ e === this.tail && (this.tail = r), e.list.length--, e.next = null, e.prev = null,
  e.list = null, t;
 }, Yallist.prototype.unshiftNode = function(e) {
  if (e !== this.head) {
   e.list && e.list.removeNode(e);
   var t = this.head;
-  e.list = this, e.next = t, t && (t.prev = e), this.head = e, this.tail || (this.tail = e), 
+  e.list = this, e.next = t, t && (t.prev = e), this.head = e, this.tail || (this.tail = e),
   this.length++;
  }
 }, Yallist.prototype.pushNode = function(e) {
  if (e !== this.tail) {
   e.list && e.list.removeNode(e);
   var t = this.tail;
-  e.list = this, e.prev = t, t && (t.next = e), this.tail = e, this.head || (this.head = e), 
+  e.list = this, e.prev = t, t && (t.next = e), this.tail = e, this.head || (this.head = e),
   this.length++;
  }
 }, Yallist.prototype.push = function() {
@@ -4948,13 +4948,13 @@ iterator = function(e) {
 }, Yallist.prototype.pop = function() {
  if (this.tail) {
   var e = this.tail.value;
-  return this.tail = this.tail.prev, this.tail ? this.tail.next = null : this.head = null, 
+  return this.tail = this.tail.prev, this.tail ? this.tail.next = null : this.head = null,
   this.length--, e;
  }
 }, Yallist.prototype.shift = function() {
  if (this.head) {
   var e = this.head.value;
-  return this.head = this.head.next, this.head ? this.head.prev = null : this.tail = null, 
+  return this.head = this.head.next, this.head ? this.head.prev = null : this.tail = null,
   this.length--, e;
  }
 }, Yallist.prototype.forEach = function(e, t) {
@@ -4962,7 +4962,7 @@ iterator = function(e) {
  for (var r = this.head, n = 0; null !== r; n++) e.call(t, r.value, n, this), r = r.next;
 }, Yallist.prototype.forEachReverse = function(e, t) {
  t = t || this;
- for (var r = this.tail, n = this.length - 1; null !== r; n--) e.call(t, r.value, n, this), 
+ for (var r = this.tail, n = this.length - 1; null !== r; n--) e.call(t, r.value, n, this),
  r = r.prev;
 }, Yallist.prototype.get = function(e) {
  for (var t = 0, r = this.head; null !== r && t < e; t++) r = r.next;
@@ -4972,12 +4972,12 @@ iterator = function(e) {
  if (t === e && null !== r) return r.value;
 }, Yallist.prototype.map = function(e, t) {
  var r, n;
- for (t = t || this, r = new Yallist, n = this.head; null !== n; ) r.push(e.call(t, n.value, this)), 
+ for (t = t || this, r = new Yallist, n = this.head; null !== n; ) r.push(e.call(t, n.value, this)),
  n = n.next;
  return r;
 }, Yallist.prototype.mapReverse = function(e, t) {
  var r, n;
- for (t = t || this, r = new Yallist, n = this.tail; null !== n; ) r.push(e.call(t, n.value, this)), 
+ for (t = t || this, r = new Yallist, n = this.tail; null !== n; ) r.push(e.call(t, n.value, this)),
  n = n.prev;
  return r;
 }, Yallist.prototype.reduce = function(e, t) {
@@ -5006,24 +5006,24 @@ iterator = function(e) {
  return r;
 }, Yallist.prototype.slice = function(e, t) {
  var r, n, i;
- if ((t = t || this.length) < 0 && (t += this.length), (e = e || 0) < 0 && (e += this.length), 
+ if ((t = t || this.length) < 0 && (t += this.length), (e = e || 0) < 0 && (e += this.length),
  r = new Yallist, t < e || t < 0) return r;
  for (e < 0 && (e = 0), t > this.length && (t = this.length), n = 0, i = this.head; null !== i && n < e; n++) i = i.next;
  for (;null !== i && n < t; n++, i = i.next) r.push(i.value);
  return r;
 }, Yallist.prototype.sliceReverse = function(e, t) {
  var r, n, i;
- if ((t = t || this.length) < 0 && (t += this.length), (e = e || 0) < 0 && (e += this.length), 
+ if ((t = t || this.length) < 0 && (t += this.length), (e = e || 0) < 0 && (e += this.length),
  r = new Yallist, t < e || t < 0) return r;
  for (e < 0 && (e = 0), t > this.length && (t = this.length), n = this.length, i = this.tail; null !== i && n > t; n--) i = i.prev;
  for (;null !== i && n > e; n--, i = i.prev) r.push(i.value);
  return r;
 }, Yallist.prototype.splice = function(e, t, ...r) {
  var n, i, s;
- for (e > this.length && (e = this.length - 1), e < 0 && (e = this.length + e), n = 0, 
+ for (e > this.length && (e = this.length - 1), e < 0 && (e = this.length + e), n = 0,
  i = this.head; null !== i && n < e; n++) i = i.next;
  for (s = [], n = 0; i && n < t; n++) s.push(i.value), i = this.removeNode(i);
- for (null === i && (i = this.tail), i !== this.head && i !== this.tail && (i = i.prev), 
+ for (null === i && (i = this.tail), i !== this.head && i !== this.tail && (i = i.prev),
  n = 0; n < r.length; n++) i = insert(this, i, r[n]);
  return s;
 }, Yallist.prototype.reverse = function() {
@@ -5057,7 +5057,7 @@ const MAX = Symbol("max"), LENGTH = Symbol("length"), LENGTH_CALCULATOR = Symbol
 }, del = (e, t) => {
  if (t) {
   const r = t.value;
-  e[DISPOSE] && e[DISPOSE](r.key, r.value), e[LENGTH] -= r.length, e[CACHE].delete(r.key), 
+  e[DISPOSE] && e[DISPOSE](r.key, r.value), e[LENGTH] -= r.length, e[CACHE].delete(r.key),
   e[LRU_LIST].removeNode(t);
  }
 };
@@ -5080,9 +5080,9 @@ lruCache = class LRUCache {
   }), e || (e = {}), e.max && ("number" != typeof e.max || e.max < 0)) throw new TypeError("max must be a non-negative number");
   this[MAX] = e.max || 1 / 0;
   const t = e.length || naiveLength;
-  if (this[LENGTH_CALCULATOR] = "function" != typeof t ? naiveLength : t, this[ALLOW_STALE] = e.stale || !1, 
+  if (this[LENGTH_CALCULATOR] = "function" != typeof t ? naiveLength : t, this[ALLOW_STALE] = e.stale || !1,
   e.maxAge && "number" != typeof e.maxAge) throw new TypeError("maxAge must be a number");
-  this[MAX_AGE] = e.maxAge || 0, this[DISPOSE] = e.dispose, this[NO_DISPOSE_ON_SET] = e.noDisposeOnSet || !1, 
+  this[MAX_AGE] = e.maxAge || 0, this[DISPOSE] = e.dispose, this[NO_DISPOSE_ON_SET] = e.noDisposeOnSet || !1,
   this[UPDATE_AGE_ON_GET] = e.updateAgeOnGet || !1, this.reset();
  }
  set max(e) {
@@ -5106,7 +5106,7 @@ lruCache = class LRUCache {
   return this[MAX_AGE];
  }
  set lengthCalculator(e) {
-  "function" != typeof e && (e = naiveLength), e !== this[LENGTH_CALCULATOR] && (this[LENGTH_CALCULATOR] = e, 
+  "function" != typeof e && (e = naiveLength), e !== this[LENGTH_CALCULATOR] && (this[LENGTH_CALCULATOR] = e,
   this[LENGTH] = 0, this[LRU_LIST].forEach((e => {
    e.length = this[LENGTH_CALCULATOR](e.value, e.key), this[LENGTH] += e.length;
   }))), trim(this);
@@ -5141,7 +5141,7 @@ lruCache = class LRUCache {
   return this[LRU_LIST].toArray().map((e => e.value));
  }
  reset() {
-  this[DISPOSE] && this[LRU_LIST] && this[LRU_LIST].length && this[LRU_LIST].forEach((e => this[DISPOSE](e.key, e.value))), 
+  this[DISPOSE] && this[LRU_LIST] && this[LRU_LIST].length && this[LRU_LIST].forEach((e => this[DISPOSE](e.key, e.value))),
   this[CACHE] = new Map, this[LRU_LIST] = new yallist, this[LENGTH] = 0;
  }
  dump() {
@@ -5160,13 +5160,13 @@ lruCache = class LRUCache {
   if (this[CACHE].has(e)) {
    if (i > this[MAX]) return del(this, this[CACHE].get(e)), !1;
    const s = this[CACHE].get(e).value;
-   return this[DISPOSE] && (this[NO_DISPOSE_ON_SET] || this[DISPOSE](e, s.value)), 
-   s.now = n, s.maxAge = r, s.value = t, this[LENGTH] += i - s.length, s.length = i, 
+   return this[DISPOSE] && (this[NO_DISPOSE_ON_SET] || this[DISPOSE](e, s.value)),
+   s.now = n, s.maxAge = r, s.value = t, this[LENGTH] += i - s.length, s.length = i,
    this.get(e), trim(this), !0;
   }
   const s = new Entry(e, t, i, n, r);
-  return s.length > this[MAX] ? (this[DISPOSE] && this[DISPOSE](e, t), !1) : (this[LENGTH] += s.length, 
-  this[LRU_LIST].unshift(s), this[CACHE].set(e, this[LRU_LIST].head), trim(this), 
+  return s.length > this[MAX] ? (this[DISPOSE] && this[DISPOSE](e, t), !1) : (this[LENGTH] += s.length,
+  this[LRU_LIST].unshift(s), this[CACHE].set(e, this[LRU_LIST].head), trim(this),
   !0);
  }
  has(e) {
@@ -5201,16 +5201,16 @@ lruCache = class LRUCache {
  prune() {
   this[CACHE].forEach(((e, t) => get(this, t, !1)));
  }
-}, eq_1 = (e, t, r) => 0 === compare_1(e, t, r), neq_1 = (e, t, r) => 0 !== compare_1(e, t, r), 
-gt_1 = (e, t, r) => compare_1(e, t, r) > 0, gte_1 = (e, t, r) => compare_1(e, t, r) >= 0, 
+}, eq_1 = (e, t, r) => 0 === compare_1(e, t, r), neq_1 = (e, t, r) => 0 !== compare_1(e, t, r),
+gt_1 = (e, t, r) => compare_1(e, t, r) > 0, gte_1 = (e, t, r) => compare_1(e, t, r) >= 0,
 lt_1 = (e, t, r) => compare_1(e, t, r) < 0, cmp_1 = (e, t, r, n) => {
  switch (t) {
  case "===":
-  return "object" == typeof e && (e = e.version), "object" == typeof r && (r = r.version), 
+  return "object" == typeof e && (e = e.version), "object" == typeof r && (r = r.version),
   e === r;
 
  case "!==":
-  return "object" == typeof e && (e = e.version), "object" == typeof r && (r = r.version), 
+  return "object" == typeof e && (e = e.version), "object" == typeof r && (r = r.version),
   e !== r;
 
  case "":
@@ -5249,14 +5249,14 @@ class Comparator {
    if (e.loose === !!t.loose) return e;
    e = e.value;
   }
-  debug_1("comparator", e, t), this.options = t, this.loose = !!t.loose, this.parse(e), 
-  this.semver === ANY ? this.value = "" : this.value = this.operator + this.semver.version, 
+  debug_1("comparator", e, t), this.options = t, this.loose = !!t.loose, this.parse(e),
+  this.semver === ANY ? this.value = "" : this.value = this.operator + this.semver.version,
   debug_1("comp", this);
  }
  parse(e) {
   const t = this.options.loose ? re$1[t$1.COMPARATORLOOSE] : re$1[t$1.COMPARATOR], r = e.match(t);
   if (!r) throw new TypeError(`Invalid comparator: ${e}`);
-  this.operator = void 0 !== r[1] ? r[1] : "", "=" === this.operator && (this.operator = ""), 
+  this.operator = void 0 !== r[1] ? r[1] : "", "=" === this.operator && (this.operator = ""),
   r[2] ? this.semver = new semver(r[2], this.options.loose) : this.semver = ANY;
  }
  toString() {
@@ -5290,10 +5290,10 @@ const {re: re$1, t: t$1} = re_1;
 class Range {
  constructor(e, t) {
   if (t = parseOptions_1(t), e instanceof Range) return e.loose === !!t.loose && e.includePrerelease === !!t.includePrerelease ? e : new Range(e.raw, t);
-  if (e instanceof comparator) return this.raw = e.value, this.set = [ [ e ] ], this.format(), 
+  if (e instanceof comparator) return this.raw = e.value, this.set = [ [ e ] ], this.format(),
   this;
-  if (this.options = t, this.loose = !!t.loose, this.includePrerelease = !!t.includePrerelease, 
-  this.raw = e, this.set = e.split("||").map((e => this.parseRange(e.trim()))).filter((e => e.length)), 
+  if (this.options = t, this.loose = !!t.loose, this.includePrerelease = !!t.includePrerelease,
+  this.raw = e, this.set = e.split("||").map((e => this.parseRange(e.trim()))).filter((e => e.length)),
   !this.set.length) throw new TypeError(`Invalid SemVer Range: ${e}`);
   if (this.set.length > 1) {
    const e = this.set[0];
@@ -5315,10 +5315,10 @@ class Range {
   const r = `parseRange:${Object.keys(this.options).join(",")}:${e}`, n = cache.get(r);
   if (n) return n;
   const i = this.options.loose, s = i ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE];
-  e = e.replace(s, hyphenReplace(this.options.includePrerelease)), debug_1("hyphen replace", e), 
+  e = e.replace(s, hyphenReplace(this.options.includePrerelease)), debug_1("hyphen replace", e),
   e = e.replace(re[t.COMPARATORTRIM], comparatorTrimReplace), debug_1("comparator trim", e);
   let o = (e = (e = (e = e.replace(re[t.TILDETRIM], tildeTrimReplace)).replace(re[t.CARETTRIM], caretTrimReplace)).split(/\s+/).join(" ")).split(" ").map((e => parseComparator(e, this.options))).join(" ").split(/\s+/).map((e => replaceGTE0(e, this.options)));
-  i && (o = o.filter((e => (debug_1("loose invalid filter", e, this.options), !!e.match(re[t.COMPARATORLOOSE]))))), 
+  i && (o = o.filter((e => (debug_1("loose invalid filter", e, this.options), !!e.match(re[t.COMPARATORLOOSE]))))),
   debug_1("range list", o);
   const a = new Map, l = o.map((e => new comparator(e, this.options)));
   for (const e of l) {
@@ -5355,14 +5355,14 @@ const cache = new lruCache({
  let i = n.pop();
  for (;r && n.length; ) r = n.every((e => i.intersects(e, t))), i = n.pop();
  return r;
-}, parseComparator = (e, t) => (debug_1("comp", e, t), e = replaceCarets(e, t), 
-debug_1("caret", e), e = replaceTildes(e, t), debug_1("tildes", e), e = replaceXRanges(e, t), 
+}, parseComparator = (e, t) => (debug_1("comp", e, t), e = replaceCarets(e, t),
+debug_1("caret", e), e = replaceTildes(e, t), debug_1("tildes", e), e = replaceXRanges(e, t),
 debug_1("xrange", e), e = replaceStars(e, t), debug_1("stars", e), e), isX = e => !e || "x" === e.toLowerCase() || "*" === e, replaceTildes = (e, t) => e.trim().split(/\s+/).map((e => replaceTilde(e, t))).join(" "), replaceTilde = (e, r) => {
  const n = r.loose ? re[t.TILDELOOSE] : re[t.TILDE];
  return e.replace(n, ((t, r, n, i, s) => {
   let o;
-  return debug_1("tilde", e, t, r, n, i, s), isX(r) ? o = "" : isX(n) ? o = `>=${r}.0.0 <${+r + 1}.0.0-0` : isX(i) ? o = `>=${r}.${n}.0 <${r}.${+n + 1}.0-0` : s ? (debug_1("replaceTilde pr", s), 
-  o = `>=${r}.${n}.${i}-${s} <${r}.${+n + 1}.0-0`) : o = `>=${r}.${n}.${i} <${r}.${+n + 1}.0-0`, 
+  return debug_1("tilde", e, t, r, n, i, s), isX(r) ? o = "" : isX(n) ? o = `>=${r}.0.0 <${+r + 1}.0.0-0` : isX(i) ? o = `>=${r}.${n}.0 <${r}.${+n + 1}.0-0` : s ? (debug_1("replaceTilde pr", s),
+  o = `>=${r}.${n}.${i}-${s} <${r}.${+n + 1}.0-0`) : o = `>=${r}.${n}.${i} <${r}.${+n + 1}.0-0`,
   debug_1("tilde return", o), o;
  }));
 }, replaceCarets = (e, t) => e.trim().split(/\s+/).map((e => replaceCaret(e, t))).join(" "), replaceCaret = (e, r) => {
@@ -5370,9 +5370,9 @@ debug_1("xrange", e), e = replaceStars(e, t), debug_1("stars", e), e), isX = e =
  const n = r.loose ? re[t.CARETLOOSE] : re[t.CARET], i = r.includePrerelease ? "-0" : "";
  return e.replace(n, ((t, r, n, s, o) => {
   let a;
-  return debug_1("caret", e, t, r, n, s, o), isX(r) ? a = "" : isX(n) ? a = `>=${r}.0.0${i} <${+r + 1}.0.0-0` : isX(s) ? a = "0" === r ? `>=${r}.${n}.0${i} <${r}.${+n + 1}.0-0` : `>=${r}.${n}.0${i} <${+r + 1}.0.0-0` : o ? (debug_1("replaceCaret pr", o), 
-  a = "0" === r ? "0" === n ? `>=${r}.${n}.${s}-${o} <${r}.${n}.${+s + 1}-0` : `>=${r}.${n}.${s}-${o} <${r}.${+n + 1}.0-0` : `>=${r}.${n}.${s}-${o} <${+r + 1}.0.0-0`) : (debug_1("no pr"), 
-  a = "0" === r ? "0" === n ? `>=${r}.${n}.${s}${i} <${r}.${n}.${+s + 1}-0` : `>=${r}.${n}.${s}${i} <${r}.${+n + 1}.0-0` : `>=${r}.${n}.${s} <${+r + 1}.0.0-0`), 
+  return debug_1("caret", e, t, r, n, s, o), isX(r) ? a = "" : isX(n) ? a = `>=${r}.0.0${i} <${+r + 1}.0.0-0` : isX(s) ? a = "0" === r ? `>=${r}.${n}.0${i} <${r}.${+n + 1}.0-0` : `>=${r}.${n}.0${i} <${+r + 1}.0.0-0` : o ? (debug_1("replaceCaret pr", o),
+  a = "0" === r ? "0" === n ? `>=${r}.${n}.${s}-${o} <${r}.${n}.${+s + 1}-0` : `>=${r}.${n}.${s}-${o} <${r}.${+n + 1}.0-0` : `>=${r}.${n}.${s}-${o} <${+r + 1}.0.0-0`) : (debug_1("no pr"),
+  a = "0" === r ? "0" === n ? `>=${r}.${n}.${s}${i} <${r}.${n}.${+s + 1}-0` : `>=${r}.${n}.${s}${i} <${r}.${+n + 1}.0-0` : `>=${r}.${n}.${s} <${+r + 1}.0.0-0`),
   debug_1("caret return", a), a;
  }));
 }, replaceXRanges = (e, t) => (debug_1("replaceXRanges", e, t), e.split(/\s+/).map((e => replaceXRange(e, t))).join(" ")), replaceXRange = (e, r) => {
@@ -5381,12 +5381,12 @@ debug_1("xrange", e), e = replaceStars(e, t), debug_1("stars", e), e), isX = e =
  return e.replace(n, ((t, n, i, s, o, a) => {
   debug_1("xRange", e, t, n, i, s, o, a);
   const l = isX(i), c = l || isX(s), u = c || isX(o), f = u;
-  return "=" === n && f && (n = ""), a = r.includePrerelease ? "-0" : "", l ? t = ">" === n || "<" === n ? "<0.0.0-0" : "*" : n && f ? (c && (s = 0), 
-  o = 0, ">" === n ? (n = ">=", c ? (i = +i + 1, s = 0, o = 0) : (s = +s + 1, o = 0)) : "<=" === n && (n = "<", 
-  c ? i = +i + 1 : s = +s + 1), "<" === n && (a = "-0"), t = `${n + i}.${s}.${o}${a}`) : c ? t = `>=${i}.0.0${a} <${+i + 1}.0.0-0` : u && (t = `>=${i}.${s}.0${a} <${i}.${+s + 1}.0-0`), 
+  return "=" === n && f && (n = ""), a = r.includePrerelease ? "-0" : "", l ? t = ">" === n || "<" === n ? "<0.0.0-0" : "*" : n && f ? (c && (s = 0),
+  o = 0, ">" === n ? (n = ">=", c ? (i = +i + 1, s = 0, o = 0) : (s = +s + 1, o = 0)) : "<=" === n && (n = "<",
+  c ? i = +i + 1 : s = +s + 1), "<" === n && (a = "-0"), t = `${n + i}.${s}.${o}${a}`) : c ? t = `>=${i}.0.0${a} <${+i + 1}.0.0-0` : u && (t = `>=${i}.${s}.0${a} <${i}.${+s + 1}.0-0`),
   debug_1("xRange return", t), t;
  }));
-}, replaceStars = (e, r) => (debug_1("replaceStars", e, r), e.trim().replace(re[t.STAR], "")), replaceGTE0 = (e, r) => (debug_1("replaceGTE0", e, r), 
+}, replaceStars = (e, r) => (debug_1("replaceStars", e, r), e.trim().replace(re[t.STAR], "")), replaceGTE0 = (e, r) => (debug_1("replaceGTE0", e, r),
 e.trim().replace(re[r.includePrerelease ? t.GTE0PRE : t.GTE0], "")), hyphenReplace = e => (t, r, n, i, s, o, a, l, c, u, f, h, p) => `${r = isX(n) ? "" : isX(i) ? `>=${n}.0.0${e ? "-0" : ""}` : isX(s) ? `>=${n}.${i}.0${e ? "-0" : ""}` : o ? `>=${r}` : `>=${r}${e ? "-0" : ""}`} ${l = isX(c) ? "" : isX(u) ? `<${+c + 1}.0.0-0` : isX(f) ? `<${c}.${+u + 1}.0-0` : h ? `<=${c}.${u}.${f}-${h}` : e ? `<${c}.${u}.${+f + 1}-0` : `<=${l}`}`.trim(), testSet = (e, t, r) => {
  for (let r = 0; r < e.length; r++) if (!e[r].test(t)) return !1;
  if (t.prerelease.length && !r.includePrerelease) {
@@ -5425,7 +5425,7 @@ class NodeLazyRequire {
    }
   })), n.length > 0) {
    const e = buildError(r);
-   e.header = "Please install supported versions of dev dependencies with either npm or yarn.", 
+   e.header = "Please install supported versions of dev dependencies with either npm or yarn.",
    e.messageText = `npm install --save-dev ${n.join(" ")}`;
   }
   return r;
@@ -5459,21 +5459,21 @@ class NodeResolveModule {
   }));
   const l = normalizePath(path__default.default.parse(e).root);
   let c;
-  for (;a !== l; ) if (a = normalizePath(path__default.default.dirname(a)), c = path__default.default.join(a, "package.json"), 
+  for (;a !== l; ) if (a = normalizePath(path__default.default.dirname(a)), c = path__default.default.join(a, "package.json"),
   fs__default.default.existsSync(c)) return this.resolveModuleCache.set(n, c), c;
   throw new Error(`error loading "${t}" from "${e}"`);
  }
  resolveTypesModule(e, t, r) {
   const n = t.split("/"), i = normalizePath(path__default.default.parse(e).root);
   let s, o = normalizePath(path__default.default.join(e, "noop.js"));
-  for (;o !== i; ) if (o = normalizePath(path__default.default.dirname(o)), s = path__default.default.join(o, "node_modules", n[0], n[1], "package.json"), 
+  for (;o !== i; ) if (o = normalizePath(path__default.default.dirname(o)), s = path__default.default.join(o, "node_modules", n[0], n[1], "package.json"),
   fs__default.default.existsSync(s)) return this.resolveModuleCache.set(r, s), s;
   throw new Error(`error loading "${t}" from "${e}"`);
  }
  resolveModuleManually(e, t, r) {
   const n = normalizePath(path__default.default.parse(e).root);
   let i, s = normalizePath(path__default.default.join(e, "noop.js"));
-  for (;s !== n; ) if (s = normalizePath(path__default.default.dirname(s)), i = path__default.default.join(s, "node_modules", t, "package.json"), 
+  for (;s !== n; ) if (s = normalizePath(path__default.default.dirname(s)), i = path__default.default.join(s, "node_modules", t, "package.json"),
   fs__default.default.existsSync(i)) return this.resolveModuleCache.set(r, i), i;
   throw new Error(`error loading "${t}" from "${e}"`);
  }
@@ -5483,8 +5483,8 @@ const REGISTRY_URL = "https://registry.npmjs.org/@stencil/core", CHANGELOG = "ht
 
 class NodeWorkerMain extends require$$7.EventEmitter {
  constructor(e, t) {
-  super(), this.id = e, this.tasks = new Map, this.exitCode = null, this.processQueue = !0, 
-  this.sendQueue = [], this.stopped = !1, this.successfulMessage = !1, this.totalTasksAssigned = 0, 
+  super(), this.id = e, this.tasks = new Map, this.exitCode = null, this.processQueue = !0,
+  this.sendQueue = [], this.stopped = !1, this.successfulMessage = !1, this.totalTasksAssigned = 0,
   this.fork(t);
  }
  fork(e) {
@@ -5494,7 +5494,7 @@ class NodeWorkerMain extends require$$7.EventEmitter {
    cwd: process.cwd(),
    silent: !0
   };
-  this.childProcess = cp__namespace.fork(e, [], t), this.childProcess.stdout.setEncoding("utf8"), 
+  this.childProcess = cp__namespace.fork(e, [], t), this.childProcess.stdout.setEncoding("utf8"),
   this.childProcess.stdout.on("data", (e => {
    console.log(e);
   })), this.childProcess.stderr.setEncoding("utf8"), this.childProcess.stderr.on("data", (e => {
@@ -5522,11 +5522,11 @@ class NodeWorkerMain extends require$$7.EventEmitter {
  receiveFromWorker(e) {
   if (this.successfulMessage = !0, this.stopped) return;
   const t = this.tasks.get(e.stencilId);
-  t ? (null != e.stencilRtnError ? t.reject(e.stencilRtnError) : t.resolve(e.stencilRtnValue), 
+  t ? (null != e.stencilRtnError ? t.reject(e.stencilRtnError) : t.resolve(e.stencilRtnValue),
   this.tasks.delete(e.stencilId), this.emit("response", e)) : null != e.stencilRtnError && this.emit("error", e.stencilRtnError);
  }
  stop() {
-  this.stopped = !0, this.tasks.forEach((e => e.reject(TASK_CANCELED_MSG))), this.tasks.clear(), 
+  this.stopped = !0, this.tasks.forEach((e => e.reject(TASK_CANCELED_MSG))), this.tasks.clear(),
   this.successfulMessage ? (this.childProcess.send({
    exit: !0
   }), setTimeout((() => {
@@ -5537,10 +5537,10 @@ class NodeWorkerMain extends require$$7.EventEmitter {
 
 class NodeWorkerController extends require$$7.EventEmitter {
  constructor(e, t) {
-  super(), this.forkModulePath = e, this.workerIds = 0, this.stencilId = 0, this.isEnding = !1, 
+  super(), this.forkModulePath = e, this.workerIds = 0, this.stencilId = 0, this.isEnding = !1,
   this.taskQueue = [], this.workers = [];
   const r = require$$6.cpus().length;
-  this.useForkedWorkers = t > 0, this.maxWorkers = Math.max(Math.min(t, r), 2) - 1, 
+  this.useForkedWorkers = t > 0, this.maxWorkers = Math.max(Math.min(t, r), 2) - 1,
   this.useForkedWorkers ? this.startWorkers() : this.mainThreadRunner = require(e);
  }
  onError(e, t) {
@@ -5598,7 +5598,7 @@ class NodeWorkerController extends require$$7.EventEmitter {
   return (...t) => this.send(e, ...t);
  }
  cancelTasks() {
-  for (const e of this.workers) e.tasks.forEach((e => e.reject(TASK_CANCELED_MSG))), 
+  for (const e of this.workers) e.tasks.forEach((e => e.reject(TASK_CANCELED_MSG))),
   e.tasks.clear();
   this.taskQueue.length = 0;
  }
@@ -5688,10 +5688,10 @@ exports.createNodeLogger = e => {
       return t.fetch(i, n);
      }
      return r.url = new URL(r.url, e.devServerHostUrl).href, t.fetch(r, n);
-    }, global.Headers = t.Headers, global.Request = t.Request, global.Response = t.Response, 
+    }, global.Headers = t.Headers, global.Request = t.Request, global.Response = t.Response,
     global.FetchError = t.FetchError;
    }
-   e.window.fetch = global.fetch, e.window.Headers = global.Headers, e.window.Request = global.Request, 
+   e.window.fetch = global.fetch, e.window.Headers = global.Headers, e.window.Request = global.Request,
    e.window.Response = global.Response, e.window.FetchError = global.FetchError;
   },
   fetch: (e, t) => {
@@ -5986,8 +5986,8 @@ exports.createNodeLogger = e => {
     };
    }, f.watchFile = (e, r) => {
     const i = n(e, ((e, n) => {
-     e = normalizePath(e), n === t.FileWatcherEventKind.Created ? (r(e, "fileAdd"), f.events.emit("fileAdd", e)) : n === t.FileWatcherEventKind.Changed ? (r(e, "fileUpdate"), 
-     f.events.emit("fileUpdate", e)) : n === t.FileWatcherEventKind.Deleted && (r(e, "fileDelete"), 
+     e = normalizePath(e), n === t.FileWatcherEventKind.Created ? (r(e, "fileAdd"), f.events.emit("fileAdd", e)) : n === t.FileWatcherEventKind.Changed ? (r(e, "fileUpdate"),
+     f.events.emit("fileUpdate", e)) : n === t.FileWatcherEventKind.Deleted && (r(e, "fileDelete"),
      f.events.emit("fileDelete", e));
     }), 250, {
      watchFile: t.WatchFileKind.FixedPollingInterval,
@@ -6117,7 +6117,7 @@ exports.createNodeLogger = e => {
  e.process.on("unhandledRejection", (t => {
   if (!shouldIgnoreError(t)) {
    let r = "unhandledRejection";
-   null != t && ("string" == typeof t ? r += ": " + t : t.stack ? r += ": " + t.stack : t.message && (r += ": " + t.message)), 
+   null != t && ("string" == typeof t ? r += ": " + t : t.stack ? r += ": " + t.stack : t.message && (r += ": " + t.message)),
    e.logger.error(r);
   }
  }));

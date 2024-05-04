@@ -6,12 +6,12 @@
   <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
 </div>
 <div class="oh-modal__dialog-body">
-<form onsubmit="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')" 
-  hx-post='{% url "send-acknowledgement" %} ' 
+<form onsubmit="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+  hx-post='{% url "send-acknowledgement" %} '
   hx-swap="none"
   class="oh-general__tab-target oh-profile-section"
-  id='ack-form-{{cand.id}}' 
-  hx-target="#ack-message-{{cand.id}}" 
+  id='ack-form-{{cand.id}}'
+  hx-target="#ack-message-{{cand.id}}"
   hx-encoding="multipart/form-data">
   <input type="hidden" value="{{cand.id}}" name="id">
   <div class="modal-body">
@@ -111,7 +111,7 @@
   $("#candidates[name=candidates]select[multiple]").val(selectedIds).change()
 {% endif %}
 </script>
-    
+
 <script>
   button = document.querySelector('.submit-send')
   button.onclick = function (event) {

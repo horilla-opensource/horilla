@@ -177,20 +177,20 @@
 
 <script>
 	$(document).ready(function () {
-		
-	  	$(".ticket-view-type").click(function (e) { 
+
+	  	$(".ticket-view-type").click(function (e) {
 			e.preventDefault();
 			var view = $(this).attr("data-view")
 			$("#ticket-search").attr("hx-vals", `{"view":"${view}"}`);
 			$("#filterView").val(view);
-			var currentURL = window.location.href;     
-			if (/\?view=[^&]+/.test(currentURL)) {          
-			newURL = currentURL.replace(/\?view=[^&]+/, "?view="+view);      
-			}        
-			else {          
-			var separator = currentURL.includes('?') ? '&' : '?';  
-			newURL = currentURL + separator + "view="+view;        
-			}       
+			var currentURL = window.location.href;
+			if (/\?view=[^&]+/.test(currentURL)) {
+			newURL = currentURL.replace(/\?view=[^&]+/, "?view="+view);
+			}
+			else {
+			var separator = currentURL.includes('?') ? '&' : '?';
+			newURL = currentURL + separator + "view="+view;
+			}
 			history.pushState({}, "", newURL);
 			window.location.reload();
 			$(".oh-btn--view-active").removeClass("oh-btn--view-active")
@@ -200,36 +200,36 @@
 			$("#filterSearch").val($(this).val());
 			const formData = $("#filterForm").serializeArray();
 			const jsonObject = {};
-			
+
 			$.each(formData, function() {
 				jsonObject[this.name] = this.value;
 			});
 			delete jsonObject.view
 			var hxVals = JSON.stringify(jsonObject)
-			$(".ticket-view-type a").attr("hx-vals", hxVals);      
+			$(".ticket-view-type a").attr("hx-vals", hxVals);
 		});
-	
-		$("#ticket-search").keyup(function (e) { 
+
+		$("#ticket-search").keyup(function (e) {
 			const formData = $("#filterForm").serializeArray();
 			const jsonObject = {};
-			
+
 			$.each(formData, function() {
 				jsonObject[this.name] = this.value;
 			});
 			delete jsonObject.search
 			var hxVals = JSON.stringify(jsonObject)
-			$(this).attr("hx-vals", hxVals);   
+			$(this).attr("hx-vals", hxVals);
 		});
-		$(".filterButton").click(function (e) { 
+		$(".filterButton").click(function (e) {
 			const formData = $("#filterForm").serializeArray();
 			const jsonObject = {};
-			
+
 			$.each(formData, function() {
 				jsonObject[this.name] = this.value;
 			});
 			delete jsonObject.view
 			var hxVals = JSON.stringify(jsonObject)
-			$(".ticket-view-type").attr("hx-vals", hxVals);   
+			$(".ticket-view-type").attr("hx-vals", hxVals);
 		});
 	});
 	function saveTag(){
@@ -252,7 +252,7 @@
               $("#id_tags option[value='create_new_tag']").before(newOption);
               $("#id_tags option[value='create_new_tag']").prop('selected',false)
                 {% comment %} updateTag() {% endcomment %}
-            }    
+            }
           }
         });
     }
@@ -278,7 +278,7 @@
 				$("#id_ticket_type option[value='create_new_ticket_type']").before(newOption);
 				$("#id_ticket_type option[value='create_new_ticket_type']").prop('selected',false)
 				  {% comment %} updateTag() {% endcomment %}
-			  }    
+			  }
 			}
 		  });
 	}

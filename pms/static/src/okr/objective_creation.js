@@ -14,7 +14,7 @@ $(document).ready(function () {
   //           $("#PeriodModal").addClass("oh-modal--show");
   //           $("#periodModalTarget").html(response);
   //         },
-  //       });   
+  //       });
   //   }
   // });
 });

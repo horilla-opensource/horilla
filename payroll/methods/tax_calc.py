@@ -1,14 +1,15 @@
 """
 Module: payroll.tax_calc
 
-This module contains a function for calculating the taxable amount for an employee 
+This module contains a function for calculating the taxable amount for an employee
 based on their contract details and income information.
 """
 
 import datetime
+
 from payroll.methods.payslip_calc import (
-    calculate_taxable_gross_pay,
     calculate_gross_pay,
+    calculate_taxable_gross_pay,
 )
 from payroll.models.models import Contract
 from payroll.models.tax_models import TaxBracket

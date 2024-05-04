@@ -147,7 +147,7 @@ x-data="{searchShow: false}"
                       <label class="oh-label">{% trans "Requested Date From" %}</label>
                       {{f.form.requested_date__gte}}
                     </div>
-                  
+
                   </div>
                   <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
@@ -174,7 +174,7 @@ x-data="{searchShow: false}"
         x-show="open"
         @click.outside="open = false"
         style="display: none"
-        >            
+        >
         <div class="oh-accordion">
           <label>{% trans "Group By" %}</label>
             <div class="row">
@@ -227,14 +227,14 @@ x-data="{searchShow: false}"
               {% endif %}
               {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
               <li class="oh-dropdown__item">
-                <a href="#" class="oh-dropdown__link " id="approveWorkTypeRequest" 
+                <a href="#" class="oh-dropdown__link " id="approveWorkTypeRequest"
                   >{% trans "Approve Requests" %}</a
                 >
               </li>
-              {% endif %} 
+              {% endif %}
               {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
               <li class="oh-dropdown__item">
-                <a href="#" class="oh-dropdown__link " id="cancelWorkTypeRequest" 
+                <a href="#" class="oh-dropdown__link " id="cancelWorkTypeRequest"
                   >{% trans "Reject Requests" %}</a
                 >
               </li>

@@ -55,19 +55,19 @@
                       {% trans "Title" %}
                     </div>
                     <div
-                      data-cell-index="1" data-cell-title='{% trans "Managers" %}' 
+                      data-cell-index="1" data-cell-title='{% trans "Managers" %}'
                       class="oh-sticky-table__th "
                     >
                       {% trans "Managers" %}
                     </div>
                     <div
-                      data-cell-index="2" data-cell-title='{% trans "Type" %}' 
+                      data-cell-index="2" data-cell-title='{% trans "Type" %}'
                       class="oh-sticky-table__th"
                     >
                       {% trans "Type" %}
                     </div>
                     {% comment %} <div
-                      data-cell-index="3" data-cell-title='{% trans "Recruitment" %}' 
+                      data-cell-index="3" data-cell-title='{% trans "Recruitment" %}'
                       class="oh-sticky-table__th {% if request.sort_option.order == '-recruitment_id__start_date' %}arrow-up {% elif request.sort_option.order == 'recruitment_id__start_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
                       hx-get="{% url 'stage-search' %}?{{pd}}&orderby=recruitment_id__start_date"
                       hx-target="#stage-container"
@@ -85,10 +85,10 @@
                     <div
                       class="oh-sticky-table__sd oh-permission-table--toggle {% if stage.stage_type == 'cancelled' %} row-status--red
                       {% elif stage.stage_type == 'hired'  %} row-status--yellow
-                      {% elif stage.stage_type == 'interview'  %} row-status--orange  
-                      {% elif stage.stage_type == 'test'  %} row-status--blue  
-                      {% elif stage.stage_type == 'initial'  %} row-status--cyan  
-                      {% endif %}" 
+                      {% elif stage.stage_type == 'interview'  %} row-status--orange
+                      {% elif stage.stage_type == 'test'  %} row-status--blue
+                      {% elif stage.stage_type == 'initial'  %} row-status--cyan
+                      {% endif %}"
                       data-toggle-count
                     >
                       <div class="d-flex align-items-center">
@@ -152,7 +152,7 @@
                           >
                             <ion-icon name="create-outline"></ion-icon>
                           </a>
-                        {% endif %} 
+                        {% endif %}
                         {% if perms.recruitment.change_stage %}
                           <a
                             hx-get="{% url 'rec-stage-duplicate' stage.id %}"
@@ -164,8 +164,8 @@
                           >
                             <ion-icon name="copy-outline"></ion-icon>
                           </a>
-                        {% endif %} 
-                        {% if perms.recruitment.delete_stage %} 
+                        {% endif %}
+                        {% if perms.recruitment.delete_stage %}
                         <form action="{% url 'rec-stage-delete' stage.id %}"
                           onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');" method='post' class="w-50"
                           >
@@ -203,7 +203,7 @@
     <nav class="oh-pagination__nav">
       <div class="oh-pagination__input-container me-3">
         <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-  
+
         <input
           type="number"
           name="page"
@@ -217,7 +217,7 @@
           >{% trans "of" %} {{data.paginator.num_pages}}</span
         >
       </div>
-  
+
       <ul class="oh-pagination__items">
         {% if data.has_previous %}
         <li class="oh-pagination__item oh-pagination__item--wide">

@@ -18,7 +18,7 @@
 {% load basefilters %}
 {% include 'filter_tags.html' %}
 <div id="messages">
-  
+
 </div>
 <div class="oh-tabs__contents" id="view-container">
   <div class="oh-tabs__content oh-tabs__content--active" id="tab_1">
@@ -34,7 +34,7 @@
             </div>
           </div>
         </div>
-        <div id="attendence-request-table" data-table-name="attendence_request_tab"> 
+        <div id="attendence-request-table" data-table-name="attendence_request_tab">
           <!-- Sticky Table -->
           <div class="oh-sticky-table">
             <div class="oh-sticky-table__table oh-table--sortable">
@@ -58,8 +58,8 @@
               </div>
               <div class="oh-sticky-table__tbody">
                 {% for attendance in requests %}
-                  <div class="oh-sticky-table__tr" 
-                    draggable="true" 
+                  <div class="oh-sticky-table__tr"
+                    draggable="true"
                     data-toggle="oh-modal-toggle"
                     data-target="#validateAttendanceRequest"
                     data-attendance-id="{{attendance.id}}"
@@ -83,7 +83,7 @@
                         >
                       </div>
                     </div>
-                  
+
                     <div data-cell-index="1" class="oh-sticky-table__td {% if 'attendance_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} dateformat_changer" >
                       {{attendance.attendance_date}}
                     </div>
@@ -116,7 +116,7 @@
                       {{attendance.attendance_overtime}}
                     </div>
 
-                    <div class="oh-sticky-table__td" onclick="event.stopPropagation();" @click="open = !open">								  
+                    <div class="oh-sticky-table__td" onclick="event.stopPropagation();" @click="open = !open">
                       <button type="button" hx-get="{% url 'attendance-request-view-comment' attendance.id %}?{{pd}}" hx-target="#commentContainer"
                         data-target = '#activitySidebar' title='{% trans "Add / View Comment" %}'  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
                         <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
@@ -127,14 +127,14 @@
                         <a
                           class="oh-btn oh-btn--light-bkg w-100"
                           title="{% trans 'View' %}"
-                          
+
                           ><ion-icon
                           name="eye-outline"
                           role="img"
-              
+
                             ></ion-icon
                             ></a>
-                            
+
                         <a
                           type="submit"
                           class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -210,7 +210,7 @@
         </h5>
       </div>
       <!-- end of empty page -->
-    {% endif %} 
+    {% endif %}
   </div>
   <div class="oh-tabs__content" id="tab_2">
     {% if attendances %}
@@ -250,7 +250,7 @@
               <div class="oh-sticky-table__tbody">
                 <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle"
                       data-target="#objectDetailsModalW25"
-                      hx-target="#objectDetailsModalW25Target"     
+                      hx-target="#objectDetailsModalW25Target"
                       hx-get="{% url 'user-request-one-view' attendance.id %}?all_attendance=true&instances_ids={{attendances_ids}}">
                   <div
                     class="oh-sticky-table__sd {% if attendance.attendance_validated %}row-status--yellow {% else %}row-status--purple{% endif %}"
@@ -313,7 +313,7 @@
                         <ion-icon name="create-outline" role="img" ></ion-icon>
                       </a>
 
-                      
+
                     </div>
                   </div>
                 </div>
@@ -381,9 +381,9 @@
         </h5>
       </div>
       <!-- end of empty page -->
-    {% endif %} 
+    {% endif %}
   </div>
-    
+
 
 
 <!-- start of comment modal -->
@@ -434,7 +434,7 @@
           $(`[data-target="${activeTab}"]`).toggleClass("oh-tabs__tab--active");
           $(activeTab).toggleClass("oh-tabs__content--active");
       }
-      $(".oh-tabs__tab[data-target]").click(function (e) { 
+      $(".oh-tabs__tab[data-target]").click(function (e) {
           e.preventDefault();
           localStorage.setItem("attendanceRequestActiveTab",$(this).attr('data-target'))
       });
@@ -454,7 +454,7 @@
    if (!localStorageReqAttendanceCells) {
      $("#ReqAttendanceCells").find("[type=checkbox]").prop("checked",true)
    }
-   
+
    $("[type=checkbox]").change()
    // end of toggle columns //
 </script>

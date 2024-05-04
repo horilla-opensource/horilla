@@ -1,4 +1,4 @@
-{% load i18n %} {% load static %} {% include 'filter_tags.html' %} 
+{% load i18n %} {% load static %} {% include 'filter_tags.html' %}
 {% if messages %}
   <div class="oh-wrapper">
     {% for message in messages %}
@@ -7,7 +7,7 @@
         {{ message }}
       </div>
     </div>
-    {% endfor %} 
+    {% endfor %}
   </div>
 {% endif %}
 {% if restrictday %}

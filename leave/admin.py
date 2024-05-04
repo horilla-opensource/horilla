@@ -4,20 +4,20 @@ models with the Django admin site.
 """
 
 from django.contrib import admin
-from .models import (
-    LeaveRequestConditionApproval,
-    LeaveType,
-    LeaveRequest,
-    AvailableLeave,
-    Holiday,
-    CompanyLeave,
-    LeaveAllocationRequest,
-    LeaveallocationrequestComment,
-    LeaverequestComment,
-    RestrictLeave
-)
 from simple_history.admin import SimpleHistoryAdmin
 
+from .models import (
+    AvailableLeave,
+    CompanyLeave,
+    Holiday,
+    LeaveAllocationRequest,
+    LeaveallocationrequestComment,
+    LeaveRequest,
+    LeaverequestComment,
+    LeaveRequestConditionApproval,
+    LeaveType,
+    RestrictLeave,
+)
 
 # Register your models here.
 admin.site.register(LeaveType)

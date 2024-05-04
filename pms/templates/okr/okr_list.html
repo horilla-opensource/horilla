@@ -105,19 +105,19 @@
                                                 <div class="oh-sticky-table__thead">
                                                     <div class="oh-sticky-table__tr">
                                                         <div class="oh-sticky-table__th">{% trans "Title" %}</div>
-                                                        <div data-cell-index="1" data-cell-title='{% trans "Managers" %}' 
+                                                        <div data-cell-index="1" data-cell-title='{% trans "Managers" %}'
                                                             class="oh-sticky-table__th"
                                                         >{% trans "Managers" %}</div>
-                                                        <div data-cell-index="2" data-cell-title='{% trans "Key Results" %}' 
+                                                        <div data-cell-index="2" data-cell-title='{% trans "Key Results" %}'
                                                             class="oh-sticky-table__th"
                                                         >{% trans "Key Results" %}</div>
-                                                        <div data-cell-index="3" data-cell-title='{% trans "Assignees" %}' 
+                                                        <div data-cell-index="3" data-cell-title='{% trans "Assignees" %}'
                                                             class="oh-sticky-table__th"
                                                         >{% trans "Assignees" %}</div>
-                                                        <div data-cell-index="4" data-cell-title='{% trans "Duration" %}' 
+                                                        <div data-cell-index="4" data-cell-title='{% trans "Duration" %}'
                                                             class="oh-sticky-table__th"
                                                         >{% trans "Duration" %}</div>
-                                                        <div data-cell-index="5" data-cell-title='{% trans "Description" %}' 
+                                                        <div data-cell-index="5" data-cell-title='{% trans "Description" %}'
                                                             class="oh-sticky-table__th"
                                                         >{% trans "Description" %}</div>
                                                         {% if  perms.pms.add_employeeobjective or perms.pms.change_objective or perms.pms.delete_objective %}
@@ -128,9 +128,9 @@
                                                 <div class="oh-sticky-table__tbody">
                                                     {% for objective in objectives %}
                                                         <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
-                                                            onclick="window.location.href = `{% url 'objective-detailed-view' objective.id %}`" 
-                                                        >                                         
-                                                            <div class="oh-sticky-table__sd oh-permission-table--toggle " 
+                                                            onclick="window.location.href = `{% url 'objective-detailed-view' objective.id %}`"
+                                                        >
+                                                            <div class="oh-sticky-table__sd oh-permission-table--toggle "
                                                                 data-toggle-count
                                                             >
                                                                 <div class="d-flex align-items-center">
@@ -158,11 +158,11 @@
                                                                             >{{manager.employee_first_name|truncatechars:15}}</span>
                                                                         </div>
                                                                         {% if perms.pms.change_objective %}
-                                                                        <a 
+                                                                        <a
                                                                             hx-confirm="{% trans 'Are you sure want to remove this manager?' %}"
-                                                                            hx-post="{% url 'objective-manager-remove' objective.id manager.id %}" 
-                                                                            title="{% trans "Remove" %}" hx-swap="outerHTML" 
-                                                                            hx-target="#managerContainer{{manager.id}}" class="oh-user-panel__remove" 
+                                                                            hx-post="{% url 'objective-manager-remove' objective.id manager.id %}"
+                                                                            title="{% trans "Remove" %}" hx-swap="outerHTML"
+                                                                            hx-target="#managerContainer{{manager.id}}" class="oh-user-panel__remove"
                                                                             onclick="event.stopPropagation()"
                                                                         >
                                                                             <ion-icon name="close-outline"></ion-icon>
@@ -172,7 +172,7 @@
                                                                 </div>
                                                                 {% endfor %}
                                                                 <span class="count-span">{{objective.managers.all|length}} {% trans "Managers" %}</span>
-                                                                
+
                                                             </div>
                                                             <div data-cell-index="2" class="oh-sticky-table__td">
                                                                 {% for kr in objective.key_result_id.all %}
@@ -190,13 +190,13 @@
                                                                             >{{kr|truncatechars:15}}</span
                                                                             >
                                                                         </div>
-                                                                        {% if "perms.pms.delete_keyresult" %}                                                                    
-                                                                        <a 
+                                                                        {% if "perms.pms.delete_keyresult" %}
+                                                                        <a
                                                                             hx-confirm="{% trans 'Are you sure want to remove this key result?' %}"
-                                                                            hx-post="{% url 'key-result-remove' objective.id kr.id %}" 
-                                                                            title="{% trans "Remove" %}" hx-swap="outerHTML" 
-                                                                            hx-target="#keyResultContainer{{kr.id}}" 
-                                                                            class="oh-user-panel__remove" 
+                                                                            hx-post="{% url 'key-result-remove' objective.id kr.id %}"
+                                                                            title="{% trans "Remove" %}" hx-swap="outerHTML"
+                                                                            hx-target="#keyResultContainer{{kr.id}}"
+                                                                            class="oh-user-panel__remove"
                                                                             onclick="event.stopPropagation()"
                                                                         >
                                                                             <ion-icon name="close-outline"></ion-icon>
@@ -206,7 +206,7 @@
                                                                 </div>
                                                                 {% endfor %}
                                                                 <span class="count-span">{{objective.key_result_id.all|length}} {% trans "Key results" %}</span>
-                                                            </div> 
+                                                            </div>
                                                             <div data-cell-index="3" class="oh-sticky-table__td">
                                                                 {% for emp_objective in objective.employee_objective.all %}
                                                                     <div id="assigneesContainer{{emp_objective.id}}">
@@ -223,10 +223,10 @@
                                                                                 >{{emp_objective.employee_id|truncatechars:15}}</span
                                                                                 >
                                                                             </div>
-                                                                            <a 
+                                                                            <a
                                                                                 hx-confirm="{% trans 'Are you sure want to remove this assignee?' %}"
-                                                                                hx-post="{% url 'assignees-remove' objective.id emp_objective.employee_id.id %}" 
-                                                                                title="{% trans "Remove" %}" hx-swap="delete" hx-target="#assigneesContainer{{emp_objective.id}}" 
+                                                                                hx-post="{% url 'assignees-remove' objective.id emp_objective.employee_id.id %}"
+                                                                                title="{% trans "Remove" %}" hx-swap="delete" hx-target="#assigneesContainer{{emp_objective.id}}"
                                                                                 onclick="event.stopPropagation()" class="oh-user-panel__remove"
                                                                             >
                                                                                 <ion-icon name="close-outline"></ion-icon>
@@ -234,7 +234,7 @@
                                                                         </span>
                                                                     </div>
                                                                 {% endfor %}
-                                                                <span class="count-span">{{ objective.employee_objective.all|length}} {% trans "Assignees" %}</span>   
+                                                                <span class="count-span">{{ objective.employee_objective.all|length}} {% trans "Assignees" %}</span>
                                                             </div>
                                                             <div data-cell-index="4" class="oh-sticky-table__td ">
                                                                 {{objective.duration}}
@@ -247,13 +247,13 @@
                                                             <div class="oh-sticky-table__td oh-sticky-table__right">
                                                                 <div class="oh-btn-group" onclick="event.stopPropagation()">
                                                                     {% if perms.pms.add_employeeobjective %}
-                                                                        <a 
+                                                                        <a
                                                                             onclick="event.preventDefault();event.stopPropagation()"
                                                                             hx-get="{% url 'add-assignees' objective.pk %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="Add assignees"
                                                                         ><ion-icon name="add-outline"></ion-icon></a>
                                                                     {% endif %}
                                                                     {% if perms.pms.change_objective %}
-                                                                        <a 
+                                                                        <a
                                                                             onclick="event.preventDefault();event.stopPropagation()"
                                                                             hx-get="{% url 'objective-update' objective.id %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"
                                                                         ><ion-icon name="create-outline"></ion-icon></a>
@@ -261,9 +261,9 @@
                                                                         {% comment %} <a hx-get="" hx-target='#duplicateFormContainer' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#duplicateRecruitmentModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Duplicate' %}"><ion-icon name="copy-outline"></ion-icon></a> {% endcomment %}
                                                                     {% if perms.pms.delete_objective %}
                                                                         {% if objective.archive %}
-                                                                                <form 
+                                                                                <form
                                                                                     action='{% url "objective-archive" objective.id %}'
-                                                                                    onsubmit="return confirm('{% trans "Do you want to unarchive this objective?" %}')" 
+                                                                                    onsubmit="return confirm('{% trans "Do you want to unarchive this objective?" %}')"
                                                                                     method="post"
                                                                                     style="display: contents;width:100%">
                                                                                     {% csrf_token %}
@@ -272,9 +272,9 @@
                                                                                     </button>
                                                                                 </form>
                                                                         {% else %}
-                                                                                <form 
+                                                                                <form
                                                                                     action='{% url "objective-archive" objective.id %}'
-                                                                                    onsubmit="return confirm('{% trans "Do you want to archive this objective?" %}')" 
+                                                                                    onsubmit="return confirm('{% trans "Do you want to archive this objective?" %}')"
                                                                                     method="post"
                                                                                     style="display: contents;width:100%">
                                                                                     {% csrf_token %}
@@ -285,9 +285,9 @@
                                                                         {% endif %}
                                                                     {% endif %}
                                                                     {% if perms.pms.delete_objective %}
-                                                                        <form 
+                                                                        <form
                                                                             action='{% url "objective-delete" objective.id %}'
-                                                                            onsubmit="return confirm('{% trans "Are you sure to delete this objective?" %}')" 
+                                                                            onsubmit="return confirm('{% trans "Are you sure to delete this objective?" %}')"
                                                                             method="post"
                                                                             style="display: contents;width:100%">
                                                                         {% csrf_token %}
@@ -300,7 +300,7 @@
                                                             </div>
                                                             {% endif %}
                                                         </div>
-                                                    {% endfor %} 
+                                                    {% endfor %}
                                                 </div>
                                             </div>
                                             <!-- end of sticky table -->
@@ -320,11 +320,11 @@
                         {% trans "Page" %} {{ objectives.number }} {% trans "of" %} {{ objectives.paginator.num_pages }}.
                         </span
                         >
-                    
+
                         <nav class="oh-pagination__nav">
                         <div class="oh-pagination__input-container me-3">
                             <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-                    
+
                             <input
                             type="number"
                             name="all_page"
@@ -335,7 +335,7 @@
                             />
                             <span class="oh-pagination__label">{% trans "of" %} {{objectives.paginator.num_pages}}</span>
                         </div>
-                    
+
                         <ul class="oh-pagination__items">
                             {% if objectives.has_previous %}
                             <li class="oh-pagination__item oh-pagination__item--wide">
@@ -353,7 +353,7 @@
                             <a hx-target='#objective_list' hx-get="{% url 'objective-list-search' %}?{{pd}}&all_page={{ objectives.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
                             </li>
                             {% endif %}
-                    
+
                         </ul>
                         </nav>
                     </div>
@@ -404,19 +404,19 @@
                                             <div class="oh-sticky-table__table">
                                                 <div class="oh-sticky-table__thead">
                                                     <div class="oh-sticky-table__tr">
-                                                        <div 
+                                                        <div
                                                             class="oh-sticky-table__th"
                                                         >{% trans "Title" %}</div>
-                                                        <div data-cell-index="1" data-cell-title='{% trans "Managers" %}' 
+                                                        <div data-cell-index="1" data-cell-title='{% trans "Managers" %}'
                                                             class="oh-sticky-table__th"
                                                         >{% trans "Managers" %}</div>
-                                                        <div data-cell-index="2" data-cell-title='{% trans "Key Results" %}' 
+                                                        <div data-cell-index="2" data-cell-title='{% trans "Key Results" %}'
                                                             class="oh-sticky-table__th"
                                                         >{% trans "Key Results" %}</div>
-                                                        <div data-cell-index="3" data-cell-title='{% trans "Duration" %}' 
+                                                        <div data-cell-index="3" data-cell-title='{% trans "Duration" %}'
                                                             class="oh-sticky-table__th"
                                                         >{% trans "Duration" %}</div>
-                                                        <div data-cell-index="4" data-cell-title='{% trans "Description" %}' 
+                                                        <div data-cell-index="4" data-cell-title='{% trans "Description" %}'
                                                             class="oh-sticky-table__th"
                                                         >{% trans "Description" %}</div>
                                                         {% if perms.pms.change_objective or perms.pms.delete_objective %}
@@ -427,9 +427,9 @@
                                                 <div class="oh-sticky-table__tbody">
                                                     {% for objective in own_objectives %}
                                                         <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
-                                                            onclick="window.location.href = `{% url 'objective-detailed-view' objective.objective_id.id %}`" 
+                                                            onclick="window.location.href = `{% url 'objective-detailed-view' objective.objective_id.id %}`"
                                                         >
-                                                            <div class="oh-sticky-table__sd oh-permission-table--toggle" 
+                                                            <div class="oh-sticky-table__sd oh-permission-table--toggle"
                                                             >
                                                                 <div class="d-flex align-items-center">
                                                                     <button class="oh-permission-table__collapse me-2">
@@ -458,7 +458,7 @@
                                                                 </span>
                                                                 {% endfor %}
                                                                 <span class="count-span">{{objective.objective_id.managers.all|length}} {% trans "Managers" %}</span>
-                                                                
+
                                                             </div>
                                                             <div data-cell-index="2" class="oh-sticky-table__td">
                                                                 {% for kr in objective.key_result_id.all %}
@@ -479,8 +479,8 @@
                                                                 {% endfor %}
                                                                 <span class="count-span">{{objective.key_result_id.all|length}} {% trans "Key results" %}</span>
 
-                                                            </div> 
-                                                            
+                                                            </div>
+
                                                             <div data-cell-index="3" class="oh-sticky-table__td ">
                                                                 {{objective.objective_id.duration}}
                                                             </div>
@@ -491,16 +491,16 @@
                                                             <div class="oh-sticky-table__td oh-sticky-table__right">
                                                                 <div class="oh-btn-group" onclick="event.stopPropagation()">
                                                                     {% if perms.pms.change_objective %}
-                                                                        <a 
+                                                                        <a
                                                                             onclick="event.preventDefault();event.stopPropagation()"
                                                                             hx-get="{% url 'update-employee-objective' objective.id %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"
                                                                         ><ion-icon name="create-outline"></ion-icon></a>
                                                                     {% endif %}
                                                                     {% if perms.pms.delete_objective %}
                                                                         {% if objective.archive %}
-                                                                                <form 
+                                                                                <form
                                                                                     action='{% url "archive-employee-objective" objective.id %}'
-                                                                                    onsubmit="return confirm('{% trans "Do you want to unarchive this objective?" %}')" 
+                                                                                    onsubmit="return confirm('{% trans "Do you want to unarchive this objective?" %}')"
                                                                                     method="post"
                                                                                     style="display: contents;width:100%">
                                                                                     {% csrf_token %}
@@ -509,9 +509,9 @@
                                                                                     </button>
                                                                                 </form>
                                                                         {% else %}
-                                                                                <form 
+                                                                                <form
                                                                                     action='{% url "archive-employee-objective" objective.id %}'
-                                                                                    onsubmit="return confirm('{% trans "Do you want to archive this objective?" %}')" 
+                                                                                    onsubmit="return confirm('{% trans "Do you want to archive this objective?" %}')"
                                                                                     method="post"
                                                                                     style="display: contents;width:100%">
                                                                                     {% csrf_token %}
@@ -522,9 +522,9 @@
                                                                         {% endif %}
                                                                     {% endif %}
                                                                     {% if perms.pms.delete_objective %}
-                                                                        <form 
+                                                                        <form
                                                                             action='{% url "delete-employee-objective" objective.id %}'
-                                                                            onsubmit="return confirm('{% trans "Are you sure to delete this objective?" %}')" 
+                                                                            onsubmit="return confirm('{% trans "Are you sure to delete this objective?" %}')"
                                                                             method="post"
                                                                             style="display: contents;width:100%">
                                                                         {% csrf_token %}
@@ -537,7 +537,7 @@
                                                             </div>
                                                             {% endif %}
                                                         </div>
-                                                    {% endfor %} 
+                                                    {% endfor %}
                                                 </div>
                                             </div>
                                             <!-- end of sticky table -->
@@ -557,11 +557,11 @@
                         {% trans "Page" %} {{ own_objectives.number }} {% trans "of" %} {{ own_objectives.paginator.num_pages }}.
                         </span
                         >
-                    
+
                         <nav class="oh-pagination__nav">
                         <div class="oh-pagination__input-container me-3">
                             <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-                    
+
                             <input
                             type="number"
                             name="page"
@@ -572,7 +572,7 @@
                             />
                             <span class="oh-pagination__label">{% trans "of" %} {{own_objectives.paginator.num_pages}}</span>
                         </div>
-                    
+
                         <ul class="oh-pagination__items">
                             {% if own_objectives.has_previous %}
                             <li class="oh-pagination__item oh-pagination__item--wide">
@@ -590,7 +590,7 @@
                             <a hx-target='#objective_list' hx-get="{% url 'objective-list-search' %}?{{pd}}&page={{ own_objectives.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
                             </li>
                             {% endif %}
-                    
+
                         </ul>
                         </nav>
                     </div>
@@ -642,5 +642,5 @@
     }
     $("[type=checkbox]").change();
 
-  
+
 </script>

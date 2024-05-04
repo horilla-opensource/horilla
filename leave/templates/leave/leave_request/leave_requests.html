@@ -99,8 +99,8 @@
               <div class="oh-sticky-table__tr  {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}" draggable="true" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25"
               hx-get="{% url 'one-request-view' leave_request.id %}?instances_ids={{requests_ids}}" hx-target="#objectDetailsModalW25Target">
                   {% if not request.GET.dashboard %}
-                      <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--orange 
-                              {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--gray 
+                      <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--orange
+                              {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--gray
                               {% elif leave_request.status == "rejected" %}row-status--red{% endif %}" onclick="event.stopPropagation()">
                           <div class="centered-div">
                               <input
@@ -171,13 +171,13 @@
                   <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                       <div class="oh-btn-group">
                           {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or request.user|is_leave_approval_manager %}
-                          <button 
+                          <button
                               data-toggle="oh-modal-toggle"
                               data-target="#penaltyModal"
                               hx-target="#penaltyModalBody"
                               hx-get="{% url "leave-cut-penalty" leave_request.id %}?{{pd}}"
-                              type='submit' 
-                              class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
+                              type='submit'
+                              class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                               title="{% trans 'Penalty' %}">
                               <ion-icon name="information-circle-outline"></ion-icon>
                           </button>

@@ -1,9 +1,9 @@
 """ Django notifications template tags file """
 
 # -*- coding: utf-8 -*-
-from distutils.version import (
+from distutils.version import (  # pylint: disable=no-name-in-module,import-error
     StrictVersion,
-)  # pylint: disable=no-name-in-module,import-error
+)
 
 from django import get_version
 from django.template import Library
@@ -12,9 +12,9 @@ from django.utils.html import format_html
 try:
     from django.urls import reverse
 except ImportError:
-    from django.core.urlresolvers import (
+    from django.core.urlresolvers import (  # pylint: disable=no-name-in-module,import-error
         reverse,
-    )  # pylint: disable=no-name-in-module,import-error
+    )
 
 register = Library()
 

@@ -1,10 +1,10 @@
 {% load i18n %}
-<form  
+<form
     hx-post='{% url "interview-schedule" cand_id %}?view={{view}}'
     hx-target="#createTarget"
     hx-encoding="multipart/form-data"
     id="skillform"
->        
+>
     {{form.as_p}}
 </form>
 <script>
@@ -32,16 +32,16 @@
                 value: key,
                 text: value
                 }));
-    
+
             });
-    
+
             // Set the selected Managers back to the dropdown
             if (selectedmanagers) {
                 $('[name=employee_id]').val(selectedmanagers);
             }
             }
         });
-        
+
     })
 
     $('[name=candidate_id]').change(function(){
@@ -58,7 +58,7 @@
             success: function(data) {
             // Clear existing options in the Managers dropdown
             $('[name=employee_id]').empty();
-    
+
             // Append new options based on the response
             $.each(data.employees, function(key, value) {
 
@@ -66,9 +66,9 @@
                 value: key,
                 text: value
                 }));
-    
+
             });
-    
+
             // Set the selected Managers back to the dropdown
             if (selectedmanagers) {
                 $('[name=employee_id]').val(selectedmanagers);

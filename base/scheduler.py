@@ -1,6 +1,8 @@
-from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import datetime, timedelta, date
 import calendar
+from datetime import date, datetime, timedelta
+
+from apscheduler.schedulers.background import BackgroundScheduler
+
 from notifications.signals import notify
 
 
@@ -222,8 +224,9 @@ def switch_shift():
     """
     This method change employees shift information regards to the shift request
     """
-    from base.models import ShiftRequest
     from django.contrib.auth.models import User
+
+    from base.models import ShiftRequest
 
     today = date.today()
 
@@ -260,8 +263,9 @@ def undo_shift():
     """
     This method undo previous employees shift information regards to the shift request
     """
-    from base.models import ShiftRequest
     from django.contrib.auth.models import User
+
+    from base.models import ShiftRequest
 
     today = date.today()
     # here will get all the active shift requests
@@ -302,6 +306,7 @@ def switch_work_type():
     This method change employees work type information regards to the work type request
     """
     from django.contrib.auth.models import User
+
     from base.models import WorkTypeRequest
 
     today = date.today()
@@ -340,8 +345,9 @@ def undo_work_type():
     """
     This method undo previous employees work type information regards to the work type request
     """
-    from base.models import WorkTypeRequest
     from django.contrib.auth.models import User
+
+    from base.models import WorkTypeRequest
 
     today = date.today()
     # here will get all the active work type requests

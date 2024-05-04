@@ -165,7 +165,7 @@ $(document).ready(function () {
     success: (response) => {
 
       departmentDataUpdate(response);
-      
+
     },
     error: (error) => {
       console.log("Error", error);

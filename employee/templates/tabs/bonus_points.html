@@ -19,10 +19,10 @@
                         class="md hydrated"
                         aria-label="ellipsis vertical"
                     ></ion-icon>
-                </button>                    
+                </button>
             </div>
             {% endif %}
-            
+
         </div>
         <div class="oh-timeoff-modal__profile-content">
             <div class="oh-profile mb-2">
@@ -62,7 +62,7 @@
                         <strong>{{activity.points}} </strong> {% trans "points" %}</span
                     >
                     <span class="dateformat_changer">{{ activity.date|date:"d N. Y"}}</span>
-                    {% else %}                
+                    {% else %}
                     <span
                         >{% if activity.reason == 'bonus points has been redeemed.' %} <strong> --> {{activity.points|abs_value}} </strong> {% else %}<strong>--> {{activity.user}}</strong> {% trans "Added " %}
                         <strong>{{activity.points}} </strong> {% trans "bonus points for " %}{% endif %} <span title="{{activity.reason}}">{{activity.reason|truncatechars:40}}</span> </span
@@ -70,7 +70,7 @@
                     <span class="dateformat_changer">{{ activity.date|date:"d N. Y"}}</span>
                     {% endif %}
                 </div>
-            {% endfor %} 
+            {% endfor %}
         </div>
     </div>
 </div>

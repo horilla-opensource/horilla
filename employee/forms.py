@@ -3,7 +3,7 @@ forms.py
 
 This module contains the form classes used in the application.
 
-Each form represents a specific functionality or data input in the 
+Each form represents a specific functionality or data input in the
 application. They are responsible for validating
 and processing user input data.
 
@@ -21,31 +21,33 @@ class YourForm(forms.Form):
         pass
 """
 
-from datetime import date
 import re
+from datetime import date
 from typing import Any
+
 from django import forms
-from django.db.models import Q
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.forms import DateInput, TextInput
+from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
-from django.template.loader import render_to_string
+
 from base import thread_local_middleware
-from horilla.decorators import logger
+from base.methods import reload_queryset
 from employee.models import (
     Actiontype,
     BonusPoint,
     DisciplinaryAction,
     Employee,
-    EmployeeWorkInformation,
     EmployeeBankDetails,
     EmployeeNote,
+    EmployeeWorkInformation,
     NoteFiles,
     Policy,
     PolicyMultipleFile,
 )
-from base.methods import reload_queryset
+from horilla.decorators import logger
 from horilla_audit.models import AccountBlockUnblock
 
 

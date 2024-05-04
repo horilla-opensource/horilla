@@ -6,7 +6,7 @@
 
 
 <h1>
-  
+
 </h1>
 {% if messages %}
 {% for message in messages %}
@@ -49,13 +49,13 @@
       <!-- for creating period -->
       <div class="oh-modal__dialog-header">
         <button type="button" class="oh-modal__close" aria-label="Close"
-                hx-get="{% url 'period-hx-view' %}" hx-target="#periodListTable"  
+                hx-get="{% url 'period-hx-view' %}" hx-target="#periodListTable"
         >
           <ion-icon name="close-outline"></ion-icon>
         </button>
       </div>
       <div class="oh-modal__dialog-body" id="periodModalTarget">
-         
+
         </div>
     </div>
   </div>
@@ -67,7 +67,7 @@
 class="oh-wrapper-main"
 >
   <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-    
+
     <div class="oh-wrapper">
       <div class="oh-404">
           <img style="    width: 190px;height: 190px;" src="{% static 'images/ui/deadline.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>

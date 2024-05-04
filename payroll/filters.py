@@ -8,21 +8,23 @@ to customize the filtering behavior.
 """
 
 import uuid
+
 import django_filters
 from django import forms
 from django.utils.translation import gettext_lazy as _
+
+from base.filters import FilterSet
 from employee.models import Employee
 from horilla.filters import filter_by_name
-from base.filters import FilterSet
 from payroll.models.models import (
     Allowance,
     Contract,
     Deduction,
     FilingStatus,
     LoanAccount,
+    Payslip,
     Reimbursement,
 )
-from payroll.models.models import Payslip
 
 
 class ContractFilter(FilterSet):

@@ -46,11 +46,11 @@
 						>
 							<ion-icon name="create-outline"></ion-icon>
 						</button>
-						{% endif %} {% if perms.base.delete_company %} 
-						<form action="{% url 'company-delete' company.id %}" 
-						onsubmit="return confirm('{% trans "Are you sure you want to delete this company?" %}');" 
+						{% endif %} {% if perms.base.delete_company %}
+						<form action="{% url 'company-delete' company.id %}"
+						onsubmit="return confirm('{% trans "Are you sure you want to delete this company?" %}');"
 						method='post'
-						class='w-50'> 
+						class='w-50'>
 							{% csrf_token %}
 							<button
 								type="submit"

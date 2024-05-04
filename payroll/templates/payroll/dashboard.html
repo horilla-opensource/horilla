@@ -1,4 +1,4 @@
-{% extends 'index.html' %} 
+{% extends 'index.html' %}
 {% block content %}
 {% load static i18n %}
 {% load i18n %}
@@ -21,7 +21,7 @@
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter" id="confirmedPayslip">
                         <div class="oh-card-dashboard oh-card-dashboard--neutral"
-                            
+
                         >
                             <div class="oh-card-dashboard__header">
                                 <span class="oh-card-dashboard__title">{% trans "Confirmed" %}</span>
@@ -62,9 +62,9 @@
                 <div class="oh-btn-group ms-2 mt-3 justify-content-between">
                     <div style = "cursor: pointer;">
                         <label for="monthYearField" class="text-danger fw-bold" style = "cursor: pointer;">{% trans "Select Month and Year:" %}</label>
-                        <input class="oh-select p-3 m-1" type="month" id="monthYearField" name="monthYearField" style = "cursor: pointer;"> 
+                        <input class="oh-select p-3 m-1" type="month" id="monthYearField" name="monthYearField" style = "cursor: pointer;">
                     </div>
-                    
+
                     <div class="oh-main__titlebar-button-container">
 
                         <div class="oh-dropdown" x-data="{open: false}">
@@ -103,7 +103,7 @@
                                             <label class="oh-label d-block">{% trans "Status" %}</label>
                                             {{export_form.status}}
                                         </div>
-                                    </div>                            
+                                    </div>
                                     <div class="col-sm-12 col-md-12 col-lg-12 mb-3">
                                         <div class="oh-input-group">
                                             <label class="oh-label d-block">{% trans "Contributions" %}</label>
@@ -154,7 +154,7 @@
                             <ul id="department_total_empty" style="height: 232px; overflow-y: auto; list-style: disc;"></ul>
                         </div>
                     </div>
-                    
+
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4">
                         <form hx-get="{% url 'get-contribution-report' %}" hx-trigger="load, submit"  hx-target="#contributionReportContainer" class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" >
                             <div class="d-flex justify-content-between oh-card-dashboard__header oh-card-dashboard__header--divider" style = "cursor: default;">
@@ -236,6 +236,6 @@
             window.location.href='{% url "view-payslip" %}?status=draft'
         })
     })
-    
+
 </script>
 {% endblock content %}

@@ -76,10 +76,10 @@
             <div class="oh-sticky-table__tbody">
                 {% for leave_request in leave_requests %}
                 <div class="oh-sticky-table__tr" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25"
-                    hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{request_ids}}" 
+                    hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{request_ids}}"
                     hx-target="#objectDetailsModalW25Target">
-                    <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange 
-                        {% elif leave_request.status == "cancelled" %} row-status--gray 
+                    <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange
+                        {% elif leave_request.status == "cancelled" %} row-status--gray
                         {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "rejected" %} row-status--red{% endif %}" onclick="event.stopPropagation()">
                         <div class="centered-div">
                             <input
@@ -124,27 +124,27 @@
                         {% else %}
                             {{leave_request.get_status_display}}
                         {% endif %}
-                    </div>                      
+                    </div>
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-        
-                        <button type="button" hx-get="{% url 'leave-request-view-comment' leave_request.id %}?{{pd}}&target=userRequest" hx-target="#commentContainer"  
+
+                        <button type="button" hx-get="{% url 'leave-request-view-comment' leave_request.id %}?{{pd}}&target=userRequest" hx-target="#commentContainer"
                         data-target = '#leaveactivitySidebar' title="{% trans 'Add / View Comment' %}"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
                         <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
                         </button>
-                        
+
                     </div>
-  
+
                     <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
                         {% if leave_request.status == 'approved' and leave_request.end_date >= current_date %}
                             <a type="submit" data-toggle="oh-modal-toggle"
-                                data-target="#cancelModal" 
-                                hx-get="{% url 'user-request-cancel' leave_request.id %}" 
-                                hx-target="#cancelForm" 
+                                data-target="#cancelModal"
+                                hx-get="{% url 'user-request-cancel' leave_request.id %}"
+                                hx-target="#cancelForm"
                                 title="{% trans 'Cancel' %}"
                                 class="oh-btn oh-btn--primary w-100"> {% trans "Cancel" %}
                             </a>
                         {% else %}
-                            <button class="oh-btn oh-btn--primary w-100" disabled> 
+                            <button class="oh-btn oh-btn--primary w-100" disabled>
                                 {% trans "Cancel" %}
                             </button>
                         {% endif %}
@@ -158,7 +158,7 @@
                                     hx-target="#objectUpdateModalTarget">
                                     <ion-icon name="create-outline"></ion-icon>
                                 </button>
-                                <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
+                                <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                     title="{% trans 'Delete' %}" id="delete-link"
                                     hx-confirm="{% trans 'Are you sure you want to delete this leave request?' %}"
                                     hx-post="{% url 'user-request-delete' leave_request.id %}?{{pd}}"
@@ -169,7 +169,7 @@
                             </div>
                         {% else %}
                             <div class="oh-btn-group" >
-                                <button 
+                                <button
                                     class="oh-btn oh-btn--light-bkg w-50" disabled>
                                     <ion-icon name="create-outline" ></ion-icon>
                                 </button></td>
@@ -220,7 +220,7 @@
                     class="oh-pagination__link">{% trans "Last" %}</a>
             </li>
             {% endif %}
-  
+
         </ul>
     </nav>
   </div>

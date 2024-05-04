@@ -12,73 +12,75 @@ provide the main entry points for interacting with the application's functionali
 """
 
 import calendar
-import json
 import contextlib
-from datetime import datetime, timedelta
-from datetime import date
-import pandas as pd
+import json
+from datetime import date, datetime, timedelta
 from urllib.parse import parse_qs
-from django.shortcuts import render, redirect
-from django.utils.translation import gettext_lazy as _
-from django.utils.translation import gettext as __
+
+import pandas as pd
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import ProtectedError
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, render
+from django.utils.translation import gettext as __
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
-from employee.models import Employee
-from horilla.decorators import (
-    permission_required,
-    login_required,
-    hx_request_required,
-    manager_can_enter,
-)
-from base.methods import closest_numbers, export_data, get_pagination
-from base.methods import get_key_instances
-from base.models import EmployeeShiftSchedule
-from base.methods import filtersubordinates, choosesubordinates
-from leave.models import WEEK_DAYS, CompanyLeave, Holiday
-from notifications.signals import notify
-from attendance.views.handle_attendance_errors import handle_attendance_errors
-from attendance.views.process_attendance_data import process_attendance_data
+
 from attendance.filters import (
+    AttendanceActivityFilter,
+    AttendanceActivityReGroup,
     AttendanceFilters,
     AttendanceOverTimeFilter,
+    AttendanceOvertimeReGroup,
+    AttendanceReGroup,
     LateComeEarlyOutFilter,
-    AttendanceActivityFilter,
+    LateComeEarlyOutReGroup,
 )
 from attendance.forms import (
     AttendanceActivityExportForm,
+    AttendanceExportForm,
     AttendanceForm,
     AttendanceOverTimeExportForm,
     AttendanceOverTimeForm,
-    AttendanceValidationConditionForm,
-    AttendanceUpdateForm,
-    AttendanceExportForm,
     AttendanceRequestCommentForm,
+    AttendanceUpdateForm,
+    AttendanceValidationConditionForm,
     GraceTimeForm,
     LateComeEarlyOutExportForm,
 )
-
 from attendance.models import (
     Attendance,
     AttendanceActivity,
     AttendanceGeneralSetting,
-    AttendanceOverTime,
     AttendanceLateComeEarlyOut,
-    AttendanceValidationCondition,
+    AttendanceOverTime,
     AttendanceRequestComment,
     AttendanceRequestFile,
+    AttendanceValidationCondition,
     GraceTime,
 )
-from attendance.filters import (
-    AttendanceReGroup,
-    AttendanceOvertimeReGroup,
-    LateComeEarlyOutReGroup,
-    AttendanceActivityReGroup,
+from attendance.views.handle_attendance_errors import handle_attendance_errors
+from attendance.views.process_attendance_data import process_attendance_data
+from base.methods import (
+    choosesubordinates,
+    closest_numbers,
+    export_data,
+    filtersubordinates,
+    get_key_instances,
+    get_pagination,
 )
+from base.models import EmployeeShiftSchedule
+from employee.models import Employee
+from horilla.decorators import (
+    hx_request_required,
+    login_required,
+    manager_can_enter,
+    permission_required,
+)
+from leave.models import WEEK_DAYS, CompanyLeave, Holiday
+from notifications.signals import notify
 from payroll.models.models import WorkRecord
-
 
 # Create your views here.
 

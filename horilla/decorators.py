@@ -1,17 +1,17 @@
-import logging, os
+import logging
+import os
 from urllib.parse import urlencode
+
+from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from base.models import MultipleApprovalManagers
-from employee.models import Employee, EmployeeWorkInformation
-from django.contrib import messages
-from django.shortcuts import render
-from horilla.settings import TEMPLATES, BASE_DIR
-from horilla import settings
-from base.models import BiometricAttendance
 
+from base.models import BiometricAttendance, MultipleApprovalManagers
+from employee.models import Employee, EmployeeWorkInformation
+from horilla import settings
+from horilla.settings import BASE_DIR, TEMPLATES
 
 logger = logging.getLogger(__name__)
 
@@ -259,21 +259,29 @@ def install_required(function):
 
 
 @decorator_with_arguments
-def meeting_manager_can_enter(function, perm, answerable = False):
+def meeting_manager_can_enter(function, perm, answerable=False):
     def _function(request, *args, **kwargs):
 
         user = request.user
         employee = user.employee_get
         is_answer_employee = False
 
-        is_manager = Employee.objects.filter(
+        is_manager = (
+            Employee.objects.filter(
                 meeting_manager__isnull=False,
-        ).filter(id=employee.id).exists()
+            )
+            .filter(id=employee.id)
+            .exists()
+        )
 
         if answerable:
-            is_answer_employee = Employee.objects.filter(
+            is_answer_employee = (
+                Employee.objects.filter(
                     meeting_answer_employees__isnull=False,
-            ).filter(id=employee.id).exists()
+                )
+                .filter(id=employee.id)
+                .exists()
+            )
 
         if user.has_perm(perm) or is_manager or is_answer_employee:
             return function(request, *args, **kwargs)

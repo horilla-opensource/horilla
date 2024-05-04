@@ -34,7 +34,7 @@
                             class="oh-profile-section__modal-image" alt="" />
                     </div>
                     <div  >
-                        <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+                        <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;"
                             href ="{% url 'employee-view-individual' employee.employee_id.id %}">
                             <div class="oh-timeoff-modal__profile-info mb-2">
                                 <span class="oh-timeoff-modal__user fw-bold">{{employee.employee_id}}</span>
@@ -107,7 +107,7 @@
                 </div>
             </div>
             {% endif %}
-            
+
         </div>
     </div>
 </div>
@@ -122,7 +122,7 @@
     $("select[name='task']").on("change", function() {
         var value = $(this).val();
         var dot = $(this).closest('.col-6').find('span.oh-dot');
-    
+
         // Update the class
         dot.removeClass().addClass('oh-dot oh-dot--small me-1 oh-dot--color-' + value);
     })

@@ -37,7 +37,7 @@
 </div> {% endcomment %}
 {% endif %}
 <div class="d-flex justify-content-between align-items-center">
-    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;"
         href ="{% url 'employee-view-individual' instance.employee_id.id %}">
         <div class="oh-profile mb-2">
             <div class="oh-profile__avatar">
@@ -63,7 +63,7 @@
     </a>
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title me-3">{% trans "Status" %}</span>
-                {% if perms.pms.change_employeeobjective or instance|is_manager:request.user %}        
+                {% if perms.pms.change_employeeobjective or instance|is_manager:request.user %}
 
                     <select name="status" id="{{instance.id}}" class="oh-table__editable-input p-3"
                     hx-trigger="change" hx-post="{% url 'change-employee-objective-status' instance.id %}" hx-target="#objectDetailsModalTarget"
@@ -75,7 +75,7 @@
                     </select>
                 {% else %}
                     <span class="oh-timeoff-modal__stat-count">{{instance.get_status_display}}</span>
-                {% endif %} 
+                {% endif %}
 
         </div>
 </div>
@@ -102,14 +102,14 @@
                     <option value="{{status.0}}"  {% if status.0 == instance.status %} selected {% endif %}>
                         <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span></option>
                     {% endfor %}
-                </select> 
+                </select>
         </div>
     </div> {% endcomment %}
     <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Start Date" %}</span>
             <span class="oh-timeoff-modal__stat-count dateformat_changer">
-                {{instance.start_date}} 
+                {{instance.start_date}}
             </span>
         </div>
         <div class="oh-timeoff-modal__stat">
@@ -117,16 +117,16 @@
             <span class="oh-timeoff-modal__stat-count dateformat_changer">{{instance.end_date}}</span>
         </div>
     </div>
-    {% if perms.pms.change_employeeobjective or perms.pms.delete_employeeobjective or instance|is_manager:request.user %}        
+    {% if perms.pms.change_employeeobjective or perms.pms.delete_employeeobjective or instance|is_manager:request.user %}
         <div class="oh-modal__button-container text-center mt-3">
             <div class="oh-btn-group">
-                {% if perms.pms.change_employeeobjective or instance|is_manager:request.user %}        
+                {% if perms.pms.change_employeeobjective or instance|is_manager:request.user %}
                     <a class="oh-btn oh-btn--info" hx-get='{% url "update-employee-objective" instance.id %}' hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" style="width: 50%;">
                         <ion-icon name="create-outline">
-                        </ion-icon>{% trans "Edit" %} 
+                        </ion-icon>{% trans "Edit" %}
                     </a>
                 {% endif %}
-                {% if perms.pms.delete_employeeobjective or instance|is_manager:request.user %}        
+                {% if perms.pms.delete_employeeobjective or instance|is_manager:request.user %}
 
                     {% if instance.archive %}
                         <form  class="oh-btn oh-btn--primary" style="width: 50%;" onsubmit="return confirm('Do you want to Unarchive this Employee objective?')"  action='{% url "archive-employee-objective" instance.id %}'>
@@ -140,7 +140,7 @@
                                 cursor: pointer;
                                 outline: inherit;">
                                 <ion-icon name="archive-outline"></ion-icon>
-                                {% trans "Unarchive" %} 
+                                {% trans "Unarchive" %}
                             </button>
                         </form>
                     {% else %}
@@ -155,9 +155,9 @@
                                 cursor: pointer;
                                 outline: inherit;">
                                 <ion-icon name="archive-outline"></ion-icon>
-                                {% trans "Archive" %} 
+                                {% trans "Archive" %}
                             </button>
-                        </form> 
+                        </form>
                     {% endif %}
                     <form  class="oh-btn oh-btn--secondary" method="post" style="width: 50%;" onsubmit="return confirm('Do you Want to delete this employee objective?')"  action='{% url "delete-employee-objective" instance.id %}'>
                         {% csrf_token %}
@@ -169,10 +169,10 @@
                             cursor: pointer;
                             outline: inherit;">
                             <ion-icon name="trash-outline">
-                            </ion-icon>{% trans "Delete" %} 
+                            </ion-icon>{% trans "Delete" %}
                         </button>
-                    </form> 
-                {% endif %}             
+                    </form>
+                {% endif %}
             </div>
         </div>
     {% endif %}

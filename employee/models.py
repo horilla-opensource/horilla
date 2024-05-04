@@ -6,31 +6,33 @@ This module is used to register models for employee app
 """
 
 from datetime import date, datetime, timedelta
+
 from django.conf import settings
-from django.db import models
-from django.contrib.auth.models import User, Permission
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from django.utils.translation import gettext_lazy as trans
-from django.utils.translation import gettext as _
+from django.contrib.auth.models import Permission, User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
+from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as trans
+
 from base import thread_local_middleware
-from horilla.models import HorillaModel
-from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
-from horilla_audit.methods import get_diff
+from base.horilla_company_manager import HorillaCompanyManager
 from base.models import (
     Company,
-    JobPosition,
-    WorkType,
-    EmployeeType,
-    JobRole,
     Department,
     EmployeeShift,
+    EmployeeType,
+    JobPosition,
+    JobRole,
+    WorkType,
     validate_time_format,
 )
-from base.horilla_company_manager import HorillaCompanyManager
-from employee.methods.duration_methods import strtime_seconds, format_time
+from employee.methods.duration_methods import format_time, strtime_seconds
+from horilla.models import HorillaModel
+from horilla_audit.methods import get_diff
+from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # create your model
 
@@ -257,7 +259,7 @@ class Employee(models.Model):
         a dictionary is returned with a list of related models of that employee.
         """
         from onboarding.models import OnboardingStage, OnboardingTask
-        from recruitment.models import Stage, Recruitment
+        from recruitment.models import Recruitment, Stage
 
         reporting_manager_query = EmployeeWorkInformation.objects.filter(
             reporting_manager_id=self.pk
@@ -629,9 +631,9 @@ class EmployeeBankDetails(HorillaModel):
 
     def clean(self):
         if self.account_number is not None:
-            bank_details = EmployeeBankDetails.objects.exclude(employee_id=self.employee_id).filter(
-                account_number=self.account_number
-            )
+            bank_details = EmployeeBankDetails.objects.exclude(
+                employee_id=self.employee_id
+            ).filter(account_number=self.account_number)
             if bank_details:
                 raise ValidationError(
                     {
@@ -732,7 +734,9 @@ class BonusPoint(HorillaModel):
             HorillaAuditInfo,
         ],
     )
-    objects = HorillaCompanyManager(related_company_field="employee_id__employee_work_info__company_id")
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
 
     def __str__(self):
         return f"{self.employee_id} - {self.points} Points"

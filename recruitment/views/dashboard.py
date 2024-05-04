@@ -5,15 +5,17 @@ This module is used to write dashboard related views
 """
 
 import datetime
+
 from django.core import serializers
 from django.http import JsonResponse
-from django.utils.translation import gettext_lazy as _
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
+
+from base.models import Department, JobPosition
+from employee.models import EmployeeWorkInformation
 from horilla.decorators import login_required
 from recruitment.decorators import manager_can_enter
 from recruitment.models import Candidate, Recruitment, SkillZone, Stage
-from base.models import Department, JobPosition
-from employee.models import EmployeeWorkInformation
 
 
 def stage_type_candidate_count(rec, stage_type):

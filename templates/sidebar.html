@@ -1,4 +1,4 @@
-{% load static %} {% load i18n %} {% load attendancefilters offboarding_filter %} 
+{% load static %} {% load i18n %} {% load attendancefilters offboarding_filter %}
 {% load recruitmentfilters %} {% load onboardingfilters %} {% load basefilters %}
 <script>
   function activeNav(id) {
@@ -83,7 +83,7 @@
         </a>
       </li>
 
-{% comment %}       
+{% comment %}
       <li
       class="oh-sidebar__menu-item"
       x-data="{ isOpen: getOpenState('announcementNav') }"
@@ -107,7 +107,7 @@
           <span>{% trans "Announcement" %}</span>
         </a>
       </li>
-      
+
  {% endcomment %}
       {% if request.user|is_stagemanager or 'recruitment' in perms %}
       <li
@@ -382,7 +382,7 @@
               </a>
             </li>
             <li class="oh-sidebar__submenu-item">
-              <a class="oh-sidebar__submenu-link" 
+              <a class="oh-sidebar__submenu-link"
                   href="{% url 'organisation-chart' %}"
                 >{% trans "Organization Chart" %}
               </a>
@@ -462,7 +462,7 @@
                 >{% trans "Hour Account" %}</a
               >
             </li>
-            {% if perms.attendance.view_attendance or request.user|is_reportingmanager %}    
+            {% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
@@ -557,7 +557,7 @@
                 >{% trans "Leave Requests" %}</a
               >
             </li>
-            {% endif %} 
+            {% endif %}
             {% if perms.leave.view_leavetype %}
             <li class="oh-sidebar__submenu-item">
               <a href="{% url 'type-view' %}" class="oh-sidebar__submenu-link"
@@ -570,7 +570,7 @@
                 >{% trans "Assigned Leaves" %}</a
               >
             </li>
-            {% endif %} 
+            {% endif %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'leave-allocation-request-view' %}"
@@ -579,7 +579,7 @@
               >
             </li>
             {% if not perms.leave.add_holiday %}
-            
+
               <li class="oh-sidebar__submenu-item">
                 <a
                   href="{% url 'holiday-view' %}"
@@ -638,7 +638,7 @@
                 >{% trans "Dashboard" %}</a
               >
             </li>
-            {%endif%} 
+            {%endif%}
             {% if perms.payroll.view_contract %}
             <li class="oh-sidebar__submenu-item">
               <a
@@ -860,7 +860,7 @@
           style="display: none"
         >
           <ul class="oh-sidebar__submenu-items">
-            
+
             {% if perms.asset.view_assetcategory %}
             <li class="oh-sidebar__submenu-item">
               <a

@@ -55,7 +55,7 @@
                         >{% trans "Edit" %}
                       </a>
                     </li>
-                  {% endif %} 
+                  {% endif %}
                   {% if perms.recruitment.change_recruitmentsurvey %}
                     <li class="oh-dropdown__item">
                       <a
@@ -67,7 +67,7 @@
                         >{% trans "Duplicate" %}
                       </a>
                     </li>
-                  {% endif %} 
+                  {% endif %}
                   {% if perms.recruitment.delete_recruitmentsurvey %}
                     <li class="oh-dropdown__item">
                       <a href="{% url 'recruitment-survey-question-template-delete' question.id %}"

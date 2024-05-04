@@ -65,7 +65,7 @@
     max-height: 70px !important;
     overflow: hidden;
     overflow-y: scroll;
-  } 
+  }
   .search-highlight{
     background-color: rgba(255, 68, 0, 0.076);
   }
@@ -84,7 +84,7 @@
       toggle = $(this).attr("data-stage-id");
       if ($(`[data-stage-toggle-id=${toggle}]`).hasClass("d-none")) {
         $(`[data-stage-toggle-id=${toggle}]`).removeClass("d-none");
-      } 
+      }
       else {
         setTimeout(function() {
           $(`[data-stage-toggle-id=${toggle}]`).addClass("d-none");
@@ -129,7 +129,7 @@
       background-position: 800px 0
     }
   }
-  
+
   .animated-background {
     animation-duration: 2s;
     animation-fill-mode: forwards;
@@ -166,7 +166,7 @@
 		setTimeout(function() {
 		  enlargeImageContainer.show();
 
-      const iframe = document.querySelector("iframe").contentWindow; 
+      const iframe = document.querySelector("iframe").contentWindow;
       var iframe_document = iframe.document
       iframe_image = iframe_document.getElementsByTagName('img')[0]
       $(iframe_image).attr("style","width:100%; height:100%;")
@@ -178,16 +178,16 @@
 		var enlargeImageContainer = $('#enlargeImageContainer');
 		enlargeImageContainer.empty();
   }
-  
+
   $(document).on('click', function(event){
     if (!$(event.target).closest('#enlargeImageContainer').length) {
         hideEnlargeImage();
     }
   });
-  
 
-  $(document).ready(function () {    
-    $(".stage-candidates").change(function (e) { 
+
+  $(document).ready(function () {
+    $(".stage-candidates").change(function (e) {
       var stageId = $(this).attr("data-stage-id");
       $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).prop("checked",false).closest(".oh-sticky-table__tr")
       .removeClass("highlight-selected");;
@@ -197,10 +197,10 @@
         .addClass("highlight-selected");
         $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).change()
       }else{
-        
-      }    
+
+      }
     });
-    $("[name=bulk_stage]").change(function (e) { 
+    $("[name=bulk_stage]").change(function (e) {
       e.preventDefault();
       var currentStageId = $(this).attr("data-stage-id");
       var nextStageId = $(this).val();

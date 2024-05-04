@@ -16,7 +16,7 @@
             {% if company_leaves %}
             <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
                 <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-                <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" 
+                <input type="text" class="oh-input oh-input__icon" aria-label="Search Input"
                     placeholder="{% trans 'Search' %}" name="search" onkeyup="$('.filterButton').click()" id="search" />
             </div>
             <div class="oh-main__titlebar-button-container">
@@ -24,7 +24,7 @@
                     <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
                         <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
                     </button>
-                
+
                     <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
                         @click.outside="open = false" style="display: none;">
                         <div class="oh-dropdown__filter-body">
@@ -74,7 +74,7 @@
 </section>
 
 <div class="oh-wrapper" id="companyLeave">
-    {% include 'leave/company_leave/company_leave.html' %} 
+    {% include 'leave/company_leave/company_leave.html' %}
 </div>
 
 
@@ -89,8 +89,8 @@
         document.head.appendChild(scriptElement);
     });
 
-    $("#companyLeaveCreate").click(function (e) { 
-        $("#objectCreateModalTarget").css("max-width", "350px"); 
+    $("#companyLeaveCreate").click(function (e) {
+        $("#objectCreateModalTarget").css("max-width", "350px");
     });
 
 </script>

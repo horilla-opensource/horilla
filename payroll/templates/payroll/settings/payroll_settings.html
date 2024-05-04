@@ -6,7 +6,7 @@
     <h2 class="oh-inner-sidebar-content__title">{% trans "Currency" %}</h2>
   </div>
   <div class="oh-label__info" for="currency_symbol">
-    <label class="oh-label" for="currency_symbol">{% trans "Currency Symbol" %}</label> 
+    <label class="oh-label" for="currency_symbol">{% trans "Currency Symbol" %}</label>
   </div>
   <input type="text" name="currency_symbol" value="{{currency_form.instance.currency_symbol}}" maxlength="5" class="oh-input w-25" placeholder="Currency Symbol" required="" id="id_currency_symbol">
   {% if perms.payroll.change_payrollsettings %}

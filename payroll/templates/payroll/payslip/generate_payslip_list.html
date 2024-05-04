@@ -101,7 +101,7 @@
           </div>
           <div class="oh-sticky-table__td">
             {{payslip.group_name}}
-          </div>          
+          </div>
           <div class="oh-sticky-table__td">
             {{currency}} {{payslip.gross_pay|floatformat:2}}
           </div>
@@ -157,7 +157,7 @@
 <div id="messageContainer">
 </div>
 <script>
-  $(".all-slips").change(function (e) { 
+  $(".all-slips").change(function (e) {
     e.preventDefault();
     $(".payslip-row").prop("checked",false)
     if ($(this).is(":checked")) {
@@ -184,7 +184,7 @@
     e.preventDefault();
     var status = $(this).val()
     var ids =[]
-    $.each($(".payslip-row:checked"), function (indexInArray, valueOfElement) { 
+    $.each($(".payslip-row:checked"), function (indexInArray, valueOfElement) {
       ids.push($(valueOfElement).val())
     });
     var color = "gray"

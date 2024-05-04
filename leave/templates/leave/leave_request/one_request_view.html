@@ -1,13 +1,13 @@
 {% load i18n %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button 
+    <button
         hx-get="{% url 'one-request-view' previous %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" hx-target="#objectDetailsModalW25Target"
         class="oh-modal__diaglog-nav oh-modal__nav-prev">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
         aria-label="chevron back outline"></ion-icon>
     </button>
 
-    <button  
+    <button
         hx-get="{% url 'one-request-view' next %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" hx-target="#objectDetailsModalW25Target"
         class="oh-modal__diaglog-nav oh-modal__nav-next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
@@ -25,7 +25,7 @@
     </button>
 </div>
 <div class="oh-modal__dialog-body  oh-modal__dialog-relative">
-    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;"
         href ="{% url 'employee-view-individual' leave_request.employee_id.id %}">
         <div class="oh-profile mb-2">
           <div class="oh-profile__avatar">
@@ -87,7 +87,7 @@
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Multiple Approvals" %}</span>
                 {% for approval in  leave_request.multiple_approvals.approvals %}
-                    <div class="oh-timeoff-modal__stat-description">{{forloop.counter}}.{{approval.manager_id}} : 
+                    <div class="oh-timeoff-modal__stat-description">{{forloop.counter}}.{{approval.manager_id}} :
                         {% if approval.is_approved %}{% trans "Approved" %}
                         {% else %}
                             {% if approval.is_rejected %}

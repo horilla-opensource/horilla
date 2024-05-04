@@ -1,9 +1,16 @@
-from datetime import datetime
 import json
+from datetime import datetime
 from operator import itemgetter
 from urllib.parse import parse_qs
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+
+from django.contrib import messages
+from django.core.paginator import Paginator
+from django.db.models import ProtectedError, Q
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
+from django.utils.translation import gettext as _
+from haystack.query import SearchQuerySet
+
 from attendance.methods.group_by import group_by_queryset
 from base.forms import TagsForm
 from base.methods import filtersubordinates, get_key_instances, get_pagination, sortby
@@ -16,26 +23,11 @@ from helpdesk.forms import (
     DepartmentManagerCreateForm,
     FAQCategoryForm,
     FAQForm,
+    TicketAssigneesForm,
     TicketForm,
     TicketRaisedOnForm,
     TicketTagForm,
-    TicketAssigneesForm,
     TicketTypeForm,
-)
-from django.utils.translation import gettext as _
-from django.contrib import messages
-from django.db.models import ProtectedError
-from haystack.query import SearchQuerySet
-from django.db.models import Q
-from django.core.paginator import Paginator
-from helpdesk.threading import AddAssigneeThread, RemoveAssigneeThread, TicketSendThread
-from notifications.signals import notify
-
-from horilla.decorators import (
-    login_required,
-    manager_can_enter,
-    owner_can_enter,
-    permission_required,
 )
 from helpdesk.models import (
     FAQ,
@@ -47,6 +39,14 @@ from helpdesk.models import (
     Ticket,
     TicketType,
 )
+from helpdesk.threading import AddAssigneeThread, RemoveAssigneeThread, TicketSendThread
+from horilla.decorators import (
+    login_required,
+    manager_can_enter,
+    owner_can_enter,
+    permission_required,
+)
+from notifications.signals import notify
 
 # Create your views here.
 
@@ -693,9 +693,9 @@ def ticket_filter(request):
     tickets_items1 = []
     tickets_items2 = []
 
-    my_tickets = tickets.filter(
-        employee_id=request.user.employee_get
-    ).order_by("-created_date")
+    my_tickets = tickets.filter(employee_id=request.user.employee_get).order_by(
+        "-created_date"
+    )
 
     all_tickets = tickets.filter(is_active=True).order_by("-created_date")
     all_tickets = filtersubordinates(request, tickets, "helpdesk.add_tickets")
@@ -811,13 +811,13 @@ def ticket_detail(request, ticket_id, **kwargs):
         remaining = "Due Today"
         color = "warning"
 
-    rating = ''
-    if ticket.priority == 'low':
-        rating = '1'
-    elif ticket.priority == 'medium':
-        rating = '2'
+    rating = ""
+    if ticket.priority == "low":
+        rating = "1"
+    elif ticket.priority == "medium":
+        rating = "2"
     else:
-        rating = '3'
+        rating = "3"
 
     context = {
         "ticket": ticket,
@@ -830,7 +830,7 @@ def ticket_detail(request, ticket_id, **kwargs):
         "create_tag_f": TagsForm(),
         "color": color,
         "remaining": remaining,
-        "rating" : rating,
+        "rating": rating,
     }
     return render(request, "helpdesk/ticket/ticket_detail.html", context=context)
 
@@ -1222,18 +1222,18 @@ def delete_department_manager(request, dep_id):
 @login_required
 def update_priority(request, ticket_id):
     """
-       This function is used to update the priority 
-       from the detailed view
+    This function is used to update the priority
+    from the detailed view
     """
-    ti = Ticket.objects.get(id = ticket_id)
+    ti = Ticket.objects.get(id=ticket_id)
     rating = request.POST.get("rating")
-    
-    if rating == '1':
-        ti.priority = 'low'
-    elif rating == '2':
-        ti.priority = 'medium'
+
+    if rating == "1":
+        ti.priority = "low"
+    elif rating == "2":
+        ti.priority = "medium"
     else:
-        ti.priority = 'high'
+        ti.priority = "high"
     ti.save()
     messages.success(request, _("Priority updated successfully."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

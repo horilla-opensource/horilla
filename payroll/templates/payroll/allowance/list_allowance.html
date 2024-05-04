@@ -26,15 +26,15 @@
     </div>
   </div>
   <!-- end of column toggle -->
-  <div id="allowance-column-table" data-table-name="allowance_column_tab"> 
+  <div id="allowance-column-table" data-table-name="allowance_column_tab">
     <!-- start of sticky table -->
     <div class="oh-sticky-table">
       <div class="oh-sticky-table__table oh-table--sortable">
         <div class="oh-sticky-table__thead">
           <div class="oh-sticky-table__tr">
-            <div 
+            <div
               class="oh-sticky-table__th {% if request.sort_option.order == '-title' %}arrow-up {% elif request.sort_option.order == 'title' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'filter-allowance' %}?{{pd}}&sortby=title" 
+              hx-get="{% url 'filter-allowance' %}?{{pd}}&sortby=title"
               hx-target="#payroll-allowance-container"
             >
                   {% trans "Allowance" %}
@@ -45,9 +45,9 @@
             <div data-cell-index="4" data-cell-title="{% trans 'Is Condition Based' %}" class="oh-sticky-table__th">{% trans "Is Condition Based" %}</div>
             <div data-cell-index="5" data-cell-title="{% trans 'Condition' %}" class="oh-sticky-table__th">{% trans "Condition" %}</div>
             <div data-cell-index="6" data-cell-title="{% trans 'Is Fixed' %}" class="oh-sticky-table__th">{% trans "Is Fixed" %}</div>
-            <div data-cell-index="7" data-cell-title="{% trans 'Amount' %}" 
+            <div data-cell-index="7" data-cell-title="{% trans 'Amount' %}"
               class="oh-sticky-table__th {% if request.sort_option.order == '-amount' %}arrow-up {% elif request.sort_option.order == 'amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'filter-allowance' %}?{{pd}}&sortby=amount" 
+              hx-get="{% url 'filter-allowance' %}?{{pd}}&sortby=amount"
               hx-target="#payroll-allowance-container"
             >{% trans "Amount" %}</div>
             <div data-cell-index="8" data-cell-title="{% trans 'Based On' %}" class="oh-sticky-table__th">{% trans "Based On" %}</div>
@@ -113,7 +113,7 @@
                   hx-confirm="{% trans 'Do you want to delete this Allowance?' %}"
                   hx-post="{% url 'delete-allowance' allowance.id %}?{{pd}}&view=list"
                   hx-target="#payroll-allowance-container"
-                  title="{% trans 'Delete' %}"  
+                  title="{% trans 'Delete' %}"
                 >
                   <ion-icon
                     name="trash-outline"
@@ -199,5 +199,5 @@
    $("#allowanceCells").find("[type=checkbox]").prop("checked",true)
  }
  $("[type=checkbox]").change()
- 
+
 </script>

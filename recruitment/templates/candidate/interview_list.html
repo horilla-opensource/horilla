@@ -1,4 +1,4 @@
-{% load i18n static %} 
+{% load i18n static %}
 {% include 'filter_tags.html' %}
     {% if data %}
     <div class="oh-card p-4">
@@ -24,16 +24,16 @@
                         <div class="oh-sticky-table__thead">
                             <div class="oh-sticky-table__tr">
                                 <div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
-                                <div data-cell-index="1" data-cell-title='{% trans "Interviewer" %}' 
+                                <div data-cell-index="1" data-cell-title='{% trans "Interviewer" %}'
                                     class="oh-sticky-table__th"
                                 >{% trans "Interviewer" %}</div>
-                                <div data-cell-index="2" data-cell-title='{% trans "Interview Date" %}' 
+                                <div data-cell-index="2" data-cell-title='{% trans "Interview Date" %}'
                                     class="oh-sticky-table__th"
                                 >{% trans "Interview Date" %}</div>
-                                <div data-cell-index="3" data-cell-title='{% trans "Interview Time" %}' 
+                                <div data-cell-index="3" data-cell-title='{% trans "Interview Time" %}'
                                     class="oh-sticky-table__th"
                                 >{% trans "Interview Time" %}</div>
-                                <div data-cell-index="4" data-cell-title='{% trans "Status" %}' 
+                                <div data-cell-index="4" data-cell-title='{% trans "Status" %}'
                                     class="oh-sticky-table__th"
                                 >{% trans "Status" %}</div>
                                 <div class="oh-sticky-table__th oh-sticky-table__right" align="center" style="width: 220px;">{% trans "Actions" %}</div>
@@ -43,7 +43,7 @@
                             {% for interview in data %}
                                 <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed {% if request.user.employee_get in interview.employee_id.all %}diff-cell {% endif %}"
                                 >
-                                    <div class="oh-sticky-table__sd oh-permission-table--toggle " 
+                                    <div class="oh-sticky-table__sd oh-permission-table--toggle "
                                         data-toggle-count
                                     >
                                         <div class="d-flex align-items-center">
@@ -70,11 +70,11 @@
                                                     >{{employee.get_full_name|truncatechars:15}}</span>
                                                 </div>
                                                 {% if perms.recruitment.change_interviewschedule or request.user.employee_get in interview.employee_id.all %}
-                                                <a 
+                                                <a
                                                     hx-confirm="{% trans 'Are you sure to remove this interviewer?' %}"
                                                     hx-post="{% url 'interview-employee-remove' interview.id employee.id %}"
-                                                    title="{% trans "Remove" %}" hx-swap="outerHTML" 
-                                                    hx-target="#employeeContainer{{employee.id}}-{{interview.id}}" class="oh-user-panel__remove" 
+                                                    title="{% trans "Remove" %}" hx-swap="outerHTML"
+                                                    hx-target="#employeeContainer{{employee.id}}-{{interview.id}}" class="oh-user-panel__remove"
                                                     onclick="event.stopPropagation()"
                                                 >
                                                     <ion-icon name="close-outline"></ion-icon>
@@ -84,11 +84,11 @@
                                         </div>
                                         {% endfor %}
                                         <span class="count-span">{{interview.employee_id.all|length}} {% trans "Interviewers" %}</span>
-                                        
+
                                     </div>
                                     <div data-cell-index="2" class="oh-sticky-table__td dateformat_changer">
                                         {{interview.interview_date}}
-                                    </div> 
+                                    </div>
                                     <div data-cell-index="3" class="oh-sticky-table__td timeformat_changer">
                                         {{interview.interview_time}}
                                     </div>
@@ -119,17 +119,17 @@
                                             <div class="oh-btn-group" onclick="event.stopPropagation()">
 
                                                 {% if perms.recruitment.change_interviewschedule or request.user.employee_get in interview.employee_id.all %}
-                                                    <a 
+                                                    <a
                                                     title="{% trans "Edit" %}" hx-get="{% url 'edit-interview' interview.id %}?view=true"
-                                                    data-target="#createModal" hx-swap="innerHTML" hx-target="#createTarget" 
+                                                    data-target="#createModal" hx-swap="innerHTML" hx-target="#createTarget"
                                                     data-toggle="oh-modal-toggle"  class="oh-btn oh-btn--light-bkg w-100"
                                                     ><ion-icon name="create-outline"></ion-icon></a>
                                                 {% endif %}
 
                                                 {% if perms.recruitment.delete_interviewschedule %}
-                                                    <form 
+                                                    <form
                                                         action="{% url 'delete-interview' interview.id %}?view=true"
-                                                        onsubmit="return confirm('{% trans "Are you sure to delete this interview?" %}')" 
+                                                        onsubmit="return confirm('{% trans "Are you sure to delete this interview?" %}')"
                                                         method="post"
                                                         style="display: contents;width:100%">
                                                         {% csrf_token %}
@@ -141,7 +141,7 @@
                                             </div>
                                         </div>
                                 </div>
-                            {% endfor %} 
+                            {% endfor %}
                         </div>
                     </div>
                     <!-- end of sticky table -->
@@ -152,7 +152,7 @@
         <div class="oh-pagination">
             <span class="oh-pagination__page">
                 {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
-            </span> 
+            </span>
             <nav class="oh-pagination__nav">
                 <div class="oh-pagination__input-container me-3">
                     <span class="oh-pagination__label me-1">{% trans "Page" %}</span>

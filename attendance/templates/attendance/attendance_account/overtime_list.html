@@ -32,7 +32,7 @@
 					<div class="oh-sticky-table__tr">
 						<div class="oh-sticky-table__th" style="width:10px;">
 							<div class="centered-div">
-								<input type="checkbox" class="oh-input oh-input__checkbox all-hour-account" title="{% trans 'Select All' %}" 
+								<input type="checkbox" class="oh-input oh-input__checkbox all-hour-account" title="{% trans 'Select All' %}"
 								id = "allHourAccount"/>
 							</div>
 						</div>
@@ -76,7 +76,7 @@
 									</div>
 								</div>
 								<div data-cell-index="2"  class="oh-sticky-table__td">
-									{% with  month=ot.month|capfirst  %}{% trans month %}{% endwith %} 
+									{% with  month=ot.month|capfirst  %}{% trans month %}{% endwith %}
 								</div>
 								<div data-cell-index="3"  class="oh-sticky-table__td">{{ot.year}}</div>
 								<div data-cell-index="4"  class="oh-sticky-table__td">{{ot.worked_hours}}</div>
@@ -94,15 +94,15 @@
 											{% if perms.attendance.change_attendanceovertime or request.user|is_reportingmanager %}
 												<a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
 											{% endif %}
-											{% if perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %} 
+											{% if perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %}
 												<form hx-confirm="{% trans 'Are you sure want to delete this hour account?' %}"
-													hx-post="{% url 'attendance-overtime-delete' ot.id  %}?{{pd}}" 
+													hx-post="{% url 'attendance-overtime-delete' ot.id  %}?{{pd}}"
 													hx-target="#ot-table" class='w-50'>
 													{% csrf_token %}
 													<button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"   title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
 												</form>
 											{% endif %}
-										</div>      
+										</div>
 									</div>
 								{% endif %}
 							</div>
@@ -114,7 +114,7 @@
 		<div class="oh-pagination">
 			<span class="oh-pagination__page">
 				{% trans "Page" %} {{ accounts.number }} {% trans "of" %} {{ accounts.paginator.num_pages }}.
-			</span> 
+			</span>
 			<nav class="oh-pagination__nav">
 				<div class="oh-pagination__input-container me-3">
 					<span class="oh-pagination__label me-1">{% trans "Page" %}</span>

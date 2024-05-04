@@ -4,14 +4,14 @@
     {% trans "Selected Employees" %}
   </div>
   <div id="view-container">
-    {% if data %}  
-      {% if view_type == 'list' %} 
-        {% include 'employee_personal_info/employee_list.html' %} 
-      {% else %} 
-        {% include 'employee_personal_info/employee_card.html' %} 
+    {% if data %}
+      {% if view_type == 'list' %}
+        {% include 'employee_personal_info/employee_list.html' %}
+      {% else %}
+        {% include 'employee_personal_info/employee_card.html' %}
       {% endif %}
-    {% else %} 
-      {% include "employee_personal_info/employee_empty_view.html" %} 
+    {% else %}
+      {% include "employee_personal_info/employee_empty_view.html" %}
     {% endif %}
   </div>
 </div>

@@ -1,4 +1,4 @@
-# Contributing Guidelines for Horilla 
+# Contributing Guidelines for Horilla
 
 Thank you for considering contributing to Horilla! We welcome your input and appreciate the community effort to make this project even better.
 
@@ -28,7 +28,7 @@ Thank you for considering contributing to Horilla! We welcome your input and app
    - Commit your changes with a clear and descriptive commit message.
 
      ```bash
-     git commit -m "Add feature X" 
+     git commit -m "Add feature X"
      ```
 
 6. **Push Changes:**

@@ -49,7 +49,7 @@
 			{% endif %}
 			<div class="oh-main__titlebar-button-container">
 				{% if documents %}
-				
+
 					<div class="oh-dropdown" x-data="{open: false}">
 						<button
 							class="oh-btn ml-2"
@@ -140,7 +140,7 @@
 													{{f.form.status}}
 												</div>
 											</div>
-											
+
 											<div class="col-sm-12 col-md-12 col-lg-6">
 												{% comment %} <div class="oh-input-group">
 													<label class="oh-label"
@@ -153,7 +153,7 @@
 													{{f.form.document_request_id}}
 												</div>
 											</div>
-											
+
 										</div>
 									</div>
 								</div>
@@ -191,7 +191,7 @@
 										>{% trans "Bulk Approve Requests" %}</a
 									>
 								</li>
-								{% endif %} 
+								{% endif %}
 								{% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
 
 								<li class="oh-dropdown__item">
@@ -278,7 +278,7 @@
 			</button>
 		</div>
 		<div class="oh-modal__dialog-body" id="BulkRejectForm">
-			<form id="bulk-reject-form"> 
+			<form id="bulk-reject-form">
 				<textarea name="rejection_reason" cols="40" rows="2" class="oh-input w-100" placeholder="Rejection reason" id="bulk_rejection_reason" required></textarea>
 				<div class="d-flex flex-row-reverse w-100 align-items-center mt-4">
 					<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow bulk_reject">

@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<form  
+<form
     {% if shift_schedule.id %}
     hx-post="{% url 'employee-shift-schedule-update' shift_schedule.id %}"
     {% else %}

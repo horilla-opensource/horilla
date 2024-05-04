@@ -1,14 +1,14 @@
 {% load i18n %} {% load yes_no %}
 {% if request.GET.instances_ids %}
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-        <button 
+        <button
             hx-get="{% url 'leave-type-individual-view' previous %}?instances_ids={{requests_ids}}" hx-target="#objectDetailsModalTarget"
             class="oh-modal__diaglog-nav oh-modal__nav-prev">
             <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
             aria-label="chevron back outline"></ion-icon>
         </button>
-    
-        <button  
+
+        <button
             hx-get="{% url 'leave-type-individual-view' next %}?instances_ids={{requests_ids}}" hx-target="#objectDetailsModalTarget"
             class="oh-modal__diaglog-nav oh-modal__nav-next">
             <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
@@ -41,7 +41,7 @@
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Period In" %}</span>
                 <span class="oh-timeoff-modal__stat-count">{{leave_type.get_period_in_display}}</span>
-            </div>        
+            </div>
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "count" %}</span>
                 <span class="oh-timeoff-modal__stat-count">{{leave_type.count}}</span>
@@ -164,7 +164,7 @@
                         {% trans "Delete" %}
                     </a>
                 </div>
-            {% endif %} 
+            {% endif %}
         </div>
     </div>
 </div>

@@ -12,26 +12,26 @@
       {% trans "Create Key result" %}
     </h2>
   {% endif %}
-  
+
   <button type="button" class="oh-modal__close--custom" onclick="$('#objectDetailsModal').removeClass('oh-modal--show');">
     <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
   </button>
 </div>
 <div class="oh-modal__dialog-body">
   {% if form.instance.id %}
-    <form 
+    <form
       hx-post="{% url 'update-key-result' form.instance.id %}"
       hx-target="#objectDetailsModalTarget"
       id="realKeyResultForm"
     >
   {% else %}
-    <form 
+    <form
       hx-post="{% url 'create-key-result' %}"
       hx-target="#objectDetailsModalTarget"
       id="realKeyResultForm"
     >
   {% endif %}
-  
+
     {% csrf_token %}
     {{form.as_p}}
   </form>

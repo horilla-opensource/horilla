@@ -39,10 +39,10 @@
 			</button>
 		</div>
 		<div class="oh-modal__dialog-body" id="editTarget">
-      <form  
+      <form
         hx-post="{% url 'create-tag' %}"
         hx-target="#addTagTarget"
-        method="post" 
+        method="post"
         hx-encoding="multipart/form-data"
       >
         {% csrf_token %}
@@ -67,7 +67,7 @@
         {% comment %} $.ajax({
             type: "GET",
             url: '/helpdesk/create-tag',
-            success: function (response) { 
+            success: function (response) {
               $("#editModal").addClass("oh-modal--show");
               $("#editTarget").html(response);
             },
@@ -131,7 +131,7 @@
                     </div>
                     <div class="oh-helpdesk__bubble-body">
                       <p>{{ticket.description}}</p>
-                     
+
                     </div>
                   </div>
 
@@ -170,22 +170,22 @@
                                       <div class="oh-helpdesk__icon">
                                         <span class="oh-file-icon {% if attachment.format == 'file' %} oh-file-icon--pdf
                                         {% elif attachment.format == 'image' %} oh-file-icon--image
-                                        {% elif attachment.format == 'audio' %} oh-file-icon--audio 
+                                        {% elif attachment.format == 'audio' %} oh-file-icon--audio
                                         {% endif %}"
                                         ></span>
                                       </div>
                                     </a>
-                                  </div>  
+                                  </div>
                                   <a href="{{attachment.file.url}}" target="_blank" >
-                                    <span class="oh-helpdesk__filename" >{{attachment}}</span> 
+                                    <span class="oh-helpdesk__filename" >{{attachment}}</span>
                                   </a>
                                   <button class="oh-user-panel__remove">
                                     <ion-icon name="close-outline" role="img" class="md hydrated"
                                       aria-label="close outline"></ion-icon>
                                   </button>
                                 </div>
-                                {% endfor %} 
-                              {% endif %} 
+                                {% endfor %}
+                              {% endif %}
                           </div>
                         </div>
                       </div>
@@ -210,7 +210,7 @@
                           >
                         </div>
                         <div class="oh-helpdesk__bubble-body">
-                          <p>{{comment.comment}}</p> 
+                          <p>{{comment.comment}}</p>
                             {% if comment.comment_attachment.all %}
                               {% for attachment in comment.comment_attachment.all %}
                                 <li class="oh-helpdesk__document">
@@ -218,7 +218,7 @@
                                     <div class="oh-helpdesk__icon">
                                       <span class="oh-file-icon {% if attachment.format == 'file' %} oh-file-icon--pdf
                                       {% elif attachment.format == 'image' %} oh-file-icon--image
-                                      {% elif attachment.format == 'audio' %} oh-file-icon--audio 
+                                      {% elif attachment.format == 'audio' %} oh-file-icon--audio
                                       {% endif %}"
                                       ></span>
                                     </div>
@@ -229,8 +229,8 @@
                                     >
                                   </a>
                                 </li>
-                              {% endfor %} 
-                            {% endif %}  
+                              {% endfor %}
+                            {% endif %}
                         </div>
                       </div>
                     {% endif %}
@@ -241,7 +241,7 @@
                       >
                       <span>26 Mar 2019, 1:32PM</span>
                     </div>
-                    
+
 
                   <div class="oh-helpdesk__chat-update">
                     <span
@@ -363,8 +363,8 @@
                           role="button"
                           class="oh-link oh-link--secondary oh-text--xs"
                           >Change</a
-                        > 
-                        
+                        >
+
                       </div>
                       {% for assigne in ticket.assigned_to.all %}
                         <div class="oh-helpdesk__subcard-body">
@@ -408,7 +408,7 @@
                               <div class="oh-helpdesk__icon">
                                 <span class="oh-file-icon {% if attachment.format == 'file' %} oh-file-icon--pdf
                                 {% elif attachment.format == 'image' %} oh-file-icon--image
-                                {% elif attachment.format == 'audio' %} oh-file-icon--audio 
+                                {% elif attachment.format == 'audio' %} oh-file-icon--audio
                                 {% endif %}"
                                 ></span>
                               </div>
@@ -419,8 +419,8 @@
                               >
                             </a>
                           </li>
-                        {% endfor %} 
-                      {% endif %}  
+                        {% endfor %}
+                      {% endif %}
 
                     </ul>
                   </div>
@@ -435,7 +435,7 @@
       </div>
     </div>
 
-    <div id="addTagModal">                  
+    <div id="addTagModal">
       <div id="addTagTarget">
       </div>
     </div>
@@ -456,10 +456,10 @@
           </button>
         </div>
         <div class="oh-modal__dialog-body" id="editTarget">
-          <form  
+          <form
             hx-post="{% url 'ticket-create-tag' %}"
             hx-target="#addTagTarget"
-            method="post" 
+            method="post"
             hx-encoding="multipart/form-data"
             onsubmit="showTag()"
           >
@@ -477,7 +477,7 @@
     </div>
     <script>
       function handleSuccess() {
-    
+
       }
       function updateStatus(){
         var status = $("[name='status_update']").val()
@@ -527,7 +527,7 @@
             url:'/helpdesk/ticket-change-tag',
             data:{"selectedValues":selectedValues,'ticketId':ticketId},
           })
-          
+
         }
       }
 
@@ -547,7 +547,7 @@
         })
       }
     </script>
-    
+
     <script src="./build/js/web.frontend.min.js"></script>
     <script
       type="module"
@@ -560,4 +560,3 @@
 </html>
 
 {% endblock content %}
-

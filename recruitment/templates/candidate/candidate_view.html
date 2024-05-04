@@ -28,7 +28,7 @@
 <div class="oh-wrapper">
   <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display:none;" >
   </div>
-  
+
   <div class="d-flex flex-row-reverse">
     <span class="m-1" onclick="$('[name=canceled]').val('true');$('[name=hired]').val('unknown');$('[name=canceled]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 5px;">
       <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
@@ -43,7 +43,7 @@
       {% trans "Hired" %}
     </span>
   </div>
-  
+
   <div id="section" hx-target="#section" hx-swap="innerHTML">
     {% if view_type == 'list' %}
       {% include 'candidate/candidate_list.html' %}
@@ -54,7 +54,7 @@
 </div>
 
 
-    
+
 <script src="{% static '/candidate/bulk.js' %}"></script>
 
 

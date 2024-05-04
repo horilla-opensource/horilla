@@ -16,7 +16,7 @@
 </style>
 <script>
   $(document).ready(function () {
-    $("[data-toggle-count]").click(function (e) { 
+    $("[data-toggle-count]").click(function (e) {
       e.preventDefault();
       span = $(this).parent().find(".count-span").toggle()
     });
@@ -67,23 +67,23 @@
                           <div class="oh-sticky-table__th {% if request.sort_option.order == '-title' %}arrow-up {% elif request.sort_option.order == 'title' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=title" hx-target="#recruitment-container">{% trans "Recruitment" %}</div>
                           <div data-cell-index="1" data-cell-title='{% trans "Managers" %}' class="oh-sticky-table__th" >{% trans "Managers" %}</div>
                           <div data-cell-index="2" data-cell-title='{% trans "Open Jobs" %}' class="oh-sticky-table__th" >{% trans "Open Jobs" %}</div>
-                          <div data-cell-index="3" data-cell-title='{% trans "Vacancy" %}' 
-                            class="oh-sticky-table__th {% if request.sort_option.order == '-vacancy' %}arrow-up {% elif request.sort_option.order == 'vacancy' %}arrow-down {% else %} arrow-up-down {% endif %}" 
-                            hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=vacancy" 
+                          <div data-cell-index="3" data-cell-title='{% trans "Vacancy" %}'
+                            class="oh-sticky-table__th {% if request.sort_option.order == '-vacancy' %}arrow-up {% elif request.sort_option.order == 'vacancy' %}arrow-down {% else %} arrow-up-down {% endif %}"
+                            hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=vacancy"
                             hx-target="#recruitment-container"
                           >{% trans "Vacancy" %}</div>
                           <div data-cell-index="4" data-cell-title='{% trans "Total Hires" %}' class="oh-sticky-table__th" >{% trans "Total Hires" %}</div>
-                          <div data-cell-index="5" data-cell-title='{% trans "Start Date" %}' 
-                            class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %} arrow-up-down {% endif %}" 
-                            hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=start_date" 
+                          <div data-cell-index="5" data-cell-title='{% trans "Start Date" %}'
+                            class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
+                            hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=start_date"
                             hx-target="#recruitment-container"
                           >{% trans "Start Date" %}</div>
-                          <div data-cell-index="6" data-cell-title='{% trans "End Date" %}' 
-                            class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %} arrow-up-down {% endif %}" 
-                            hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=end_date" 
+                          <div data-cell-index="6" data-cell-title='{% trans "End Date" %}'
+                            class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
+                            hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=end_date"
                             hx-target="#recruitment-container"
                           >{% trans "End Date" %}</div>
-                          <div data-cell-index="7" data-cell-title='{% trans "Status" %}' 
+                          <div data-cell-index="7" data-cell-title='{% trans "Status" %}'
                             class="oh-sticky-table__th"
                           >{% trans "Status" %}</div>
                           <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 315px;">{% trans "Actions" %}</div>
@@ -93,8 +93,8 @@
                         {% for rec in data %}
                         <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed" >
                           <div class="oh-sticky-table__sd oh-permission-table--toggle {% if rec.closed %} row-status--red
-                            {% elif not rec.closed %} row-status--yellow  
-                            {% endif %}" 
+                            {% elif not rec.closed %} row-status--yellow
+                            {% endif %}"
                             data-toggle-count
                           >
                             <div class="d-flex align-items-center">
@@ -127,7 +127,7 @@
                             </span>
                             {% endfor %}
                             <span class="count-span">{{rec.recruitment_managers.all|length}} {% trans "Managers" %}</span>
-                            
+
                           </div>
                           <div data-cell-index="2" class="oh-sticky-table__td">
                             {% for jb in rec.open_positions.all %}
@@ -186,9 +186,9 @@
                               {% endif %}
                               {% if perms.recruitment.delete_recruitment %}
                               <span>
-                                <form 
+                                <form
                                 action="{% url 'recruitment-delete' rec.id  %}"
-                                onsubmit="return confirm('{% trans "Are you sure to delete this recruitment?" %}')" 
+                                onsubmit="return confirm('{% trans "Are you sure to delete this recruitment?" %}')"
                                 method="post"
                                 style="display: contents">
                                 {% csrf_token %}
@@ -220,11 +220,11 @@
       {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
       </span
     >
-  
+
     <nav class="oh-pagination__nav">
       <div class="oh-pagination__input-container me-3">
         <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-  
+
         <input
           type="number"
           name="page"
@@ -235,7 +235,7 @@
         />
         <span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
       </div>
-  
+
       <ul class="oh-pagination__items">
         {% if data.has_previous %}
         <li class="oh-pagination__item oh-pagination__item--wide">
@@ -253,7 +253,7 @@
           <a hx-target='#recruitment-container' hx-get="{% url 'recruitment-search' %}?{{pd}}&page={{ data.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
         </li>
         {% endif %}
-  
+
       </ul>
     </nav>
   </div>
@@ -290,7 +290,7 @@
       </button>
     </div>
     <div class="oh-modal__dialog-body" id='updateFormContainer'>
-      
+
     </div>
   </div>
 </div>
@@ -312,7 +312,7 @@
       </button>
     </div>
     <div class="oh-modal__dialog-body" id='duplicateFormContainer'>
-      
+
     </div>
   </div>
 </div>
@@ -326,4 +326,3 @@
   }
   $("[type=checkbox]").change()
 </script>
-

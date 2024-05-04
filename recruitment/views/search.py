@@ -6,12 +6,15 @@ This module is used to register search/filter views methods
 
 import json
 from urllib.parse import parse_qs
-from django.shortcuts import render
-from django.core.paginator import Paginator
+
 from django.contrib.auth.models import User
-from horilla.decorators import login_required, permission_required
-from base.methods import get_pagination, sortby, get_key_instances
+from django.core.paginator import Paginator
+from django.shortcuts import render
+
+from attendance.methods.group_by import group_by_queryset
 from attendance.methods.group_by import group_by_queryset as general_group_by
+from base.methods import get_key_instances, get_pagination, sortby
+from horilla.decorators import login_required, permission_required
 from recruitment.filters import (
     CandidateFilter,
     RecruitmentFilter,
@@ -22,11 +25,10 @@ from recruitment.filters import (
 from recruitment.models import (
     Candidate,
     Recruitment,
-    Stage,
     RecruitmentSurvey,
+    Stage,
     SurveyTemplate,
 )
-from attendance.methods.group_by import group_by_queryset
 from recruitment.views.paginator_qry import paginator_qry
 
 

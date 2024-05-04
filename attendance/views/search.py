@@ -7,30 +7,28 @@ This is moduel is used to register end point related to the search filter functi
 import json
 from datetime import datetime
 from urllib.parse import parse_qs
+
 from django.shortcuts import render
-from attendance.methods.group_by import group_by_queryset
-from base.methods import filtersubordinates, sortby, get_key_instances
-from horilla.decorators import (
-    hx_request_required,
-    login_required,
-    manager_can_enter,
-)
+from django.utils.translation import gettext_lazy as _
+
 from attendance.filters import (
     AttendanceActivityFilter,
     AttendanceFilters,
+    AttendanceOverTimeFilter,
     LateComeEarlyOutFilter,
 )
 from attendance.forms import AttendanceOverTimeForm
-from attendance.filters import AttendanceOverTimeFilter
+from attendance.methods.group_by import group_by_queryset
 from attendance.models import (
     Attendance,
-    AttendanceValidationCondition,
-    AttendanceOverTime,
     AttendanceActivity,
     AttendanceLateComeEarlyOut,
+    AttendanceOverTime,
+    AttendanceValidationCondition,
 )
 from attendance.views.views import paginator_qry, strtime_seconds
-from django.utils.translation import gettext_lazy as _
+from base.methods import filtersubordinates, get_key_instances, sortby
+from horilla.decorators import hx_request_required, login_required, manager_can_enter
 
 
 @login_required
@@ -332,8 +330,11 @@ def filter_own_attendance(request):
     ]
     remove_params = []
     if params == list(request.GET.keys()):
-        remove_params = [param for param in params if param != "attendance_date__gte" and param != "attendance_date__lte"]
-
+        remove_params = [
+            param
+            for param in params
+            if param != "attendance_date__gte" and param != "attendance_date__lte"
+        ]
 
     attendances = Attendance.objects.filter(employee_id=request.user.employee_get)
     attendances = AttendanceFilters(request.GET, queryset=attendances).qs
@@ -342,7 +343,11 @@ def filter_own_attendance(request):
     field = request.GET.get("field")
     template = "attendance/own_attendance/attendances.html"
     previous_data = request.GET.urlencode()
-    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"] or key in remove_params]
+    keys_to_remove = [
+        key
+        for key, value in data_dict.items()
+        if value == ["unknown"] or key in remove_params
+    ]
     for key in keys_to_remove:
         data_dict.pop(key)
     attendances_ids = json.dumps(

@@ -1,8 +1,8 @@
 {% load i18n %} {% load i18n offboarding_filter %}
 
-{% if task.task_id|have_task:employee %} 
+{% if task.task_id|have_task:employee %}
 		{% for assinged_tasks in employee|get_assigned_task:task.task_id %}
-        
+
         <select
 			hx-get="{% url "update-task-status" %}?stage_id={{employee.stage_id.id}}&employee_ids={{employee.id}}&task_id={{assinged_tasks.task_id.id}}"
             hx-target="#offboardingBody{{employee.stage_id.offboarding_id.id}}"
@@ -20,7 +20,7 @@
             <option value="{{ assinged_task.0 }}">{{ assinged_task.1 }}</option>
             {% endif %} {% endfor %}
         </select>
-        {% endfor %} 
+        {% endfor %}
     {% else %}
         <button
 			hx-get="{% url "offboarding-assign-task" %}?employee_ids={{employee.id}}&task_id={{task.id}}"
@@ -37,7 +37,7 @@
     $("select[name='task_status']").on("change", function() {
         var value = $(this).val();
         var dot = $(this).closest('.col-6').find('span.oh-dot');
-    
+
         // Update the class
         dot.removeClass().addClass('oh-dot oh-dot--small me-1 oh-dot--color-' + value);
     })

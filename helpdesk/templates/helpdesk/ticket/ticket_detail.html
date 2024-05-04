@@ -1,6 +1,6 @@
 {% extends 'index.html' %}  {% load static %} {% load i18n %}
 {% load audit_filters %}
-{% load basefilters %} 
+{% load basefilters %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -27,9 +27,9 @@
               <div class="oh-helpdesk__header">
                 <div class = "d-flex justify-content-between align-items-center">
                   <p class="oh-helpdesk__header-title">{{ticket.title}}</p>
-                  
+
                   <span class="helpdesk__card-value me-3">
-                    <select name="status_update" title='{% trans "Status" %}' class="oh-select" onchange="updateStatus()" 
+                    <select name="status_update" title='{% trans "Status" %}' class="oh-select" onchange="updateStatus()"
                     style="
                     width:190px;
                     align-items: center;
@@ -67,7 +67,7 @@
                     </div>
                     <div class="oh-helpdesk__bubble-body">
                       <p>{{ticket.description}}</p>
-                     
+
                     </div>
                   </div>
 
@@ -107,22 +107,22 @@
                                         <div class="oh-helpdesk__icon">
                                           <span class="oh-file-icon {% if attachment.format == 'file' %} oh-file-icon--pdf
                                           {% elif attachment.format == 'image' %} oh-file-icon--image
-                                          {% elif attachment.format == 'audio' %} oh-file-icon--audio 
+                                          {% elif attachment.format == 'audio' %} oh-file-icon--audio
                                           {% endif %}"
                                           ></span>
                                         </div>
                                       </a>
-                                    </div>  
+                                    </div>
                                     <a href="{{attachment.file.url}}" target="_blank" >
-                                      <span class="oh-helpdesk__filename" >{{attachment}}</span> 
+                                      <span class="oh-helpdesk__filename" >{{attachment}}</span>
                                     </a>
                                     <button class="oh-user-panel__remove">
                                       <ion-icon name="close-outline" role="img" class="md hydrated"
                                         aria-label="close outline"></ion-icon>
                                     </button>
                                   </div>
-                                  {% endfor %} 
-                                {% endif %} 
+                                  {% endfor %}
+                                {% endif %}
                             </div>
                           </div>
                         </div>
@@ -149,20 +149,20 @@
                           <div class="oh-helpdesk__bubble-body">
                             <div class="d-flex justify-content-between align-items-center comment_container">
                               <textarea class="bg-transparent border-0 w-100 comment_input" data-comment-id = "{{item.comment.id}}" >{{item.comment.comment}}</textarea>
-                              <p class="">{{item.comment.comment}}</p> 
-                              <div class="oh-btn-group" style="border:none">                                
+                              <p class="">{{item.comment.comment}}</p>
+                              <div class="oh-btn-group" style="border:none">
                                 <a
                                   class="oh-btn p-3 edit_comment"
                                   title="{% trans 'Edit' %}"
-                                  
+
                                 >
                                   <ion-icon name="pencil-outline"></ion-icon>
                               </a>
-                                <a 
-                                  href="{% url "comment-delete" item.comment.id %}" 
-                                  type="button" title="{% trans 'View' %}" 
+                                <a
+                                  href="{% url "comment-delete" item.comment.id %}"
+                                  type="button" title="{% trans 'View' %}"
                                   class="oh-btn p-3"
-                                > 
+                                >
                                   <ion-icon name="trash-outline"></ion-icon>
                                 </a>
                               </div>
@@ -174,7 +174,7 @@
                                       <div class="oh-helpdesk__icon">
                                         <span class="oh-file-icon {% if attachment.format == 'file' %} oh-file-icon--pdf
                                         {% elif attachment.format == 'image' %} oh-file-icon--image
-                                        {% elif attachment.format == 'audio' %} oh-file-icon--audio 
+                                        {% elif attachment.format == 'audio' %} oh-file-icon--audio
                                         {% endif %}"
                                         ></span>
                                       </div>
@@ -185,8 +185,8 @@
                                       >
                                     </a>
                                   </li>
-                                {% endfor %} 
-                              {% endif %}  
+                                {% endfor %}
+                              {% endif %}
                           </div>
                         </div>
                       {% endif %}
@@ -279,12 +279,12 @@
                       <li class="helpdesk__card-item">
                         <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                           {% csrf_token %}
-                          <div class="d-flex">                           
+                          <div class="d-flex">
                             <span class="helpdesk__card-label">{% trans "Priority" %} :</span>
                             <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                               {% for i in "321" %}
                               <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if rating == i %} checked {% endif %}/>
-                              <label for="star{{i}}{{ticket.id}}" 
+                              <label for="star{{i}}{{ticket.id}}"
                               {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
                               {% endfor %}
                             </div>
@@ -353,9 +353,9 @@
                           role="button"
                           class="oh-link oh-link--secondary oh-text--xs"
                           >{% trans "Change" %}</a
-                        > 
+                        >
                         {% endif %}
-                        
+
                       </div>
                       {% for assignee in ticket.assigned_to.all %}
                         <div class="oh-helpdesk__subcard-body">
@@ -396,7 +396,7 @@
                               <div class="oh-helpdesk__icon">
                                 <span class="oh-file-icon {% if attachment.format == 'file' %} oh-file-icon--pdf
                                 {% elif attachment.format == 'image' %} oh-file-icon--image
-                                {% elif attachment.format == 'audio' %} oh-file-icon--audio 
+                                {% elif attachment.format == 'audio' %} oh-file-icon--audio
                                 {% endif %}"
                                 ></span>
                               </div>
@@ -407,8 +407,8 @@
                               >
                             </a>
                           </li>
-                        {% endfor %} 
-                      {% endif %}  
+                        {% endfor %}
+                      {% endif %}
 
                     </ul>
                   </div>
@@ -425,7 +425,7 @@
 
 <!-- start of create tag modal. -->
 
-    <div id="addTagModal">                  
+    <div id="addTagModal">
       <div id="addTagTarget">
       </div>
     </div>
@@ -485,7 +485,7 @@
               }
           });
       }
-      
+
       function showTag(){
         var title=$('#id_title').val()
         var color = $("#id_color").val()
@@ -506,7 +506,7 @@
               $("#id_tags option[value='create_new_tag']").before(newOption);
               $("#id_tags option[value='create_new_tag']").prop('selected',false)
                 updateTag()
-            }    
+            }
           }
         });
       }
@@ -540,7 +540,7 @@
                   )
             }
           },
-        }); 
+        });
       }
 
       function validateComment(event){
@@ -550,7 +550,7 @@
           event.preventDefault();
         }
       }
-     
+
       function updateTag(event) {
         var ticketId = $("[name='ticketId']").attr('id');
         var selectedValues = $("#id_tags option:selected").map(function(){
@@ -574,7 +574,7 @@
                     ${response.message}
                     </div>
                   </div>`);
-                  duration = 1500;                 
+                  duration = 1500;
               }
             },
           })
@@ -591,11 +591,11 @@
           $(input).focus()
           var length = input.val().length;
           input[0].setSelectionRange(length, length);
-          
+
         })
         $(".comment_input").on("keydown", function(event) {
           if (event.keyCode === 13 && !event.shiftKey) {
-            event.preventDefault();            
+            event.preventDefault();
             $(this).blur();
           }
         });
@@ -620,7 +620,7 @@
 
       })
     </script>
-    
+
     <script src="./build/js/web.frontend.min.js"></script>
     <script
       type="module"
@@ -633,4 +633,3 @@
 </html>
 
 {% endblock content %}
-

@@ -6,12 +6,14 @@ This module is used handle mail sent in thread
 
 import logging
 from threading import Thread
+
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
-from employee.models import EmployeeWorkInformation
-from payroll.views.views import payslip_pdf
-from payroll.models.models import Payslip
+
 from base.backends import ConfiguredEmailBackend
+from employee.models import EmployeeWorkInformation
+from payroll.models.models import Payslip
+from payroll.views.views import payslip_pdf
 
 logger = logging.getLogger(__name__)
 

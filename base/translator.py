@@ -324,4 +324,3 @@ _("rejected"),
 _("true"),
 _("false"),
 _("candidate-create"),
-

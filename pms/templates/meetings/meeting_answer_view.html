@@ -11,32 +11,32 @@
                 <span class="oh-activity-sidebar__a"
                     >{{ answer.answer.answer}}.</span
                 >
-                {% endif %} 
+                {% endif %}
                 {% if answer.question_id.question_type == '2' %}
                 <!--question type =  Rating-->
                 <div class="d-block mb-0">
                     <div class="oh-rate">
-                        <input type="radio" id="star5" value="5" disabled 
+                        <input type="radio" id="star5" value="5" disabled
                         {% if answer.answer.answer == '5' %} checked {% endif %} />
                         <label for="star5" title="5 Stars"
                             >5 {% trans "Stars" %}</label
                         >
-                        <input type="radio" id="star4" value="4" disabled 
+                        <input type="radio" id="star4" value="4" disabled
                         {% if answer.answer.answer == '4' %} checked {% endif %} />
                         <label for="star4" title="4 Stars"
                             >4 {% trans "Stars" %}</label
                         >
-                        <input type="radio" id="star3" value="3" disabled 
+                        <input type="radio" id="star3" value="3" disabled
                         {% if answer.answer.answer == '3' %} checked {% endif %} />
                         <label for="star3" title="3 Stars"
                             >3 {% trans "Stars" %}</label
                         >
-                        <input type="radio" id="star2" value="2" disabled 
+                        <input type="radio" id="star2" value="2" disabled
                         {% if answer.answer.answer == '2' %} checked {% endif %} />
                         <label for="star2" title="2 Stars"
                             >2 {% trans "Stars" %}</label
                         >
-                        <input type="radio" id="star1" value="1" disabled 
+                        <input type="radio" id="star1" value="1" disabled
                         {% if answer.answer.answer == '1' %} checked {% endif %} />
                         <label for="star1" title="1 Star"
                             >1 {% trans "Star" %}</label
@@ -56,7 +56,7 @@
                         </div>
                     </div>
                 </div>
-                {% endif %} 
+                {% endif %}
                 {% if answer.question_id.question_type == '4' %}
                 <!--question type =  Multi-choices-->
                 <div class="d-block">
@@ -119,7 +119,7 @@
         var yellow = "oh-input-picker--3"
         var light_green = "oh-input-picker--4"
         var green = "oh-input-picker--5"
-    
+
         $('.likert-colour').each(function() {
             var likertText = $(this).text().trim()
 
