@@ -1875,9 +1875,14 @@ def employee_delete(request, obj_id):
     try:
         view = request.POST.get("view")
         employee = Employee.objects.get(id=obj_id)
+        if Contract.objects.get(employee_id=obj_id) is not None:
+            contract = Contract.objects.get(employee_id=obj_id)
+            if contract.contract_status != 'active':
+                contract.delete()
         user = employee.employee_user_id
         user.delete()
         messages.success(request, _("Employee deleted"))
+
     except Employee.DoesNotExist:
         messages.error(request, _("Employee not found."))
     except ProtectedError as e:
@@ -2455,8 +2460,8 @@ def work_info_import(request):
                 email = work_info["Email"]
                 phone = work_info["Phone"]
                 first_name = convert_nan("First Name", work_info)
-                last_name = work_info["Last Name"]
-                badge_id = convert_nan("Badge id", work_info)
+                last_name = convert_nan("Last Name", work_info)
+                badge_id = work_info["Badge id"]
                 department = convert_nan("Department", work_info)
                 job_position = convert_nan("Job Position", work_info)
                 job_role = convert_nan("Job Role", work_info)
@@ -2548,8 +2553,8 @@ def work_info_import(request):
                     email = work_info["Email"]
                     phone = work_info["Phone"]
                     first_name = convert_nan("First Name", work_info)
-                    last_name = work_info["Last Name"]
-                    badge_id = convert_nan("Badge id", work_info)
+                    last_name = convert_nan("Last Name", work_info)
+                    badge_id = work_info["Badge id"]
                     department = convert_nan("Department", work_info)
                     job_position = convert_nan("Job Position", work_info)
                     job_role = convert_nan("Job Role", work_info)
@@ -2656,10 +2661,10 @@ def work_info_import(request):
                     employee_work_info.shift_id = shift_obj
                     employee_work_info.location = location
                     employee_work_info.date_joining = (
-                        date_joining if date_joining == "nan" else datetime.today()
+                        date_joining if not pd.isnull(date_joining) else datetime.today()
                     )
                     employee_work_info.contract_end_date = (
-                        contract_end_date if contract_end_date == "nan" else None
+                        contract_end_date if not pd.isnull(contract_end_date) else None
                     )
                     employee_work_info.basic_salary = (
                         basic_salary if type(basic_salary) is int else 0
