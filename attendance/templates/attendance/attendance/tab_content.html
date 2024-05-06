@@ -184,7 +184,7 @@
                                           <ion-icon name="create-outline"></ion-icon>
                                         </a>
                                     {% endif %} 
-                                    {% if perms.attendance.delete_attendance %}
+                                    {% if perms.attendance.delete_attendance or request.user|is_reportingmanager %}
                                         <form action="{% url 'attendance-delete' attendance.id %}"
                                               onclick="event.stopPropagation()" 
                                               onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
@@ -448,7 +448,7 @@
                                           ><ion-icon name="create-outline"></ion-icon
                                         ></a>
                                     {% endif %} 
-                                    {% if perms.attendance.delete_attendance %} 
+                                    {% if perms.attendance.delete_attendance or request.user|is_reportingmanager %} 
                                         <form action="{% url 'attendance-delete' attendance.id %}"
                                               onclick="event.stopPropagation()" 
                                               onsubmit="return confirm('{%trans "Are you sure want to delete this attendance?" %}')"
@@ -728,7 +728,7 @@
                                           ><ion-icon name="create-outline"></ion-icon
                                         ></a>
                                     {% endif %} 
-                                    {% if perms.attendance.delete_attendance %} 
+                                    {% if perms.attendance.delete_attendance or request.user|is_reportingmanager %} 
                                         <form action="{% url 'attendance-delete' attendance.id %}"
                                               onclick="event.stopPropagation()" 
                                               onsubmit="return confirm('{%trans "Are you sure want to delete this attendance?" %}')"
