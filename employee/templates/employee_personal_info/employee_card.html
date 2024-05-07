@@ -97,7 +97,7 @@
                       </li>
                     {% endif %}
                     {% if perms.employee.delete_employee %}
-                      
+
                       {% with emp.contract_set.first as contract %}
                           {% if contract.contract_status == 'active' %}
                             <li class="oh-dropdown__item">
@@ -108,7 +108,7 @@
                             </li>
                           {% else %}
                             <li class="oh-dropdown__item">
-                              <form action="{% url 'employee-delete' emp.id %}?view=card" method="post" 
+                              <form action="{% url 'employee-delete' emp.id %}?view=card" method="post"
                                 onsubmit="return confirm('{% trans "The employee contract in" %} {{ contract.get_contract_status_display }} {% trans "state will also be deleted, Do you want to continue ?" %}')">
                                 {% csrf_token %}
                                 <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</button>

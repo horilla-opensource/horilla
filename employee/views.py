@@ -1897,7 +1897,7 @@ def employee_delete(request, obj_id):
         employee = Employee.objects.get(id=obj_id)
         if Contract.objects.get(employee_id=obj_id) is not None:
             contract = Contract.objects.get(employee_id=obj_id)
-            if contract.contract_status != 'active':
+            if contract.contract_status != "active":
                 contract.delete()
         user = employee.employee_user_id
         user.delete()
@@ -2681,7 +2681,9 @@ def work_info_import(request):
                     employee_work_info.shift_id = shift_obj
                     employee_work_info.location = location
                     employee_work_info.date_joining = (
-                        date_joining if not pd.isnull(date_joining) else datetime.today()
+                        date_joining
+                        if not pd.isnull(date_joining)
+                        else datetime.today()
                     )
                     employee_work_info.contract_end_date = (
                         contract_end_date if not pd.isnull(contract_end_date) else None

@@ -271,9 +271,9 @@
 
               {% with emp.contract_set.first as contract %}
                   {% if contract.contract_status == 'active' %}
-                    <form 
-                        action="{% url 'employee-delete' emp.id %}?view=list" 
-                        onsubmit="return confirm('{% trans "Are you sure want to delete this employee?" %}')" 
+                    <form
+                        action="{% url 'employee-delete' emp.id %}?view=list"
+                        onsubmit="return confirm('{% trans "Are you sure want to delete this employee?" %}')"
                         method="post" style = "width:100%"
                       > {% csrf_token %}
                         <button
@@ -285,8 +285,8 @@
                         </button>
                     </form>
                   {% else %}
-                    <form 
-                        action="{% url 'employee-delete' emp.id %}?view=list" 
+                    <form
+                        action="{% url 'employee-delete' emp.id %}?view=list"
                         onsubmit="return confirm('{% trans "The employee contract in" %} {{ contract.get_contract_status_display }} {% trans "state will also be deleted, Do you want to continue ?" %}')"
                         method="post" style = "width:100%"
                       > {% csrf_token %}
