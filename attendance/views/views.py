@@ -1948,6 +1948,7 @@ def work_records(request):
     data = []
     today = date.today()
     month_matrix = calendar.monthcalendar(today.year, today.month)
+    previous_data = request.GET.urlencode()
 
     days = [day for week in month_matrix for day in week if day != 0]
     current_month_date_list = [
@@ -1972,11 +1973,15 @@ def work_records(request):
                 "work_record": work_record_list,
             }
         )
+    page_number = request.GET.get("page")
+    paginator = Paginator(data, 20)
+    data = paginator.get_page(page_number)
 
     context = {
         "current_date": today,
         "current_month_dates_list": current_month_date_list,
-        "data": paginator_qry(data, 1),
+        "data": data,
+        "pd":previous_data,
     }
     return render(
         request, "attendance/work_record/work_record_view.html", context=context
@@ -1986,6 +1991,7 @@ def work_records(request):
 @login_required
 @hx_request_required
 def work_records_change_month(request):
+    previous_data = request.GET.urlencode()
     if request.GET.get("month"):
         date_obj = request.GET.get("month")
         month = int(date_obj.split("-")[1])
@@ -2020,9 +2026,14 @@ def work_records_change_month(request):
             }
         )
 
+    page_number = request.GET.get("page")
+    paginator = Paginator(data, 20)
+    data = paginator.get_page(page_number)
+
     context = {
         "current_month_dates_list": current_month_date_list,
-        "data": paginator_qry(data, request.GET.get("page")),
+        "data": data,
+        "pd": previous_data,
     }
     return render(
         request, "attendance/work_record/work_record_list.html", context=context

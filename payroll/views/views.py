@@ -1330,6 +1330,7 @@ def contract_bulk_delete(request):
 
 
 def payslip_pdf(request, id):
+    payslip = Payslip.objects.get(id=id)
     if (
         request.user.has_perm("payroll.view_payslip")
         or payslip.employee_id.employee_user_id == request.user
@@ -1354,7 +1355,6 @@ def payslip_pdf(request, id):
         else:
             date_format = "MMM. D, YYYY"
 
-        payslip = Payslip.objects.get(id=id)
         data = payslip.pay_head_data
         start_date_str = data["start_date"]
         end_date_str = data["end_date"]
