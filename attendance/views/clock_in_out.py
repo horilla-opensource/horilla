@@ -323,7 +323,6 @@ def clock_out_attendance_and_activity(employee, date_today, now, out_datetime=No
     attendance.attendance_clock_out = now + ":00"
     attendance.attendance_clock_out_date = date_today
     attendance.attendance_worked_hour = duration
-    attendance.save()
     # Overtime calculation
     attendance.attendance_overtime = overtime_calculation(attendance)
 

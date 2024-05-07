@@ -1942,6 +1942,48 @@ def delete_comment_file(request):
     )
 
 
+def monthly_leave_days(month, year):
+    leave_dates = []
+    holidays = Holiday.objects.filter(start_date__month=month, start_date__year=year)
+    leave_dates += list(holidays.values_list("start_date", flat=True))
+
+    company_leaves = CompanyLeave.objects.all()
+    for company_leave in company_leaves:
+        year = year
+        month = month
+        based_on_week = company_leave.based_on_week
+        based_on_week_day = company_leave.based_on_week_day
+        if based_on_week != None:
+
+            # Set Sunday as the first day of the week
+            calendar.setfirstweekday(6)
+            month_calendar = calendar.monthcalendar(year, month)
+            weeks = month_calendar[int(based_on_week)]
+            weekdays_in_weeks = [day for day in weeks if day != 0]
+            for day in weekdays_in_weeks:
+                date_name = datetime.strptime(
+                    f"{year}-{month:02}-{day:02}", "%Y-%m-%d"
+                ).date()
+                if (
+                    date_name.weekday() == int(based_on_week_day)
+                    and date_name not in leave_dates
+                ):
+                    leave_dates.append(date_name.day)
+        else:
+            # Set Monday as the first day of the week
+            calendar.setfirstweekday(0)
+            month_calendar = calendar.monthcalendar(year, month)
+            for week in month_calendar:
+                if week[int(based_on_week_day)] != 0:
+                    date_name = datetime.strptime(
+                        f"{year}-{month:02}-{week[int(based_on_week_day)]:02}",
+                        "%Y-%m-%d",
+                    ).date()
+                    if date_name not in leave_dates:
+                        leave_dates.append(date_name)
+    return leave_dates
+
+
 @login_required
 def work_records(request):
     employees = Employee.objects.filter(is_active=True)
@@ -1973,6 +2015,7 @@ def work_records(request):
                 "work_record": work_record_list,
             }
         )
+    leave_dates = monthly_leave_days(today.month, today.year)
     page_number = request.GET.get("page")
     paginator = Paginator(data, 20)
     data = paginator.get_page(page_number)
@@ -1980,8 +2023,10 @@ def work_records(request):
     context = {
         "current_date": today,
         "current_month_dates_list": current_month_date_list,
+        "leave_dates": leave_dates,
+        "shift_schedule": EmployeeShiftSchedule.objects.all(),
         "data": data,
-        "pd":previous_data,
+        "pd": previous_data,
     }
     return render(
         request, "attendance/work_record/work_record_view.html", context=context
@@ -2025,15 +2070,17 @@ def work_records_change_month(request):
                 "work_record": work_record_list,
             }
         )
-
+    leave_dates = monthly_leave_days(month, year)
     page_number = request.GET.get("page")
     paginator = Paginator(data, 20)
     data = paginator.get_page(page_number)
 
     context = {
         "current_month_dates_list": current_month_date_list,
+        "leave_dates": leave_dates,
         "data": data,
         "pd": previous_data,
+        "current_date": date.today(),
     }
     return render(
         request, "attendance/work_record/work_record_list.html", context=context

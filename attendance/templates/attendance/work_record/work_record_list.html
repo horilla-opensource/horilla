@@ -1,30 +1,33 @@
-{% load i18n %} {% load current_month_record %}
+{% load i18n %} {% load attendancefilters %}
 <div class="oh-sticky-table">
     <table>
         <thead>
             <tr>
-                <th class="oh-sticky-table__th">{% trans "Work Records" %}</th>
+                <th class="oh-sticky-table__th header">{% trans "Work Records" %}</th>
                 {% for day in current_month_dates_list %}
-                <th class="oh-sticky-table__th">{{ day.day }}</th>
+                <th class="oh-sticky-table__th {% if day in leave_dates %}holiday {% else %}header{% endif %}">{{ day.day }}</th>
                 {% endfor %}
             </tr>
         </thead>
         {% for employee_data in data %}
         <tr>
-            <td style="width:12%">{{ employee_data.employee }} </td>
+            <td style="width:12%">{{ employee_data.employee }}</td>
 
             {% for date in current_month_dates_list %}
                 {% with work_record=employee_data.work_record|get_item:forloop.counter0 %}
 
-                <td class="days"
+                <td class="days {% if date in leave_dates %}holiday{% endif %}"
+                style="text-align:center; cursor:default;
                     {% if work_record %}
-                        style="text-align:center; cursor:default; {% if work_record.work_record_type == 'CONF' %}background-color: #ed4c4c; color: #fff
+                        {% if work_record.work_record_type == 'CONF' %}background-color: #ed4c4c; color: #fff
                         {% elif work_record.work_record_type == 'FDP' %}background-color: #38c338;  color: #fff
                         {% elif work_record.work_record_type == 'HDP' %}background-color: #dfdf52;
-                        {% elif work_record.work_record_type == 'HD' %}background-color: ##3848c3;
                         {% elif work_record.work_record_type == 'ABS' %}background-color: #808080; color: #fff
-                        {% endif %};"
+                        {% endif %}
+                        {% elif employee_data.employee|shift_exists:date and date <= current_date and not date in leave_dates %}
+                        background-color: #a8b1ff; color: #fff
                     {% endif %}
+                "
                 >
                     {% if work_record %}
                     <div title="{{work_record.message}}" class="fw-bold">
@@ -32,11 +35,12 @@
                             {% if work_record.work_record_type == 'CONF' %}!
                             {% elif work_record.work_record_type == 'FDP' %} P
                             {% elif work_record.work_record_type == 'HDP' %} HP
-                            {% elif work_record.work_record_type == 'HD' %} HD
                             {% elif work_record.work_record_type == 'ABS' %} A
                             {% endif %}
                         </a>
                     </div>
+                    {% elif employee_data.employee|shift_exists:date and date <= current_date and not date in leave_dates %}
+                    EW
                     {% endif %}
                 </td>
 
