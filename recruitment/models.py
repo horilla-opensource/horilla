@@ -453,6 +453,31 @@ class Candidate(HorillaModel):
             .first()
         )
 
+    def get_interview(self):
+        """
+        This method is used to get the interview dates and times for the candidate for the mail templates
+        """
+
+        interviews = InterviewSchedule.objects.filter(candidate_id=self.id)
+        if interviews:
+            interview_info = "<table>"
+            interview_info += "<tr><th>Sl No.</th><th>Date</th><th>Time</th><th>Is Completed</th></tr>"
+            for index, interview in enumerate(interviews, start=1):
+                interview_info += f"<tr><td>{index}</td>"
+                interview_info += (
+                    f"<td class='dateformat_changer'>{interview.interview_date}</td>"
+                )
+                interview_info += (
+                    f"<td class='timeformat_changer'>{interview.interview_time}</td>"
+                )
+                interview_info += (
+                    f"<td>{'Yes' if interview.completed else 'No'}</td></tr>"
+                )
+            interview_info += "</table>"
+            return interview_info
+        else:
+            return ""
+
     def save(self, *args, **kwargs):
         # Check if the 'stage_id' attribute is not None
         if self.stage_id is not None:
