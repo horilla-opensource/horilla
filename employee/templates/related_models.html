@@ -53,8 +53,8 @@
                       class="oh-table__editable-input w-100 oh-select oh-select-2 manager-select"
                       data-error = "{{related_model.field_name}}_error"
                       >
-                      {% for option in employee_choices %} 
-                        <option value="{{option.0}}" {% if option.0 == employee.id%}selected{% endif %}>{{option.1}}</option> 
+                      {% for option in employee_choices %}
+                        <option value="{{option.0}}" {% if option.0 == employee.id%}selected{% endif %}>{{option.1}}</option>
                       {% endfor %}
                     </select>
                   </div>

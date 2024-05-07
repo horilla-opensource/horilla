@@ -40,7 +40,7 @@
                                     </div>
                                     <div class="oh-recuritment_tag" style="background:hsl(121deg 81.26% 91.23%)"><a class=" text-success text-decoration-none" href="{% url "application-form" %}?recruitmentId={{recruitment.id}}" rel="noopener noreferrer" target="_blank">{% trans "Apply Now" %}</a></div>
                                 </div>
-                                <div class="d-flex mt-3 flex-wrap">                    
+                                <div class="d-flex mt-3 flex-wrap">
                                 {% for job_position in recruitment.open_positions.all %}
                                     <div class="oh-recuritment_tag">{{job_position}}</div>
                                 {% endfor %}
@@ -54,7 +54,7 @@
                                 </div>
                                 <span class="oh-recuritment_application"><span class="oh-recuritment_application-count">{{recruitment.candidate.all|length}}
                                         {% trans "Applied" %}</span> {% trans "of" %} {{recruitment.vacancy}} {% trans "Capacity" %}</span>
-                                        
+
                                 {% else %}
                                 <div style="color: gray;">
                                     {{recruitment.start_date}} - {{recruitment.end_date}} <br>
@@ -78,13 +78,13 @@
             </main>
             <div class="oh-modal" id="jobDetailModal" role="dialog" aria-labelledby="jobDetailModal" aria-hidden="true">
                 <div class=" oh-job-selected_detail">
-                
+
                         <button class="oh-modal__close" aria-label="Close">
                             <ion-icon name="close-outline"></ion-icon>
                         </button>
-            
+
                     <div class="oh-job-selected__detail--container" style="height:100vh;overflow:auto" id="detailTarget">
-                        
+
 
                     </div>
 

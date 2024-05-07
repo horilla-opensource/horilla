@@ -86,7 +86,7 @@
         <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Reports' %}"></button>
         <div class="oh-kanban__card-content oh-kanban__card-content--hide mt-3">
           {% for report in asset.asset_report.all %}
-            <li class="pt-2 ">                
+            <li class="pt-2 ">
               {{report.title}}
               <div class="d-flex m-2">
                 {% for doc in report.documents.all %}
@@ -96,17 +96,17 @@
 
             </li>
           {% endfor %}
-        </div>                                    
+        </div>
     </div>
   {% endif %}
   <div class="oh-modal__button-container text-center mt-3">
-       
+
     <div class="oh-btn-group">
-      <a hx-get="{% url 'asset-update' asset_id=asset.id %}?{{pg}}&requests_ids={{requests_ids}}" 
-        data-toggle="oh-modal-toggle" 
+      <a hx-get="{% url 'asset-update' asset_id=asset.id %}?{{pg}}&requests_ids={{requests_ids}}"
+        data-toggle="oh-modal-toggle"
         data-target="#objectUpdateModal"
-        hx-target="#objectUpdateModalTarget" 
-        class="oh-btn oh-btn--info" 
+        hx-target="#objectUpdateModalTarget"
+        class="oh-btn oh-btn--info"
         style="width: 50%;"
       >
         <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>{% trans "Edit" %}

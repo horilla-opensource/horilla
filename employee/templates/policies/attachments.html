@@ -8,7 +8,7 @@
                 style="width:40px;height:40px"><img src="{% static '/images/ui/minus-icon.png' %}"
                     style="display:block;width:50%;height:50%"
                     hx-get="{% url 'remove-attachment-policy' %}?ids={{ attachment.id }}&policy_id={{ policy.id }}"
-                    hx-target="#attachmentContainer" 
+                    hx-target="#attachmentContainer"
                     onclick="event.stopPropagation();event.preventDefault()" />
                 </span>
             </a>
@@ -19,13 +19,13 @@
                 </span>
             </a>
         {% endif %}
-    
+
     {% endfor %}
     {% if perms.employee.add_policy %}
     {% csrf_token %}
     <input type="file" name="files" class="d-none" multiple="true" id="addFile_18" onchange="submitForm(this)" />
     <input type="submit" class="d-none add_more_submit" value="save" />
-    <label for="addFile_18" title="Add Files" 
+    <label for="addFile_18" title="Add Files"
         style="cursor: pointer;">
         <ion-icon name="add-outline" style="font-size: 24px" role="img" class="md hydrated"
             aria-label="add outline"></ion-icon>

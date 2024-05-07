@@ -1,7 +1,7 @@
-{% load attendancefilters %} 
-{% load basefilters %} 
+{% load attendancefilters %}
+{% load basefilters %}
 {% load static %}
-{% load i18n %} 
+{% load i18n %}
 {% include 'filter_tags.html' %}
 {% if messages %}
 <div class="oh-wrapper">
@@ -52,14 +52,14 @@
                                         </div>
                                         <div class="oh-sticky-table__tbody">
                                             {% for my_leave_allocation_request in my_leave_allocation_request_list.list %}
-                                                <div class="oh-sticky-table__tr" draggable="true" 
+                                                <div class="oh-sticky-table__tr" draggable="true"
                                                     data-toggle="oh-modal-toggle"
                                                     data-target="#objectDetailsModalW25"
                                                     hx-get="{% url 'leave-allocation-request-single-view' my_leave_allocation_request.id %}?my_request=True&my_instances_ids={{my_requests_ids}}"
                                                     hx-target="#objectDetailsModalW25Target">
                                                     <div class="oh-sticky-table__sd
-                                                        {% if my_leave_allocation_request.status == 'requested' %} row-status--blue 
-                                                        {% elif my_leave_allocation_request.status == 'approved' %} row-status--yellow 
+                                                        {% if my_leave_allocation_request.status == 'requested' %} row-status--blue
+                                                        {% elif my_leave_allocation_request.status == 'approved' %} row-status--yellow
                                                         {% elif my_leave_allocation_request.status == 'rejected' %}row-status--red
                                                         {% endif %} ">
                                                         <div class="oh-profile oh-profile--md">
@@ -91,26 +91,26 @@
                                                     <div class="oh-sticky-table__td {% if my_leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
                                                         <div class="oh-btn-group">
                                                             {% if my_leave_allocation_request.status ==  'requested' %}
-                                                                <button  
-                                                                    class="oh-btn oh-btn--light-bkg w-50" 
-                                                                title="{% trans 'Edit' %}" 
+                                                                <button
+                                                                    class="oh-btn oh-btn--light-bkg w-50"
+                                                                title="{% trans 'Edit' %}"
                                                                     data-toggle="oh-modal-toggle"
-                                                                    data-target="#editModal" 
+                                                                    data-target="#editModal"
                                                                     hx-get="{% url 'leave-allocation-request-update' my_leave_allocation_request.id %}"
                                                                     hx-target="#editTarget">
                                                                     <ion-icon name="create-outline"></ion-icon>
                                                                 </button>
                                                             {% else %}
-                                                                <button 
+                                                                <button
                                                                     class="oh-btn oh-btn--light-bkg w-50" disabled>
                                                                     <ion-icon name="create-outline" ></ion-icon>
                                                                 </button></td>
                                                             {% endif %}
                                                             {% if my_leave_allocation_request.status !=  'approved' %}
                                                                 <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" id="delete-link"
-                                                                    hx-confirm="{% trans 'Are you sure you want to delete ?' %}" 
+                                                                    hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
                                                                     hx-post="{% url 'leave-allocation-request-delete' my_leave_allocation_request.id %}?{{pd}}"
-                                                                    hx-target="#view-container" 
+                                                                    hx-target="#view-container"
                                                                     title="{% trans 'Delete' %}">
                                                                     <ion-icon name="trash-outline"></ion-icon>
                                                                 </a>
@@ -127,7 +127,7 @@
                                     </div>
                                 </div>
                                 <!-- end of sticky table -->
-                                
+
                                 <!-- start of pagination  -->
                                 <div class="oh-pagination">
                                     <span class="oh-pagination__page">
@@ -197,7 +197,7 @@
                                         <div class="oh-tabs__input-badge-container">
                                             <span
                                                 class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
-                                            >   
+                                            >
                                                 {{leave_allocation_request_list.list.paginator.count}}
                                             </span>
                                                 {{leave_allocation_request_list.grouper}}
@@ -223,14 +223,14 @@
                                             </div>
                                             <div class="oh-sticky-table__tbody">
                                                 {% for leave_allocation_request in leave_allocation_request_list.list %}
-                                                    <div class="oh-sticky-table__tr" draggable="true" 
+                                                    <div class="oh-sticky-table__tr" draggable="true"
                                                         data-toggle="oh-modal-toggle"
                                                         data-target="#objectDetailsModalW25"
-                                                        hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?instances_ids={{requests_ids}}" 
+                                                        hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?instances_ids={{requests_ids}}"
                                                         hx-target="#objectDetailsModalW25Target">
                                                         <div class="oh-sticky-table__sd
-                                                            {% if leave_allocation_request.status == 'requested' %} row-status--blue 
-                                                            {% elif leave_allocation_request.status == 'approved' %} row-status--yellow 
+                                                            {% if leave_allocation_request.status == 'requested' %} row-status--blue
+                                                            {% elif leave_allocation_request.status == 'approved' %} row-status--yellow
                                                             {% elif leave_allocation_request.status == 'rejected' %}row-status--red
                                                             {% endif %} ">
                                                             <div class="oh-profile oh-profile--md">
@@ -262,24 +262,24 @@
                                                         <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
                                                             <div class="oh-btn-group">
                                                                 {% if leave_allocation_request.status ==  'requested' %}
-                                                                    <button  
-                                                                        class="oh-btn oh-btn--light-bkg w-50" 
-                                                                        title="{% trans 'Edit' %}" 
+                                                                    <button
+                                                                        class="oh-btn oh-btn--light-bkg w-50"
+                                                                        title="{% trans 'Edit' %}"
                                                                         data-toggle="oh-modal-toggle"
-                                                                        data-target="#editModal" 
+                                                                        data-target="#editModal"
                                                                         hx-get="{% url 'leave-allocation-request-update' leave_allocation_request.id %}"
                                                                         hx-target="#editTarget">
                                                                         <ion-icon name="create-outline"></ion-icon>
                                                                     </button>
                                                                 {% else %}
-                                                                    <button 
+                                                                    <button
                                                                         class="oh-btn oh-btn--light-bkg w-50" disabled>
                                                                         <ion-icon name="create-outline" ></ion-icon>
                                                                     </button></td>
                                                                 {% endif %}
                                                                 {% if leave_allocation_request.status !=  'approved' %}
                                                                     <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" id="delete-link"
-                                                                        hx-confirm="{% trans 'Are you sure you want to delete ?' %}" 
+                                                                        hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
                                                                         hx-post="{% url 'leave-allocation-request-delete' leave_allocation_request.id %}?{{pd}}"
                                                                         hx-target="#view-container"
                                                                         title="{% trans 'Delete' %}">
@@ -296,7 +296,7 @@
                                                             <div class="oh-btn-group" >
                                                                 {% if perms.leave.change_leaveallocationrequest or request.user|is_reportingmanager %}
                                                                     {% if leave_allocation_request.status == 'requested' %}
-                                                                        <a type="submit" href="{% url 'leave-allocation-request-approve' leave_allocation_request.id %}" 
+                                                                        <a type="submit" href="{% url 'leave-allocation-request-approve' leave_allocation_request.id %}"
                                                                             title="{% trans 'Approve' %}"
                                                                             class="oh-btn oh-btn--success w-100">
                                                                             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
@@ -309,9 +309,9 @@
                                                                     {% endif %}
                                                                     {% if leave_allocation_request.status == 'requested' or leave_allocation_request.status == 'approved' %}
                                                                         <a type="submit" data-toggle="oh-modal-toggle"
-                                                                            data-target="#rejectModal" 
-                                                                            hx-get="{% url 'leave-allocation-request-reject' leave_allocation_request.id %}" 
-                                                                            hx-target="#rejectTarget" 
+                                                                            data-target="#rejectModal"
+                                                                            hx-get="{% url 'leave-allocation-request-reject' leave_allocation_request.id %}"
+                                                                            hx-target="#rejectTarget"
                                                                             title="{% trans 'Reject' %}"
                                                                             class="oh-btn oh-btn--danger w-100">
                                                                             <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
@@ -341,7 +341,7 @@
                                         <nav class="oh-pagination__nav">
                                             <div class="oh-pagination__input-container me-3">
                                                 <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-                                                <input type="number" name="page" class="oh-pagination__input" 
+                                                <input type="number" name="page" class="oh-pagination__input"
                                                     value="{{leave_allocation_requests.number}}"
                                                     hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}" hx-target="#view-container" min="1" />
                                                 <span class="oh-pagination__label">{% trans "of" %} {{leave_allocation_requests.paginator.num_pages}}</span>
@@ -393,7 +393,7 @@
     {% endif %}
 </div>
 <!-- end of contents -->
- 
+
 
 <script>
   $(document).ready(function () {
@@ -404,7 +404,7 @@
           $(`[data-target="${activeTab}"]`).toggleClass("oh-tabs__tab--active");
           $(activeTab).toggleClass("oh-tabs__content--active");
       }
-      $(".oh-tabs__tab[data-target]").click(function (e) { 
+      $(".oh-tabs__tab[data-target]").click(function (e) {
           e.preventDefault();
           localStorage.setItem("leaveAllocationRequestActiveTab",$(this).attr('data-target'))
       });

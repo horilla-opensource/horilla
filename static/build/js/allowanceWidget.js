@@ -212,7 +212,7 @@ $(document).ready(function () {
   <div class="m-1  p-1" onclick="conditionAdd()" align="center" style="border-radius:15px; width:25px;border:solid 1px green;cursor:pointer;display:inline;" title="Add More">
 +
   </div>
-  
+
   </div>
   `)
 
@@ -262,6 +262,6 @@ function conditionAdd() {
 
 conditionalVisibility();
 $(document).ready(function () {
-  
+
   $("#id_is_condition_based").change()
 });

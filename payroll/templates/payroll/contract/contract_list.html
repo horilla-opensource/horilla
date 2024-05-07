@@ -42,22 +42,22 @@
               </div>
             </div>
             <div class="oh-sticky-table__th">{% trans "Contract" %}</div>
-            <div data-cell-index="1" data-cell-title='{% trans "Employee" %}' 
+            <div data-cell-index="1" data-cell-title='{% trans "Employee" %}'
               class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %} arrow-up-down {% endif %}"
               hx-target="#payroll-contract-container" hx-get="{% url 'contract-filter' %}?{{pd}}&orderby=employee_id__employee_first_name"
             >{% trans "Employee" %}</div>
-            <div data-cell-index="2" data-cell-title='{% trans "Start Date" %}' 
+            <div data-cell-index="2" data-cell-title='{% trans "Start Date" %}'
               class="oh-sticky-table__th {% if request.sort_option.order == '-contract_start_date' %}arrow-up {% elif request.sort_option.order == 'contract_start_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
               hx-target="#payroll-contract-container" hx-get="{% url 'contract-filter' %}?{{pd}}&orderby=contract_start_date"
             >{% trans "Start Date" %}</div>
-            <div data-cell-index="3" data-cell-title='{% trans "End Date" %}' 
+            <div data-cell-index="3" data-cell-title='{% trans "End Date" %}'
               class="oh-sticky-table__th {% if request.sort_option.order == '-contract_end_date' %}arrow-up {% elif request.sort_option.order == 'contract_end_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
               hx-target="#payroll-contract-container" hx-get="{% url 'contract-filter' %}?{{pd}}&orderby=contract_end_date"
             >{% trans "End Date" %}</div>
-            <div data-cell-index="4" data-cell-title='{% trans "Wage Type" %}' 
+            <div data-cell-index="4" data-cell-title='{% trans "Wage Type" %}'
               class="oh-sticky-table__th"
             >{% trans "Wage Type" %}</div>
-            <div data-cell-index="5" data-cell-title='{% trans "Basic Salary" %}' 
+            <div data-cell-index="5" data-cell-title='{% trans "Basic Salary" %}'
               class="oh-sticky-table__th {% if request.sort_option.order == '-wage' %}arrow-up {% elif request.sort_option.order == 'wage' %}arrow-down {% else %} arrow-up-down {% endif %}"
               hx-target="#payroll-contract-container" hx-get="{% url 'contract-filter' %}?{{pd}}&orderby=wage"
             >{% trans "Basic Salary" %}</div>
@@ -70,8 +70,8 @@
           {% for contract in contracts %}
           <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target = "#objectDetailsModal" hx-get="{% url 'single-contract-view' contract.id %}?instances_ids={{contract_ids}}" hx-target = "#objectDetailsModalTarget">
             <div class="oh-sticky-table__sd  {% if contract.contract_status == "active" %} row-status--yellow
-                {% elif contract.contract_status == 'draft' %} row-status--purple 
-                {% elif contract.contract_status == 'expired' %} row-status--red 
+                {% elif contract.contract_status == 'draft' %} row-status--purple
+                {% elif contract.contract_status == 'expired' %} row-status--red
                 {% elif contract.contract_status == 'terminated' %} row-status--black {% endif %}" onclick="event.stopPropagation()">
                 <div class="centered-div">
                   <input
@@ -94,14 +94,14 @@
             </div>
             <div data-cell-index="5" class="oh-sticky-table__td">{{ contract.wage}}</div>
             <div data-cell-index="6" class="oh-sticky-table__td">{{ contract.filing_status}}</div>
-            <!-- Future updation 
+            <!-- Future updation
                 <div data-cell-index="6" class="oh-sticky-table__td" onclick="event.stopPropagation();">
                   <select name="filing_status" hx-trigger="change" hx-post="{% url 'update-contract-filing-status' contract.id %}" hx-target="#payroll-contract-container" hx-vals='{"view":"table"}' class="oh-table__editable-input w-100">
                     {% for filing_status_id, filing_status_label in contract.FILING_STATUS_CHOICES %}
                       <option value="{{ filing_status_id }}" {% if filing_status_id == contract.filing_status.id %}selected{% endif %}>{{ filing_status_label }}</option>
                     {% endfor %}
                   </select>
-                </div>           
+                </div>
             -->
             <div data-cell-index="7" class="oh-sticky-table__td" onclick="event.stopPropagation();">
               <select name="status" hx-trigger="change" hx-post="{% url 'update-contract-status' contract.id %}?{{pd}}" hx-target="#payroll-contract-container" hx-vals='{"view":"table"}' class="oh-table__editable-input w-100" >
@@ -250,6 +250,6 @@
     if (!localStoragecontractCells) {
       $("#contractCells").find("[type=checkbox]").prop("checked",true)
     }
-    $("[type=checkbox]").change()  
+    $("[type=checkbox]").change()
 </script>
 <script src="{% static 'payroll/action.js' %}"></script>

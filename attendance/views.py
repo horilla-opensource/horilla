@@ -14,49 +14,48 @@ provide the main entry points for interacting with the application's functionali
 import contextlib
 import json
 from datetime import date, datetime, timedelta
-from django.shortcuts import render, redirect
-from django.utils.translation import gettext_lazy as _
-from django.db.models import Q
+
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.db.models import Q
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, render
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
-from horilla.decorators import (
-    permission_required,
-    login_required,
-    hx_request_required,
-    manager_can_enter,
-)
-from base.methods import filtersubordinates, choosesubordinates, sortby
-from base.models import EmployeeShiftDay, EmployeeShiftSchedule, Department
-from notifications.signals import notify
-from employee.models import Employee
+
 from attendance.filters import (
+    AttendanceActivityFilter,
+    AttendanceActivityReGroup,
     AttendanceFilters,
     AttendanceOverTimeFilter,
+    AttendanceOvertimeReGroup,
+    AttendanceReGroup,
     LateComeEarlyOutFilter,
-    AttendanceActivityFilter,
+    LateComeEarlyOutReGroup,
 )
 from attendance.forms import (
     AttendanceForm,
     AttendanceOverTimeForm,
-    AttendanceValidationConditionForm,
     AttendanceUpdateForm,
+    AttendanceValidationConditionForm,
 )
 from attendance.models import (
     Attendance,
     AttendanceActivity,
-    AttendanceOverTime,
     AttendanceLateComeEarlyOut,
+    AttendanceOverTime,
     AttendanceValidationCondition,
 )
-from attendance.filters import (
-    AttendanceReGroup,
-    AttendanceOvertimeReGroup,
-    LateComeEarlyOutReGroup,
-    AttendanceActivityReGroup,
+from base.methods import choosesubordinates, filtersubordinates, sortby
+from base.models import Department, EmployeeShiftDay, EmployeeShiftSchedule
+from employee.models import Employee
+from horilla.decorators import (
+    hx_request_required,
+    login_required,
+    manager_can_enter,
+    permission_required,
 )
-
+from notifications.signals import notify
 
 # Create your views here.
 
@@ -1000,11 +999,11 @@ def clock_out(request):
     clock_out_attendance_and_activity(employee=employee, date_today=date_today, now=now)
     return HttpResponse(
         """
-              <button class="oh-btn oh-btn--success-outline " 
-              hx-get="/attendance/clock-in" 
-              hx-target='#attendance-activity-container' 
+              <button class="oh-btn oh-btn--success-outline "
+              hx-get="/attendance/clock-in"
+              hx-target='#attendance-activity-container'
               hx-swap='innerHTML'>
-              <ion-icon class="oh-navbar__clock-icon mr-2 text-success" 
+              <ion-icon class="oh-navbar__clock-icon mr-2 text-success"
               name="enter-outline"></ion-icon>
                <span class="hr-check-in-out-text">{check_in}</span>
               </button>

@@ -1,6 +1,6 @@
 {% load i18n %}
 {% load static %}
-<form hx-post="{% url 'shift-request-update' form.instance.id %}" 
+<form hx-post="{% url 'shift-request-update' form.instance.id %}"
     hx-target="#shiftRequestModalUpdateBody">
     {% comment %} <div id="updateformBody"> {% endcomment %}
         {{form.as_p}}

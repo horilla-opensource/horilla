@@ -15,17 +15,17 @@
 {% if request.GET.instances_ids %}
 
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-        <button 
-            hx-get="{% url 'shift-allocation-request-details' previous %}?instances_ids={{allocation_ids}}&dashboard={{dashboard}}" 
-            hx-target="#objectDetailsModalTarget"  
+        <button
+            hx-get="{% url 'shift-allocation-request-details' previous %}?instances_ids={{allocation_ids}}&dashboard={{dashboard}}"
+            hx-target="#objectDetailsModalTarget"
             class="oh-modal__diaglog-nav oh-modal__nav-prev">
             <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
             aria-label="chevron back outline"></ion-icon>
         </button>
 
-        <button  
-            hx-get="{% url 'shift-allocation-request-details' next %}?instances_ids={{allocation_ids}}&dashboard={{dashboard}}" 
-            hx-target="#objectDetailsModalTarget"  
+        <button
+            hx-get="{% url 'shift-allocation-request-details' next %}?instances_ids={{allocation_ids}}&dashboard={{dashboard}}"
+            hx-target="#objectDetailsModalTarget"
             class="oh-modal__diaglog-nav oh-modal__nav-next">
             <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
             aria-label="chevron forward outline"></ion-icon>
@@ -33,7 +33,7 @@
     </div>
 
 {% endif %}
-<a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+<a class="oh-timeoff-modal__profile-content" style="text-decoration:none;"
     href ="{% url 'employee-view-individual' shift_request.employee_id.id %}">
     <div class="oh-profile mb-2">
         <div class="oh-profile__avatar">
@@ -139,7 +139,7 @@
             <!-- end of edit button  -->
 
             <!-- start of remove button  -->
-            {% if shift_request.approved == False and shift_request.canceled == False %} 
+            {% if shift_request.approved == False and shift_request.canceled == False %}
                 <form action="{% url 'shift-request-delete' shift_request.id  %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');" method='post' style="width: 50%">
                     {% csrf_token %}
                     <button type='submit' class="oh-btn oh-btn--secondary w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
@@ -151,7 +151,7 @@
                 </form>
             {% else %}
                 <button class="oh-btn oh-btn--secondary w-50" disabled><ion-icon name="trash-outline"></ion-icon></button></td>
-            {% endif %} 
+            {% endif %}
              <!-- end of remove button  -->
         {% endif %}
        </div>

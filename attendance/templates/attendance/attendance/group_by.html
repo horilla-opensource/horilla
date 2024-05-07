@@ -1,5 +1,5 @@
 {% load attendancefilters %} {% load basefilters %} {% load static %}
-{% load i18n %} {% include 'filter_tags.html' %} 
+{% load i18n %} {% include 'filter_tags.html' %}
 <style>
   .oh-sticky-table__right {
     position: sticky;
@@ -66,7 +66,7 @@
                 <div class="oh-sticky-table__tr">
                   <div class="oh-sticky-table__th" style="width:10px;" onclick="event.stopPropagation()">
                     <div class="centered-div">
-                      <input type="checkbox" class="oh-input oh-input__checkbox ot-attendances" 
+                      <input type="checkbox" class="oh-input oh-input__checkbox ot-attendances"
                         title="{% trans 'Select All' %}"
                       />
                     </div>
@@ -97,7 +97,7 @@
                   data-target="#objectDetailsModalW25"
                   hx-target="#objectDetailsModalW25Target"
                   hx-get="{% url 'user-request-one-view' attendance.id %}?ot=true&instances_ids={{ot_attendances_ids}}"
-                  > 
+                  >
                   <div class="oh-sticky-table__sd">
                     <input
                       type="checkbox"
@@ -188,7 +188,7 @@
                             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                         </a>
                       {% else %}
-                          <a type="submit" href="{% url 'approve-overtime' attendance.id %}" 
+                          <a type="submit" href="{% url 'approve-overtime' attendance.id %}"
                               title="{% trans 'Approve' %}"
                               class="oh-btn oh-btn--success w-100"
                               onclick="event.stopPropagation()"
@@ -351,7 +351,7 @@
                 <div class="oh-sticky-table__tr">
                   <div class="oh-sticky-table__th" style="width:10px;">
                     <div class="centered-div">
-                      <input type="checkbox" class="oh-input oh-input__checkbox validate" title="{% trans 'Select All' %}" 
+                      <input type="checkbox" class="oh-input oh-input__checkbox validate" title="{% trans 'Select All' %}"
                         />
                     </div>
                   </div>

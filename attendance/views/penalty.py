@@ -4,16 +4,17 @@ attendance/views/penalty.py
 This module is used to write late come early out penatly methods
 """
 
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
-from attendance.forms import PenaltyAccountForm
+
 from attendance.filters import PenaltyFilter
+from attendance.forms import PenaltyAccountForm
 from attendance.models import AttendanceLateComeEarlyOut, PenaltyAccount
-from leave.models import AvailableLeave
 from employee.models import Employee
 from horilla.decorators import login_required, manager_can_enter
+from leave.models import AvailableLeave
 
 
 @login_required

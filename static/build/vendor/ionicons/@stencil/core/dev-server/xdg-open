@@ -454,7 +454,7 @@ detectDE()
            DE=gnome;
            ;;
          LXDE|Lubuntu)
-           DE=lxde; 
+           DE=lxde;
            ;;
          MATE)
            DE=mate;
@@ -467,7 +467,7 @@ detectDE()
 
     if [ x"$DE" = x"" ]; then
       # fallback to uname output for other platforms
-      case "$(uname 2>/dev/null)" in 
+      case "$(uname 2>/dev/null)" in
         CYGWIN*)
           DE=cygwin;
           ;;

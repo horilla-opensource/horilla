@@ -2,13 +2,14 @@
 URL configuration for asset-related views.
 """
 
-from django.urls import path
 from django import views
+from django.urls import path
+
 from asset.forms import AssetCategoryForm, AssetForm
 from asset.models import Asset, AssetCategory
 from base.views import object_duplicate
-from . import views
 
+from . import views
 
 urlpatterns = [
     path("asset-creation/<int:id>/", views.asset_creation, name="asset-creation"),

@@ -472,7 +472,7 @@ class Tabs extends Tables {
         } else {
           tableRow += `
             <div class="oh-sticky-table__sd oh-table-config__td">
-              <input class="oh-table__editable-input" placeholder="Edit" value="${field.value}" readonly>   
+              <input class="oh-table__editable-input" placeholder="Edit" value="${field.value}" readonly>
             </div>`;
         }
       });
@@ -483,7 +483,7 @@ class Tabs extends Tables {
       let attachTarget = parentContainer.prev('.oh-tabs__movable').find(`${targetSelector}`).last();
 
       // Append new row to the table [[ Check if we're adding on to the right parent ]]
-     
+
       $(tableRow).insertAfter(attachTarget);
 
       // Clear all form inputs
@@ -500,7 +500,7 @@ class Tabs extends Tables {
   closeOnClickOutside(e){
       if($(e.target).closest('.oh-table__add-row-dropdown').length > 0 || $(e.target).closest('.oh-d-toggle').length > 0 ) return;
       $('.oh-table__add-row-dropdown').addClass('d-none');
-    
+
   }
 }
 

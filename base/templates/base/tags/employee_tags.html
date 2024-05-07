@@ -13,7 +13,7 @@
 					class="oh-btn oh-btn--secondary oh-btn--shadow"
 					data-toggle="oh-modal-toggle"
 					data-target="#emptagModal"
-					hx-get="{% url 'employee-tag-create' %}" 
+					hx-get="{% url 'employee-tag-create' %}"
 					hx-target="#emptagForm"
 				>
 					<ion-icon name="add-outline" class="me-1"></ion-icon>
@@ -22,7 +22,7 @@
 			{% endif %}
         </div>
 		{% if employeetags %}
-        	{% include 'base/employee_tag/employee_tag_view.html' %}     
+        	{% include 'base/employee_tag/employee_tag_view.html' %}
 		{% else %}
 			<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
 				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/price-tag.png' %}" class="" alt="Page not found. 404." />

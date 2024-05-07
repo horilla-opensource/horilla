@@ -5,8 +5,10 @@ This module is used to register django_filters
 """
 
 import uuid
+
 import django_filters
 from django import forms
+
 from base.filters import FilterSet
 from offboarding.models import (
     Offboarding,

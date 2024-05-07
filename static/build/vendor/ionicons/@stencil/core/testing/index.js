@@ -39,11 +39,11 @@ function _interopNamespace(e) {
 async function startPuppeteerBrowser(e) {
  if (!e.flags.e2e) return null;
  const t = process.env, r = e.testing.browserExecutablePath ? "puppeteer-core" : "puppeteer", s = e.sys.lazyRequire.getModulePath(e.rootDir, r), n = e.sys.lazyRequire.require(e.rootDir, s);
- t.__STENCIL_PUPPETEER_MODULE__ = s, t.__STENCIL_BROWSER_WAIT_UNTIL = e.testing.browserWaitUntil, 
- e.flags.devtools && (e.testing.browserDevtools = !0, e.testing.browserHeadless = !1, 
- t.__STENCIL_E2E_DEVTOOLS__ = "true"), e.logger.debug(`puppeteer: ${s}`), e.logger.debug(`puppeteer headless: ${e.testing.browserHeadless}`), 
- Array.isArray(e.testing.browserArgs) && e.logger.debug(`puppeteer args: ${e.testing.browserArgs.join(" ")}`), 
- "boolean" == typeof e.testing.browserDevtools && e.logger.debug(`puppeteer devtools: ${e.testing.browserDevtools}`), 
+ t.__STENCIL_PUPPETEER_MODULE__ = s, t.__STENCIL_BROWSER_WAIT_UNTIL = e.testing.browserWaitUntil,
+ e.flags.devtools && (e.testing.browserDevtools = !0, e.testing.browserHeadless = !1,
+ t.__STENCIL_E2E_DEVTOOLS__ = "true"), e.logger.debug(`puppeteer: ${s}`), e.logger.debug(`puppeteer headless: ${e.testing.browserHeadless}`),
+ Array.isArray(e.testing.browserArgs) && e.logger.debug(`puppeteer args: ${e.testing.browserArgs.join(" ")}`),
+ "boolean" == typeof e.testing.browserDevtools && e.logger.debug(`puppeteer devtools: ${e.testing.browserDevtools}`),
  "number" == typeof e.testing.browserSlowMo && e.logger.debug(`puppeteer slowMo: ${e.testing.browserSlowMo}`);
  const o = {
   ignoreHTTPSErrors: !0,
@@ -60,12 +60,12 @@ async function startPuppeteerBrowser(e) {
    devtools: e.testing.browserDevtools,
    ...o
   };
-  e.testing.browserExecutablePath && (t.executablePath = e.testing.browserExecutablePath), 
+  e.testing.browserExecutablePath && (t.executablePath = e.testing.browserExecutablePath),
   i = await n.launch({
    ...t
   });
  }
- return t.__STENCIL_BROWSER_WS_ENDPOINT__ = i.wsEndpoint(), e.logger.debug(`puppeteer browser wsEndpoint: ${t.__STENCIL_BROWSER_WS_ENDPOINT__}`), 
+ return t.__STENCIL_BROWSER_WS_ENDPOINT__ = i.wsEndpoint(), e.logger.debug(`puppeteer browser wsEndpoint: ${t.__STENCIL_BROWSER_WS_ENDPOINT__}`),
  i;
 }
 
@@ -92,8 +92,8 @@ function transpile(e, t = {}) {
 
 function formatDiagnostic(e) {
  let t = "";
- return e.relFilePath && (t += e.relFilePath, "number" == typeof e.lineNumber && (t += ":" + e.lineNumber + 1, 
- "number" == typeof e.columnNumber && (t += ":" + e.columnNumber)), t += "\n"), t += e.messageText, 
+ return e.relFilePath && (t += e.relFilePath, "number" == typeof e.lineNumber && (t += ":" + e.lineNumber + 1,
+ "number" == typeof e.columnNumber && (t += ":" + e.columnNumber)), t += "\n"), t += e.messageText,
  t;
 }
 
@@ -125,8 +125,8 @@ function getCompilerOptions(e) {
     errorCharStart: n.character,
     errorLength: Math.max(e.length, 1)
    };
-   if (t.lineNumber = o.lineNumber, t.columnNumber = o.errorCharStart + 1, t.lines.push(o), 
-   0 === o.errorLength && o.errorCharStart > 0 && (o.errorLength = 1, o.errorCharStart--), 
+   if (t.lineNumber = o.lineNumber, t.columnNumber = o.errorCharStart + 1, t.lines.push(o),
+   0 === o.errorLength && o.errorCharStart > 0 && (o.errorLength = 1, o.errorCharStart--),
    o.lineIndex > 0) {
     const e = {
      lineIndex: o.lineIndex - 1,
@@ -174,12 +174,12 @@ function setScreenshotEmulateData(e, t) {
  } catch (e) {
   return void console.error("error loading puppeteer DeviceDescriptors", e);
  }
- e.viewport && ("number" == typeof e.viewport.width && (r.viewport.width = e.viewport.width), 
- "number" == typeof e.viewport.height && (r.viewport.height = e.viewport.height), 
- "number" == typeof e.viewport.deviceScaleFactor && (r.viewport.deviceScaleFactor = e.viewport.deviceScaleFactor), 
- "boolean" == typeof e.viewport.hasTouch && (r.viewport.hasTouch = e.viewport.hasTouch), 
- "boolean" == typeof e.viewport.isLandscape && (r.viewport.isLandscape = e.viewport.isLandscape), 
- "boolean" == typeof e.viewport.isMobile && (r.viewport.isMobile = e.viewport.isMobile), 
+ e.viewport && ("number" == typeof e.viewport.width && (r.viewport.width = e.viewport.width),
+ "number" == typeof e.viewport.height && (r.viewport.height = e.viewport.height),
+ "number" == typeof e.viewport.deviceScaleFactor && (r.viewport.deviceScaleFactor = e.viewport.deviceScaleFactor),
+ "boolean" == typeof e.viewport.hasTouch && (r.viewport.hasTouch = e.viewport.hasTouch),
+ "boolean" == typeof e.viewport.isLandscape && (r.viewport.isLandscape = e.viewport.isLandscape),
+ "boolean" == typeof e.viewport.isMobile && (r.viewport.isMobile = e.viewport.isMobile),
  "string" == typeof e.userAgent && (r.userAgent = e.userAgent)), t.__STENCIL_EMULATE__ = JSON.stringify(r);
 }
 
@@ -194,12 +194,12 @@ async function runJest(e, t) {
    }
    return r;
   }(e.testing, e.flags);
-  t.__STENCIL_EMULATE_CONFIGS__ = JSON.stringify(s), t.__STENCIL_ENV__ = JSON.stringify(e.env), 
-  e.flags.ci || e.flags.e2e ? t.__STENCIL_DEFAULT_TIMEOUT__ = "30000" : t.__STENCIL_DEFAULT_TIMEOUT__ = "15000", 
+  t.__STENCIL_EMULATE_CONFIGS__ = JSON.stringify(s), t.__STENCIL_ENV__ = JSON.stringify(e.env),
+  e.flags.ci || e.flags.e2e ? t.__STENCIL_DEFAULT_TIMEOUT__ = "30000" : t.__STENCIL_DEFAULT_TIMEOUT__ = "15000",
   e.flags.devtools && (t.__STENCIL_DEFAULT_TIMEOUT__ = "300000000"), e.logger.debug(`default timeout: ${t.__STENCIL_DEFAULT_TIMEOUT__}`);
   const n = function n(e) {
    const t = require("yargs"), r = e.flags.knownArgs.slice();
-   r.some((e => e.startsWith("--max-workers") || e.startsWith("--maxWorkers"))) || r.push(`--max-workers=${e.maxConcurrentWorkers}`), 
+   r.some((e => e.startsWith("--max-workers") || e.startsWith("--maxWorkers"))) || r.push(`--max-workers=${e.maxConcurrentWorkers}`),
    e.flags.devtools && r.push("--runInBand");
    const s = [ ...r, ...e.flags.unknownArgs ];
    e.logger.info(e.logger.magenta(`jest args: ${s.join(" ")}`));
@@ -228,13 +228,13 @@ async function runJest(e, t) {
     const t = e.testing, r = require("jest-config").defaults, s = Object.keys(r), n = {};
     return Object.keys(t).forEach((e => {
      s.includes(e) && (n[e] = t[e]);
-    })), n.rootDir = e.rootDir, isString(t.collectCoverage) && (n.collectCoverage = t.collectCoverage), 
-    Array.isArray(t.collectCoverageFrom) && (n.collectCoverageFrom = t.collectCoverageFrom), 
-    isString(t.coverageDirectory) && (n.coverageDirectory = t.coverageDirectory), t.coverageThreshold && (n.coverageThreshold = t.coverageThreshold), 
-    isString(t.globalSetup) && (n.globalSetup = t.globalSetup), isString(t.globalTeardown) && (n.globalTeardown = t.globalTeardown), 
-    isString(t.preset) && (n.preset = t.preset), t.projects && (n.projects = t.projects), 
-    Array.isArray(t.reporters) && (n.reporters = t.reporters), isString(t.testResultsProcessor) && (n.testResultsProcessor = t.testResultsProcessor), 
-    t.transform && (n.transform = t.transform), t.verbose && (n.verbose = t.verbose), 
+    })), n.rootDir = e.rootDir, isString(t.collectCoverage) && (n.collectCoverage = t.collectCoverage),
+    Array.isArray(t.collectCoverageFrom) && (n.collectCoverageFrom = t.collectCoverageFrom),
+    isString(t.coverageDirectory) && (n.coverageDirectory = t.coverageDirectory), t.coverageThreshold && (n.coverageThreshold = t.coverageThreshold),
+    isString(t.globalSetup) && (n.globalSetup = t.globalSetup), isString(t.globalTeardown) && (n.globalTeardown = t.globalTeardown),
+    isString(t.preset) && (n.preset = t.preset), t.projects && (n.projects = t.projects),
+    Array.isArray(t.reporters) && (n.reporters = t.reporters), isString(t.testResultsProcessor) && (n.testResultsProcessor = t.testResultsProcessor),
+    t.transform && (n.transform = t.transform), t.verbose && (n.verbose = t.verbose),
     n.testRunner = "jest-jasmine2", JSON.stringify(n);
    }(e), "string" == typeof n.maxWorkers) try {
     n.maxWorkers = parseInt(n.maxWorkers, 10);
@@ -320,8 +320,8 @@ async function globalMockFetch(e) {
  }
  if (null == r) return new MockResponse404;
  const s = r.response.clone();
- return "number" != typeof s.status && (s.status = 200), "string" != typeof s.statusText && (s.status >= 500 ? s.statusText = "Internal Server Error" : 404 === s.status ? s.statusText = "Not Found" : s.status >= 400 ? s.statusText = "Bad Request" : 302 === s.status ? s.statusText = "Found" : 301 === s.status ? s.statusText = "Moved Permanently" : s.status >= 300 ? s.statusText = "Redirection" : s.statusText = "OK"), 
- s.ok = s.status >= 200 && s.status <= 299, "string" != typeof s.type && (s.type = "basic"), 
+ return "number" != typeof s.status && (s.status = 200), "string" != typeof s.statusText && (s.status >= 500 ? s.statusText = "Internal Server Error" : 404 === s.status ? s.statusText = "Not Found" : s.status >= 400 ? s.statusText = "Bad Request" : 302 === s.status ? s.statusText = "Found" : 301 === s.status ? s.statusText = "Moved Permanently" : s.status >= 300 ? s.statusText = "Redirection" : s.statusText = "OK"),
+ s.ok = s.status >= 200 && s.status <= 299, "string" != typeof s.type && (s.type = "basic"),
  s;
 }
 
@@ -340,14 +340,14 @@ function setMockedResponse(e, t, r) {
 function resetBuildConditionals(e) {
  Object.keys(e).forEach((t => {
   e[t] = !0;
- })), e.isDev = !0, e.isTesting = !0, e.isDebug = !1, e.lazyLoad = !0, e.member = !0, 
- e.reflect = !0, e.scoped = !0, e.shadowDom = !0, e.slotRelocation = !0, e.asyncLoading = !0, 
- e.svg = !0, e.updatable = !0, e.vdomAttribute = !0, e.vdomClass = !0, e.vdomFunctional = !0, 
- e.vdomKey = !0, e.vdomPropOrAttr = !0, e.vdomRef = !0, e.vdomListener = !0, e.vdomStyle = !0, 
- e.vdomText = !0, e.vdomXlink = !0, e.allRenderFn = !1, e.devTools = !1, e.hydrateClientSide = !1, 
- e.hydrateServerSide = !1, e.cssAnnotations = !1, e.style = !1, e.hydratedAttribute = !1, 
- e.hydratedClass = !0, e.invisiblePrehydration = !0, e.appendChildSlotFix = !1, e.cloneNodeFix = !1, 
- e.dynamicImportShim = !1, e.hotModuleReplacement = !1, e.safari10 = !1, e.scriptDataOpts = !1, 
+ })), e.isDev = !0, e.isTesting = !0, e.isDebug = !1, e.lazyLoad = !0, e.member = !0,
+ e.reflect = !0, e.scoped = !0, e.shadowDom = !0, e.slotRelocation = !0, e.asyncLoading = !0,
+ e.svg = !0, e.updatable = !0, e.vdomAttribute = !0, e.vdomClass = !0, e.vdomFunctional = !0,
+ e.vdomKey = !0, e.vdomPropOrAttr = !0, e.vdomRef = !0, e.vdomListener = !0, e.vdomStyle = !0,
+ e.vdomText = !0, e.vdomXlink = !0, e.allRenderFn = !1, e.devTools = !1, e.hydrateClientSide = !1,
+ e.hydrateServerSide = !1, e.cssAnnotations = !1, e.style = !1, e.hydratedAttribute = !1,
+ e.hydratedClass = !0, e.invisiblePrehydration = !0, e.appendChildSlotFix = !1, e.cloneNodeFix = !1,
+ e.dynamicImportShim = !1, e.hotModuleReplacement = !1, e.safari10 = !1, e.scriptDataOpts = !1,
  e.scopedSlotTextContentFix = !1, e.slotChildNodesFix = !1;
 }
 
@@ -366,7 +366,7 @@ function normalizeStringPosix(e, t) {
    if (a === s - 1 || 1 === l) ; else if (a !== s - 1 && 2 === l) {
     if (o.length < 2 || 2 !== i || 46 !== o.charCodeAt(o.length - 1) || 46 !== o.charCodeAt(o.length - 2)) if (o.length > 2) {
      if ((n = o.lastIndexOf("/")) !== o.length - 1) {
-      -1 === n ? (o = "", i = 0) : i = (o = o.slice(0, n)).length - 1 - o.lastIndexOf("/"), 
+      -1 === n ? (o = "", i = 0) : i = (o = o.slice(0, n)).length - 1 - o.lastIndexOf("/"),
       a = s, l = 0;
       continue;
      }
@@ -555,8 +555,8 @@ function mockCompilerCtx(e) {
      const r = v(t);
      if ("boolean" != typeof r.isDirectory || "boolean" != typeof r.isFile) {
       const s = await e.stat(t);
-      s.error ? r.exists = !1 : (r.exists = !0, s.isFile ? (r.isFile = !0, r.isDirectory = !1, 
-      r.size = s.size) : s.isDirectory ? (r.isFile = !1, r.isDirectory = !0, r.size = s.size) : (r.isFile = !1, 
+      s.error ? r.exists = !1 : (r.exists = !0, s.isFile ? (r.isFile = !0, r.isDirectory = !1,
+      r.size = s.size) : s.isDirectory ? (r.isFile = !1, r.isDirectory = !0, r.size = s.size) : (r.isFile = !1,
       r.isDirectory = !1, r.size = null));
      }
      return {
@@ -569,8 +569,8 @@ function mockCompilerCtx(e) {
      const r = v(t);
      if ("boolean" != typeof r.isDirectory || "boolean" != typeof r.isFile) {
       const s = e.statSync(t);
-      s.error ? r.exists = !1 : (r.exists = !0, s.isFile ? (r.isFile = !0, r.isDirectory = !1, 
-      r.size = s.size) : s.isDirectory ? (r.isFile = !1, r.isDirectory = !0, r.size = s.size) : (r.isFile = !1, 
+      s.error ? r.exists = !1 : (r.exists = !0, s.isFile ? (r.isFile = !0, r.isDirectory = !1,
+      r.size = s.size) : s.isDirectory ? (r.isFile = !1, r.isDirectory = !0, r.size = s.size) : (r.isFile = !1,
       r.isDirectory = !1, r.size = null));
      }
      return {
@@ -589,17 +589,17 @@ function mockCompilerCtx(e) {
      };
      if (!0 === shouldIgnore(t)) return o.ignored = !0, o;
      const i = v(t);
-     if (i.exists = !0, i.isFile = !0, i.isDirectory = !1, i.queueDeleteFromDisk = !1, 
-     "string" == typeof i.fileText ? o.changedContent = i.fileText.replace(/\r/g, "") !== s.replace(/\r/g, "") : o.changedContent = !0, 
-     i.fileText = s, o.queuedWrite = !1, null != n && ("string" == typeof n.outputTargetType && r.set(t, n.outputTargetType), 
-     !1 === n.useCache && (i.useCache = !1)), null != n && !0 === n.inMemoryOnly) i.queueWriteToDisk ? o.queuedWrite = !0 : i.queueWriteToDisk = !1, 
+     if (i.exists = !0, i.isFile = !0, i.isDirectory = !1, i.queueDeleteFromDisk = !1,
+     "string" == typeof i.fileText ? o.changedContent = i.fileText.replace(/\r/g, "") !== s.replace(/\r/g, "") : o.changedContent = !0,
+     i.fileText = s, o.queuedWrite = !1, null != n && ("string" == typeof n.outputTargetType && r.set(t, n.outputTargetType),
+     !1 === n.useCache && (i.useCache = !1)), null != n && !0 === n.inMemoryOnly) i.queueWriteToDisk ? o.queuedWrite = !0 : i.queueWriteToDisk = !1,
      await d(t, !0); else if (null != n && !0 === n.immediateWrite) {
       if (o.changedContent || !0 !== n.useCache) {
        const r = await e.readFile(t);
-       "string" == typeof r && (o.changedContent = i.fileText.replace(/\r/g, "") !== r.replace(/\r/g, "")), 
+       "string" == typeof r && (o.changedContent = i.fileText.replace(/\r/g, "") !== r.replace(/\r/g, "")),
        o.changedContent && (await d(t, !1), await e.writeFile(t, i.fileText));
       }
-     } else i.queueWriteToDisk || !0 !== o.changedContent || (i.queueWriteToDisk = !0, 
+     } else i.queueWriteToDisk || !0 !== o.changedContent || (i.queueWriteToDisk = !0,
      o.queuedWrite = !0);
      return o;
     }, d = async (e, t) => {
@@ -700,7 +700,7 @@ function mockCompilerCtx(e) {
       v(e).queueCopyFileToDest = t;
      },
      emptyDirs: async e => {
-      e = e.filter(isString).map(normalizePath).reduce(((e, t) => (e.includes(t) || e.push(t), 
+      e = e.filter(isString).map(normalizePath).reduce(((e, t) => (e.includes(t) || e.push(t),
       e)), []);
       const t = await Promise.all(e.map((e => s(e, {
        recursive: !0
@@ -732,7 +732,7 @@ function mockCompilerCtx(e) {
        if (e.exists && "string" == typeof e.fileText) return e.fileText;
       }
       const s = await e.readFile(t), n = v(t);
-      return "string" == typeof s ? s.length < b && (n.exists = !0, n.isFile = !0, n.isDirectory = !1, 
+      return "string" == typeof s ? s.length < b && (n.exists = !0, n.isFile = !0, n.isDirectory = !1,
       n.fileText = s) : n.exists = !1, s;
      },
      readFileSync: (t, r) => {
@@ -741,7 +741,7 @@ function mockCompilerCtx(e) {
        if (e.exists && "string" == typeof e.fileText) return e.fileText;
       }
       const s = e.readFileSync(t), n = v(t);
-      return "string" == typeof s ? s.length < b && (n.exists = !0, n.isFile = !0, n.isDirectory = !1, 
+      return "string" == typeof s ? s.length < b && (n.exists = !0, n.isFile = !0, n.isDirectory = !1,
       n.fileText = s) : n.exists = !1, s;
      },
      readdir: s,
@@ -780,7 +780,7 @@ function mockLogger() {
 }
 
 async function initPageEvents(e) {
- e._e2eEvents = new Map, e._e2eEventIds = 0, e.spyOnEvent = pageSpyOnEvent.bind(e, e), 
+ e._e2eEvents = new Map, e._e2eEventIds = 0, e.spyOnEvent = pageSpyOnEvent.bind(e, e),
  await e.exposeFunction("stencilOnEvent", ((t, r) => {
   !function s(e, t, r) {
    const s = e.get(t);
@@ -829,7 +829,7 @@ function browserContextEvents() {
   const e = [], t = (e, r) => {
    if (null != r && 1 === r.nodeType) for (let s = 0; s < r.children.length; s++) {
     const n = r.children[s];
-    n.tagName.includes("-") && "function" == typeof n.componentOnReady && e.push(n.componentOnReady()), 
+    n.tagName.includes("-") && "function" == typeof n.componentOnReady && e.push(n.componentOnReady()),
     t(e, n);
    }
   };
@@ -977,8 +977,8 @@ async function compareScreenshot(e, t, r, s, n, o, i, a) {
  const d = function h(e, t) {
   if ("string" != typeof t || 0 === t.trim().length) throw new Error("invalid test description");
   const r = crypto$3.createHash("md5");
-  return r.update(t + ":"), r.update(e.userAgent + ":"), r.update(e.viewport.width + ":"), 
-  r.update(e.viewport.height + ":"), r.update(e.viewport.deviceScaleFactor + ":"), 
+  return r.update(t + ":"), r.update(e.userAgent + ":"), r.update(e.viewport.width + ":"),
+  r.update(e.viewport.height + ":"), r.update(e.viewport.deviceScaleFactor + ":"),
   r.update(e.viewport.hasTouch + ":"), r.update(e.viewport.isMobile + ":"), r.digest("hex").slice(0, 8).toLowerCase();
  }(e, s), p = {
   id: d,
@@ -1076,7 +1076,7 @@ async function e2eSetContent(e, t, r = {}) {
  if ("string" != typeof n) throw new Error("invalid e2eSetContent() app script url");
  s.push("<!doctype html>"), s.push("<html>"), s.push("<head>");
  const o = env.__STENCIL_APP_STYLE_URL__;
- "string" == typeof o && s.push(`<link rel="stylesheet" href="${o}">`), s.push(`<script type="module" src="${n}"><\/script>`), 
+ "string" == typeof o && s.push(`<link rel="stylesheet" href="${o}">`), s.push(`<script type="module" src="${n}"><\/script>`),
  s.push("</head>"), s.push("<body>"), s.push(t), s.push("</body>"), s.push("</html>");
  const i = env.__STENCIL_BROWSER_URL__;
  await e.setRequestInterception(!0), e.on("request", (e => {
@@ -1114,7 +1114,7 @@ async function waitForChanges(e) {
       const s = e.children, n = s.length;
       for (let e = 0; e < n; e++) {
        const n = s[e];
-       null != n && (n.tagName.includes("-") && "function" == typeof n.componentOnReady && t.push(n.componentOnReady()), 
+       null != n && (n.tagName.includes("-") && "function" == typeof n.componentOnReady && t.push(n.componentOnReady()),
        r(n, t));
       }
      }
@@ -1126,7 +1126,7 @@ async function waitForChanges(e) {
     }));
    }));
   })))), e.isClosed()) return;
-  "function" == typeof e.waitForTimeout ? await e.waitForTimeout(100) : await e.waitFor(100), 
+  "function" == typeof e.waitForTimeout ? await e.waitForTimeout(100) : await e.waitFor(100),
   await Promise.all(e._e2eElements.map((e => e.e2eSync())));
  } catch (e) {}
 }
@@ -1134,7 +1134,7 @@ async function waitForChanges(e) {
 function serializeConsoleMessage(e) {
  return `${e.text()} ${function t(e) {
   let t = "";
-  return e && e.url && (t = `\nLocation: ${e.url}`, e.lineNumber && (t += `:${e.lineNumber}`), 
+  return e && e.url && (t = `\nLocation: ${e.url}`, e.lineNumber && (t += `:${e.lineNumber}`),
   e.columnNumber && (t += `:${e.columnNumber}`)), t;
  }(e.location())}`;
 }
@@ -1157,16 +1157,16 @@ function findRootComponent(e, t) {
 function createBuildId() {
  const e = new Date;
  let t = e.getFullYear() + "";
- return t += ("0" + (e.getMonth() + 1)).slice(-2), t += ("0" + e.getDate()).slice(-2), 
- t += ("0" + e.getHours()).slice(-2), t += ("0" + e.getMinutes()).slice(-2), t += ("0" + e.getSeconds()).slice(-2), 
+ return t += ("0" + (e.getMonth() + 1)).slice(-2), t += ("0" + e.getDate()).slice(-2),
+ t += ("0" + e.getHours()).slice(-2), t += ("0" + e.getMinutes()).slice(-2), t += ("0" + e.getSeconds()).slice(-2),
  t;
 }
 
 function createBuildMessage() {
  const e = new Date;
  let t = e.getFullYear() + "-";
- return t += ("0" + (e.getMonth() + 1)).slice(-2) + "-", t += ("0" + e.getDate()).slice(-2) + " ", 
- t += ("0" + e.getHours()).slice(-2) + ":", t += ("0" + e.getMinutes()).slice(-2) + ":", 
+ return t += ("0" + (e.getMonth() + 1)).slice(-2) + "-", t += ("0" + e.getDate()).slice(-2) + " ",
+ t += ("0" + e.getHours()).slice(-2) + ":", t += ("0" + e.getMinutes()).slice(-2) + ":",
  t += ("0" + e.getSeconds()).slice(-2), `Build: ${t}`;
 }
 
@@ -1313,7 +1313,7 @@ const stencil_js = require("../compiler/stencil.js"), appData = _lazyRequire("@s
  o && n.push(2322);
  let i = "";
  if (!n.includes(t.code) && (i = t.messageText, isIterable(t.next))) for (const r of t.next) i += flattenDiagnosticMessageText(e, r);
- return o && (i = i.replace("type 'StencilConfig'", "Stencil Config"), i = i.replace("Object literal may only specify known properties, but ", ""), 
+ return o && (i = i.replace("type 'StencilConfig'", "Stencil Config"), i = i.replace("Object literal may only specify known properties, but ", ""),
  i = i.replace("Object literal may only specify known properties, and ", "")), i.trim();
 }, isJest27TransformOptions = e => null != e && "object" == typeof e && e.hasOwnProperty("config");
 
@@ -1415,7 +1415,7 @@ const jestPreprocessor = {
   if (null == e) throw new Error(`expect toEqualText() value is "${e}"`);
   if ("function" == typeof e.then) throw new Error("element must be a resolved value, not a promise, before it can be tested");
   let r;
-  1 === e.nodeType ? r = e.textContent.replace(/\s\s+/g, " ").trim() : null != e && (r = String(e).replace(/\s\s+/g, " ").trim()), 
+  1 === e.nodeType ? r = e.textContent.replace(/\s\s+/g, " ").trim() : null != e && (r = String(e).replace(/\s\s+/g, " ").trim()),
   "string" == typeof t && (t = t.replace(/\s\s+/g, " ").trim());
   const s = r === t;
   return {
@@ -1628,11 +1628,11 @@ class MockHeaders {
 
 class MockRequest {
  constructor(e, t = {}) {
-  this._method = "GET", this._url = "/", this.bodyUsed = !1, this.cache = "default", 
-  this.credentials = "same-origin", this.integrity = "", this.keepalive = !1, this.mode = "cors", 
-  this.redirect = "follow", this.referrer = "about:client", this.referrerPolicy = "", 
-  "string" == typeof e ? this.url = e : e && (Object.assign(this, e), this.headers = new MockHeaders(e.headers)), 
-  Object.assign(this, t), t.headers && (this.headers = new MockHeaders(t.headers)), 
+  this._method = "GET", this._url = "/", this.bodyUsed = !1, this.cache = "default",
+  this.credentials = "same-origin", this.integrity = "", this.keepalive = !1, this.mode = "cors",
+  this.redirect = "follow", this.referrer = "about:client", this.referrerPolicy = "",
+  "string" == typeof e ? this.url = e : e && (Object.assign(this, e), this.headers = new MockHeaders(e.headers)),
+  Object.assign(this, t), t.headers && (this.headers = new MockHeaders(t.headers)),
   this.headers || (this.headers = new MockHeaders);
  }
  get url() {
@@ -1657,7 +1657,7 @@ class MockRequest {
 
 class MockResponse {
  constructor(e, t = {}) {
-  this.ok = !0, this.status = 200, this.statusText = "", this.type = "default", this.url = "", 
+  this.ok = !0, this.status = 200, this.statusText = "", this.type = "default", this.url = "",
   this._body = e, t && Object.assign(this, t), this.headers = new MockHeaders(t.headers);
  }
  async json() {
@@ -1736,19 +1736,19 @@ const FETCH_DEFAULT_PATH = "/mock-fetch-data", HtmlSerializer = {
 
 class BuildContext {
  constructor(e, t) {
-  this.buildId = -1, this.buildMessages = [], this.buildResults = null, this.bundleBuildCount = 0, 
-  this.collections = [], this.completedTasks = [], this.components = [], this.componentGraph = new Map, 
-  this.data = {}, this.buildStats = void 0, this.diagnostics = [], this.dirsAdded = [], 
-  this.dirsDeleted = [], this.entryModules = [], this.filesAdded = [], this.filesChanged = [], 
-  this.filesDeleted = [], this.filesUpdated = [], this.filesWritten = [], this.globalStyle = void 0, 
-  this.hasConfigChanges = !1, this.hasFinished = !1, this.hasHtmlChanges = !1, this.hasPrintedResults = !1, 
-  this.hasServiceWorkerChanges = !1, this.hasScriptChanges = !0, this.hasStyleChanges = !0, 
-  this.hydrateAppFilePath = null, this.indexBuildCount = 0, this.indexDoc = void 0, 
-  this.isRebuild = !1, this.moduleFiles = [], this.outputs = [], this.packageJson = {}, 
-  this.packageJsonFilePath = null, this.pendingCopyTasks = [], this.requiresFullBuild = !0, 
-  this.scriptsAdded = [], this.scriptsDeleted = [], this.startTime = Date.now(), this.styleBuildCount = 0, 
-  this.stylesPromise = null, this.stylesUpdated = [], this.timeSpan = null, this.transpileBuildCount = 0, 
-  this.config = e, this.compilerCtx = t, this.buildId = ++this.compilerCtx.activeBuildId, 
+  this.buildId = -1, this.buildMessages = [], this.buildResults = null, this.bundleBuildCount = 0,
+  this.collections = [], this.completedTasks = [], this.components = [], this.componentGraph = new Map,
+  this.data = {}, this.buildStats = void 0, this.diagnostics = [], this.dirsAdded = [],
+  this.dirsDeleted = [], this.entryModules = [], this.filesAdded = [], this.filesChanged = [],
+  this.filesDeleted = [], this.filesUpdated = [], this.filesWritten = [], this.globalStyle = void 0,
+  this.hasConfigChanges = !1, this.hasFinished = !1, this.hasHtmlChanges = !1, this.hasPrintedResults = !1,
+  this.hasServiceWorkerChanges = !1, this.hasScriptChanges = !0, this.hasStyleChanges = !0,
+  this.hydrateAppFilePath = null, this.indexBuildCount = 0, this.indexDoc = void 0,
+  this.isRebuild = !1, this.moduleFiles = [], this.outputs = [], this.packageJson = {},
+  this.packageJsonFilePath = null, this.pendingCopyTasks = [], this.requiresFullBuild = !0,
+  this.scriptsAdded = [], this.scriptsDeleted = [], this.startTime = Date.now(), this.styleBuildCount = 0,
+  this.stylesPromise = null, this.stylesUpdated = [], this.timeSpan = null, this.transpileBuildCount = 0,
+  this.config = e, this.compilerCtx = t, this.buildId = ++this.compilerCtx.activeBuildId,
   this.debug = e.logger.debug.bind(e.logger);
  }
  start() {
@@ -1757,7 +1757,7 @@ class BuildContext {
    messages: [],
    progress: 0
   };
-  this.compilerCtx.events.emit("buildLog", t), this.timeSpan = this.createTimeSpan(e), 
+  this.compilerCtx.events.emit("buildLog", t), this.timeSpan = this.createTimeSpan(e),
   this.timestamp = getBuildTimestamp(), this.debug(`start build, ${this.timestamp}`);
   const r = {
    buildId: this.buildId,
@@ -1780,7 +1780,7 @@ class BuildContext {
    return {
     duration: () => r.duration(),
     finish: (e, s, n, o) => {
-     if ((!this.hasFinished || t) && (t && this.config.watch && (e = `${this.config.logger.cyan("[" + this.buildId + "]")} ${e}`), 
+     if ((!this.hasFinished || t) && (t && this.config.watch && (e = `${this.config.logger.cyan("[" + this.buildId + "]")} ${e}`),
      r.finish(e, s, n, o), !t)) {
       const e = {
        buildId: this.buildId,
@@ -1812,7 +1812,7 @@ class BuildContext {
   this.completedTasks.push(e);
  }
  async validateTypesBuild() {
-  this.hasError || this.validateTypesPromise && (this.config.watch || (this.debug("build, non-watch, waiting on validateTypes"), 
+  this.hasError || this.validateTypesPromise && (this.config.watch || (this.debug("build, non-watch, waiting on validateTypes"),
   await this.validateTypesPromise, this.debug("build, non-watch, finished waiting on validateTypes")));
  }
 }
@@ -1820,8 +1820,8 @@ class BuildContext {
 const getBuildTimestamp = () => {
  const e = new Date;
  let t = e.getUTCFullYear() + "-";
- return t += ("0" + (e.getUTCMonth() + 1)).slice(-2) + "-", t += ("0" + e.getUTCDate()).slice(-2) + "T", 
- t += ("0" + e.getUTCHours()).slice(-2) + ":", t += ("0" + e.getUTCMinutes()).slice(-2) + ":", 
+ return t += ("0" + (e.getUTCMonth() + 1)).slice(-2) + "-", t += ("0" + e.getUTCDate()).slice(-2) + "T",
+ t += ("0" + e.getUTCHours()).slice(-2) + ":", t += ("0" + e.getUTCMinutes()).slice(-2) + ":",
  t += ("0" + e.getUTCSeconds()).slice(-2), t;
 }, getProgress = e => {
  let t = 0;
@@ -1840,12 +1840,12 @@ const getBuildTimestamp = () => {
 
 class Cache {
  constructor(e, t) {
-  this.config = e, this.cacheFs = t, this.failed = 0, this.skip = !1, this.sys = e.sys, 
+  this.config = e, this.cacheFs = t, this.failed = 0, this.skip = !1, this.sys = e.sys,
   this.logger = e.logger;
  }
  async initCacheDir() {
   if (!this.config._isTesting && this.config.cacheDir) {
-   if (!this.config.enableCache || !this.cacheFs) return this.config.logger.info("cache optimizations disabled"), 
+   if (!this.config.enableCache || !this.cacheFs) return this.config.logger.info("cache optimizations disabled"),
    void this.clearDiskCache();
    this.config.logger.debug(`cache enabled, cacheDir: ${this.config.cacheDir}`);
    try {
@@ -1858,7 +1858,7 @@ class Cache {
  }
  async get(e) {
   if (!this.config.enableCache || this.skip) return null;
-  if (this.failed >= MAX_FAILED) return this.skip || (this.skip = !0, this.logger.debug(`cache had ${this.failed} failed ops, skip disk ops for remander of build`)), 
+  if (this.failed >= MAX_FAILED) return this.skip || (this.skip = !0, this.logger.debug(`cache had ${this.failed} failed ops, skip disk ops for remander of build`)),
   null;
   let t;
   try {
@@ -1885,7 +1885,7 @@ class Cache {
   return this.config.enableCache ? e + "_" + await this.sys.generateContentHash(JSON.stringify(t), 32) : e + 9999999 * Math.random();
  }
  async commit() {
-  this.config.enableCache && (this.skip = !1, this.failed = 0, await this.cacheFs.commit(), 
+  this.config.enableCache && (this.skip = !1, this.failed = 0, await this.cacheFs.commit(),
   await this.clearExpiredCache());
  }
  clear() {
@@ -1907,7 +1907,7 @@ class Cache {
   this.logger.debug("clearExpiredCache, set last clear"), await this.sys.cacheStorage.set(EXP_STORAGE_KEY, e);
  }
  async clearDiskCache() {
-  null != this.cacheFs && await this.cacheFs.access(this.config.cacheDir) && (await this.cacheFs.remove(this.config.cacheDir), 
+  null != this.cacheFs && await this.cacheFs.access(this.config.cacheDir) && (await this.cacheFs.remove(this.config.cacheDir),
   await this.cacheFs.commit());
  }
  getCacheFilePath(e) {
@@ -2010,7 +2010,7 @@ const MAX_FAILED = 100, ONE_DAY = 864e5, ONE_WEEK = 7 * ONE_DAY, EXP_STORAGE_KEY
   const r = t.dirsToDelete.indexOf(e);
   r > -1 && t.dirsToDelete.splice(r, 1);
  }
- return t.dirsToDelete = t.dirsToDelete.filter((e => "/" !== e && !0 !== e.endsWith(":/"))), 
+ return t.dirsToDelete = t.dirsToDelete.filter((e => "/" !== e && !0 !== e.endsWith(":/"))),
  t.dirsToEnsure = t.dirsToEnsure.filter((t => {
   const r = e.get(t);
   return (null == r || !0 !== r.exists || !0 !== r.isDirectory) && "/" !== t && !t.endsWith(":/");
@@ -2084,14 +2084,14 @@ class TestingLogger {
 (posix = {
  resolve: function e() {
   var t, r, s, n = "", o = !1;
-  for (r = arguments.length - 1; r >= -1 && !o; r--) r >= 0 ? s = arguments[r] : (void 0 === t && (t = process.cwd()), 
+  for (r = arguments.length - 1; r >= -1 && !o; r--) r >= 0 ? s = arguments[r] : (void 0 === t && (t = process.cwd()),
   s = t), assertPath(s), 0 !== s.length && (n = s + "/" + n, o = 47 === s.charCodeAt(0));
   return n = normalizeStringPosix(n, !o), o ? n.length > 0 ? "/" + n : "/" : n.length > 0 ? n : ".";
  },
  normalize: function e(t) {
   var r, s;
-  return assertPath(t), 0 === t.length ? "." : (r = 47 === t.charCodeAt(0), s = 47 === t.charCodeAt(t.length - 1), 
-  0 !== (t = normalizeStringPosix(t, !r)).length || r || (t = "."), t.length > 0 && s && (t += "/"), 
+  return assertPath(t), 0 === t.length ? "." : (r = 47 === t.charCodeAt(0), s = 47 === t.charCodeAt(t.length - 1),
+  0 !== (t = normalizeStringPosix(t, !r)).length || r || (t = "."), t.length > 0 && s && (t += "/"),
   r ? "/" + t : t);
  },
  isAbsolute: function e(t) {
@@ -2121,7 +2121,7 @@ class TestingLogger {
    47 === d && (c = u);
   }
   for (h = "", u = s + c + 1; u <= n; ++u) u !== n && 47 !== t.charCodeAt(u) || (0 === h.length ? h += ".." : h += "/..");
-  return h.length > 0 ? h + r.slice(i + c) : (i += c, 47 === r.charCodeAt(i) && ++i, 
+  return h.length > 0 ? h + r.slice(i + c) : (i += c, 47 === r.charCodeAt(i) && ++i,
   r.slice(i));
  },
  _makeLong: function e(t) {
@@ -2148,7 +2148,7 @@ class TestingLogger {
      s = i + 1;
      break;
     }
-   } else -1 === l && (o = !1, l = i + 1), a >= 0 && (c === r.charCodeAt(a) ? -1 == --a && (n = i) : (a = -1, 
+   } else -1 === l && (o = !1, l = i + 1), a >= 0 && (c === r.charCodeAt(a) ? -1 == --a && (n = i) : (a = -1,
    n = l));
    return s === n ? n = l : -1 === n && (n = t.length), t.slice(s, n);
   }
@@ -2162,7 +2162,7 @@ class TestingLogger {
  },
  extname: function e(t) {
   var r, s, n, o, i, a, l;
-  for (assertPath(t), r = -1, s = 0, n = -1, o = !0, i = 0, a = t.length - 1; a >= 0; --a) if (47 !== (l = t.charCodeAt(a))) -1 === n && (o = !1, 
+  for (assertPath(t), r = -1, s = 0, n = -1, o = !0, i = 0, a = t.length - 1; a >= 0; --a) if (47 !== (l = t.charCodeAt(a))) -1 === n && (o = !1,
   n = a + 1), 46 === l ? -1 === r ? r = a : 1 !== i && (i = 1) : -1 !== r && (i = -1); else if (!o) {
    s = a + 1;
    break;
@@ -2185,14 +2185,14 @@ class TestingLogger {
    ext: "",
    name: ""
   }, 0 === t.length) return r;
-  for ((n = 47 === (s = t.charCodeAt(0))) ? (r.root = "/", o = 1) : o = 0, i = -1, 
-  a = 0, l = -1, c = !0, u = t.length - 1, d = 0; u >= o; --u) if (47 !== (s = t.charCodeAt(u))) -1 === l && (c = !1, 
+  for ((n = 47 === (s = t.charCodeAt(0))) ? (r.root = "/", o = 1) : o = 0, i = -1,
+  a = 0, l = -1, c = !0, u = t.length - 1, d = 0; u >= o; --u) if (47 !== (s = t.charCodeAt(u))) -1 === l && (c = !1,
   l = u + 1), 46 === s ? -1 === i ? i = u : 1 !== d && (d = 1) : -1 !== i && (d = -1); else if (!c) {
    a = u + 1;
    break;
   }
-  return -1 === i || -1 === l || 0 === d || 1 === d && i === l - 1 && i === a + 1 ? -1 !== l && (r.base = r.name = 0 === a && n ? t.slice(1, l) : t.slice(a, l)) : (0 === a && n ? (r.name = t.slice(1, i), 
-  r.base = t.slice(1, l)) : (r.name = t.slice(a, i), r.base = t.slice(a, l)), r.ext = t.slice(i, l)), 
+  return -1 === i || -1 === l || 0 === d || 1 === d && i === l - 1 && i === a + 1 ? -1 !== l && (r.base = r.name = 0 === a && n ? t.slice(1, l) : t.slice(a, l)) : (0 === a && n ? (r.name = t.slice(1, i),
+  r.base = t.slice(1, l)) : (r.name = t.slice(a, i), r.base = t.slice(a, l)), r.ext = t.slice(i, l)),
   a > 0 ? r.dir = t.slice(0, a - 1) : n && (r.dir = "/"), r;
  },
  sep: "/",
@@ -2259,7 +2259,7 @@ caller = function() {
  }, e.exports = s ? o.parse : r.parse, e.exports.posix = r.parse, e.exports.win32 = o.parse;
 })), parse = path__default.default.parse || pathParse, getNodeModulesDirs = function e(t, r) {
  var s, n, o = "/";
- for (/^([A-Za-z]:)/.test(t) ? o = "" : /^\\\\/.test(t) && (o = "\\\\"), s = [ t ], 
+ for (/^([A-Za-z]:)/.test(t) ? o = "" : /^\\\\/.test(t) && (o = "\\\\"), s = [ t ],
  n = parse(t); n.dir !== s[s.length - 1]; ) s.push(n.dir), n = parse(n.dir);
  return s.reduce((function(e, t) {
   return e.concat(r.map((function(e) {
@@ -2273,7 +2273,7 @@ caller = function() {
  }), r) : (n = getNodeModulesDirs(t, o), r && r.paths ? n.concat(r.paths) : n);
 }, normalizeOptions = function(e, t) {
  return t || {};
-}, ERROR_MESSAGE = "Function.prototype.bind called on incompatible ", slice = Array.prototype.slice, 
+}, ERROR_MESSAGE = "Function.prototype.bind called on incompatible ", slice = Array.prototype.slice,
 toStr = Object.prototype.toString, implementation = function e(t) {
  var r, s, n, o, i, a, l, c = this;
  if ("function" != typeof c || "[object Function]" !== toStr.call(c)) throw new TypeError(ERROR_MESSAGE + c);
@@ -2284,8 +2284,8 @@ toStr = Object.prototype.toString, implementation = function e(t) {
   }
   return c.apply(t, r.concat(slice.call(arguments)));
  }, o = Math.max(0, c.length - r.length), i = [], a = 0; a < o; a++) i.push("$" + a);
- return s = Function("binder", "return function (" + i.join(",") + "){ return binder.apply(this,arguments); }")(n), 
- c.prototype && ((l = function e() {}).prototype = c.prototype, s.prototype = new l, 
+ return s = Function("binder", "return function (" + i.join(",") + "){ return binder.apply(this,arguments); }")(n),
+ c.prototype && ((l = function e() {}).prototype = c.prototype, s.prototype = new l,
  l.prototype = null), s;
 }, functionBind = Function.prototype.bind || implementation, src = functionBind.call(Function.call, Object.prototype.hasOwnProperty);
 
@@ -2384,7 +2384,7 @@ isCoreModule = function e(t, r) {
   }
   return matchesRange$1(r, t);
  }(r, data$1[t]);
-}, realpathFS$1 = fs__default.default.realpath && "function" == typeof fs__default.default.realpath.native ? fs__default.default.realpath.native : fs__default.default.realpath, 
+}, realpathFS$1 = fs__default.default.realpath && "function" == typeof fs__default.default.realpath.native ? fs__default.default.realpath.native : fs__default.default.realpath,
 defaultIsFile$1 = function e(t, r) {
  fs__default.default.stat(t, (function(e, t) {
   return e ? "ENOENT" === e.code || "ENOTDIR" === e.code ? r(null, !1) : r(e) : r(null, t.isFile() || t.isFIFO());
@@ -2414,7 +2414,7 @@ defaultIsFile$1 = function e(t, r) {
  return o;
 }, async = function e(t, r, s) {
  function n(e) {
-  if (/^(?:\.\.?(?:\/|$)|\/|([A-Za-z]:)?[/\\])/.test(t)) T = path__default.default.resolve(e, t), 
+  if (/^(?:\.\.?(?:\/|$)|\/|([A-Za-z]:)?[/\\])/.test(t)) T = path__default.default.resolve(e, t),
   "." !== t && ".." !== t && "/" !== t.slice(-1) || (T += "/"), /\/$/.test(t) && T === e ? l(T, C.package, o) : i(T, C.package, o); else {
    if (_ && isCoreModule(t)) return S(null, t);
    !function r(e, t, s) {
@@ -2448,7 +2448,7 @@ defaultIsFile$1 = function e(t, r) {
   "function" == typeof s && (n = s, s = void 0), function e(t, r, s) {
    function o(s, o, a) {
     var u, h, p;
-    return c = o, s ? n(s) : a && c && C.pathFilter && (h = (u = path__default.default.relative(a, l)).slice(0, u.length - t[0].length), 
+    return c = o, s ? n(s) : a && c && C.pathFilter && (h = (u = path__default.default.relative(a, l)).slice(0, u.length - t[0].length),
     p = C.pathFilter(c, r, h)) ? e([ "" ].concat(w.slice()), path__default.default.resolve(a, p), c) : void d(l, i);
    }
    function i(s, o) {
@@ -2481,7 +2481,7 @@ defaultIsFile$1 = function e(t, r) {
    d(o, (function(t, r) {
     return t ? s(t) : r ? void m(p, o, (function(t, r) {
      var n, a;
-     return t ? s(t) : ((n = r) && C.packageFilter && (n = C.packageFilter(n, o)), n && n.main ? "string" != typeof n.main ? ((a = new TypeError("package “" + n.name + "” `main` must be a string")).code = "INVALID_PACKAGE_MAIN", 
+     return t ? s(t) : ((n = r) && C.packageFilter && (n = C.packageFilter(n, o)), n && n.main ? "string" != typeof n.main ? ((a = new TypeError("package “" + n.name + "” `main` must be a string")).code = "INVALID_PACKAGE_MAIN",
      s(a)) : ("." !== n.main && "./" !== n.main || (n.main = "index"), void i(path__default.default.resolve(e, n.main), n, (function(t, r, n) {
       return t ? s(t) : r ? s(null, r, n) : n ? void l(path__default.default.resolve(e, n.main), n, (function(t, r, n) {
        return t ? s(t) : r ? s(null, r, n) : void i(path__default.default.join(e, "index"), n, s);
@@ -2505,16 +2505,16 @@ defaultIsFile$1 = function e(t, r) {
   }));
  }
  var u, d, h, p, f, m, g, y, w, _, v, b, E, T, S = s, C = r;
- return "function" == typeof r && (S = C, C = {}), "string" != typeof t ? (u = new TypeError("Path must be a string."), 
+ return "function" == typeof r && (S = C, C = {}), "string" != typeof t ? (u = new TypeError("Path must be a string."),
  process.nextTick((function() {
   S(u);
- }))) : (C = normalizeOptions(0, C), d = C.isFile || defaultIsFile$1, h = C.isDirectory || defaultIsDir$1, 
- p = C.readFile || fs__default.default.readFile, f = C.realpath || defaultRealpath, 
- m = C.readPackage || defaultReadPackage, C.readFile && C.readPackage ? (g = new TypeError("`readFile` and `readPackage` are mutually exclusive."), 
+ }))) : (C = normalizeOptions(0, C), d = C.isFile || defaultIsFile$1, h = C.isDirectory || defaultIsDir$1,
+ p = C.readFile || fs__default.default.readFile, f = C.realpath || defaultRealpath,
+ m = C.readPackage || defaultReadPackage, C.readFile && C.readPackage ? (g = new TypeError("`readFile` and `readPackage` are mutually exclusive."),
  process.nextTick((function() {
   S(g);
- }))) : (y = C.packageIterator, w = C.extensions || [ ".js" ], _ = !1 !== C.includeCoreModules, 
- v = C.basedir || path__default.default.dirname(caller()), b = C.filename || v, C.paths = C.paths || [], 
+ }))) : (y = C.packageIterator, w = C.extensions || [ ".js" ], _ = !1 !== C.includeCoreModules,
+ v = C.basedir || path__default.default.dirname(caller()), b = C.filename || v, C.paths = C.paths || [],
  E = path__default.default.resolve(v), void maybeRealpath(f, E, C, (function(e, t) {
   e ? S(e) : n(t);
  }))));
@@ -2604,12 +2604,12 @@ const data = {
  zlib: !0
 };
 
-for (mod in current = process.versions && process.versions.node && process.versions.node.split(".") || [], 
+for (mod in current = process.versions && process.versions.node && process.versions.node.split(".") || [],
 core = {}, data) Object.prototype.hasOwnProperty.call(data, mod) && (core[mod] = versionIncluded(data[mod]));
 
 core_1 = core, isCore = function e(t) {
  return isCoreModule(t);
-}, realpathFS = fs__default.default.realpathSync && "function" == typeof fs__default.default.realpathSync.native ? fs__default.default.realpathSync.native : fs__default.default.realpathSync, 
+}, realpathFS = fs__default.default.realpathSync && "function" == typeof fs__default.default.realpathSync.native ? fs__default.default.realpathSync.native : fs__default.default.realpathSync,
 defaultIsFile = function e(t) {
  try {
   var r = fs__default.default.statSync(t);
@@ -2647,14 +2647,14 @@ defaultIsFile = function e(t) {
 }, sync = function e(t, r) {
  function s(e) {
   var t, r, s, o, l = n(path__default.default.dirname(e));
-  if (l && l.dir && l.pkg && i.pathFilter && (t = path__default.default.relative(l.dir, e), 
-  (r = i.pathFilter(l.pkg, e, t)) && (e = path__default.default.resolve(l.dir, r))), 
+  if (l && l.dir && l.pkg && i.pathFilter && (t = path__default.default.relative(l.dir, e),
+  (r = i.pathFilter(l.pkg, e, t)) && (e = path__default.default.resolve(l.dir, r))),
   a(e)) return e;
   for (s = 0; s < p.length; s++) if (o = e + p[s], a(o)) return o;
  }
  function n(e) {
   var t, r;
-  if ("" !== e && "/" !== e && !("win32" === process.platform && /^\w:[/\\]*$/.test(e) || /[/\\]node_modules[/\\]*$/.test(e))) return t = path__default.default.join(maybeRealpathSync(u, e, i), "package.json"), 
+  if ("" !== e && "/" !== e && !("win32" === process.platform && /^\w:[/\\]*$/.test(e) || /[/\\]node_modules[/\\]*$/.test(e))) return t = path__default.default.join(maybeRealpathSync(u, e, i), "package.json"),
   a(t) ? ((r = d(l, t)) && i.packageFilter && (r = i.packageFilter(r, e)), {
    pkg: r,
    dir: e
@@ -2667,7 +2667,7 @@ defaultIsFile = function e(t) {
     t = d(l, h);
    } catch (e) {}
    if (t && i.packageFilter && (t = i.packageFilter(t, e)), t && t.main) {
-    if ("string" != typeof t.main) throw (r = new TypeError("package “" + t.name + "” `main` must be a string")).code = "INVALID_PACKAGE_MAIN", 
+    if ("string" != typeof t.main) throw (r = new TypeError("package “" + t.name + "” `main` must be a string")).code = "INVALID_PACKAGE_MAIN",
     r;
     "." !== t.main && "./" !== t.main || (t.main = "index");
     try {
@@ -2680,13 +2680,13 @@ defaultIsFile = function e(t) {
  }
  var i, a, l, c, u, d, h, p, f, m, g, y, w, _, v, b;
  if ("string" != typeof t) throw new TypeError("Path must be a string.");
- if (i = normalizeOptions(0, r), a = i.isFile || defaultIsFile, l = i.readFileSync || fs__default.default.readFileSync, 
- c = i.isDirectory || defaultIsDir, u = i.realpathSync || defaultRealpathSync, d = i.readPackageSync || defaultReadPackageSync, 
+ if (i = normalizeOptions(0, r), a = i.isFile || defaultIsFile, l = i.readFileSync || fs__default.default.readFileSync,
+ c = i.isDirectory || defaultIsDir, u = i.realpathSync || defaultRealpathSync, d = i.readPackageSync || defaultReadPackageSync,
  i.readFileSync && i.readPackageSync) throw new TypeError("`readFileSync` and `readPackageSync` are mutually exclusive.");
- if (h = i.packageIterator, p = i.extensions || [ ".js" ], f = !1 !== i.includeCoreModules, 
- m = i.basedir || path__default.default.dirname(caller()), g = i.filename || m, i.paths = i.paths || [], 
+ if (h = i.packageIterator, p = i.extensions || [ ".js" ], f = !1 !== i.includeCoreModules,
+ m = i.basedir || path__default.default.dirname(caller()), g = i.filename || m, i.paths = i.paths || [],
  y = maybeRealpathSync(u, path__default.default.resolve(m), i), /^(?:\.\.?(?:\/|$)|\/|([A-Za-z]:)?[/\\])/.test(t)) {
-  if (w = path__default.default.resolve(y, t), "." !== t && ".." !== t && "/" !== t.slice(-1) || (w += "/"), 
+  if (w = path__default.default.resolve(y, t), "." !== t && ".." !== t && "/" !== t.slice(-1) || (w += "/"),
   _ = s(w) || o(w)) return maybeRealpathSync(u, _, i);
  } else {
   if (f && isCoreModule(t)) return t;
@@ -2700,7 +2700,7 @@ defaultIsFile = function e(t) {
    }
   }(t, y), v) return maybeRealpathSync(u, v, i);
  }
- throw (b = new Error("Cannot find module '" + t + "' from '" + g + "'")).code = "MODULE_NOT_FOUND", 
+ throw (b = new Error("Cannot find module '" + t + "' from '" + g + "'")).code = "MODULE_NOT_FOUND",
  b;
 }, async.core = core_1, async.isCore = isCore, async.sync = sync, resolve = async;
 
@@ -2713,8 +2713,8 @@ const COMMON_DIR_MODULE_EXTS = [ ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json", 
    scope: null,
    scopeSubModuleId: null
   };
-  return e.startsWith("@") && t.length > 1 ? (r.moduleId = t.slice(0, 2).join("/"), 
-  r.filePath = t.slice(2).join("/"), r.scope = t[0], r.scopeSubModuleId = t[1]) : (r.moduleId = t[0], 
+  return e.startsWith("@") && t.length > 1 ? (r.moduleId = t.slice(0, 2).join("/"),
+  r.filePath = t.slice(2).join("/"), r.scope = t[0], r.scopeSubModuleId = t[1]) : (r.moduleId = t[0],
   r.filePath = t.slice(1).join("/")), r;
  })(t);
  for (let e = r.length - 1; e >= 1; e--) if ("node_modules" === r[e - 1]) if (s.scope) {
@@ -2731,7 +2731,7 @@ const COMMON_DIR_MODULE_EXTS = [ ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json", 
  return "@stencil/core" === o ? ((e, t) => {
   let r = (t = normalizePath(t)).split("/");
   const s = r.lastIndexOf("node_modules");
-  s > -1 && s < r.length - 1 && (r = r.slice(s + 1), r = r[0].startsWith("@") ? r.slice(2) : r.slice(1), 
+  s > -1 && s < r.length - 1 && (r = r.slice(s + 1), r = r[0].startsWith("@") ? r.slice(2) : r.slice(1),
   t = r.join("/"));
   const n = new URL("../", e).href;
   return new URL("./" + t, n).href;
@@ -2761,7 +2761,7 @@ const COMMON_DIR_MODULE_EXTS = [ ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json", 
       } catch (e) {}
      })(o, n);
      let i = path$2.dirname(s);
-     for (;"/" !== i && "" !== i; ) t ? (t.clearFileCache(i), await t.sys.createDir(i)) : await e.createDir(i), 
+     for (;"/" !== i && "" !== i; ) t ? (t.clearFileCache(i), await t.sys.createDir(i)) : await e.createDir(i),
      i = path$2.dirname(i);
      t ? (t.clearFileCache(s), await t.sys.writeFile(s, n)) : await e.writeFile(s, n);
     })(e, t, s, n, i, r), i;
@@ -2801,11 +2801,11 @@ const COMMON_DIR_MODULE_EXTS = [ ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json", 
    printDiagnostics(t) {
     t.forEach((t => ((e, t) => {
      let r = BLUE, s = "Build", n = "";
-     "error" === e.level ? (r = RED, s = "Error") : "warn" === e.level && (r = YELLOW, 
+     "error" === e.level ? (r = RED, s = "Error") : "warn" === e.level && (r = YELLOW,
      s = "Warning"), e.header && (s = e.header);
      const o = e.relFilePath || e.absFilePath;
-     if (o && (n += o, "number" == typeof e.lineNumber && e.lineNumber > 0 && (n += ", line " + e.lineNumber, 
-     "number" == typeof e.columnNumber && e.columnNumber > 0 && (n += ", column " + e.columnNumber)), 
+     if (o && (n += o, "number" == typeof e.lineNumber && e.lineNumber > 0 && (n += ", line " + e.lineNumber,
+     "number" == typeof e.columnNumber && e.columnNumber > 0 && (n += ", column " + e.columnNumber)),
      n += "\n"), n += e.messageText, e.lines && e.lines.length > 0 && (e.lines.forEach((e => {
       n += "\n" + e.lineNumber + ":  " + e.text;
      })), n += "\n"), t) {
@@ -3023,7 +3023,7 @@ const COMMON_DIR_MODULE_EXTS = [ ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json", 
     isDirectory: !1,
     error: null
    }, s = _(e);
-   if (s.error) r.error = `${e} does not exist`; else if (s.isFile ? r.isFile = !0 : s.isDirectory && (r.isDirectory = !0), 
+   if (s.error) r.error = `${e} does not exist`; else if (s.isFile ? r.isFile = !0 : s.isDirectory && (r.isDirectory = !0),
    g(e, t, r), !r.error) if (r.isDirectory) {
     const t = y(e, {
      recursive: !0
@@ -3053,7 +3053,7 @@ const COMMON_DIR_MODULE_EXTS = [ ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json", 
      e > -1 && r.watcherCallbacks.splice(e, 1);
     }
    };
-   return o(n), r ? (r.isDirectory = !0, r.isFile = !1, r.watcherCallbacks = r.watcherCallbacks || [], 
+   return o(n), r ? (r.isDirectory = !0, r.isFile = !1, r.watcherCallbacks = r.watcherCallbacks || [],
    r.watcherCallbacks.push(t)) : s.set(e, {
     basename: path$2.basename(e),
     dirname: path$2.dirname(e),
@@ -3076,7 +3076,7 @@ const COMMON_DIR_MODULE_EXTS = [ ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json", 
      e > -1 && r.watcherCallbacks.splice(e, 1);
     }
    };
-   return o(n), r ? (r.isDirectory = !1, r.isFile = !0, r.watcherCallbacks = r.watcherCallbacks || [], 
+   return o(n), r ? (r.isDirectory = !1, r.isFile = !0, r.watcherCallbacks = r.watcherCallbacks || [],
    r.watcherCallbacks.push(t)) : s.set(e, {
     basename: path$2.basename(e),
     dirname: path$2.dirname(e),
@@ -3122,7 +3122,7 @@ const COMMON_DIR_MODULE_EXTS = [ ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json", 
       const r = t.data;
       if (Array.isArray(r)) for (const t of r) if (t) {
        const r = a.get(t.stencilId);
-       r ? (a.delete(t.stencilId), t.stencilRtnError ? r.reject(t.stencilRtnError) : r.resolve(t.stencilRtnValue), 
+       r ? (a.delete(t.stencilId), t.stencilRtnError ? r.reject(t.stencilRtnError) : r.resolve(t.stencilRtnValue),
        e.activeTasks--, (e.activeTasks < 0 || e.activeTasks > 50) && (e.activeTasks = 0)) : t.stencilRtnError && console.error(t.stencilRtnError);
       }
      }
@@ -3155,7 +3155,7 @@ const COMMON_DIR_MODULE_EXTS = [ ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json", 
    return {
     send: y,
     destroy: () => {
-     n = !0, a.forEach((e => e.reject("task canceled"))), a.clear(), c.forEach((e => e.worker.terminate())), 
+     n = !0, a.forEach((e => e.reject("task canceled"))), a.clear(), c.forEach((e => e.worker.terminate())),
      c.length = 0;
     },
     handler: e => function(...t) {
@@ -3193,7 +3193,7 @@ const COMMON_DIR_MODULE_EXTS = [ ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json", 
     const n = normalizeFsPath(r);
     if ((await t.stat(n)).isDirectory) s(null, !0); else {
      if (shouldFetchModule(n)) {
-      if ("node_modules" === path$2.basename(n)) return t.sys.createDirSync(n), t.clearFileCache(n), 
+      if ("node_modules" === path$2.basename(n)) return t.sys.createDirSync(n), t.clearFileCache(n),
       void s(null, !0);
       if (isCommonDirModuleFile(n)) return void s(null, !1);
       for (const r of COMMON_DIR_FILENAMES) {
@@ -3214,7 +3214,7 @@ const COMMON_DIR_MODULE_EXTS = [ ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json", 
    },
    extensions: r
   }))(e, null, r.exts);
-  return s.basedir = path$2.dirname(normalizeFsPath(r.containingFile)), r.packageFilter ? s.packageFilter = r.packageFilter : null !== r.packageFilter && (s.packageFilter = e => (isString(e.main) && "" !== e.main || (e.main = "package.json"), 
+  return s.basedir = path$2.dirname(normalizeFsPath(r.containingFile)), r.packageFilter ? s.packageFilter = r.packageFilter : null !== r.packageFilter && (s.packageFilter = e => (isString(e.main) && "" !== e.main || (e.main = "package.json"),
   e)), new Promise(((e, t) => {
    resolve(r.moduleId, s, ((s, n, o) => {
     if (s) t(s); else {
@@ -3244,12 +3244,12 @@ const COMMON_DIR_MODULE_EXTS = [ ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json", 
   const r = e;
   return (...e) => (t++, r.apply(r, e));
  };
- if (r.access = s(r.access), r.accessSync = s(r.accessSync), r.homeDir = s(r.homeDir), 
- r.readFile = s(r.readFile), r.readFileSync = s(r.readFileSync), r.readDir = s(r.readDir), 
- r.readDirSync = s(r.readDirSync), r.stat = s(r.stat), r.statSync = s(r.statSync), 
- r.copyFile = n(r.copyFile), r.createDir = n(r.createDir), r.createDirSync = n(r.createDirSync), 
- r.removeFile = n(r.removeFile), r.removeFileSync = n(r.removeFileSync), r.writeFile = n(r.writeFile), 
- r.writeFileSync = n(r.writeFileSync), r.getCompilerExecutingPath = () => "bin/stencil.js", 
+ if (r.access = s(r.access), r.accessSync = s(r.accessSync), r.homeDir = s(r.homeDir),
+ r.readFile = s(r.readFile), r.readFileSync = s(r.readFileSync), r.readDir = s(r.readDir),
+ r.readDirSync = s(r.readDirSync), r.stat = s(r.stat), r.statSync = s(r.statSync),
+ r.copyFile = n(r.copyFile), r.createDir = n(r.createDir), r.createDirSync = n(r.createDirSync),
+ r.removeFile = n(r.removeFile), r.removeFileSync = n(r.removeFileSync), r.writeFile = n(r.writeFile),
+ r.writeFileSync = n(r.writeFileSync), r.getCompilerExecutingPath = () => "bin/stencil.js",
  Object.defineProperties(r, {
   diskReads: {
    get: () => e,
@@ -3311,7 +3311,7 @@ class E2EElement extends index_cjs.MockHTMLElement {
   this._queuedActions.push(e);
  }
  constructor(e, t) {
-  super(null, null), this._page = e, this._elmHandle = t, this._queuedActions = [], 
+  super(null, null), this._page = e, this._elmHandle = t, this._queuedActions = [],
   e._e2eElements.push(this);
  }
  find(e) {
@@ -3562,7 +3562,7 @@ class E2EElement extends index_cjs.MockHTMLElement {
    return t.forEach((t => {
     if (t.methodName) r = e[t.methodName].apply(e, t.methodArgs); else if (t.setPropertyName) e[t.setPropertyName] = t.setPropertyValue; else if (t.setAttributeName) e.setAttribute(t.setAttributeName, t.setAttributeValue); else if (t.removeAttribute) e.removeAttribute(t.removeAttribute); else if (t.toggleAttributeName) "boolean" == typeof t.toggleAttributeForce ? e.toggleAttribute(t.toggleAttributeName, t.toggleAttributeForce) : e.toggleAttribute(t.toggleAttributeName); else if (t.classAdd) e.classList.add(t.classAdd); else if (t.classRemove) e.classList.remove(t.classRemove); else if (t.classToggle) e.classList.toggle(t.classToggle); else if (t.eventName) {
      const r = t.eventInitDict || {};
-     "boolean" != typeof r.bubbles && (r.bubbles = !0), "boolean" != typeof r.cancelable && (r.cancelable = !0), 
+     "boolean" != typeof r.bubbles && (r.bubbles = !0), "boolean" != typeof r.cancelable && (r.cancelable = !0),
      "boolean" != typeof r.composed && (r.composed = !0);
      const s = new CustomEvent(t.eventName, r);
      e.dispatchEvent(s);
@@ -3593,7 +3593,7 @@ class E2EElement extends index_cjs.MockHTMLElement {
 
 const env = process.env, isOutputTargetDistLazy = e => e.type === DIST_LAZY, isOutputTargetWww = e => e.type === WWW, DIST_LAZY = "dist-lazy", WWW = "www";
 
-exports.MockHeaders = MockHeaders, exports.MockRequest = MockRequest, exports.MockResponse = MockResponse, 
+exports.MockHeaders = MockHeaders, exports.MockRequest = MockRequest, exports.MockResponse = MockResponse,
 exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment() {
  const e = require("jest-environment-node");
  return class extends e {
@@ -3601,7 +3601,7 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
    super(e), this.browser = null, this.pages = [];
   }
   async setup() {
-   "true" === process.env.__STENCIL_E2E_TESTS__ && (this.global.__NEW_TEST_PAGE__ = this.newPuppeteerPage.bind(this), 
+   "true" === process.env.__STENCIL_E2E_TESTS__ && (this.global.__NEW_TEST_PAGE__ = this.newPuppeteerPage.bind(this),
    this.global.__CLOSE_OPEN_PAGES__ = this.closeOpenPages.bind(this));
   }
   async newPuppeteerPage() {
@@ -3619,7 +3619,7 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
    }(this.browser);
    this.pages.push(t);
    const s = process.env;
-   return "string" == typeof s.__STENCIL_DEFAULT_TIMEOUT__ && t.setDefaultTimeout(parseInt(s.__STENCIL_DEFAULT_TIMEOUT__, 10)), 
+   return "string" == typeof s.__STENCIL_DEFAULT_TIMEOUT__ && t.setDefaultTimeout(parseInt(s.__STENCIL_DEFAULT_TIMEOUT__, 10)),
    t;
   }
   async closeOpenPages() {
@@ -3653,8 +3653,8 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
  };
 }, exports.createTesting = async e => {
  e = function t(e) {
-  return e.buildEs5 = !1, e.devMode = !0, e.minifyCss = !1, e.minifyJs = !1, e.hashFileNames = !1, 
-  e.validateTypes = !1, e._isTesting = !0, e.buildDist = !0, e.flags.serve = !1, e.flags.open = !1, 
+  return e.buildEs5 = !1, e.devMode = !0, e.minifyCss = !1, e.minifyJs = !1, e.hashFileNames = !1,
+  e.validateTypes = !1, e._isTesting = !0, e.buildDist = !0, e.flags.serve = !1, e.flags.open = !1,
   e.outputTargets.forEach((e => {
    "www" === e.type && (e.serviceWorker = null);
   })), e.flags.args.includes("--watchAll") && (e.watch = !0), e;
@@ -3663,7 +3663,7 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
  let n, o;
  const i = async () => {
   const t = [];
-  e && (e.sys && e.sys.destroy && t.push(e.sys.destroy()), e = null), n && (n.close && t.push(n.close()), 
+  e && (e.sys && e.sys.destroy && t.push(e.sys.destroy()), e = null), n && (n.close && t.push(n.close()),
   n = null), o && (o.close && t.push(o.close()), o = null), await Promise.all(t);
  };
  return {
@@ -3672,11 +3672,11 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
    let r, a = !1, l = !1, c = null;
    const u = [];
    try {
-    if (!t.spec && !t.e2e) return e.logger.error("Testing requires either the --spec or --e2e command line flags, or both. For example, to run unit tests, use the command: stencil test --spec"), 
+    if (!t.spec && !t.e2e) return e.logger.error("Testing requires either the --spec or --e2e command line flags, or both. For example, to run unit tests, use the command: stencil test --spec"),
     !1;
-    if (r = process.env, t.e2e && (u.push("e2e"), r.__STENCIL_E2E_TESTS__ = "true"), 
-    t.spec && (u.push("spec"), r.__STENCIL_SPEC_TESTS__ = "true"), e.logger.info(e.logger.magenta(`testing ${u.join(" and ")} files${e.watch ? " (watch)" : ""}`)), 
-    a = !(!t.e2e || !t.screenshot), a && (r.__STENCIL_SCREENSHOT__ = "true", t.updateScreenshot ? e.logger.info(e.logger.magenta("updating master screenshots")) : e.logger.info(e.logger.magenta("comparing against master screenshots"))), 
+    if (r = process.env, t.e2e && (u.push("e2e"), r.__STENCIL_E2E_TESTS__ = "true"),
+    t.spec && (u.push("spec"), r.__STENCIL_SPEC_TESTS__ = "true"), e.logger.info(e.logger.magenta(`testing ${u.join(" and ")} files${e.watch ? " (watch)" : ""}`)),
+    a = !(!t.e2e || !t.screenshot), a && (r.__STENCIL_SCREENSHOT__ = "true", t.updateScreenshot ? e.logger.info(e.logger.magenta("updating master screenshots")) : e.logger.info(e.logger.magenta("comparing against master screenshots"))),
     t.e2e) {
      let t = null;
      e.outputTargets.forEach((e => {
@@ -3687,18 +3687,18 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
       const t = c.on("buildFinish", (r => {
        t(), e(r);
       }));
-     })), c.start()) : t = s.build()), e.devServer.openBrowser = !1, e.devServer.gzip = !1, 
+     })), c.start()) : t = s.build()), e.devServer.openBrowser = !1, e.devServer.gzip = !1,
      e.devServer.reloadStrategy = null;
      const l = await Promise.all([ index_js.start(e.devServer, e.logger), startPuppeteerBrowser(e) ]);
      if (n = l[0], o = l[1], t) {
       const r = await t;
       if (!r || !e.watch && hasError(r && r.diagnostics)) return await i(), !1;
      }
-     n && (r.__STENCIL_BROWSER_URL__ = n.browserUrl, e.logger.debug(`e2e dev server url: ${r.__STENCIL_BROWSER_URL__}`), 
+     n && (r.__STENCIL_BROWSER_URL__ = n.browserUrl, e.logger.debug(`e2e dev server url: ${r.__STENCIL_BROWSER_URL__}`),
      r.__STENCIL_APP_SCRIPT_URL__ = function d(e, t) {
       return getAppUrl(e, t, `${e.fsNamespace}.esm.js`);
-     }(e, n.browserUrl), e.logger.debug(`e2e app script url: ${r.__STENCIL_APP_SCRIPT_URL__}`), 
-     getAppStyleUrl(e, n.browserUrl) && (r.__STENCIL_APP_STYLE_URL__ = getAppStyleUrl(e, n.browserUrl), 
+     }(e, n.browserUrl), e.logger.debug(`e2e app script url: ${r.__STENCIL_APP_SCRIPT_URL__}`),
+     getAppStyleUrl(e, n.browserUrl) && (r.__STENCIL_APP_STYLE_URL__ = getAppStyleUrl(e, n.browserUrl),
      e.logger.debug(`e2e app style url: ${r.__STENCIL_APP_STYLE_URL__}`)));
     }
    } catch (t) {
@@ -3735,7 +3735,7 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
       let s = await r.completeBuild(i);
       if (t.finish("screenshot, completeTimespan finished"), s) {
        const t = e.logger.createTimeSpan("screenshot, publishBuild started", !0);
-       if (s = await r.publishBuild(s), t.finish("screenshot, publishBuild finished"), 
+       if (s = await r.publishBuild(s), t.finish("screenshot, publishBuild finished"),
        e.flags.updateScreenshot) s.currentBuild && "string" == typeof s.currentBuild.previewUrl && e.logger.info(e.logger.magenta(s.currentBuild.previewUrl)); else if (s.compare) {
         try {
          await r.updateScreenshotCache(a, s);
@@ -3757,7 +3757,7 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
   }
  };
 }, exports.jestPreprocessor = jestPreprocessor, exports.jestSetupTestFramework = function jestSetupTestFramework() {
- global.Context = {}, global.resourcesUrl = "/build", expect.extend(expectExtend), 
+ global.Context = {}, global.resourcesUrl = "/build", expect.extend(expectExtend),
  expect.addSnapshotSerializer(HtmlSerializer), index_cjs.setupGlobal(global), function e(t) {
   const r = t.window;
   "fetch" in r || (r.fetch = function(e) {
@@ -3766,10 +3766,10 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
    return globalMockFetch(e);
   });
  }(global), beforeEach((() => {
-  testing.resetPlatform(), testing.setErrorHandler(void 0), resetBuildConditionals(appData.BUILD), 
+  testing.resetPlatform(), testing.setErrorHandler(void 0), resetBuildConditionals(appData.BUILD),
   testing.modeResolutionChain.length = 0;
  })), afterEach((async () => {
-  global.__CLOSE_OPEN_PAGES__ && await global.__CLOSE_OPEN_PAGES__(), testing.stopAutoApplyChanges(), 
+  global.__CLOSE_OPEN_PAGES__ && await global.__CLOSE_OPEN_PAGES__(), testing.stopAutoApplyChanges(),
   index_cjs.teardownGlobal(global), global.Context = {}, global.resourcesUrl = "/build";
  }));
  const t = jasmine.getEnv();
@@ -3867,9 +3867,9 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
    "true" === t.__STENCIL_SCREENSHOT__ ? e.compareScreenshot = (r, s) => {
     const n = global;
     let o, i = "", a = "";
-    if (n.currentSpec && ("string" == typeof n.currentSpec.fullName && (i = n.currentSpec.fullName), 
-    "string" == typeof n.currentSpec.testPath && (a = n.currentSpec.testPath)), "string" == typeof r ? (i.length > 0 ? i += ", " + r : i = r, 
-    "object" == typeof s && (o = s)) : "object" == typeof r && (o = r), i = i.trim(), 
+    if (n.currentSpec && ("string" == typeof n.currentSpec.fullName && (i = n.currentSpec.fullName),
+    "string" == typeof n.currentSpec.testPath && (a = n.currentSpec.testPath)), "string" == typeof r ? (i.length > 0 ? i += ", " + r : i = r,
+    "object" == typeof s && (o = s)) : "object" == typeof r && (o = r), i = i.trim(),
     o = o || {}, !i) throw new Error(`Invalid screenshot description in "${a}"`);
     if (n.screenshotDescriptions.has(i)) throw new Error(`Screenshot description "${i}" found in "${a}" cannot be used for multiple screenshots and must be unique. To make screenshot descriptions unique within the same test, use the first argument to "compareScreenshot", such as "compareScreenshot('more to the description')".`);
     return n.screenshotDescriptions.add(i), async function l(e, t, r, s, n) {
@@ -3898,7 +3898,7 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
       }), t;
      }(n), u = await e.screenshot(l), d = "number" == typeof n.pixelmatchThreshold ? n.pixelmatchThreshold : i.pixelmatchThreshold;
      let h = o.viewport.width, p = o.viewport.height;
-     return n && n.clip && ("number" == typeof n.clip.width && (h = n.clip.width), "number" == typeof n.clip.height && (p = n.clip.height)), 
+     return n && n.clip && ("number" == typeof n.clip.width && (h = n.clip.width), "number" == typeof n.clip.height && (p = n.clip.height)),
      await compareScreenshot(o, i, u, r, h, p, s, d);
     }(e, t, i, a, o);
    } : e.compareScreenshot = async () => ({
@@ -3924,8 +3924,8 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
    const r = () => {
     throw new Error("The page was already closed");
    };
-   t._e2eElements = r, t._e2eEvents = r, t._e2eGoto = r, t.find = r, t.debugger = r, 
-   t.findAll = r, t.compareScreenshot = r, t.setContent = r, t.spyOnEvent = r, t.waitForChanges = r, 
+   t._e2eElements = r, t._e2eEvents = r, t._e2eGoto = r, t.find = r, t.debugger = r,
+   t.findAll = r, t.compareScreenshot = r, t.setContent = r, t.spyOnEvent = r, t.waitForChanges = r,
    t.waitForEvent = r;
    try {
     t.isClosed() || await t._e2eClose(e);
@@ -3941,7 +3941,7 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
   }, t.waitForEvent = async e => {
    const r = await n();
    return waitForEvent(t, e, r);
-  }, t.getDiagnostics = () => r, t.waitForChanges = waitForChanges.bind(null, t), 
+  }, t.getDiagnostics = () => r, t.waitForChanges = waitForChanges.bind(null, t),
   t.debugger = () => {
    if ("true" !== env.__STENCIL_E2E_DEVTOOLS__) throw new Error("Set the --devtools flag in order to use E2EPage.debugger()");
    return t.evaluate((() => new Promise((e => {
@@ -3984,10 +3984,10 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
 }, exports.newSpecPage = async function newSpecPage(e) {
  var t;
  if (null == e) throw new Error("NewSpecPageOptions required");
- testing.resetPlatform(null !== (t = e.platform) && void 0 !== t ? t : {}), resetBuildConditionals(appData.BUILD), 
- Array.isArray(e.components) && testing.registerComponents(e.components), e.hydrateClientSide && (e.includeAnnotations = !0), 
- e.hydrateServerSide ? (e.includeAnnotations = !0, testing.setSupportsShadowDom(!1)) : (e.includeAnnotations = !!e.includeAnnotations, 
- !1 === e.supportsShadowDom ? testing.setSupportsShadowDom(!1) : testing.setSupportsShadowDom(!0)), 
+ testing.resetPlatform(null !== (t = e.platform) && void 0 !== t ? t : {}), resetBuildConditionals(appData.BUILD),
+ Array.isArray(e.components) && testing.registerComponents(e.components), e.hydrateClientSide && (e.includeAnnotations = !0),
+ e.hydrateServerSide ? (e.includeAnnotations = !0, testing.setSupportsShadowDom(!1)) : (e.includeAnnotations = !!e.includeAnnotations,
+ !1 === e.supportsShadowDom ? testing.setSupportsShadowDom(!1) : testing.setSupportsShadowDom(!0)),
  appData.BUILD.cssAnnotations = e.includeAnnotations;
  const r = new Set;
  testing.win.__stencil_spec_options = e;
@@ -4005,23 +4005,23 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
   if (null == e.COMPILER_META) throw new Error('Invalid component class: Missing static "COMPILER_META" property.');
   r.add(e.COMPILER_META.tagName), e.isProxied = !1, function t(e) {
    var t, r, s, n, o, i;
-   "function" == typeof (null === (t = e.prototype) || void 0 === t ? void 0 : t.__componentWillLoad) && (e.prototype.componentWillLoad = e.prototype.__componentWillLoad, 
-   e.prototype.__componentWillLoad = null), "function" == typeof (null === (r = e.prototype) || void 0 === r ? void 0 : r.__componentWillUpdate) && (e.prototype.componentWillUpdate = e.prototype.__componentWillUpdate, 
-   e.prototype.__componentWillUpdate = null), "function" == typeof (null === (s = e.prototype) || void 0 === s ? void 0 : s.__componentWillRender) && (e.prototype.componentWillRender = e.prototype.__componentWillRender, 
-   e.prototype.__componentWillRender = null), "function" == typeof (null === (n = e.prototype) || void 0 === n ? void 0 : n.componentWillLoad) && (e.prototype.__componentWillLoad = e.prototype.componentWillLoad, 
+   "function" == typeof (null === (t = e.prototype) || void 0 === t ? void 0 : t.__componentWillLoad) && (e.prototype.componentWillLoad = e.prototype.__componentWillLoad,
+   e.prototype.__componentWillLoad = null), "function" == typeof (null === (r = e.prototype) || void 0 === r ? void 0 : r.__componentWillUpdate) && (e.prototype.componentWillUpdate = e.prototype.__componentWillUpdate,
+   e.prototype.__componentWillUpdate = null), "function" == typeof (null === (s = e.prototype) || void 0 === s ? void 0 : s.__componentWillRender) && (e.prototype.componentWillRender = e.prototype.__componentWillRender,
+   e.prototype.__componentWillRender = null), "function" == typeof (null === (n = e.prototype) || void 0 === n ? void 0 : n.componentWillLoad) && (e.prototype.__componentWillLoad = e.prototype.componentWillLoad,
    e.prototype.componentWillLoad = function() {
     const e = this.__componentWillLoad();
-    return null != e && "function" == typeof e.then ? testing.writeTask((() => e)) : testing.writeTask((() => Promise.resolve())), 
+    return null != e && "function" == typeof e.then ? testing.writeTask((() => e)) : testing.writeTask((() => Promise.resolve())),
     e;
-   }), "function" == typeof (null === (o = e.prototype) || void 0 === o ? void 0 : o.componentWillUpdate) && (e.prototype.__componentWillUpdate = e.prototype.componentWillUpdate, 
+   }), "function" == typeof (null === (o = e.prototype) || void 0 === o ? void 0 : o.componentWillUpdate) && (e.prototype.__componentWillUpdate = e.prototype.componentWillUpdate,
    e.prototype.componentWillUpdate = function() {
     const e = this.__componentWillUpdate();
-    return null != e && "function" == typeof e.then ? testing.writeTask((() => e)) : testing.writeTask((() => Promise.resolve())), 
+    return null != e && "function" == typeof e.then ? testing.writeTask((() => e)) : testing.writeTask((() => Promise.resolve())),
     e;
-   }), "function" == typeof (null === (i = e.prototype) || void 0 === i ? void 0 : i.componentWillRender) && (e.prototype.__componentWillRender = e.prototype.componentWillRender, 
+   }), "function" == typeof (null === (i = e.prototype) || void 0 === i ? void 0 : i.componentWillRender) && (e.prototype.__componentWillRender = e.prototype.componentWillRender,
    e.prototype.componentWillRender = function() {
     const e = this.__componentWillRender();
-    return null != e && "function" == typeof e.then ? testing.writeTask((() => e)) : testing.writeTask((() => Promise.resolve())), 
+    return null != e && "function" == typeof e.then ? testing.writeTask((() => e)) : testing.writeTask((() => Promise.resolve())),
     e;
    });
   }(e);
@@ -4035,7 +4035,7 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
   testing.registerModule(s, e);
   const o = ((e, t) => [ e, t.map((e => ((e, t) => {
    let r = 0;
-   "shadow" === e.encapsulation ? (r |= 1, e.shadowDelegatesFocus && (r |= 16)) : "scoped" === e.encapsulation && (r |= 2), 
+   "shadow" === e.encapsulation ? (r |= 1, e.shadowDelegatesFocus && (r |= 16)) : "scoped" === e.encapsulation && (r |= 2),
    "shadow" !== e.encapsulation && e.htmlTagNames.includes("slot") && (r |= 4), e.hasMode && (r |= 32);
    const s = formatComponentRuntimeMembers(e, t), n = formatHostListeners(e);
    return trimFalsy([ r, e.tagName, Object.keys(s).length > 0 ? s : void 0, n.length > 0 ? n : void 0 ]);
@@ -4098,17 +4098,17 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
    watchCallback: e.some((e => e.hasWatchCallback)),
    taskQueue: !0
   };
-  return n.asyncLoading = n.cmpWillUpdate || n.cmpWillLoad || n.cmpWillRender, n.vdomAttribute = n.vdomAttribute || n.reflect, 
+  return n.asyncLoading = n.cmpWillUpdate || n.cmpWillLoad || n.cmpWillRender, n.vdomAttribute = n.vdomAttribute || n.reflect,
   n.vdomPropOrAttr = n.vdomPropOrAttr || n.reflect, n;
  })(e.components.map((e => e.COMPILER_META)));
  if (e.strictBuild ? Object.assign(appData.BUILD, i) : Object.keys(i).forEach((e => {
   !0 === i[e] && (appData.BUILD[e] = !0);
- })), appData.BUILD.asyncLoading = !0, e.hydrateClientSide ? (appData.BUILD.hydrateClientSide = !0, 
- appData.BUILD.hydrateServerSide = !1) : e.hydrateServerSide && (appData.BUILD.hydrateServerSide = !0, 
- appData.BUILD.hydrateClientSide = !1), appData.BUILD.cloneNodeFix = !1, appData.BUILD.shadowDomShim = !1, 
- appData.BUILD.safari10 = !1, appData.BUILD.attachStyles = !!e.attachStyles, "string" == typeof e.url && (n.win.location.href = e.url), 
- "string" == typeof e.direction && n.doc.documentElement.setAttribute("dir", e.direction), 
- "string" == typeof e.language && n.doc.documentElement.setAttribute("lang", e.language), 
+ })), appData.BUILD.asyncLoading = !0, e.hydrateClientSide ? (appData.BUILD.hydrateClientSide = !0,
+ appData.BUILD.hydrateServerSide = !1) : e.hydrateServerSide && (appData.BUILD.hydrateServerSide = !0,
+ appData.BUILD.hydrateClientSide = !1), appData.BUILD.cloneNodeFix = !1, appData.BUILD.shadowDomShim = !1,
+ appData.BUILD.safari10 = !1, appData.BUILD.attachStyles = !!e.attachStyles, "string" == typeof e.url && (n.win.location.href = e.url),
+ "string" == typeof e.direction && n.doc.documentElement.setAttribute("dir", e.direction),
+ "string" == typeof e.language && n.doc.documentElement.setAttribute("lang", e.language),
  "string" == typeof e.cookie) try {
   n.doc.cookie = e.cookie;
  } catch (e) {}
@@ -4144,12 +4144,12 @@ exports.createJestPuppeteerEnvironment = function createJestPuppeteerEnvironment
    const e = testing.getHostRef(n.root);
    return null != e ? e.$lazyInstance$ : null;
   }
- }), e.hydrateServerSide && testing.insertVdomAnnotations(s, []), e.autoApplyChanges && (testing.startAutoApplyChanges(), 
- n.waitForChanges = () => (console.error('waitForChanges() cannot be used manually if the "startAutoApplyChanges" option is enabled'), 
+ }), e.hydrateServerSide && testing.insertVdomAnnotations(s, []), e.autoApplyChanges && (testing.startAutoApplyChanges(),
+ n.waitForChanges = () => (console.error('waitForChanges() cannot be used manually if the "startAutoApplyChanges" option is enabled'),
  Promise.resolve())), n;
 }, exports.shuffleArray = function shuffleArray(e) {
  let t, r, s = e.length;
- for (;0 !== s; ) r = Math.floor(Math.random() * s), s -= 1, t = e[s], e[s] = e[r], 
+ for (;0 !== s; ) r = Math.floor(Math.random() * s), s -= 1, t = e[s], e[s] = e[r],
  e[r] = t;
  return e;
 }, exports.transpile = transpile;

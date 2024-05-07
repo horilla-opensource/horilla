@@ -11,14 +11,14 @@
         </div>
     </div>
 {% endif %}
-<form  
+<form
     {% if tag_id %}
     hx-post="{% url 'employee-tag-update' tag_id %}"
     {% else	%}
     hx-post="{% url 'employee-tag-create' %}"
     {% endif %}
     hx-target="#emptagForm"
-    method="post" 
+    method="post"
     hx-encoding="multipart/form-data">
     {% csrf_token %}
     {{form.as_p}}

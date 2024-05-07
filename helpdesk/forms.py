@@ -3,7 +3,7 @@ forms.py
 
 This module contains the form classes used in the application.
 
-Each form represents a specific functionality or data input in the 
+Each form represents a specific functionality or data input in the
 application. They are responsible for validating
 and processing user input data.
 
@@ -22,21 +22,23 @@ class YourForm(forms.Form):
 """
 
 from typing import Any
+
+from django import forms
+from django.template.loader import render_to_string
+
 from base.forms import ModelForm
 from base.models import Department, JobPosition
 from employee.forms import MultipleFileField
 from employee.models import Employee
 from helpdesk.models import (
-    Attachment,
-    DepartmentManager,
-    TicketType,
     FAQ,
-    Ticket,
-    FAQCategory,
+    Attachment,
     Comment,
+    DepartmentManager,
+    FAQCategory,
+    Ticket,
+    TicketType,
 )
-from django import forms
-from django.template.loader import render_to_string
 
 
 class TicketTypeForm(ModelForm):

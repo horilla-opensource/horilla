@@ -96,7 +96,7 @@
             {% trans "Employee" %}
           </div>
           <div
-            
+
             class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_date' %}arrow-up {% elif request.sort_option.order == 'attendance_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
             hx-target="#attendance-container"
             hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_date"
@@ -110,13 +110,13 @@
             {% trans "Day" %}
           </div>
           <div
-            data-cell-index="3" data-cell-title='{% trans "Check-In" %}' 
+            data-cell-index="3" data-cell-title='{% trans "Check-In" %}'
             class="oh-sticky-table__th"
           >
             {% trans "Check-In" %}
           </div>
           <div
-            data-cell-index="4" data-cell-title='{% trans "In Date" %}' 
+            data-cell-index="4" data-cell-title='{% trans "In Date" %}'
             class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_in_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_in_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
             hx-target="#attendance-container"
             hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_clock_in_date"
@@ -124,7 +124,7 @@
             {% trans "In Date" %}
           </div>
           <div
-            data-cell-index="5" data-cell-title='{% trans "Check-Out" %}' 
+            data-cell-index="5" data-cell-title='{% trans "Check-Out" %}'
             class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out' %}arrow-down {% else %} arrow-up-down {% endif %}"
             hx-target="#attendance-container"
             hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_clock_out"
@@ -132,7 +132,7 @@
             {% trans "Check-Out" %}
           </div>
           <div
-            data-cell-index="6" data-cell-title='{% trans "Out Date" %}' 
+            data-cell-index="6" data-cell-title='{% trans "Out Date" %}'
             class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
             hx-target="#attendance-container"
             hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_clock_out_date"
@@ -140,25 +140,25 @@
             {% trans "Out Date" %}
           </div>
           <div
-            data-cell-index="7" data-cell-title='{% trans "Shift" %}' 
+            data-cell-index="7" data-cell-title='{% trans "Shift" %}'
             class="oh-sticky-table__th"
           >
             {% trans "Shift" %}
           </div>
           <div
-            data-cell-index="8" data-cell-title='{% trans "Work Type" %}' 
+            data-cell-index="8" data-cell-title='{% trans "Work Type" %}'
             class="oh-sticky-table__th"
           >
             {% trans "Work Type" %}
           </div>
           <div
-            data-cell-index="9" data-cell-title='{% trans "Min Hour" %}' 
+            data-cell-index="9" data-cell-title='{% trans "Min Hour" %}'
             class="oh-sticky-table__th"
           >
             {% trans "Min Hour" %}
           </div>
           <div
-            data-cell-index="10" data-cell-title='{% trans "At Work" %}' 
+            data-cell-index="10" data-cell-title='{% trans "At Work" %}'
             class="oh-sticky-table__th {% if request.sort_option.order == '-at_work_second' %}arrow-up {% elif request.sort_option.order == 'at_work_second' %}arrow-down {% else %} arrow-up-down {% endif %}"
             hx-target="#attendance-container"
             hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=at_work_second"
@@ -171,7 +171,7 @@
             {% trans "Pending Hour" %}
           </div>
           <div
-            data-cell-index="12" data-cell-title='{% trans "Overtime" %}' 
+            data-cell-index="12" data-cell-title='{% trans "Overtime" %}'
             class="oh-sticky-table__th {% if request.sort_option.order == '-overtime_second' %}arrow-up {% elif request.sort_option.order == 'overtime_second' %}arrow-down {% else %} arrow-up-down {% endif %}"
             hx-target="#attendance-container"
             hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=overtime_second"
@@ -187,7 +187,7 @@
           draggable="false"
           data-toggle="oh-modal-toggle"
           data-target="#objectDetailsModalW25"
-          hx-target="#objectDetailsModalW25Target"     
+          hx-target="#objectDetailsModalW25Target"
           hx-get="{% url 'user-request-one-view' attendance.id %}?my_attendance=true&instances_ids={{attendances_ids}}"
         >
           <div
@@ -306,5 +306,5 @@
   if (!localStorageMyAttendanceCells) {
     $("#MyAttendanceCells").find("[type=checkbox]").prop("checked",true)
   }
-  $("[type=checkbox]").change()  
+  $("[type=checkbox]").change()
 </script>

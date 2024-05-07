@@ -5,13 +5,15 @@ Payroll related module to write custom calculation methods
 """
 
 import calendar
-from datetime import timedelta, datetime, date
-from django.db.models import F, Q
-from django.core.paginator import Paginator
+from datetime import date, datetime, timedelta
+
 from dateutil.relativedelta import relativedelta
-from base.methods import get_pagination
-from leave.models import Holiday, CompanyLeave
+from django.core.paginator import Paginator
+from django.db.models import F, Q
+
 from attendance.models import Attendance
+from base.methods import get_pagination
+from leave.models import CompanyLeave, Holiday
 from payroll.models.models import Contract, Deduction, Payslip
 
 

@@ -21,40 +21,41 @@ class YourForm(forms.Form):
         pass
 """
 
+import uuid
 from ast import Dict
 from datetime import date, datetime
 from typing import Any
-import uuid
+
 from django import forms
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.template.loader import render_to_string
+from django.utils.translation import gettext_lazy as _
+
 from base import thread_local_middleware
+from base.forms import Form
+from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import Employee
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla.decorators import logger
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from recruitment import widgets
 from recruitment.models import (
+    Candidate,
     InterviewSchedule,
-    RejectReason,
+    JobPosition,
+    Recruitment,
+    RecruitmentMailTemplate,
+    RecruitmentSurvey,
     RejectedCandidate,
+    RejectReason,
     SkillZone,
     SkillZoneCandidate,
     Stage,
-    Recruitment,
-    Candidate,
     StageFiles,
     StageNote,
-    JobPosition,
-    RecruitmentSurvey,
-    RecruitmentMailTemplate,
     SurveyTemplate,
 )
-from recruitment import widgets
-from base.methods import reload_queryset
-from base.forms import Form
-from django.core.exceptions import NON_FIELD_ERRORS
 
 
 class ModelForm(forms.ModelForm):
@@ -1018,27 +1019,35 @@ class ScheduleInterviewForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['interview_date'].widget = forms.DateInput(attrs={'type': 'date', 'class':"oh-input w-100"})
-        self.fields['interview_time'].widget = forms.TimeInput(attrs={'type': 'time', 'class':"oh-input w-100"})
-
+        self.fields["interview_date"].widget = forms.DateInput(
+            attrs={"type": "date", "class": "oh-input w-100"}
+        )
+        self.fields["interview_time"].widget = forms.TimeInput(
+            attrs={"type": "time", "class": "oh-input w-100"}
+        )
 
     def clean(self):
         instance = self.instance
         cleaned_data = super().clean()
-        interview_date = cleaned_data.get('interview_date')
-        interview_time = cleaned_data.get('interview_time')
-        
+        interview_date = cleaned_data.get("interview_date")
+        interview_time = cleaned_data.get("interview_time")
+
         if not instance.pk and interview_date and interview_date < date.today():
-            self.add_error('interview_date', _("Interview date cannot be in the past."))
-        
+            self.add_error("interview_date", _("Interview date cannot be in the past."))
+
         if not instance.pk and interview_time:
             now = datetime.now().time()
-            if not instance.pk and interview_date == date.today() and interview_time < now:
-                self.add_error('interview_time', _("Interview time cannot be in the past."))
-        
+            if (
+                not instance.pk
+                and interview_date == date.today()
+                and interview_time < now
+            ):
+                self.add_error(
+                    "interview_time", _("Interview time cannot be in the past.")
+                )
+
         return cleaned_data
 
     def as_p(self, *args, **kwargs):

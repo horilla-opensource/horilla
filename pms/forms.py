@@ -5,37 +5,39 @@ This module is used to register the forms for pms models
 """
 
 import datetime
-from typing import Any
 import uuid
+from typing import Any
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.files.base import File
 from django.db.models.base import Model
+from django.forms import ModelForm
 from django.forms.utils import ErrorList
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
+
+from base.forms import ModelForm as BaseForm
+from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import Department, JobPosition
-from django.forms import ModelForm
-from base.forms import ModelForm as BaseForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from pms.models import (
     AnonymousFeedback,
+    Comment,
+    Employee,
+    EmployeeKeyResult,
+    EmployeeObjective,
+    Feedback,
     KeyResult,
     Meetings,
     Objective,
-    Question,
-    EmployeeObjective,
-    EmployeeKeyResult,
-    Feedback,
     Period,
-    Comment,
+    Question,
     QuestionOptions,
-    Employee,
     QuestionTemplate,
 )
-from base.methods import reload_queryset
 
 
 def validate_date(start_date, end_date):
@@ -934,14 +936,16 @@ class AnonymousFeedbackForm(BaseForm):
 
 class MeetingsForm(BaseForm):
     date = forms.DateTimeField(
-        widget=forms.DateTimeInput(attrs={"class": "oh-input w-100", "type": "datetime-local"}),
+        widget=forms.DateTimeInput(
+            attrs={"class": "oh-input w-100", "type": "datetime-local"}
+        ),
     )
 
     class Meta:
         model = Meetings
         fields = "__all__"
         exclude = ["response", "is_active"]
-        
+
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -949,18 +953,18 @@ class MeetingsForm(BaseForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
-    
+
     def clean(self):
         cleaned_data = super().clean()
 
-        answerable_employees = self.data.getlist('answer_employees', [])
+        answerable_employees = self.data.getlist("answer_employees", [])
         employees = Employee.objects.filter(id__in=answerable_employees)
         cleaned_data["answer_employees"] = employees
 
-        employee_id = self.data.getlist('employee_id', [])
+        employee_id = self.data.getlist("employee_id", [])
         employees = Employee.objects.filter(id__in=employee_id)
         cleaned_data["employee_id"] = employees
-        
+
         if isinstance(self.fields["employee_id"], HorillaMultiSelectField):
             ids = self.data.getlist("employee_id")
             if ids:
@@ -985,8 +989,9 @@ class MeetingsForm(BaseForm):
             )
         try:
             if self.data.getlist("employee_id"):
-                employees = Employee.objects.filter(id__in=self.data.getlist("employee_id"))
+                employees = Employee.objects.filter(
+                    id__in=self.data.getlist("employee_id")
+                )
                 self.fields["answer_employees"].queryset = employees
         except:
             pass
-

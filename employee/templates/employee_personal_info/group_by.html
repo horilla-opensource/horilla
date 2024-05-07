@@ -197,10 +197,10 @@
                           ></a>
                           {% endif %} {% if perms.employee.delete_employee %} {% if emp.is_active %}
                             <form hx-confirm="{% trans 'Do you want to archive this employee?' %}"
-                                  hx-post="{% url 'employee-archive' emp.id %}" 
+                                  hx-post="{% url 'employee-archive' emp.id %}"
                                   hx-target="#relatedModel"
                                   style = "width:100%"
-                              > 
+                              >
                               {% csrf_token %}
                               <button
                                 type="submit"
@@ -212,10 +212,10 @@
                             </form>
                           {% else %}
                             <form hx-confirm="{% trans 'Do you want to un-archive this employee?' %}"
-                                hx-post="{% url 'employee-archive' emp.id %}" 
+                                hx-post="{% url 'employee-archive' emp.id %}"
                                 hx-target="#relatedModel"
                                 style = "width:100%"
-                              > 
+                              >
                               {% csrf_token %}
                               <button
                                 type="submit"
@@ -226,9 +226,9 @@
                             </button>
                             </form>
                           {% endif %} {% endif %} {% if perms.employee.delete_employee %}
-                          <form 
-                            action="{% url 'employee-delete' emp.id %}?view=list" 
-                            onsubmit="return confirm('{% trans "Are you sure want to delete this employee?" %}')" 
+                          <form
+                            action="{% url 'employee-delete' emp.id %}?view=list"
+                            onsubmit="return confirm('{% trans "Are you sure want to delete this employee?" %}')"
                             method="post" style = "width:100%"
                           > {% csrf_token %}
                             <button
@@ -380,7 +380,7 @@
       $("#selectAllEmployees").click(function () {
         selectAllEmployees();
       });
-  
+
       $("#unselectAllEmployees").click(function () {
         unselectAllEmployees();
       });

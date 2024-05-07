@@ -11,101 +11,103 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
-import os
 import ast
+import calendar
 import json
 import operator
-import calendar
+import os
 import re
-import pandas as pd
-from urllib.parse import parse_qs
 from collections import defaultdict
-from datetime import datetime, timedelta, date
-from django.utils import timezone
-from django.db import models
-from django.db.models import Q
-from django.db.models import F, ProtectedError
+from datetime import date, datetime, timedelta
+from urllib.parse import parse_qs
+
+import pandas as pd
 from django.conf import settings
 from django.contrib import messages
-from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, render, redirect
-from django.utils.translation import gettext as __
 from django.contrib.auth.models import User
-from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
+from django.core.paginator import Paginator
+from django.db import models
+from django.db.models import F, ProtectedError, Q
 from django.forms import CharField, ChoiceField, DateInput, Select
-from asset.models import AssetAssignment, AssetRequest
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
+
+from asset.models import AssetAssignment, AssetRequest
 from attendance.methods.group_by import group_by_queryset
 from attendance.models import Attendance, AttendanceOverTime
-from employee.methods.methods import get_ordered_badge_ids
-from horilla.filters import HorillaPaginator
-from horilla_audit.models import AccountBlockUnblock
-from leave.models import LeaveRequest
-from notifications.signals import notify
-from horilla.decorators import (
-    owner_can_enter,
-    permission_required,
-    login_required,
-    hx_request_required,
-    manager_can_enter,
-    logger,
-)
-from base.models import (
-    Department,
-    EmailLog,
-    JobPosition,
-    JobRole,
-    RotatingShiftAssign,
-    RotatingWorkTypeAssign,
-    ShiftRequest,
-    WorkType,
-    EmployeeShift,
-    EmployeeType,
-    Company,
-    WorkTypeRequest,
-    clear_messages,
-)
 from base.forms import ModelForm
 from base.methods import (
+    check_manager,
+    check_owner,
     choosesubordinates,
     filtersubordinates,
     filtersubordinatesemployeemodel,
     get_key_instances,
     get_pagination,
     sortby,
-    check_manager,
-    check_owner,
 )
-from employee.filters import EmployeeFilter, EmployeeReGroup, DocumentRequestFilter
+from base.models import (
+    Company,
+    Department,
+    EmailLog,
+    EmployeeShift,
+    EmployeeType,
+    JobPosition,
+    JobRole,
+    RotatingShiftAssign,
+    RotatingWorkTypeAssign,
+    ShiftRequest,
+    WorkType,
+    WorkTypeRequest,
+    clear_messages,
+)
+from employee.filters import DocumentRequestFilter, EmployeeFilter, EmployeeReGroup
 from employee.forms import (
     BonusPointAddForm,
     BonusPointRedeemForm,
     BulkUpdateFieldForm,
+    EmployeeBankDetailsForm,
+    EmployeeBankDetailsUpdateForm,
     EmployeeExportExcelForm,
     EmployeeForm,
-    EmployeeBankDetailsForm,
     EmployeeNoteForm,
     EmployeeWorkInformationForm,
     EmployeeWorkInformationUpdateForm,
-    EmployeeBankDetailsUpdateForm,
     excel_columns,
 )
+from employee.methods.methods import get_ordered_badge_ids
+from employee.models import (
+    BonusPoint,
+    Employee,
+    EmployeeBankDetails,
+    EmployeeGeneralSetting,
+    EmployeeNote,
+    EmployeeWorkInformation,
+    NoteFiles,
+)
+from horilla.decorators import (
+    hx_request_required,
+    logger,
+    login_required,
+    manager_can_enter,
+    owner_can_enter,
+    permission_required,
+)
+from horilla.filters import HorillaPaginator
+from horilla_audit.models import AccountBlockUnblock
 from horilla_documents.forms import (
     DocumentForm,
     DocumentRejectForm,
     DocumentRequestForm,
     DocumentUpdateForm,
 )
-from employee.models import (
-    BonusPoint,
-    Employee,
-    EmployeeGeneralSetting,
-    EmployeeNote,
-    EmployeeWorkInformation,
-    EmployeeBankDetails,
-    NoteFiles,
-)
+from horilla_documents.models import Document, DocumentRequest
+from leave.models import LeaveRequest
+from notifications.signals import notify
 from onboarding.models import OnboardingStage, OnboardingTask
 from payroll.methods.payslip_calc import dynamic_attr
 from payroll.models.models import (
@@ -117,8 +119,6 @@ from payroll.models.models import (
 )
 from pms.models import Feedback
 from recruitment.models import Candidate, InterviewSchedule, Recruitment, Stage
-from horilla_documents.models import Document, DocumentRequest
-
 
 operator_mapping = {
     "equal": operator.eq,
@@ -180,7 +180,9 @@ def employee_profile(request):
     employee = Employee.objects.filter(employee_user_id=user).first()
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=employee)
     feedback_own = Feedback.objects.filter(employee_id=employee, archive=False)
-    interviews = InterviewSchedule.objects.filter(employee_id = employee).order_by("-interview_date")
+    interviews = InterviewSchedule.objects.filter(employee_id=employee).order_by(
+        "-interview_date"
+    )
     today = datetime.today()
     now = timezone.now()
     return render(
@@ -193,8 +195,8 @@ def employee_profile(request):
             "leave_request_ids": leave_request_ids,
             "self_feedback": feedback_own,
             "current_date": today,
-            "interviews" : interviews,
-            "now" : now,
+            "interviews": interviews,
+            "now": now,
         },
     )
 
@@ -242,7 +244,7 @@ def employee_view_individual(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
     """
-    employee = Employee.objects.get(id=obj_id)        
+    employee = Employee.objects.get(id=obj_id)
     instances = LeaveRequest.objects.filter(employee_id=employee)
     leave_request_ids = json.dumps([instance.id for instance in instances])
     employee_leaves = employee.available_leave.all()
@@ -250,17 +252,17 @@ def employee_view_individual(request, obj_id, **kwargs):
         AccountBlockUnblock.objects.exists()
         and AccountBlockUnblock.objects.first().is_enabled
     )
-    context={
-            "employee": employee,
-            "current_date": date.today(),
-            "leave_request_ids": leave_request_ids,
-            "enabled_block_unblock": enabled_block_unblock,
-        }
+    context = {
+        "employee": employee,
+        "current_date": date.today(),
+        "leave_request_ids": leave_request_ids,
+        "enabled_block_unblock": enabled_block_unblock,
+    }
     # if the requesting user opens own data
     if request.user.employee_get == employee:
-        context['user_leaves']=employee_leaves
+        context["user_leaves"] = employee_leaves
     else:
-        context['employee_leaves']=employee_leaves
+        context["employee_leaves"] = employee_leaves
 
     return render(
         request,
@@ -1158,30 +1160,48 @@ def view_employee_bulk_update(request):
                                         parts[-1]
                                     )
 
-                                    if parts[1] == 'department_id' or parts[1] == 'job_position_id' or parts[1] == 'job_role_id':
-                                        if not "employee_work_info__department_id" in update_fields:
+                                    if (
+                                        parts[1] == "department_id"
+                                        or parts[1] == "job_position_id"
+                                        or parts[1] == "job_role_id"
+                                    ):
+                                        if (
+                                            not "employee_work_info__department_id"
+                                            in update_fields
+                                        ):
                                             fields.append("department_id")
                                             widgets["department_id"] = Select(
                                                 attrs={"required": True}
                                             )
-                                        if not "employee_work_info__job_position_id" in update_fields:
+                                        if (
+                                            not "employee_work_info__job_position_id"
+                                            in update_fields
+                                        ):
                                             fields.append("job_position_id")
                                             widgets["job_position_id"] = Select(
                                                 attrs={"required": True}
                                             )
-                                        if not "employee_work_info__job_role_id" in update_fields:
+                                        if (
+                                            not "employee_work_info__job_role_id"
+                                            in update_fields
+                                        ):
                                             fields.append("job_role_id")
                                             widgets["job_role_id"] = Select(
                                                 attrs={"required": True}
                                             )
                                         fields.append(parts[1])
-                                        widgets[field] = Select(attrs={"required": True})
-
+                                        widgets[field] = Select(
+                                            attrs={"required": True}
+                                        )
 
                                     fields.append(parts[-1])
 
                                     # Remove inner lists
-                                    fields = [item for item in fields if not isinstance(item, list)]                                    
+                                    fields = [
+                                        item
+                                        for item in fields
+                                        if not isinstance(item, list)
+                                    ]
 
                                     if isinstance(field_obj, models.DateField):
                                         widgets[parts[-1]] = DateInput(
@@ -1621,9 +1641,9 @@ def employee_create_update_personal_info(request, obj_id=None):
                 <div class="oh-alert-container">
                     <div class="oh-alert oh-alert--animated oh-alert--success">
                         Personal Info updated
-                    </div> 
+                    </div>
                 </div>
-                
+
         """
         )
     if obj_id is None:
@@ -1663,13 +1683,13 @@ def employee_update_work_info(request, obj_id=None):
         work_info.save()
         return HttpResponse(
             """
-            
+
                 <div class="oh-alert-container">
                     <div class="oh-alert oh-alert--animated oh-alert--success">
                         Personal Info updated
-                    </div> 
+                    </div>
                 </div>
-                
+
         """
         )
     errors = "\n".join(
@@ -1702,7 +1722,7 @@ def employee_update_bank_details(request, obj_id=None):
             <div class="oh-alert-container">
                 <div class="oh-alert oh-alert--animated oh-alert--success">
                     Bank details updated
-                </div> 
+                </div>
             </div>
         """
         )
@@ -2329,7 +2349,7 @@ def employee_import(request):
     <div class='alert-success p-3 border-rounded'>
         Employee data has been imported successfully.
     </div>
-            
+
     """
         )
     data_frame = pd.DataFrame(columns=["employee_full_name", "email", "phone"])
@@ -3531,6 +3551,8 @@ def employee_get_mail_log(request):
 
 
 def get_job_roles(request):
-    job_id = request.GET.get('job_id')
-    job_roles = JobRole.objects.filter(job_position_id=job_id).values_list('id', 'job_role')
-    return JsonResponse({'job_roles': dict(job_roles)})
+    job_id = request.GET.get("job_id")
+    job_roles = JobRole.objects.filter(job_position_id=job_id).values_list(
+        "id", "job_role"
+    )
+    return JsonResponse({"job_roles": dict(job_roles)})

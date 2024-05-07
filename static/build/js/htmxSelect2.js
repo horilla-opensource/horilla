@@ -4140,7 +4140,7 @@ $(document).on("htmx:afterSettle", function (e) {
     $(this).parent().find(".oh-table__toggle-child").toggleClass("oh-table__toggle-child--show")
   })
 
-  $(`#${targetId} [data-toggle-count]`).click(function (e) { 
+  $(`#${targetId} [data-toggle-count]`).click(function (e) {
     e.preventDefault();
     span = $(this).parent().find(".count-span").toggle()
   });

@@ -5,20 +5,20 @@ This page is used to register the model with admins site.
 """
 
 from django.contrib import admin
+from simple_history.admin import SimpleHistoryAdmin
+
 from employee.models import (
+    Actiontype,
     BonusPoint,
+    DisciplinaryAction,
     Employee,
-    EmployeeWorkInformation,
     EmployeeBankDetails,
     EmployeeNote,
     EmployeeTag,
-    PolicyMultipleFile,
+    EmployeeWorkInformation,
     Policy,
-    DisciplinaryAction,
-    Actiontype,
+    PolicyMultipleFile,
 )
-from simple_history.admin import SimpleHistoryAdmin
-
 
 # Register your models here.
 

@@ -27,7 +27,7 @@
     font-weight: 400;
     src: url("../fonts/material_icons_outlined.woff2") format('woff2');
   }
-  
+
 .material-symbols-outlined {
 font-family: 'Material Symbols Outlined';
 font-weight: normal;
@@ -499,10 +499,11 @@ form label {
 
 .d-none{
     display: none !important;
-}
+
 .oh-sidebar__company {
     position: sticky;
     top: 0;
     left: 0;
     backdrop-filter: blur(8px);
 }
+

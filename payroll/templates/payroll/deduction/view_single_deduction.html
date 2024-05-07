@@ -81,7 +81,7 @@
                     {% if deduction.is_fixed %}
                         <span class="oh-timeoff-modal__stat-count">{{deduction.amount}}{{currency}}</span>
                     {% else %}
-                        <span class="oh-timeoff-modal__stat-count">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>    
+                        <span class="oh-timeoff-modal__stat-count">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
                         <span class="oh-timeoff-modal__stat-count">{% trans "Employee Rate :" %} {{deduction.rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
                     {% endif %}
                 {% endif %}
@@ -109,7 +109,7 @@
             {% trans "Edit" %}
           </a>
           <a onclick = "event.preventDefault();event.stopPropagation();" hx-confirm="{% trans 'Do you want to delete this deduction?' %}"
-            hx-post="{% url 'delete-deduction' deduction.id %}?instances_ids={{deduction_ids}}" hx-target = "#objectDetailsModalTarget" 
+            hx-post="{% url 'delete-deduction' deduction.id %}?instances_ids={{deduction_ids}}" hx-target = "#objectDetailsModalTarget"
             class="oh-btn oh-btn--danger" style="width: 50%;">
             <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
             {% trans "Delete" %}
@@ -146,5 +146,3 @@
   </h5>
 </div>
 {% endif %}
-
-

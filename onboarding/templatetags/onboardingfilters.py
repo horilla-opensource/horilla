@@ -4,11 +4,10 @@ onboardingfilters.py
 This page is used to write custom template filters.
 """
 
-from django.template.defaultfilters import register
 from django import template
+from django.template.defaultfilters import register
 
 from onboarding.models import OnboardingStage
-
 
 # from django.forms.boundfield
 

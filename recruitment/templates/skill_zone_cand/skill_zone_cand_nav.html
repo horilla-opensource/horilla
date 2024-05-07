@@ -68,7 +68,7 @@ x-data="{searchShow: false}"
     ></ion-icon>
     <input
       type="text"
-      placeholder="{% trans 'Search' %}" 
+      placeholder="{% trans 'Search' %}"
       id="candidate-search"
       name='search'
       onkeyup = "$('.filterButton').click()"
@@ -82,20 +82,20 @@ x-data="{searchShow: false}"
     <li class="oh-view-type candidate-view-type " data-view='list' >
       <a
         onclick="$(this).parents().closest('ul').find('[name=view]').val('list');$('.filterButton').click();$(this).toggleClass('oh-btn--view-active');$('#card').removeClass('oh-btn--view-active')"
-        id = 'list' 
-        hx-get="{% url 'search-candidate' %}?view=list"  
-        hx-target='#section' 
+        id = 'list'
+        hx-get="{% url 'search-candidate' %}?view=list"
+        hx-target='#section'
         class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
         title = {% trans "List" %}
         ><ion-icon name="list-outline"></ion-icon
       ></a>
     </li>
     <li class="oh-view-type candidate-view-type" data-view='card'>
-      <a 
+      <a
         onclick="$(this).parents().closest('ul').find('[name=view]').val('card');$('.filterButton').click();$(this).toggleClass('oh-btn--view-active');$('#list').removeClass('oh-btn--view-active')"
         id="card"
-        hx-get="{% url 'search-candidate' %}?view=card" 
-        hx-target='#section' 
+        hx-get="{% url 'search-candidate' %}?view=card"
+        hx-target='#section'
         class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
         title = {% trans "Card" %}
         ><ion-icon name="grid-outline"></ion-icon
@@ -105,7 +105,7 @@ x-data="{searchShow: false}"
   </ul>
 
   <div class="oh-main__titlebar-button-container">
-    
+
 
     <div class="oh-dropdown" x-data="{open: false}">
       <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
@@ -120,7 +120,7 @@ x-data="{searchShow: false}"
       {% include 'candidate/filters.html' %}
       </div>
     </div>
-    
+
     </form>
     {% comment %} <div class="oh-btn-group ml-2">
       <div class="oh-dropdown" x-data="{open: false}">
@@ -131,7 +131,7 @@ x-data="{searchShow: false}"
         >
           {% trans "Actions" %}
         </button>
-        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" 
+        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
         style="display: none;"
       >
           <ul class="oh-dropdown__items">
@@ -154,7 +154,7 @@ x-data="{searchShow: false}"
                 >{% trans "Archive" %}</a
               >
             </li>
-            {% endif %} 
+            {% endif %}
 
             {% if perms.delete_candidates %}
             <li class="oh-dropdown__item">
@@ -164,7 +164,7 @@ x-data="{searchShow: false}"
                 >{% trans "Un-Archive" %}</a
               >
             </li>
-            {% endif %} 
+            {% endif %}
 
             {% if perms.delete_candidates %}
             <li class="oh-dropdown__item">

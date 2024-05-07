@@ -6,11 +6,12 @@ This module is used to write custom template filters.
 """
 
 import uuid
-from django.template.defaultfilters import register
+
 from django import template
 from django.contrib.auth.models import User
-from onboarding.models import OnboardingTask
+from django.template.defaultfilters import register
 
+from onboarding.models import OnboardingTask
 from recruitment.models import CandidateRating
 
 # from django.forms.boundfield

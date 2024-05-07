@@ -11,7 +11,7 @@
             </div>
           </div>
         </div>
-            
+
         {% endfor %}
     </ul>
 {% endif %}
@@ -102,8 +102,8 @@
 
           {% for feedback in self_feedback.object_list %}
           <div class="oh-sticky-table__tr" draggable="true">
-            <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue 
-              {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray 
+            <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue
+              {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray
               {% elif feedback.status == 'Behind' %}row-status--orange {% elif feedback.status == 'At Risk' %}row-status--red{% endif %}">
               <div class="d-flex">
                 <div>
@@ -127,7 +127,7 @@
             <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;"class="oh-sticky-table__td">{{feedback.review_cycle | title}}</a>
             <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;"class="oh-sticky-table__td">
               <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
-              <span>{% trans feedback.status %}</span> 
+              <span>{% trans feedback.status %}</span>
             </a>
             <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</a>
             <div class="oh-sticky-table__td">
@@ -145,10 +145,10 @@
                     <ion-icon name="archive-sharp" type="submit"></ion-icon>
                   </button>
                   </form>
-                  {% if perms.pms.delete_feedback %} 
+                  {% if perms.pms.delete_feedback %}
                     <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
                       {% csrf_token %}
-                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" > 
+                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
                           <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
                       </button>
                     </form>
@@ -240,8 +240,8 @@
 
           {% for feedback in requested_feedback.object_list %}
           <div class="oh-sticky-table__tr" draggable="true">
-            <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue 
-              {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray 
+            <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue
+              {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray
               {% elif feedback.status == 'Behind' %}row-status--orange {% elif feedback.status == 'At Risk' %}row-status--red{% endif %}">
               <div class="d-flex">
                 <div>
@@ -265,8 +265,8 @@
             <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{feedback.review_cycle | title}}</a>
             <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
               <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
-              <span>{% trans feedback.status %}</span> 
-              
+              <span>{% trans feedback.status %}</span>
+
             </a>
             <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</a>
             <div class="oh-sticky-table__td">
@@ -284,10 +284,10 @@
                   <ion-icon name="archive-sharp" type="submit"></ion-icon>
                 </button>
                 </form>
-                {% if perms.pms.delete_feedback %} 
+                {% if perms.pms.delete_feedback %}
                   <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
                     {% csrf_token %}
-                    <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" > 
+                    <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
                         <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
                     </button>
                   </form>
@@ -382,8 +382,8 @@
 
           {% for feedback in all_feedbacks.object_list %}
           <div class="oh-sticky-table__tr" draggable="true">
-            <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue 
-                {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray 
+            <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue
+                {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray
                 {% elif feedback.status == 'Behind' %}row-status--orange {% elif feedback.status == 'At Risk' %}row-status--red{% endif %}">
               <div class="d-flex">
                 <div>
@@ -419,15 +419,15 @@
                     <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
                   {% else %}
                     <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" >
-                  {% endif %} 
+                  {% endif %}
                    {% csrf_token %}
                   <ion-icon name="archive-sharp" type="submit"></ion-icon>
                 </button>
                 </form>
-                {% if perms.pms.delete_feedback %} 
+                {% if perms.pms.delete_feedback %}
                   <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
                     {% csrf_token %}
-                    <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" > 
+                    <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
                         <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
                     </button>
                   </form>
@@ -521,7 +521,7 @@
             {% if feedback.archive %}
             <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target ="#FeedbackModal" hx-get="{% url 'single-anonymous-feedback-view' feedback.id %}" hx-target = "#OneFeedbackTarget">
               <div class="oh-sticky-table__sd">
-                
+
                   <div class="centered-div">
                     <input
                       type="checkbox"
@@ -537,14 +537,14 @@
                 {{feedback.feedback_subject}}
               </div>
               <div class="oh-sticky-table__td">
-                {% trans "Based on" %} : 
+                {% trans "Based on" %} :
                     {% if feedback.based_on == "employee" %}
                       {{feedback.employee_id}}
                     {% elif feedback.based_on == "department" %}
                       {{feedback.department_id}}
                     {% elif feedback.based_on == "job_position" %}
                       {{feedback.job_position_id}}
-                    {% else %} 
+                    {% else %}
                       {{feedback.get_based_on_display}}
                     {% endif %}
               </div>
@@ -564,10 +564,10 @@
                     <ion-icon name="archive-sharp" type="submit"></ion-icon>
                   </button>
                   </form>
-                  {% if perms.pms.delete_feedback %} 
+                  {% if perms.pms.delete_feedback %}
                     <form action="{% url 'delete-anonymous-feedback' obj_id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
                       {% csrf_token %}
-                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" > 
+                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
                           <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
                       </button>
                     </form>
@@ -580,7 +580,7 @@
             {% if feedback.archive == False %}
             <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target ="#FeedbackModal" hx-get="{% url 'single-anonymous-feedback-view' feedback.id %}" hx-target = "#OneFeedbackTarget">
               <div class="oh-sticky-table__sd">
-                
+
                   <div class="centered-div">
                     <input
                       type="checkbox"
@@ -596,14 +596,14 @@
                 {{feedback.feedback_subject}}
               </div>
               <div class="oh-sticky-table__td">
-                {% trans "Based on" %} : 
+                {% trans "Based on" %} :
                     {% if feedback.based_on == "employee" %}
                       {{feedback.employee_id}}
                     {% elif feedback.based_on == "department" %}
                       {{feedback.department_id}}
                     {% elif feedback.based_on == "job_position" %}
                       {{feedback.job_position_id}}
-                    {% else %} 
+                    {% else %}
                       {{feedback.get_based_on_display}}
                     {% endif %}
               </div>
@@ -623,10 +623,10 @@
                     <ion-icon name="archive-sharp" type="submit"></ion-icon>
                   </button>
                   </form>
-                  {% if perms.pms.delete_feedback %} 
+                  {% if perms.pms.delete_feedback %}
                     <form action="{% url 'delete-anonymous-feedback' obj_id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
                       {% csrf_token %}
-                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" > 
+                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
                           <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
                       </button>
                     </form>
@@ -636,7 +636,7 @@
             </div>
             {% endif %}
           {% endif %}
-            
+
           {% endfor%}
         </div>
       </div>
@@ -651,7 +651,7 @@
 </div>
 </div>
 
-<script src="{% static 'src/feedback/action.js' %}"></script> 
+<script src="{% static 'src/feedback/action.js' %}"></script>
 <script>
 
   $(document).ready(function () {

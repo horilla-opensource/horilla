@@ -2,8 +2,9 @@
 
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from notifications.base.admin import AbstractNotificationAdmin
 from swapper import load_model
+
+from notifications.base.admin import AbstractNotificationAdmin
 
 Notification = load_model("notifications", "Notification")
 

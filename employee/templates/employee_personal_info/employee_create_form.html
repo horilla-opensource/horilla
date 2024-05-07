@@ -12,22 +12,22 @@
                 {% for message in messages %}
                 <div class="oh-alert oh-alert--animated {{message.tags}}">
                       {{ message }}
-                    </div> 
+                    </div>
                 {% endfor %}
             </div>
             {% endif %}
             <h3 class="mb-4">{% trans "New Employee" %}</h3>
-            
+
             <div class="row">
                 <div class="col-md-6 ">
                     {{form.employee_first_name.errors}}
                     <div class="form-outline mb-4">{{form.employee_first_name}}</div>
                   </div>
-                  
+
                   <div class="col-md-6">
                     {{form.employee_last_name.errors}}
-                    
-                  <div class="form-outline mb-4">{{form.employee_last_name}}</div>            
+
+                  <div class="form-outline mb-4">{{form.employee_last_name}}</div>
                 </div>
               <div class="col-md-6">
                 {{form.email.errors}}
@@ -47,14 +47,14 @@
               </div>
             </div>
             <div>
-                
-                
+
+
                 {{form.address.errors}}
                 <div class="form-outline mb-4">{{form.address}}</div>
                 {{form.country.errors}}
                 <div class="form-outline mb-4">{{form.country}}</div>
-                
-                
+
+
                 {{form.qualification.errors}}
                 <div class="form-outline mb-4">{{form.qualification}}</div>
                 {{form.experience.errors}}
@@ -67,9 +67,9 @@
                 <label class="text-secondary" for="id_{{form.employee_profile.name}}">{{form.employee_profile.label}}</label>
                 {{form.employee_profile}}
             </div>
-            
 
-            
+
+
             <label for="id_groups" class="text-secondary">{% trans "User Groups" %}</label>
             {{perm_form.groups}}
             <label for="id_groups" class="text-secondary">{% trans "User Permissions" %}</label>
@@ -111,6 +111,3 @@
 
 <script>
 </script>
-
-
- 

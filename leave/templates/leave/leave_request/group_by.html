@@ -1,5 +1,5 @@
 {% load attendancefilters %} {% load basefilters %} {% load static %}
-{% load i18n %} {% include 'filter_tags.html' %} 
+{% load i18n %} {% include 'filter_tags.html' %}
   <!-- start of selection buttons -->
 
 {% if messages %}
@@ -90,7 +90,7 @@
                                 <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25"
                                 hx-get="{% url 'one-request-view' leave_request.id %}" hx-target="#objectDetailsModalW25Target">
                                     <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--blue {% elif leave_request.status == "cancelled_and_rejected" %} row-status--black
-                                        {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--gray 
+                                        {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--gray
                                         {% elif leave_request.status == "rejected" %}row-status--red{% endif %}" onclick="event.stopPropagation()">
                                         <div class="centered-div">
                                             <input
@@ -99,7 +99,7 @@
                                             class="oh-input holiday-checkbox oh-input__checkbox all-leave-requests-row"
                                             />
                                         </div>
-                                    </div>            
+                                    </div>
                                     <div class="oh-sticky-table__td">
                                       {% if leave_request in leave_requests_with_interview %}
                                         <div class="d-flex" style="flex-direction: row-reverse; margin-bottom:-25px;">
@@ -145,8 +145,8 @@
                                           <div class="oh-btn-group">
                                               {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or request.user|is_leave_approval_manager %}
                                                 <button  data-toggle="oh-modal-toggle" data-target="#penaltyModal"
-                                                  hx-target="#penaltyModalBody" hx-get="{% url "leave-cut-penalty" leave_request.id %}?{{pd}}" 
-                                                  type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
+                                                  hx-target="#penaltyModalBody" hx-get="{% url "leave-cut-penalty" leave_request.id %}?{{pd}}"
+                                                  type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                                   title="{% trans 'Penalty' %}">
                                                   <ion-icon name="information-circle-outline"></ion-icon>
                                                 </button>
@@ -159,13 +159,13 @@
                                               <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
                                               hx-confirm="{% trans "Are you sure you want to delete ?" %}" hx-get="{% url 'request-delete' leave_request.id %}?{{pd}}" hx-target="#leaveRequest"  title="{% trans 'Delete' %}"><ion-icon
                                                   name="trash-outline">group_by</ion-icon></a>
-                                              
+
                                           </div>
                                       </div>
                                       <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                         {% if leave_request.get_penalties_count %}
-                                            <div data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" 
-                                                hx-get="{% url "view-penalties" %}?leave_request_id={{leave_request.id}}" 
+                                            <div data-target="#penaltyViewModal" data-toggle="oh-modal-toggle"
+                                                hx-get="{% url "view-penalties" %}?leave_request_id={{leave_request.id}}"
                                                 hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">
                                                 {% trans "Penalties" %} :{{leave_request.get_penalties_count}}
                                             </div>
@@ -205,31 +205,31 @@
                                                 data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm" title="{% trans 'Reject' %}"
                                                 class="oh-btn oh-btn--danger w-100">
                                                 <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                    
+
                                             </a>
                                             {% else %}
                                             <a type="submit" href="#" title="{% trans 'Reject' %}"
                                                 class="oh-btn oh-btn--danger oh-btn--disabled
                                                 w-100" >
                                                 <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                    
+
                                             </a>
                                             {% endif %}
-                    
+
                                           {% endif %}
                                         </div>
                                       </div>
                                     {% endif %}
                                 </div>
                                 {% endfor %}
-                
+
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="oh-pagination">
                   <span class="oh-pagination__page">
-                      {% trans "Page" %} {{ leave_request_list.list.number }} 
+                      {% trans "Page" %} {{ leave_request_list.list.number }}
                       {%trans "of" %} {{leave_request_list.list.paginator.num_pages }}.
                   </span>
                   <nav class="oh-pagination__nav">
@@ -337,7 +337,7 @@
                         class="oh-pagination__link">{% trans "Last" %}</a>
                 </li>
                 {% endif %}
-    
+
             </ul>
         </nav>
     </div>
@@ -356,8 +356,8 @@
 </div>
 <!-- end of comment modal -->
 
-<div class="oh-modal" id="penaltyModal" 
-    role="dialog" aria-labelledby="requestcommentModal" 
+<div class="oh-modal" id="penaltyModal"
+    role="dialog" aria-labelledby="requestcommentModal"
     aria-hidden="true">
   <div class="oh-modal__dialog" style="max-width: 550px" id="penaltyModalBody"></div>
 </div>

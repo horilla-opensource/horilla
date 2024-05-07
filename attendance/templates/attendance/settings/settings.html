@@ -5,9 +5,9 @@
 </div>
 <form  hx-get="{% url 'enable-timerunner' %}" hx-swap="none">
   <div class="oh-label__info" for="application_tracking">
-      <label class="oh-label" for="application_tracking">{% trans "At-Work Tracker" %}</label> 
+      <label class="oh-label" for="application_tracking">{% trans "At-Work Tracker" %}</label>
       <span class="oh-info mr-2" title="{% trans "By enabling this users can access time-runner feature" %}">
-      </span> 
+      </span>
   </div>
   <div class="oh-switch p-3">
     <input type="checkbox"class="oh-switch__checkbox" name="time_runner" onchange="$(this).closest('form').find('input[type=submit]').click()" {% if enabled_timerunner %} checked{% endif %} />

@@ -3,13 +3,15 @@ Module containing custom filter classes for various models.
 """
 
 import uuid
+
 import django_filters
 from django import forms
 from django_filters import FilterSet
 
-from horilla.filters import filter_by_name
-from .models import Asset, AssetAssignment, AssetCategory, AssetRequest
 from base.methods import reload_queryset
+from horilla.filters import filter_by_name
+
+from .models import Asset, AssetAssignment, AssetCategory, AssetRequest
 
 
 class CustomFilterSet(FilterSet):
@@ -140,7 +142,9 @@ class AssetRequestFilter(CustomFilterSet):
     """
     Custom filter set for AssetRequest instances.
     """
+
     search = django_filters.CharFilter(method="search_method")
+
     def search_method(self, queryset, _, value: str):
         """
         This method is used to search employees
@@ -180,7 +184,9 @@ class AssetAllocationFilter(CustomFilterSet):
     """
     Custom filter set for AssetAllocation instances.
     """
+
     search = django_filters.CharFilter(method="search_method")
+
     def search_method(self, queryset, _, value: str):
         """
         This method is used to search employees

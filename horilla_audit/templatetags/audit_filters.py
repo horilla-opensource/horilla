@@ -1,7 +1,8 @@
-from django.template.defaultfilters import register
 from django import template
-from employee.models import Employee, EmployeeWorkInformation
 from django.core.paginator import Page, Paginator
+from django.template.defaultfilters import register
+
+from employee.models import Employee, EmployeeWorkInformation
 
 
 @register.filter(name="fk_history")

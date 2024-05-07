@@ -1,6 +1,7 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.utils.translation import gettext as _
+
 from base.thread_local_middleware import _thread_locals
 
 
@@ -40,9 +41,9 @@ class HorillaModel(models.Model):
     @classmethod
     def find(cls, object_id):
         return cls.objects.filter(id=object_id).first()
-    
+
     @classmethod
-    def activate_deactivate(cls, object_id):       
+    def activate_deactivate(cls, object_id):
         object = cls.find(object_id)
         if object:
             object.is_active = not object.is_active

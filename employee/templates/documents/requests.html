@@ -38,7 +38,7 @@
 			<span class="oh-modal__dialog-title" id="uploadFileModalLabel"
 				>{% trans "Upload File" %}</span
 			>
-			<button class="oh-modal__close--custom" aria-label="Close" 
+			<button class="oh-modal__close--custom" aria-label="Close"
 			onclick="event.stopPropagation();event.preventDefault();$('#uploadFileModal').toggleClass('oh-modal--show');">
 				<ion-icon
 					name="close-outline"
@@ -64,7 +64,7 @@
 			<span class="oh-modal__dialog-title" id="rejectFileModalLabel"
 				>{% trans "Upload File" %}</span
 			>
-			<button class="oh-modal__close--custom" aria-label="Close" 
+			<button class="oh-modal__close--custom" aria-label="Close"
 			onclick="event.stopPropagation();event.preventDefault();$('#rejectFileModal').toggleClass('oh-modal--show');">
 				<ion-icon
 					name="close-outline"
@@ -88,7 +88,7 @@
 				<span class="oh-accordion-meta__title pt-3 pb-3">
 					<div class="oh-tabs__input-badge-container">
 						<input type="checkbox" name="select_all" onclick="event.stopPropagation()" class="oh-input payslip-checkbox oh-input__checkbox select_all me-3">
-						{{document_list.grouper}} 
+						{{document_list.grouper}}
 						<div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" style="margin-left: 20px;" title="{% trans 'Uploaded / Requested' %}">
 							{{document_list.list.0.upload_documents_count}} / {{document_list.list|length}}
 						</div>
@@ -112,11 +112,11 @@
 								</li>
 								<li class="oh-dropdown__item">
 
-									<form 
-									action="{% url 'document-request-delete' document_list.list.0.document_request_id.id %}" 
-										class="w-50" 
-										onsubmit="return confirm('{% trans "Are you sure you want to delete this Document Request?" %}');" 
-										method='post'> 
+									<form
+									action="{% url 'document-request-delete' document_list.list.0.document_request_id.id %}"
+										class="w-50"
+										onsubmit="return confirm('{% trans "Are you sure you want to delete this Document Request?" %}');"
+										method='post'>
 										{% csrf_token %}
 										<button
 											type="submit"
@@ -139,11 +139,11 @@
 						<div
 							class="oh-user_permission-list_item accordion exclude-accordion-style " hx-get='{% url "view-file" document.id %}'
 							hx-target="#viewFile" data-toggle="oh-modal-toggle"
-							data-target="#viewFileModal" 
+							data-target="#viewFileModal"
 						>
 							<div class="oh-user_permission-list_profile ps-2 {% if document.status == "approved" %}row-status--yellow {% elif document.status == 'rejected' %}row-status--red {% elif document.status == 'requested' %}row-status--blue{% endif %}">
-								<input type="checkbox" id="{{ document.id }}" onchange="highlightRow($(this))" 
-									class="oh-input payslip-checkbox oh-input__checkbox all-documents-row" 
+								<input type="checkbox" id="{{ document.id }}" onchange="highlightRow($(this))"
+									class="oh-input payslip-checkbox oh-input__checkbox all-documents-row"
 									onclick="event.stopPropagation()"
 								>
 								<div class="oh-navbar__user-photo oh-user_permission--profile">
@@ -202,7 +202,7 @@
 								</div>
 							</div>
 							<div class="oh-btn-group">
-                                    {% if perms.horilla_document.change_documentrequest %} 
+                                    {% if perms.horilla_document.change_documentrequest %}
                                         {% if document.status == "approved" or not document.document %}
                                         <a class="oh-btn oh-btn--success w-100 oh-btn--disabled"  onclick="event.stopPropagation()">
                                             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
@@ -228,9 +228,9 @@
                                         <a
                                             type="submit"
                                             hx-get="{% url 'document-reject' document.id %}"
-                                            hx-target="#rejectFileForm"  
+                                            hx-target="#rejectFileForm"
 											data-toggle="oh-modal-toggle"
-											data-target="#rejectFileModal" 
+											data-target="#rejectFileModal"
                                             title="{% trans 'Reject' %}"
                                             class="oh-btn oh-btn--danger w-100"
 											onclick="event.stopPropagation()"
@@ -238,13 +238,13 @@
                                             <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
                                         </a>
 										{% endif %}
-                                    {% endif %} 
-								<form action="{% url 'document-delete' document.id %}" 
-									class="" 
-									onsubmit="return confirm('{% trans "Are you sure you want to delete this Document Request?" %}');" 
+                                    {% endif %}
+								<form action="{% url 'document-delete' document.id %}"
+									class=""
+									onsubmit="return confirm('{% trans "Are you sure you want to delete this Document Request?" %}');"
 									method='post'
 									onclick="event.stopPropagation()"
-									> 
+									>
 									{% csrf_token %}
 									<button
 										type="submit"
@@ -267,7 +267,7 @@
 				</div>
 				<div class="oh-pagination">
                     <span class="oh-pagination__page">
-                        {% trans "Page" %} {{ document_list.list.number }} 
+                        {% trans "Page" %} {{ document_list.list.number }}
                         {%trans "of" %} {{document_list.list.paginator.num_pages }}.
                     </span>
                     <nav class="oh-pagination__nav">
@@ -340,7 +340,7 @@
 		</div>
 	</div>
 	{% endfor %}
-	
+
 	<div class="oh-pagination">
         <span class="oh-pagination__page">
             {% trans "Page" %} {{ documents.number }} {% trans "of" %}

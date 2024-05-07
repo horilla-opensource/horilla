@@ -12,20 +12,17 @@ django.shortcuts module.
 
 import math
 from urllib.parse import parse_qs
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
+
 from django.contrib import messages
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
-from horilla.decorators import permission_required, login_required
+
 from base.methods import get_key_instances
-from payroll.models.tax_models import (
-    TaxBracket,
-)
-from payroll.forms.tax_forms import (
-    FilingStatusForm,
-    TaxBracketForm,
-)
+from horilla.decorators import login_required, permission_required
+from payroll.forms.tax_forms import FilingStatusForm, TaxBracketForm
 from payroll.models.models import FilingStatus
+from payroll.models.tax_models import TaxBracket
 
 
 @login_required

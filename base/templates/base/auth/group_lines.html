@@ -22,7 +22,7 @@
       <div class="btn-group">
         {% if perms.auth.change_group %}
           <button class=" oh-btn oh-btn--light" hx-get="{% url "user-group-assign" %}" hx-vals='{"group":"{{group.id}}"}' hx-target="#groupAssignBody" data-toggle="oh-modal-toggle" data-target="#groupAssign" onclick="event.stopPropagation()">
-            <ion-icon name="person-add-outline" class="text-dark"></ion-icon>    
+            <ion-icon name="person-add-outline" class="text-dark"></ion-icon>
           </button>
         {% endif %}
         {% if perms.auth.delete_group %}
@@ -59,15 +59,15 @@
 <div class="oh-wrapper w-100">
     <div class="oh-pagination">
       <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal">{% trans 'Page' %} {{ groups.number }} {% trans 'of' %} {{ groups.paginator.num_pages }}.</span>
-  
+
       <nav class="oh-pagination__nav">
         <div class="oh-pagination__input-container me-3">
           <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
-  
+
           <input type="number" name="page" class="oh-pagination__input" value="{{ groups.number }}" hx-get="{% url 'user-group-search' %}?{{ pd }}" hx-target="#permissionContainer" min="1" />
           <span class="oh-pagination__label">{% trans 'of' %} {{ groups.paginator.num_pages }}</span>
         </div>
-  
+
         <ul class="oh-pagination__items">
           {% if groups.has_previous %}
             <li class="oh-pagination__item oh-pagination__item--wide">
@@ -89,4 +89,3 @@
       </nav>
     </div>
   </div>
-  

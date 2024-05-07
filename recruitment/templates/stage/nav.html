@@ -17,13 +17,13 @@ x-data="{searchShow: false}"
     ></ion-icon>
   </a>
 </div>
-<form hx-get='{% url "stage-search" %}' hx-target='#stage-container' 
+<form hx-get='{% url "stage-search" %}' hx-target='#stage-container'
   id="filterForm"
   onkeyup="$('.filterButton')[0].click()"
 >
 
   <div class="oh-main__titlebar oh-main__titlebar--right">
-    
+
     <div
       class="oh-input-group oh-input__search-group"
       :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -34,7 +34,7 @@ x-data="{searchShow: false}"
       ></ion-icon>
       <input
         type="text"
-        placeholder="{% trans 'Search' %}" 
+        placeholder="{% trans 'Search' %}"
         name='search'
         class="oh-input oh-input__icon"
         aria-label="Search Input"
@@ -43,7 +43,7 @@ x-data="{searchShow: false}"
     <div class="oh-main__titlebar-button-container">
 
       <div class="oh-dropdown" x-data="{open: false}">
-        
+
         <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
           <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
         </button>
@@ -59,11 +59,11 @@ x-data="{searchShow: false}"
       </div>
       <div class="oh-dropdown" x-data="{open: false}">
         {% if perms.recruitment.add_stage %}
-          <button 
+          <button
             data-target='#objectCreateModal'
             data-toggle='oh-modal-toggle'
             class="oh-btn oh-btn--secondary ml-2"
-            hx-get="{% url 'rec-stage-create' %}" 
+            hx-get="{% url 'rec-stage-create' %}"
             hx-target="#objectCreateModalTarget"
             >
             <ion-icon name="add" class="mr-1"></ion-icon>{% trans "Create" %}

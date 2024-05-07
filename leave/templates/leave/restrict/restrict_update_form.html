@@ -119,7 +119,7 @@
         success: function(data) {
           // Clear existing options in the Job Position dropdown
           $('#id_job_position').empty();
-          
+
           // Append new options based on the response
           $.each(data.job_positions, function(key, value) {
             $('#id_job_position').append($('<option>', {
@@ -132,6 +132,3 @@
     });
   });
 </script>
-
-
-

@@ -159,7 +159,7 @@
                         </a>
                     {% endif %}
                     {% if perms.payroll.delete_contract  %}
-                        <a 
+                        <a
                             class="oh-btn oh-btn--danger"style="width: 50%;"
                             hx-confirm="{% trans 'Do you want to delete this Contract?' %}"
                             hx-post="{% url 'delete-contract-modal' contract.id %}?{{pd}}"
@@ -178,5 +178,3 @@
         {% endif %}
     </div>
 </div>
-
-

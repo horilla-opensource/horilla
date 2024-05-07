@@ -30,7 +30,7 @@
   </div>
 </div>
 <!-- end of column toggle -->
-<div id="displinary-column-table" data-table-name="displinary_column_tab"> 
+<div id="displinary-column-table" data-table-name="displinary_column_tab">
   <!-- sticky table Start-->
   <div class="oh-sticky-table">
     <div class="oh-sticky-table__table oh-table--sortable">
@@ -58,7 +58,7 @@
                   <span  title="{% trans "Reveal" %}" class="reveal-span"><ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline"></ion-icon></span>
                   <span  title="{% trans "Collapse" %}" class="collapse-span"><ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon></span>
                 </button>
-                <span class="count-span" style="font-style:italic;color:hsl(0deg,0%,37%);">{{i.employee_id.all|length}} 
+                <span class="count-span" style="font-style:italic;color:hsl(0deg,0%,37%);">{{i.employee_id.all|length}}
                   {% if i.employee_id.all|length > 1 %}
                     {% trans "Employees" %}
                   {% else %}
@@ -111,7 +111,7 @@
                 {% else %}
                     <div data-cell-index="2" class="oh-sticky-table__td dateformat_changer">{{ i.start_date }}</div>
                 {% endif %}
-                
+
                 {% if i.attachment %}
                   <div data-cell-index="3" class="oh-sticky-table__td">
                     <div class="oh-helpdesk_attached--content">
@@ -125,7 +125,7 @@
                   <div data-cell-index="3" class="oh-sticky-table__td">{% trans "No file has been uploaded." %}</div>
                 {% endif %}
                 <div data-cell-index="4" class="oh-sticky-table__td">{{ i.description|truncatechars:25}}</div>
-                
+
                 {% if perms.payroll.change_disciplinaryaction or perms.payroll.delete_disciplinaryaction %}
                   <div class="oh-sticky-table__td">
                     <div class="oh-btn-group" >

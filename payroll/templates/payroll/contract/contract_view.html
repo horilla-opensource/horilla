@@ -24,7 +24,7 @@
                     onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
                     id="hxContractExportForm"
                 >
-                    {% csrf_token %} 
+                    {% csrf_token %}
 					{% include 'payroll/contract/contract_export_filter.html' %}
                     <div class="oh-dropdown__filter-footer">
                         <button

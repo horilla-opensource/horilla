@@ -1,6 +1,6 @@
-{% load i18n %} 
-{% load basefilters %} 
-{% load attendancefilters %} 
+{% load i18n %}
+{% load basefilters %}
+{% load attendancefilters %}
 {% include 'filter_tags.html' %}
 <style>
   .disabled {
@@ -145,12 +145,12 @@
                                   >
                                   <ion-icon name="create-outline"></ion-icon>
                                 </a>
-                            {% endif %} 
+                            {% endif %}
                             {% if perms.attendance.delete_attendance %}
                                 <form action="{% url 'attendance-delete' attendance.id %}"
-                                      onclick="event.stopPropagation()" 
+                                      onclick="event.stopPropagation()"
                                       onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
-                                      hx-target="#tab_contents" method='post' class='w-50'> 
+                                      hx-target="#tab_contents" method='post' class='w-50'>
                                       {% csrf_token %}
                                     <button
                                       type="submit"
@@ -184,7 +184,7 @@
               hx-target="#tab_contents"
               min="1"
             />
-            <span class="oh-pagination__label"> 
+            <span class="oh-pagination__label">
                 {% trans "of" %} {{attendances.paginator.num_pages}}
             </span>
         </div>
@@ -206,7 +206,7 @@
                       >{% trans "Previous" %}
                     </a>
                 </li>
-            {% endif %} 
+            {% endif %}
             {% if attendances.has_next %}
                 <li class="oh-pagination__item oh-pagination__item--wide">
                     <a

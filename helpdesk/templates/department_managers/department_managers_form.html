@@ -26,14 +26,14 @@
                 </div>
             </div>
         {% endif %}
-        <form  
+        <form
             {% if dep_id %}
             hx-post="{% url 'department-manager-update' dep_id %}"
             {% else	%}
             hx-post="{% url 'department-manager-create' %}"
             {% endif %}
             hx-target="#deparmentManagersForm"
-            method="post" 
+            method="post"
             hx-encoding="multipart/form-data">
             {% csrf_token %}
             {{form.as_p}}

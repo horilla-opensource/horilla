@@ -51,7 +51,7 @@
       </div>
     </div>
   </div>
-  <div id="rotating-shift-table" data-table-name="rotating_shift_tab"> 
+  <div id="rotating-shift-table" data-table-name="rotating_shift_tab">
     <!-- start of sticky table -->
     <div class="oh-sticky-table">
       <div class="oh-sticky-table__table oh-table--sortable">
@@ -116,15 +116,15 @@
               {% trans "Weekly every" %} {{rshift.rotate_every_weekend}}
               {% elif rshift.based_on == "monthly" %}
               {% if rshift.rotate_every == "1" %}
-              {% trans "Rotate every" %} {{rshift.rotate_every}}{% trans "st day of month" %} 
+              {% trans "Rotate every" %} {{rshift.rotate_every}}{% trans "st day of month" %}
               {% elif rshift.rotate_every == "2" %}
-              {% trans "Rotate every" %} {{rshift.rotate_every}}{% trans "nd day of month" %} 
+              {% trans "Rotate every" %} {{rshift.rotate_every}}{% trans "nd day of month" %}
               {% elif rshift.rotate_every == "3" %}
-              {% trans "Rotate every" %} {{rshift.rotate_every}}{% trans "rd day of month" %} 
+              {% trans "Rotate every" %} {{rshift.rotate_every}}{% trans "rd day of month" %}
               {% elif rshift.rotate_every == "last" %}
-              {% trans "Rotate every last day of month" %} 
+              {% trans "Rotate every last day of month" %}
               {% else %}
-              {% trans "Rotate every" %} {{rshift.rotate_every}}{% trans "th day of month" %} 
+              {% trans "Rotate every" %} {{rshift.rotate_every}}{% trans "th day of month" %}
               {% endif %}
               {% endif %}
             </div>
@@ -147,8 +147,8 @@
                 >
                   <ion-icon name="create-outline"></ion-icon>
                 </a>
-                <a 
-                  class="oh-btn oh-btn--light-bkg w-100" 
+                <a
+                  class="oh-btn oh-btn--light-bkg w-100"
                   data-toggle="oh-modal-toggle"
                   data-target="#objectCreateModal"
                   hx-get="{% url 'rotating-shift-assign-duplicate' rshift.id %}?{{pg}}"
@@ -158,10 +158,10 @@
                 >
                   <ion-icon name="copy-outline"></ion-icon>
                 </a>
-                {% endif %} 
+                {% endif %}
                 {% if perms.base.change_rotatingshiftassign  or request.user|is_reportingmanager %}
                   {% if rshift.is_active %}
-                    <form hx-confirm="{% trans 'Do you want to archive this rotating shift assign?' %}" hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}" 
+                    <form hx-confirm="{% trans 'Do you want to archive this rotating shift assign?' %}" hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}"
                           hx-target="#view-container" style="width:100%"
                     >
                       <input type="hidden" name="is_active" value="{% trans 'False' %}" id="">
@@ -170,7 +170,7 @@
                       </button>
                     </form>
                   {% else %}
-                    <form hx-confirm="{% trans 'Do you Want to un-archive this rotating shift assign?' %}" hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}" 
+                    <form hx-confirm="{% trans 'Do you Want to un-archive this rotating shift assign?' %}" hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}"
                           hx-target="#view-container" style="width:100%"
                       >
                       <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Un-Archive' %}">
@@ -282,7 +282,7 @@
     <!-- end of empty page -->
 
   {% endif %}
- 
+
 </div>
 </div>
 

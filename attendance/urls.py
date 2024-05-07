@@ -6,12 +6,13 @@ This page is used to map request or url path with function
 """
 
 from django.urls import path
-import attendance.views.clock_in_out
 
+import attendance.views.clock_in_out
 import attendance.views.dashboard
 import attendance.views.penalty
-import attendance.views.search
 import attendance.views.requests
+import attendance.views.search
+
 from .views import views
 
 urlpatterns = [
@@ -21,7 +22,9 @@ urlpatterns = [
         "attendance-info-import", views.attendance_import, name="attendance-info-import"
     ),
     path(
-        "attendance-info-export-form", views.attendance_export, name="attendance-info-export-form"
+        "attendance-info-export-form",
+        views.attendance_export,
+        name="attendance-info-export-form",
     ),
     path(
         "attendance-info-export", views.attendance_export, name="attendance-info-export"

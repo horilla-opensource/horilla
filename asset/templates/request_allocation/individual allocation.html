@@ -12,7 +12,7 @@
             aria-label="chevron back outline"
         ></ion-icon>
     </button>
-  
+
     <button
       hx-get="{% url 'asset-allocation-individual-view' next %}?allocations_ids={{allocations_ids}}"
       hx-target="#objectDetailsModalW25Target"
@@ -38,7 +38,7 @@
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-	<a class="oh-timeoff-modal__profile-content pt-4" style="text-decoration:none;" 
+	<a class="oh-timeoff-modal__profile-content pt-4" style="text-decoration:none;"
 		href ="{% url 'employee-view-individual' asset_allocation.assigned_to_employee_id.id %}">
 	    <div class="oh-profile mb-2">
 	        <div class="oh-profile__avatar">

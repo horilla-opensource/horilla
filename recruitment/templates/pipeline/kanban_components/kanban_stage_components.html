@@ -31,7 +31,7 @@
     </span>
     </div>
 
-    <div class="oh-kanban__head-actions oh-kanban__dropdown candidate-table" data-stage-id="{{stage.id}}" >          
+    <div class="oh-kanban__head-actions oh-kanban__dropdown candidate-table" data-stage-id="{{stage.id}}" >
         <div class="oh-dropdown" x-data="{open: false}">
         <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open"
         @click.outside="open = false" title="{% trans " Actions" %}">
@@ -41,10 +41,10 @@
             <ul class="oh-dropdown__items">
                 {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec%}
                 <li class="oh-dropdown__item">
-                <a class="oh-dropdown__link" 
-                hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.id}}" 
-                hx-target="#createTarget" 
-                data-toggle="oh-modal-toggle" 
+                <a class="oh-dropdown__link"
+                hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.id}}"
+                hx-target="#createTarget"
+                data-toggle="oh-modal-toggle"
                 data-target="#createModal"  data-key=".oh-kanban__section">{% trans "Add Candidate" %}</a>
                 </li>
                 {% endif %}
@@ -64,32 +64,32 @@
             </ul>
         </div>
         </div>
-        
+
     </div>
     </div>
 
-    <div 
-        class="oh-kanban__section-body ui-sortable candidate-container hx-sortable" 
-        data-stage-id='{{stage.id}}' 
+    <div
+        class="oh-kanban__section-body ui-sortable candidate-container hx-sortable"
+        data-stage-id='{{stage.id}}'
         data-recruitment-id="{{rec.id}}"
         hx-get="{% url 'candidate-stage-component' %}?stage_id={{stage.id}}&view=card"
         hx-trigger="load"
         id="kanbanCandidates{{stage.id}}"
         >
         <div class="animated-background" ondrop="event.stopPropagation()" ondrag="event.stopPropagation()"></div>
-    
+
     </div>
 
 </div>
 {% endfor %}
 
-    
+
 {% if perms.recruitment.add_stage or request.user|recruitment_manages:rec %}
 <div class="oh-kanban__add-container">
     <button class="oh-btn oh-btn--x-small oh-kanban__add-section"data-target="#objectCreateModal" data-toggle="oh-modal-toggle" hx-get="{% url "rec-stage-create" %}?recruitment_id={{rec.id}}" hx-target="#objectCreateModalTarget">
         <ion-icon class="me-1 md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
         {% trans "Stage" %}
-    </button>                        
+    </button>
 </div>
 {% endif %}
 

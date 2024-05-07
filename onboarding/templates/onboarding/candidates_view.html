@@ -52,7 +52,7 @@
           x-show="open"
           @click.outside="open = false"
           style="display: none"
-          >            
+          >
           <div class="oh-accordion">
             <label>{% trans "Group By" %}</label>
               <div class="row">
@@ -80,7 +80,7 @@
             </div>
           </div>
         </div>
-      
+
 
         <div class="oh-btn-group ml-2">
           <button type="button" class="oh-btn oh-btn--info oh-btn--shadow" data-target="#addAttachments" data-toggle="oh-modal-toggle">
@@ -127,10 +127,10 @@
   </span>
 </div>
 <div id="messages" class="oh-alert-container">
-  
+
 </div>
 <div class="oh-wrapper" id="candidates">
-  
+
   {% include 'onboarding/candidates.html' %}
   {% else %}
   <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
@@ -151,8 +151,8 @@
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
-    <form hx-post="{% url 'email-send' %}" 
-    hx-target="#addAttachmentsBody" 
+    <form hx-post="{% url 'email-send' %}"
+    hx-target="#addAttachmentsBody"
     hx-encoding="multipart/form-data">
       <div class="oh-modal__dialog-body" id="addAttachmentsBody">
         <section>

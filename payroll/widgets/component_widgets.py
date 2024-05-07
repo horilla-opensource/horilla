@@ -114,7 +114,7 @@ class StyleWidget(forms.Widget):
                 }}
                 $("select, [type='checkbox'], [type='radio']").change(function (e) {{
                     e.preventDefault();
-                    toggleSelect2();                    
+                    toggleSelect2();
                 }});
                 toggleSelect2();
             }});

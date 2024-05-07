@@ -52,7 +52,7 @@
                                                 aria-label="add sharp"
                                             ></ion-icon>
                                         </a>
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -65,11 +65,11 @@
                             {% for ticket in my_tickets %} {% if ticket.status == status %}
 
                             <div
-                                class="oh-kanban__card candidate change-ticket 
-                                        {% if ticket.status == 'new' %}row-status--blue 
+                                class="oh-kanban__card candidate change-ticket
+                                        {% if ticket.status == 'new' %}row-status--blue
                                         {% elif ticket.status == 'in_progress' %}row-status--orange
-                                        {% elif ticket.status == 'resolved' %}row-status--yellowgreen 
-                                        {% elif ticket.status == 'on_hold' %}row-status--red  
+                                        {% elif ticket.status == 'resolved' %}row-status--yellowgreen
+                                        {% elif ticket.status == 'on_hold' %}row-status--red
                                         {% elif ticket.status == 'canceled' %}row-status--grey{% endif %}"
                                 data-ticket-id="{{ticket.id}}"
                                 id="canididate-{{ticket.id}}"
@@ -78,7 +78,7 @@
                                 data-job-position="{{ticket.job_position_id}}"
                                 onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
                             >
-                            
+
                                 <div class="oh-kanban__card-head">
                                     <div class="border-bottom pb-3">
                                         <span
@@ -98,8 +98,8 @@
                                     >
                                         <button class="oh-btn oh-btn--small
                                             oh-btn--transparent oh-kanban__btn
-                                            oh-kanban__dropdown-toggle action-button" 
-                                            title={% trans "Actions" %} 
+                                            oh-kanban__dropdown-toggle action-button"
+                                            title={% trans "Actions" %}
                                             onclick="event.stopPropagation()">
                                             <ion-icon
                                                 name="ellipsis-vertical-sharp"
@@ -127,7 +127,7 @@
                                                             class="oh-dropdown__link oh-dropdown__link--secondary"
                                                             data-toggle="oh-modal-toggle"
                                                             data-target="#objectCreateModal"
-                                                            hx-get="{% url 'ticket-update' ticket.id %}" 
+                                                            hx-get="{% url 'ticket-update' ticket.id %}"
                                                             hx-target="#objectCreateModalTarget"
                                                             onclick="event.stopPropagation()"
                                                             >{% trans "Edit" %}</a
@@ -182,11 +182,11 @@
                                             {% if ticket.priority == 'low' %}
                                                 <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                                     {% csrf_token %}
-                                                    <div class="d-flex">                           
+                                                    <div class="d-flex">
                                                         <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                                                             {% for i in "321" %}
                                                                 <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '1' == i %} checked {% endif %}/>
-                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                <label for="star{{i}}{{ticket.id}}"
                                                                 {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
                                                             {% endfor %}
                                                         </div>
@@ -197,11 +197,11 @@
                                             {% elif ticket.priority == 'medium' %}
                                                 <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                                     {% csrf_token %}
-                                                    <div class="d-flex">                           
+                                                    <div class="d-flex">
                                                         <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                                                             {% for i in "321" %}
                                                                 <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '2' == i %} checked {% endif %}/>
-                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                <label for="star{{i}}{{ticket.id}}"
                                                                 {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
                                                             {% endfor %}
                                                         </div>
@@ -212,11 +212,11 @@
                                             {% else %}
                                                 <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                                     {% csrf_token %}
-                                                    <div class="d-flex">                           
+                                                    <div class="d-flex">
                                                         <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                                                             {% for i in "321" %}
                                                                 <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '3' == i %} checked {% endif %}/>
-                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                <label for="star{{i}}{{ticket.id}}"
                                                                 {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
                                                             {% endfor %}
                                                         </div>
@@ -224,7 +224,7 @@
                                                         <span id="rating-radio-error"></span>
                                                     </div>
                                                 </form>
-                                            {% endif %}                                        
+                                            {% endif %}
                                             <div>
                                                 <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
                                             </div>
@@ -240,9 +240,9 @@
                                         <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
                                         <div class="oh-kanban__card-content oh-kanban__card-content--hide">
                                             <span class="oh-kanban__card-footer-text oh-text--light">
-                                                {{ticket.assigned_to.all|join:", "}} 
+                                                {{ticket.assigned_to.all|join:", "}}
                                             </span>
-                                        </div>                                    
+                                        </div>
                                     </div>
                                 {% endif %}
                             </div>
@@ -253,14 +253,14 @@
                 </div>
             </div>
         {% else %}
-            <!-- start of empty page-->  
+            <!-- start of empty page-->
             <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
 				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/ticket.png' %}" class="" alt="Page not found. 404." />
 				<h5 class="oh-404__subtitle">{% trans "There are no tickets at the moment." %}</h5>
 			</div>
-            <!-- end of empty page--> 
+            <!-- end of empty page-->
         {% endif %}
-        
+
     </div>
     <div class="oh-tabs__content" id="tab_2">
         {% if allocated_tickets %}
@@ -314,7 +314,7 @@
                                                 aria-label="add sharp"
                                             ></ion-icon>
                                         </a>
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -327,11 +327,11 @@
                             {% for ticket in allocated_tickets %} {% if ticket.status == status %}
 
                             <div
-                                class="oh-kanban__card candidate change-ticket 
-                                        {% if ticket.status == 'new' %}row-status--blue 
+                                class="oh-kanban__card candidate change-ticket
+                                        {% if ticket.status == 'new' %}row-status--blue
                                         {% elif ticket.status == 'in_progress' %}row-status--orange
-                                        {% elif ticket.status == 'resolved' %}row-status--yellowgreen 
-                                        {% elif ticket.status == 'on_hold' %}row-status--red  
+                                        {% elif ticket.status == 'resolved' %}row-status--yellowgreen
+                                        {% elif ticket.status == 'on_hold' %}row-status--red
                                         {% elif ticket.status == 'canceled' %}row-status--grey{% endif %}"
                                 data-ticket-id="{{ticket.id}}"
                                 id="canididate-{{ticket.id}}"
@@ -340,7 +340,7 @@
                                 data-job-position="{{ticket.job_position_id}}"
                                 onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
                             >
-                            
+
                                 <div class="oh-kanban__card-head">
                                     <div class="border-bottom pb-3">
                                         <span
@@ -360,8 +360,8 @@
                                     >
                                         <button class="oh-btn oh-btn--small
                                             oh-btn--transparent oh-kanban__btn
-                                            oh-kanban__dropdown-toggle action-button" 
-                                            title={% trans "Actions" %} 
+                                            oh-kanban__dropdown-toggle action-button"
+                                            title={% trans "Actions" %}
                                             onclick="event.stopPropagation()">
                                             <ion-icon
                                                 name="ellipsis-vertical-sharp"
@@ -390,7 +390,7 @@
                                                             class="oh-dropdown__link oh-dropdown__link--secondary"
                                                             data-toggle="oh-modal-toggle"
                                                             data-target="#objectCreateModal"
-                                                            hx-get="{% url 'ticket-update' ticket.id %}" 
+                                                            hx-get="{% url 'ticket-update' ticket.id %}"
                                                             hx-target="#objectCreateModalTarget"
                                                             onclick="event.stopPropagation()"
                                                             >{% trans "Edit" %}</a
@@ -406,7 +406,7 @@
                                                             class="oh-dropdown__link"
                                                             >{% trans "Archive" %}</a
                                                         >
-                                                    </li>                                                
+                                                    </li>
                                                     {% if not ticket.assigned_to.all %}
                                                     <li
                                                         class="oh-dropdown__item"
@@ -417,7 +417,7 @@
                                                             class="oh-dropdown__link"
                                                             >{% trans "claim" %}</a
                                                         >
-                                                    </li>                                                
+                                                    </li>
                                                     {% endif %}
                                                     {% if ticket.employee_id == request.user.employee_get or perms.helpdesk.deleteticket %}
                                                     <li
@@ -460,11 +460,11 @@
                                             {% if ticket.priority == 'low' %}
                                                 <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                                     {% csrf_token %}
-                                                    <div class="d-flex">                           
+                                                    <div class="d-flex">
                                                         <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                                                             {% for i in "321" %}
                                                                 <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '1' == i %} checked {% endif %}/>
-                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                <label for="star{{i}}{{ticket.id}}"
                                                                 {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
                                                             {% endfor %}
                                                         </div>
@@ -475,11 +475,11 @@
                                             {% elif ticket.priority == 'medium' %}
                                                 <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                                     {% csrf_token %}
-                                                    <div class="d-flex">                           
+                                                    <div class="d-flex">
                                                         <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                                                             {% for i in "321" %}
                                                                 <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '2' == i %} checked {% endif %}/>
-                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                <label for="star{{i}}{{ticket.id}}"
                                                                 {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
                                                             {% endfor %}
                                                         </div>
@@ -490,11 +490,11 @@
                                             {% else %}
                                                 <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                                     {% csrf_token %}
-                                                    <div class="d-flex">                           
+                                                    <div class="d-flex">
                                                         <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                                                             {% for i in "321" %}
                                                                 <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '3' == i %} checked {% endif %}/>
-                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                <label for="star{{i}}{{ticket.id}}"
                                                                 {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
                                                             {% endfor %}
                                                         </div>
@@ -502,10 +502,10 @@
                                                         <span id="rating-radio-error"></span>
                                                     </div>
                                                 </form>
-                                            {% endif %} 
+                                            {% endif %}
                                             <div>
                                                 <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
-                                            </div>                                        
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -518,7 +518,7 @@
                                         <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
                                         <div class="oh-kanban__card-content oh-kanban__card-content--hide">
                                             <span class="oh-kanban__card-footer-text oh-text--light">
-                                                {{ticket.assigned_to.all|join:", "}} 
+                                                {{ticket.assigned_to.all|join:", "}}
                                             </span>
                                         </div>
                                     </div>
@@ -531,12 +531,12 @@
                 </div>
             </div>
         {% else %}
-            <!-- start of empty page-->  
+            <!-- start of empty page-->
             <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
 				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/ticket.png' %}" class="" alt="Page not found. 404." />
 				<h5 class="oh-404__subtitle">{% trans "There are no tickets at the moment." %}</h5>
 			</div>
-            <!-- end of empty page--> 
+            <!-- end of empty page-->
         {% endif %}
     </div>
     <div class="oh-tabs__content" id="tab_3">
@@ -591,7 +591,7 @@
                                                 aria-label="add sharp"
                                             ></ion-icon>
                                         </a>
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -604,11 +604,11 @@
                             {% for ticket in all_tickets %} {% if ticket.status == status %}
 
                             <div
-                                class="oh-kanban__card candidate change-ticket 
-                                        {% if ticket.status == 'new' %}row-status--blue 
+                                class="oh-kanban__card candidate change-ticket
+                                        {% if ticket.status == 'new' %}row-status--blue
                                         {% elif ticket.status == 'in_progress' %}row-status--orange
-                                        {% elif ticket.status == 'resolved' %}row-status--yellowgreen 
-                                        {% elif ticket.status == 'on_hold' %}row-status--red  
+                                        {% elif ticket.status == 'resolved' %}row-status--yellowgreen
+                                        {% elif ticket.status == 'on_hold' %}row-status--red
                                         {% elif ticket.status == 'canceled' %}row-status--grey{% endif %}"
                                 data-ticket-id="{{ticket.id}}"
                                 id="canididate-{{ticket.id}}"
@@ -617,7 +617,7 @@
                                 data-job-position="{{ticket.job_position_id}}"
                                 onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
                             >
-                            
+
                                 <div class="oh-kanban__card-head">
                                     <div class="border-bottom pb-3">
                                         <span
@@ -637,8 +637,8 @@
                                     >
                                         <button class="oh-btn oh-btn--small
                                             oh-btn--transparent oh-kanban__btn
-                                            oh-kanban__dropdown-toggle action-button" 
-                                            title={% trans "Actions" %} 
+                                            oh-kanban__dropdown-toggle action-button"
+                                            title={% trans "Actions" %}
                                             onclick="event.stopPropagation()">
                                             <ion-icon
                                                 name="ellipsis-vertical-sharp"
@@ -666,7 +666,7 @@
                                                             class="oh-dropdown__link oh-dropdown__link--secondary"
                                                             data-toggle="oh-modal-toggle"
                                                             data-target="#objectCreateModal"
-                                                            hx-get="{% url 'ticket-update' ticket.id %}" 
+                                                            hx-get="{% url 'ticket-update' ticket.id %}"
                                                             hx-target="#objectCreateModalTarget"
                                                             onclick="event.stopPropagation()"
                                                             >{% trans "Edit" %}</a
@@ -721,11 +721,11 @@
                                             {% if ticket.priority == 'low' %}
                                                 <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                                     {% csrf_token %}
-                                                    <div class="d-flex">                           
+                                                    <div class="d-flex">
                                                         <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                                                             {% for i in "321" %}
                                                                 <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '1' == i %} checked {% endif %}/>
-                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                <label for="star{{i}}{{ticket.id}}"
                                                                 {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
                                                             {% endfor %}
                                                         </div>
@@ -736,11 +736,11 @@
                                             {% elif ticket.priority == 'medium' %}
                                                 <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                                     {% csrf_token %}
-                                                    <div class="d-flex">                           
+                                                    <div class="d-flex">
                                                         <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                                                             {% for i in "321" %}
                                                                 <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '2' == i %} checked {% endif %}/>
-                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                <label for="star{{i}}{{ticket.id}}"
                                                                 {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
                                                             {% endfor %}
                                                         </div>
@@ -751,11 +751,11 @@
                                             {% else %}
                                                 <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                                     {% csrf_token %}
-                                                    <div class="d-flex">                           
+                                                    <div class="d-flex">
                                                         <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
                                                             {% for i in "321" %}
                                                                 <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '3' == i %} checked {% endif %}/>
-                                                                <label for="star{{i}}{{ticket.id}}" 
+                                                                <label for="star{{i}}{{ticket.id}}"
                                                                 {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
                                                             {% endfor %}
                                                         </div>
@@ -763,7 +763,7 @@
                                                         <span id="rating-radio-error"></span>
                                                     </div>
                                                 </form>
-                                            {% endif %} 
+                                            {% endif %}
                                             <div>
                                                 <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
                                             </div>
@@ -779,7 +779,7 @@
                                         <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
                                         <div class="oh-kanban__card-content oh-kanban__card-content--hide">
                                             <span class="oh-kanban__card-footer-text oh-text--light">
-                                                {{ticket.assigned_to.all|join:", "}} 
+                                                {{ticket.assigned_to.all|join:", "}}
                                             </span>
                                         </div>
                                     </div>
@@ -792,12 +792,12 @@
                 </div>
             </div>
         {% else %}
-            <!-- start of empty page-->  
+            <!-- start of empty page-->
             <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
 				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/ticket.png' %}" class="" alt="Page not found. 404." />
 				<h5 class="oh-404__subtitle">{% trans "There are no tickets at the moment." %}</h5>
 			</div>
-            <!-- end of empty page--> 
+            <!-- end of empty page-->
         {% endif %}
     </div>
 </div>

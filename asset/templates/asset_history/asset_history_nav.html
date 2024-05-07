@@ -36,9 +36,9 @@
         id="attendance-search"
         name='search'
         placeholder="{% trans 'Search' %}"
-        hx-get="{% url 'asset-history-search' %}" 
-        hx-trigger="keyup changed delay:500ms, search" 
-        hx-target="#historyTable" 
+        hx-get="{% url 'asset-history-search' %}"
+        hx-trigger="keyup changed delay:500ms, search"
+        hx-target="#historyTable"
         hx-swap="innerHTML"
       />
     </div>
@@ -74,7 +74,7 @@
         x-show="open"
         @click.outside="open = false"
         style="display: none"
-        >            
+        >
         <div class="oh-accordion">
           <label for="id_field">{% trans "Group By" %}</label>
             <div class="row">
@@ -105,7 +105,7 @@
     </div>
   </div>
   <script>
-    $('#attendance-search').keydown(function (e) { 
+    $('#attendance-search').keydown(function (e) {
       var val = $(this).val();
       $('.pg').attr('hx-vals', `{"search":${val}}`);
     });

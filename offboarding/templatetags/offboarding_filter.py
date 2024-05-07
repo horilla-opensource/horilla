@@ -4,10 +4,10 @@ offboarding_filter.py
 This page is used to write custom template filters.
 """
 
-from django.template.defaultfilters import register
 from django import template
-from employee.models import Employee
+from django.template.defaultfilters import register
 
+from employee.models import Employee
 from offboarding.models import (
     EmployeeTask,
     Offboarding,
@@ -15,7 +15,6 @@ from offboarding.models import (
     OffboardingStage,
     OffboardingTask,
 )
-
 
 register = template.Library()
 
@@ -144,8 +143,9 @@ def completed_tasks(tasks):
     """
     return tasks.filter(status="completed").count()
 
+
 @register.filter("is_employee_tasks")
-def is_employee_tasks(employee_tasks,task):
+def is_employee_tasks(employee_tasks, task):
     """
     This method is used to to check any stage manager
     """

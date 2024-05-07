@@ -19,7 +19,7 @@ x-data="{searchShow: false}"
 </div>
 <form hx-get='{% url "recruitment-search" %}' hx-target='#recruitment-container' id="filterForm">
   <div class="oh-main__titlebar oh-main__titlebar--right">
-    
+
     <div
       class="oh-input-group oh-input__search-group"
       :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -30,7 +30,7 @@ x-data="{searchShow: false}"
       ></ion-icon>
       <input
         type="text"
-        placeholder="{% trans 'Search' %}" 
+        placeholder="{% trans 'Search' %}"
         name='search'
         id="recruitmentSearch"
         class="oh-input oh-input__icon"
@@ -55,20 +55,20 @@ x-data="{searchShow: false}"
       </div>
       <div class="oh-dropdown" x-data="{open: false}">
         {% if perms.recruitment.add_recruitment %}
-        <a 
+        <a
         href='#'
         data-toggle="oh-modal-toggle"
         data-target="#addRecruitmentModal"
-        hx-target="#addRecruitmentModalBody" 
+        hx-target="#addRecruitmentModalBody"
         hx-get="{% url "recruitment-create" %}"
-        class="oh-btn oh-btn--secondary ml-2" 
+        class="oh-btn oh-btn--secondary ml-2"
         >
           <ion-icon name="add" class="mr-1"></ion-icon>{% trans "Create" %}
         </a>
         {% endif %}
 
         </div>
-      
+
     </div>
   </div>
 </form>
@@ -92,7 +92,7 @@ x-data="{searchShow: false}"
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
-    
+
     <div class="oh-modal__dialog-body" id="addRecruitmentModalBody">
     </div>
   </div>

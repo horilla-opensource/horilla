@@ -3,7 +3,7 @@
 <div>
     <div class="card rounded-3">
         <form  enctype="multipart/form-data">
-        <div class="card-body pl-5 pr-5 pb-5 pt-5"> 
+        <div class="card-body pl-5 pr-5 pb-5 pt-5">
           <h3 class="mb-4">{{form.instance.employee_first_name}}'s {% trans "Work Info" %}</h3>
           <div class="row">
                 <div class="col-md-6 ">
@@ -12,7 +12,7 @@
                 </div>
                 <div class="col-md-6 mb-2">
                 {{work_form.department_id.errors}}
-                <div class="form-outline mb-4">{{work_form.department_id}}</div>            
+                <div class="form-outline mb-4">{{work_form.department_id}}</div>
                 </div>
                 <div class="col-md-6 mb-2">
                 {{work_form.shift_id.errors}}
@@ -40,35 +40,35 @@
                 </div>
                 <div class="col-md-6 mb-4">
                     {{work_form.company_id.errors}}
-                    {{work_form.company_id}}                    
+                    {{work_form.company_id}}
                 </div>
                 <div class="col-md-6 mb-4">
                     {{work_form.location.errors}}
-                    {{work_form.location}}        
+                    {{work_form.location}}
                 </div>
                 <div class="col-md-6 mb-4">
                     {{work_form.email.errors}}
-                    {{work_form.email}}        
+                    {{work_form.email}}
                 </div>
                 <div class="col-md-6 mb-4">
                     {{work_form.date_joining.errors}}
-                    {{work_form.date_joining}}        
+                    {{work_form.date_joining}}
                 </div>
                 <div class="col-md-6 mb-4">
                     {{work_form.contract_end_date.errors}}
-                    {{work_form.contract_end_date}}        
+                    {{work_form.contract_end_date}}
                 </div>
                 <div class="col-md-6 mb-4">
                     {{work_form.basic_salary.errors}}
-                    {{work_form.basic_salary}}        
+                    {{work_form.basic_salary}}
                 </div>
                 <div class="col-md-6 mb-4">
                     {{work_form.salary_hour.errors}}
-                    {{work_form.salary_hour}}        
+                    {{work_form.salary_hour}}
                 </div>
                 <div class="col-md-6 mb-4">
                     {{work_form.tags.errors}}
-                    {{work_form.tags}}        
+                    {{work_form.tags}}
                 </div>
             </div>
             {% if perms.employee.change_employeeworkinformation %}
@@ -93,15 +93,15 @@
             {% endif %}
             {% endif %}
           </div>
-          <div>        
-        </div>      
+          <div>
+        </div>
         </div>
         </form>
     </div>
 
     <div class="card rounded-3 mt-4">
         <form  enctype="multipart/form-data">
-            <div class="card-body pl-5 pr-5 pb-5 pt-5"> 
+            <div class="card-body pl-5 pr-5 pb-5 pt-5">
               <h3 class="mb-4">{{form.instance.employee_first_name}}'s {% trans "Bank Info" %}</h3>
               <div class="row">
                     <div class="col-md-6 ">
@@ -110,7 +110,7 @@
                     </div>
                     <div class="col-md-6 mb-2">
                     {{bank_form.account_number.errors}}
-                    <div class="form-outline mb-4">{{bank_form.account_number}}</div>            
+                    <div class="form-outline mb-4">{{bank_form.account_number}}</div>
                     </div>
                     <div class="col-md-6 mb-2">
                     {{bank_form.branch.errors}}
@@ -168,8 +168,8 @@
                 {% endif %}
                 {% endif %}
               </div>
-              <div>        
-            </div>      
+              <div>
+            </div>
             </div>
             </form>
     </div>

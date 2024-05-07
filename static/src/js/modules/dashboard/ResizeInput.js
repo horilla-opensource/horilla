@@ -20,7 +20,7 @@ class SelectDropDown {
    *  Define Editable input size on load.
    */
   // defineEditableInputSize(e) {
-    
+
   //   $(".oh-editable-input--w-auto") = e.target.value.length + "ch";
   // }
   /**

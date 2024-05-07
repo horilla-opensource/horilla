@@ -46,7 +46,7 @@
 							</div>
 							<div class="oh-sticky-table__td" data-cell-index="2">{{asset_assignement.assigned_date}} </div>
 							<div class="oh-sticky-table__td" data-cell-index="3">{{asset_assignement.return_date}}</div>
-							<div class="oh-sticky-table__td">{{asset_assignement.return_status}}</div>							
+							<div class="oh-sticky-table__td">{{asset_assignement.return_status}}</div>
 						</div>
 					{% endfor %}
 				</div>
@@ -56,7 +56,7 @@
 	<div class="oh-pagination">
 		<span class="oh-pagination__page">
 			{% trans "Page" %} {{ asset_assignments.number }} {% trans "of" %} {{ asset_assignments.paginator.num_pages }}.
-		</span> 
+		</span>
 		<nav class="oh-pagination__nav">
 			<div class="oh-pagination__input-container me-3">
 				<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
@@ -110,7 +110,7 @@
 
 <script>
     // This lines is used to set default selected stage for exits lines
-  
+
     function enlargeImage(src,$element) {
         $("#enlargeImageContainer").empty()
         var enlargeImageContainer = $("#enlargeImageContainer")
@@ -122,24 +122,24 @@
         enlargeImageContainer.append(name)
         setTimeout(function () {
             enlargeImageContainer.show()
-  
+
             const iframe = document.querySelector('iframe').contentWindow
             var iframe_document = iframe.document
             iframe_image = iframe_document.getElementsByTagName('img')[0]
             $(iframe_image).attr('style', 'width:100%; height:100%;')
         }, 100)
     }
-  
+
     function hideEnlargeImage() {
         var enlargeImageContainer = $('#enlargeImageContainer')
         enlargeImageContainer.empty()
     }
-  
+
     $(document).on('click', function (event) {
         if (!$(event.target).closest('#enlargeImageContainer').length) {
             hideEnlargeImage()
         }
-    })  
+    })
     function submitForm(elem) {
       $(elem).siblings(".add_more_submit").click();
   }
@@ -149,4 +149,3 @@
 	  $("#asset_history_button").find("[type=checkbox]").prop("checked",true).change()
   }
   </script>
-  

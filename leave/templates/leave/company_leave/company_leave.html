@@ -7,7 +7,7 @@
         {{ message }}
       </div>
     </div>
-    {% endfor %} 
+    {% endfor %}
   </div>
 {% endif %}
 {% include 'filter_tags.html' %}
@@ -55,7 +55,7 @@
                     {% endif %}
                     {% if perms.leave.delete_companyleave %}
                         <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                            hx-confirm="{% trans 'Are you sure you want to delete ?' %}" 
+                            hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
                             hx-post="{% url 'company-leave-delete' company_leave.id %}?{{pd}}"
                             hx-target="#companyLeave"
                             title="{% trans 'Delete' %}"><ion-icon name="trash-outline"></ion-icon>

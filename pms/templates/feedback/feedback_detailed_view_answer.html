@@ -54,7 +54,7 @@
       <div class="d-block">
         <div class="oh-input-picker-group oh-input-picker-group--resp mt-2">
           <div class="oh-input-picker oh-input-picker--likert likert-colour oh-input-picker--selected ">
-            {{answer.answer.answer}} 
+            {{answer.answer.answer}}
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@
 {% endfor %}
 
 <script>
-  
+
   $(document).ready(function () {
       // answer color for likert
       var booleanText = $('.boolean-colour').text().trim()
@@ -74,10 +74,10 @@
       var yellow = "oh-input-picker--3"
       var light_green = "oh-input-picker--4"
       var green = "oh-input-picker--5"
-    
+
       $('.likert-colour').each(function() {
         var likertText = $(this).text().trim()
-    
+
         if (likertText === 'Strongly Agree'){
           $(this).addClass(green)
         }
@@ -94,11 +94,11 @@
           $(this).addClass(red)
         }
       });
-    
+
       // boolean text colour adding
       $('.boolean-colour').each(function() {
         var booleanText = $(this).text().trim()
-    
+
         if (booleanText === 'yes'){
           $(this).addClass(green)
         }
@@ -106,7 +106,7 @@
           $(this).addClass(red)
         }
     })
-      
-      
+
+
     });
   </script>

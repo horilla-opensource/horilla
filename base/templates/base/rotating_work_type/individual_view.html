@@ -39,7 +39,7 @@
     </button>
 </div>
 {% endif %}
-<a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+<a class="oh-timeoff-modal__profile-content" style="text-decoration:none;"
     href ="{% url 'employee-view-individual' instance.employee_id.id %}">
   <div class="oh-profile mb-2">
     <div class="oh-profile__avatar">
@@ -86,15 +86,15 @@
                 {% trans "Weekly every" %} {{instance.rotate_every_weekend}}
                 {% elif instance.based_on == "monthly" %}
                 {% if instance.rotate_every == "1" %}
-                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "st day of month" %} 
+                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "st day of month" %}
                 {% elif instance.rotate_every == "2" %}
-                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "nd day of month" %} 
+                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "nd day of month" %}
                 {% elif instance.rotate_every == "3" %}
-                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "rd day of month" %} 
+                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "rd day of month" %}
                 {% elif instance.rotate_every == "last" %}
-                {% trans "Rotate every last day of month" %} 
+                {% trans "Rotate every last day of month" %}
                 {% else %}
-                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "th day of month" %} 
+                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "th day of month" %}
                 {% endif %}
                 {% endif %}
             </span>
@@ -116,7 +116,7 @@
             </span>
         </div>
     </div>
-    
+
     <div class="oh-timeoff-modal__stats-container mt-3 mb-3" >
         <div class="oh-timeoff-modal__stat" >
             <span class="oh-timeoff-modal__stat-title">{% trans "Next Change Date" %}</span>
@@ -135,7 +135,7 @@
                 {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager  %}
                     <a class="oh-btn oh-btn--info" hx-get="{% url "rotating-work-type-assign-update" instance.id %}" hx-target="#objectUpdateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectUpdateModal" style="width: 50%;">
                         <ion-icon name="create-outline">
-                        </ion-icon>{% trans "Edit" %} 
+                        </ion-icon>{% trans "Edit" %}
                     </a>
                     <form  class="oh-btn oh-btn--primary" style="width: 50%;" hx-confirm="{% trans 'Do you want to archive this rotating work type assign?' %}" hx-get="{% url 'rotating-work-type-assign-archive' instance.id %}?{{pd}}&instances_ids={{assign_ids}}" hx-target="#objectDetailsModalTarget">
                         <button style="background: none;
@@ -169,7 +169,7 @@
                             </ion-icon>{% trans "Delete" %}
                         </button>
                     </form>
-                {% endif %}            
+                {% endif %}
             </div>
         </div>
     {% endif %}

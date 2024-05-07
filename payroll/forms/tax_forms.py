@@ -9,15 +9,16 @@ the widget attributes to enhance the user interface and provide a better user ex
 
 """
 
-from datetime import date
 import uuid
+from datetime import date
+
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from base import thread_local_middleware
-from payroll.models.tax_models import TaxBracket
-from base.methods import reload_queryset
 
+from base import thread_local_middleware
+from base.methods import reload_queryset
 from payroll.models.models import FilingStatus
+from payroll.models.tax_models import TaxBracket
 
 
 class ModelForm(forms.ModelForm):

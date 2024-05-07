@@ -4,7 +4,7 @@
   .note-modal-backdrop{
     z-index: 998 !important;
   }
-  
+
   .tooltip {
       position: relative;
       display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
@@ -106,8 +106,8 @@ x-data="{searchShow: false}"
 </div>
 <form hx-get="{% url 'pipeline-search' %}" onsubmit="event.preventDefault()" hx-target="#pipelineSearchContainer" id="filterForm">
 <div class="oh-main__titlebar oh-main__titlebar--right">
-  
-  
+
+
   <div
     class="oh-input-group oh-input__search-group"
     :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -119,7 +119,7 @@ x-data="{searchShow: false}"
 		<input
 		type="text"
     id="pipelineSearchInput"
-		placeholder="{% trans 'Search' %}" 
+		placeholder="{% trans 'Search' %}"
 		name='candidate_name'
     value="{{request.GET.candidate_name}}"
     onkeyup="$(this).closest('form').find('.filterButton').click()"
@@ -161,8 +161,8 @@ x-data="{searchShow: false}"
       {% trans 'Recruitment' %}
     </button>
 		{% endif %}
-		
-		
+
+
 	</div>
 </div>
 </form>
@@ -184,7 +184,7 @@ x-data="{searchShow: false}"
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
-    
+
     <div class="oh-modal__dialog-body" id="addRecruitmentModalBody">
 
     </div>
@@ -219,7 +219,7 @@ aria-hidden="true"
     </button>
   </div>
   <div class="oh-modal__dialog-body" id='recruitmentUpdate'>
-    
+
   </div>
 </div>
 </div>
@@ -228,10 +228,10 @@ aria-hidden="true"
 <script>
 $(document).ready(function(){
 	{% include 'select2.js' %}
-	$('#candidate-search').keyup(function (e) { 
+	$('#candidate-search').keyup(function (e) {
 		$('.candidate-view-type').attr('hx-vals',`{"search":"${$(this).val()}"}`)
 	  });
-	  $('.candidate-view-type').click(function (e) { 
+	  $('.candidate-view-type').click(function (e) {
 		let view = $(this).attr('data-view');
 		$('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);
 	  });
@@ -245,7 +245,7 @@ $(document).ready(function(){
       }
   });
 })
-	
+
 </script>
 {% include "filter_tags.html" %}
 <div class="d-flex flex-row-reverse oh-wrapper" id="quickFilters">
@@ -275,7 +275,7 @@ $(document).ready(function(){
   function switchTab(e) {
     let parentContainerEl = e.target.closest(".oh-tabs");
     let tabElement = e.target.closest(".oh-tabs__tab");
-    
+
 
     let targetSelector = e.target.dataset.target;
     let targetEl = parentContainerEl
@@ -326,7 +326,7 @@ $(document).ready(function(){
       }
     });
     htmx.onLoad(function(content) {
-    
+
     var sortables = content.querySelectorAll(".hx-sortable");
 
 
@@ -398,7 +398,7 @@ $(document).ready(function(){
               for (let index = 0; index < array.length; index++) {
 
                 values.push($(array[index]).val())
-                
+
               }
               $.ajax({
                 type: "get",
@@ -427,7 +427,7 @@ $(document).on('htmx:beforeRequest', function(event) {
     if (isDrag == "true") {
 
 
-      
+
       $.ajax({
         type: "get",
         url: "{% url 'update-candidate-sequence' %}",
@@ -436,7 +436,7 @@ $(document).on('htmx:beforeRequest', function(event) {
           "order":values
         },
         success: function (response) {
-          
+
         }
       });
     }

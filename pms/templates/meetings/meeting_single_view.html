@@ -1,13 +1,13 @@
 {% load static i18n %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button 
+    <button
         hx-get="{% url 'meeting-single-view' previous %}?requests_ids={{requests_ids}}" hx-target="#objectDetailsModalTarget"
         class="oh-modal__diaglog-nav oh-modal__nav-prev">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
         aria-label="chevron back outline"></ion-icon>
     </button>
 
-    <button  
+    <button
         hx-get="{% url 'meeting-single-view' next %}?requests_ids={{requests_ids}}" hx-target="#objectDetailsModalTarget"
         class="oh-modal__diaglog-nav oh-modal__nav-next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
@@ -25,7 +25,7 @@
     </button>
 </div>
 <div class="oh-modal__dialog-body  oh-modal__dialog-relative">
-    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;"
         >
         <div class="oh-profile mb-2">
           <div class="oh-profile__avatar">
@@ -60,7 +60,7 @@
                 <span class="oh-timeoff-modal__stat-count">{% trans "Employees" %}</span>
                 <span class="oh-timeoff-modal__stat-title">
                     {% for employee in meeting.employee_id.all %}
-                    {{employee.get_full_name}}, 
+                    {{employee.get_full_name}},
                     {% endfor %}
                 </span>
             </div>
@@ -68,7 +68,7 @@
                 <span class="oh-timeoff-modal__stat-count">{% trans "Managers" %}</span>
                 <span class="oh-timeoff-modal__stat-title">
                     {% for manager in meeting.manager.all %}
-                    {{manager.get_full_name}}, 
+                    {{manager.get_full_name}},
                     {% endfor %}
                 </span>
             </div>
@@ -79,7 +79,7 @@
                 <span class="oh-timeoff-modal__stat-count">{% trans "Answerable employees" %}</span>
                 <span class="oh-timeoff-modal__stat-title ">
                     {% for employee in meeting.answer_employees.all %}
-                    {{employee.get_full_name}}, 
+                    {{employee.get_full_name}},
                     {% endfor %}
                 </span>
             </div>
@@ -91,7 +91,7 @@
                 <div class="oh-timeoff-modal__stat-description">{{meeting.response|default:""|safe}}</div>
             </div>
         </div>
-        
+
     </div>
     <div class="oh-modal__button-container text-center mt-3">
         <div class="oh-btn-group">
@@ -99,9 +99,9 @@
                 <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
             </button>
 
-            <form 
+            <form
                 action="{% url 'meetings-delete' meeting.id %}"
-                onsubmit="return confirm('{% trans "Are you sure to delete this meeting?" %}')" 
+                onsubmit="return confirm('{% trans "Are you sure to delete this meeting?" %}')"
                 method="post"
                 style="display: contents;width:100%">
                 {% csrf_token %}

@@ -24,12 +24,12 @@
                             </div>
                           </div>
                           <div class="oh-sticky-table__td">
-                            
-                            
+
+
                             <span class="perm-count">{{employee.employee_user_id.get_user_permissions|length}} {% trans "Permissions" %}</span>
-                            {% for permission in employee.employee_user_id.get_user_permissions %}                            
-                              <span class="oh-permission-panel oh-collapse-panel" 
-                              data-label="Permissions" 
+                            {% for permission in employee.employee_user_id.get_user_permissions %}
+                              <span class="oh-permission-panel oh-collapse-panel"
+                              data-label="Permissions"
                               data-count="{{employee.employee_user_id.get_user_permissions|length}}">
                               {{permission}}
                               {% if perms.change_permissions %}
@@ -42,7 +42,7 @@
                               {% endif %}
                             </span>
                             {% endfor %}
-                          </div>                        
+                          </div>
                         </div>
                         {% endfor %}
                       </div>
@@ -55,8 +55,8 @@
 
 
 
-  
-  
+
+
 <div class="oh-pagination">
   <span class="oh-pagination__page">
     {% trans "Page" %} {{ employees.number }} {% trans "of" %} {{ employees.paginator.num_pages }}.
@@ -95,4 +95,3 @@
     </ul>
   </nav>
 </div>
-

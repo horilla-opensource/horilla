@@ -38,7 +38,7 @@
 										<input
 											type="checkbox"
 											class="all-contract oh-input oh-input__checkbox Allcontract"
-											onchange=" 
+											onchange="
 											$(this).closest('.oh-sticky-table').find('.all-contract-row').prop('checked', $(this).is(':checked')).change();addingContractIds()"
 											id = ""
 											title='{% trans "Select All" %}'
@@ -60,8 +60,8 @@
 							{% for contract in contract_list.list %}
 							<div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target = "#objectDetailsModal" hx-get="{% url 'single-contract-view' contract.id %}?instances_ids={{contract_ids}}" hx-target = "#objectDetailsModalTarget">
 								<div class="oh-sticky-table__sd  {% if contract.contract_status == "active" %} row-status--yellow
-									{% elif contract.contract_status == 'draft' %} row-status--purple 
-									{% elif contract.contract_status == 'expired' %} row-status--red 
+									{% elif contract.contract_status == 'draft' %} row-status--purple
+									{% elif contract.contract_status == 'expired' %} row-status--red
 									{% elif contract.contract_status == 'terminated' %} row-status--black {% endif %}" onclick="event.stopPropagation()">
 									<div class="centered-div">
 										<input
@@ -132,7 +132,7 @@
         		</div>
 				<div class="oh-pagination">
                     <span class="oh-pagination__page">
-                        {% trans "Page" %} {{ contract_list.list.number }} 
+                        {% trans "Page" %} {{ contract_list.list.number }}
                         {%trans "of" %} {{contract_list.list.paginator.num_pages }}.
                     </span>
                     <nav class="oh-pagination__nav">
@@ -243,7 +243,7 @@
 						<a hx-target='#payroll-contract-container' hx-get="{% url 'contract-filter' %}?{{pd}}&page={{ contracts.paginator.num_pages }}" class="oh-pagination__link" onclick=tickContractCheckboxes()>{% trans "Last" %}</a>
 					</li>
 					{% endif %}
-			
+
 				</ul>
 			</nav>
 		</div>

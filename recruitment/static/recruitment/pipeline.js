@@ -15,7 +15,7 @@ function getCookie(name) {
   }
   return cookieValue;
 }
- 
+
 
 var candidateId = null
 
@@ -30,7 +30,7 @@ var oldSequences = []
 var stages = []
 var elements = []
 
-$('.stage').mousedown(function () { 
+$('.stage').mousedown(function () {
   window['stageSequence'] = $(this).attr('data-stage-sequence');
   window['recruitmentId'] = $(this).attr('data-recruitment-id');
 
@@ -42,7 +42,7 @@ $('.stage').mousedown(function () {
   });
 });
 
-$('.stage').mouseup(function () { 
+$('.stage').mouseup(function () {
 
   var newSequences = []
   $('.stage').each(function(i, obj) {
@@ -77,21 +77,21 @@ $('.stage').mouseup(function () {
       success: function (response) {
         // console.log(response);
       }
-    });    
+    });
   }
 
-  
+
   elements.forEach(function(element) {
     for (let index = 0; index < newSequences.length; index++) {
       const sequence = newSequences[index];
       if (sequence==$(element).attr('data-stage-sequence')) {
         $(element).attr('data-stage-sequence',`${index+1}`)
         return
-      }    
+      }
     }
   });
 
-  
+
 
   window['stageSequence'] = null
   window['recruitmentId'] = null
@@ -104,10 +104,10 @@ $('.stage').mouseup(function () {
 
 
 $(".column").droppable({
-  drop: function (event, ui) 
+  drop: function (event, ui)
   {
-   var stageId = $(this).attr('data-stage-id');  
-   if (candidateId != null) {  
+   var stageId = $(this).attr('data-stage-id');
+   if (candidateId != null) {
      $.ajax({
        type: "post",
        url: `/recruitment/candidate-stage-update/${candidateId}/`,
@@ -119,11 +119,11 @@ $(".column").droppable({
           var candidateId = $(this).attr('data-candidate-id');
         }
       });
-    }   
-  } 
+    }
+  }
 });
 
-$('.schedule').change(function (e) { 
+$('.schedule').change(function (e) {
   date = this.value
   candidateId = $(this).data('candidate-id');
   $.ajax({
@@ -138,5 +138,5 @@ $('.schedule').change(function (e) {
       // console.log(response);
     }
   });
-  
+
 });

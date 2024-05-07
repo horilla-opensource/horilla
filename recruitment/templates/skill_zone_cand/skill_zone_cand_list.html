@@ -24,7 +24,7 @@
                                     <div class="oh-profile__avatar mr-1">
                                         {% if sz_candidate.candidate_id.profile %}
                                             <img src="{{sz_candidate.candidate_id.get_avatar}}" class="oh-profile__image"
-                                            alt="" /> 
+                                            alt="" />
                                         {% else %}
                                         <img src="https://ui-avatars.com/api/?name={{sz_candidate.candidate_id}}&background=random"
                                             class="oh-profile__image" alt="" />
@@ -48,22 +48,22 @@
                                 ></a>
                             </div>
                             <div class="oh-sticky-table__td " onclick="event.stopPropagation()">
-                                <div class="oh-btn-group">                                                  
-                                    <button  
-                                        class="oh-btn oh-btn--light-bkg w-50" 
-                                        title="{% trans 'Edit' %}" 
+                                <div class="oh-btn-group">
+                                    <button
+                                        class="oh-btn oh-btn--light-bkg w-50"
+                                        title="{% trans 'Edit' %}"
                                         data-toggle="oh-modal-toggle"
-                                        data-target="#editModal" 
+                                        data-target="#editModal"
                                         hx-get="{% url 'skill-zone-cand-edit' sz_candidate.id %}"
                                         hx-target="#editTarget">
                                         <ion-icon name="create-outline"></ion-icon>
                                     </button>
-                                    
+
                                     <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" id="delete-link"
-                                        href="{% url 'rec-candidate-delete' sz_candidate.id %}"  
-                                        onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" 
+                                        href="{% url 'rec-candidate-delete' sz_candidate.id %}"
+                                        onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');"
                                         title="{% trans 'Delete' %}">
-                                    
+
                                         <ion-icon name="trash-outline"></ion-icon>
                                     </a>
                                 </div>
@@ -72,7 +72,7 @@
                     </div>
                 </a>
             {% endfor %}
-            
+
         </div>
     </div>
     <!-- end of sticky table -->

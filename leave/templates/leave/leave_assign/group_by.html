@@ -1,4 +1,4 @@
-{% load attendancefilters %} {% load basefilters %} {% load static %} 
+{% load attendancefilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %} {% if messages %}
 <div class="oh-wrapper">
   {% for message in messages %}
@@ -142,7 +142,7 @@
                       >
                         <ion-icon name="create-outline"></ion-icon>
                       </button>
-                      {% endif %} 
+                      {% endif %}
                       {% if perms.leave.delete_availableleave or request.user|is_reportingmanager %}
                       <a
                         class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"

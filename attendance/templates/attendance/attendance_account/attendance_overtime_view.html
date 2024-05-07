@@ -19,7 +19,7 @@
   <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow" >
   </div>
 
-  <div id="ot-table" hx-target="#ot-table" hx-get="{% url 'attendance-ot-search' %}?field=month&year={% now 'Y' %}" hx-trigger="load"> 
+  <div id="ot-table" hx-target="#ot-table" hx-get="{% url 'attendance-ot-search' %}?field=month&year={% now 'Y' %}" hx-trigger="load">
     {% include 'filter_tags.html' %}
 
   </div>

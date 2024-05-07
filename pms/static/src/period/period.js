@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  
+
 // this function is used to generate csrf token
 function getCookie(name) {
   let cookieValue = null;

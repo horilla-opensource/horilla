@@ -40,11 +40,11 @@
         {% if perms.recruitment.delete_recruitmentmailtemplate %}
           <h3 class="oh-faq-card__title d-flex justify-content-between "><span>{{ template.title }}</span>
             <div>
-            <a hx-get="{% url 'duplicate-mail-template' template.id %}" hx-target="#duplicateTemplateFormModal" data-toggle="oh-modal-toggle" 
+            <a hx-get="{% url 'duplicate-mail-template' template.id %}" hx-target="#duplicateTemplateFormModal" data-toggle="oh-modal-toggle"
               data-target="#duplicateTemplateModal" title="{% trans 'Duplicate' %}" style= "cursor: pointer;">
               <ion-icon name="copy-outline"></ion-icon>
             </a>
-            <a href="{% url "delete-mail-template" %}?ids={{template.id}}" class="text-danger" style="cursor: pointer;" 
+            <a href="{% url "delete-mail-template" %}?ids={{template.id}}" class="text-danger" style="cursor: pointer;"
                 onclick="return confirm('Do you want to delete this template?')" title="{% trans 'Edit' %}" >
               <ion-icon name="trash-outline"></ion-icon>
             </a>
@@ -52,8 +52,8 @@
           </h3>
         {% endif %}
         {% if perms.recruitment.change_recruitmentmailtemplate %}
-                       
-            {% endif %} 
+
+            {% endif %}
           <div class="oh-faq-card__desc" style="max-height: 500px; padding-top: 10px;">
           <div style="max-height: 350px;overflow: hidden;" class="truncated-text">{{ template.body|safe }}</div>
           </div>

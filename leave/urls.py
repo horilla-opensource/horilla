@@ -1,8 +1,7 @@
-from django.urls import path
 from django import views
-from . import views
-from . import models
+from django.urls import path
 
+from . import models, views
 
 urlpatterns = [
     path("type-creation", views.leave_type_creation, name="type-creation"),
@@ -21,7 +20,11 @@ urlpatterns = [
     path("type-delete/<int:id>", views.leave_type_delete, name="type-delete"),
     path("type-filter", views.leave_type_filter, name="type-filter"),
     path("request-creation", views.leave_request_creation, name="request-creation"),
-    path("get-employee-leave-types", views.get_employee_leave_types, name="get-employee-leave-types"),
+    path(
+        "get-employee-leave-types",
+        views.get_employee_leave_types,
+        name="get-employee-leave-types",
+    ),
     path(
         "leave-request-creation/<int:type_id>/<int:emp_id>",
         views.leave_request_creation,
@@ -92,14 +95,12 @@ urlpatterns = [
     ),
     path("assign-filter", views.leave_assign_filter, name="assign-filter"),
     path("holiday-view", views.holiday_view, name="holiday-view"),
-
     path("get_job_positions", views.get_job_positions, name="get_job_positions"),
     path("restrict-view", views.restrict_view, name="restrict-view"),
     path("restrict-filter", views.restrict_filter, name="restrict-filter"),
     path("restrict-creation", views.restrict_creation, name="restrict-creation"),
     path("restrict-update/<int:id>", views.restrict_update, name="restrict-update"),
     path("restrict-delete/<int:id>", views.restrict_delete, name="restrict-delete"),
-
     path(
         "holidays-excel-template",
         views.holidays_excel_template,

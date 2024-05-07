@@ -14,7 +14,7 @@
 		transition: max-height 0.3s ease,padding 0.3s ease;
 		overflow-y: auto;
 	}
-	
+
 	.oh-faq__item--show .oh-faq__item-body {
 		max-height: 200px; /* Adjust the max-height as needed */
 	}
@@ -72,7 +72,7 @@
 <!--  modal -->
 
 
-<div id="addTagTargetModal">                  
+<div id="addTagTargetModal">
 	<div id="addTagTarget">
 	</div>
   </div>
@@ -94,10 +94,10 @@
 			</button>
 		</div>
 		<div class="oh-modal__dialog-body" id="editTarget">
-			<form  
+			<form
 			{% comment %} hx-post="{% url 'ticket-create-tag' %}"
 			hx-target="#addTagTarget"
-			method="post" 
+			method="post"
 			hx-encoding="multipart/form-data" {% endcomment %}
 			id ="addTagForm"
 			>
@@ -119,13 +119,13 @@
         var selectedValues = $("#id_tags option:selected").map(function(){
           	return $(this).val();
         }).get();
-		
+
         // Check if 'create_new_tag' exists in the list
         if (selectedValues.includes('create_new_tag')) {
 			$("#addTagModal").addClass("oh-modal--show");
-        } 
+        }
     }
-	  
+
 	$("#addTagForm").on('submit', function(){
 		event.preventDefault();
 		$.ajax({

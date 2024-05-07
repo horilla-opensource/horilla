@@ -156,7 +156,7 @@ $('[data-container-list = "candidate"]').on("DOMNodeInserted", function (e) {
 
     // Check if the inserted element has the class you want to remove
     if (!insertedElement.hasClass("ui-sortable-placeholder")) {
-      
+
       // countSequence(candidate)
       var stageId = $(this).attr("data-stage-id");
       candidateId = $(candidate).attr("data-candidate-id");
@@ -188,7 +188,7 @@ $('[data-container-list = "candidate"]').on("DOMNodeInserted", function (e) {
       }
     }
   }
-  
+
 });
 
 $(`.change-cand`).not('[data-container-list = "candidate"]').mouseup(function (e) {

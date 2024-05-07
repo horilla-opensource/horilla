@@ -3,23 +3,26 @@ These forms provide a convenient way to handle data input, validation, and custo
 of form fields and widgets for the corresponding models in the payroll management system.
 """
 
-from typing import Any
-import uuid
 import datetime
+import uuid
+from typing import Any
+
 from django import forms
-from django.utils.translation import gettext_lazy as _
-from notifications.signals import notify
 from django.template.loader import render_to_string
+from django.utils.translation import gettext_lazy as _
+
+import payroll.models.models
 from base import thread_local_middleware
+from base.forms import Form, ModelForm
+from base.methods import reload_queryset
+from employee.filters import EmployeeFilter
+from employee.models import BonusPoint, Employee
 from horilla_widgets.forms import HorillaForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-from base.forms import Form, ModelForm
-from employee.models import BonusPoint, Employee
-from employee.filters import EmployeeFilter
 from leave.models import AvailableLeave, LeaveType
+from notifications.signals import notify
 from payroll.models import tax_models as models
-from payroll.widgets import component_widgets as widget
 from payroll.models.models import (
     Allowance,
     Contract,
@@ -30,8 +33,7 @@ from payroll.models.models import (
     Reimbursement,
     ReimbursementMultipleAttachment,
 )
-import payroll.models.models
-from base.methods import reload_queryset
+from payroll.widgets import component_widgets as widget
 
 
 class AllowanceForm(forms.ModelForm):
@@ -547,14 +549,14 @@ class ReimbursementForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
 
-    def get_encashable_leaves(self,employee):
-        leaves=LeaveType.objects.filter(
+    def get_encashable_leaves(self, employee):
+        leaves = LeaveType.objects.filter(
             employee_available_leave__employee_id=employee,
             employee_available_leave__total_leave_days__gte=1,
             is_encashable=True,
         )
         return leaves
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         exclude_fields = []
@@ -646,21 +648,19 @@ class ReimbursementForm(ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         if self.instance.pk:
-           employee_id = self.instance.employee_id
-           type= self.instance.type
-           
-        else:
-            employee_id=cleaned_data["employee_id"]
-            type =cleaned_data["type"]
+            employee_id = self.instance.employee_id
+            type = self.instance.type
 
-        available_points = BonusPoint.objects.filter(
-            employee_id=employee_id
-        ).first()
-        if type =="bonus_encashment":
+        else:
+            employee_id = cleaned_data["employee_id"]
+            type = cleaned_data["type"]
+
+        available_points = BonusPoint.objects.filter(employee_id=employee_id).first()
+        if type == "bonus_encashment":
             if self.instance.pk:
                 bonus_to_encash = self.instance.bonus_to_encash
             else:
-                bonus_to_encash=cleaned_data["bonus_to_encash"]
+                bonus_to_encash = cleaned_data["bonus_to_encash"]
 
             if available_points.points < bonus_to_encash:
                 raise forms.ValidationError(
@@ -668,30 +668,28 @@ class ReimbursementForm(ModelForm):
                 )
             if bonus_to_encash <= 0:
                 raise forms.ValidationError(
-                    {
-                        "bonus_to_encash": "Points must be greater than zero to redeem."
-                    }
+                    {"bonus_to_encash": "Points must be greater than zero to redeem."}
                 )
-        if type =="leave_encashment":
+        if type == "leave_encashment":
             if self.instance.pk:
                 leave_type_id = self.instance.leave_type_id
                 cfd_to_encash = self.instance.cfd_to_encash
                 ad_to_encash = self.instance.ad_to_encash
             else:
-                leave_type_id=cleaned_data["leave_type_id"]
+                leave_type_id = cleaned_data["leave_type_id"]
                 cfd_to_encash = cleaned_data["cfd_to_encash"]
                 ad_to_encash = cleaned_data["ad_to_encash"]
             encashable_leaves = self.get_encashable_leaves(employee_id)
-            if (leave_type_id is None):
-                raise forms.ValidationError(
-                    {"leave_type_id": "This field is required"}
-                )
-            elif (leave_type_id not in encashable_leaves):
+            if leave_type_id is None:
+                raise forms.ValidationError({"leave_type_id": "This field is required"})
+            elif leave_type_id not in encashable_leaves:
                 raise forms.ValidationError(
                     {"leave_type_id": "This leave type is not encashable"}
                 )
             else:
-                available_leave = AvailableLeave.objects.filter(leave_type_id=leave_type_id,employee_id=employee_id).first()
+                available_leave = AvailableLeave.objects.filter(
+                    leave_type_id=leave_type_id, employee_id=employee_id
+                ).first()
                 if cfd_to_encash < 0:
                     raise forms.ValidationError(
                         {"cfd_to_encash": _("Value can't be negative.")}
@@ -708,6 +706,7 @@ class ReimbursementForm(ModelForm):
                     raise forms.ValidationError(
                         {"ad_to_encash": _("Not enough available days to redeem")}
                     )
+
     def save(self, commit: bool = ...) -> Any:
         is_new = not self.instance.pk
         attachemnt = []

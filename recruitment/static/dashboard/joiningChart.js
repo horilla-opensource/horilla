@@ -8,7 +8,7 @@ $(document).ready(function () {
       // $("#hiringChart").html("<canvas id='hiring'></canvas>")
       window['myChart1'] = {}
       var ctx = document.getElementById("hiringChart");
-      
+
       if (ctx != null) {
         ctx = ctx.getContext("2d")
         myChart1 = new Chart(ctx, {
@@ -19,7 +19,7 @@ $(document).ready(function () {
         });
       }
     }
-    
+
     function joining(){
       var year = $("#year").val()
 
@@ -37,14 +37,14 @@ $(document).ready(function () {
       });
     }
 
-    $("#year").on("change", function (e) { 
+    $("#year").on("change", function (e) {
       myChart1.destroy();
       joining()
     });
 
     joining()
 
-    $('#chart2').click(function (e) { 
+    $('#chart2').click(function (e) {
       var chartType = myChart1.config.type
       if (chartType === 'line') {
         chartType = 'bar';
@@ -52,10 +52,7 @@ $(document).ready(function () {
           chartType = 'line';
       }
       myChart1.config.type = chartType;
-      myChart1.update();    
+      myChart1.update();
     });
-      
+
   });
-
-
-  

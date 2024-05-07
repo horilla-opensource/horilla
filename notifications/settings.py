@@ -3,7 +3,6 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 
-
 CONFIG_DEFAULTS = {
     "PAGINATE_BY": 20,
     "USE_JSONFIELD": False,

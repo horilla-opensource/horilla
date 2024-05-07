@@ -1,17 +1,17 @@
 {% load i18n %}
-<form  
+<form
     id="skillform"
     {% if sz_id %}
-        hx-post="{% url 'skill-zone-cand-create' sz_id %}" 
+        hx-post="{% url 'skill-zone-cand-create' sz_id %}"
     {% elif cand_id %}
-        hx-post="{% url 'to-skill-zone' cand_id %}" 
+        hx-post="{% url 'to-skill-zone' cand_id %}"
     {% else %}
         hx-post="{% url 'skill-zone-cand-edit' sz_cand_id %}"
     {% endif %}
     hx-target="#editCandTarget"
     hx-encoding="multipart/form-data">
     {% csrf_token %}
-    {{form.as_p}} 
+    {{form.as_p}}
 </form>
 
 <script>

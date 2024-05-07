@@ -1,10 +1,12 @@
 import json
-from django.template.defaultfilters import register
+
 from django import template
+from django.core.paginator import Page, Paginator
+from django.template.defaultfilters import register
+
 from base.methods import get_pagination
 from base.models import MultipleApprovalManagers
 from employee.models import Employee, EmployeeWorkInformation
-from django.core.paginator import Page, Paginator
 
 
 def paginator_qry(qryset, page_number):
@@ -116,6 +118,7 @@ def abs_value(value):
     permission names return method
     """
     return abs(value)
+
 
 @register.filter(name="config_perms")
 def config_perms(user):

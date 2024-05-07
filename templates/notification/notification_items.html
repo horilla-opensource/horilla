@@ -1,5 +1,5 @@
 {% load i18n %}  {% load static %}
-{% get_current_language as LANGUAGE_CODE %} 
+{% get_current_language as LANGUAGE_CODE %}
 
 {% if messages %}
 <div class="oh-alert-container">
@@ -14,12 +14,12 @@
   {% if notifications %}
     <div class="oh-navbar__notification-links" x-show="visible">
       <a class="oh-navbar__notification-tray-link mr-2"
-        hx-get="{% url 'read-notifications' %}" 
+        hx-get="{% url 'read-notifications' %}"
         hx-target="#notificationContainer"
         x-show="!markRead" @click="markRead = true">
         <ion-icon name="checkmark-done-outline" class="mr-1"></ion-icon> {% trans "Mark as read" %}
       </a>
-      <a class="oh-navbar__notification-tray-link oh-navbar__notification-tray-link--danger" 
+      <a class="oh-navbar__notification-tray-link oh-navbar__notification-tray-link--danger"
         hx-get="{% url 'clear-notifications' %}"
         hx-target="#notificationContainer"
         >
@@ -83,7 +83,7 @@
           </p>
         {% endif %}
         <span class="oh-navbar__notification-date">
-          {{ notification.timesince }} {% trans "ago by" %} 
+          {{ notification.timesince }} {% trans "ago by" %}
           {% if notification.actor.employee_first_name %}
             {{ notification.actor.employee_first_name }}
           {% else %}

@@ -4,46 +4,30 @@ component_views.py
 This module is used to write methods to the component_urls patterns respectively
 """
 
-from collections import defaultdict
-from itertools import groupby
 import json
 import operator
+from collections import defaultdict
 from datetime import date, datetime
+from itertools import groupby
 from urllib.parse import parse_qs
+
+import pandas as pd
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
-from django.shortcuts import render, redirect
-from django.contrib import messages
+from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
-from attendance.methods.group_by import group_by_queryset
-from notifications.signals import notify
-import pandas as pd
+
+import payroll.models.models
 from asset.models import Asset
+from attendance.methods.group_by import group_by_queryset
+from base.backends import ConfiguredEmailBackend
+from base.methods import closest_numbers, filter_own_records, get_key_instances, sortby
+from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required, owner_can_enter, permission_required
-from base.backends import ConfiguredEmailBackend
-from base.models import Company
-from base.methods import filter_own_records, get_key_instances, closest_numbers, sortby
 from leave.models import AvailableLeave
-import payroll.models.models
-from payroll.models.models import (
-    Allowance,
-    Deduction,
-    LoanAccount,
-    Payslip,
-    Reimbursement,
-    ReimbursementMultipleAttachment,
-)
-from payroll.methods.payslip_calc import (
-    calculate_allowance,
-    calculate_gross_pay,
-    calculate_taxable_gross_pay,
-)
-from payroll.methods.payslip_calc import (
-    calculate_post_tax_deduction,
-    calculate_pre_tax_deduction,
-    calculate_tax_deduction,
-)
+from notifications.signals import notify
 from payroll.filters import (
     AllowanceFilter,
     DeductionFilter,
@@ -53,17 +37,31 @@ from payroll.filters import (
     ReimbursementFilter,
 )
 from payroll.forms import component_forms as forms
-from payroll.methods.payslip_calc import (
-    calculate_net_pay_deduction,
-)
-from payroll.methods.tax_calc import calculate_taxable_amount
+from payroll.methods.deductions import update_compensation_deduction
 from payroll.methods.methods import (
     calculate_employer_contribution,
     compute_salary_on_period,
     paginator_qry,
     save_payslip,
 )
-from payroll.methods.deductions import update_compensation_deduction
+from payroll.methods.payslip_calc import (
+    calculate_allowance,
+    calculate_gross_pay,
+    calculate_net_pay_deduction,
+    calculate_post_tax_deduction,
+    calculate_pre_tax_deduction,
+    calculate_tax_deduction,
+    calculate_taxable_gross_pay,
+)
+from payroll.methods.tax_calc import calculate_taxable_amount
+from payroll.models.models import (
+    Allowance,
+    Deduction,
+    LoanAccount,
+    Payslip,
+    Reimbursement,
+    ReimbursementMultipleAttachment,
+)
 from payroll.threadings.mail import MailSendThread
 from payroll.views.views import view_created_payslip
 
@@ -1091,16 +1089,10 @@ def view_loans(request):
     loan = records.filter(type="loan")
     adv_salary = records.filter(type="advanced_salary")
     fine = records.filter(type="fine")
-    
-    fine_ids=json.dumps(
-        list(fine.values_list("id", flat=True))
-    )
-    loan_ids=json.dumps(
-        list(loan.values_list("id", flat=True))
-    )
-    adv_salary_ids=json.dumps(
-        list(adv_salary.values_list("id", flat=True))
-    )
+
+    fine_ids = json.dumps(list(fine.values_list("id", flat=True)))
+    loan_ids = json.dumps(list(loan.values_list("id", flat=True)))
+    adv_salary_ids = json.dumps(list(adv_salary.values_list("id", flat=True)))
     loan = sortby(request, loan, "sortby")
     adv_salary = sortby(request, adv_salary, "sortby")
     fine = sortby(request, fine, "sortby")
@@ -1112,9 +1104,9 @@ def view_loans(request):
             "records": paginator_qry(records, request.GET.get("page")),
             "loan": paginator_qry(loan, request.GET.get("lpage")),
             "adv_salary": paginator_qry(adv_salary, request.GET.get("apage")),
-            'fine_ids':fine_ids,
-            'loan_ids':loan_ids,
-            'adv_salary_ids':adv_salary_ids,
+            "fine_ids": fine_ids,
+            "loan_ids": loan_ids,
+            "adv_salary_ids": adv_salary_ids,
             "fine": paginator_qry(fine, request.GET.get("fpage")),
             "f": filter_instance,
         },
@@ -1150,15 +1142,16 @@ def view_installments(request):
     loan_id = request.GET["loan_id"]
     loan = LoanAccount.objects.get(id=loan_id)
     installments = loan.deduction_ids.all()
-    
+
     requests_ids_json = request.GET.get("instances_ids")
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
-        previous_id, next_id = closest_numbers(requests_ids,int(loan_id))
+        previous_id, next_id = closest_numbers(requests_ids, int(loan_id))
     return render(
         request,
         "payroll/loan/installments.html",
-        {"installments": installments,
+        {
+            "installments": installments,
             "loan": loan,
             "instances_ids": requests_ids_json,
             "previous": previous_id,
@@ -1194,15 +1187,9 @@ def search_loan(request):
     adv_salary = records.filter(type="advanced_salary")
     fine = records.filter(type="fine")
 
-    fine_ids=json.dumps(
-        list(fine.values_list("id", flat=True))
-    )
-    loan_ids=json.dumps(
-        list(loan.values_list("id", flat=True))
-    )
-    adv_salary_ids=json.dumps(
-        list(adv_salary.values_list("id", flat=True))
-    )
+    fine_ids = json.dumps(list(fine.values_list("id", flat=True)))
+    loan_ids = json.dumps(list(loan.values_list("id", flat=True)))
+    adv_salary_ids = json.dumps(list(adv_salary.values_list("id", flat=True)))
     loan = sortby(request, loan, "sortby")
     adv_salary = sortby(request, adv_salary, "sortby")
     fine = sortby(request, fine, "sortby")
@@ -1221,9 +1208,9 @@ def search_loan(request):
             "loan": paginator_qry(loan, request.GET.get("lpage")),
             "adv_salary": paginator_qry(adv_salary, request.GET.get("apage")),
             "fine": paginator_qry(fine, request.GET.get("fpage")),
-            'fine_ids':fine_ids,
-            'loan_ids':loan_ids,
-            'adv_salary_ids':adv_salary_ids,
+            "fine_ids": fine_ids,
+            "loan_ids": loan_ids,
+            "adv_salary_ids": adv_salary_ids,
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
         },
@@ -1331,9 +1318,7 @@ def search_reimbursement(request):
     reimbursements = requests.filter(type="reimbursement")
     leave_encashments = requests.filter(type="leave_encashment")
     bonus_encashment = requests.filter(type="bonus_encashment")
-    reimbursements_ids = json.dumps(
-        list(reimbursements.values_list("id", flat=True))
-    )
+    reimbursements_ids = json.dumps(list(reimbursements.values_list("id", flat=True)))
     leave_encashments_ids = json.dumps(
         list(leave_encashments.values_list("id", flat=True))
     )
@@ -1363,9 +1348,9 @@ def search_reimbursement(request):
             ),
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
-            'reimbursements_ids':reimbursements_ids,
-            'leave_encashments_ids':leave_encashments_ids,
-            'bonus_encashment_ids':bonus_encashment_ids,
+            "reimbursements_ids": reimbursements_ids,
+            "leave_encashments_ids": leave_encashments_ids,
+            "bonus_encashment_ids": bonus_encashment_ids,
         },
     )
 
@@ -1401,8 +1386,8 @@ def approve_reimbursements(request):
     """
     ids = request.GET.getlist("ids")
     status = request.GET["status"]
-    if status =='canceled':
-        status = 'rejected'
+    if status == "canceled":
+        status = "rejected"
     amount = eval(request.GET.get("amount")) if request.GET.get("amount") else 0
     amount = max(0, amount)
     reimbursements = Reimbursement.objects.filter(id__in=ids)
@@ -1416,14 +1401,13 @@ def approve_reimbursements(request):
             emp = reimbursement.employee_id
             reimbursement.status = status
             reimbursement.save()
-            if reimbursement.status == 'requested' :
+            if reimbursement.status == "requested":
                 if not (messages.get_messages(request)._queued_messages):
-                    messages.info(
-                        request, _("Please check the data you provided.")
-                    )
+                    messages.info(request, _("Please check the data you provided."))
             else:
                 messages.success(
-                    request,_(f"Request {reimbursement.get_status_display()} successfully")
+                    request,
+                    _(f"Request {reimbursement.get_status_display()} successfully"),
                 )
         if status == "rejected":
             notify.send(
@@ -1478,6 +1462,7 @@ def delete_reimbursements(request):
 
     return redirect(view_reimbursement)
 
+
 @login_required
 @owner_can_enter("payroll.view_reimbursement", Reimbursement, True)
 def reimbursement_individual_view(request, instance_id):
@@ -1500,6 +1485,7 @@ def reimbursement_individual_view(request, instance_id):
         "payroll/reimbursement/reimbursenent_individual.html",
         context,
     )
+
 
 @login_required
 @owner_can_enter("payroll.view_reimbursement", Reimbursement, True)

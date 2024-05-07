@@ -123,7 +123,7 @@ function empleavetypeChange(selectElement) {
     "date":start_date,
     },
     success: function (response) {
-      
+
       // Assuming parentForm is a reference to the form containing the element to update
       var messageDiv = parentForm.find(".leave-message");
 
@@ -199,7 +199,7 @@ function employeeChange(selectElement) {
     "date":start_date,
     },
     success: function (response) {
-      
+
       // Assuming parentForm is a reference to the form containing the element to update
       var messageDiv = parentForm.find(".leave-message");
 

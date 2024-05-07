@@ -2,11 +2,11 @@
 {% include 'filter_tags.html' %}
 <style>
   .rejected-candidate{
-    
+
   }
 </style>
 
-  
+
 {% if candidates %}
 
 <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
@@ -252,7 +252,7 @@
   if (!localStorageCandidateViewCells) {
     $("#CandidateViewCells").find("[type=checkbox]").prop("checked",true)
   }
-  // $("[type=checkbox]").change() 
+  // $("[type=checkbox]").change()
   // end of toggle column//
 </script>
 <div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
@@ -445,7 +445,7 @@
             var previousIds = $("#selectedInstances").attr("data-ids")
             $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))));
             tickCandidateCheckboxes();
-            
+
           },
           error: function (xhr, status, error) {
             console.error("Error:", error);

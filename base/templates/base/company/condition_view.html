@@ -12,7 +12,7 @@
       <div class="oh-sticky-table__tbody">
           {% if condition != None %}
         <div class="oh-sticky-table__tr" draggable="true">
-        
+
             <div class="oh-sticky-table__td">
                 {{condition.validation_at_work}}
             </div>
@@ -25,7 +25,7 @@
             <div class="oh-sticky-table__td">
                 <a href="{% url 'attendance-settings-update' condition.id %}" type="button" class="oh-btn oh-btn--info"> {% trans "Edit" %}</a>
             </div>
-        </div>        
+        </div>
         {% endif %}
       </div>
     </div>

@@ -18,7 +18,7 @@ $(document).ready(function() {
         });
       }
     }
-    
+
     function asset_category_chart(dataSet) {
       var Asset_category_chart = document.getElementById("assetCategoryChart");
       if (Asset_category_chart){
@@ -50,7 +50,7 @@ $(document).ready(function() {
 			console.log("Error", error);
 		},
 	});
-    
+
     $.ajax({
 		type: "GET",
 		url: "/asset/asset-category-chart",
@@ -102,4 +102,3 @@ function emptyAssetAvialabeChart(assetAvailableChartChart,args,options){
       };
     }
 }
-

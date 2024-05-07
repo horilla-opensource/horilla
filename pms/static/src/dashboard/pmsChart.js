@@ -92,7 +92,7 @@ $("#objective-status-chart").click(function (e) {
 	if (objectiveStatusChart){
 		objectiveStatusChart.update();
 	}
-	
+
 });
 
 // objecitve chart section end

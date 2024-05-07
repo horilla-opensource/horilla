@@ -16,15 +16,15 @@
     <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
 
       {% if perms.employee.add_disciplinaryaction %}
-      
+
         <div class="oh-main__titlebar-button-container">
           <div class="oh-input-group oh-input__search-group mr-4">
             <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
-            <input 
-              name="search" type="text" placeholder="Search" 
-              style="margin-right:10px" class="oh-input oh-input__icon mr-3" 
-              autocomplete="false" 
-              aria-label="Search Input" 
+            <input
+              name="search" type="text" placeholder="Search"
+              style="margin-right:10px" class="oh-input oh-input__icon mr-3"
+              autocomplete="false"
+              aria-label="Search Input"
               onkeyup="$('.filterButton')[0].click()"
             />
           </div>
@@ -132,7 +132,7 @@
 <div class="oh-modal" id="dynamicCreateModal" role="dialog" aria-hidden="true" style="z-index: 1022;">
   <div class="oh-modal__dialog" style="max-width: 550px;" id="dynamicCreateModalBody"></div>
 </div>
-  <span name="" id="dynamicActionType" style="display: none" data-toggle="oh-modal-toggle" data-target="#dynamicCreateModal" 
+  <span name="" id="dynamicActionType" style="display: none" data-toggle="oh-modal-toggle" data-target="#dynamicCreateModal"
         hx-get="{% url 'action-type-create' %}?dynamic=employee" hx-target="#dynamicCreateModalBody">
   </span>
   {% if data  %}
@@ -141,7 +141,7 @@
     </div>
   {% else %}
     <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-      
+
       <div class="oh-wrapper">
         <div class="oh-404">
             <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/legal.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
@@ -180,7 +180,7 @@
       }
     </script>
   {% endif %}
-  
+
 <div class="oh-modal" id="policyModal" role="dialog" aria-hidden="true">
   <div class="oh-modal__dialog" style="max-width: 550px">
     <div class="oh-modal__dialog-header">
@@ -212,10 +212,10 @@
 					// Show the 'block_option' field
 					parentForm.find('[id=id_block_option]').parent().show();
 				}
-				
+
 			},
 		});
 	  }
 </script>
-  
+
 {% endblock %}

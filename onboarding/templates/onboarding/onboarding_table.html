@@ -8,15 +8,15 @@
    max-height: 70px !important;
    overflow: hidden;
    overflow-y: scroll;
-   } 
+   }
 </style>
 <script src="{% static 'htmx/htmx.min.js' %}"></script>
 {% for stage in recruitment.stages %}
 <div class="oh-accordion-meta" >
  <div class="oh-accordion-meta__item" id="onboarding_stage{{stage.grouper.id}}">
-    <div class="oh-accordion-meta__header oh-accordion-meta__header--show" 
-    {% if request.user.employee_get in stage.grouper.employee_id.all %} 
-    style="background-color: hsl(38.08deg 100% 50% / 8%);" 
+    <div class="oh-accordion-meta__header oh-accordion-meta__header--show"
+    {% if request.user.employee_get in stage.grouper.employee_id.all %}
+    style="background-color: hsl(38.08deg 100% 50% / 8%);"
     {% endif %}>
       <div style="display: -webkit-inline-box;"
       >
@@ -26,8 +26,8 @@
       <div class="d-flex">
          {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage or  perms.onboarding.delete_onboardingstage %}
             {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
-               <select id="" 
-                  class="bulkStageChange" 
+               <select id=""
+                  class="bulkStageChange"
                   style="border: 1px solid hsl(213deg,22%,84%);
                   padding: 0.3rem 0.8rem 0.3rem 0.3rem;
                   height:40px;margin-left:5px;
@@ -64,7 +64,7 @@
                   <ul class="oh-dropdown__items">
                      {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
                      <li class="oh-dropdown__item">
-                        <a hx-get="{% url 'stage-update' stage.grouper.id recruitment.id %}" 
+                        <a hx-get="{% url 'stage-update' stage.grouper.id recruitment.id %}"
                            hx-target="#updateStage"
                            data-toggle="oh-modal-toggle"
                            data-target="#editModal3"
@@ -187,9 +187,9 @@
                {% for candidate in stage.list %}
                {% if candidate.candidate_id.recruitment_id == recruitment %}
                <div class="oh-sticky-table__tr oh-multiple-table-sort__movable change-cand"
-                  data-candidate-id="{{candidate.candidate_id}}" data-drop="candidate" 
-                  data-change-cand-id="{{candidate.candidate_id}}" 
-                  data-candidate="{{candidate.candidate_id}}" 
+                  data-candidate-id="{{candidate.candidate_id}}" data-drop="candidate"
+                  data-change-cand-id="{{candidate.candidate_id}}"
+                  data-candidate="{{candidate.candidate_id}}"
                   data-job-position = "{{candidate.candidate_id.job_position_id}}"
                   data-join-date="{{candidate.candidate_id.joining_date}}"
                   data-portal-count="{{candidate.candidate_id.onboarding_portal.count}}"
@@ -233,7 +233,7 @@
                   </div>
                   <div class="oh-sticky-table__td">
                      <div class="oh-checkpoint-badge oh-checkpoint-badge--primary" >
-                        {{candidate.task_completion_ratio}} 
+                        {{candidate.task_completion_ratio}}
                      </div>
                   </div>
                   <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
@@ -280,7 +280,7 @@
                   {% endfor %}
                </div>
                {% endif %}
-               {% endfor %} 
+               {% endfor %}
             </div>
          </div>
       </div>
@@ -322,7 +322,7 @@
                      >{% trans "Previous" %}</a
                      >
                </li>
-               {% endif %} 
+               {% endif %}
                {% if stage.list.has_next %}
                <li class="oh-pagination__item oh-pagination__item--wide">
                   <a
@@ -353,21 +353,21 @@
        let NewStatus = $(element).val();
        let Task = $(element).data("task");
        let checkbox = $("input[type='checkbox']:checked")
-       let ids =[] 
+       let ids =[]
        checkbox.each(function(index){
            ids.push(parseInt($(this).val()))
        })
-       
+
        ids=ids.filter(value => !isNaN(value))
        $.ajax({
            type: "POST",
            url: '/onboarding/candidate-task-bulk-update',
-           data: { 
+           data: {
                "ids": JSON.stringify(ids),
                "task": Task,
                "status": NewStatus,
                csrfmiddlewaretoken: getCookie("csrftoken"),
-   
+
             },
            success: function (response) {
                for (let i of ids) {
@@ -383,16 +383,16 @@
            error: () => {
                console.log("error")
            }
-             
+
        })
    }
    $(document).ready(function() {
-       
-   
+
+
        $("select[name='stage']").on("htmx:afterRequest", function(event, xhr, data) {
            var alertContainer = $('<div class="oh-alert-container">');
            var alertDiv = $('<div class="oh-alert oh-alert--animated oh-alert--success">').text("{% trans 'Candidate task stage updated successfully.' %}")
-           
+
            alertContainer.append(alertDiv);
            $(".messages").html(alertContainer);
        });

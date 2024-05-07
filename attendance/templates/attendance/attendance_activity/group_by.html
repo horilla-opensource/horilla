@@ -36,7 +36,7 @@
               <div class="oh-sticky-table__tr">
                 <div class="oh-sticky-table__th" style="width: 20px;">
                   <div class="centered-div">
-                    <input type="checkbox" title="{% trans 'Select All' %}" 
+                    <input type="checkbox" title="{% trans 'Select All' %}"
                           class="oh-input oh-input__checkbox all-attendance-activity"/>
                   </div>
                 </div>
@@ -49,7 +49,7 @@
                 {% if perms.attendance.delete_attendanceactivity %}
                 <div class='oh-sticky-table__th oh-sticky-table__right' scope="col" style="width: 80px;">{% trans "Actions" %}</div>
                 {% endif %}
-              </div> 
+              </div>
             </div>
             <div class="oh-sticky-table__tbody">
               {% for activity in attendance_list.list %}
@@ -59,7 +59,7 @@
                 hx-get="{% url 'attendance-activity-single-view' activity.id %}?{{pd}}&instances_ids={{activity_ids}}">
                   <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                     <div class="centered-div">
-                      <input type="checkbox" id="{{activity.id}}" 
+                      <input type="checkbox" id="{{activity.id}}"
                         class="oh-input attendance-checkbox oh-input__checkbox all-attendance-activity-row" />
                     </div>
                   </div>
@@ -84,7 +84,7 @@
                     <div class="oh-sticky-table__td dateformat_changer">{{activity.clock_out_date}}</div>
                     {% if perms.attendance.delete_attendanceactivity %}
                       <div class="oh-sticky-table__td oh-sticky-table__right">
-                        <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}" 
+                        <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
                           hx-post="{% url 'attendance-activity-delete' activity.id  %}?{{pd}}"
                           onclick="event.stopPropagation()" hx-target="#activity-table">
                           {% csrf_token %}
@@ -92,7 +92,7 @@
                             <ion-icon name="trash-outline"></ion-icon>
                           </button>
                         </form>
-                      </div>      
+                      </div>
                     {% endif %}
               </div>
               {% endfor %}

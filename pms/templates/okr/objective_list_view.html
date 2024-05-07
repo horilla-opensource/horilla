@@ -1,6 +1,6 @@
 {% extends 'index.html' %} {% load static i18n %} {% load i18n %} {% load widget_tweaks %} {% load mathfilters %} {% load basefilters %} {% block styles %}
 <link rel="stylesheet" href="{% static 'css/pms.css' %}" />
-{% endblock styles %} {% block content %} 
+{% endblock styles %} {% block content %}
 
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
 	<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">

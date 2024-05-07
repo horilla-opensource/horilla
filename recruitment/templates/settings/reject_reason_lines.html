@@ -30,9 +30,9 @@
 							>
 								<ion-icon name="create-outline"></ion-icon
 							></a>
-							{% endif %} 
-							{% if perms.base.delete_deaprtment %} 
-                            <a onclick="return confirm('{% trans "Are you sure want to delete this reason?" %}')"   
+							{% endif %}
+							{% if perms.base.delete_deaprtment %}
+                            <a onclick="return confirm('{% trans "Are you sure want to delete this reason?" %}')"
                                 href="{% url 'delete-reject-reasons' %}?ids={{reason.id}}"
                                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50"
                                 title="{% trans 'Remove' %}"

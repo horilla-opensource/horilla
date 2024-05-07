@@ -99,7 +99,7 @@
           onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
           id="assignedLeavesExportForm"
         >
-          {% csrf_token %} 
+          {% csrf_token %}
           {% include "leave/leave_assign/assigned_leaves_export_filter.html" %}
           <div class="oh-dropdown__filter-footer">
             <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
@@ -224,8 +224,8 @@
 </section>
 
 <div class="oh-wrapper" id="assignedLeaves">
-  {% if available_leaves %} 
-    {% include 'leave/leave_assign/assigned_leave.html'%} 
+  {% if available_leaves %}
+    {% include 'leave/leave_assign/assigned_leave.html'%}
   {% else %}
   <div
     style="

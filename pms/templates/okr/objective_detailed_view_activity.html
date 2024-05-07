@@ -9,7 +9,7 @@
     </div>
     {% endfor %}
 </div>
-{% endif %} 
+{% endif %}
 <div class="oh-activity-sidebar__header">
     <a
     style="cursor: pointer;"
@@ -23,7 +23,7 @@
     <span class="oh-activity-sidebar__title"> {% trans "Activities" %} </span>
 </div>
 <form method="post"
-    hx-target="#activityContainer" 
+    hx-target="#activityContainer"
     hx-post=" {% url 'objective-detailed-view-comment' objective.id %} " id="commentForm">
     {% csrf_token %}
 
@@ -63,7 +63,7 @@
     </li> {% endcomment %}
     <!-- history section -->
     {% for activity in activity_list %}
-    
+
         {% comment %} {% for history in history_object.delta.changes %} {% endcomment %}
             {% if activity.type == 'Changes' %}
             <ul class="d-flex justify-content-between align-items-center pt-3 mb-3 border-top">
@@ -72,7 +72,7 @@
                         <img src="https://ui-avatars.com/api/?name={{activity.updated_by}}&background=random"
                             class="oh-activity-list__image" alt="Albert Camus" />
                     </div>
-                    <small class="oh-activity-list__description"><strong>{{activity.updated_by}} </strong> 
+                    <small class="oh-activity-list__description"><strong>{{activity.updated_by}} </strong>
                         {% trans "updated" %}
                         <strong> {{activity.changes.0.field |title|cut:'_'}}</strong> {% trans "from" %}
                         <strong>{{activity.changes.0.old}}</strong> to <strong>{{activity.changes.0.new}}</strong>
@@ -93,11 +93,11 @@
                             <img src="https://ui-avatars.com/api/?name={{activity.key_result.changed_user}}&background=random"
                                 class="oh-activity-list__image" alt="Albert Camus" />
                         </div>
-                        <small class="oh-activity-list__description"><strong>{{activity.key_result.changed_user}} </strong> 
+                        <small class="oh-activity-list__description"><strong>{{activity.key_result.changed_user}} </strong>
                             {% trans "updated" %}
                             <strong>{{history.field|replace|title}}</strong> {% trans "field of " %}
                             <strong>{{activity.key_result.k_r}} </strong> {% trans "key result" %},
-                            {% trans "from" %} 
+                            {% trans "from" %}
                             <strong>{{history.old}}</strong> {% trans "to" %} <strong>{{history.new}}</strong>
                             {% comment %} <strong> {{activity.changes.0.field |title|cut:'_'}}</strong> {% trans "from" %}
                             <strong>{{activity.changes.0.old}}</strong> to <strong>{{activity.changes.0.new}}</strong> {% endcomment %}
@@ -137,14 +137,14 @@
                 </div>
             </ul>
             {% else %}
-            
+
             <ul class="d-flex justify-content-between align-items-center pt-3 mb-3 border-top">
                 <li class="oh-activity-list__item align-items-center mb-0">
                     <div class="oh-activity-list__photo oh-activity-list__photo--small me-2">
                         <img src="https://ui-avatars.com/api/?name={{activity.updated_by}}&background=random"
                             class="oh-activity-list__image" alt="Albert Camus" />
                     </div>
-                    <small class="oh-activity-list__description"><strong>{{activity.updated_by}} </strong> 
+                    <small class="oh-activity-list__description"><strong>{{activity.updated_by}} </strong>
                         {% trans "Created Objective" %}
                     </small>
                 </li>

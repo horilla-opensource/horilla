@@ -1,4 +1,4 @@
-{% load attendancefilters %} {% load basefilters %} {% load static %} 
+{% load attendancefilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %}
 <div class="oh-card">
     {% for asset_history_list in asset_assignments %}
@@ -99,7 +99,7 @@
 
                 <div class="oh-pagination">
                     <span class="oh-pagination__page">
-                        {% trans "Page" %} {{ asset_history_list.list.number }} 
+                        {% trans "Page" %} {{ asset_history_list.list.number }}
                         {%trans "of" %} {{asset_history_list.list.paginator.num_pages }}.
                     </span>
                     <nav class="oh-pagination__nav">

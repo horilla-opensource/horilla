@@ -5,8 +5,9 @@ Used to register filter for onboarding models
 
 from django import forms
 from django_filters import filters
-from onboarding.models import Candidate, CandidateStage, OnboardingStage
+
 from base.filters import FilterSet
+from onboarding.models import Candidate, CandidateStage, OnboardingStage
 
 
 class CandidateFilter(FilterSet):

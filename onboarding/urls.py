@@ -5,6 +5,7 @@ This module is used to map url path with view methods.
 """
 
 from django.urls import path
+
 from onboarding import views
 from recruitment.models import Candidate
 

@@ -1,4 +1,4 @@
-{% load static %} {% load i18n %} 
+{% load static %} {% load i18n %}
 {% if records %}
   <div class="oh-sticky-table__table mt-3">
     <div class="oh-sticky-table__thead">
@@ -21,10 +21,10 @@
         <div class="oh-sticky-table__td">{{ acc.leave_type_id }}</div>
         <div class="oh-sticky-table__td">{{ acc.minus_leaves }}</div>
         <div class="oh-sticky-table__td">
-          {% if acc.deduct_from_carry_forward %} 
-            {% trans "Yes" %} 
-          {% else %} 
-            {% trans "No" %} 
+          {% if acc.deduct_from_carry_forward %}
+            {% trans "Yes" %}
+          {% else %}
+            {% trans "No" %}
           {% endif %}
         </div>
         <div class="oh-sticky-table__td">
@@ -49,5 +49,5 @@
         </h5>
       </div>
     </div>
-    
+
 {% endif %}

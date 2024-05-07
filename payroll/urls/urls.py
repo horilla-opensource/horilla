@@ -4,9 +4,10 @@ urls.py
 This module is used to map url pattern or request path with view functions
 """
 
-from django.urls import path, include
-from payroll.views import views
+from django.urls import include, path
+
 from payroll.models.models import Contract, Payslip
+from payroll.views import views
 
 urlpatterns = [
     path("", include("payroll.urls.component_urls")),

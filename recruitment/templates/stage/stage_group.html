@@ -1,5 +1,5 @@
  {% load i18n %}{% load static %}
- 
+
  <!-- start of messages -->
 {% if messages %}
 <div class="oh-wrapper">
@@ -21,40 +21,40 @@
 
  <!-- start of quick filters -->
   <div class="d-flex flex-row-reverse">
-    <span class="m-1" 
+    <span class="m-1"
       onclick="$('[name=stage_type]').val('hired'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
       style="cursor: pointer;margin-left: 10px;" >
       <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
       {% trans "Hired" %}
     </span>
-    <span class="m-1" 
+    <span class="m-1"
       onclick="$('[name=stage_type]').val('cancelled'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
       style="cursor: pointer;margin-left: 10px;" >
       <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
       {% trans "cancelled" %}
     </span>
-    <span class="m-1" 
+    <span class="m-1"
       onclick="$('[name=stage_type]').val('interview'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
       style="cursor: pointer;margin-left: 10px;" >
       <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
       {% trans "interview" %}
     </span>
-    <span class="m-1"   
+    <span class="m-1"
       onclick="$('[name=stage_type]').val('test'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
       style="cursor: pointer;margin-left: 10px;" >
       <span class="oh-dot oh-dot--small me-1" style="background-color:blue"></span>
       {% trans "Test" %}
     </span>
-    <span class="m-1" 
-      onclick="$('[name=stage_type]').val('initial'); $('[name=stage_type]').first().change(); $('.filterButton').click()" 
+    <span class="m-1"
+      onclick="$('[name=stage_type]').val('initial'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
       style="cursor: pointer;margin-left: 10px;" >
       <span class="oh-dot oh-dot--small me-1" style="background-color:cyan"></span>
       {% trans "Initial" %}
     </span>
   </div>
   <!-- end of quick filters -->
-  
-  {% comment %} 
+
+  {% comment %}
   <div id="stage-container">
     {% include 'stage/stage_component.html' %}
   </div> {% endcomment %}
@@ -69,10 +69,10 @@
       <div
         class="oh-accordion-meta__header oh-accordion-meta__header--custom"
         {% if perms.payroll.view_taxbracket %}
-        data-target="#stageBody{{rec.grouper.id}}" 
+        data-target="#stageBody{{rec.grouper.id}}"
         hx-get="{% url 'stage-data' rec.grouper.id %}?{{request.GET.urlencode}}"
         hx-target="#stageData{{rec.grouper.id}}"
-        {% endif %} 
+        {% endif %}
       >
         <div class="d-flex">
           <div class="oh-tabs__input-badge-container">
@@ -133,9 +133,9 @@
                   {% endif %}
                   {% if perms.payroll.delete_filingstatus %}
                   <li class="oh-dropdown__item">
-                    <form 
+                    <form
                       action="{% url 'filing-status-delete' filing_status_id=filing_status.id %}"
-                      onsubmit="return confirm('{% trans "Are you sure to delete this status ?" %}')" 
+                      onsubmit="return confirm('{% trans "Are you sure to delete this status ?" %}')"
                       method="post"
                       style="display: contents">
                       {% csrf_token %}
@@ -177,7 +177,7 @@
     <nav class="oh-pagination__nav">
       <div class="oh-pagination__input-container me-3">
         <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-  
+
         <input
           type="number"
           name="rpage"
@@ -191,7 +191,7 @@
           >{% trans "of" %} {{recruitments.paginator.num_pages}}</span
         >
       </div>
-  
+
       <ul class="oh-pagination__items">
         {% if recruitments.has_previous %}
         <li class="oh-pagination__item oh-pagination__item--wide">
@@ -247,5 +247,3 @@
   <!-- end of empty page -->
 {% endif %}
 </div>
-
-  

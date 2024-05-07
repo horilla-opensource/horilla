@@ -36,7 +36,7 @@
         </div>
     </div>
     <!-- end of column toggle -->
-    <div id="krs-table" data-table-name="krs_table"> 
+    <div id="krs-table" data-table-name="krs_table">
         <!-- start of sticky table -->
         <div class="oh-sticky-table">
         <div class="oh-sticky-table__table oh-table--sortable">
@@ -52,9 +52,9 @@
                             />
                         </div>
                     </div>
-                    <div 
+                    <div
                         class="oh-sticky-table__th {% if request.sort_option.order == '-title' %}arrow-up {% elif request.sort_option.order == 'title' %}arrow-down {% else %}arrow-up-down {% endif %}"
-                        hx-get="{% url 'filter-key-result' %}?{{pd}}&sortby=title" 
+                        hx-get="{% url 'filter-key-result' %}?{{pd}}&sortby=title"
                         hx-target="#krs-container"
                     >
                         {% trans "Key Results" %}
@@ -64,12 +64,12 @@
                     <div data-cell-index="3" data-cell-title="{% trans 'Duration' %}" class="oh-sticky-table__th">{% trans "Duration" %}</div>
                     <div data-cell-index="4" data-cell-title="{% trans 'Descrption' %}" class="oh-sticky-table__th">{% trans "Descrption" %}</div>
                     {% comment %} <div data-cell-index="5" data-cell-title="{% trans 'Is Active' %}" class="oh-sticky-table__th">{% trans "Is Active" %}</div> {% endcomment %}
-                    
+
                     <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
                 </div>
             </div>
             {% for kr in krs %}
-            <div class="oh-sticky-table__tbody " draggable="true" 
+            <div class="oh-sticky-table__tbody " draggable="true"
             >
             <div class="oh-sticky-table__tr ">
                 <div class="oh-sticky-table__sd" onclick="event.stopPropagation()">
@@ -101,7 +101,7 @@
                 {% comment %} <div data-cell-index="5" class="oh-sticky-table__td">
                 {{kr.target_value}}
                 </div> {% endcomment %}
-                
+
                 <div class="oh-sticky-table__td oh-sticky-table__right">
                 <div class="oh-btn-group">
                     <a
@@ -125,9 +125,9 @@
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                     onclick = "event.preventDefault();event.stopPropagation();"
                     hx-confirm="{% trans 'Do you want to delete this Key result?' %}"
-                    hx-post="{% url 'delete-key-result' kr.id %}?{{pd}}" 
+                    hx-post="{% url 'delete-key-result' kr.id %}?{{pd}}"
                     hx-target="#krs-container"
-                    title="{% trans 'Delete' %}"  
+                    title="{% trans 'Delete' %}"
                     >
                     <ion-icon
                         name="trash-outline"
@@ -213,5 +213,5 @@
    $("#krsCells").find("[type=checkbox]").prop("checked",true)
  }
  $("[type=checkbox]").change()
- 
+
 </script>

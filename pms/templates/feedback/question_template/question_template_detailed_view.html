@@ -41,7 +41,7 @@
                                         <label class="oh-label text-muted fw-bold">{% trans "Question" %}</label>
                                         {{form.question}}
                                     <!-- <li id="id_question_template_error"></li>  -->
-                                        
+
                                     </div>
                                     <div x-data="{showAnswers: true}" class="oh-link__expanded d-none">
                                         <a href="#" class="oh-link oh-link--secondary mt-3"
@@ -102,7 +102,7 @@
 </div>
 
 </div>
-<!-- 
+<!--
 <script>
 $(document).ready(function () {
     $('form').on('submit',function(e){
@@ -110,7 +110,7 @@ $(document).ready(function () {
     var questionValue = $("#questionCreationFormCol #id_question").val()
 
     var errorElement = $('#questionCreationFormCol #id_question_template_error')
-    
+
     if (questionValue.trim() === '') {
         alert('empty')
         errorElement.text('This field is required.');

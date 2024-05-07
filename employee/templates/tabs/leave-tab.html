@@ -73,7 +73,7 @@
   <div class="oh-sticky-table">
     <div class="kanban-card-container">
       <!-- Container for Kanban cards -->
-      {% for user_leave in user_leaves %} 
+      {% for user_leave in user_leaves %}
         {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == user_leave.employee_id.employee_user_id %}
           <div
             class="oh-kanban-card"
@@ -117,7 +117,7 @@
               >
             </div>
           </div>
-        {% endif %} 
+        {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -128,7 +128,7 @@
   <div class="oh-sticky-table">
     <div class="kanban-card-container">
       <!-- Container for Kanban cards -->
-      {% for employee_leave in employee_leaves %} 
+      {% for employee_leave in employee_leaves %}
         {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == employee_leave.employee_id.employee_user_id %}
           <div
             class="oh-kanban-card"
@@ -172,7 +172,7 @@
               >
             </div>
           </div>
-        {% endif %} 
+        {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -186,7 +186,7 @@
       {% trans "No Leave Types have been assigned." %}
     </h5>
   </div>
-{% endif %} 
+{% endif %}
 {% if employee_leaves or user_leaves %}
 <div class="oh-sticky-table-request">
   {% if employee.leaverequest_set.all %}
@@ -213,9 +213,9 @@
           hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{leave_request_ids}}"
           hx-target="#objectDetailsModalW25Target"
         >
-          <div class="oh-sticky-table__sd 
-            {% if leave_request.status == "requested" %}row-status--orange 
-            {% elif leave_request.status == "cancelled" %} row-status--gray 
+          <div class="oh-sticky-table__sd
+            {% if leave_request.status == "requested" %}row-status--orange
+            {% elif leave_request.status == "cancelled" %} row-status--gray
             {% elif leave_request.status == "rejected" %} row-status--red
             {% elif leave_request.status == "approved" %} row-status--yellow{% endif %}"
            >
@@ -315,7 +315,7 @@
   </div>
   {% endif %}
 </div>
-{% endif %} 
+{% endif %}
 {% if perms.leave.add_leaverequest or request.user == employee.employee_user_id or request.user|check_manager:employee %}
 <div
   class="oh-modal"

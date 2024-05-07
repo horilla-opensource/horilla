@@ -1,12 +1,10 @@
 from django.urls import path
 
 from base.views import object_delete
-from . import views
-from . import models
 
+from . import models, views
 
 urlpatterns = [
-
     # objectives
     path("objective-list-view/", views.objective_list_view, name="objective-list-view"),
     path("objective-creation/", views.objective_creation, name="objective-creation"),
@@ -14,12 +12,15 @@ urlpatterns = [
         "objective-update/<int:obj_id>", views.objective_update, name="objective-update"
     ),
     path("add-assignees/<int:obj_id>", views.add_assignees, name="add-assignees"),
-
     # key results
     path("view-key-result/", views.view_key_result, name="view-key-result"),
     path("filter-key-result/", views.filter_key_result, name="filter-key-result"),
     path("create-key-result/", views.kr_create_or_update, name="create-key-result"),
-    path("update-key-result/<int:kr_id>", views.kr_create_or_update, name="update-key-result"),
+    path(
+        "update-key-result/<int:kr_id>",
+        views.kr_create_or_update,
+        name="update-key-result",
+    ),
     path(
         "delete-key-result/<int:id>/",
         object_delete,
@@ -32,7 +33,6 @@ urlpatterns = [
         views.key_result_remove,
         name="key-result-remove",
     ),
-    
     path(
         "objective-list-search",
         views.objective_list_search,
@@ -43,7 +43,6 @@ urlpatterns = [
         views.objective_dashboard_view,
         name="objective-dashboard-view",
     ),
-
     path(
         "objective-delete/<int:obj_id>", views.objective_delete, name="objective-delete"
     ),
@@ -75,7 +74,7 @@ urlpatterns = [
         "objective-detailed-view-activity/<int:id>",
         views.objective_detailed_view_activity,
         name="objective-detailed-view-activity",
-    ), 
+    ),
     path(
         "emp-objective-search/<int:obj_id>",
         views.emp_objective_search,

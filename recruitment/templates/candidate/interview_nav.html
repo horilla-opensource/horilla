@@ -20,11 +20,11 @@ x-data="{searchShow: false}"
 <div class="oh-main__titlebar-button-container">
   <div class="oh-input-group oh-input__search-group mr-4">
     <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
-    <input 
-      name="search" type="text" placeholder="Search" 
-      style="margin-right:10px" class="oh-input oh-input__icon mr-3" 
-      autocomplete="false" 
-      aria-label="Search Input" 
+    <input
+      name="search" type="text" placeholder="Search"
+      style="margin-right:10px" class="oh-input oh-input__icon mr-3"
+      autocomplete="false"
+      aria-label="Search Input"
       onkeyup="$('.filterButton')[0].click()"
     />
   </div>
@@ -59,7 +59,7 @@ x-data="{searchShow: false}"
                   <label class="oh-label" for="{{f.form.start_date.id_for_label}}">{% trans "Interview Date From" %}</label>
                   {{f.form.scheduled_from}}
                 </div>
-                
+
               </div>
               <div class="col-sm-12 col-md-12 col-lg-6">
 
@@ -72,7 +72,7 @@ x-data="{searchShow: false}"
                   <label class="oh-label" for="{{f.form.start_date.id_for_label}}">{% trans "Interview Date Till" %}</label>
                   {{f.form.scheduled_till}}
                 </div>
-                
+
               </div>
             </div>
           </div>

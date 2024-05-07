@@ -4,51 +4,55 @@ views.py
 
 import contextlib
 import json
-import pandas as pd
-from datetime import datetime, timedelta, date
 from collections import defaultdict
+from datetime import date, datetime, timedelta
 from urllib.parse import parse_qs
-from django.db.models import Q
-from django.shortcuts import get_object_or_404, render, redirect
-from django.db.models import ProtectedError
-from django.utils.translation import gettext as __
-from django.core.paginator import Paginator
+
+import pandas as pd
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponse
-from django.views.decorators.http import require_http_methods
+from django.core.paginator import Paginator
+from django.db.models import ProtectedError, Q
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
+
 from attendance.filters import PenaltyFilter
 from attendance.forms import PenaltyAccountForm
+from attendance.methods.group_by import group_by_queryset
 from attendance.models import PenaltyAccount
-from horilla.decorators import login_required, hx_request_required
-from horilla.decorators import permission_required, manager_can_enter
 from base.methods import (
+    choosesubordinates,
     closest_numbers,
     export_data,
     filter_conditional_leave_request,
-    get_pagination,
-)
-from leave.threading import LeaveMailSendThread
-from base.models import *
-from base.methods import (
     filtersubordinates,
-    choosesubordinates,
     get_key_instances,
+    get_pagination,
     sortby,
 )
-from notifications.signals import notify
-from leave.models import *
-from leave.forms import *
+from base.models import *
+from employee.models import Employee
+from horilla.decorators import (
+    hx_request_required,
+    login_required,
+    manager_can_enter,
+    permission_required,
+)
 from leave.decorators import *
 from leave.filters import *
-from employee.models import Employee
-from attendance.methods.group_by import group_by_queryset
+from leave.forms import *
+from leave.models import *
+from leave.threading import LeaveMailSendThread
+from notifications.signals import notify
 from recruitment.models import InterviewSchedule
+
 from .methods import (
     calculate_requested_days,
-    leave_requested_dates,
-    holiday_dates_list,
     company_leave_dates_list,
+    holiday_dates_list,
+    leave_requested_dates,
 )
 
 
@@ -307,7 +311,7 @@ def leave_request_creation(request, type_id=None, emp_id=None):
     referer_parts = [
         part for part in request.META.get("HTTP_REFERER").split("/") if part != ""
     ]
-    confirm = request.GET.get('confirm')
+    confirm = request.GET.get("confirm")
     previous_data = unquote(request.GET.urlencode())[len("pd=") :]
     form = LeaveRequestCreationForm()
     if request:
@@ -332,8 +336,10 @@ def leave_request_creation(request, type_id=None, emp_id=None):
             leave_request = form.save(commit=False)
             save = True
 
-            if not confirm == 'True' :
-                interview = InterviewSchedule.objects.filter(employee_id=leave_request.employee_id.id)
+            if not confirm == "True":
+                interview = InterviewSchedule.objects.filter(
+                    employee_id=leave_request.employee_id.id
+                )
                 days = leave_request.requested_dates()
 
                 interviews = []
@@ -370,7 +376,9 @@ def leave_request_creation(request, type_id=None, emp_id=None):
             if save:
                 leave_request.created_by = request.user.employee_get
                 leave_request.save()
-                mail_thread = LeaveMailSendThread(request, leave_request, type="request")
+                mail_thread = LeaveMailSendThread(
+                    request, leave_request, type="request"
+                )
                 mail_thread.start()
                 messages.success(request, _("Leave request created successfully.."))
                 with contextlib.suppress(Exception):
@@ -389,22 +397,22 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                 if referer_parts[-2] == "employee-view":
                     return HttpResponse("<script>window.location.reload();</script>")
 
-            elif not confirm == 'True':
-                    admin = True
-                    return render(
-                        request,
-                        "leave/user_leave/user_leave_confirm.html",
-                        {
-                            "employee": leave_request,
-                            "interview" : interviews,
-                            "title": _("Leave Request Alert."),
-                            "admin" : admin
-                        },
-                    )
+            elif not confirm == "True":
+                admin = True
+                return render(
+                    request,
+                    "leave/user_leave/user_leave_confirm.html",
+                    {
+                        "employee": leave_request,
+                        "interview": interviews,
+                        "title": _("Leave Request Alert."),
+                        "admin": admin,
+                    },
+                )
     return render(
         request,
         "leave/leave_request/leave_request_form.html",
-        {"form": form, "pd": previous_data, "confirm" : confirm},
+        {"form": form, "pd": previous_data, "confirm": confirm},
     )
 
 
@@ -434,12 +442,15 @@ def leave_request_view(request):
 
     # Fetching leave requests
     leave_requests = queryset
-    
+
     leave_requests_with_interview = []
     for leave_request in leave_requests:
 
         # Fetch interviews for the employee within the requested leave period
-        interviews = InterviewSchedule.objects.filter(employee_id=leave_request.employee_id, interview_date__range=[leave_request.start_date, leave_request.end_date])
+        interviews = InterviewSchedule.objects.filter(
+            employee_id=leave_request.employee_id,
+            interview_date__range=[leave_request.start_date, leave_request.end_date],
+        )
         if interviews:
             # If interview exists then adding the leave request to the list
             leave_requests_with_interview.append(leave_request)
@@ -499,15 +510,18 @@ def leave_request_filter(request):
     """
     previous_data = request.GET.urlencode()
     queryset = LeaveRequestFilter(request.GET).qs.order_by("-id")
-        
+
     # Fetching leave requests
     leave_requests = queryset
-    
+
     leave_requests_with_interview = []
     for leave_request in leave_requests:
 
         # Fetch interviews for the employee within the requested leave period
-        interviews = InterviewSchedule.objects.filter(employee_id=leave_request.employee_id, interview_date__range=[leave_request.start_date, leave_request.end_date])
+        interviews = InterviewSchedule.objects.filter(
+            employee_id=leave_request.employee_id,
+            interview_date__range=[leave_request.start_date, leave_request.end_date],
+        )
         if interviews:
             # If interview exists then adding the leave request to the list
             leave_requests_with_interview.append(leave_request)
@@ -562,7 +576,7 @@ def leave_request_filter(request):
             "dashboard": request.GET.get("dashboard"),
             "requests_ids": requests_ids,
             "current_date": date.today(),
-            "leave_requests_with_interview": leave_requests_with_interview
+            "leave_requests_with_interview": leave_requests_with_interview,
         },
     )
 
@@ -584,7 +598,7 @@ def leave_request_update(request, id):
     """
     leave_request = LeaveRequest.objects.get(id=id)
     leave_type_id = leave_request.leave_type_id
-    confirm = request.GET.get('confirm')
+    confirm = request.GET.get("confirm")
     employee = leave_request.employee_id
     form = LeaveRequestUpdationForm(instance=leave_request)
     if employee:
@@ -607,8 +621,10 @@ def leave_request_update(request, id):
             leave_request = form.save(commit=False)
             save = True
 
-            if not confirm == 'True' :
-                interview = InterviewSchedule.objects.filter(employee_id=leave_request.employee_id.id)
+            if not confirm == "True":
+                interview = InterviewSchedule.objects.filter(
+                    employee_id=leave_request.employee_id.id
+                )
                 days = leave_request.requested_dates()
 
                 interviews = []
@@ -617,7 +633,7 @@ def leave_request_update(request, id):
                         interviews.append(i)
                         save = False
             if save:
-                leave_request.save()            
+                leave_request.save()
                 messages.success(request, _("Leave request is updated successfully.."))
                 with contextlib.suppress(Exception):
                     notify.send(
@@ -637,26 +653,27 @@ def leave_request_update(request, id):
                     {"form": form, "id": id},
                 )
                 return HttpResponse(
-                    response.content.decode("utf-8") + "<script>location.reload();</script>"
+                    response.content.decode("utf-8")
+                    + "<script>location.reload();</script>"
                 )
-            
-            elif not confirm == 'True':
+
+            elif not confirm == "True":
                 update_admin = True
                 return render(
                     request,
                     "leave/user_leave/user_leave_confirm.html",
                     {
                         "employee": leave_request,
-                        "interview" : interviews,
+                        "interview": interviews,
                         "title": _("Leave Request Alert."),
-                        "id":id,
-                        "update_admin": update_admin
+                        "id": id,
+                        "update_admin": update_admin,
                     },
                 )
     return render(
         request,
         "leave/leave_request/request_update_form.html",
-        {"form": form, "id": id, "confirm":confirm },
+        {"form": form, "id": id, "confirm": confirm},
     )
 
 
@@ -2016,7 +2033,7 @@ def user_leave_request(request, id):
     previous_data = unquote(request.GET.urlencode())[len("pd=") :]
     employee = request.user.employee_get
     leave_type = LeaveType.objects.get(id=id)
-    confirm = request.GET.get('confirm')
+    confirm = request.GET.get("confirm")
     form = UserLeaveRequestForm(
         initial={"employee_id": employee, "leave_type_id": leave_type}
     )
@@ -2078,8 +2095,10 @@ def user_leave_request(request, id):
                 leave_request.leave_type_id = leave_type
                 leave_request.employee_id = employee
 
-                if not confirm == 'True' :
-                    interview = InterviewSchedule.objects.filter(employee_id=leave_request.employee_id.id)
+                if not confirm == "True":
+                    interview = InterviewSchedule.objects.filter(
+                        employee_id=leave_request.employee_id.id
+                    )
                     days = leave_request.requested_dates()
 
                     interviews = []
@@ -2087,7 +2106,7 @@ def user_leave_request(request, id):
                         if i.interview_date in days:
                             interviews.append(i)
                             save = False
-                
+
                 if leave_request.leave_type_id.require_approval == "no":
                     employee_id = leave_request.employee_id
                     leave_type_id = leave_request.leave_type_id
@@ -2138,24 +2157,32 @@ def user_leave_request(request, id):
                     ) == 1 or request.META.get("HTTP_REFERER").endswith(
                         "employee-profile/"
                     ):
-                        return HttpResponse("<script>window.location.reload();</script>")
-                    
-                elif not confirm == 'True':
+                        return HttpResponse(
+                            "<script>window.location.reload();</script>"
+                        )
+
+                elif not confirm == "True":
                     return render(
                         request,
                         "leave/user_leave/user_leave_confirm.html",
                         {
                             "employee": leave_request,
-                            "interview" : interviews,
+                            "interview": interviews,
                             "title": _("Leave Request Alert."),
-                            "id":id,
+                            "id": id,
                         },
                     )
 
             return render(
                 request,
                 "leave/user_leave/user_request_form.html",
-                {"form": form, "id": id, "leave_type": leave_type, "pd": previous_data, "confirm" : confirm},
+                {
+                    "form": form,
+                    "id": id,
+                    "leave_type": leave_type,
+                    "pd": previous_data,
+                    "confirm": confirm,
+                },
             )
         else:
             form.add_error(
@@ -2165,7 +2192,13 @@ def user_leave_request(request, id):
     return render(
         request,
         "leave/user_leave/user_request_form.html",
-        {"form": form, "id": id, "leave_type": leave_type, "pd": previous_data, "confirm" : confirm},
+        {
+            "form": form,
+            "id": id,
+            "leave_type": leave_type,
+            "pd": previous_data,
+            "confirm": confirm,
+        },
     )
 
 
@@ -2184,7 +2217,7 @@ def user_request_update(request, id):
     POST : return user leave request view template
     """
     previous_data = request.GET.urlencode()
-    confirm = request.GET.get('confirm')
+    confirm = request.GET.get("confirm")
     leave_request = LeaveRequest.objects.get(id=id)
     try:
         if (
@@ -2204,8 +2237,10 @@ def user_request_update(request, id):
                 if form.is_valid():
                     leave_request = form.save(commit=False)
                     save = True
-                    if not confirm == 'True' :
-                        interview = InterviewSchedule.objects.filter(employee_id=leave_request.employee_id.id)
+                    if not confirm == "True":
+                        interview = InterviewSchedule.objects.filter(
+                            employee_id=leave_request.employee_id.id
+                        )
                         days = leave_request.requested_dates()
 
                         interviews = []
@@ -2266,17 +2301,17 @@ def user_request_update(request, id):
                             messages.success(
                                 request, _("Leave request updated successfully..")
                             )
-                        elif not confirm == 'True':
+                        elif not confirm == "True":
                             update = True
                             return render(
                                 request,
                                 "leave/user_leave/user_leave_confirm.html",
                                 {
                                     "employee": leave_request,
-                                    "interview" : interviews,
+                                    "interview": interviews,
                                     "title": _("Leave Request Alert."),
-                                    "id":id,
-                                    "update": update
+                                    "id": id,
+                                    "update": update,
                                 },
                             )
                     else:
@@ -2287,7 +2322,7 @@ def user_request_update(request, id):
             return render(
                 request,
                 "leave/user_leave/user_request_update.html",
-                {"form": form, "id": id, "pd": previous_data, "confirm" : confirm },
+                {"form": form, "id": id, "pd": previous_data, "confirm": confirm},
             )
         else:
             messages.error(request, _("You can't update this leave request..."))
@@ -2297,7 +2332,7 @@ def user_request_update(request, id):
     return render(
         request,
         "leave/user_leave/user_request_update.html",
-        {"form": form, "id": id, "pd": previous_data, "confirm" : confirm },
+        {"form": form, "id": id, "pd": previous_data, "confirm": confirm},
     )
 
 
@@ -2412,15 +2447,21 @@ def user_request_view(request):
         queryset = user.leaverequest_set.all()
         previous_data = request.GET.urlencode()
         page_number = request.GET.get("page")
-                
+
         # Fetching leave requests
         leave_requests = queryset
-        
+
         leave_requests_with_interview = []
         for leave_request in leave_requests:
 
             # Fetch interviews for the employee within the requested leave period
-            interviews = InterviewSchedule.objects.filter(employee_id=leave_request.employee_id, interview_date__range=[leave_request.start_date, leave_request.end_date])
+            interviews = InterviewSchedule.objects.filter(
+                employee_id=leave_request.employee_id,
+                interview_date__range=[
+                    leave_request.start_date,
+                    leave_request.end_date,
+                ],
+            )
             if interviews:
                 # If interview exists then adding the leave request to the list
                 leave_requests_with_interview.append(leave_request)
@@ -2445,7 +2486,7 @@ def user_request_view(request):
                 "gp_fields": MyLeaveRequestReGroup.fields,
                 "request_ids": request_ids,
                 "user_leaves": user_leave,
-                "leave_requests_with_interview": leave_requests_with_interview
+                "leave_requests_with_interview": leave_requests_with_interview,
             },
         )
     except Exception as e:
@@ -2474,12 +2515,18 @@ def user_request_filter(request):
 
         # Fetching leave requests
         leave_requests = queryset
-        
+
         leave_requests_with_interview = []
         for leave_request in leave_requests:
 
             # Fetch interviews for the employee within the requested leave period
-            interviews = InterviewSchedule.objects.filter(employee_id=leave_request.employee_id, interview_date__range=[leave_request.start_date, leave_request.end_date])
+            interviews = InterviewSchedule.objects.filter(
+                employee_id=leave_request.employee_id,
+                interview_date__range=[
+                    leave_request.start_date,
+                    leave_request.end_date,
+                ],
+            )
             if interviews:
                 # If interview exists then adding the leave request to the list
                 leave_requests_with_interview.append(leave_request)
@@ -2526,7 +2573,7 @@ def user_request_filter(request):
             "current_date": date.today(),
             "request_ids": requests_ids,
             "user_leaves": user_leave,
-            "leave_requests_with_interview": leave_requests_with_interview
+            "leave_requests_with_interview": leave_requests_with_interview,
         }
         return render(request, template, context=context)
     except Exception as e:
@@ -3025,7 +3072,7 @@ def leave_request_create(request):
     previous_data = unquote(request.GET.urlencode())[len("pd=") :]
     emp = request.user.employee_get
     emp_id = emp.id
-    confirm = request.GET.get('confirm')
+    confirm = request.GET.get("confirm")
 
     form = UserLeaveRequestCreationForm(employee=emp)
     if request.method == "POST":
@@ -3035,8 +3082,10 @@ def leave_request_create(request):
                 leave_request = form.save(commit=False)
                 save = True
 
-                if not confirm == 'True' :
-                    interview = InterviewSchedule.objects.filter(employee_id=leave_request.employee_id.id)
+                if not confirm == "True":
+                    interview = InterviewSchedule.objects.filter(
+                        employee_id=leave_request.employee_id.id
+                    )
                     days = leave_request.requested_dates()
 
                     interviews = []
@@ -3100,13 +3149,13 @@ def leave_request_create(request):
                         return HttpResponse(
                             "<script>window.location.reload();</script>"
                         )
-                elif not confirm == 'True':
+                elif not confirm == "True":
                     return render(
                         request,
                         "leave/user_leave/user_leave_confirm.html",
                         {
                             "employee": leave_request,
-                            "interview" : interviews,
+                            "interview": interviews,
                             "title": _("Leave Request Alert."),
                         },
                     )
@@ -3114,7 +3163,7 @@ def leave_request_create(request):
             return render(
                 request,
                 "leave/user_leave/request_form.html",
-                {"form": form, "pd": previous_data, "confirm" : confirm},
+                {"form": form, "pd": previous_data, "confirm": confirm},
             )
         else:
             messages.error(request, _("You don't have permission"))
@@ -3127,7 +3176,7 @@ def leave_request_create(request):
     return render(
         request,
         "leave/user_leave/request_form.html",
-        {"form": form, "pd": previous_data, "confirm" : confirm},
+        {"form": form, "pd": previous_data, "confirm": confirm},
     )
 
 

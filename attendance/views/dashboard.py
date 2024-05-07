@@ -6,14 +6,16 @@ This module is used to register endpoints for dashboard-related requests
 
 import calendar
 from datetime import date, datetime, timedelta
+
 from django.db.models import Q, Sum
-from django.shortcuts import render
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
+
 from attendance.filters import (
     AttendanceFilters,
-    LateComeEarlyOutFilter,
     AttendanceOverTimeFilter,
+    LateComeEarlyOutFilter,
 )
 from attendance.models import (
     Attendance,

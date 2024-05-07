@@ -1,15 +1,15 @@
 {% load i18n %}
 
-<form 
+<form
     {% if r_type.id %}
     hx-post="{% url 'rotating-work-type-update' r_type.id %}"
     {% else %}
     hx-post="{% url 'rotating-work-type-create' %}"
     {% endif %}
     hx-target="#RotatingWorkTypeForm"
-    method="post"    
+    method="post"
     class="settings-label mb-1">
-	{% csrf_token %} {{form}}	
+	{% csrf_token %} {{form}}
     <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
         <button type="submit" class="oh-btn oh-btn--secondary pl-5 pr-5">
           {% trans "Save" %}

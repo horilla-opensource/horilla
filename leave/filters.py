@@ -1,30 +1,33 @@
 """
-This module contains custom filter classes used for filtering 
+This module contains custom filter classes used for filtering
 various models in the Leave Management System app.
-The filters are designed to provide flexible search and filtering 
+The filters are designed to provide flexible search and filtering
 capabilities for LeaveType, LeaveRequest,AvailableLeave, Holiday, and CompanyLeave models.
 """
 
-from datetime import datetime, timedelta
 import uuid
+from datetime import datetime, timedelta
+
+import django_filters
 from django import forms
 from django.db.models import Q
 from django.db.models.functions import TruncYear
-import django_filters
-from django_filters import FilterSet, DateFilter, filters, NumberFilter
-from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as __
+from django.utils.translation import gettext_lazy as _
+from django_filters import DateFilter, FilterSet, NumberFilter, filters
+
+from base.filters import FilterSet
 from employee.models import Employee
+
 from .models import (
-    LeaveType,
-    LeaveRequest,
     AvailableLeave,
-    Holiday,
     CompanyLeave,
+    Holiday,
     LeaveAllocationRequest,
+    LeaveRequest,
+    LeaveType,
     RestrictLeave,
 )
-from base.filters import FilterSet
 
 
 class LeaveTypeFilter(FilterSet):

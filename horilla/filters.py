@@ -3,13 +3,14 @@ filters.py
 """
 
 import uuid
+
 import django_filters
 from django import forms
-from django.db import models
-from base.methods import reload_queryset
 from django.core.paginator import Page, Paginator
+from django.db import models
 from django_filters.filterset import FILTER_FOR_DBFIELD_DEFAULTS
 
+from base.methods import reload_queryset
 
 FILTER_FOR_DBFIELD_DEFAULTS[models.ForeignKey][
     "filter_class"

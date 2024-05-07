@@ -41,8 +41,8 @@
                 $(this).parent().removeClass('todo-task')
             }
             " hx-get="{% url 'change-task-status' %}?task_id={{task.id}}"
-            name="status" 
-            class="" 
+            name="status"
+            class=""
             style="width: 150px;"
             id="task_status{{task.id}}">
                 {% for status in task.choice %}

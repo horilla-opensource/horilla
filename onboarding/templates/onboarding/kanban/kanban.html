@@ -18,7 +18,7 @@
 
 <div class="oh-wrapper">
     {% include "onboarding/onboarding_view_nav.html" %}
-    
+
     <div id = "stage-messages"></div>
     <div class="oh-wrapper oh-filter-tag-container filter-value" style="margin-left:-3px"></div>
     <div class="oh-tabs">
@@ -28,7 +28,7 @@
             <div class="oh-tabs__content " id="tab_{{rec.id}}" data-recruitment-id="{{rec.id}}">
                 <div class="oh-kanban">
                     {% for stage in rec.stages %}
-                    
+
                     <div class="oh-kanban__section stage" id="b3a7bac2-2a16-40fe-9b7e-78a1101ee9d3" data-recruitment-id="{{rec.id}}" data-stage-id="{{stage.grouper.id}}" data-sequence="{{forloop.counter}}">
                         <div class="oh-kanban__section-head oh-kanban__section-head--white" {% if request.user.employee_get in stage.grouper.employee_id.all %} style="background-color: hsl(38.08deg 100% 50% / 8%) !important;" {% endif %}>
                             <div class="d-flex ">
@@ -41,7 +41,7 @@
                                     hx-target="#stage-messages"
                                     style="width: 160px;"
                                     readonly=""
-                                />  
+                                />
                                 </span>
                                 <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count" title="{{stage.grouper.candidate.count}} {% trans 'Candidate' %}">{{stage.grouper.candidate.count}}</span>
                             </div>
@@ -55,7 +55,7 @@
                                     <div class="oh-dropdown__menu oh-dropdown__menu--right">
                                         <ul class="oh-dropdown__items">
                                             <li class="oh-dropdown__item">
-                                                <a data-toggle="oh-modal-toggle" 
+                                                <a data-toggle="oh-modal-toggle"
                                                 data-target="#editModal3"
                                                 hx-get="{% url 'stage-update' stage.grouper.id rec.id %}"
                                                 hx-target="#updateStage" class="oh-dropdown__link" style="cursor:pointer;">{% trans "Edit" %}</a>
@@ -69,7 +69,7 @@
                                     </div>
                                 </div>
                                 <button
-                                    class="oh-btn oh-btn--small oh-btn--transparent p-0" 
+                                    class="oh-btn oh-btn--small oh-btn--transparent p-0"
                                     data-toggle="oh-modal-toggle"
                                     data-target="#taskModal"
                                     hx-get="{% url 'task-creation' %}?stage_id={{stage.grouper.id}}"
@@ -110,9 +110,9 @@
                                     </div>
                                 </div>
                                 <div class="oh-kanban__card-body">
-                                    {{candidate.candidate_id.job_position_id}} 
+                                    {{candidate.candidate_id.job_position_id}}
                                     <div class="oh-checkpoint-badge oh-checkpoint-badge--primary" style="margin-left:94px" >
-                                        {{candidate.task_completion_ratio}} 
+                                        {{candidate.task_completion_ratio}}
                                     </div> <br/>
                                     <span class="oh-kanban__card-footer-text oh-text--light">{{candidate.candidate_id.email}}</span>
                                     <button class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Tasks' %}"></button>
@@ -149,7 +149,7 @@
     </div>
 
 
-            
+
     <!-- Paginator Section -->
     <div class="oh-pagination">
         <span
@@ -160,11 +160,11 @@
           {% trans "Page" %} {{ recruitments.number }} {% trans "of" %} {{ recruitments.paginator.num_pages }}.
           </span
           >
-          
+
         <nav class="oh-pagination__nav">
         <div class="oh-pagination__input-container me-3">
             <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-            
+
             <input
             type="number"
             name="page"
@@ -175,7 +175,7 @@
             />
             <span class="oh-pagination__label">{% trans "of" %} {{recruitments.paginator.num_pages}}</span>
         </div>
-        
+
         <ul class="oh-pagination__items">
             {% if recruitments.has_previous %}
             <li class="oh-pagination__item oh-pagination__item--wide">
@@ -193,12 +193,12 @@
                 <a href="{% url 'kanban-view' %}?{{pd}}&page={{ recruitments.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
             </li>
             {% endif %}
-            
+
         </ul>
         </nav>
     </div>
-    
-    
+
+
 </div>
 <div class="messages"></div>
 
@@ -224,7 +224,7 @@
             </button>
         </div>
         <div id="stageForm" class="">
-            
+
         </div>
     </div>
 </div>
@@ -238,7 +238,7 @@
             </button>
         </div>
         <div id="taskModalBody" class="">
-            
+
         </div>
     </div>
 </div>
@@ -252,13 +252,13 @@
             </button>
         </div>
         <div id="sendMailModalBody" class="p-3 ">
-                        
+
         </div>
     </div>
 </div>
 <script>
     $(document).ready(function() {
-        
+
         $("#is_closed").on("change", function() {
             if ($(this).is(":checked")) {
                 window.location.href = "{% url 'kanban-view' %}?closed=closed";

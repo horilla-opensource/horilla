@@ -10,7 +10,7 @@
                 class="oh-btn oh-btn--secondary oh-btn--shadow"
                 data-toggle="oh-modal-toggle"
                 data-target="#deparmentManagersModal"
-                hx-get="{% url 'department-manager-create' %}" 
+                hx-get="{% url 'department-manager-create' %}"
                 hx-target="#deparmentManagersModal"
             >
                 <ion-icon name="add-outline" class="me-1"></ion-icon>
@@ -19,7 +19,7 @@
 			{% endif %}
         </div>
 		{% if department_managers %}
-			{% include 'department_managers/department_managers_view.html' %}     
+			{% include 'department_managers/department_managers_view.html' %}
         {% else %}
             <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
                 <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/manager.png' %}" class="" alt="Page not found. 404." />

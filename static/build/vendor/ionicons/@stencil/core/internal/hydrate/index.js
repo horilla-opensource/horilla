@@ -14,8 +14,8 @@ function hydrateApp(e, t, o, n, s) {
   if (global.clearTimeout(p), i.clear(), r.clear(), !h) {
    h = !0;
    try {
-    t.clientHydrateAnnotations && insertVdomAnnotations(e.document, t.staticComponents), 
-    e.dispatchEvent(new e.Event("DOMContentLoaded")), e.document.createElement = c, 
+    t.clientHydrateAnnotations && insertVdomAnnotations(e.document, t.staticComponents),
+    e.dispatchEvent(new e.Event("DOMContentLoaded")), e.document.createElement = c,
     e.document.createElementNS = $;
    } catch (e) {
     renderCatchError(t, o, e);
@@ -38,10 +38,10 @@ function hydrateApp(e, t, o, n, s) {
      $tagName$: e.nodeName.toLowerCase(),
      $flags$: null
     }, null);
-    null != t && null != t.cmpMeta && (i.add(e), e.connectedCallback = u, registerHost(e, t.cmpMeta), 
+    null != t && null != t.cmpMeta && (i.add(e), e.connectedCallback = u, registerHost(e, t.cmpMeta),
     function o(e, t) {
-     if ("function" != typeof e.componentOnReady && (e.componentOnReady = componentOnReady), 
-     "function" != typeof e.forceUpdate && (e.forceUpdate = forceUpdate), 1 & t.$flags$ && (e.shadowRoot = e), 
+     if ("function" != typeof e.componentOnReady && (e.componentOnReady = componentOnReady),
+     "function" != typeof e.forceUpdate && (e.forceUpdate = forceUpdate), 1 & t.$flags$ && (e.shadowRoot = e),
      null != t.$members$) {
       const o = getHostRef(e);
       Object.entries(t.$members$).forEach((([n, s]) => {
@@ -75,7 +75,7 @@ function hydrateApp(e, t, o, n, s) {
    }
   }
   function g(n) {
-   return i.delete(n), isValidComponent(n, t) && o.hydratedCount < t.maxHydrateCount && !r.has(n) && shouldHydrate(n) ? (r.add(n), 
+   return i.delete(n), isValidComponent(n, t) && o.hydratedCount < t.maxHydrateCount && !r.has(n) && shouldHydrate(n) ? (r.add(n),
    async function s(e, t, o, n, l) {
     o = o.toLowerCase();
     const a = loadModule({
@@ -110,7 +110,7 @@ function hydrateApp(e, t, o, n, s) {
    a(`Hydrate exceeded timeout${function e(t) {
     return Array.from(t).map(waitingOnElementMsg);
    }(d)}`);
-  }), t.timeout), plt.$resourcesUrl$ = new URL(t.resourcesUrl || "./", doc.baseURI).href, 
+  }), t.timeout), plt.$resourcesUrl$ = new URL(t.resourcesUrl || "./", doc.baseURI).href,
   globalScripts(), function e(t) {
    if (null != t && 1 === t.nodeType) {
     f(t);
@@ -156,7 +156,7 @@ function renderCatchError(e, t, o) {
   const t = new URL(e.url);
   "/" !== t.pathname && (n.header += ": " + t.pathname);
  } catch (e) {}
- null != o && (null != o.stack ? n.messageText = o.stack.toString() : null != o.message ? n.messageText = o.message.toString() : n.messageText = o.toString()), 
+ null != o && (null != o.stack ? n.messageText = o.stack.toString() : null != o.message ? n.messageText = o.message.toString() : n.messageText = o.toString()),
  t.diagnostics.push(n);
 }
 
@@ -175,7 +175,7 @@ function waitingOnElementMsg(e) {
   const o = [];
   t = " - waiting on:";
   let n = e;
-  for (;n && 9 !== n.nodeType && "BODY" !== n.nodeName; ) o.unshift(printTag(n)), 
+  for (;n && 9 !== n.nodeType && "BODY" !== n.nodeName; ) o.unshift(printTag(n)),
   n = n.parentElement;
   let s = "";
   for (const e of o) s += "  ", t += `\n${s}${e}`;
@@ -205,17 +205,17 @@ const createTime = (e, t = "") => {
 }, XLINK_NS = "http://www.w3.org/1999/xlink", EMPTY_OBJ = {}, isComplexType = e => "object" == (e = typeof e) || "function" === e, isPromise = e => !!e && ("object" == typeof e || "function" == typeof e) && "function" == typeof e.then, h = (e, t, ...o) => {
  let n = null, s = null, l = null, a = !1, r = !1;
  const i = [], d = t => {
-  for (let o = 0; o < t.length; o++) n = t[o], Array.isArray(n) ? d(n) : null != n && "boolean" != typeof n && ((a = "function" != typeof e && !isComplexType(n)) ? n = String(n) : BUILD.isDev && "function" != typeof e && n.$flags$, 
+  for (let o = 0; o < t.length; o++) n = t[o], Array.isArray(n) ? d(n) : null != n && "boolean" != typeof n && ((a = "function" != typeof e && !isComplexType(n)) ? n = String(n) : BUILD.isDev && "function" != typeof e && n.$flags$,
   a && r ? i[i.length - 1].$text$ += n : i.push(a ? newVNode(null, n) : n), r = a);
  };
- if (d(o), t && (BUILD.isDev && "input" === e && validateInputProperties(t), BUILD.vdomKey && t.key && (s = t.key), 
+ if (d(o), t && (BUILD.isDev && "input" === e && validateInputProperties(t), BUILD.vdomKey && t.key && (s = t.key),
  BUILD.slotRelocation && t.name && (l = t.name), BUILD.vdomClass)) {
   const e = t.className || t.class;
   e && (t.class = "object" != typeof e ? e : Object.keys(e).filter((t => e[t])).join(" "));
  }
  if (BUILD.isDev && i.some(isHost), BUILD.vdomFunctional && "function" == typeof e) return e(null === t ? {} : t, i, vdomFnUtils);
  const c = newVNode(e, null);
- return c.$attrs$ = t, i.length > 0 && (c.$children$ = i), BUILD.vdomKey && (c.$key$ = s), 
+ return c.$attrs$ = t, i.length > 0 && (c.$children$ = i), BUILD.vdomKey && (c.$key$ = s),
  BUILD.slotRelocation && (c.$name$ = l), c;
 }, newVNode = (e, t) => {
  const o = {
@@ -225,7 +225,7 @@ const createTime = (e, t = "") => {
   $elm$: null,
   $children$: null
  };
- return BUILD.vdomAttribute && (o.$attrs$ = null), BUILD.vdomKey && (o.$key$ = null), 
+ return BUILD.vdomAttribute && (o.$attrs$ = null), BUILD.vdomKey && (o.$key$ = null),
  BUILD.slotRelocation && (o.$name$ = null), o;
 }, Host = {}, isHost = e => e && e.$tag$ === Host, vdomFnUtils = {
  forEach: (e, t) => e.map(convertToPublic).forEach(t),
@@ -245,11 +245,11 @@ const createTime = (e, t = "") => {
   return e.vkey && (t.key = e.vkey), e.vname && (t.name = e.vname), h(e.vtag, t, ...e.vchildren || []);
  }
  const t = newVNode(e.vtag, e.vtext);
- return t.$attrs$ = e.vattrs, t.$children$ = e.vchildren, t.$key$ = e.vkey, t.$name$ = e.vname, 
+ return t.$attrs$ = e.vattrs, t.$children$ = e.vchildren, t.$key$ = e.vkey, t.$name$ = e.vname,
  t;
 }, validateInputProperties = e => {
  const t = Object.keys(e);
- -1 !== t.indexOf("value") && (t.indexOf("type"), t.indexOf("min"), t.indexOf("max"), 
+ -1 !== t.indexOf("value") && (t.indexOf("type"), t.indexOf("min"), t.indexOf("max"),
  t.indexOf("step"));
 }, clientHydrate = (e, t, o, n, s, l, a) => {
  let r, i, d, c;
@@ -267,10 +267,10 @@ const createTime = (e, t = "") => {
    $key$: null,
    $name$: null,
    $text$: null
-  }, t.push(d), l.removeAttribute("c-id"), e.$children$ || (e.$children$ = []), e.$children$[d.$index$] = d, 
+  }, t.push(d), l.removeAttribute("c-id"), e.$children$ || (e.$children$ = []), e.$children$[d.$index$] = d,
   e = d, n && "0" === d.$depth$ && (n[d.$index$] = d.$elm$))), c = l.childNodes.length - 1; c >= 0; c--) clientHydrate(e, t, o, n, s, l.childNodes[c], a);
   if (l.shadowRoot) for (c = l.shadowRoot.childNodes.length - 1; c >= 0; c--) clientHydrate(e, t, o, n, s, l.shadowRoot.childNodes[c], a);
- } else if (8 === l.nodeType) i = l.nodeValue.split("."), i[1] !== a && "0" !== i[1] || (r = i[0], 
+ } else if (8 === l.nodeType) i = l.nodeValue.split("."), i[1] !== a && "0" !== i[1] || (r = i[0],
  d = {
   $flags$: 0,
   $hostId$: i[1],
@@ -284,13 +284,13 @@ const createTime = (e, t = "") => {
   $name$: null,
   $tag$: null,
   $text$: null
- }, "t" === r ? (d.$elm$ = l.nextSibling, d.$elm$ && 3 === d.$elm$.nodeType && (d.$text$ = d.$elm$.textContent, 
- t.push(d), l.remove(), e.$children$ || (e.$children$ = []), e.$children$[d.$index$] = d, 
- n && "0" === d.$depth$ && (n[d.$index$] = d.$elm$))) : d.$hostId$ === a && ("s" === r ? (d.$tag$ = "slot", 
- i[5] ? l["s-sn"] = d.$name$ = i[5] : l["s-sn"] = "", l["s-sr"] = !0, BUILD.shadowDom && n && (d.$elm$ = doc.createElement(d.$tag$), 
- d.$name$ && d.$elm$.setAttribute("name", d.$name$), l.parentNode.insertBefore(d.$elm$, l), 
- l.remove(), "0" === d.$depth$ && (n[d.$index$] = d.$elm$)), o.push(d), e.$children$ || (e.$children$ = []), 
- e.$children$[d.$index$] = d) : "r" === r && (BUILD.shadowDom && n ? l.remove() : BUILD.slotRelocation && (s["s-cr"] = l, 
+ }, "t" === r ? (d.$elm$ = l.nextSibling, d.$elm$ && 3 === d.$elm$.nodeType && (d.$text$ = d.$elm$.textContent,
+ t.push(d), l.remove(), e.$children$ || (e.$children$ = []), e.$children$[d.$index$] = d,
+ n && "0" === d.$depth$ && (n[d.$index$] = d.$elm$))) : d.$hostId$ === a && ("s" === r ? (d.$tag$ = "slot",
+ i[5] ? l["s-sn"] = d.$name$ = i[5] : l["s-sn"] = "", l["s-sr"] = !0, BUILD.shadowDom && n && (d.$elm$ = doc.createElement(d.$tag$),
+ d.$name$ && d.$elm$.setAttribute("name", d.$name$), l.parentNode.insertBefore(d.$elm$, l),
+ l.remove(), "0" === d.$depth$ && (n[d.$index$] = d.$elm$)), o.push(d), e.$children$ || (e.$children$ = []),
+ e.$children$[d.$index$] = d) : "r" === r && (BUILD.shadowDom && n ? l.remove() : BUILD.slotRelocation && (s["s-cr"] = l,
  l["s-cn"] = !0)))); else if (e && "style" === e.$tag$) {
   const t = newVNode(null, l.textContent);
   t.$elm$ = l, t.$index$ = "0", e.$children$ = [ t ];
@@ -336,7 +336,7 @@ const createTime = (e, t = "") => {
      e && (l = e, r = null);
     } else o = doc.createElement("style"), o.innerHTML = a;
     const i = null !== (s = plt.$nonce$) && void 0 !== s ? s : queryNonceMetaTagContent(doc);
-    null != i && o.setAttribute("nonce", i), (BUILD.hydrateServerSide || BUILD.hotModuleReplacement) && o.setAttribute("sty-id", l), 
+    null != i && o.setAttribute("nonce", i), (BUILD.hydrateServerSide || BUILD.hotModuleReplacement) && o.setAttribute("sty-id", l),
     e.insertBefore(o, e.querySelector("link"));
    }
    r && r.add(l);
@@ -345,8 +345,8 @@ const createTime = (e, t = "") => {
  return l;
 }, attachStyles = e => {
  const t = e.$cmpMeta$, o = e.$hostElement$, n = t.$flags$, s = createTime("attachStyles", t.$tagName$), l = addStyle(BUILD.shadowDom && supportsShadow && o.shadowRoot ? o.shadowRoot : o.getRootNode(), t, e.$modeName$, o);
- (BUILD.shadowDom || BUILD.scoped) && BUILD.cssAnnotations && 10 & n && (o["s-sc"] = l, 
- o.classList.add(l + "-h"), BUILD.scoped && 2 & n && o.classList.add(l + "-s")), 
+ (BUILD.shadowDom || BUILD.scoped) && BUILD.cssAnnotations && 10 & n && (o["s-sc"] = l,
+ o.classList.add(l + "-h"), BUILD.scoped && 2 & n && o.classList.add(l + "-s")),
  s();
 }, getScopeId = (e, t) => "sc-" + (BUILD.mode && t && 32 & e.$flags$ ? e.$tagName$ + "-" + t : e.$tagName$), setAccessor = (e, t, o, n, s, l) => {
  if (o !== n) {
@@ -367,10 +367,10 @@ const createTime = (e, t = "") => {
      }
     } catch (e) {}
     let d = !1;
-    BUILD.vdomXlink && r !== (r = r.replace(/^xlink\:?/, "")) && (t = r, d = !0), null == n || !1 === n ? !1 === n && "" !== e.getAttribute(t) || (BUILD.vdomXlink && d ? e.removeAttributeNS(XLINK_NS, t) : e.removeAttribute(t)) : (!a || 4 & l || s) && !i && (n = !0 === n ? "" : n, 
+    BUILD.vdomXlink && r !== (r = r.replace(/^xlink\:?/, "")) && (t = r, d = !0), null == n || !1 === n ? !1 === n && "" !== e.getAttribute(t) || (BUILD.vdomXlink && d ? e.removeAttributeNS(XLINK_NS, t) : e.removeAttribute(t)) : (!a || 4 & l || s) && !i && (n = !0 === n ? "" : n,
     BUILD.vdomXlink && d ? e.setAttributeNS(XLINK_NS, t, n) : e.setAttribute(t, n));
    }
-  } else t = "-" === t[2] ? t.slice(3) : isMemberInElement(win, r) ? r.slice(2) : r[2] + t.slice(3), 
+  } else t = "-" === t[2] ? t.slice(3) : isMemberInElement(win, r) ? r.slice(2) : r[2] + t.slice(3),
   o && plt.rel(e, t, o, !1), n && plt.ael(e, t, n, !1);
  }
 }, parseClassListRegex = /\s/, parseClassList = e => e ? e.split(parseClassListRegex) : [], updateElement = (e, t, o, n) => {
@@ -384,64 +384,64 @@ let scopeId, contentRef, hostTagName, useNativeShadowDom = !1, checkSlotFallback
 const createElm = (e, t, o, n) => {
  const s = t.$children$[o];
  let l, a, r, i = 0;
- if (BUILD.slotRelocation && !useNativeShadowDom && (checkSlotRelocate = !0, "slot" === s.$tag$ && (scopeId && n.classList.add(scopeId + "-s"), 
- s.$flags$ |= s.$children$ ? 2 : 1)), BUILD.isDev && s.$elm$ && consoleDevError(`The JSX ${null !== s.$text$ ? `"${s.$text$}" text` : `"${s.$tag$}" element`} node should not be shared within the same renderer. The renderer caches element lookups in order to improve performance. However, a side effect from this is that the exact same JSX node should not be reused. For more information please see https://stenciljs.com/docs/templating-jsx#avoid-shared-jsx-nodes`), 
+ if (BUILD.slotRelocation && !useNativeShadowDom && (checkSlotRelocate = !0, "slot" === s.$tag$ && (scopeId && n.classList.add(scopeId + "-s"),
+ s.$flags$ |= s.$children$ ? 2 : 1)), BUILD.isDev && s.$elm$ && consoleDevError(`The JSX ${null !== s.$text$ ? `"${s.$text$}" text` : `"${s.$tag$}" element`} node should not be shared within the same renderer. The renderer caches element lookups in order to improve performance. However, a side effect from this is that the exact same JSX node should not be reused. For more information please see https://stenciljs.com/docs/templating-jsx#avoid-shared-jsx-nodes`),
  BUILD.vdomText && null !== s.$text$) l = s.$elm$ = doc.createTextNode(s.$text$); else if (BUILD.slotRelocation && 1 & s.$flags$) l = s.$elm$ = BUILD.isDebug || BUILD.hydrateServerSide ? slotReferenceDebugNode(s) : doc.createTextNode(""); else {
-  if (BUILD.svg && !isSvgMode && (isSvgMode = "svg" === s.$tag$), l = s.$elm$ = BUILD.svg ? doc.createElementNS(isSvgMode ? "http://www.w3.org/2000/svg" : "http://www.w3.org/1999/xhtml", BUILD.slotRelocation && 2 & s.$flags$ ? "slot-fb" : s.$tag$) : doc.createElement(BUILD.slotRelocation && 2 & s.$flags$ ? "slot-fb" : s.$tag$), 
-  BUILD.svg && isSvgMode && "foreignObject" === s.$tag$ && (isSvgMode = !1), BUILD.vdomAttribute && updateElement(null, s, isSvgMode), 
-  (BUILD.shadowDom || BUILD.scoped) && null != scopeId && l["s-si"] !== scopeId && l.classList.add(l["s-si"] = scopeId), 
-  s.$children$) for (i = 0; i < s.$children$.length; ++i) a = createElm(e, s, i, l), 
+  if (BUILD.svg && !isSvgMode && (isSvgMode = "svg" === s.$tag$), l = s.$elm$ = BUILD.svg ? doc.createElementNS(isSvgMode ? "http://www.w3.org/2000/svg" : "http://www.w3.org/1999/xhtml", BUILD.slotRelocation && 2 & s.$flags$ ? "slot-fb" : s.$tag$) : doc.createElement(BUILD.slotRelocation && 2 & s.$flags$ ? "slot-fb" : s.$tag$),
+  BUILD.svg && isSvgMode && "foreignObject" === s.$tag$ && (isSvgMode = !1), BUILD.vdomAttribute && updateElement(null, s, isSvgMode),
+  (BUILD.shadowDom || BUILD.scoped) && null != scopeId && l["s-si"] !== scopeId && l.classList.add(l["s-si"] = scopeId),
+  s.$children$) for (i = 0; i < s.$children$.length; ++i) a = createElm(e, s, i, l),
   a && l.appendChild(a);
   BUILD.svg && ("svg" === s.$tag$ ? isSvgMode = !1 : "foreignObject" === l.tagName && (isSvgMode = !0));
  }
- return BUILD.slotRelocation && (l["s-hn"] = hostTagName, 3 & s.$flags$ && (l["s-sr"] = !0, 
- l["s-cr"] = contentRef, l["s-sn"] = s.$name$ || "", r = e && e.$children$ && e.$children$[o], 
- r && r.$tag$ === s.$tag$ && e.$elm$ && putBackInOriginalLocation(e.$elm$, !1))), 
+ return BUILD.slotRelocation && (l["s-hn"] = hostTagName, 3 & s.$flags$ && (l["s-sr"] = !0,
+ l["s-cr"] = contentRef, l["s-sn"] = s.$name$ || "", r = e && e.$children$ && e.$children$[o],
+ r && r.$tag$ === s.$tag$ && e.$elm$ && putBackInOriginalLocation(e.$elm$, !1))),
  l;
 }, putBackInOriginalLocation = (e, t) => {
  plt.$flags$ |= 1;
  const o = e.childNodes;
  for (let e = o.length - 1; e >= 0; e--) {
   const n = o[e];
-  n["s-hn"] !== hostTagName && n["s-ol"] && (parentReferenceNode(n).insertBefore(n, referenceNode(n)), 
+  n["s-hn"] !== hostTagName && n["s-ol"] && (parentReferenceNode(n).insertBefore(n, referenceNode(n)),
   n["s-ol"].remove(), n["s-ol"] = void 0, checkSlotRelocate = !0), t && putBackInOriginalLocation(n, t);
  }
  plt.$flags$ &= -2;
 }, addVnodes = (e, t, o, n, s, l) => {
  let a, r = BUILD.slotRelocation && e["s-cr"] && e["s-cr"].parentNode || e;
- for (BUILD.shadowDom && r.shadowRoot && r.tagName === hostTagName && (r = r.shadowRoot); s <= l; ++s) n[s] && (a = createElm(null, o, s, e), 
+ for (BUILD.shadowDom && r.shadowRoot && r.tagName === hostTagName && (r = r.shadowRoot); s <= l; ++s) n[s] && (a = createElm(null, o, s, e),
  a && (n[s].$elm$ = a, r.insertBefore(a, BUILD.slotRelocation ? referenceNode(t) : t)));
 }, removeVnodes = (e, t, o, n, s) => {
- for (;t <= o; ++t) (n = e[t]) && (s = n.$elm$, callNodeRefs(n), BUILD.slotRelocation && (checkSlotFallbackVisibility = !0, 
+ for (;t <= o; ++t) (n = e[t]) && (s = n.$elm$, callNodeRefs(n), BUILD.slotRelocation && (checkSlotFallbackVisibility = !0,
  s["s-ol"] ? s["s-ol"].remove() : putBackInOriginalLocation(s, !0)), s.remove());
 }, isSameVnode = (e, t) => e.$tag$ === t.$tag$ && (BUILD.slotRelocation && "slot" === e.$tag$ ? e.$name$ === t.$name$ : !BUILD.vdomKey || e.$key$ === t.$key$), referenceNode = e => e && e["s-ol"] || e, parentReferenceNode = e => (e["s-ol"] ? e["s-ol"] : e).parentNode, patch = (e, t) => {
  const o = t.$elm$ = e.$elm$, n = e.$children$, s = t.$children$, l = t.$tag$, a = t.$text$;
  let r;
- BUILD.vdomText && null !== a ? BUILD.vdomText && BUILD.slotRelocation && (r = o["s-cr"]) ? r.parentNode.textContent = a : BUILD.vdomText && e.$text$ !== a && (o.data = a) : (BUILD.svg && (isSvgMode = "svg" === l || "foreignObject" !== l && isSvgMode), 
- (BUILD.vdomAttribute || BUILD.reflect) && (BUILD.slot && "slot" === l || updateElement(e, t, isSvgMode)), 
+ BUILD.vdomText && null !== a ? BUILD.vdomText && BUILD.slotRelocation && (r = o["s-cr"]) ? r.parentNode.textContent = a : BUILD.vdomText && e.$text$ !== a && (o.data = a) : (BUILD.svg && (isSvgMode = "svg" === l || "foreignObject" !== l && isSvgMode),
+ (BUILD.vdomAttribute || BUILD.reflect) && (BUILD.slot && "slot" === l || updateElement(e, t, isSvgMode)),
  BUILD.updatable && null !== n && null !== s ? ((e, t, o, n) => {
   let s, l, a = 0, r = 0, i = 0, d = 0, c = t.length - 1, $ = t[0], m = t[c], p = n.length - 1, h = n[0], u = n[p];
-  for (;a <= c && r <= p; ) if (null == $) $ = t[++a]; else if (null == m) m = t[--c]; else if (null == h) h = n[++r]; else if (null == u) u = n[--p]; else if (isSameVnode($, h)) patch($, h), 
-  $ = t[++a], h = n[++r]; else if (isSameVnode(m, u)) patch(m, u), m = t[--c], u = n[--p]; else if (isSameVnode($, u)) !BUILD.slotRelocation || "slot" !== $.$tag$ && "slot" !== u.$tag$ || putBackInOriginalLocation($.$elm$.parentNode, !1), 
-  patch($, u), e.insertBefore($.$elm$, m.$elm$.nextSibling), $ = t[++a], u = n[--p]; else if (isSameVnode(m, h)) !BUILD.slotRelocation || "slot" !== $.$tag$ && "slot" !== u.$tag$ || putBackInOriginalLocation(m.$elm$.parentNode, !1), 
+  for (;a <= c && r <= p; ) if (null == $) $ = t[++a]; else if (null == m) m = t[--c]; else if (null == h) h = n[++r]; else if (null == u) u = n[--p]; else if (isSameVnode($, h)) patch($, h),
+  $ = t[++a], h = n[++r]; else if (isSameVnode(m, u)) patch(m, u), m = t[--c], u = n[--p]; else if (isSameVnode($, u)) !BUILD.slotRelocation || "slot" !== $.$tag$ && "slot" !== u.$tag$ || putBackInOriginalLocation($.$elm$.parentNode, !1),
+  patch($, u), e.insertBefore($.$elm$, m.$elm$.nextSibling), $ = t[++a], u = n[--p]; else if (isSameVnode(m, h)) !BUILD.slotRelocation || "slot" !== $.$tag$ && "slot" !== u.$tag$ || putBackInOriginalLocation(m.$elm$.parentNode, !1),
   patch(m, h), e.insertBefore(m.$elm$, $.$elm$), m = t[--c], h = n[++r]; else {
    if (i = -1, BUILD.vdomKey) for (d = a; d <= c; ++d) if (t[d] && null !== t[d].$key$ && t[d].$key$ === h.$key$) {
     i = d;
     break;
    }
-   BUILD.vdomKey && i >= 0 ? (l = t[i], l.$tag$ !== h.$tag$ ? s = createElm(t && t[r], o, i, e) : (patch(l, h), 
-   t[i] = void 0, s = l.$elm$), h = n[++r]) : (s = createElm(t && t[r], o, r, e), h = n[++r]), 
+   BUILD.vdomKey && i >= 0 ? (l = t[i], l.$tag$ !== h.$tag$ ? s = createElm(t && t[r], o, i, e) : (patch(l, h),
+   t[i] = void 0, s = l.$elm$), h = n[++r]) : (s = createElm(t && t[r], o, r, e), h = n[++r]),
    s && (BUILD.slotRelocation ? parentReferenceNode($.$elm$).insertBefore(s, referenceNode($.$elm$)) : $.$elm$.parentNode.insertBefore(s, $.$elm$));
   }
   a > c ? addVnodes(e, null == n[p + 1] ? null : n[p + 1].$elm$, o, n, r, p) : BUILD.updatable && r > p && removeVnodes(t, a, c);
- })(o, n, t, s) : null !== s ? (BUILD.updatable && BUILD.vdomText && null !== e.$text$ && (o.textContent = ""), 
- addVnodes(o, null, t, s, 0, s.length - 1)) : BUILD.updatable && null !== n && removeVnodes(n, 0, n.length - 1), 
+ })(o, n, t, s) : null !== s ? (BUILD.updatable && BUILD.vdomText && null !== e.$text$ && (o.textContent = ""),
+ addVnodes(o, null, t, s, 0, s.length - 1)) : BUILD.updatable && null !== n && removeVnodes(n, 0, n.length - 1),
  BUILD.svg && isSvgMode && "svg" === l && (isSvgMode = !1));
 }, updateFallbackSlotVisibility = e => {
  const t = e.childNodes;
  let o, n, s, l, a, r;
  for (n = 0, s = t.length; n < s; n++) if (o = t[n], 1 === o.nodeType) {
-  if (o["s-sr"]) for (a = o["s-sn"], o.hidden = !1, l = 0; l < s; l++) if (r = t[l].nodeType, 
+  if (o["s-sr"]) for (a = o["s-sn"], o.hidden = !1, l = 0; l < s; l++) if (r = t[l].nodeType,
   t[l]["s-hn"] !== o["s-hn"] || "" !== a) {
    if (1 === r && a === t[l].getAttribute("slot")) {
     o.hidden = !0;
@@ -457,13 +457,13 @@ const createElm = (e, t, o, n) => {
  let t, o, n, s, l, a, r = 0;
  const i = e.childNodes, d = i.length;
  for (;r < d; r++) {
-  if (t = i[r], t["s-sr"] && (o = t["s-cr"]) && o.parentNode) for (n = o.parentNode.childNodes, 
-  s = t["s-sn"], a = n.length - 1; a >= 0; a--) o = n[a], o["s-cn"] || o["s-nr"] || o["s-hn"] === t["s-hn"] || (isNodeLocatedInSlot(o, s) ? (l = relocateNodes.find((e => e.$nodeToRelocate$ === o)), 
+  if (t = i[r], t["s-sr"] && (o = t["s-cr"]) && o.parentNode) for (n = o.parentNode.childNodes,
+  s = t["s-sn"], a = n.length - 1; a >= 0; a--) o = n[a], o["s-cn"] || o["s-nr"] || o["s-hn"] === t["s-hn"] || (isNodeLocatedInSlot(o, s) ? (l = relocateNodes.find((e => e.$nodeToRelocate$ === o)),
   checkSlotFallbackVisibility = !0, o["s-sn"] = o["s-sn"] || s, l ? l.$slotRefNode$ = t : relocateNodes.push({
    $slotRefNode$: t,
    $nodeToRelocate$: o
   }), o["s-sr"] && relocateNodes.map((e => {
-   isNodeLocatedInSlot(e.$nodeToRelocate$, o["s-sn"]) && (l = relocateNodes.find((e => e.$nodeToRelocate$ === o)), 
+   isNodeLocatedInSlot(e.$nodeToRelocate$, o["s-sn"]) && (l = relocateNodes.find((e => e.$nodeToRelocate$ === o)),
    l && !e.$slotRefNode$ && (e.$slotRefNode$ = l.$slotRefNode$));
   }))) : relocateNodes.some((e => e.$nodeToRelocate$ === o)) || relocateNodes.push({
    $nodeToRelocate$: o
@@ -475,30 +475,30 @@ const createElm = (e, t, o, n) => {
 }, renderVdom = (e, t) => {
  const o = e.$hostElement$, n = e.$cmpMeta$, s = e.$vnode$ || newVNode(null, null), l = isHost(t) ? t : h(null, null, t);
  if (hostTagName = o.tagName, BUILD.isDev && Array.isArray(t) && t.some(isHost)) throw new Error(`The <Host> must be the single root component.\nLooks like the render() function of "${hostTagName.toLowerCase()}" is returning an array that contains the <Host>.\n\nThe render() function should look like this instead:\n\nrender() {\n  // Do not return an array\n  return (\n    <Host>{content}</Host>\n  );\n}\n  `);
- if (BUILD.reflect && n.$attrsToReflect$ && (l.$attrs$ = l.$attrs$ || {}, n.$attrsToReflect$.map((([e, t]) => l.$attrs$[t] = o[e]))), 
- l.$tag$ = null, l.$flags$ |= 4, e.$vnode$ = l, l.$elm$ = s.$elm$ = BUILD.shadowDom && o.shadowRoot || o, 
- (BUILD.scoped || BUILD.shadowDom) && (scopeId = o["s-sc"]), BUILD.slotRelocation && (contentRef = o["s-cr"], 
- useNativeShadowDom = supportsShadow, checkSlotFallbackVisibility = !1), patch(s, l), 
+ if (BUILD.reflect && n.$attrsToReflect$ && (l.$attrs$ = l.$attrs$ || {}, n.$attrsToReflect$.map((([e, t]) => l.$attrs$[t] = o[e]))),
+ l.$tag$ = null, l.$flags$ |= 4, e.$vnode$ = l, l.$elm$ = s.$elm$ = BUILD.shadowDom && o.shadowRoot || o,
+ (BUILD.scoped || BUILD.shadowDom) && (scopeId = o["s-sc"]), BUILD.slotRelocation && (contentRef = o["s-cr"],
+ useNativeShadowDom = supportsShadow, checkSlotFallbackVisibility = !1), patch(s, l),
  BUILD.slotRelocation) {
   if (plt.$flags$ |= 1, checkSlotRelocate) {
    let e, t, o, n, s, a;
    relocateSlotContent(l.$elm$);
    let r = 0;
-   for (;r < relocateNodes.length; r++) e = relocateNodes[r], t = e.$nodeToRelocate$, 
-   t["s-ol"] || (o = BUILD.isDebug || BUILD.hydrateServerSide ? originalLocationDebugNode(t) : doc.createTextNode(""), 
+   for (;r < relocateNodes.length; r++) e = relocateNodes[r], t = e.$nodeToRelocate$,
+   t["s-ol"] || (o = BUILD.isDebug || BUILD.hydrateServerSide ? originalLocationDebugNode(t) : doc.createTextNode(""),
    o["s-nr"] = t, t.parentNode.insertBefore(t["s-ol"] = o, t));
-   for (r = 0; r < relocateNodes.length; r++) if (e = relocateNodes[r], t = e.$nodeToRelocate$, 
+   for (r = 0; r < relocateNodes.length; r++) if (e = relocateNodes[r], t = e.$nodeToRelocate$,
    e.$slotRefNode$) {
-    for (n = e.$slotRefNode$.parentNode, s = e.$slotRefNode$.nextSibling, o = t["s-ol"]; o = o.previousSibling; ) if (a = o["s-nr"], 
+    for (n = e.$slotRefNode$.parentNode, s = e.$slotRefNode$.nextSibling, o = t["s-ol"]; o = o.previousSibling; ) if (a = o["s-nr"],
     a && a["s-sn"] === t["s-sn"] && n === a.parentNode && (a = a.nextSibling, !a || !a["s-nr"])) {
      s = a;
      break;
     }
-    (!s && n !== t.parentNode || t.nextSibling !== s) && t !== s && (!t["s-hn"] && t["s-ol"] && (t["s-hn"] = t["s-ol"].parentNode.nodeName), 
+    (!s && n !== t.parentNode || t.nextSibling !== s) && t !== s && (!t["s-hn"] && t["s-ol"] && (t["s-hn"] = t["s-ol"].parentNode.nodeName),
     n.insertBefore(t, s));
    } else 1 === t.nodeType && (t.hidden = !0);
   }
-  checkSlotFallbackVisibility && updateFallbackSlotVisibility(l.$elm$), plt.$flags$ &= -2, 
+  checkSlotFallbackVisibility && updateFallbackSlotVisibility(l.$elm$), plt.$flags$ &= -2,
   relocateNodes.length = 0;
  }
 }, slotReferenceDebugNode = e => doc.createComment(`<slot${e.$name$ ? ' name="' + e.$name$ + '"' : ""}> (host=${hostTagName.toLowerCase()})`), originalLocationDebugNode = e => doc.createComment("org-location for " + (e.localName ? `<${e.localName}> (host=${e["s-hn"]})` : `[${e.textContent}]`)), attachToAncestor = (e, t) => {
@@ -511,23 +511,23 @@ const createElm = (e, t, o, n) => {
 }, dispatchHooks = (e, t) => {
  const o = e.$hostElement$, n = createTime("scheduleUpdate", e.$cmpMeta$.$tagName$), s = BUILD.lazyLoad ? e.$lazyInstance$ : o;
  let l;
- return t ? (BUILD.lazyLoad && BUILD.hostListener && (e.$flags$ |= 256, e.$queuedListeners$ && (e.$queuedListeners$.map((([e, t]) => safeCall(s, e, t))), 
- e.$queuedListeners$ = null)), emitLifecycleEvent(o, "componentWillLoad"), BUILD.cmpWillLoad && (l = safeCall(s, "componentWillLoad"))) : (emitLifecycleEvent(o, "componentWillUpdate"), 
- BUILD.cmpWillUpdate && (l = safeCall(s, "componentWillUpdate"))), emitLifecycleEvent(o, "componentWillRender"), 
- BUILD.cmpWillRender && (l = then(l, (() => safeCall(s, "componentWillRender")))), 
+ return t ? (BUILD.lazyLoad && BUILD.hostListener && (e.$flags$ |= 256, e.$queuedListeners$ && (e.$queuedListeners$.map((([e, t]) => safeCall(s, e, t))),
+ e.$queuedListeners$ = null)), emitLifecycleEvent(o, "componentWillLoad"), BUILD.cmpWillLoad && (l = safeCall(s, "componentWillLoad"))) : (emitLifecycleEvent(o, "componentWillUpdate"),
+ BUILD.cmpWillUpdate && (l = safeCall(s, "componentWillUpdate"))), emitLifecycleEvent(o, "componentWillRender"),
+ BUILD.cmpWillRender && (l = then(l, (() => safeCall(s, "componentWillRender")))),
  n(), then(l, (() => updateComponent(e, s, t)));
 }, updateComponent = async (e, t, o) => {
  const n = e.$hostElement$, s = createTime("update", e.$cmpMeta$.$tagName$), l = n["s-rc"];
  BUILD.style && o && attachStyles(e);
  const a = createTime("render", e.$cmpMeta$.$tagName$);
- if (BUILD.isDev && (e.$flags$ |= 1024), BUILD.hydrateServerSide ? await callRender(e, t, n) : callRender(e, t, n), 
- BUILD.cssVarShim && plt.$cssShim$ && plt.$cssShim$.updateHost(n), BUILD.isDev && (e.$renderCount$++, 
+ if (BUILD.isDev && (e.$flags$ |= 1024), BUILD.hydrateServerSide ? await callRender(e, t, n) : callRender(e, t, n),
+ BUILD.cssVarShim && plt.$cssShim$ && plt.$cssShim$.updateHost(n), BUILD.isDev && (e.$renderCount$++,
  e.$flags$ &= -1025), BUILD.hydrateServerSide) try {
   serverSideConnected(n), o && (1 & e.$cmpMeta$.$flags$ ? n["s-en"] = "" : 2 & e.$cmpMeta$.$flags$ && (n["s-en"] = "c"));
  } catch (e) {
   consoleError(e, n);
  }
- if (BUILD.asyncLoading && l && (l.map((e => e())), n["s-rc"] = void 0), a(), s(), 
+ if (BUILD.asyncLoading && l && (l.map((e => e())), n["s-rc"] = void 0), a(), s(),
  BUILD.asyncLoading) {
   const t = n["s-p"], o = () => postUpdateComponent(e);
   0 === t.length ? o() : (Promise.all(t).then(o), e.$flags$ |= 4, t.length = 0);
@@ -539,7 +539,7 @@ let renderingRef = null;
 const callRender = (e, t, o) => {
  const n = !!BUILD.allRenderFn, s = !!BUILD.lazyLoad, l = !!BUILD.taskQueue, a = !!BUILD.updatable;
  try {
-  if (renderingRef = t, t = (n || t.render) && t.render(), a && l && (e.$flags$ &= -17), 
+  if (renderingRef = t, t = (n || t.render) && t.render(), a && l && (e.$flags$ &= -17),
   (a || s) && (e.$flags$ |= 2), BUILD.hasRenderFn || BUILD.reflect) if (BUILD.vdomRender || BUILD.reflect) {
    if (BUILD.hydrateServerSide) return Promise.resolve(t).then((t => renderVdom(e, t)));
    renderVdom(e, t);
@@ -550,16 +550,16 @@ const callRender = (e, t, o) => {
  return renderingRef = null, null;
 }, getRenderingRef = () => renderingRef, postUpdateComponent = e => {
  const t = e.$cmpMeta$.$tagName$, o = e.$hostElement$, n = createTime("postUpdate", t), s = BUILD.lazyLoad ? e.$lazyInstance$ : o, l = e.$ancestorComponent$;
- BUILD.cmpDidRender && (BUILD.isDev && (e.$flags$ |= 1024), safeCall(s, "componentDidRender"), 
- BUILD.isDev && (e.$flags$ &= -1025)), emitLifecycleEvent(o, "componentDidRender"), 
- 64 & e.$flags$ ? (BUILD.cmpDidUpdate && (BUILD.isDev && (e.$flags$ |= 1024), safeCall(s, "componentDidUpdate"), 
- BUILD.isDev && (e.$flags$ &= -1025)), emitLifecycleEvent(o, "componentDidUpdate"), 
- n()) : (e.$flags$ |= 64, BUILD.asyncLoading && BUILD.cssAnnotations && addHydratedFlag(o), 
- BUILD.cmpDidLoad && (BUILD.isDev && (e.$flags$ |= 2048), safeCall(s, "componentDidLoad"), 
- BUILD.isDev && (e.$flags$ &= -2049)), emitLifecycleEvent(o, "componentDidLoad"), 
- n(), BUILD.asyncLoading && (e.$onReadyResolve$(o), l || appDidLoad(t))), BUILD.hotModuleReplacement && o["s-hmr-load"] && o["s-hmr-load"](), 
- BUILD.method && BUILD.lazyLoad && e.$onInstanceResolve$(o), BUILD.asyncLoading && (e.$onRenderResolve$ && (e.$onRenderResolve$(), 
- e.$onRenderResolve$ = void 0), 512 & e.$flags$ && nextTick((() => scheduleUpdate(e, !1))), 
+ BUILD.cmpDidRender && (BUILD.isDev && (e.$flags$ |= 1024), safeCall(s, "componentDidRender"),
+ BUILD.isDev && (e.$flags$ &= -1025)), emitLifecycleEvent(o, "componentDidRender"),
+ 64 & e.$flags$ ? (BUILD.cmpDidUpdate && (BUILD.isDev && (e.$flags$ |= 1024), safeCall(s, "componentDidUpdate"),
+ BUILD.isDev && (e.$flags$ &= -1025)), emitLifecycleEvent(o, "componentDidUpdate"),
+ n()) : (e.$flags$ |= 64, BUILD.asyncLoading && BUILD.cssAnnotations && addHydratedFlag(o),
+ BUILD.cmpDidLoad && (BUILD.isDev && (e.$flags$ |= 2048), safeCall(s, "componentDidLoad"),
+ BUILD.isDev && (e.$flags$ &= -2049)), emitLifecycleEvent(o, "componentDidLoad"),
+ n(), BUILD.asyncLoading && (e.$onReadyResolve$(o), l || appDidLoad(t))), BUILD.hotModuleReplacement && o["s-hmr-load"] && o["s-hmr-load"](),
+ BUILD.method && BUILD.lazyLoad && e.$onInstanceResolve$(o), BUILD.asyncLoading && (e.$onRenderResolve$ && (e.$onRenderResolve$(),
+ e.$onRenderResolve$ = void 0), 512 & e.$flags$ && nextTick((() => scheduleUpdate(e, !1))),
  e.$flags$ &= -517);
 }, forceUpdate$1 = e => {
  if (BUILD.updatable) {
@@ -568,7 +568,7 @@ const callRender = (e, t, o) => {
  }
  return !1;
 }, appDidLoad = e => {
- BUILD.cssAnnotations && addHydratedFlag(doc.documentElement), BUILD.asyncQueue && (plt.$flags$ |= 2), 
+ BUILD.cssAnnotations && addHydratedFlag(doc.documentElement), BUILD.asyncQueue && (plt.$flags$ |= 2),
  nextTick((() => emitEvent(win, "appload", {
   detail: {
    namespace: NAMESPACE
@@ -598,7 +598,7 @@ const callRender = (e, t, o) => {
  const s = getHostRef(e), l = BUILD.lazyLoad ? s.$hostElement$ : e, a = s.$instanceValues$.get(t), r = s.$flags$, i = BUILD.lazyLoad ? s.$lazyInstance$ : l;
  o = parsePropertyValue(o, n.$members$[t][0]);
  const d = Number.isNaN(a) && Number.isNaN(o), c = o !== a && !d;
- if ((!BUILD.lazyLoad || !(8 & r) || void 0 === a) && c && (s.$instanceValues$.set(t, o), 
+ if ((!BUILD.lazyLoad || !(8 & r) || void 0 === a) && c && (s.$instanceValues$.set(t, o),
  BUILD.isDev && (1024 & s.$flags$ || s.$flags$), !BUILD.lazyLoad || i)) {
   if (BUILD.watchCallback && n.$watchers$ && 128 & r) {
    const e = n.$watchers$[t];
@@ -649,7 +649,7 @@ const callRender = (e, t, o) => {
     }));
    }, e.observedAttributes = n.filter((([e, t]) => 15 & t[0])).map((([e, n]) => {
     const s = n[1] || e;
-    return o.set(s, e), BUILD.reflect && 512 & n[0] && t.$attrsToReflect$.push([ e, s ]), 
+    return o.set(s, e), BUILD.reflect && 512 & n[0] && t.$attrsToReflect$.push([ e, s ]),
     s;
    }));
   }
@@ -659,15 +659,15 @@ const callRender = (e, t, o) => {
  if ((BUILD.lazyLoad || BUILD.hydrateServerSide || BUILD.style) && 0 == (32 & t.$flags$)) {
   if (BUILD.lazyLoad || BUILD.hydrateClientSide) {
    if (t.$flags$ |= 32, (s = loadModule(o)).then) {
-    const e = (l = `st:load:${o.$tagName$}:${t.$modeName$}`, a = `[Stencil] Load module for <${o.$tagName$}>`, 
-    BUILD.profile && performance.mark ? (0 === performance.getEntriesByName(l, "mark").length && performance.mark(l), 
+    const e = (l = `st:load:${o.$tagName$}:${t.$modeName$}`, a = `[Stencil] Load module for <${o.$tagName$}>`,
+    BUILD.profile && performance.mark ? (0 === performance.getEntriesByName(l, "mark").length && performance.mark(l),
     () => {
      0 === performance.getEntriesByName(a, "measure").length && performance.measure(a, l);
     }) : () => {});
     s = await s, e();
    }
    if ((BUILD.isDev || BUILD.isDebug) && !s) throw new Error(`Constructor for "${o.$tagName$}#${t.$modeName$}" was not found`);
-   BUILD.member && !s.isProxied && (BUILD.watchCallback && (o.$watchers$ = s.watchers), 
+   BUILD.member && !s.isProxied && (BUILD.watchCallback && (o.$watchers$ = s.watchers),
    proxyComponent(s, o, 2), s.isProxied = !0);
    const e = createTime("createInstance", o.$tagName$);
    BUILD.member && (t.$flags$ |= 8);
@@ -676,7 +676,7 @@ const callRender = (e, t, o) => {
    } catch (e) {
     consoleError(e);
    }
-   BUILD.member && (t.$flags$ &= -9), BUILD.watchCallback && (t.$flags$ |= 128), e(), 
+   BUILD.member && (t.$flags$ &= -9), BUILD.watchCallback && (t.$flags$ |= 128), e(),
    fireConnectedCallback(t.$lazyInstance$);
   } else s = e.constructor, t.$flags$ |= 32, customElements.whenDefined(o.$tagName$).then((() => t.$flags$ |= 128));
   if (BUILD.style && s.style) {
@@ -685,7 +685,7 @@ const callRender = (e, t, o) => {
    const l = getScopeId(o, t.$modeName$);
    if (!styles.has(l)) {
     const e = createTime("registerStyles", o.$tagName$);
-    !BUILD.hydrateServerSide && BUILD.shadowDom && BUILD.shadowDomShim && 8 & o.$flags$ && (n = await import("./shadow-css.js").then((e => e.scopeCss(n, l, !1)))), 
+    !BUILD.hydrateServerSide && BUILD.shadowDom && BUILD.shadowDomShim && 8 & o.$flags$ && (n = await import("./shadow-css.js").then((e => e.scopeCss(n, l, !1)))),
     registerStyle(l, n, o.$flags$), e();
    }
   }
@@ -698,7 +698,7 @@ const callRender = (e, t, o) => {
 }, connectedCallback = e => {
  if (0 == (1 & plt.$flags$)) {
   const t = getHostRef(e), o = t.$cmpMeta$, n = createTime("connectedCallback", o.$tagName$);
-  if (BUILD.hostListenerTargetParent && addHostEventListeners(e, t, o.$listeners$, !0), 
+  if (BUILD.hostListenerTargetParent && addHostEventListeners(e, t, o.$listeners$, !0),
   1 & t.$flags$) addHostEventListeners(e, t, o.$listeners$, !1), fireConnectedCallback(t.$lazyInstance$); else {
    let n;
    if (t.$flags$ |= 1, BUILD.hydrateClientSide && (n = e.getAttribute("s-id"), n)) {
@@ -708,17 +708,17 @@ const callRender = (e, t, o) => {
     }
     ((e, t, o, n) => {
      const s = createTime("hydrateClient", t), l = e.shadowRoot, a = [], r = BUILD.shadowDom && l ? [] : null, i = n.$vnode$ = newVNode(t, null);
-     plt.$orgLocNodes$ || initializeDocumentHydrate(doc.body, plt.$orgLocNodes$ = new Map), 
+     plt.$orgLocNodes$ || initializeDocumentHydrate(doc.body, plt.$orgLocNodes$ = new Map),
      e["s-id"] = o, e.removeAttribute("s-id"), clientHydrate(i, a, [], r, e, e, o), a.map((e => {
       const o = e.$hostId$ + "." + e.$nodeId$, n = plt.$orgLocNodes$.get(o), s = e.$elm$;
-      n && supportsShadow && "" === n["s-en"] && n.parentNode.insertBefore(s, n.nextSibling), 
+      n && supportsShadow && "" === n["s-en"] && n.parentNode.insertBefore(s, n.nextSibling),
       l || (s["s-hn"] = t, n && (s["s-ol"] = n, s["s-ol"]["s-nr"] = s)), plt.$orgLocNodes$.delete(o);
      })), BUILD.shadowDom && l && r.map((e => {
       e && l.appendChild(e);
      })), s();
     })(e, o.$tagName$, n, t);
    }
-   if (BUILD.slotRelocation && !n && (BUILD.hydrateServerSide || (BUILD.slot || BUILD.shadowDom) && 12 & o.$flags$) && setContentReference(e), 
+   if (BUILD.slotRelocation && !n && (BUILD.hydrateServerSide || (BUILD.slot || BUILD.shadowDom) && 12 & o.$flags$) && setContentReference(e),
    BUILD.asyncLoading) {
     let o = e;
     for (;o = o.parentNode || o.host; ) if (BUILD.hydrateClientSide && 1 === o.nodeType && o.hasAttribute("s-id") && o["s-p"] || o["s-p"]) {
@@ -741,8 +741,8 @@ const callRender = (e, t, o) => {
 }, disconnectedCallback = e => {
  if (0 == (1 & plt.$flags$)) {
   const t = getHostRef(e), o = BUILD.lazyLoad ? t.$lazyInstance$ : e;
-  BUILD.hostListener && t.$rmListeners$ && (t.$rmListeners$.map((e => e())), t.$rmListeners$ = void 0), 
-  BUILD.cssVarShim && plt.$cssShim$ && plt.$cssShim$.removeHost(e), BUILD.lazyLoad && BUILD.disconnectedCallback && safeCall(o, "disconnectedCallback"), 
+  BUILD.hostListener && t.$rmListeners$ && (t.$rmListeners$.map((e => e())), t.$rmListeners$ = void 0),
+  BUILD.cssVarShim && plt.$cssShim$ && plt.$cssShim$.removeHost(e), BUILD.lazyLoad && BUILD.disconnectedCallback && safeCall(o, "disconnectedCallback"),
   BUILD.cmpDidUnload && safeCall(o, "componentDidUnload");
  }
 }, defineCustomElement = (e, t) => {
@@ -752,8 +752,8 @@ const callRender = (e, t, o) => {
   $flags$: t[0],
   $tagName$: t[1]
  };
- BUILD.member && (o.$members$ = t[2]), BUILD.hostListener && (o.$listeners$ = t[3]), 
- BUILD.watchCallback && (o.$watchers$ = e.$watchers$), BUILD.reflect && (o.$attrsToReflect$ = []), 
+ BUILD.member && (o.$members$ = t[2]), BUILD.hostListener && (o.$listeners$ = t[3]),
+ BUILD.watchCallback && (o.$watchers$ = e.$watchers$), BUILD.reflect && (o.$attrsToReflect$ = []),
  BUILD.shadowDom && !supportsShadow && 1 & o.$flags$ && (o.$flags$ |= 8);
  const n = e.prototype.connectedCallback, s = e.prototype.disconnectedCallback;
  return Object.assign(e.prototype, {
@@ -775,7 +775,7 @@ const callRender = (e, t, o) => {
   const t = computeMode(e), o = getHostRef(e);
   if (o.$modeName$ !== t) {
    const n = o.$cmpMeta$, s = e["s-sc"], l = getScopeId(n, t), a = e.constructor.style[t];
-   n.$flags$, a && (styles.has(l) || registerStyle(l, a), o.$modeName$ = t, e.classList.remove(s + "-h", s + "-s"), 
+   n.$flags$, a && (styles.has(l) || registerStyle(l, a), o.$modeName$ = t, e.classList.remove(s + "-h", s + "-s"),
    attachStyles(o), forceUpdate$1(e));
   }
  }
@@ -786,8 +786,8 @@ const callRender = (e, t, o) => {
   if (BUILD.slot && !n && e) {
    let e, t, n = 0;
    const l = [ "s-id", "s-cr", "s-lr", "s-rc", "s-sc", "s-p", "s-cn", "s-sr", "s-sn", "s-hn", "s-ol", "s-nr", "s-si" ];
-   for (;n < o.childNodes.length; n++) e = o.childNodes[n]["s-nr"], t = l.every((e => !o.childNodes[n][e])), 
-   e && (BUILD.appendChildSlotFix && s.__appendChild ? s.__appendChild(e.cloneNode(!0)) : s.appendChild(e.cloneNode(!0))), 
+   for (;n < o.childNodes.length; n++) e = o.childNodes[n]["s-nr"], t = l.every((e => !o.childNodes[n][e])),
+   e && (BUILD.appendChildSlotFix && s.__appendChild ? s.__appendChild(e.cloneNode(!0)) : s.appendChild(e.cloneNode(!0))),
    t && s.appendChild(o.childNodes[n].cloneNode(!0));
   }
   return s;
@@ -912,8 +912,8 @@ const callRender = (e, t, o) => {
  })();
  const n = createTime("bootstrapLazy"), s = [], l = t.exclude || [], a = win.customElements, r = doc.head, i = r.querySelector("meta[charset]"), d = doc.createElement("style"), c = [], $ = doc.querySelectorAll("[sty-id]");
  let m, p = !0, h = 0;
- if (Object.assign(plt, t), plt.$resourcesUrl$ = new URL(t.resourcesUrl || "./", doc.baseURI).href, 
- BUILD.asyncQueue && t.syncQueue && (plt.$flags$ |= 4), BUILD.hydrateClientSide && (plt.$flags$ |= 2), 
+ if (Object.assign(plt, t), plt.$resourcesUrl$ = new URL(t.resourcesUrl || "./", doc.baseURI).href,
+ BUILD.asyncQueue && t.syncQueue && (plt.$flags$ |= 4), BUILD.hydrateClientSide && (plt.$flags$ |= 2),
  BUILD.hydrateClientSide && BUILD.shadowDom) for (;h < $.length; h++) registerStyle($[h].getAttribute("sty-id"), $[h].innerHTML.replace(/\/\*!@([^\/]+)\*\/[^\{]+\{/g, "$1{"));
  if (e.map((e => {
   e[1].map((o => {
@@ -923,12 +923,12 @@ const callRender = (e, t, o) => {
     $members$: o[2],
     $listeners$: o[3]
    };
-   BUILD.member && (n.$members$ = o[2]), BUILD.hostListener && (n.$listeners$ = o[3]), 
-   BUILD.reflect && (n.$attrsToReflect$ = []), BUILD.watchCallback && (n.$watchers$ = {}), 
+   BUILD.member && (n.$members$ = o[2]), BUILD.hostListener && (n.$listeners$ = o[3]),
+   BUILD.reflect && (n.$attrsToReflect$ = []), BUILD.watchCallback && (n.$watchers$ = {}),
    BUILD.shadowDom && !supportsShadow && 1 & n.$flags$ && (n.$flags$ |= 8);
    const r = BUILD.transformTagName && t.transformTagName ? t.transformTagName(n.$tagName$) : n.$tagName$, i = class extends HTMLElement {
     constructor(e) {
-     super(e), registerHost(e = this, n), BUILD.shadowDom && 1 & n.$flags$ && (BUILD.hydrateServerSide || "shadowRoot" in e || (e.shadowRoot = e)), 
+     super(e), registerHost(e = this, n), BUILD.shadowDom && 1 & n.$flags$ && (BUILD.hydrateServerSide || "shadowRoot" in e || (e.shadowRoot = e)),
      BUILD.slotChildNodesFix && patchChildSlotNodes(e, n);
     }
     connectedCallback() {
@@ -941,7 +941,7 @@ const callRender = (e, t, o) => {
      return getHostRef(this).$onReadyPromise$;
     }
    };
-   BUILD.cloneNodeFix && patchCloneNode(i.prototype), BUILD.appendChildSlotFix && patchSlotAppendChild(i.prototype), 
+   BUILD.cloneNodeFix && patchCloneNode(i.prototype), BUILD.appendChildSlotFix && patchSlotAppendChild(i.prototype),
    BUILD.hotModuleReplacement && (i.prototype["s-hmr"] = function(e) {
     ((e, t, o) => {
      const n = getHostRef(e);
@@ -949,7 +949,7 @@ const callRender = (e, t, o) => {
       delete e["s-hmr-load"];
      }, initializeComponent(e, n, t);
     })(this, n);
-   }), BUILD.scopedSlotTextContentFix && patchTextContent(i.prototype, n), n.$lazyBundleId$ = e[0], 
+   }), BUILD.scopedSlotTextContentFix && patchTextContent(i.prototype, n), n.$lazyBundleId$ = e[0],
    l.includes(r) || a.get(r) || (s.push(r), a.define(r, proxyComponent(i, n, 1)));
   }));
  })), BUILD.invisiblePrehydration && (BUILD.hydratedClass || BUILD.hydratedAttribute)) {
@@ -957,7 +957,7 @@ const callRender = (e, t, o) => {
   const e = null !== (o = plt.$nonce$) && void 0 !== o ? o : queryNonceMetaTagContent(doc);
   null != e && d.setAttribute("nonce", e), r.insertBefore(d, i ? i.nextSibling : r.firstChild);
  }
- p = !1, c.length ? c.map((e => e.connectedCallback())) : BUILD.profile ? plt.jmp((() => m = setTimeout(appDidLoad, 30, "timeout"))) : plt.jmp((() => m = setTimeout(appDidLoad, 30))), 
+ p = !1, c.length ? c.map((e => e.connectedCallback())) : BUILD.profile ? plt.jmp((() => m = setTimeout(appDidLoad, 30, "timeout"))) : plt.jmp((() => m = setTimeout(appDidLoad, 30))),
  n();
 }, getConnect = (e, t) => {
  const o = () => {
@@ -975,7 +975,7 @@ const callRender = (e, t, o) => {
   then: e => nextTick(e)
  }
 } : void 0, Fragment = (e, t) => t, addHostEventListeners = (e, t, o, n) => {
- BUILD.hostListener && o && (BUILD.hostListenerTargetParent && (o = n ? o.filter((([e]) => 32 & e)) : o.filter((([e]) => !(32 & e)))), 
+ BUILD.hostListener && o && (BUILD.hostListenerTargetParent && (o = n ? o.filter((([e]) => 32 & e)) : o.filter((([e]) => !(32 & e)))),
  o.map((([o, n, s]) => {
   const l = BUILD.hostListenerTarget ? getHostListenerTarget(e, o) : e, a = hostListenerProxy(t, s), r = hostListenerOpts(o);
   plt.ael(l, n, a, r), (t.$rmListeners$ = t.$rmListeners$ || []).push((() => plt.rel(l, n, a, r)));
@@ -997,7 +997,7 @@ const callRender = (e, t, o) => {
    if (null != t) {
     const n = t["s-nr"];
     let s = n["s-host-id"], l = n["s-node-id"], a = `${s}.${l}`;
-    if (null == s) if (s = 0, o.rootLevelIds++, l = o.rootLevelIds, a = `${s}.${l}`, 
+    if (null == s) if (s = 0, o.rootLevelIds++, l = o.rootLevelIds, a = `${s}.${l}`,
     1 === n.nodeType) n.setAttribute("c-id", a); else if (3 === n.nodeType) {
      if (0 === s && "" === n.nodeValue.trim()) return void t.remove();
      const o = e.createComment(a);
@@ -1023,7 +1023,7 @@ const callRender = (e, t, o) => {
 }, insertVNodeAnnotations = (e, t, o, n, s) => {
  if (null != o) {
   const l = ++n.hostIds;
-  if (t.setAttribute("s-id", l), null != t["s-cr"] && (t["s-cr"].nodeValue = `r.${l}`), 
+  if (t.setAttribute("s-id", l), null != t["s-cr"] && (t["s-cr"].nodeValue = `r.${l}`),
   null != o.$children$) {
    const t = 0;
    o.$children$.forEach(((o, n) => {
@@ -1131,7 +1131,7 @@ const cmpModules = new Map, getModule = e => {
   $instanceValues$: new Map,
   $renderCount$: 0
  };
- return o.$onInstancePromise$ = new Promise((e => o.$onInstanceResolve$ = e)), o.$onReadyPromise$ = new Promise((e => o.$onReadyResolve$ = e)), 
+ return o.$onInstancePromise$ = new Promise((e => o.$onInstanceResolve$ = e)), o.$onReadyPromise$ = new Promise((e => o.$onReadyResolve$ = e)),
  e["s-p"] = [], e["s-rc"] = [], addHostEventListeners(e, o, t.$listeners$, !1), hostRefs.set(e, o);
 }, Build = {
  isDev: !1,

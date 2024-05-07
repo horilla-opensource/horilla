@@ -1,15 +1,16 @@
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from base.forms import AnnouncementForm, AnnouncementCommentForm
+from django.utils.translation import gettext_lazy as _
+
+from base.forms import AnnouncementCommentForm, AnnouncementForm
 from base.methods import filter_own_records
 from base.models import Announcement, AnnouncementComment, AnnouncementView
 from employee.models import Employee
 from horilla.decorators import login_required, permission_required
-from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.contrib.auth.models import User
 
 
 @login_required

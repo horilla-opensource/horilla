@@ -17,14 +17,14 @@ function getCookie(name) {
 }
 
 $(document).ready(function () {
-  
-    // answer status checking 
+
+    // answer status checking
     $('.feedback-status').each(function(){
       var statusEl = $(this)
       var feedbackId = statusEl.attr('x-data-feedback-id')
       var employeeId = statusEl.attr('x-data-employee-id')
       var csrf_token = getCookie("csrftoken")
-      
+
       $.ajax({
             url: '/pms/feedback-status',
             type: "POST",
@@ -32,11 +32,11 @@ $(document).ready(function () {
             data: {'employee_id':employeeId,'feedback_id': feedbackId, 'csrfmiddlewaretoken':csrf_token},
             headers: {
               "X-Requested-With": "XMLHttpRequest",
-              
+
             },
             success: (data) => {
               // based on response the span element text will be added
-              statusEl.text(data.status) 
+              statusEl.text(data.status)
               if (data.status === 'Completed') {
                 statusEl.prev().attr('class','oh-dot oh-dot--small oh-dot--success me-1')
               }else{
@@ -45,11 +45,10 @@ $(document).ready(function () {
             },
             error: (error) => {
               console.log('Error',error);
-            
+
             }
           });
-      
+
       })
-    
+
   });
-  

@@ -8,10 +8,10 @@ $(document).ready(function () {
     var yellow = "oh-input-picker--3"
     var light_green = "oh-input-picker--4"
     var green = "oh-input-picker--5"
-  
+
     $('.likert-colour').each(function() {
       var likertText = $(this).text().trim()
-  
+
       if (likertText === 'Strongly Agree'){
         $(this).addClass(green)
       }
@@ -28,11 +28,11 @@ $(document).ready(function () {
         $(this).addClass(red)
       }
     });
-  
+
     // boolean text colour adding
     $('.boolean-colour').each(function() {
       var booleanText = $(this).text().trim()
-  
+
       if (booleanText === 'yes'){
         $(this).addClass(green)
       }
@@ -40,6 +40,6 @@ $(document).ready(function () {
         $(this).addClass(red)
       }
   })
-    
-    
+
+
   });

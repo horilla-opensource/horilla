@@ -108,13 +108,13 @@ $(document).ready(function () {
         },
         success: function (response) {
           var candidateId = $(this).attr("data-candidate-id");
-          
+
         },
       });
     }
   });
 
-  
+
 
   $(".schedule").change(function (e) {
     date = this.value;

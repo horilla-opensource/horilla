@@ -42,7 +42,7 @@
 								</div>
 								<div class="oh-sticky-table__td">
 									<span class="oh-permission-count">
-										{{department.job_position.all|length}} 
+										{{department.job_position.all|length}}
 										{% trans "Job Positions" %}
 									</span>
 									{% for job in department.job_position.all %}
@@ -75,13 +75,13 @@
 														<ion-icon name="pencil"></ion-icon>
 													</a>
 												</div>
-												{% endif %} 
+												{% endif %}
 												{% if perms.base.delete_jobposition %}
 												<div class="m-2">
-													<form 
+													<form
 														action="{% url 'job-position-delete' job.id %}"
 														onsubmit="return confirm('{% trans "Are you sure you want to delete this job position?" %}');"
-														method="post" 
+														method="post"
 													>
 														<button
 															type="submit"

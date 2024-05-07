@@ -11,10 +11,10 @@
         </div>
     </div>
 {% endif %}
-<form  
+<form
     hx-post="{% url 'payroll-request-add-comment' request_id %}"
     hx-target="#shiftRequestCommentForm"
-    method="post" 
+    method="post"
     hx-encoding="multipart/form-data">
     {% csrf_token %}
     {{form.as_p}}

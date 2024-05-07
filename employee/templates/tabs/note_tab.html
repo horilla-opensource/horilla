@@ -71,7 +71,7 @@ $(document).on('click', function (event) {
           hx-target="#note_target"
           hx-post="{% url 'add-employee-note' employee.id %}" id="commentForm">
           {% csrf_token %}
-          
+
           <div>
             <div class="mt-4">
               <span class="oh-activity-sidebar__title fw-bold">{{employee}}'s {% trans "Notes" %}</span>
@@ -84,7 +84,7 @@ $(document).on('click', function (event) {
 
           <div class="oh-inner-sidebar-content__footer"></div>
       </form>
-      
+
     </div>
     <div class="d-flex flex-row-reverse">
       <button
@@ -116,7 +116,7 @@ $(document).on('click', function (event) {
             </span>
               {% endif %}
           </span>
-        
+
           <div class="d-flex mt-2 mb-2">
             {% for file in note.note_files.all %}
             <a
@@ -136,13 +136,13 @@ $(document).on('click', function (event) {
                   onclick="event.stopPropagation();event.preventDefault()" /></span
             ></a>
             {% endfor %}
-          
+
             <form
               hx-post="{% url 'add-more-files-employee' note.id %}"
               class="add-files-form"
               hx-encoding="multipart/form-data"
               data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#note_target"
-          
+
             >
               {% csrf_token %}
               <label for="addFile_{{note.id}}" title="Add Files"
@@ -169,7 +169,7 @@ $(document).on('click', function (event) {
               />
             </form>
           </div>
-        
+
         <span class="oh-activity-sidebar__a">
           {% trans "by" %}
           <img
@@ -204,12 +204,12 @@ $(document).on('click', function (event) {
 </div>
 {% endif %}
 <div class="mt-4">
-  
+
   <form method="post"
       hx-target="#note_target"
       hx-post="{% url 'add-employee-note' employee.id %}" id="commentForm">
       {% csrf_token %}
-      
+
       <div>
         <div class="mt-4">
           <span class="oh-activity-sidebar__title fw-bold">{{employee}}'s {% trans "Notes" %}</span>
@@ -222,7 +222,7 @@ $(document).on('click', function (event) {
 
       <div class="oh-inner-sidebar-content__footer"></div>
   </form>
-  
+
 </div>
 <div class="d-flex mt-5" style="margin-left: 30%">
   <img
@@ -293,4 +293,3 @@ $(document).on('click', function (event) {
       }
   });
 </script>
-

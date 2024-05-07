@@ -1,10 +1,10 @@
+from django.contrib import messages
+from django.http import HttpResponse
+from django.shortcuts import render
 from pyexpat.errors import messages
 
-from django.http import HttpResponse
 from employee.models import EmployeeWorkInformation
 from pms.models import EmployeeObjective, Objective
-from django.contrib import messages
-from django.shortcuts import render
 
 decorator_with_arguments = (
     lambda decorator: lambda *args, **kwargs: lambda func: decorator(
@@ -54,9 +54,16 @@ def pms_owner_and_manager_can_enter(function, perm):
         is_manager = EmployeeWorkInformation.objects.filter(
             reporting_manager_id=employee
         ).exists()
-        is_objective_owner = EmployeeObjective.objects.filter(employee_id=employee).exists()
+        is_objective_owner = EmployeeObjective.objects.filter(
+            employee_id=employee
+        ).exists()
         is_objective_manager = Objective.objects.filter(managers=employee).exists()
-        if user.has_perm(perm) or is_manager or is_objective_manager or is_objective_owner:
+        if (
+            user.has_perm(perm)
+            or is_manager
+            or is_objective_manager
+            or is_objective_owner
+        ):
             return function(request, *args, **kwargs)
         else:
             messages.info(request, "You dont have permission.")

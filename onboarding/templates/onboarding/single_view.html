@@ -1,4 +1,4 @@
-{% load i18n %} {% load onboardingfilters %} 
+{% load i18n %} {% load onboardingfilters %}
 {% if request.GET.requests_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button hx-get="{% url 'candidate-single-view' previous %}?requests_ids={{requests_ids}}" hx-target = "#singleView" class="oh-modal__diaglog-nav oh-modal__nav-prev">
@@ -26,7 +26,7 @@
                     <span class="oh-timeoff-modal__user fw-bold">{{candidate}}</span>
                 </div>
                 <div class="oh-profile">
-                    <a href="{% url 'candidate-view-individual' candidate.id %}" type="button" title="View" class="oh-btn oh-btn--light-bkg w-50"> 
+                    <a href="{% url 'candidate-view-individual' candidate.id %}" type="button" title="View" class="oh-btn oh-btn--light-bkg w-50">
                         <ion-icon name="eye-outline" role="img" class="md hydrated" aria-label="eye outline"></ion-icon>
                     </a>
                     <a href="{% url 'rec-candidate-update' candidate.id %}?onboarding=true" class="oh-btn oh-btn--light-bkg w-100" title="Edit" >
@@ -91,7 +91,7 @@
                         {{stage}}
                         {% endif %}
                     {% endfor %}
-        
+
                     {% endif %}
             </span>
         </div>
@@ -120,14 +120,14 @@
             </div>
         </div>
     </div>
-    
+
 </div>
 
 <script>
     $("select[name='task']").on("change", function() {
         var value = $(this).val();
         var dot = $(this).closest('.col-6').find('span.oh-dot');
-    
+
         // Update the class
         dot.removeClass().addClass('oh-dot oh-dot--small me-1 oh-dot--color-' + value);
     })

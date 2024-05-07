@@ -6,14 +6,15 @@ This module is used handle mail sent in thread
 
 import logging
 from threading import Thread
+
+from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+
+from base.backends import ConfiguredEmailBackend
+from base.models import Department
 from employee.models import EmployeeWorkInformation
 from helpdesk.models import Ticket
-from django.contrib import messages
-from base.models import Department
-from base.backends import ConfiguredEmailBackend
-
 
 logger = logging.getLogger(__name__)
 

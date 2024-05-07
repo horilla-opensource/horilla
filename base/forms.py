@@ -5,22 +5,23 @@ This module is used to register forms for base module
 """
 
 import calendar
-import os
-from typing import Any
-import uuid
 import datetime
+import os
+import uuid
 from datetime import date, timedelta
-from django.contrib.auth import authenticate
+from typing import Any
+
 from django import forms
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import Group, Permission, User
-from django.forms import DateInput, HiddenInput, TextInput
 from django.core.exceptions import ValidationError
+from django.forms import DateInput, HiddenInput, TextInput
+from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _trans
-from django.template.loader import render_to_string
+
 from base import thread_local_middleware
-from employee.filters import EmployeeFilter
-from employee.models import Employee, EmployeeTag
+from base.methods import reload_queryset
 from base.models import (
     Announcement,
     AnnouncementComment,
@@ -32,30 +33,30 @@ from base.models import (
     DriverViewed,
     DynamicEmailConfiguration,
     DynamicPagination,
+    EmployeeShift,
+    EmployeeShiftDay,
+    EmployeeShiftSchedule,
+    EmployeeType,
     JobPosition,
     JobRole,
     MultipleApprovalCondition,
-    ShiftRequestComment,
-    WorkType,
-    EmployeeType,
-    EmployeeShift,
-    EmployeeShiftSchedule,
     RotatingShift,
     RotatingShiftAssign,
     RotatingWorkType,
     RotatingWorkTypeAssign,
-    WorkTypeRequest,
     ShiftRequest,
-    EmployeeShiftDay,
+    ShiftRequestComment,
     Tags,
+    WorkType,
+    WorkTypeRequest,
     WorkTypeRequestComment,
 )
-from base.methods import reload_queryset
+from employee.filters import EmployeeFilter
+from employee.forms import MultipleFileField
+from employee.models import Employee, EmployeeTag
 from horilla_audit.models import AuditTag
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-from employee.forms import MultipleFileField
-
 
 # your form here
 
@@ -1691,6 +1692,7 @@ class DynamicMailConfForm(ModelForm):
         model = DynamicEmailConfiguration
         fields = "__all__"
         exclude = ["is_active"]
+
     # def clean(self):
     #     from_mail = self.from_email
     #     return super().clean()

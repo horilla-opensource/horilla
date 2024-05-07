@@ -3,7 +3,7 @@ forms.py
 
 This module contains the form classes used in the application.
 
-Each form represents a specific functionality or data input in the 
+Each form represents a specific functionality or data input in the
 application. They are responsible for validating
 and processing user input data.
 
@@ -21,38 +21,40 @@ class YourForm(forms.Form):
         pass
 """
 
+import datetime
 import json
-import uuid, datetime
+import uuid
+from calendar import month_name
 from collections import OrderedDict
 from typing import Any, Dict
-from calendar import month_name
+
 from django import forms
-from django.template.loader import render_to_string
-from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.forms import DateTimeInput
-from base import thread_local_middleware
-from base.forms import MultipleFileField
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
-from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-from employee.models import Employee
-from employee.filters import EmployeeFilter
-from base.methods import reload_queryset
-from base.models import Company
+from django.template.loader import render_to_string
+from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
+
 from attendance.models import (
     Attendance,
-    AttendanceOverTime,
     AttendanceActivity,
     AttendanceLateComeEarlyOut,
-    AttendanceValidationCondition,
+    AttendanceOverTime,
     AttendanceRequestComment,
     AttendanceRequestFile,
+    AttendanceValidationCondition,
     GraceTime,
     PenaltyAccount,
     strtime_seconds,
 )
-from django.utils.html import format_html
-
+from base import thread_local_middleware
+from base.forms import MultipleFileField
+from base.methods import reload_queryset
+from base.models import Company
+from employee.filters import EmployeeFilter
+from employee.models import Employee
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from leave.models import LeaveType
 
 

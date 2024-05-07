@@ -26,7 +26,7 @@
           <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;"class="oh-sticky-table__td">{{feedback.review_cycle | title}}</a>
           <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;"class="oh-sticky-table__td">
             <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
-            <span>{% trans feedback.status %}</span> 
+            <span>{% trans feedback.status %}</span>
           </a>
           <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</a>
           <div class="oh-sticky-table__td">
@@ -36,9 +36,9 @@
                       <ion-icon name="create-outline"></ion-icon>
                   </a>
               {% endif %}
-              
+
                 <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
-                
+
             </div>
           </div>
         </div>

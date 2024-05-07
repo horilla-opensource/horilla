@@ -4,10 +4,10 @@
 {% load notifications_tags %}
 {% notifications_unread as unread_count %}
 
-<div 
+<div
   class="oh-navbar__notifications"
   id="notificationIcon"
-  x-data="{open: false}" 
+  x-data="{open: false}"
   hx-get="{% url 'notifications' %}"
   hx-target="#notificationContainer"
 >
@@ -25,7 +25,7 @@
         {% include 'notification/notification_items.html' %}
       </div>
       <div class="oh-navbar__notification-footer" x-show="visible">
-        <a 
+        <a
         {% comment %} href="{% url 'notifications:all' %}" {% endcomment %}
         id="viewallnotification"
         data-target="#allNotifications"
@@ -39,7 +39,7 @@
         <span class="oh-navbar__notification-empty-desc">{% trans "You have no new notifications at the moment." %}</span>
       </div>
     </div>
-  </div> 
+  </div>
 
   <script src="{% static 'notifications/notify.js' %}" type="text/javascript"></script>
 {% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}

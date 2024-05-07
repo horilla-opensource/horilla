@@ -14,7 +14,7 @@
 		transition: max-height 0.3s ease,padding 0.3s ease;
 		overflow-y: auto;
 	}
-	
+
 	.oh-faq__item--show .oh-faq__item-body {
 		max-height: 200px; /* Adjust the max-height as needed */
 	}
@@ -36,7 +36,7 @@
 	}
 </style>
 <div class="oh-wrapper">
-	{% if faq_categories %} 
+	{% if faq_categories %}
 	<div id="faqCategoryList">
 
 		{% include "helpdesk/faq/faq_category_list.html" %}
@@ -89,10 +89,10 @@
 	function completeSuggestion (element) {
 		$('.oh-search_input').val($(element).text());
 		$("#suggestion_box").hide();
-	} 
+	}
 
 	$(document).ready(function () {
-		
+
     	var autocompleteSuggestions = $('.oh-autocomplete-suggestions');
 		var searchInput = $('.oh-search_input');
 
@@ -119,20 +119,20 @@
 				}
 			})
 		})
-		
+
 		$(document).on('click', function (event) {
 			if (!searchInput.is(event.target) && !autocompleteSuggestions.is(event.target) && autocompleteSuggestions.has(event.target).length === 0) {
 				$("#suggestion_box").html('');
 			}
 		});
 	});
-	
+
 	$(document).ready(function(){
 		$(".oh-faq__item-header").on("click", function(){
 			if ($(this).parent(".oh-faq__item--show").length !=0){
-				$(".oh-faq__item--show").removeClass("oh-faq__item--show");		
+				$(".oh-faq__item--show").removeClass("oh-faq__item--show");
 			} else {
-				$(".oh-faq__item--show").removeClass("oh-faq__item--show");	
+				$(".oh-faq__item--show").removeClass("oh-faq__item--show");
 				$(this).parent('.oh-faq__item').addClass("oh-faq__item--show");
 			}
 		})

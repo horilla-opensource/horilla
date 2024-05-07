@@ -5,7 +5,9 @@ Horilla forms
 """
 
 from typing import Any, Dict
+
 from django import forms
+
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 
 

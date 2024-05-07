@@ -1,4 +1,4 @@
-{% load i18n %} {% load yes_no %} {% load static %} 
+{% load i18n %} {% load yes_no %} {% load static %}
 {% include 'filter_tags.html' %} {% if messages %}
 <div class="oh-wrapper">
     {% for message in messages %}
@@ -114,26 +114,26 @@
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                         <div class="oh-btn-group">
                             {% if perms.offboarding.change_resignationletter %}
-                            <button type="button" hx-get="{% url 'send-mail-employee' letter.employee_id.id %}" 
+                            <button type="button" hx-get="{% url 'send-mail-employee' letter.employee_id.id %}"
                               title="{% trans " Send Mail" %}" hx-target="#resignationModalBody" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle"
                               data-target="#resignationModal" style="flex: 1 0 auto; width: 40px; height: 40.68px; padding: 0"
                               onclick="event.stopPropagation()"><ion-icon name="mail-open-outline" role="img" class="md hydrated"
                                 aria-label="mail open outline"></ion-icon>
                             </button>
                             {% endif %}
-                  
+
                             <a hx-get="{% url 'create-resignation-request' %}?instance_id={{ letter.id }}" title = {% trans "Edit" %}
                               class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" hx-target="#resignationModalBody"
                               data-target="#resignationModal" style="flex: 1 0 auto; width: 40px; height: 40.68px; padding: 0"><ion-icon
                                 class="text-dark md hydrated" name="create-outline" role="img" aria-label="create outline"></ion-icon></a>
                             {% if perms.offboarding.delete_resignationletter %}
-                            <a href="{% url 'delete-resignation-request' %}?letter_ids={{letter.id}}" class="oh-btn oh-btn--light" 
+                            <a href="{% url 'delete-resignation-request' %}?letter_ids={{letter.id}}" class="oh-btn oh-btn--light"
                               title = {%trans "Delete" %} style="flex: 1 0 auto; width: 40px; height: 40.68px; padding: 0"
                               onclick="return confirm('{% trans 'Do you want to delete this record' %}?')"><ion-icon
                                 class="text-danger md hydrated" name="trash-outline" role="img" aria-label="trash outline"></ion-icon>
                             </a>
                             {% endif %}
-                  
+
                           </div>
                     </div>
                     <div class="oh-sticky-table__td oh-sticky-table__right">
@@ -214,7 +214,7 @@
     <!-- start of pagination -->
     <div class="oh-pagination">
         <span class="oh-pagination__page">
-            {% trans "Page" %} {{ letters.number }} {% trans "of" %} 
+            {% trans "Page" %} {{ letters.number }} {% trans "of" %}
             {{letters.paginator.num_pages }}.
         </span>
         <nav class="oh-pagination__nav">
@@ -319,19 +319,19 @@
             // {% for offboarding in offboardings %}
               <option value="{{offboarding.id}}">{{offboarding.title}}</option>
             // {% endfor %}
-        </select>      
+        </select>
       </div>
       <div class="col-6 col-md-6">
         <div class="oh-label__info" for="notice_period_starts">
           <label class="oh-label" for="notice_period_starts">Planned to leave on</label>
         </div>
-          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value);alert()" name="notice_period_starts" value="{% now "Y-m-d" %}"  class="oh-input w-100 form-control" required id="notice_period_starts">      
+          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value);alert()" name="notice_period_starts" value="{% now "Y-m-d" %}"  class="oh-input w-100 form-control" required id="notice_period_starts">
       </div>
       <div class="col-6 col-md-6">
         <div class="oh-label__info" for="notice_period_ends">
           <label class="oh-label" for="notice_period_ends">Notice period end</label>
         </div>
-          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value);alert()" name="notice_period_ends"  class="oh-input w-100 form-control" required id="notice_period_ends">      
+          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value);alert()" name="notice_period_ends"  class="oh-input w-100 form-control" required id="notice_period_ends">
       </div>
     </div>
     ` + "</div>" }

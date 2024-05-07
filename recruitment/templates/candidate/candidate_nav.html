@@ -64,7 +64,7 @@ x-data="{searchShow: false}"
   >
 
   <div class="oh-main__titlebar oh-main__titlebar--right">
-    
+
     <div
       class="oh-input-group oh-input__search-group"
       :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -75,7 +75,7 @@ x-data="{searchShow: false}"
       ></ion-icon>
       <input
         type="text"
-        placeholder="{% trans 'Search' %}" 
+        placeholder="{% trans 'Search' %}"
         id="candidate-search"
         name='name'
         class="oh-input oh-input__icon"
@@ -86,7 +86,7 @@ x-data="{searchShow: false}"
     <ul class="oh-view-types ml-2" style="margin-bottom: 0;" id="view-type">
       <li class="oh-view-type candidate-view-type " data-view='list' >
         <a
-          id = 'list'  
+          id = 'list'
           class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
           title ='{% trans "List" %}'
           onclick="$('[name=view]').val('list');$('.filterButton')[0].click();"
@@ -94,7 +94,7 @@ x-data="{searchShow: false}"
         ></a>
       </li>
       <li class="oh-view-type candidate-view-type" data-view='card'>
-        <a 
+        <a
           id="card"
           class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
           title = '{% trans "Card" %}'
@@ -118,7 +118,7 @@ x-data="{searchShow: false}"
         {% include 'candidate/filters.html' %}
         </div>
       </div>
-      
+
       <div class="oh-dropdown" x-data="{open: false}">
         <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
           <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
@@ -129,7 +129,7 @@ x-data="{searchShow: false}"
         x-show="open"
         @click.outside="open = false"
         style="display: none"
-        >            
+        >
         <div class="oh-accordion">
           <label>{% trans "Group By" %}</label>
             <div class="row">
@@ -167,7 +167,7 @@ x-data="{searchShow: false}"
           >
             {% trans "Actions" %}
           </button>
-          <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" 
+          <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
           style="display: none;"
         >
             <ul class="oh-dropdown__items">
@@ -200,7 +200,7 @@ x-data="{searchShow: false}"
                   >{% trans "Archive" %}</a
                 >
               </li>
-              {% endif %} 
+              {% endif %}
 
               {% if perms.delete_candidates %}
               <li class="oh-dropdown__item">
@@ -210,7 +210,7 @@ x-data="{searchShow: false}"
                   >{% trans "Un-Archive" %}</a
                 >
               </li>
-              {% endif %} 
+              {% endif %}
 
               {% if perms.delete_candidates %}
               <li class="oh-dropdown__item">

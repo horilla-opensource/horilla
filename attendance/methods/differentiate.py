@@ -5,6 +5,7 @@ This module is used write custom methods
 """
 
 from datetime import datetime
+
 from django.db import models
 
 

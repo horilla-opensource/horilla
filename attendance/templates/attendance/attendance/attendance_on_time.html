@@ -38,7 +38,7 @@
         </div>
         <div class="oh-sticky-table__tbody">
           {% for attendance in attendances %}
-          <div class="oh-sticky-table__tr" 
+          <div class="oh-sticky-table__tr"
           draggable="false">
             <div class="oh-sticky-table__sd">
               <div class="d-flex">
@@ -91,7 +91,7 @@
             <div class="oh-sticky-table__td">
               {{attendance.attendance_overtime}}
             </div>
-            
+
             <div class="oh-sticky-table__td">
                 <div class="oh-btn-group">
                 {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
@@ -103,11 +103,11 @@
                   <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
                 </form>
                 {% endif %}
-              </div>      
+              </div>
           </div>
           </div>
           {% endfor %}
-          
+
         </div>
       </div>
     </div>
@@ -116,19 +116,19 @@
     $(document).ready(function () {
       var activeTab = localStorage.getItem('activeTabAttendance')
       if (activeTab != null) {
-        var tab  = $(`[data-target="${activeTab}"]`)  
+        var tab  = $(`[data-target="${activeTab}"]`)
         var tabContent = $(activeTab)
-        $(tab).attr('class', 'oh-tabs__tab oh-tabs__tab--active');   
-        $(tabContent).attr('class', 'oh-tabs__content oh-tabs__content--active'); 
+        $(tab).attr('class', 'oh-tabs__tab oh-tabs__tab--active');
+        $(tabContent).attr('class', 'oh-tabs__content oh-tabs__content--active');
       }
       else{
-        $('[data-target="#tab_1"]').attr('class', 'oh-tabs__tab oh-tabs__tab--active');   
-        $('#tab_1').attr('class', 'oh-tabs__content oh-tabs__content--active'); 
+        $('[data-target="#tab_1"]').attr('class', 'oh-tabs__tab oh-tabs__tab--active');
+        $('#tab_1').attr('class', 'oh-tabs__content oh-tabs__content--active');
       }
-      $('.oh-tabs__tab').click(function (e) { 
+      $('.oh-tabs__tab').click(function (e) {
         var activeTab = $(this).attr('data-target');
         localStorage.setItem('activeTabAttendance',activeTab)
-        
+
       });
     });
   </script>

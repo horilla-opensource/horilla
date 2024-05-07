@@ -42,7 +42,7 @@
     }
   }
   function fieldLabel(value, field) {
-    if (field == "field") {      
+    if (field == "field") {
       return $(`option[value="${value}"]`).html();
     }
     return value;
@@ -54,11 +54,11 @@
     <span class="oh-titlebar__tag oh-titlebar__tag--custom"
       >{% trans 'Filters' %}:</span
     >
-    {% endif %} 
-    {%for field,values in filter_dict.items %} {% if values %} 
+    {% endif %}
+    {%for field,values in filter_dict.items %} {% if values %}
     {% with translation_field=field|filter_field %}
     <span class="oh-titlebar__tag filter-field" >
-      {% trans translation_field %} : 
+      {% trans translation_field %} :
 	  {% for value in values %}
 		${fieldLabel("{% trans value %}", "{{field}}")}
 	  {% endfor %}
@@ -76,8 +76,8 @@
     {% if filter_dict %}
     <span class="oh-titlebar__tag oh-titlebar__tag--custom" title="{% trans 'Clear All' %}" role="button" onclick="clearAllFilter($(this));"
       ><ion-icon class="close-icon" name="close-outline"></ion-icon></span
-    > 
-    {% endif %} 
+    >
+    {% endif %}
     `);
 
     nav.html(tags);

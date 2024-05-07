@@ -3,10 +3,10 @@
   {% if candidate == task.candidate_id %}
   <select name="task"  class="w-100" id="{{task.id}}"
       data-task-id="{{task.id}}" data-candidate-id={{candidate.id}}
-      data-onboarding-task-id={{task.id}} 
+      data-onboarding-task-id={{task.id}}
       style="border: 1px solid hsl(213deg,22%,84%);
               padding: 0.3rem 0.8rem 0.3rem 0.3rem;
-              border-radius: 0rem;" 
+              border-radius: 0rem;"
       onchange="updateSingleStatus(this,event)"
   >
       {% for choice in choices %}
@@ -17,7 +17,7 @@
           {% endif %}
       {% endfor %}
   {% else %}
-  <button class="oh-checkpoint-badge text-info" data-toggle="oh-modal-toggle" 
+  <button class="oh-checkpoint-badge text-info" data-toggle="oh-modal-toggle"
       hx-post="{% url 'assign-task' task.id  %}?cand_id={{candidate.id}}&cand_stage={{candidate.id}}&stage_id={{stage.grouper.id}}"
       hx-target="#task{{task.id}}{{candidate.id}}"
   >
@@ -30,14 +30,14 @@
   {% if candidate.candidate_id  in task.candidates.all %}
   <select name="task"  class="w-100" id="{{candidate.candidate_id.id}}"
       data-task-id="{{task.id}}" data-candidate-id={{candidate.candidate_id.id}}
-      data-onboarding-task-id={{task.id}} 
+      data-onboarding-task-id={{task.id}}
       style="border: 1px solid hsl(213deg,22%,84%);
               padding: 0.3rem 0.8rem 0.3rem 0.3rem;
-              border-radius: 0rem;" 
+              border-radius: 0rem;"
       {% if not second_load %}
           hx-post="{% url 'get-status' task.id  %}?cand_id={{candidate.candidate_id.id}}&cand_stage={{candidate.id}}"
 
-          hx-trigger="load" 
+          hx-trigger="load"
           hx-target="#task{{task.id}}{{candidate.candidate_id.id}}"
       {% endif %}
       onchange="updateStatus(this,event)"
@@ -50,7 +50,7 @@
           {% endif %}
       {% endfor %}
   {% else %}
-      <button class="oh-checkpoint-badge text-info" data-toggle="oh-modal-toggle" 
+      <button class="oh-checkpoint-badge text-info" data-toggle="oh-modal-toggle"
           hx-post="{% url 'assign-task' task.id  %}?cand_id={{candidate.candidate_id.id}}&cand_stage={{candidate.id}}&stage_id={{stage.grouper.id}}"
           hx-target="#task{{task.id}}{{candidate.candidate_id.id}}"
       >
@@ -98,14 +98,14 @@ function getCookie(name) {
                     </div>`);
                     duration = 1500;
           }
-        
+
     });
 }
 function updateSingleStatus(selectElement,event) {
   event.stopPropagation()
   event.preventDefault()
   var taskId = $(selectElement).data("task-id");
-  var candId = $(selectElement).data('candidate-id'); 
+  var candId = $(selectElement).data('candidate-id');
   var status = $(selectElement).val();
   $.ajax({
       type: "POST",
@@ -121,7 +121,7 @@ function updateSingleStatus(selectElement,event) {
                   </div>`);
                   duration = 1500;
         }
-      
+
   });
 }
 

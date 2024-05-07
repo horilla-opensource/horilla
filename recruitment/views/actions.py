@@ -5,19 +5,21 @@ This module is used to register methods to delete/archive/un-archive instances
 """
 
 import json
+
 from django.contrib import messages
-from django.db.models import ProtectedError
 from django.contrib.auth.models import Permission
+from django.db.models import ProtectedError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.utils.translation import gettext_lazy as _
+from django.shortcuts import redirect, render
 from django.utils.translation import gettext as __
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
-from django.shortcuts import render, redirect
+
 from attendance.methods.group_by import group_by_queryset
 from employee.models import Employee
 from horilla.decorators import login_required, permission_required
-from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from notifications.signals import notify
+from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.filters import StageFilter
 from recruitment.forms import StageCreationForm
 from recruitment.models import Candidate, Recruitment, Stage, StageNote
@@ -316,9 +318,13 @@ def remove_stage_manager(request, mid, sid):
     return render(
         request,
         "stage/stage_group.html",
-        {"data": paginator_qry(stages, request.GET.get("page")), "pd": previous_data, "form": form,
+        {
+            "data": paginator_qry(stages, request.GET.get("page")),
+            "pd": previous_data,
+            "form": form,
             "f": filter_obj,
-            "recruitments": recruitments,},
+            "recruitments": recruitments,
+        },
     )
 
 

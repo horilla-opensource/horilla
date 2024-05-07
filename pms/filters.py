@@ -1,15 +1,19 @@
 """
 Module: filters.py
 
-This module contains custom Django filters and filter sets for 
+This module contains custom Django filters and filter sets for
 the PMS (Performance Management System) app.
 """
 
 import datetime
+
 import django
 import django_filters
 from django import forms
 from django_filters import DateFilter
+
+from base.filters import FilterSet
+from base.methods import reload_queryset
 from pms.models import (
     EmployeeKeyResult,
     EmployeeObjective,
@@ -18,8 +22,6 @@ from pms.models import (
     Meetings,
     Objective,
 )
-from base.methods import reload_queryset
-from base.filters import FilterSet
 
 
 class DateRangeFilter(django_filters.Filter):
@@ -34,13 +36,13 @@ class DateRangeFilter(django_filters.Filter):
         if value:
             if value == "today":
                 today = datetime.datetime.now().date()
-                formatted_date = today.strftime('%Y-%m-%d')
+                formatted_date = today.strftime("%Y-%m-%d")
                 qs = qs.filter(created_at__startswith=formatted_date)
 
             if value == "yesterday":
                 today = datetime.date.today()
                 yesterday = today - datetime.timedelta(days=1)
-                formatted_date = yesterday.strftime('%Y-%m-%d')
+                formatted_date = yesterday.strftime("%Y-%m-%d")
                 qs = qs.filter(created_at__startswith=formatted_date)
 
             if value == "week":

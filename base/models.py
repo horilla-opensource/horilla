@@ -6,14 +6,15 @@ This module is used to register django models
 
 import django
 from django.contrib import messages
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
-from django.db import models
 from django.contrib.auth.models import User
-from horilla.models import HorillaModel
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
 from base.horilla_company_manager import HorillaCompanyManager
 from base.thread_local_middleware import _thread_locals
+from horilla.models import HorillaModel
+from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # Create your models here.
 
@@ -1365,7 +1366,11 @@ class DashboardEmployeeCharts(HorillaModel):
 class BiometricAttendance(models.Model):
     is_installed = models.BooleanField(default=False)
     company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT,related_name="biometric_enabled_company"
+        Company,
+        null=True,
+        editable=False,
+        on_delete=models.PROTECT,
+        related_name="biometric_enabled_company",
     )
 
     def __str__(self):

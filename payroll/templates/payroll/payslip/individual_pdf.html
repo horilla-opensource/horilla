@@ -61,8 +61,8 @@
 						{% trans "Payslip" %}
 					</h1>
 					<h2 class="oh-payslip__title oh-payslip__title--h2">
-						<span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{formatted_start_date}}</span> &nbsp 
-						<span class="oh-payslip__title oh-payslip__title--h2">{% trans "to" %}</span> &nbsp 
+						<span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{formatted_start_date}}</span> &nbsp
+						<span class="oh-payslip__title oh-payslip__title--h2">{% trans "to" %}</span> &nbsp
 						<span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{formatted_end_date}}</span>
 					</h2>
 				</div>
@@ -274,17 +274,16 @@
 	document.addEventListener("DOMContentLoaded", function () {
 	  // Your date in string format
 	  var dateStr = "2023-12-14";
-  
+
 	  // Your desired date format
 	  var dateFormat = "dddd, MMMM D, YYYY";
-  
+
 	  // Parse the date using Moment.js
 	  var dateObj = moment(dateStr);
-  
+
 	  // Format the date
 	  var formattedDate = dateObj.format(dateFormat);
-  
+
 	  // Log the result
 	});
 </script>
-  

@@ -11,59 +11,42 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
-import datetime
-from django import template
-from django.core.mail import EmailMessage
-from django.utils import timezone
-import os
-import json
 import contextlib
+import datetime
+import json
+import os
+from itertools import chain
 from urllib.parse import parse_qs
+
+from django import template
 from django.conf import settings
-from django.db.models import Q
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
-from django.db.models import ProtectedError
-from django.shortcuts import render, redirect
-from django.core import serializers
-from django.core.paginator import Paginator
-from attendance.methods.group_by import group_by_queryset
-from base.context_processors import check_candidate_self_tracking
-from base.models import EmailLog, JobPosition
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.views.decorators.http import require_http_methods
+from django.core import serializers
+from django.core.mail import EmailMessage
+from django.core.paginator import Paginator
+from django.db.models import ProtectedError, Q
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from itertools import chain
-from employee.models import Employee, EmployeeWorkInformation
-from notifications.signals import notify
-from horilla import settings
+from django.views.decorators.http import require_http_methods
+
+from attendance.methods.group_by import group_by_queryset
 from base.backends import ConfiguredEmailBackend
+from base.context_processors import check_candidate_self_tracking
+from base.methods import export_data, generate_pdf, get_key_instances
+from base.models import EmailLog, JobPosition
+from employee.models import Employee, EmployeeWorkInformation
+from horilla import settings
 from horilla.decorators import (
-    permission_required,
-    login_required,
     hx_request_required,
     logger,
+    login_required,
+    permission_required,
 )
-from base.methods import export_data, generate_pdf, get_key_instances
-from recruitment.views.paginator_qry import paginator_qry
-from recruitment.models import (
-    InterviewSchedule,
-    Recruitment,
-    Candidate,
-    RecruitmentGeneralSetting,
-    RecruitmentSurvey,
-    RejectReason,
-    SkillZone,
-    SkillZoneCandidate,
-    Stage,
-    CandidateRating,
-    RecruitmentMailTemplate,
-    Recruitment,
-    Candidate,
-    Stage,
-    StageFiles,
-    StageNote,
-)
+from notifications.signals import notify
+from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.filters import (
     CandidateFilter,
     CandidateReGroup,
@@ -73,13 +56,11 @@ from recruitment.filters import (
     SkillZoneFilter,
     StageFilter,
 )
-from recruitment.methods import recruitment_manages
-from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.forms import (
     AddCandidateForm,
+    CandidateCreationForm,
     CandidateExportForm,
     RecruitmentCreationForm,
-    CandidateCreationForm,
     RejectReasonForm,
     ScheduleInterviewForm,
     SkillZoneCandidateForm,
@@ -89,6 +70,23 @@ from recruitment.forms import (
     StageNoteUpdateForm,
     ToSkillZoneForm,
 )
+from recruitment.methods import recruitment_manages
+from recruitment.models import (
+    Candidate,
+    CandidateRating,
+    InterviewSchedule,
+    Recruitment,
+    RecruitmentGeneralSetting,
+    RecruitmentMailTemplate,
+    RecruitmentSurvey,
+    RejectReason,
+    SkillZone,
+    SkillZoneCandidate,
+    Stage,
+    StageFiles,
+    StageNote,
+)
+from recruitment.views.paginator_qry import paginator_qry
 
 
 def is_stagemanager(request, stage_id=False):
@@ -289,13 +287,13 @@ def recruitment_update(request, rec_id):
         id : recruitment_id
     """
     recruitment_obj = Recruitment.objects.get(id=rec_id)
-    survey_template_list=[]
-    survey_templates = RecruitmentSurvey.objects.filter(recruitment_ids=rec_id).distinct()
+    survey_template_list = []
+    survey_templates = RecruitmentSurvey.objects.filter(
+        recruitment_ids=rec_id
+    ).distinct()
     for survey in survey_templates:
         survey_template_list.append(survey.template_id.all())
-    form = RecruitmentCreationForm(
-        instance=recruitment_obj
-    )
+    form = RecruitmentCreationForm(instance=recruitment_obj)
     if request.method == "POST":
         form = RecruitmentCreationForm(request.POST, instance=recruitment_obj)
         if form.is_valid():
@@ -379,8 +377,7 @@ def recruitment_pipeline(request):
             "recruitment": recruitments,
             "stage_filter_obj": stage_filter,
             "candidate_filter_obj": candidate_filter,
-            'now' : now,
-
+            "now": now,
         },
     )
 
@@ -400,10 +397,16 @@ def filter_pipeline(request):
     view = request.GET.get("view")
     recruitments = filter_obj.qs.filter(is_active=True)
     if not request.user.has_perm("recruitment.view_recruitment"):
-        recruitments = recruitments.filter(Q(recruitment_managers=request.user.employee_get))
-        stage_recruitment_ids = stage_filter.qs.filter(stage_managers=request.user.employee_get).values_list('recruitment_id', flat=True).distinct()
+        recruitments = recruitments.filter(
+            Q(recruitment_managers=request.user.employee_get)
+        )
+        stage_recruitment_ids = (
+            stage_filter.qs.filter(stage_managers=request.user.employee_get)
+            .values_list("recruitment_id", flat=True)
+            .distinct()
+        )
         recruitments = recruitments | filter_obj.qs.filter(id__in=stage_recruitment_ids)
-        recruitments = recruitments.filter(is_active = True).distinct()
+        recruitments = recruitments.filter(is_active=True).distinct()
 
     closed = request.GET.get("closed")
     filter_dict = parse_qs(request.GET.urlencode())
@@ -539,7 +542,7 @@ def candidate_component(request):
             ),
             "stage": stage,
             "rec": getattr(candidates.first(), "recruitment_id", {}),
-            "now" : now,
+            "now": now,
         },
     )
 
@@ -1262,15 +1265,17 @@ def interview_filter_view(request):
     if request.user.has_perm("view_interviewschedule"):
         interviews = InterviewSchedule.objects.all()
     else:
-        interviews = InterviewSchedule.objects.filter(employee_id = request.user.employee_get.id)
+        interviews = InterviewSchedule.objects.filter(
+            employee_id=request.user.employee_get.id
+        )
 
-    dis_filter = InterviewFilter(request.GET, queryset = interviews).qs
+    dis_filter = InterviewFilter(request.GET, queryset=interviews).qs
 
     page_number = request.GET.get("page")
     page_obj = paginator_qry(dis_filter, page_number)
     data_dict = parse_qs(previous_data)
     get_key_instances(InterviewSchedule, data_dict)
-    now=timezone.now()
+    now = timezone.now()
     return render(
         request,
         "candidate/interview_list.html",
@@ -1278,9 +1283,10 @@ def interview_filter_view(request):
             "data": page_obj,
             "pd": previous_data,
             "filter_dict": data_dict,
-            "now" : now,
+            "now": now,
         },
     )
+
 
 def interview_view(request):
     """
@@ -1291,14 +1297,16 @@ def interview_view(request):
     if request.user.has_perm("view_interviewschedule"):
         interviews = InterviewSchedule.objects.all()
     else:
-        interviews = InterviewSchedule.objects.filter(employee_id = request.user.employee_get.id)
+        interviews = InterviewSchedule.objects.filter(
+            employee_id=request.user.employee_get.id
+        )
 
     form = InterviewFilter(request.GET, queryset=interviews)
     page_number = request.GET.get("page")
     page_obj = paginator_qry(form.qs, page_number)
     previous_data = request.GET.urlencode()
     template = "candidate/interview_view.html"
-    now=timezone.now()
+    now = timezone.now()
 
     return render(
         request,
@@ -1307,13 +1315,13 @@ def interview_view(request):
             "data": page_obj,
             "pd": previous_data,
             "f": form,
-            "now":now,
+            "now": now,
         },
     )
 
 
 @login_required
-def interview_employee_remove(request,interview_id,employee_id):
+def interview_employee_remove(request, interview_id, employee_id):
     """
     This view is used to remove the employees from the meeting ,
     Args:
@@ -1413,8 +1421,7 @@ def candidate_view_individual(request, cand_id, **kwargs):
             "candidate": candidate_obj,
             "emp_list": existing_emails,
             "average_rate": avg_rate,
-            'now' : now,
-
+            "now": now,
         },
     )
 
@@ -1582,10 +1589,10 @@ def interview_schedule(request, cand_id):
     candidate = Candidate.objects.get(id=cand_id)
     candidates = Candidate.objects.filter(id=cand_id)
     template = "pipeline/pipeline_components/schedule_interview.html"
-    form  = ScheduleInterviewForm(initial={"candidate_id": candidate})
+    form = ScheduleInterviewForm(initial={"candidate_id": candidate})
     form.fields["candidate_id"].queryset = candidates
     if request.method == "POST":
-        form  = ScheduleInterviewForm(request.POST)
+        form = ScheduleInterviewForm(request.POST)
         if form.is_valid():
             form.save()
             emp_ids = form.cleaned_data["employee_id"]
@@ -1620,10 +1627,10 @@ def create_interview_schedule(request):
     """
     candidates = Candidate.objects.all()
     template = "candidate/interview_form.html"
-    form  = ScheduleInterviewForm()
+    form = ScheduleInterviewForm()
     form.fields["candidate_id"].queryset = candidates
     if request.method == "POST":
-        form  = ScheduleInterviewForm(request.POST)
+        form = ScheduleInterviewForm(request.POST)
         if form.is_valid():
             form.save()
             emp_ids = form.cleaned_data["employee_id"]
@@ -1652,15 +1659,15 @@ def create_interview_schedule(request):
 @manager_can_enter(perm="recruitment.delete_interviewschedule")
 def interview_delete(request, interview_id):
     """
-    This method is used to delete interview 
+    This method is used to delete interview
     Args:
         interview_id : interview schedule instance id
     """
-    view = request.GET['view']
+    view = request.GET["view"]
     interview = InterviewSchedule.objects.get(id=interview_id)
     interview.delete()
     messages.success(request, "Interview deleted successfully.")
-    if view == 'true':
+    if view == "true":
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     else:
         return HttpResponse("<script>window.location.reload()</script>")
@@ -1675,23 +1682,23 @@ def interview_edit(request, interview_id):
         interview_id : interview schedule instance id
     """
     interview = InterviewSchedule.objects.get(id=interview_id)
-    view = request.GET['view']
-    if view == 'true':
+    view = request.GET["view"]
+    if view == "true":
         candidates = Candidate.objects.all()
-        view = 'true'
+        view = "true"
     else:
         candidates = Candidate.objects.filter(id=interview.candidate_id.id)
-        view = 'false'
+        view = "false"
     template = "pipeline/pipeline_components/schedule_interview_update.html"
-    form  = ScheduleInterviewForm(instance=interview)
+    form = ScheduleInterviewForm(instance=interview)
     form.fields["candidate_id"].queryset = candidates
     if request.method == "POST":
-        form  = ScheduleInterviewForm(request.POST, instance=interview)
+        form = ScheduleInterviewForm(request.POST, instance=interview)
         if form.is_valid():
-            emp_ids = form.cleaned_data['employee_id']
-            cand_id = form.cleaned_data['candidate_id']
-            interview_date = form.cleaned_data['interview_date']
-            interview_time = form.cleaned_data['interview_time']
+            emp_ids = form.cleaned_data["employee_id"]
+            cand_id = form.cleaned_data["candidate_id"]
+            interview_date = form.cleaned_data["interview_date"]
+            interview_time = form.cleaned_data["interview_time"]
             form.save()
             users = [employee.employee_user_id for employee in emp_ids]
             notify.send(
@@ -1707,7 +1714,15 @@ def interview_edit(request, interview_id):
             )
             messages.success(request, "Interview updated successfully.")
             return HttpResponse("<script>window.location.reload()</script>")
-    return render(request, template, {"form": form, "interview_id": interview_id, 'view' : view,})
+    return render(
+        request,
+        template,
+        {
+            "form": form,
+            "interview_id": interview_id,
+            "view": view,
+        },
+    )
 
 
 def get_managers(request):
@@ -1716,13 +1731,18 @@ def get_managers(request):
     stage_obj = Stage.objects.filter(recruitment_id=candidate_obj.recruitment_id.id)
 
     # Combine the querysets into a single iterable
-    all_managers = chain(candidate_obj.recruitment_id.recruitment_managers.all(), *[stage.stage_managers.all() for stage in stage_obj])
+    all_managers = chain(
+        candidate_obj.recruitment_id.recruitment_managers.all(),
+        *[stage.stage_managers.all() for stage in stage_obj],
+    )
 
     # Extract unique managers from the combined iterable
     unique_managers = list(set(all_managers))
 
     # Assuming you have a list of employee objects called 'unique_managers'
-    employees_dict = {employee.id: employee.get_full_name() for employee in unique_managers}
+    employees_dict = {
+        employee.id: employee.get_full_name() for employee in unique_managers
+    }
     return JsonResponse({"employees": employees_dict})
 
 

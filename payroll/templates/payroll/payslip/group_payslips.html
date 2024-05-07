@@ -1,13 +1,13 @@
 {% load i18n %} {% load attendancefilters static %}
 {% include 'filter_tags.html' %}
 <div class="oh-card">
-  {% dynamic_regroup payslips by "group_name" as group_payslips %} 
+  {% dynamic_regroup payslips by "group_name" as group_payslips %}
   {% for payslip in group_payslips %}
   <div class="oh-accordion-meta">
     <div class="oh-accordion-meta__item">
       <div class="oh-accordion-meta__header {% if request.GET.active_group == payslip.grouper %} oh-accordion-meta__header--show {% endif %}"
       {% if request.GET.active_group == payslip.grouper %} style="background-color: #ffff000f;" {% endif %}
-      
+
       >
         <span class="oh-accordion-meta__title d-flex">
           <div class="oh-tabs__input-badge-container">
@@ -86,7 +86,7 @@
                 </div> {% endcomment %}
                 <div class="oh-sticky-table__td dateformat_changer">
                   {{payslip.start_date}}
-                </div>                
+                </div>
                 <div class="oh-sticky-table__td dateformat_changer">
                   {{payslip.end_date}}
                 </div>
@@ -116,7 +116,7 @@
                     <div class="w-50">
                       {% if perms.payroll.change_payslip %}
                         <form action="{% url 'delete-payslip' payslip.id %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this payslip?" %}');" method='post'>
-                          {% csrf_token %} 
+                          {% csrf_token %}
                           <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
                         </form>
                       {% endif %}
@@ -176,7 +176,7 @@
   </nav>
 </div>
 <script>
-  $(".select-all-payslip-row").change(function (e) { 
+  $(".select-all-payslip-row").change(function (e) {
     e.preventDefault();
     var accordionId = $(this).attr("data-accordion-id");
     $(`[id="${accordionId}"] .payslip-row`).prop("checked",false).change()
@@ -195,11 +195,11 @@
     let $element = $(this)
     updatePayStatus($element)
   });
-  $("[name=update_selected]").change(function (e) { 
+  $("[name=update_selected]").change(function (e) {
     e.preventDefault();
     updateBulkStatus($(this))
   });
-  $(".oh-table__editable-input--batch").focusout(function (e) { 
+  $(".oh-table__editable-input--batch").focusout(function (e) {
     e.preventDefault();
     var grouper = $(this)
     var previousName = grouper.attr("data-previous-name");
@@ -233,9 +233,9 @@
         }
     });
   });
-  $(".payslip-row.all-payslip-row").change(function (e) { 
+  $(".payslip-row.all-payslip-row").change(function (e) {
     e.preventDefault();
-    // var id 
+    // var id
     var ids = JSON.parse($("#selectedPayslip").attr("data-ids"))
     if ($(this).is(":checked")) {
       ids.push($(this).val())

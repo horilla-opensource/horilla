@@ -1,10 +1,10 @@
-from django.core.mail import EmailMessage
-from django.contrib import messages
-from django.utils.translation import gettext as _
-from django.template.loader import render_to_string
-from django.db.models import Q
-
 from threading import Thread
+
+from django.contrib import messages
+from django.core.mail import EmailMessage
+from django.db.models import Q
+from django.template.loader import render_to_string
+from django.utils.translation import gettext as _
 
 from base.backends import ConfiguredEmailBackend
 
@@ -130,9 +130,15 @@ class LeaveClashThread(Thread):
         Method to count leave clashes where this employee's leave request overlaps
         with other employees' requested dates.
         """
-        overlapping_requests = LeaveRequest.objects.exclude(id=self.leave_request.id).filter(
-            Q(employee_id__employee_work_info__department_id=self.leave_request.employee_id.employee_work_info.department_id) |
-            Q(employee_id__employee_work_info__job_position_id=self.leave_request.employee_id.employee_work_info.job_position_id),
+        overlapping_requests = LeaveRequest.objects.exclude(
+            id=self.leave_request.id
+        ).filter(
+            Q(
+                employee_id__employee_work_info__department_id=self.leave_request.employee_id.employee_work_info.department_id
+            )
+            | Q(
+                employee_id__employee_work_info__job_position_id=self.leave_request.employee_id.employee_work_info.job_position_id
+            ),
             start_date__lte=self.leave_request.end_date,
             end_date__gte=self.leave_request.start_date,
         )
@@ -141,6 +147,7 @@ class LeaveClashThread(Thread):
 
     def run(self) -> None:
         from leave.models import LeaveRequest
+
         super().run()
         dates = self.leave_request.requested_dates()
         leave_requests_to_update = LeaveRequest.objects.filter(

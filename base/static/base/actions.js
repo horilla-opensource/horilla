@@ -102,7 +102,7 @@ function getCookie(name) {
   return cookieValue;
 }
 
-function getCurrentLanguageCode(callback) {  
+function getCurrentLanguageCode(callback) {
   var languageCode = $("#main-section-data").attr("data-lang");
   var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
   if (allowedLanguageCodes.includes(languageCode)) {

@@ -6,11 +6,13 @@ This module is used to register forms for offboarding app
 
 import contextlib
 from typing import Any
+
 from django import forms
-from django.template.loader import render_to_string
 from django.contrib import messages
-from base.forms import ModelForm
+from django.template.loader import render_to_string
+
 from base import thread_local_middleware
+from base.forms import ModelForm
 from employee.forms import MultipleFileField
 from notifications.signals import notify
 from offboarding.models import (
@@ -77,7 +79,7 @@ class OffboardingEmployeeForm(ModelForm):
     class Meta:
         model = OffboardingEmployee
         fields = "__all__"
-        exclude = ["notice_period", "unit" , "is_active"]
+        exclude = ["notice_period", "unit", "is_active"]
         widgets = {
             "notice_period_starts": forms.DateInput(attrs={"type": "date"}),
             "notice_period_ends": forms.DateInput(attrs={"type": "date"}),

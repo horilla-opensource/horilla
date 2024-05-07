@@ -26,17 +26,17 @@
                 {% if perms.recruitment.chane_surveytemplate %}
                 <li class="oh-dropdown__item">
                   <a hx-get="{% url 'survey-template-question-add' %}?title={{grouper.grouper}}" hx-target="#templateModalBody" data-toggle="oh-modal-toggle" data-target="#templateModal" class="oh-dropdown__link">{% trans "Add Questions" %}</a>
-                </li>                 
+                </li>
                 {% endif %}
                 {% if perms.recruitment.chane_surveytemplate %}
                 <li class="oh-dropdown__item">
                   <a hx-get="{% url 'survey-template-create' %}?title={{grouper.grouper}}" hx-target="#templateModalBody" data-toggle="oh-modal-toggle" data-target="#templateModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
-                </li>                 
+                </li>
                 {% endif %}
                 {% if perms.recruitment.delete_surveytemplate %}
                 <li class="oh-dropdown__item">
                   <a href="{% url 'survey-template-delete' %}?title={{grouper.grouper}}" onclick="return confirm('{% trans "Do you want to delete this template" %}')" class="oh-dropdown__link tex-danger" style="color: #dc3545!important;">{% trans "Delete" %}</a>
-                </li>                 
+                </li>
                 {% endif %}
               </ul>
             </div>
@@ -81,7 +81,7 @@
                 <div class="oh-sticky-table__td">{{question.get_type_display}}</div>
                 <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                   <div class="oh-btn-group">
-                    <button 
+                    <button
                     hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
                     data-toggle="oh-modal-toggle"
                     data-target="#updateSurvey"
@@ -91,7 +91,7 @@
                     >
                     <ion-icon name="create-outline"></ion-icon>
                   </button>
-                  <a 
+                  <a
                     href="{% url 'recruitment-survey-question-template-delete' question.id %}" onclick="return confirm('Do you want to delete this record?')"                     data-toggle="oh-modal-toggle"
                     class="oh-btn oh-btn--light-bkg w-100 tex-danger"
                     style="color: hsl(8,77%,56%);"
@@ -175,7 +175,7 @@
 
 <div class="oh-pagination">
   <span class="oh-pagination__page">
-    {% trans "Page" %} {{ templates.number }} {% trans "of" %} 
+    {% trans "Page" %} {{ templates.number }} {% trans "of" %}
     {{ templates.paginator.num_pages }}.
   </span>
   <nav class="oh-pagination__nav">

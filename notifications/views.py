@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """ Django Notifications example views """
-from distutils.version import (
+from distutils.version import (  # pylint: disable=no-name-in-module,import-error
     StrictVersion,
-)  # pylint: disable=no-name-in-module,import-error
+)
 
 from django import get_version
 from django.contrib.auth.decorators import login_required
@@ -11,10 +11,11 @@ from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.generic import ListView
+from swapper import load_model
+
 from notifications import settings
 from notifications.settings import get_config
 from notifications.utils import id2slug, slug2id
-from swapper import load_model
 
 Notification = load_model("notifications", "Notification")
 
@@ -23,6 +24,7 @@ if StrictVersion(get_version()) >= StrictVersion("1.7.0"):
 else:
     # Django 1.6 doesn't have a proper JsonResponse
     import json
+
     from django.http import HttpResponse  # noqa
 
     def date_handler(obj):

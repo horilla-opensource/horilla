@@ -3,9 +3,10 @@ employee/methods.py
 """
 
 import re
-from employee.models import Employee
 from itertools import groupby
+
 from base.context_processors import get_initial_prefix
+from employee.models import Employee
 
 
 def dynamic_prefix_sort(item):

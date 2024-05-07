@@ -7,13 +7,14 @@ This module is used to write custom template filters.
 
 import base64
 from itertools import groupby
+
 from django import template
 from django.forms.widgets import SelectMultiple, Textarea
 from django.template import TemplateSyntaxError
 from django.template.defaultfilters import register
-from attendance.views.views import strtime_seconds
-from attendance.models import AttendanceValidationCondition
 
+from attendance.models import AttendanceValidationCondition
+from attendance.views.views import strtime_seconds
 
 register = template.Library()
 

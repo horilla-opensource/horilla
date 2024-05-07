@@ -16,7 +16,7 @@
               alt="." />
           </div>
           <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
-          
+
         </div>
         <select id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="Status"
           hx-post="{%url 'feedback-detailed-view-status'  id=feedback.id %}"
@@ -38,7 +38,7 @@
       <div class="oh-btn-group m-2">
         <div class="oh-btn-group" >
           <form action="{% url 'feedback-archive' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want archive this Feedback ?" %}')" >
-          <button class="oh-btn  w-100 "  title="{% trans 'Archive' %}" style="background-color: white;!important"> 
+          <button class="oh-btn  w-100 "  title="{% trans 'Archive' %}" style="background-color: white;!important">
              {% csrf_token %}
             <ion-icon name="archive-sharp" type="submit"></ion-icon>
           </button>
@@ -46,7 +46,7 @@
           {% if perms.pms.delete_feedback  %}
             <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')">
               {% csrf_token %}
-              <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" style="background-color: white;!important"> 
+              <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" style="background-color: white;!important">
                   <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
               </button>
             </form>
@@ -63,7 +63,7 @@
           <button
             class="oh-btn oh-btn--x-small d-flex align-items-center ms-2 "
             data-toggle="oh-modal-toggle"
-            data-target="#feedbackModalPopup" 
+            data-target="#feedbackModalPopup"
             hx-get="{%url 'feedback-update' id=feedback.id %}"
             hx-target="#feedbackModalTarget">
             <ion-icon name="create-outline" class="me-1" ></ion-icon>
@@ -331,7 +331,7 @@
       </ol>
     </div>
   </div>
- 
+
   <!-- update modal  -->
   <div class="oh-modal" id="feedbackModalPopup" role="dialog" aria-labelledby="" aria-hidden="true">
     <div class="oh-modal__dialog" id="">

@@ -54,14 +54,14 @@
       <div class="oh-modal__dialog-body" id="reimbursementAttachementModalBody"></div>
     </div>
   </div>
-  
+
   <div class="oh-activity-sidebar" id="activitySidebar" style="z-index:1000;">
 
     <div class="oh-activity-sidebar__body" id="commentContainer">
     </div>
-  
+
   </div>
-  
+
   <script>
     function reimbursementConfirm(params, target, approve = false) {
       event.preventDefault();event.stopPropagation()
@@ -91,7 +91,7 @@
 
 
   // This lines is used to set default selected stage for exits lines
-  
+
     function enlargeImage(src,$element) {
         $(".enlargeImageContainer").empty()
         var enlargeImageContainer = $element.parents().closest("li").find(".enlargeImageContainer")
@@ -103,24 +103,24 @@
         enlargeImageContainer.append(name)
         setTimeout(function () {
             enlargeImageContainer.show()
-  
+
             const iframe = document.querySelector('iframe').contentWindow
             var iframe_document = iframe.document
             iframe_image = iframe_document.getElementsByTagName('img')[0]
             $(iframe_image).attr('style', 'width:100%; height:100%;')
         }, 100)
     }
-  
+
     function hideEnlargeImage() {
         var enlargeImageContainer = $('.enlargeImageContainer')
         enlargeImageContainer.empty()
     }
-  
+
     $(document).on('click', function (event) {
         if (!$(event.target).closest('#enlargeImageContainer').length) {
             hideEnlargeImage()
         }
-    })  
+    })
     function submitForm(elem) {
         $(elem).siblings(".add_more_submit").click();
     }
@@ -155,6 +155,6 @@
     if (!$(event.target).closest('#enlargeattachmentContainer').length) {
       hideEnlargeattachment()
     }
-  })  
+  })
   </script>
 {% endblock %}

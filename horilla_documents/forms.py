@@ -1,11 +1,11 @@
 from django import forms
+from django.template.loader import render_to_string
+
+from base.forms import ModelForm
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla_documents.models import Document, DocumentRequest
-from base.forms import ModelForm
-from django.template.loader import render_to_string
-
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
@@ -100,4 +100,4 @@ class DocumentRejectForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["reject_reason"].widget.attrs["required"]=True
+        self.fields["reject_reason"].widget.attrs["required"] = True

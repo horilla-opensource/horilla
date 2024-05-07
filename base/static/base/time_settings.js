@@ -1,14 +1,14 @@
 function saveTimeFormat() {
     var timeFormatSelector = document.getElementById('timeFormat');
     const selectedTimeFormat = timeFormatSelector.value;
-  
+
     // Set the selected time format in the utility
     timeFormatter.setTimeFormat(selectedTimeFormat);
-  
+
     // Save the time format to the backend
     saveTimeFormatToBackend(selectedTimeFormat);
   }
-  
+
   function saveTimeFormatToBackend(selectedTimeFormat) {
     $.ajax({
       url: '/settings/save-time/',
@@ -24,4 +24,3 @@ function saveTimeFormat() {
       },
     });
   }
-  

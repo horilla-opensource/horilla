@@ -5,10 +5,12 @@ This module is used to make queryset by groups
 """
 
 from datetime import datetime
-from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
+
 from django.core.paginator import Paginator
-from base.thread_local_middleware import _thread_locals
 from django.db import models
+from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
+
+from base.thread_local_middleware import _thread_locals
 
 
 def record_queryset_paginator(request, queryset, page_name, records_per_page=10):

@@ -11,14 +11,15 @@ Models Registered:
 """
 
 from django.contrib import admin
+
 from .models import (
     Asset,
+    AssetAssignment,
     AssetCategory,
     AssetDocuments,
+    AssetLot,
     AssetReport,
     AssetRequest,
-    AssetAssignment,
-    AssetLot,
 )
 
 # Register your models here.

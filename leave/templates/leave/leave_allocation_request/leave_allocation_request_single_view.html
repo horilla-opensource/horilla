@@ -2,22 +2,22 @@
 {% load basefilters %}
 {% if instances_ids %}
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-        <button 
-            hx-get="{% url 'leave-allocation-request-single-view' previous %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}" 
+        <button
+            hx-get="{% url 'leave-allocation-request-single-view' previous %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"
             hx-target="#objectDetailsModalW25Target"
             class="oh-modal__diaglog-nav oh-modal__nav-prev">
             <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
             aria-label="chevron back outline"></ion-icon>
         </button>
-        <button  
-            hx-get="{% url 'leave-allocation-request-single-view' next %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"  
+        <button
+            hx-get="{% url 'leave-allocation-request-single-view' next %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"
             hx-target="#objectDetailsModalW25Target"
             class="oh-modal__diaglog-nav oh-modal__nav-next">
             <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
             aria-label="chevron forward outline"></ion-icon>
         </button>
     </div>
-{% endif %} 
+{% endif %}
 </div>
 
 <div class="oh-modal__dialog-header">
@@ -29,7 +29,7 @@
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;"
         href ="{% url 'employee-view-individual' leave_allocation_request.employee_id.id %}">
         <div class="oh-profile mb-2">
           <div class="oh-profile__avatar">
@@ -74,7 +74,7 @@
                 <span class="oh-timeoff-modal__stat-count">{{leave_allocation_request.created_by.employee_get}}</span>
             </div>
         </div>
-    
+
         <div class="oh-timeoff-modal__stats w-100 mt-3">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
@@ -94,7 +94,7 @@
                         <span style="color: #35b835;"> {% trans "Allocated days" %} : {{leave_allocation_request.allocate_tracking.new}}</span>
                     </div>
                     <div class="oh-timeoff-modal__stat-count"></div>
-                </div> 
+                </div>
             </div>
         </div>
         {% endif %}
@@ -120,27 +120,27 @@
         <div class="oh-btn-group">
             {% if my_request %}
                 {% if leave_allocation_request.status ==  'requested' %}
-                    <button  
-                        class="oh-btn oh-btn--info w-100 " 
-                        title="{% trans 'Edit' %}" 
+                    <button
+                        class="oh-btn oh-btn--info w-100 "
+                        title="{% trans 'Edit' %}"
                         data-toggle="oh-modal-toggle"
-                        data-target="#editModal" 
+                        data-target="#editModal"
                         hx-get="{% url 'leave-allocation-request-update' leave_allocation_request.id %}"
                         hx-target="#editTarget">
-                        <ion-icon name="create-outline" role="img" 
+                        <ion-icon name="create-outline" role="img"
                         class="md hydrated" aria-label="create outline">
                         </ion-icon>{% trans "Edit" %}
                     </button>
                 {% else %}
-                    <button 
+                    <button
                         class="oh-btn oh-btn--info  w-100" disabled>
                         <ion-icon name="create-outline" ></ion-icon>
                     </button></td>
                 {% endif %}
                 {% if leave_allocation_request.status !=  'approved' %}
                     <a class="oh-btn oh-btn--danger w-100" id="delete-link"
-                        href="{% url 'leave-allocation-request-delete' leave_allocation_request.id %}" 
-                        onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" 
+                        href="{% url 'leave-allocation-request-delete' leave_allocation_request.id %}"
+                        onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');"
                         title="{% trans 'Delete' %}">
                         <ion-icon
                             name="trash-outline"
@@ -158,8 +158,8 @@
             {% else %}
                 {% if perms.leave.Change_leaveallocationrequest or request.user|is_reportingmanager %}
                     {% if leave_allocation_request.status == 'requested' %}
-                        <a 
-                            href="{% url 'leave-allocation-request-approve' leave_allocation_request.id %}" 
+                        <a
+                            href="{% url 'leave-allocation-request-approve' leave_allocation_request.id %}"
                             class="oh-btn oh-btn--success w-100"
                             title="{% trans 'Approve' %}"                        >
                             <ion-icon class="me-1 " name="checkmark-outline"></ion-icon>
@@ -167,27 +167,27 @@
                         </a>
                     {% else %}
                         <a href="" class="oh-btn oh-btn--success oh-btn--disabled w-100"
-                            title="{% trans 'Approved' %}" 
+                            title="{% trans 'Approved' %}"
                             onclick="event.preventDefault()">
                             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                             {% trans "Approve" %}
                         </a>
                     {% endif %}
                     {% if leave_allocation_request.status == 'requested' or leave_allocation_request.status == 'approved' %}
-                        <a 
-                            hx-get="{% url 'leave-allocation-request-reject' leave_allocation_request.id %}" 
+                        <a
+                            hx-get="{% url 'leave-allocation-request-reject' leave_allocation_request.id %}"
                             data-target="{% if dashboard == 'true' %}#bigModal {% else %}#rejectModal {% endif %}"
                             hx-target="{% if dashboard == 'true' %}#bigModalTarget {% else %}#rejectTarget{% endif %}"
                             class="oh-btn oh-btn--danger w-100"
                             data-toggle="oh-modal-toggle"
-                            title="{% trans 'Reject' %}" 
+                            title="{% trans 'Reject' %}"
                         >
                             <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
                             {% trans "Reject" %}
                         </a>
                     {% else %}
                         <a href="" class="oh-btn oh-btn--danger oh-btn--disabled w-100"
-                            title="{% trans 'Rejected' %}" 
+                            title="{% trans 'Rejected' %}"
                             onclick="event.preventDefault()">
                             <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
                             {% trans "Reject" %}
@@ -198,4 +198,3 @@
         </div>
     </div>
 </div>
-

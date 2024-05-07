@@ -5,9 +5,9 @@
 </div>
 <form  action="{% url 'initial-notice-period' %}">
   <div class="oh-label__info" for="default_notice_period">
-    <label class="oh-label" for="default_notice_period">{% trans "Default Notice Period" %}</label> 
+    <label class="oh-label" for="default_notice_period">{% trans "Default Notice Period" %}</label>
     <span class="oh-info mr-2" title="{% trans "Set initial notice period (in days)" %}">
-    </span> 
+    </span>
   </div>
     <input type="number"class="oh-input w-25" name="notice_period" value="{{get_initial_notice_period}}"  />
     <button

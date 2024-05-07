@@ -6,19 +6,21 @@ This page is used to register filter for recruitment models
 """
 
 import uuid
+
 import django_filters
 from django import forms
+
+from base.filters import FilterSet
 from recruitment.models import (
     Candidate,
     InterviewSchedule,
     Recruitment,
+    RecruitmentSurvey,
     SkillZone,
     SkillZoneCandidate,
     Stage,
-    RecruitmentSurvey,
     SurveyTemplate,
 )
-from base.filters import FilterSet
 
 # from django.forms.widgets import Boo
 
@@ -548,7 +550,9 @@ class InterviewFilter(FilterSet):
         FilterSet (class): custom filter set class to apply styling
     """
 
-    search = django_filters.CharFilter(field_name="candidate_id__name", lookup_expr="icontains")
+    search = django_filters.CharFilter(
+        field_name="candidate_id__name", lookup_expr="icontains"
+    )
 
     scheduled_from = django_filters.DateFilter(
         field_name="interview_date",

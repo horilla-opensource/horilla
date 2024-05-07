@@ -45,7 +45,7 @@
                 </a>
                 <!-- import asset start  -->
                 <div class="oh-dropdown" >
-                    
+
                         <button class="ml-2" id="import-button" style='border:none'>
                             <a href="#" id="asset-info-import" class="button-link" onclick="return confirm('{% trans "Do you want to download template ?" %}')"><ion-icon name="arrow-down-outline" class="me-1"></ion-icon> {% trans "Import" %}</a>
                         </button>
@@ -73,11 +73,11 @@
                 <div class="oh-btn-group ml-2">
                     {% if perms.asset.add_assetcategory %}
                         <div>
-                            <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow" 
+                            <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow"
                                 data-toggle="oh-modal-toggle"
-                                data-target="#objectCreateModal" 
+                                data-target="#objectCreateModal"
                                 hx-get="{%url 'asset-category-creation' %}"
-                                hx-target="#objectCreateModalTarget"> 
+                                hx-target="#objectCreateModalTarget">
                                 <ion-icon name="add-outline"></ion-icon>
                                 {% trans "Create" %}
                             </a>

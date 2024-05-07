@@ -57,7 +57,7 @@
                         </ul>
                     </div>
                 </div>
-            {% endif %}  
+            {% endif %}
 
             <div class="card-header mb-3">
                 <h5 class="card-title fw-bold">{{ anoun.title }}
@@ -66,13 +66,13 @@
                         <span>{{anoun.get_views|length}}</span>
                         <span align="center">
                             <ion-icon name="eye-outline"></ion-icon>
-                        </span> 
+                        </span>
                     </div>
                     {% endif %}
-                </h5> 
+                </h5>
 
                 <span class="text-muted fw-bold"><small>
-                    {% trans "Posted on" %} &nbsp<span class="dateformat_changer">{{ anoun.created_at|date:"F j, Y" }}</span> &nbsp 
+                    {% trans "Posted on" %} &nbsp<span class="dateformat_changer">{{ anoun.created_at|date:"F j, Y" }}</span> &nbsp
                     {% trans "at" %} &nbsp <span class="timeformat_changer">{{ anoun.created_at|time:"g:i A" }}</span></small>
                 </span>
             </div>
@@ -81,7 +81,7 @@
                 <p class="card-text">{{ anoun.description|safe }}</p>
             </div>
 
- 
+
             <div class="card-footer">
                 {% for attachment in anoun.attachments.all %}
                     {% if  anoun.attachments.all|length > 1 %}
@@ -102,7 +102,7 @@
             <div class="card-footer mt-2">
 
                 <div class="oh-announcement__comment-view">
-                    
+
                     {% if anoun.department.all or anoun.job_position.all %}
                         <button class="oh-btn me-1 oh-announcement-btn" type="button" onmouseover="showDetails()" onmouseout="hideDetails()">
                             <ion-icon name="information"></ion-icon>
@@ -113,17 +113,17 @@
                         hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#commentModal">
                         <ion-icon name="chatbox-outline" class="md hydrated" role="img" aria-label="chevron back outline"></ion-icon>
                       </button>
-                      <button class="oh-btn me-1 oh-announcement-btn" type="button" hx-get="{% url 'announcement-view-comment' anoun.id %}"  hx-target="#commentviewTarget" data-toggle='oh-modal-toggle' 
+                      <button class="oh-btn me-1 oh-announcement-btn" type="button" hx-get="{% url 'announcement-view-comment' anoun.id %}"  hx-target="#commentviewTarget" data-toggle='oh-modal-toggle'
                         data-target ='#commentviewModal' title="View Comment"  class="oh-btn oh-btn--light">
                         <ion-icon name="eye-outline" class="md hydrated" role="img" aria-label="chevron back outline"></ion-icon>
                     </button>
                     {% endif %}
-                    
+
                 </div>
 
-            </div>            
+            </div>
 
-            
+
             <div id="infoDiv" style="display:none;">
                 {% if anoun.department.all %}
                     <div class="oh-announcement-hastag__container" style="z-index:1000">
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                 {% endif %}
-            
+
                 {% if anoun.job_position.all %}
                     <div class="oh-announcement-hastag__container">
                         <span class="oh-announcement-hashtags" style="font-size:0.8rem;">{% trans "Job Position" %}</span>
@@ -156,7 +156,7 @@
               <div  class="oh-modal__dialog-header">
                 <button  class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');" ><ion-icon  name="close-outline"></ion-icon></button>
               </div>
-        
+
               <div class="oh-modal__dialog-body" id="viewedByBody"></div>
             </div>
           </div>

@@ -4,9 +4,10 @@ middleware.py
 
 from django.apps import apps
 from django.db.models import Q
+
+from base.context_processors import AllCompany
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
-from base.context_processors import AllCompany
 
 
 class CompanyMiddleware:

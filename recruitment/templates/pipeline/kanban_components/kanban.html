@@ -14,7 +14,7 @@
 </div>
 {% endif %}
 {% endfor %}
- 
+
 <div class="oh-wrapper mb-5">
   <!-- Paginator Section -->
   <div class="oh-pagination">
@@ -26,7 +26,7 @@
     {% trans "Page" %} {{ recruitment.number }} {% trans "of" %} {{ recruitment.paginator.num_pages }}.
     </span
     >
-    
+
   <nav class="oh-pagination__nav">
     <div class="oh-pagination__input-container me-3">
       <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
@@ -42,7 +42,7 @@
         />
         <span class="oh-pagination__label">{% trans "of" %} {{recruitment.paginator.num_pages}}</span>
       </div>
-      
+
       <ul class="oh-pagination__items">
         {% if recruitment.has_previous %}
         <li class="oh-pagination__item oh-pagination__item--wide">
@@ -64,11 +64,11 @@
           hx-get="{% url 'pipeline-search' %}?{{pd}}&page={{ recruitment.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
         </li>
         {% endif %}
-        
+
       </ul>
     </nav>
   </div>
-  
+
 </div>
 </div>
 {% include 'pipeline/footer_components.html' %}

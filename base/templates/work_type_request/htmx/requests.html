@@ -48,7 +48,7 @@
       </div>
     </div>
   </div>
-  <div id="work-type-request-table" data-table-name="work_type_request_tab"> 
+  <div id="work-type-request-table" data-table-name="work_type_request_tab">
     <!-- start of sticky table -->
     <div class="oh-sticky-table">
       <div class="oh-sticky-table__table oh-table--sortable">
@@ -64,7 +64,7 @@
               </div>
             </div>
             <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=employee_id__employee_first_name" 
+              hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=employee_id__employee_first_name"
               hx-target="#view-container"
             >
               {% trans "Employee" %}
@@ -79,7 +79,7 @@
             >{% trans "Requested Date" %}</div>
             <div data-cell-index="4" data-cell-title='{% trans "Requested Till" %}'
               class="oh-sticky-table__th {% if request.sort_option.order == '-requested_till' %}arrow-up {% elif request.sort_option.order == 'requested_till' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=requested_till" 
+              hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=requested_till"
               hx-target="#view-container"
             >{% trans "Requested Till" %}</div>
             <div data-cell-index="5" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
@@ -92,17 +92,17 @@
         </div>
       {% for work_type_request in data %}
         <div class="oh-sticky-table__tbody">
-          <div class="oh-sticky-table__tr" 
-            hx-get="{% url 'work-type-request-single-view' work_type_request.id %}?instances_ids={{requests_ids}}" 
-            hx-target='#objectDetailsModalTarget' 
-            data-target='#objectDetailsModal' 
-            data-toggle='oh-modal-toggle' 
+          <div class="oh-sticky-table__tr"
+            hx-get="{% url 'work-type-request-single-view' work_type_request.id %}?instances_ids={{requests_ids}}"
+            hx-target='#objectDetailsModalTarget'
+            data-target='#objectDetailsModal'
+            data-toggle='oh-modal-toggle'
             draggable="true"
           >
-            <div class="oh-sticky-table__sd 
-              {% if work_type_request.approved %} row-status--yellow 
+            <div class="oh-sticky-table__sd
+              {% if work_type_request.approved %} row-status--yellow
               {% elif  work_type_request.canceled %} row-status--red
-              {% endif %}" 
+              {% endif %}"
               onclick="event.stopPropagation();"
             >
               <div class="centered-div">
@@ -129,12 +129,12 @@
             <div class="oh-sticky-table__td" data-cell-index="5">{{work_type_request.description|truncatechars:25}}</div>
             <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 
-                <button type="button" hx-get="{% url 'view-work-type-comment' work_type_request.id %}" hx-target="#commentContainer" 
-                  data-toggle='oh-modal-toggle' data-target = '#worktypeactivitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" 
+                <button type="button" hx-get="{% url 'view-work-type-comment' work_type_request.id %}" hx-target="#commentContainer"
+                  data-toggle='oh-modal-toggle' data-target = '#worktypeactivitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
                   style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
                   <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
                 </button>
-       
+
             </div>
             <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
               <div class="oh-btn-group">
@@ -143,8 +143,8 @@
               {% else %}
                 <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="create-outline" ></ion-icon></button></td>
               {% endif %}
-              <a 
-                  class="oh-btn oh-btn--light-bkg w-50" 
+              <a
+                  class="oh-btn oh-btn--light-bkg w-50"
                   data-toggle="oh-modal-toggle"
                   data-target="#objectCreateModal"
                   hx-get="{% url 'work-type-request-duplicate' work_type_request.id %}?{{pg}}"
@@ -165,10 +165,10 @@
               </div>
             </div>
             {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
-              <div class="oh-sticky-table__td" onclick="event.stopPropagation();"> 
+              <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                 <div class="oh-btn-group" >
                   {% if work_type_request.approved == False and work_type_request.canceled == False %}
-                    <a href="/work-type-request-approve/{{work_type_request.id}}/" 
+                    <a href="/work-type-request-approve/{{work_type_request.id}}/"
                       title="{% trans 'Approve' %}"
                       onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
                       class="oh-btn oh-btn--success w-100">
@@ -181,7 +181,7 @@
                     </a>
                   {% endif %}
                   {% if work_type_request.canceled == False %}
-                    <a href="/work-type-request-cancel/{{work_type_request.id}}/" 
+                    <a href="/work-type-request-cancel/{{work_type_request.id}}/"
                         title="{% trans 'Reject' %}"
                         onclick="return confirm('{% trans "Do you want to reject this request?" %}')"
                         class="oh-btn oh-btn--danger w-100">
@@ -198,7 +198,7 @@
               </div>
             {% endif %}
 
-            
+
           </div>
         </div>
         {% endfor %}

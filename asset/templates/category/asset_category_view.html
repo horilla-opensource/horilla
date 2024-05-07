@@ -16,7 +16,7 @@
         text-decoration: none;
         cursor: pointer;
     }
-    
+
     .oh-modal_close--custom {
       border: none;
       background: none;
@@ -60,7 +60,7 @@
                     <input name="search" type="text" id="assetSearchField" class="oh-input oh-input__icon " aria-label="Search Input" placeholder="{% trans 'Search' %}" />
                     <select size="2" name="type" class='oh-input__icon'
                       onclick="document.getElementById('searchForm').dispatchEvent(new Event('submit'));"
-                      style="border: none;overflow: hidden; display: flex; position: absolute; z-index: 999; margin-left:8%;" 
+                      style="border: none;overflow: hidden; display: flex; position: absolute; z-index: 999; margin-left:8%;"
                       >
                         <option value="asset">{% trans "Search in :Asset" %}</option>
                         <option value="category" >{% trans "Search in :Asset Category" %}</option>
@@ -75,14 +75,14 @@
                     </a>
                 {% endif %}
                 <!-- import asset start  -->
-                
+
                 <!-- import asset end  -->
                 <!-- asset export start  -->
                 {% comment %} <div class="oh-dropdown">
                     <button class="oh-btn ml-2">
                         <ion-icon name="arrow-up-outline" class="me-1"></ion-icon> {% trans "Export" %}
                     </button>
-                    
+
                 </div> {% endcomment %}
                 <!--  asset export end  -->
                 <!--  asset filter  -->
@@ -171,7 +171,7 @@
                         </div>
                     </div>
                 </div>
-                {% comment %} <div class="oh-dropdown" >                    
+                {% comment %} <div class="oh-dropdown" >
                     <div class="oh-dropdown__import oh-dropdown__import--right " style="display: none;top:40px" id ="import-dropdown" >
                         <button class="oh-modal__close close-import"  aria-label="Close">
                             <ion-icon name="close-outline"></ion-icon>
@@ -232,11 +232,11 @@
                 <div class="oh-btn-group ml-2">
                     {% if perms.asset.add_assetcategory %}
                         <div>
-                            <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow" 
+                            <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow"
                             data-toggle="oh-modal-toggle"
-                            data-target="#objectCreateModal" 
+                            data-target="#objectCreateModal"
                             hx-get="{%url 'asset-category-creation' %}"
-                            hx-target="#objectCreateModalTarget"> 
+                            hx-target="#objectCreateModalTarget">
                             <ion-icon name="add-outline"></ion-icon>
                             {% trans "Create" %}
                             </a>

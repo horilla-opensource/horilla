@@ -6,7 +6,7 @@
   <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
   {% endfor %}
 </div>
-{% endif %} 
+{% endif %}
 <span name="" id="filterEmployee" style="display: none" hx-get="{% url 'employee-filter-view' %}?{{pd}}" hx-target="#view-container"></span>
 <div class="d-flex flex-row-reverse p-0 m-2">
   <span class="" onclick="$('[name=working_today]').val('false'); $('[name=working_today]').first().change(); $('.filterButton').click()" style="cursor: pointer;">
@@ -60,7 +60,7 @@
 		  </div>
 		</div>
 	  </div>
-<div id="employee-table" data-table-name="employee_table">  
+<div id="employee-table" data-table-name="employee_table">
 <div class="oh-sticky-table">
   <div class="oh-sticky-table__table oh-table--sortable">
     <div class="oh-sticky-table__thead">
@@ -145,56 +145,56 @@
           </div>
         </a>
         {% if perms.employee.view_employee %}
-        <a data-cell-index="1" 
+        <a data-cell-index="1"
           href="{% url 'employee-view-individual' emp.id %}"
           style="color: inherit; text-decoration: none"
           class="oh-sticky-table__td"
           >{{emp.email}}</a
         >
-        <a data-cell-index="2" 
+        <a data-cell-index="2"
           href="{% url 'employee-view-individual' emp.id %}"
           style="color: inherit; text-decoration: none"
           class="oh-sticky-table__td"
           >{{emp.phone}}</a
         >
         {% endif %}
-        <a data-cell-index="3" 
+        <a data-cell-index="3"
           href="{% url 'employee-view-individual' emp.id %}"
           style="color: inherit; text-decoration: none"
           class="oh-sticky-table__td"
           >{{emp.badge_id}}</a
         >
-        <a data-cell-index="4" 
+        <a data-cell-index="4"
           href="{% url 'employee-view-individual' emp.id %}"
           style="color: inherit; text-decoration: none"
           class="oh-sticky-table__td"
           >{{emp.employee_work_info.job_position_id}}</a
         >
-        <a data-cell-index="5" 
+        <a data-cell-index="5"
           href="{% url 'employee-view-individual' emp.id %}"
           style="color: inherit; text-decoration: none"
           class="oh-sticky-table__td"
           >{{emp.employee_work_info.department_id}}</a
         >
-        <a data-cell-index="6" 
+        <a data-cell-index="6"
           href="{% url 'employee-view-individual' emp.id %}"
           style="color: inherit; text-decoration: none"
           class="oh-sticky-table__td"
           >{{emp.employee_work_info.shift_id}}</a
         >
-        <a data-cell-index="7" 
+        <a data-cell-index="7"
           href="{% url 'employee-view-individual' emp.id %}"
           style="color: inherit; text-decoration: none"
           class="oh-sticky-table__td"
           >{{emp.employee_work_info.work_type_id}}</a
         >
-        <a data-cell-index="8" 
+        <a data-cell-index="8"
           href="{% url 'employee-view-individual' emp.id %}"
           style="color: inherit; text-decoration: none"
           class="oh-sticky-table__td"
           >{{emp.employee_work_info.job_role_id}}</a
         >
-        <a data-cell-index="9" 
+        <a data-cell-index="9"
           href="{% url 'employee-view-individual' emp.id %}"
           style="color: inherit; text-decoration: none"
           class="oh-sticky-table__td"
@@ -223,7 +223,7 @@
           class="oh-sticky-table__td oh-sticky-table__right"
         >
           <div class="oh-btn-group">
-            
+
             <button
               type="button"
               hx-get="{% url 'send-mail-employee' emp.id %}"
@@ -243,19 +243,19 @@
               title="{% trans 'Edit' %}"
               ><ion-icon name="create-outline"></ion-icon
             ></a>
-            {% endif %} 
-            {% if perms.employee.delete_employee %} 
+            {% endif %}
+            {% if perms.employee.delete_employee %}
               {% if emp.is_active %}
-                <button hx-confirm="{% trans 'Do you want to archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}?{{pd}}" 
+                <button hx-confirm="{% trans 'Do you want to archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}?{{pd}}"
                         hx-target="#relatedModel" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
                   <ion-icon name="archive"></ion-icon>
                 </button>
               {% else %}
                 <form hx-confirm="return confirm('{% trans "Do you want to un-archive this employee?" %}')"
-                      hx-post="{% url 'employee-archive' emp.id %}" 
+                      hx-post="{% url 'employee-archive' emp.id %}"
                       hx-target="#relatedModel"
                       style = "width:100%"
-                    > 
+                    >
                   {% csrf_token %}
                   <button
                     type="submit"
@@ -265,8 +265,8 @@
                     <ion-icon name="archive"></ion-icon>
                   </button>
                 </form>
-              {% endif %} 
-            {% endif %} 
+              {% endif %}
+            {% endif %}
             {% if perms.employee.delete_employee %}
 
               {% with emp.contract_set.first as contract %}

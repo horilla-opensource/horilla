@@ -1,6 +1,6 @@
 {% load i18n %} {% load static %}
-{% load basefilters %} 
-{% load attendancefilters %} 
+{% load basefilters %}
+{% load attendancefilters %}
 {% include 'filter_tags.html' %}
 <style>
   .disabled {
@@ -39,8 +39,8 @@
           </div>
         </div>
       </div>
-      
-      <div id="validated-attendance-table" data-table-name="validated_attendances_tab">  
+
+      <div id="validated-attendance-table" data-table-name="validated_attendances_tab">
         <!-- start of Sticky Table -->
         <div class="oh-sticky-table">
             <div class="oh-sticky-table__table oh-table--sortable">
@@ -183,12 +183,13 @@
                                           >
                                           <ion-icon name="create-outline"></ion-icon>
                                         </a>
+
                                     {% endif %} 
                                     {% if perms.attendance.delete_attendance or request.user|is_reportingmanager %}
                                         <form action="{% url 'attendance-delete' attendance.id %}"
-                                              onclick="event.stopPropagation()" 
+                                              onclick="event.stopPropagation()"
                                               onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
-                                              hx-target="#tab_contents" method='post' class='w-50'> 
+                                              hx-target="#tab_contents" method='post' class='w-50'>
                                               {% csrf_token %}
                                             <button
                                               type="submit"
@@ -225,7 +226,7 @@
                     hx-target="#tab_contents"
                     min="1"
                   />
-                  <span class="oh-pagination__label"> 
+                  <span class="oh-pagination__label">
                       {% trans "of" %} {{attendances.paginator.num_pages}}
                   </span>
               </div>
@@ -247,7 +248,7 @@
                             >{% trans "Previous" %}
                           </a>
                       </li>
-                  {% endif %} 
+                  {% endif %}
                   {% if attendances.has_next %}
                       <li class="oh-pagination__item oh-pagination__item--wide">
                           <a
@@ -447,12 +448,13 @@
                                           title="{% trans 'Edit' %}"
                                           ><ion-icon name="create-outline"></ion-icon
                                         ></a>
+                                  
                                     {% endif %} 
                                     {% if perms.attendance.delete_attendance or request.user|is_reportingmanager %} 
                                         <form action="{% url 'attendance-delete' attendance.id %}"
-                                              onclick="event.stopPropagation()" 
+                                              onclick="event.stopPropagation()"
                                               onsubmit="return confirm('{%trans "Are you sure want to delete this attendance?" %}')"
-                                              hx-target="#tab_contents" method='post' class='w-50'> 
+                                              hx-target="#tab_contents" method='post' class='w-50'>
                                               {% csrf_token %}
                                             <button
                                               type="submit"
@@ -487,7 +489,7 @@
         <!-- start of pagination -->
         <div class="oh-pagination">
           <span class="oh-pagination__page">
-            {% trans "Page" %} {{ validate_attendances.number }} {% trans "of" %} 
+            {% trans "Page" %} {{ validate_attendances.number }} {% trans "of" %}
             {{ validate_attendances.paginator.num_pages }}.
           </span>
           <nav class="oh-pagination__nav">
@@ -524,7 +526,7 @@
                             >{% trans "Previous" %}</a
                           >
                       </li>
-                  {% endif %} 
+                  {% endif %}
                   {% if validate_attendances.has_next %}
                       <li class="oh-pagination__item oh-pagination__item--wide">
                           <a
@@ -564,7 +566,7 @@
     {% endif %}
   </div>
 
-    
+
 </div>
 <!-- end of To Validate attendance -->
 
@@ -730,9 +732,9 @@
                                     {% endif %} 
                                     {% if perms.attendance.delete_attendance or request.user|is_reportingmanager %} 
                                         <form action="{% url 'attendance-delete' attendance.id %}"
-                                              onclick="event.stopPropagation()" 
+                                              onclick="event.stopPropagation()"
                                               onsubmit="return confirm('{%trans "Are you sure want to delete this attendance?" %}')"
-                                              hx-target="#tab_contents" method='post' class='w-50'> 
+                                              hx-target="#tab_contents" method='post' class='w-50'>
                                           {%csrf_token %}
                                           <button
                                             type="submit"
@@ -754,7 +756,7 @@
                                         <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                     </a>
                                 {% else %}
-                                    <a type="submit" href="{% url 'approve-overtime' attendance.id %}" 
+                                    <a type="submit" href="{% url 'approve-overtime' attendance.id %}"
                                         title="{% trans 'Approve Overtime' %}"
                                         class="oh-btn oh-btn--success w-100"
                                         onclick="event.stopPropagation()"
@@ -772,7 +774,7 @@
         <!-- start of pagination -->
         <div class="oh-pagination">
           <span class="oh-pagination__page">
-            {% trans "Page" %} {{ overtime_attendances.number }} {% trans "of" %} 
+            {% trans "Page" %} {{ overtime_attendances.number }} {% trans "of" %}
             {{ overtime_attendances.paginator.num_pages }}.
           </span>
           <nav class="oh-pagination__nav">
@@ -809,7 +811,7 @@
                             >{% trans "Previous" %}</a
                           >
                       </li>
-                  {% endif %} 
+                  {% endif %}
                   {% if overtime_attendances.has_next %}
                       <li class="oh-pagination__item oh-pagination__item--wide">
                           <a

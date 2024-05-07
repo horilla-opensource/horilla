@@ -53,7 +53,7 @@ style="cursor: pointer; display: none"
 				</span>
 			</div>
 			<div class="oh-accordion-meta__body d-none">
-				<div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">	
+				<div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
 					<div class="oh-sticky-table">
 						<div class="oh-sticky-table__table oh-table--sortable">
 							<div class="oh-sticky-table__thead">
@@ -76,7 +76,7 @@ style="cursor: pointer; display: none"
 									<div class="oh-sticky-table__th">{% trans "Requested Till" %}</div>
 									<div class="oh-sticky-table__th">{% trans "Description" %}</div>
 									<div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
-									<div class="oh-sticky-table__th">{% trans "Actions" %}</div>						  
+									<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 									{% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
 									<div class="oh-sticky-table__th">{% trans "Confirmation" %}</div>
 									{% endif %}
@@ -84,17 +84,17 @@ style="cursor: pointer; display: none"
 							</div>
 							{% for work_type_request in work_type_request_list.list %}
 							<div class="oh-sticky-table__tbody">
-								<div class="oh-sticky-table__tr" 
-									hx-get="{% url 'work-type-request-single-view' work_type_request.id %}?instances_ids={{requests_ids}}" 
-									hx-target='#objectDetailsModalTarget' 
-									data-target='#objectDetailsModal' 
-									data-toggle='oh-modal-toggle' 
+								<div class="oh-sticky-table__tr"
+									hx-get="{% url 'work-type-request-single-view' work_type_request.id %}?instances_ids={{requests_ids}}"
+									hx-target='#objectDetailsModalTarget'
+									data-target='#objectDetailsModal'
+									data-toggle='oh-modal-toggle'
 									draggable="true"
 								>
 									<div class="oh-sticky-table__sd
-										{% if work_type_request.approved %} row-status--yellow 
+										{% if work_type_request.approved %} row-status--yellow
 										{% elif  work_type_request.canceled %} row-status--red
-										{% endif %}" 
+										{% endif %}"
 										onclick="event.stopPropagation()"
 									>
 										<div class="centered-div">
@@ -120,13 +120,13 @@ style="cursor: pointer; display: none"
 									<div class="oh-sticky-table__td dateformat_changer">{{work_type_request.requested_till}}</div>
 									<div class="oh-sticky-table__td">{{work_type_request.description|truncatechars:25}}</div>
 									<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-							
-										<button type="button" hx-get="{% url 'view-work-type-comment' work_type_request.id %}" hx-target="#commentContainer" 
-											data-toggle='oh-modal-toggle' data-target = '#worktypeactivitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" 
+
+										<button type="button" hx-get="{% url 'view-work-type-comment' work_type_request.id %}" hx-target="#commentContainer"
+											data-toggle='oh-modal-toggle' data-target = '#worktypeactivitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
 											style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
 											<ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
 										</button>
-									  
+
 									</div>
 									<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 										<div class="oh-btn-group">
@@ -135,7 +135,7 @@ style="cursor: pointer; display: none"
 										{% else %}
 											<button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="create-outline" ></ion-icon></button></td>
 										{% endif %}
-                    <a class="oh-btn oh-btn--light-bkg w-50" 
+                    <a class="oh-btn oh-btn--light-bkg w-50"
                       data-toggle="oh-modal-toggle"
                       data-target="#objectCreateModal"
                       hx-get="{% url 'work-type-request-duplicate' work_type_request.id %}?{{pg}}"
@@ -156,10 +156,10 @@ style="cursor: pointer; display: none"
 										</div>
 									</div>
 									{% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
-									<div class="oh-sticky-table__td" onclick="event.stopPropagation();"> 
+									<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 										<div class="oh-btn-group" >
 											{% if work_type_request.approved == False and work_type_request.canceled == False %}
-												<a href="/work-type-request-approve/{{work_type_request.id}}/" 
+												<a href="/work-type-request-approve/{{work_type_request.id}}/"
 													title="{% trans 'Approve' %}"
 													onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
 													class="oh-btn oh-btn--success w-100">
@@ -172,7 +172,7 @@ style="cursor: pointer; display: none"
 												</a>
 											{% endif %}
 											{% if work_type_request.canceled == False %}
-												<a href="/work-type-request-cancel/{{work_type_request.id}}/" 
+												<a href="/work-type-request-cancel/{{work_type_request.id}}/"
 													title="{% trans 'Reject' %}"
 													onclick="return confirm('{% trans "Do you want to reject this request?" %}')"
 													class="oh-btn oh-btn--danger w-100">
@@ -187,7 +187,7 @@ style="cursor: pointer; display: none"
 											{% endif %}
 										</div>
 									</div>
-									{% endif %}									
+									{% endif %}
 								</div>
 							</div>
 							{% endfor %}
@@ -196,7 +196,7 @@ style="cursor: pointer; display: none"
 				</div>
 				<div class="oh-pagination">
                     <span class="oh-pagination__page">
-                        {% trans "Page" %} {{ work_type_request_list.list.number }} 
+                        {% trans "Page" %} {{ work_type_request_list.list.number }}
                         {%trans "of" %} {{work_type_request_list.list.paginator.num_pages }}.
                     </span>
                     <nav class="oh-pagination__nav">
@@ -268,7 +268,7 @@ style="cursor: pointer; display: none"
 			</div>
     	</div>
 	</div>
-    {% endfor %}      
+    {% endfor %}
 	<div class="oh-pagination">
 		<span class="oh-pagination__page">
 			{% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.

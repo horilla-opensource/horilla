@@ -5,6 +5,7 @@ This module is used to map url path with view methods.
 """
 
 from django.urls import path
+
 from base.views import object_delete, object_duplicate
 from employee import not_in_out_dashboard, policies, views
 from employee.forms import DisciplinaryActionForm
@@ -359,7 +360,11 @@ urlpatterns = [
         policies.update_actions,
         name="update-actions",
     ),
-    path("remove-employee-disciplinary-action/<int:action_id>/<int:emp_id>", policies.remove_employee_disciplinary_action, name="remove-employee-disciplinary-action"),
+    path(
+        "remove-employee-disciplinary-action/<int:action_id>/<int:emp_id>",
+        policies.remove_employee_disciplinary_action,
+        name="remove-employee-disciplinary-action",
+    ),
     path(
         "delete-actions/<int:action_id>/",
         policies.delete_actions,
@@ -405,5 +410,4 @@ urlpatterns = [
         name="get-manager-in",
     ),
     path("get_job_roles", views.get_job_roles, name="get_job_roles"),
-
 ]

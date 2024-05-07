@@ -33,5 +33,5 @@ $(`.change-ticket`).mouseup(function (e) {
         }
       }, 200);
     }
-    
+
   });

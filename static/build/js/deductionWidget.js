@@ -260,7 +260,7 @@ $(document).ready(function () {
   <div class="m-1 p-1"onclick="conditionAdd()" align="center" style="border-radius:15px; width:25px;border:solid 1px green;cursor:pointer;display:inline;" title="Add More">
   +
     </div>
-    
+
     </div>
     `)
 
@@ -306,7 +306,3 @@ function conditionAdd() {
   $("#conditionContainer").append(conditionSet);
 }
 conditionalVisibility();
-
-
-
-

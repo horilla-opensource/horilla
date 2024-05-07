@@ -6,22 +6,24 @@ This page is used to register filter for attendance models
 """
 
 import uuid
+
 import django_filters
-from django.forms import DateTimeInput
 from django import forms
+from django.db.models import OuterRef, Subquery
+from django.forms import DateTimeInput
 from django.utils.translation import gettext_lazy as _
-from django.db.models import Subquery, OuterRef
-from horilla.filters import filter_by_name
-from employee.models import Employee
+
 from attendance.models import (
     Attendance,
-    AttendanceOverTime,
-    AttendanceLateComeEarlyOut,
     AttendanceActivity,
+    AttendanceLateComeEarlyOut,
+    AttendanceOverTime,
     PenaltyAccount,
     strtime_seconds,
 )
 from base.filters import FilterSet
+from employee.models import Employee
+from horilla.filters import filter_by_name
 
 
 class DurationInSecondsFilter(django_filters.CharFilter):

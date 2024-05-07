@@ -35,7 +35,7 @@
                                                 data-toggle="oh-modal-toggle"
                                                 hx-get="{% url 'employee-key-result-update' employee_key_result.id %}"
                                                 hx-target="#ObjectiveModalFormTarget"
-                                                data-target="#objectiveModalpopup" 
+                                                data-target="#objectiveModalpopup"
                                                 onclick="$('#objectiveModalpopup').toggleClass('oh-modal--show')">
                                                 <ion-icon name="create-outline" class="me-1" ></ion-icon>
                                                 {% trans "Edit" %}
@@ -51,7 +51,7 @@
                                             <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                                                 <div class="oh-container oh-container--outline">
                                                     <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
-                                                        {% trans "Start Value" %} 
+                                                        {% trans "Start Value" %}
                                                     </label>
                                                     <input
                                                         class="oh-input oh-input--small oh-input--block px-0" min="0"
@@ -64,7 +64,7 @@
                                                     <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
                                                         {% trans "Current Value" %}
                                                     </label>
-                                                    <input 
+                                                    <input
                                                     type="number" class=""  min="0"
                                                     max="{{employee_key_result.target_value}}"
                                                     value="{{employee_key_result.current_value}}"
@@ -72,7 +72,7 @@
                                                     hx-trigger="change"
                                                     hx-target="#ObjectiveModalFormTarget"
                                                     name="current_value" />
-                                                  
+
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-12 col-md-6 col-lg-4">
@@ -80,7 +80,7 @@
                                                     <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
                                                         {% trans "Target Value" %}
                                                     </label>
-                                                    <input 
+                                                    <input
                                                         class="oh-input oh-input--small oh-input--block px-0" min="0"
                                                         value=" {{employee_key_result.target_value}} {{employee_key_result.key_result_id.progress_type}}"
                                                         readonly />
@@ -91,7 +91,7 @@
                                     <div class="oh-list-card__footer d-flex align-items-center justify-content-between flex-wrap">
                                         <div class="oh-input-group">
                                             <label class="oh-label my-2 my-2 me-2" for="status">{% trans "Status" %}</label>
-                                            <select 
+                                            <select
                                                 id="status" name="key_result_status"
                                                 hx-post="{%url 'objective-detailed-view-key-result-status'  obj_id=employee_key_result.employee_objective_id.id kr_id=employee_key_result.id %}"
                                                 hx-trigger="change" class="oh-select oh-select--sm"
@@ -124,11 +124,11 @@
             <!-- end of activity -->
         </div>
     </div>
-    <div 
-    class="oh-modal" 
-    id="objectiveModalpopup" 
-    role="dialog" 
-    aria-labelledby="objectiveModal" 
+    <div
+    class="oh-modal"
+    id="objectiveModalpopup"
+    role="dialog"
+    aria-labelledby="objectiveModal"
     aria-hidden="true"
     >
         <div class="oh-modal__dialog">

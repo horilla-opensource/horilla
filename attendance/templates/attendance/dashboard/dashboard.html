@@ -130,12 +130,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-4" 
-					id="notInYetId" 
-					hx-get="{% url "not-in-yet" %}" hx-trigger="load" > 
+                <div class="col-12 col-sm-12 col-md-12 col-lg-4"
+					id="notInYetId"
+					hx-get="{% url "not-in-yet" %}" hx-trigger="load" >
 					{% include "dashboard/not_in_yet.html" %}
 				</div>
-				
+
 				<div
 					class="col-12 col-sm-12 col-md-12 col-lg-4 "
 					id="pendingHours"
@@ -169,10 +169,10 @@
 							</div>
 						</div>
 					</div>
-				</div>				
+				</div>
 			</div>
         </div>
-		
+
 		<div class="oh-dashboard row pt-3">
 			<div
 				class="col-12 col-sm-12 col-md-12 col-lg-3 "
@@ -187,9 +187,9 @@
 							>{% trans "On Break" %}</span
 						>
 					</div>
-	
+
 					<div class="oh-card-dashboard__body" style="height:400px">
-						{% if on_break %}						
+						{% if on_break %}
 						<ul class="oh-card-dashboard__user-list">
 							{% for emp in on_break %}
 							<li class="oh-card-dashboard__user-item">
@@ -239,10 +239,10 @@
 			</div>
 		</div>
 		<div class="oh-dashboard row pt-3">
-            
+
 			<div
                 class="col-12 col-sm-12 col-md-12 col-lg-8" id="validateTableCard"
-            >                
+            >
                 {% include "attendance/dashboard/to_validate_table.html" %}
             </div>
 			<div
@@ -300,7 +300,7 @@
 						</div>
 					</div>
 				</div>
-			</div>	
+			</div>
     	</div>
     </div>
 </div>

@@ -28,11 +28,11 @@
 							>
 								<ion-icon name="create-outline"></ion-icon
 							></a>
-							{% endif %} 
-							{% if perms.base.delete_worktype %} 
-							<form action="{% url 'work-type-delete' type.id %}" class="w-50" 
-								onsubmit="return confirm('{% trans "Are you sure you want to delete this work type?" %}');" 
-								method='post'> 
+							{% endif %}
+							{% if perms.base.delete_worktype %}
+							<form action="{% url 'work-type-delete' type.id %}" class="w-50"
+								onsubmit="return confirm('{% trans "Are you sure you want to delete this work type?" %}');"
+								method='post'>
 								{% csrf_token %}
 								<button
 									type="submit"

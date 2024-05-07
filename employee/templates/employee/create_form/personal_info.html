@@ -9,7 +9,7 @@
   </div>
 </div>
 <div class="oh-wrapper" data-select2-id="select2-data-40-yu7x">
-    
+
     <div class="oh-general__tab-target oh-profile-section mb-4" id="personal" data-select2-id="select2-data-personal">
     <div class="oh-profile-section__card" data-select2-id="select2-data-48-0df8">
         <form data-select2-id="select2-data-47-5jxy" method='post' action='{% url "employee-create-personal-info" %}' enctype="multipart/form-data">
@@ -22,7 +22,7 @@
                 class="oh-profile-section__edit-photo me-4 mb-3"
                 data-toggle="oh-modal-toggle"
                 data-target="#uploadPhotoModal"
-                
+
               >
                   <img
                   src="https://ui-avatars.com/api/?name=N+P&background=random"
@@ -60,7 +60,7 @@
             />
           </div>
           {{form.employee_profile}}
-          
+
         </div>
       </div>
     </div>
@@ -178,7 +178,7 @@
       </div>
       <div class="row">
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-  
+
               <label class="oh-label d-block" for="marital_status">{% trans "Maritial Status" %}</label>
               {{form.marital_status}}
               {{form.marital_status.errors}}
@@ -189,8 +189,8 @@
             {{form.children.errors}}
           </div>
       </div>
-  
-  
+
+
       <div class="row">
           <div class="col-12 col-sm-12 col-md-12 col-lg-2">
             <label class="oh-label me-2" for="isActive">{% trans "Is Active" %}?</label>
@@ -211,7 +211,7 @@
     </div>
     <script>
       $(document).ready(function () {
-  $('#id_employee_profile').change(function (e) { 
+  $('#id_employee_profile').change(function (e) {
 
     const file = this.files[0];
     const reader = new FileReader();
@@ -226,6 +226,3 @@
 });
 
     </script>
-
-
-    

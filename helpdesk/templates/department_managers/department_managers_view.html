@@ -22,7 +22,7 @@
 						<div class="oh-btn-group">
 							{% if perms.helpdesk.change_departmentmanager %}
 							<a
-								hx-get="{% url 'department-manager-update' manager.id %}" 
+								hx-get="{% url 'department-manager-update' manager.id %}"
 								hx-target="#deparmentManagersModal"
 								data-toggle="oh-modal-toggle"
 								data-target="#deparmentManagersModal"
@@ -32,13 +32,13 @@
 							>
 								<ion-icon name="create-outline"></ion-icon
 							></a>
-							{% endif %} 
-							{% if perms.helpdesk.delete_departmentmanager %} 
-							<form 
-								action="{% url 'department-manager-delete' manager.id %}"  
-								class="w-50" 
-								onsubmit="return confirm('{% trans "Are you sure you want to remove this department manager?" %}');" 
-								method='post'> 
+							{% endif %}
+							{% if perms.helpdesk.delete_departmentmanager %}
+							<form
+								action="{% url 'department-manager-delete' manager.id %}"
+								class="w-50"
+								onsubmit="return confirm('{% trans "Are you sure you want to remove this department manager?" %}');"
+								method='post'>
 								{% csrf_token %}
 								<button
 									type="submit"

@@ -1,12 +1,13 @@
 from django.contrib import admin
+
 from offboarding.models import (
-    OffboardingStageMultipleFile,
-    OffboardingNote,
-    OffboardingTask,
     EmployeeTask,
-    ResignationLetter,
     OffboardingEmployee,
+    OffboardingNote,
     OffboardingStage,
+    OffboardingStageMultipleFile,
+    OffboardingTask,
+    ResignationLetter,
 )
 
 # Register your models here.

@@ -1,5 +1,5 @@
 {% load attendancefilters recruitmentfilters %} {% load basefilters %} {% load static %}
-{% load i18n %} {% include 'filter_tags.html' %} 
+{% load i18n %} {% include 'filter_tags.html' %}
 
 <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
     {% trans "Select All section" %}
@@ -55,9 +55,9 @@
 							{% for cand in candidate_list.list %}
 							<div class="oh-sticky-table__tbody ui-sortable">
 								<div class="oh-sticky-table__tr ui-sortable-handle">
-									<div class="oh-sticky-table__sd 
+									<div class="oh-sticky-table__sd
 									{% if cand.canceled %} row-status--red
-									{% elif cand.hired %} row-status--yellow  
+									{% elif cand.hired %} row-status--yellow
 									{% else %} row-status--purple
 									{% endif %}">
 										<div class="centered-div">
@@ -81,7 +81,7 @@
 											</div>
 										</div>
 									</div>
-							
+
 									<a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td ">{{cand.email}}</a>
 									<a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{cand.mobile}}</a>
 									<a href="#" style="color: inherit;text-decoration: none;"
@@ -93,13 +93,13 @@
 									<a style="color: inherit;text-decoration: none;" class="oh-sticky-table__td" href="/media/{{cand.resume}}"
 										target="_blank" rel="noopener noreferrer"><span class="oh-btn oh-btn--info"> {% trans "Resume" %}</span>
 									</a>
-									
+
 									<div class="oh-sticky-table__td">
 										{% if perms.recruitment.change_candidate %}
 										<div class="oh-btn-group">
 										  {% if cand.email in emp_list %}
 										  <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
-											<ion-icon name="person-circle-outline"></ion-icon>            </button>                
+											<ion-icon name="person-circle-outline"></ion-icon>            </button>
 										{% else %}
 										  <a href="{% url 'candidate-conversion' cand.id %}"
 											onclick="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
@@ -116,7 +116,7 @@
 											hx-target="#createTarget"
 											style="padding:0.8rem 1rem"
 										  >
-										  <ion-icon name="heart-circle-outline"></ion-icon>            
+										  <ion-icon name="heart-circle-outline"></ion-icon>
 										</button>
 										{% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
 										<button
@@ -126,7 +126,7 @@
 										  hx-target="#createTarget"
 										  data-toggle="oh-modal-toggle"
 										  data-target="#createModal"
-										  {% if cand.is_offer_rejected %} 
+										  {% if cand.is_offer_rejected %}
 										  style="background: #ff4500a3 !important; color: white;"
 										  title="{% trans "Added In Rejected section" %}"
 										  {% else %}
@@ -166,7 +166,7 @@
 											><ion-icon name="archive" title="Archive"></ion-icon></button>
 										  </form>
 										  {% else %}
-										  
+
 										  <form action="{% url 'rec-candidate-archive' cand.id  %}"  title="Un Archive" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate?" %}')" method='post'
 											class="w-100">
 											{% csrf_token %}
@@ -253,18 +253,18 @@
 		</div>
 	</div>
     {% endfor %}
-    
+
 	<div class="oh-pagination">
 		<span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal">
 		{% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
 		</span>
 		<nav class="oh-pagination__nav">
 			<div class="oh-pagination__input-container me-3">
-				<span class="oh-pagination__label me-1">{% trans "Page" %}</span>		
+				<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
 				<input type="number" name="page" class="oh-pagination__input" value="{{data.number}}"
 				hx-get="{% url 'search-candidate' %}?{{pd}}&view=list" hx-target="#section" min="1" />
 				<span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
-			</div>		
+			</div>
 			<ul class="oh-pagination__items">
 				{% if data.has_previous %}
 				<li class="oh-pagination__item oh-pagination__item--wide">
@@ -291,7 +291,7 @@
 						class="oh-pagination__link" onclick=tickCandidateCheckboxes()>{% trans "Last" %}
 					</a>
 				</li>
-				{% endif %}		
+				{% endif %}
 			</ul>
 		</nav>
 	</div>
@@ -305,7 +305,7 @@
 	  en: "Do you really want to archive all the selected section?",
 	  fr: "Voulez-vous vraiment archiver tous les candidats sélectionnés?",
 	};
-  
+
 	var unarchive_CanMessages = {
 	  ar: "هل ترغب حقًا في إلغاء أرشفة جميع المرشحين المحددين؟",
 	  de: "Möchten Sie wirklich alle ausgewählten Kandidaten aus der Archivierung nehmen?",
@@ -313,7 +313,7 @@
 	  en: "Do you really want to unarchive all the selected section?",
 	  fr: "Voulez-vous vraiment désarchiver tous les candidats sélectionnés?",
 	};
-  
+
 	var delete_CanMessages = {
 	  ar: "هل ترغب حقًا في حذف جميع المرشحين المحددين؟",
 	  de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
@@ -321,7 +321,7 @@
 	  en: "Do you really want to delete all the selected section?",
 	  fr: "Voulez-vous vraiment supprimer tous les candidats sélectionnés?",
 	};
-  
+
 	var noRowMessages = {
 	  ar: "لم يتم تحديد أي صفوف.",
 	  de: "Es wurden keine Zeilen ausgewählt.",
@@ -329,7 +329,7 @@
 	  en: "No rows have been selected.",
 	  fr: "Aucune ligne n'a été sélectionnée.",
 	};
-  
+
 	var rowMessages = {
 	  ar: " تم الاختيار",
 	  de: " Ausgewählt",
@@ -343,10 +343,10 @@
 	function arrayDifference(arr1, arr2) {
 	  return arr1.filter(element => !arr2.includes(element));
 	}
-  
+
 	function removeElementFromArray(array, elementToRemove) {
 	  const indexToRemove = array.indexOf(elementToRemove);
-  
+
 	  if (indexToRemove !== -1) {
 		array.splice(indexToRemove, 1);
 	  }
@@ -355,22 +355,22 @@
 	function addingCandidateIds() {
 	  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
 	  var domNotCheckedIds = []
-  
+
 	  var selectedCount = 0;
-  
+
 	  $(".all-candidate-row:checked").each(function () {
 		ids.push(this.id);
 	  });
-  
+
 	  $.each($(".candidate-checkbox:checked").not(), function (indexInArray, valueOfElement) {
 		domNotCheckedIds.push($(valueOfElement).attr("id"))
 	  });
-  
+
 	  ids = makeListUnique1(ids);
 	  ids = arrayDifference(ids, domNotCheckedIds)
 	  var selectedCount = ids.length;
 	}
-  
+
 	function tickCandidateCheckboxes() {
 	  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
 	  var uniqueIds = makeListUnique1(ids);
@@ -378,10 +378,10 @@
 		checkbox = $("#" + valueOfElement)
 		checkbox.prop("checked", true).change()
 	  });
-  
+
 	  addingCandidateIds()
 	}
-  
+
 	function updateCount() {
 	  var ids = makeListUnique1(JSON.parse($("#selectedInstances").attr("data-ids") || "[]"));
 	  $("#unselectAllInstances, #selectedCandidate, #exportsection").hide();
@@ -390,7 +390,7 @@
 		$("#selectedCandidate").text("{% trans "Selected" %}" + " -" + ids.length);
 	  }
 	}
-  
+
 	$(".all-candidate-row").change(function (e) {
 	  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
 	  if ($(this).is(":checked")) {
@@ -402,8 +402,8 @@
 	  }
 	  updateCount()
 	});
-  
-  
+
+
 	function getCurrentLanguageCode(callback) {
 	  var languageCode = $("#main-section-data").attr("data-lang");
 	  var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
@@ -428,7 +428,7 @@
 		});
 	  }
 	}
-  
+
 	$(document).ready(function () {
 	  var excelMessages = {
 		ar: "هل ترغب في تنزيل ملف Excel؟",
@@ -455,9 +455,9 @@
 			  var employeeIds = response.employee_ids;
 			  var selectedCount = employeeIds.length;
 			  var selectedCount = employeeIds.length;
-  
+
 			  var selectedCount = employeeIds.length;
-  
+
 			  for (var i = 0; i < employeeIds.length; i++) {
 				var empId = employeeIds[i];
 				$("#" + empId).prop("checked", true).change();
@@ -553,7 +553,7 @@
 	if (!localStorageCandidateCells) {
 	  $("#CandidateCells").find("[type=checkbox]").prop("checked", true)
 	}
-  
+
 	updateCount()
 	tickCandidateCheckboxes()
   </script>

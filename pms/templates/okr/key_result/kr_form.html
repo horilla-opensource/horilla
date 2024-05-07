@@ -13,7 +13,7 @@
         {% endfor %}
     </div>
 </div>
-{% endif %} 
+{% endif %}
 
 <div class="oh-modal__dialog-header">
   {% if update %}
@@ -25,26 +25,26 @@
       {% trans "Create Key result" %}
     </h2>
   {% endif %}
-  
+
   <button type="button" class="oh-modal__close--custom" onclick="$('#objectDetailsModal').removeClass('oh-modal--show');">
     <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
   </button>
 </div>
 <div class="oh-modal__dialog-body">
   {% if update %}
-    <form 
+    <form
       hx-post="{%url 'employee-key-result-update' form.instance.id %}"
       hx-target="#objectDetailsModalTarget"
       id="objectiveForm"
     >
   {% else %}
-    <form 
+    <form
       hx-post="{%url 'employee-key-result-creation' emp_objective.id %}"
       hx-target="#objectDetailsModalTarget"
       id="objectiveForm"
     >
   {% endif %}
-  
+
     {% csrf_token %}
     {{form.as_p}}
   </form>
@@ -75,6 +75,3 @@
   </div>
 </div>
 <!-- end of key result modal -->
-
-
-

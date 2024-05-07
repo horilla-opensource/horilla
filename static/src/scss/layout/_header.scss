@@ -130,7 +130,7 @@
   padding: 0.5rem 1.5rem;
   border-left: 1px solid #eee;
   border-right: 1px solid #eee;
-  
+
   cursor: pointer;
   &:hover {
     background-color: $light-grey;
@@ -336,7 +336,7 @@
 }
 .oh-navbar__clock-icon{
   color: $icon-grey;
-  
+
   @media (max-width: 767.98px) {
     margin-right: 0rem !important;
   }

@@ -46,7 +46,7 @@
               {% if perms.attendance.delete_attendanceactivity %}
                 <div class='oh-sticky-table__th oh-sticky-table__right' scope="col" style="width: 86px;">{% trans "Actions" %}</div>
               {% endif %}
-            </div> 
+            </div>
           </div>
           <div class="oh-sticky-table__tbody">
             {% for activity in data %}
@@ -56,8 +56,8 @@
                 hx-get="{% url 'attendance-activity-single-view' activity.id %}?{{pd}}&instances_ids={{activity_ids}}">
                 <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                   <div class="centered-div">
-                    <input type="checkbox" 
-                      id="{{activity.id}}" 
+                    <input type="checkbox"
+                      id="{{activity.id}}"
                       onchange="highlightRow($(this))"
                       class="oh-input attendance-checkbox oh-input__checkbox all-attendance-activity-row" />
                   </div>
@@ -83,7 +83,7 @@
                   <div data-cell-index="5" class="oh-sticky-table__td dateformat_changer">{{activity.clock_out_date}}</div>
                   {% if perms.attendance.delete_attendanceactivity %}
                     <div class="oh-sticky-table__td oh-sticky-table__right">
-                      <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}" 
+                      <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
                         hx-post="{% url 'attendance-activity-delete' activity.id  %}?{{pd}}"
                         onclick="event.stopPropagation()" hx-target="#activity-table">
                         {% csrf_token %}
@@ -91,7 +91,7 @@
                           <ion-icon name="trash-outline"></ion-icon>
                         </button>
                       </form>
-                    </div>      
+                    </div>
                   {% endif %}
             </div>
             {% endfor %}

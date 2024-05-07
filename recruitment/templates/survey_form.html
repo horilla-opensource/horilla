@@ -11,7 +11,7 @@
       <div class="col-12">{{form.non_field_errors}}</div>
 
       {% for question in questions %}
-      
+
       {% if question.type == "textarea" %}
       <div class="d-block">
         {% if question.is_mandatory %}
@@ -108,7 +108,7 @@
                   id="id_{{question.id}}"
                   {% if question.is_mandatory %}required{% endif %}
                 />
-              </div> 
+              </div>
             {% elif question.type == "date" %}
               <div class="d-block">
                 {% if question.is_mandatory %}
@@ -123,14 +123,14 @@
                   id="id_{{question.id}}"
                   {% if question.is_mandatory %}required{% endif %}
                 />
-              </div> 
+              </div>
             {% elif question.type == "rating" %}
               {% if question.is_mandatory %}
                 <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
               {% else %}
                 <span class="oh-label oh-label--question">{{ question.question }}</span>
               {% endif %}
-              {% include "rating_input.html" %} 
+              {% include "rating_input.html" %}
             {% elif question.type == "checkbox" %}
               <div class="d-block">
                 {% if question.is_mandatory %}
@@ -170,7 +170,7 @@
                   id="id_{{question.id}}"
                   {% if question.is_mandatory %}required{% endif %}
                 />
-                 
+
               </div>
             {% endif %} {% endfor %}
           </div>

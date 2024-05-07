@@ -5,12 +5,13 @@ This module contains the models for the tax calculation of taxable income.
 """
 
 import math
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
-from base.models import Company
 
+from base.models import Company
 from horilla.models import HorillaModel
 from payroll.models.models import FilingStatus
 

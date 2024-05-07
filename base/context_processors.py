@@ -4,8 +4,9 @@ context_processor.py
 This module is used to register context processor`
 """
 
-from django.urls import path
 from django.http import HttpResponse
+from django.urls import path
+
 from attendance.models import AttendanceGeneralSetting
 from base.models import Company
 from base.urls import urlpatterns

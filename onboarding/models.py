@@ -6,15 +6,17 @@ This module is used to register models for onboarding app
 """
 
 from datetime import datetime
+
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+
+from base.horilla_company_manager import HorillaCompanyManager
+from employee.models import Employee
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
-from base.horilla_company_manager import HorillaCompanyManager
-from recruitment.models import Recruitment, Candidate
-from employee.models import Employee
+from recruitment.models import Candidate, Recruitment
 
 
 class OnboardingStage(HorillaModel):

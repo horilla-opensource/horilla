@@ -3,9 +3,9 @@
     <!--meeting answer  form -->
     <form action="{% url 'meeting-answer-post' meeting.id %}" method="post">
         {% csrf_token %}
-        
+
             <div class="mb-3">
-                {% for q in questions %} 
+                {% for q in questions %}
                     {% if q.question_type == '1' %}
                         <!--  question type Text-->
                         <div class="d-block">
@@ -19,7 +19,7 @@
                                 required
                             />
                         </div>
-                    {% endif %} 
+                    {% endif %}
                     {% if q.question_type == '2' %}
                     <!--  question type Rating-->
                         <div class="d-block mb-0">
@@ -80,7 +80,7 @@
                             </div>
                             <span id="rating-radio-error"></span>
                         </div>
-                    {% endif %} 
+                    {% endif %}
                     {% if q.question_type == '3' %}
                         <!--  question type Boolean-->
                         <div class="oh-input__group">
@@ -110,7 +110,7 @@
                                 </div>
                             </div>
                         </div>
-                    {% endif %} 
+                    {% endif %}
                     {% if q.question_type == '4' %}
                         <!--  question type Multi-choices-->
                         <span class="oh-label oh-label--question"
@@ -207,9 +207,9 @@
                                         </div>
                                     </div>
                                 </div>
-                            {% endif %} 
-                        {% endfor %} 
-                    {% endif %} 
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                     {% if q.question_type == '5' %}
                         <!--  question type Likert-->
                         <div class="d-block">
@@ -272,7 +272,7 @@
                                 </div>
                             </div>
                         </div>
-                    {% endif %} 
+                    {% endif %}
                 {% endfor %}
             </div>
             <div class="oh-modal__dialog-footer mb-3">
@@ -298,5 +298,5 @@
             });
             targetEl.classList.add("oh-input-picker--selected");
         }
-    }) 
+    })
 </script>

@@ -5,20 +5,23 @@ This module is used to register models for recruitment app
 
 """
 
-from collections.abc import Iterable
-import json
 import contextlib
 import datetime as dt
-from datetime import datetime, date, timedelta
+import json
+from collections.abc import Iterable
+from datetime import date, datetime, timedelta
+
+import pandas as pd
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
-from django.core.exceptions import ValidationError
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
-from django.db.models.signals import post_save
-import pandas as pd
-from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
+
+from attendance.methods.differentiate import get_diff_dict
 from base.horilla_company_manager import HorillaCompanyManager
+from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
 from employee.models import Employee
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
@@ -30,7 +33,6 @@ from leave.models import (
     LeaveRequest,
     LeaveType,
 )
-from attendance.methods.differentiate import get_diff_dict
 
 # Create your models here.
 
@@ -673,10 +675,13 @@ class AttendanceOverTime(HorillaModel):
         try:
             year = int(self.year)
             if not (1900 <= year <= 2100):
-                raise ValidationError({"year": _("Year must be an integer value between 1900 and 2100")})
+                raise ValidationError(
+                    {"year": _("Year must be an integer value between 1900 and 2100")}
+                )
         except (ValueError, TypeError):
-            raise ValidationError({"year": _("Year must be an integer value between 1900 and 2100")})
-
+            raise ValidationError(
+                {"year": _("Year must be an integer value between 1900 and 2100")}
+            )
 
     def month_days(self):
         """

@@ -4,16 +4,18 @@ Work Type Requests, Rotating Shift and Rotating Work Type Assign.
 """
 
 import uuid
+
 import django_filters
-from horilla.filters import FilterSet, filter_by_name
-from django_filters import CharFilter
 from django import forms
+from django_filters import CharFilter
+
 from base.models import (
-    ShiftRequest,
-    WorkTypeRequest,
     RotatingShiftAssign,
     RotatingWorkTypeAssign,
+    ShiftRequest,
+    WorkTypeRequest,
 )
+from horilla.filters import FilterSet, filter_by_name
 
 
 class ShiftRequestFilter(FilterSet):

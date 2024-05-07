@@ -11,11 +11,11 @@
       z-index:9999
       ;
     }
-    
+
     .profile-picture:hover {
         transform: scale(2.4);
     }
-    
+
 </style>
 {% comment %} <div class="oh-wrapper">
     {% include 'skill_zone_cand/skill_zone_cand_nav.html' %} {% endcomment %}
@@ -36,7 +36,7 @@
                                 />
                             </div>
                         </div>
-                        
+
                         <div class="oh-kanban-card__details">
                             <span class="oh-kanban-card__title">{{cand.candidate_id.name}}</span>
                             <span class="oh-kanban-card__subtitle">{{cand.candidate_id.email}}</span><br>
@@ -51,10 +51,10 @@
                             <ul class="oh-dropdown__items">
                             {% if perms.recruitment.change_candidate %}
                             <li class="oh-dropdown__item">
-                                <a                                    
+                                <a
                                     hx-get="{% url 'skill-zone-cand-edit' sz_candidate.id %}"
                                     data-toggle="oh-modal-toggle"
-                                    data-target="#editModal" 
+                                    data-target="#editModal"
                                     hx-target="#editTarget"
                                     class="oh-dropdown__link">{% trans "Edit Profile" %}</a>
                             </li>
@@ -76,7 +76,7 @@
                                 {% csrf_token %}
                                 <button  class="oh-dropdown__link oh-dropdown__link--danger  ">{% trans "Delete" %}</button>
                                 </form>
-                
+
                             </li>
                             {% endif %}
                             </ul>
@@ -101,7 +101,7 @@
             <nav class="oh-pagination__nav">
             <div class="oh-pagination__input-container me-3">
                 <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-        
+
                 <input
                 type="number"
                 name="page"
@@ -113,7 +113,7 @@
                 />
                 <span class="oh-pagination__label">{% trans "of" %} {{sz_candidates.paginator.num_pages}}</span>
             </div>
-        
+
             <ul class="oh-pagination__items">
                 {% if sz_candidates.has_previous %}
                 <li class="oh-pagination__item oh-pagination__item--wide">
@@ -131,7 +131,7 @@
                 <a hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&page={{ sz_candidates.paginator.num_pages }}&view=card" class="oh-pagination__link">{% trans "Last" %}</a>
                 </li>
                 {% endif %}
-        
+
             </ul>
             </nav>
         </div>

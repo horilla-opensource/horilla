@@ -7,7 +7,7 @@
     hx-swap="innerHTML"
     method="post"
     hx-encoding="multipart/form-data"
->   
+>
     {% csrf_token %}
     <div class="oh-profile-section pt-0">
         <div class="row">
@@ -31,7 +31,7 @@
         {% comment %} {{ asset_report_form.as_p }} {% endcomment %}
         <div class="oh-input__group ">
             <label class="oh-input__label" for="fileUpload">{% trans "File" %}</label>
-            <input name= "file" multiple="True" type="file" id="fileUpload" />    
+            <input name= "file" multiple="True" type="file" id="fileUpload" />
         </div>
         <div class="oh-modal__dialog-footer p-0">
             <input

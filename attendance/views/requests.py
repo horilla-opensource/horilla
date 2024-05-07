@@ -4,31 +4,33 @@ requests.py
 This module is used to register the endpoints to the attendance requests
 """
 
-from datetime import date, datetime
-import json
 import copy
+import json
+from datetime import date, datetime
 from urllib.parse import parse_qs
-from django.shortcuts import render
+
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
-from attendance.views.clock_in_out import late_come, early_out
-from base.models import EmployeeShiftDay
-from notifications.signals import notify
-from horilla.decorators import login_required, manager_can_enter
-from base.methods import (
-    filtersubordinates,
-    is_reportingmanager,
-    choosesubordinates,
-    get_key_instances,
-)
-from employee.models import Employee
-from attendance.models import Attendance, AttendanceActivity, AttendanceLateComeEarlyOut
+
+from attendance.filters import AttendanceFilters, AttendanceRequestReGroup
 from attendance.forms import AttendanceRequestForm, NewRequestForm
 from attendance.methods.differentiate import get_diff_dict
+from attendance.models import Attendance, AttendanceActivity, AttendanceLateComeEarlyOut
+from attendance.views.clock_in_out import early_out, late_come
 from attendance.views.views import paginator_qry, shift_schedule_today
-from attendance.filters import AttendanceFilters, AttendanceRequestReGroup
-from base.methods import closest_numbers
+from base.methods import (
+    choosesubordinates,
+    closest_numbers,
+    filtersubordinates,
+    get_key_instances,
+    is_reportingmanager,
+)
+from base.models import EmployeeShiftDay
+from employee.models import Employee
+from horilla.decorators import login_required, manager_can_enter
+from notifications.signals import notify
 
 
 def get_employee_last_name(attendance):

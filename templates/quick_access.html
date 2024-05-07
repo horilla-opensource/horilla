@@ -93,7 +93,7 @@
         // Append the script element to the head of the HTML document
         document.head.appendChild(scriptElement);
     });
-	
+
     $(document).on('htmx:load', '#requestForm', function () {
 		{% include 'select2.js' %}
         $('#leaveType #id_leave_type_id').select2();
@@ -115,7 +115,7 @@
         "employee_id":employeeId,
     },
     success: function (response) {
-        
+
         // Assuming parentForm is a reference to the form containing the element to update
             var messageDiv = parentForm.find(".leave-message");
 
@@ -127,7 +127,7 @@
             // Checking leave type is selected in the form or not
             if (response.leave_count === ''){
                 messageDiv.hide()
-            }	
+            }
             else if (response.leave_count === 0.0){
                 messageDiv.show()
                 messageDiv.text("Available Leaves :  " + response.leave_count);
@@ -173,7 +173,7 @@
             csrfmiddlewaretoken: getCookie("csrftoken"),
             "shift_id":shiftId,
             "attendance_date":attendanceDate
-    
+
         },
         success: function (response) {
             parentForm.find("[name=attendance_clock_in]").val(response.shift_start_time)
@@ -188,12 +188,12 @@
         }
         });
     }
-    
+
     function dateChange(selectElement) {
         var selectedDate =selectElement.val()
         let parentForm = selectElement.parents().closest("form")
         var shiftId = parentForm.find("[name=shift_id]").val()
-    
+
         $.ajax({
         type: "post",
         url: "{% url 'update-date-details' %}",
@@ -204,7 +204,7 @@
         },
         success: function (response) {
             parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
-    
+
         }
         });
     }

@@ -5,19 +5,21 @@ This module is used to write context processor methods
 """
 
 from datetime import date
+
 from django import template
-from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
 from django.core.mail import EmailMessage
-from base.methods import generate_pdf
-from employee.models import Employee
-from horilla.decorators import manager_can_enter, login_required
-from horilla import settings
-from employee.filters import EmployeeFilter
-from recruitment.models import RecruitmentMailTemplate
 from django.core.paginator import Paginator
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+
 from base.backends import ConfiguredEmailBackend
+from base.methods import generate_pdf
+from employee.filters import EmployeeFilter
+from employee.models import Employee
+from horilla import settings
+from horilla.decorators import login_required, manager_can_enter
+from recruitment.models import RecruitmentMailTemplate
 
 
 def paginator_qry(qryset, page_number):

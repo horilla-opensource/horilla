@@ -1,5 +1,5 @@
 {% load i18n %}
-<form id="skillform"  hx-post="{% url 'skill-zone-update' sz_id %}"  
+<form id="skillform"  hx-post="{% url 'skill-zone-update' sz_id %}"
     hx-encoding="multipart/form-data" >
     {% csrf_token %}
     {{form.as_p}}

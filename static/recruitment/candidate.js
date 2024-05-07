@@ -15,10 +15,10 @@ function getCookie(name) {
   }
 $(document).ready(function () {
     var stages = []
-    $('#recruitment').change(function (e) { 
+    $('#recruitment').change(function (e) {
         var recruitmentId = $(this).val()
         if (recruitmentId) {
-            
+
             var a =  $.ajax({
                 type: "post",
                 url: `/recruitment/recruitment-stage-get/${recruitmentId}/`,

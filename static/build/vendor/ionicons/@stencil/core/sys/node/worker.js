@@ -32,7 +32,7 @@ const nodeApi__namespace = _interopNamespace(require("./index.js")), coreCompile
    stencilRtnValue: null,
    stencilRtnError: "Error"
   };
-  "string" == typeof t ? s.stencilRtnError += ": " + t : t && (t.stack ? s.stencilRtnError += ": " + t.stack : t.message && (s.stencilRtnError += ":" + t.message)), 
+  "string" == typeof t ? s.stencilRtnError += ": " + t : t && (t.stack ? s.stencilRtnError += ": " + t.stack : t.message && (s.stencilRtnError += ":" + t.message)),
   e.send(s, r);
  };
  e.on("message", (async s => {

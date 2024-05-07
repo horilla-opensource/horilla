@@ -29,10 +29,7 @@ services:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
       timeout: 5s
-      retries: 5  
+      retries: 5
 
 volumes:
   horilla-data:
-
-
-

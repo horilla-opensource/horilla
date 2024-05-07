@@ -36,7 +36,7 @@
 	</div>
 
 	<form method="post"
-		hx-target="#commentContainer" 
+		hx-target="#commentContainer"
 		hx-post="{% url 'payroll-request-add-comment' request_id %}" id="commentForm">
 		{% csrf_token %}
 
@@ -124,7 +124,7 @@
 					<div id="enlargeImageContainer" class="enlargeImageContainer"></div>
 				</div>
 			</li>
-			
+
 		{% endfor %}
 	</ol>
 {% else %}

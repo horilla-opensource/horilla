@@ -1,15 +1,16 @@
-from django import forms
-from django.db import models
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
-from django.core.validators import MinValueValidator
 from dateutil.relativedelta import relativedelta
+from django import forms
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
+from base.horilla_company_manager import HorillaCompanyManager
+from base.models import Company, Department, JobPosition
+from employee.models import Employee
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
-from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
-from base.models import Company, Department, JobPosition
-from base.horilla_company_manager import HorillaCompanyManager
-from employee.models import Employee
+from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 """Objectives and key result section"""
 
@@ -641,15 +642,22 @@ class KeyResultFeedback(models.Model):
 class Meetings(HorillaModel):
     title = models.CharField(max_length=100)
     date = models.DateTimeField(null=True, blank=True)
-    employee_id = models.ManyToManyField(Employee, related_name="meeting_employee",verbose_name="Employee")
+    employee_id = models.ManyToManyField(
+        Employee, related_name="meeting_employee", verbose_name="Employee"
+    )
     manager = models.ManyToManyField(Employee, related_name="meeting_manager")
-    answer_employees = models.ManyToManyField(Employee,blank=True, related_name="meeting_answer_employees",verbose_name="Answerable Employees")
+    answer_employees = models.ManyToManyField(
+        Employee,
+        blank=True,
+        related_name="meeting_answer_employees",
+        verbose_name="Answerable Employees",
+    )
     question_template = models.ForeignKey(
         QuestionTemplate, on_delete=models.PROTECT, null=True, blank=True
     )
     response = models.TextField(null=True, blank=True)
     show_response = models.BooleanField(default=False)
-    
+
     class Meta:
         verbose_name = _("Meetings")
 
@@ -674,7 +682,7 @@ class MeetingsAnswer(models.Model):
         related_name="employee_meeting_answer",
         null=True,
         blank=True,
-        verbose_name="Employee"
+        verbose_name="Employee",
     )
     meeting_id = models.ForeignKey(
         Meetings, on_delete=models.PROTECT, related_name="meeting_answer"
@@ -687,6 +695,7 @@ class MeetingsAnswer(models.Model):
 
 def manipulate_existing_data():
     from dateutil.relativedelta import relativedelta
+
     from horilla.decorators import logger
 
     try:

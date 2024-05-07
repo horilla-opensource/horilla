@@ -1,19 +1,18 @@
-from datetime import datetime
 import os
+from datetime import datetime
+
 from django import apps
 from django.db import models
+from django.db.models.signals import post_delete, post_save
 from django.forms import ValidationError
-from base.models import Department, JobPosition, Tags
 from django.utils.translation import gettext_lazy as _
-from employee.models import Employee
-from base.models import Company
+
 from base.horilla_company_manager import HorillaCompanyManager
-from django.db.models.signals import post_save, post_delete
+from base.models import Company, Department, JobPosition, Tags
+from employee.models import Employee
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
-
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
-
 
 PRIORITY = [
     ("low", "Low"),

@@ -6,25 +6,27 @@ This module contains Django ModelForms for handling various aspects of asset man
 including asset creation, allocation, return, category assignment, and batch handling.
 """
 
-from datetime import date
 import uuid
+from datetime import date
+
 from django import forms
-from base.forms import ModelForm
 from django.core.exceptions import ValidationError
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
-from employee.forms import MultipleFileField
-from employee.models import Employee
+
 from asset.models import (
     Asset,
-    AssetDocuments,
-    AssetReport,
-    AssetRequest,
     AssetAssignment,
     AssetCategory,
+    AssetDocuments,
     AssetLot,
+    AssetReport,
+    AssetRequest,
 )
+from base.forms import ModelForm
 from base.methods import reload_queryset
-from django.template.loader import render_to_string
+from employee.forms import MultipleFileField
+from employee.models import Employee
 
 
 def set_date_field_initial(instance):
@@ -92,7 +94,7 @@ class AssetForm(ModelForm):
                 attrs={
                     "class": "oh-select oh-select-2 select2-hidden-accessible  ",
                     "placeholder": "LOT001",
-                    "onchange": "batchNoChange($(this))"
+                    "onchange": "batchNoChange($(this))",
                 }
             ),
         }
@@ -108,13 +110,15 @@ class AssetForm(ModelForm):
             {"id": str(uuid.uuid4())}
         )
         self.fields["asset_status"].widget.attrs.update({"id": str(uuid.uuid4())})
-        
+
         batch_no_choices = [("", _("---Choose Batch No.---"))] + list(
             self.fields["asset_lot_number_id"].queryset.values_list("id", "lot_number")
         )
         self.fields["asset_lot_number_id"].choices = batch_no_choices
         if self.instance.pk is None:
-            self.fields["asset_lot_number_id"].choices += [("create", _("Create new batch number"))]
+            self.fields["asset_lot_number_id"].choices += [
+                ("create", _("Create new batch number"))
+            ]
 
     def clean(self):
         instance = self.instance
@@ -173,7 +177,7 @@ class AssetReportForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['asset_id'].widget.attrs['disabled'] = 'disabled'
+        self.fields["asset_id"].widget.attrs["disabled"] = "disabled"
 
 
 class AssetCategoryForm(ModelForm):

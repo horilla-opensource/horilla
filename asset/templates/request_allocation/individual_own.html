@@ -58,7 +58,7 @@
         <span class="link-primary"> {% trans "Requested to return" %} </span>
       {% else %}
         <label class="oh-timeoff-modal__stat-count">{{asset.get_asset_status_display}}</label>
-      {% endif %}   
+      {% endif %}
     </div>
   </div>
 
@@ -82,8 +82,8 @@
     </div>
   </div>
 
-  <div class="oh-modal__button-container text-center mt-3">   
-    {% if perms.asset.change_assetassignment or not asset_assignment.return_request %}    
+  <div class="oh-modal__button-container text-center mt-3">
+    {% if perms.asset.change_assetassignment or not asset_assignment.return_request %}
       <div class="oh-btn-group">
           {% if perms.asset.change_assetassignment %}
             <button

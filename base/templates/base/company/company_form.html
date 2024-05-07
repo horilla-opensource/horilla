@@ -1,7 +1,7 @@
 {% load i18n %}
 <form
 	{% if company.id %}
-		hx-post="{% url 'company-update' company.id %}" 
+		hx-post="{% url 'company-update' company.id %}"
 	{% else %}
 		hx-post="{% url 'company-create' %}"
 	{% endif %}

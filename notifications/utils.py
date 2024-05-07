@@ -3,7 +3,6 @@
 # -*- coding: utf-8 -*-
 import sys
 
-
 if sys.version > "3":
     long = int  # pylint: disable=invalid-name
 

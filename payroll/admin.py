@@ -5,22 +5,20 @@ Used to register models on admin site
 """
 
 from django.contrib import admin
+
 from payroll.models.models import (
     Allowance,
+    Contract,
     Deduction,
     FilingStatus,
-    Payslip,
-    WorkRecord,
     LoanAccount,
+    MultipleCondition,
+    Payslip,
     Reimbursement,
     ReimbursementrequestComment,
-    MultipleCondition,
+    WorkRecord,
 )
-from payroll.models.tax_models import (
-    PayrollSettings,
-    TaxBracket,
-)
-from payroll.models.models import Contract
+from payroll.models.tax_models import PayrollSettings, TaxBracket
 
 # Register your models here.
 admin.site.register(FilingStatus)

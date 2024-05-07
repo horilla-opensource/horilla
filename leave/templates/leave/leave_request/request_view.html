@@ -243,8 +243,8 @@
 <span id="bulkApproveSpan" hx-post="{% url 'leave-requests-bulk-approve' %}" hx-target="#leaveRequest"></span>
 
 <div class="oh-wrapper" id="leaveRequest">
-  {% if leave_requests %} 
-    {% include 'leave/leave_request/leave_requests.html'%} 
+  {% if leave_requests %}
+    {% include 'leave/leave_request/leave_requests.html'%}
   {% else %}
     <div
       style="
@@ -438,7 +438,7 @@
       if (!$(event.target).closest('#enlargeImageContainer').length) {
           hideEnlargeImage()
       }
-  })  
+  })
   function submitForm(elem) {
     $(elem).siblings(".add_more_submit").click();
   }
@@ -447,7 +447,7 @@
       event.preventDefault()
       var question = '<p> Would you like to proceed?</p>'
       html = '<p>' + message + '</p>'
-      html = html + "<div align='center'>" +question + "</div>" 
+      html = html + "<div align='center'>" +question + "</div>"
       Swal.fire({
         html: html,
         icon: 'question',
@@ -470,7 +470,7 @@
         } else {
         }
       });
-    
+
   }
 
 </script>

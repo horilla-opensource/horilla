@@ -5,15 +5,16 @@ This page is used to register attendance models with admins site.
 """
 
 from django.contrib import admin
+
 from .models import (
     Attendance,
     AttendanceActivity,
-    AttendanceOverTime,
     AttendanceLateComeEarlyOut,
+    AttendanceOverTime,
+    AttendanceRequestComment,
     AttendanceValidationCondition,
     GraceTime,
     PenaltyAccount,
-    AttendanceRequestComment,
 )
 
 # Register your models here.

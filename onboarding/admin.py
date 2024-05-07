@@ -1,10 +1,11 @@
 from django.contrib import admin
+
 from onboarding.models import (
-    OnboardingStage,
-    OnboardingTask,
     CandidateStage,
     CandidateTask,
     OnboardingPortal,
+    OnboardingStage,
+    OnboardingTask,
 )
 
 admin.site.register(OnboardingStage)

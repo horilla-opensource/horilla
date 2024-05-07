@@ -28,7 +28,7 @@ var oldSequences = []
 var stages = []
 var elements = []
 
-$('.stage').mousedown(function () { 
+$('.stage').mousedown(function () {
   window['stageSequence'] = $(this).attr('data-stage-sequence');
   window['recruitmentId'] = $(this).attr('data-recruitment-id');
   $('.stage').each(function(i, obj) {
@@ -39,11 +39,11 @@ $('.stage').mousedown(function () {
   });
 });
 
-$('.stage').mouseup(function () { 
+$('.stage').mouseup(function () {
   var newSequences = []
   $('.stage').each(function(i, obj) {
     if (recruitmentId == $(obj).attr('data-recruitment-id') || $(obj).attr('data-recruitment-id') == undefined ) {
-      
+
       newSequences.push($(obj).attr('data-stage-sequence'))
       if ($(obj).attr('data-recruitment-id') != undefined) {
         window['elements'].push(obj)
@@ -73,21 +73,21 @@ $('.stage').mouseup(function () {
       success: function (response) {
         // console.log(response);
       }
-    });    
+    });
   }
 
-  
+
   elements.forEach(function(element) {
     for (let index = 0; index < newSequences.length; index++) {
       const sequence = newSequences[index];
       if (sequence==$(element).attr('data-stage-sequence')) {
         $(element).attr('data-stage-sequence',`${index+1}`)
         return
-      }    
+      }
     }
   });
 
-  
+
 
   window['stageSequence'] = null
   window['recruitmentId'] = null
@@ -97,11 +97,11 @@ $('.stage').mouseup(function () {
 
 });
 
-$("[data-container='candidate']").on('DOMNodeInserted', function (e) { 
+$("[data-container='candidate']").on('DOMNodeInserted', function (e) {
   var candidate = $(e.target);
   var stageId = $(this).attr('data-stage-id');
   candidateId = $(candidate).attr('data-candidate-id');
-  if (candidateId != null) {  
+  if (candidateId != null) {
     $.ajax({
       type: "post",
       url: `/recruitment/candidate-stage-update/${candidateId}/`,
@@ -120,7 +120,7 @@ $("[data-container='candidate']").on('DOMNodeInserted', function (e) {
 
 
 
-$('.schedule').change(function (e) { 
+$('.schedule').change(function (e) {
   date = this.value
   candidateId = $(this).data('candidate-id');
   $.ajax({
@@ -135,5 +135,5 @@ $('.schedule').change(function (e) {
       console.log(response);
     }
   });
-  
+
 });

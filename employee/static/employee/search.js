@@ -4,23 +4,23 @@ $(document).ready(function () {
   });
 
 
-  $(".employee-view-type").click(function (e) {      
-    let view = $(this).attr("data-view");          
-    var currentURL = window.location.href;     
-    if (view != undefined){        
-      if (/\?view=[^&]+/.test(currentURL)) {          
-        newURL = currentURL.replace(/\?view=[^&]+/, "?view="+view);      
-      }        
-      else {          
-        var separator = currentURL.includes('?') ? '&' : '?';  
-        newURL = currentURL + separator + "view="+view;        
-      }       
-      history.pushState({}, "", newURL);      
-      $("#employee-search").attr("hx-vals", `{"view":"${view}"}`);      
-      $('#filterForm').attr("hx-vals", `{"view":"${view}"}`);   
+  $(".employee-view-type").click(function (e) {
+    let view = $(this).attr("data-view");
+    var currentURL = window.location.href;
+    if (view != undefined){
+      if (/\?view=[^&]+/.test(currentURL)) {
+        newURL = currentURL.replace(/\?view=[^&]+/, "?view="+view);
+      }
+      else {
+        var separator = currentURL.includes('?') ? '&' : '?';
+        newURL = currentURL + separator + "view="+view;
+      }
+      history.pushState({}, "", newURL);
+      $("#employee-search").attr("hx-vals", `{"view":"${view}"}`);
+      $('#filterForm').attr("hx-vals", `{"view":"${view}"}`);
       $(".oh-btn--view-active").removeClass("oh-btn--view-active")
       $(this).children("a").addClass("oh-btn--view-active")
-    }    
+    }
   });
 
 
@@ -40,7 +40,7 @@ $(document).ready(function () {
     }
   }
   activeProfileTab()
-  $("[data-action=general-tab]").on("click",function (e) { 
+  $("[data-action=general-tab]").on("click",function (e) {
     e.preventDefault();
     const targetId = $(this).attr('data-target');
     localStorage.setItem("activeProfileTab",targetId)
@@ -65,7 +65,7 @@ function employeeFilter(element) {
 
 function enlargeImage(image) {
   var enlargeImageContainer = document.getElementById('enlargeImageContainer');
-  enlargeImageContainer.innerHTML = ''; 
+  enlargeImageContainer.innerHTML = '';
 
   var enlargedImage = document.createElement('img');
   enlargedImage.src = image.src;

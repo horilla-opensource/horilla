@@ -36,10 +36,10 @@
             {% for onboarding_stage in onboarding_stages %}
             {% if candidate_stage.onboarding_stage_id.id == onboarding_stage.id %}
             <option value="{{onboarding_stage.id}}" selected>{{onboarding_stage.stage_title}}</option>
-            {% else %}         
+            {% else %}
             <option value="{{onboarding_stage.id}}">{{onboarding_stage.stage_title}}</option>
             {% endif %}
-                           
+
             {% endfor %}
           </select>
         </td>

@@ -1,5 +1,5 @@
 {% load i18n %}
-<!-- form  non field errors  --> 
+<!-- form  non field errors  -->
 {% if key_result_form.errors %}
 <div class="oh-wrapper">
     <div class="oh-alert-container">
@@ -28,7 +28,7 @@
         <label class="oh-input__label mt-0" for="{{key_result_form.key_result.id_for_label}}">{% trans "Title" %}</label>
 
         {{ key_result_form.key_result }}
-       
+
         {{ key_result_form.key_result.errors }}
 
 
@@ -91,12 +91,12 @@
         <div class="oh-input__group">
             <label class="oh-input__label" for="{{key_result_form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
             {{key_result_form.employee_id}}
-           
+
             {{key_result_form.employee_id.errors}}
 
         </div>
     </div>
-    
+
 </div>
 <div class="oh-modal__dialog-footer">
     <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">

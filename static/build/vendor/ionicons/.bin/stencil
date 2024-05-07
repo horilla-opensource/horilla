@@ -7,6 +7,6 @@ esac
 
 if [ -x "$basedir/node" ]; then
   exec "$basedir/node"  "$basedir/../@stencil/core/bin/stencil" "$@"
-else 
+else
   exec node  "$basedir/../@stencil/core/bin/stencil" "$@"
 fi

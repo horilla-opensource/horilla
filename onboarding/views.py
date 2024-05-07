@@ -11,26 +11,28 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
+import contextlib
+import json
+import random
+import secrets
 from urllib.parse import parse_qs
-import json, contextlib, random, secrets
+
 from django import template
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
-from django.core.mail import send_mail
+from django.contrib import messages
+from django.contrib.auth import login
 from django.contrib.auth.models import User
+from django.core.mail import EmailMessage, send_mail
+from django.core.paginator import Paginator
+from django.db.models import ProtectedError
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
-from django.contrib import messages
-from django.core.paginator import Paginator
 from django.views.decorators.http import require_http_methods
-from base.models import JobPosition
-from notifications.signals import notify
-from horilla import settings
-from horilla.decorators import login_required, hx_request_required, logger
-from horilla.decorators import permission_required
+
+from attendance.methods.group_by import group_by_queryset as general_group_by
+from base.backends import ConfiguredEmailBackend
 from base.methods import (
     closest_numbers,
     generate_pdf,
@@ -38,39 +40,45 @@ from base.methods import (
     get_pagination,
     sortby,
 )
-from attendance.methods.group_by import group_by_queryset as general_group_by
+from base.models import JobPosition
+from employee.models import Employee, EmployeeBankDetails, EmployeeWorkInformation
+from horilla import settings
+from horilla.decorators import (
+    hx_request_required,
+    logger,
+    login_required,
+    permission_required,
+)
+from notifications.signals import notify
+from onboarding.decorators import (
+    all_manager_can_enter,
+    recruitment_manager_can_enter,
+    stage_manager_can_enter,
+)
 from onboarding.filters import OnboardingCandidateFilter, OnboardingStageFilter
+from onboarding.forms import (
+    BankDetailsCreationForm,
+    EmployeeCreationForm,
+    OnboardingCandidateForm,
+    OnboardingTaskForm,
+    OnboardingViewStageForm,
+    OnboardingViewTaskForm,
+    UserCreationForm,
+)
+from onboarding.models import (
+    CandidateStage,
+    CandidateTask,
+    OnboardingPortal,
+    OnboardingStage,
+    OnboardingTask,
+)
+from recruitment.filters import CandidateFilter, CandidateReGroup, RecruitmentFilter
 from recruitment.forms import RejectedCandidateForm
-from base.backends import ConfiguredEmailBackend
 from recruitment.models import (
     Candidate,
     Recruitment,
     RecruitmentMailTemplate,
     RejectedCandidate,
-)
-from recruitment.filters import CandidateFilter, CandidateReGroup, RecruitmentFilter
-from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
-from django.db.models import ProtectedError
-from onboarding.forms import (
-    OnboardingCandidateForm,
-    OnboardingTaskForm,
-    UserCreationForm,
-    OnboardingViewTaskForm,
-    OnboardingViewStageForm,
-    EmployeeCreationForm,
-    BankDetailsCreationForm,
-)
-from onboarding.models import (
-    OnboardingStage,
-    OnboardingTask,
-    CandidateStage,
-    CandidateTask,
-    OnboardingPortal,
-)
-from onboarding.decorators import (
-    all_manager_can_enter,
-    stage_manager_can_enter,
-    recruitment_manager_can_enter,
 )
 from recruitment.pipeline_grouper import group_by_queryset
 
@@ -793,8 +801,10 @@ def onboarding_view(request):
     employee_tasks = request.user.employee_get.onboarding_task.all()
     for task in employee_tasks:
         if task.stage_id and task.stage_id.recruitment_id not in recruitments:
-            recruitments = recruitments | filter_obj.qs.filter(id=task.stage_id.recruitment_id.id)
-    recruitments = recruitments.filter(is_active =True).distinct()
+            recruitments = recruitments | filter_obj.qs.filter(
+                id=task.stage_id.recruitment_id.id
+            )
+    recruitments = recruitments.filter(is_active=True).distinct()
     status = request.GET.get("closed")
 
     onboarding_stages = OnboardingStage.objects.all()

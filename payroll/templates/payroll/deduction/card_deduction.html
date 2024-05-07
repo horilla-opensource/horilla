@@ -15,7 +15,7 @@
   <!-- start of kanban -->
   <div class="oh-layout--grid-3">
     {% for deduction in deductions %}
-      <div class="oh-kanban-card {% if deduction.is_fixed == True %} row-status--orange {% elif deduction.is_fixed == False %} row-status--yellow {% endif %}" 
+      <div class="oh-kanban-card {% if deduction.is_fixed == True %} row-status--orange {% elif deduction.is_fixed == False %} row-status--yellow {% endif %}"
           data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-get="{% url 'single-deduction-view' deduction.id %}?instances_ids={{deduction_ids}}" hx-target = "#objectDetailsModalTarget" >
         <div class="oh-kanban-card__avatar">
         <div class="oh-kanban-card__profile-container">
@@ -41,7 +41,7 @@
             {% if deduction.is_fixed %}
                 <span class="oh-timeoff-modal__stat-title ">{{deduction.amount}}{{currency}}</span>
             {% else %}
-                <span class="oh-timeoff-modal__stat-title">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>    
+                <span class="oh-timeoff-modal__stat-title">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
                 <span class="oh-timeoff-modal__stat-title">{% trans "Employee Rate :" %} {{deduction.rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
             {% endif %}
         {% endif %}
@@ -141,7 +141,7 @@
           <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&view=card&page={{ deductions.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
         </li>
         {% endif %}
-  
+
       </ul>
     </nav>
   </div>
@@ -160,5 +160,3 @@
 </div>
 <!-- end of empty page -->
 {% endif %}
-
-

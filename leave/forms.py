@@ -3,44 +3,46 @@ This module provides Horilla ModelForms for creating and managing leave-related 
 including leave type, leave request, leave allocation request, holidays and company leaves.
 """
 
-from datetime import date, datetime
 import re
-from typing import Any
 import uuid
+from datetime import date, datetime
+from typing import Any
+
 from django import forms
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.forms.widgets import TextInput
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
-from horilla_widgets.forms import HorillaForm, HorillaModelForm
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
-from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from django.utils.translation import gettext_lazy as _
+
 from base import thread_local_middleware
 from base.methods import reload_queryset
 from base.models import Department
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee
-from .models import (
-    LeaveType,
-    LeaveRequest,
-    AvailableLeave,
-    Holiday,
-    CompanyLeave,
-    LeaveAllocationRequest,
-    LeaveallocationrequestComment,
-    LeaverequestComment,
-    LeaverequestFile,
-    RestrictLeave,
-)
+from horilla_widgets.forms import HorillaForm, HorillaModelForm
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+
 from .methods import (
     calculate_requested_days,
-    leave_requested_dates,
-    holiday_dates_list,
     company_leave_dates_list,
+    holiday_dates_list,
+    leave_requested_dates,
 )
-
+from .models import (
+    AvailableLeave,
+    CompanyLeave,
+    Holiday,
+    LeaveAllocationRequest,
+    LeaveallocationrequestComment,
+    LeaveRequest,
+    LeaverequestComment,
+    LeaverequestFile,
+    LeaveType,
+    RestrictLeave,
+)
 
 CHOICES = [("yes", _("Yes")), ("no", _("No"))]
 

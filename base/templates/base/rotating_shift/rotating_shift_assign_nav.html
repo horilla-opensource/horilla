@@ -69,7 +69,7 @@
             x-show="open"
             @click.outside="open = false"
             style="display: none"
-            >            
+            >
             <div class="oh-accordion">
               <label>{% trans "Group By" %}</label>
                 <div class="row">
@@ -121,7 +121,7 @@
                       >{% trans "Export" %}</a
                     >
                   </li>
-                {% endif %} 
+                {% endif %}
                 {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
                   <li class="oh-dropdown__item">
                     <a
@@ -131,7 +131,7 @@
                       >{% trans "Archive" %}</a
                     >
                   </li>
-                {% endif %} 
+                {% endif %}
                 {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
                   <li class="oh-dropdown__item">
                     <a
@@ -141,7 +141,7 @@
                       >{% trans "Un-Archive" %}</a
                     >
                   </li>
-                {% endif %} 
+                {% endif %}
                 {% if request.user|is_reportingmanager %}
                   <li class="oh-dropdown__item">
                     <a

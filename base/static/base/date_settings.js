@@ -4,10 +4,10 @@ function saveDateFormat() {
 
   // Set the selected date format in the utility
   dateFormatter.setDateFormat(selectedFormat);
-  
+
   // Save the date format to the backend
   saveDateFormatToBackend(selectedFormat);
-  
+
 }
 
 function saveDateFormatToBackend(selectedFormat) {

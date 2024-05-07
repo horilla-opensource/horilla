@@ -5,18 +5,19 @@ pre-tax deductions, and post-tax deductions.
 
 """
 
-import operator
 import contextlib
+import operator
+
 from attendance.models import Attendance
+from payroll.methods.limits import compute_limit
 from payroll.models import models
 from payroll.models.models import (
-    Contract,
     Allowance,
+    Contract,
     Deduction,
     LoanAccount,
     MultipleCondition,
 )
-from payroll.methods.limits import compute_limit
 
 operator_mapping = {
     "equal": operator.eq,
@@ -60,9 +61,6 @@ filter_mapping = {
         }
     },
 }
-
-
-
 
 
 tets = {

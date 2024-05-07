@@ -4,27 +4,39 @@ views.py
 This module is used to define the method for the path in the urls
 """
 
+import json
 from collections import defaultdict
+from datetime import date, datetime, timedelta
 from itertools import groupby
 from urllib.parse import parse_qs
+
 import pandas as pd
-import json
-from datetime import date, datetime, timedelta
-from django.utils import timezone
-from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib import messages
-from django.db.models import Q, ProtectedError
+from django.db.models import ProtectedError, Q
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
 from attendance.methods.group_by import group_by_queryset
-from notifications.signals import notify
+from base.methods import (
+    closest_numbers,
+    export_data,
+    generate_colors,
+    generate_pdf,
+    get_key_instances,
+    sortby,
+)
 from base.models import Company
-from horilla.decorators import login_required, owner_can_enter, permission_required
-from base.methods import export_data, generate_colors, get_key_instances, sortby
 from employee.models import Employee, EmployeeWorkInformation
-from base.methods import closest_numbers
-from base.methods import generate_pdf
+from horilla.decorators import login_required, owner_can_enter, permission_required
+from notifications.signals import notify
 from payroll.context_processors import get_active_employees
+from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter
+from payroll.forms.component_forms import ContractExportFieldForm, PayrollSettingsForm
+from payroll.methods.methods import paginator_qry, save_payslip
 from payroll.models.models import (
+    Contract,
     FilingStatus,
     PayrollGeneralSetting,
     Payslip,
@@ -32,14 +44,8 @@ from payroll.models.models import (
     ReimbursementFile,
     ReimbursementrequestComment,
     WorkRecord,
-    Contract,
 )
 from payroll.models.tax_models import PayrollSettings
-from payroll.forms.component_forms import ContractExportFieldForm, PayrollSettingsForm
-from payroll.methods.methods import save_payslip
-from django.utils.translation import gettext_lazy as _
-from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter
-from payroll.methods.methods import paginator_qry
 
 # Create your views here.
 
@@ -64,9 +70,7 @@ def contract_create(request):
     """
     Contract create view
     """
-    from payroll.forms.forms import (
-        ContractForm,
-    )
+    from payroll.forms.forms import ContractForm
 
     form = ContractForm()
     if request.method == "POST":
@@ -93,9 +97,7 @@ def contract_update(request, contract_id, **kwargs):
         Otherwise, renders the contract update form.
 
     """
-    from payroll.forms.forms import (
-        ContractForm,
-    )
+    from payroll.forms.forms import ContractForm
 
     contract = Contract.objects.filter(id=contract_id).first()
     if not contract:
@@ -120,9 +122,7 @@ def contract_update(request, contract_id, **kwargs):
 @login_required
 @permission_required("payroll.change_contract")
 def contract_status_update(request, contract_id):
-    from payroll.forms.forms import (
-        ContractForm,
-    )
+    from payroll.forms.forms import ContractForm
 
     previous_data = request.GET.urlencode()
     if request.method == "POST":
@@ -363,9 +363,7 @@ def work_record_create(request):
     """
     Work record create view
     """
-    from payroll.forms.forms import (
-        WorkRecordForm,
-    )
+    from payroll.forms.forms import WorkRecordForm
 
     form = WorkRecordForm()
 
@@ -1483,9 +1481,7 @@ def create_payrollrequest_comment(request, payroll_id):
     """
     This method renders form and template to create Reimbursement request comments
     """
-    from payroll.forms.forms import (
-        ReimbursementRequestCommentForm,
-    )
+    from payroll.forms.forms import ReimbursementRequestCommentForm
 
     payroll = Reimbursement.objects.filter(id=payroll_id).first()
     emp = request.user.employee_get

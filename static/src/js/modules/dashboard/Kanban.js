@@ -184,7 +184,7 @@ class Kanban {
               </div>
             </div>
             <button
-              class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__add-card-btn" 
+              class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__add-card-btn"
             >
               <ion-icon name="add-sharp"></ion-icon>
             </button>
@@ -242,7 +242,7 @@ class Kanban {
                         >
                           <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
                         </button>
-                        
+
                         <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
                           <div
                             class="oh-dropdown__menu oh-dropdown__menu--right"
@@ -254,7 +254,7 @@ class Kanban {
                             </ul>
                           </div>
                         </div>
-                        
+
                       </div>
             </div>
             <div class="oh-kanban__card-footer py-0">
@@ -291,7 +291,7 @@ class Kanban {
                           >
                             <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
                           </button>
-                          
+
                           <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
                             <div
                               class="oh-dropdown__menu oh-dropdown__menu--right"
@@ -303,7 +303,7 @@ class Kanban {
                               </ul>
                             </div>
                           </div>
-                          
+
                         </div>
               </div>
               <div class="oh-kanban__card-footer">
