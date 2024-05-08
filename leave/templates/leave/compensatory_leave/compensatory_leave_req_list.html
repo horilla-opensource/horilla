@@ -12,17 +12,17 @@
   </div>
   {% endfor %}
 </div>
-{% endif %}   
+{% endif %}
 <ul class="oh-tabs__tablist">
     <li class="oh-tabs__tab oh-tabs__tab--active" data-target="#tab_1" onclick="switchTab(event)">
-        {% trans "My compensatory leave requests" %}
+        {% trans "My Compensatory Leave Requests" %}
     </li>
     {% if request.user|is_reportingmanager or perms.leave.change_leaveallocationrequest %}
     <li class="oh-tabs__tab" data-target="#tab_2" onclick="switchTab(event)">
-        {% trans "Compensatory leave requests" %}
+        {% trans "Compensatory Leave Requests" %}
     </li>
     {% endif %}
-</ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+</ul>
 <div class="oh-tabs__contents" id="view-container">
     <div class="oh-tabs__content oh-tabs__content--active" id="tab_1">
         {% if my_comp_leave_requests %}
@@ -52,7 +52,7 @@
                                 {% comment %} hx-get="{% url 'leave-allocation-request-single-view' comp_leave_request.id %}?my_request=True&instances_ids={{my_requests_ids}}"  {% endcomment %}
                                 hx-target="#objectDetailsModalW25Target">
                                 <div class="oh-sticky-table__sd
-                                    {% if comp_leave_request.status == 'requested' %} row-status--blue 
+                                    {% if comp_leave_request.status == 'requested' %} row-status--blue
                                     {% elif comp_leave_request.status == 'approved' %} row-status--yellow
                                     {% elif comp_leave_request.status == 'rejected' %}row-status--red
                                     {% endif %}" >
@@ -79,7 +79,7 @@
                                 <div class="oh-sticky-table__td ">{{comp_leave_request.created_by.employee_get}}</div>
                                 <div class="oh-sticky-table__td ">{{comp_leave_request.get_status_display}}</div>
                                 <div class="oh-sticky-table__td ">{{comp_leave_request.description|truncatechars:25}}</div>
-                                
+
                                 <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                                     <button type="button" hx-get="{% url 'view-compensatory-leave-comment' comp_leave_request.id %}" hx-target="#commentContainer" data-target = '#allocationactivitySidebar' title="View Comment"
                                         class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" title="{% trans 'Add / View Comment' %}" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
@@ -90,24 +90,24 @@
                                 <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                     <div class="oh-btn-group">
                                         {% if comp_leave_request.status ==  'requested' %}
-                                            <button  
-                                                class="oh-btn oh-btn--light-bkg w-50" 
-                                               title="{% trans 'Edit' %}" 
+                                            <button
+                                                class="oh-btn oh-btn--light-bkg w-50"
+                                               title="{% trans 'Edit' %}"
                                                 data-toggle="oh-modal-toggle"
-                                                data-target="#objectDetailsModal" 
+                                                data-target="#objectDetailsModal"
                                                 hx-get="{% url 'update-compensatory-leave' comp_leave_request.id %}"
                                                 hx-target="#objectDetailsModalTarget">
                                                 <ion-icon name="create-outline"></ion-icon>
                                             </button>
                                         {% else %}
-                                            <button 
+                                            <button
                                                 class="oh-btn oh-btn--light-bkg w-50" disabled>
                                                 <ion-icon name="create-outline" ></ion-icon>
                                             </button></td>
                                         {% endif %}
                                         {% if comp_leave_request.status !=  'approved' %}
                                             <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" id="delete-link"
-                                                hx-confirm="{% trans 'Are you sure you want to delete ?' %}" 
+                                                hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
                                                 hx-post="{% url 'delete-compensatory-leave' comp_leave_request.id %}?{{pd}}"
                                                 hx-target="#comp-leave-tabs"
                                                 title="{% trans 'Delete' %}">
@@ -178,7 +178,7 @@
             </div>
         {% endif %}
     </div>
-    
+
     {% if request.user|is_reportingmanager or perms.leave.view_compensatoryleaverequest %}
         <div class="oh-tabs__content" id="tab_2">
             {% if comp_leave_requests %}
@@ -200,15 +200,15 @@
                             </div>
                         </div>
                         <div class="oh-sticky-table__tbody">
-                            {% for comp_leave_request in comp_leave_requests %} 
+                            {% for comp_leave_request in comp_leave_requests %}
                                 <div class="oh-sticky-table__tr {% if comp_leave_request.status == 'rejected' %} diff-cell{% endif %}"
                                     data-toggle="oh-modal-toggle"
                                     data-target="#objectDetailsModalW25"
                                     {% comment %} hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?instances_ids={{requests_ids}}"  {% endcomment %}
                                     hx-target="#objectDetailsModalW25Target">
-                                    <div class="oh-sticky-table__sd {% if comp_leave_request.status == "requested" %} row-status--blue 
-                                        {% elif comp_leave_request.status == "approved" %} row-status--yellow 
-                                        {% elif comp_leave_request.status == "cancelled" %} row-status--gray 
+                                    <div class="oh-sticky-table__sd {% if comp_leave_request.status == "requested" %} row-status--blue
+                                        {% elif comp_leave_request.status == "approved" %} row-status--yellow
+                                        {% elif comp_leave_request.status == "cancelled" %} row-status--gray
                                         {% elif comp_leave_request.status == "rejected" %}row-status--red
                                         {% endif %}" >
                                         <div class="oh-profile oh-profile--md">
@@ -240,24 +240,24 @@
                                     <div class="oh-sticky-table__td " onclick="event.stopPropagation()">
                                         <div class="oh-btn-group">
                                             {% if comp_leave_request.status ==  'requested' %}
-                                                <button  
-                                                    class="oh-btn oh-btn--light-bkg w-50" 
-                                                    title="{% trans 'Edit' %}" 
+                                                <button
+                                                    class="oh-btn oh-btn--light-bkg w-50"
+                                                    title="{% trans 'Edit' %}"
                                                     data-toggle="oh-modal-toggle"
-                                                    data-target="#objectDetailsModal" 
+                                                    data-target="#objectDetailsModal"
                                                     hx-get="{% url 'update-compensatory-leave' comp_leave_request.id %}"
                                                     hx-target="#objectDetailsModalTarget">
                                                     <ion-icon name="create-outline"></ion-icon>
                                                 </button>
                                             {% else %}
-                                                <button 
+                                                <button
                                                     class="oh-btn oh-btn--light-bkg w-50" disabled>
                                                     <ion-icon name="create-outline" ></ion-icon>
                                                 </button></td>
                                             {% endif %}
                                             {% if comp_leave_request.status !=  'approved' %}
                                                 <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" id="delete-link"
-                                                    hx-confirm="{% trans 'Are you sure you want to delete ?' %}" 
+                                                    hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
                                                     hx-post="{% url 'delete-compensatory-leave' comp_leave_request.id %}?{{pd}}"
                                                     hx-target="#comp-leave-tabs"
                                                     title="{% trans 'Delete' %}">
@@ -275,8 +275,8 @@
 
                                             {% if perms.leave.change_leaveallocationrequest or request.user|is_reportingmanager %}
                                                 {% if comp_leave_request.status == 'requested' %}
-                                                    <a type="submit" 
-                                                        hx-confirm="{% trans 'Are you sure you want to approve ?' %}" 
+                                                    <a type="submit"
+                                                        hx-confirm="{% trans 'Are you sure you want to approve ?' %}"
                                                         hx-post="{% url 'approve-compensatory-leave' comp_leave_request.id %}?{{pd}}"
                                                         hx-target="#comp-leave-tabs"
                                                         title="{% trans 'Approve' %}"
@@ -291,9 +291,9 @@
                                                 {% endif %}
                                                 {% if comp_leave_request.status == 'requested' or comp_leave_request.status == 'approved' %}
                                                     <a type="submit" data-toggle="oh-modal-toggle"
-                                                        data-target="#rejectModal" 
-                                                        hx-get="{% url 'reject-compensatory-leave' comp_leave_request.id %}" 
-                                                        hx-target="#rejectTarget" 
+                                                        data-target="#rejectModal"
+                                                        hx-get="{% url 'reject-compensatory-leave' comp_leave_request.id %}"
+                                                        hx-target="#rejectTarget"
                                                         title="{% trans 'Reject' %}"
                                                         class="oh-btn oh-btn--danger w-100">
                                                         <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
@@ -322,7 +322,7 @@
                     <nav class="oh-pagination__nav">
                         <div class="oh-pagination__input-container me-3">
                             <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-                            <input type="number" name="page" class="oh-pagination__input" 
+                            <input type="number" name="page" class="oh-pagination__input"
                                 value="{{comp_leave_requests.number}}"
                                 hx-get="{% url 'filter-compensatory-leave' %}?{{pd}}" hx-target="#comp-leave-tabs" min="1" />
                             <span class="oh-pagination__label">{% trans "of" %} {{comp_leave_requests.paginator.num_pages}}</span>
@@ -418,7 +418,7 @@
           $(`[data-target="${activeTab}"]`).toggleClass("oh-tabs__tab--active");
           $(activeTab).toggleClass("oh-tabs__content--active");
       }
-      $(".oh-tabs__tab[data-target]").click(function (e) { 
+      $(".oh-tabs__tab[data-target]").click(function (e) {
           e.preventDefault();
           localStorage.setItem("CompensatoryLeaveRequestActiveTab",$(this).attr('data-target'))
       });
