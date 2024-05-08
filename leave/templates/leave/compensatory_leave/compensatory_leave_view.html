@@ -319,37 +319,37 @@
 		enlargeImageContainer.append(name)
 		setTimeout(function () {
 			enlargeImageContainer.show()
-  
+
 			const iframe = document.querySelector('iframe').contentWindow
 			var iframe_document = iframe.document
 			iframe_image = iframe_document.getElementsByTagName('img')[0]
 			$(iframe_image).attr('style', 'width:100%; height:100%;')
 		}, 100)
 	}
-  
+
 	function hideEnlargeImage() {
 		var enlargeImageContainer = $('.enlargeImageContainer')
 		enlargeImageContainer.empty()
 	}
-  
+
 	$(document).on('click', function (event) {
 		if (!$(event.target).closest('#enlargeImageContainer').length) {
 			hideEnlargeImage()
 		}
-	})  
+	})
 	function submitForm(elem) {
 	  $(elem).siblings(".add_more_submit").click();
 	}
 	function switchTab(e) {
 		let parentContainerEl = e.target.closest(".oh-tabs");
 		let tabElement = e.target.closest(".oh-tabs__tab");
-		
-	
+
+
 		let targetSelector = e.target.dataset.target;
 		let targetEl = parentContainerEl
 			? parentContainerEl.querySelector(targetSelector)
 			: null;
-	
+
 		// Highlight active tabs
 		if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
 			parentContainerEl
@@ -357,12 +357,12 @@
 				.forEach(function (item) {
 					item.classList.remove("oh-tabs__tab--active");
 				});
-	
+
 			if (!tabElement.classList.contains("oh-tabs__new-tab")) {
 				tabElement.classList.add("oh-tabs__tab--active");
 			}
 		}
-	
+
 		// Switch tabs
 		if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
 			parentContainerEl
@@ -385,24 +385,24 @@
 		enlargeImageContainer.append(name)
 		setTimeout(function () {
 			enlargeImageContainer.show()
-  
+
 			const iframe = document.querySelector('iframe').contentWindow
 			var iframe_document = iframe.document
 			iframe_image = iframe_document.getElementsByTagName('img')[0]
 			$(iframe_image).attr('style', 'width:100%; height:100%;')
 		}, 100)
 	}
-  
+
 	function hideEnlargeImage() {
 		var enlargeImageContainer = $('.enlargeImageContainer')
 		enlargeImageContainer.empty()
 	}
-  
+
 	$(document).on('click', function (event) {
 		if (!$(event.target).closest('#enlargeImageContainer').length) {
 			hideEnlargeImage()
 		}
-	})  
+	})
 	function submitForm(elem) {
 	  $(elem).siblings(".add_more_submit").click();
 	}
