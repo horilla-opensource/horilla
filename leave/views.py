@@ -128,7 +128,10 @@ def leave_type_view(request):
     """
 
     queryset = LeaveType.objects.all().exclude(is_compensatory_leave=True)
-    if LeaveGeneralSetting.objects.first().compensatory_leave:
+    if (
+        LeaveGeneralSetting.objects.first()
+        and LeaveGeneralSetting.objects.first().compensatory_leave
+    ):
         queryset = LeaveType.objects.all()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
@@ -913,6 +916,7 @@ def leave_request_cancel(request, id, emp_id=None):
                 notify.send(
                     request.user.employee_get,
                     recipient=leave_request.employee_id.employee_user_id,
+                    verb="Your leave request has been rejected.",
                     verb_ar="تم رفض طلب الإجازة الخاص بك",
                     verb_de="Ihr Urlaubsantrag wurde abgelehnt",
                     verb_es="Tu solicitud de permiso ha sido rechazada",
@@ -1247,7 +1251,12 @@ def leave_assign(request):
                                     request.user.employee_get,
                                     recipient=employee.employee_user_id,
                                     verb="New leave type is assigned to you",
-                                    # ... (remaining notify.send parameters)
+                                    verb_ar="تم تعيين نوع إجازة جديد لك",
+                                    verb_de="Dir wurde ein neuer Urlaubstyp zugewiesen",
+                                    verb_es="Se te ha asignado un nuevo tipo de permiso",
+                                    verb_fr="Un nouveau type de congé vous a été attribué",
+                                    icon="people-circle",
+                                    redirect="/leave/user-request-view",
                                 )
                         else:
                             messages.info(
@@ -2489,7 +2498,10 @@ def user_request_view(request):
         user_leave = AvailableLeave.objects.filter(employee_id=user.id).exclude(
             leave_type_id__is_compensatory_leave=True
         )
-        if LeaveGeneralSetting.objects.first().compensatory_leave:
+        if (
+            LeaveGeneralSetting.objects.first()
+            and LeaveGeneralSetting.objects.first().compensatory_leave
+        ):
             user_leave = AvailableLeave.objects.filter(employee_id=user.id)
         current_date = date.today()
         return render(
