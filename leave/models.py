@@ -227,6 +227,7 @@ class LeaveType(HorillaModel):
             and self.carryforward_max is None
         ):
             self.carryforward_max = math.inf
+        super().save()
 
     def __str__(self):
         return self.name
