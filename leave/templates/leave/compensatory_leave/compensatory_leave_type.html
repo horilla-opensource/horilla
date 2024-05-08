@@ -18,9 +18,9 @@
   }
 </style>
 <div class="oh-label__info" for="application_tracking">
-  <label class="oh-label fw-bold" for="application_tracking">{% trans "Compensatory Leave Type" %}</label> 
+  <label class="oh-label fw-bold" for="application_tracking">{% trans "Compensatory Leave Type" %}</label>
   <span class="oh-info mr-2" title="{% trans "This leave type will be used for assigning compensatory leaves." %}">
-  </span> 
+  </span>
 </div>
 <div class="oh-layout--grid-3" >
     {% comment %} {% for leave_type in leave_types %} {% endcomment %}
@@ -32,7 +32,7 @@
                 <img src="{{leave_type.get_avatar}}" class="oh-kanban-card__profile-image" alt="Username" />
               </div>
             </div>
-    
+
             <div class="oh-kanban-card__details">
               <span class="oh-card__title oh-card__title--sm fw-bold" style="font-size:18px;">{{leave_type.name}}</span>
               <div class="oh-timeoff-modal__stats-container mb-1">
@@ -46,7 +46,7 @@
                 </div>
               </div>
             </div>
-    
+
             {% if perms.leave.change_leavetype or perms.leave.delete_leavetype %}
               <div class="oh-kanban-card__dots" onclick="event.stopPropagation()">
                 <div class="oh-dropdown" x-data="{show: false}">

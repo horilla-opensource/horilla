@@ -36,7 +36,7 @@
 	</div>
 
 	<form method="post"
-		hx-target="#commentContainer" 
+		hx-target="#commentContainer"
 		hx-post="{% url 'create-compensatory-leave-comment' request_id %}?{{pd}}" id="commentForm">
 		{% csrf_token %}
 
@@ -125,7 +125,7 @@
 					<div id="enlargeImageContainer" class="enlargeImageContainer"></div>
 				</div>
 			</li>
-			
+
 		{% endfor %}
 	</ol>
 {% else %}
@@ -173,5 +173,5 @@
 			commentButton.style.display = 'none';
 		}
 	});
-	
+
 </script>
