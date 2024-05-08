@@ -126,7 +126,10 @@ def leave_type_view(request):
     Returns:
     GET : return leave type template
     """
-    queryset = LeaveType.objects.all()
+
+    queryset = LeaveType.objects.all().exclude(is_compensatory_leave=True)
+    if LeaveGeneralSetting.objects.first().compensatory_leave:
+        queryset = LeaveType.objects.all()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     previous_data = request.GET.urlencode()
@@ -162,8 +165,8 @@ def leave_type_individual_view(request, id):
     """
     leave_type = LeaveType.objects.get(id=id)
     requests_ids_json = request.GET.get("instances_ids")
-    context = {"leave_type": leave_type}
-
+    compensatory = request.GET.get("compensatory")
+    context = {"leave_type": leave_type, "compensatory": compensatory}
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
         previous_id, next_id = closest_numbers(requests_ids, id)
@@ -212,7 +215,6 @@ def leave_type_update(request, id, **kwargs):
     """
     function used to update leave type.
 
-    Parameters:
     request (HttpRequest): The HTTP request object.
     id : leave type id
 
@@ -226,6 +228,10 @@ def leave_type_update(request, id, **kwargs):
         messages.error(request, _("Leave type not found"))
         return redirect(leave_type_view)
     form = UpdateLeaveTypeForm(instance=leave_type)
+    compensatory = request.GET.get("compensatory")
+    redirect_url = leave_type_view
+    if compensatory:
+        redirect_url = compensatory_leave_settings_view
     if request.method == "POST":
         form_data = UpdateLeaveTypeForm(
             request.POST, request.FILES, instance=leave_type
@@ -233,8 +239,12 @@ def leave_type_update(request, id, **kwargs):
         if form_data.is_valid():
             form_data.save()
             messages.success(request, _("Leave type is updated successfully.."))
-            return redirect(leave_type_view)
-    return render(request, "leave/leave_type/leave_type_update.html", {"form": form})
+            return redirect(redirect_url)
+    return render(
+        request,
+        "leave/leave_type/leave_type_update.html",
+        {"form": form, "compensatory": compensatory},
+    )
 
 
 @login_required
@@ -1018,34 +1028,39 @@ def leave_assign_one(request, id):
     form = choosesubordinates(request, form, "leave.add_availableleave")
     if request.method == "POST":
         leave_type = LeaveType.objects.get(id=id)
-        employee_ids = request.POST.getlist("employee_id")
-        for employee_id in employee_ids:
-            employee = Employee.objects.get(id=employee_id)
-            if not AvailableLeave.objects.filter(
-                leave_type_id=leave_type, employee_id=employee
-            ).exists():
-                AvailableLeave(
-                    leave_type_id=leave_type,
-                    employee_id=employee,
-                    available_days=leave_type.total_days,
-                ).save()
-                messages.success(request, _("Leave type assign is successfull.."))
-                with contextlib.suppress(Exception):
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=employee.employee_user_id,
-                        verb="New leave type is assigned to you",
-                        verb_ar="تم تعيين نوع إجازة جديد لك",
-                        verb_de="Ihnen wurde ein neuer Urlaubstyp zugewiesen",
-                        verb_es="Se le ha asignado un nuevo tipo de permiso",
-                        verb_fr="Un nouveau type de congé vous a été attribué",
-                        icon="people-circle",
-                        redirect="/leave/user-request-view",
+        if not leave_type.is_compensatory_leave:
+            employee_ids = request.POST.getlist("employee_id")
+            for employee_id in employee_ids:
+                employee = Employee.objects.get(id=employee_id)
+                if not AvailableLeave.objects.filter(
+                    leave_type_id=leave_type, employee_id=employee
+                ).exists():
+                    AvailableLeave(
+                        leave_type_id=leave_type,
+                        employee_id=employee,
+                        available_days=leave_type.total_days,
+                    ).save()
+                    messages.success(request, _("Leave type assign is successfull.."))
+                    with contextlib.suppress(Exception):
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=employee.employee_user_id,
+                            verb="New leave type is assigned to you",
+                            verb_ar="تم تعيين نوع إجازة جديد لك",
+                            verb_de="Ihnen wurde ein neuer Urlaubstyp zugewiesen",
+                            verb_es="Se le ha asignado un nuevo tipo de permiso",
+                            verb_fr="Un nouveau type de congé vous a été attribué",
+                            icon="people-circle",
+                            redirect="/leave/user-request-view",
+                        )
+                else:
+                    messages.info(
+                        request, _("leave type is already assigned to the employee..")
                     )
-            else:
-                messages.info(
-                    request, _("leave type is already assigned to the employee..")
-                )
+        else:
+            messages.info(
+                request, _("Compensatory leave type cant assigned manually..")
+            )
         response = render(
             request,
             "leave/leave_assign/leave_assign_one_form.html",
@@ -2471,9 +2486,11 @@ def user_request_view(request):
         request_ids = json.dumps(
             list(page_obj.object_list.values_list("id", flat=True))
         )
-
-        user_leave = AvailableLeave.objects.filter(employee_id=user.id)
-
+        user_leave = AvailableLeave.objects.filter(employee_id=user.id).exclude(
+            leave_type_id__is_compensatory_leave=True
+        )
+        if LeaveGeneralSetting.objects.first().compensatory_leave:
+            user_leave = AvailableLeave.objects.filter(employee_id=user.id)
         current_date = date.today()
         return render(
             request,
@@ -4103,12 +4120,19 @@ def delete_comment_file(request):
     ids = request.GET.getlist("ids")
     LeaverequestFile.objects.filter(id__in=ids).delete()
     leave_id = request.GET["leave_id"]
-    comments = LeaverequestComment.objects.filter(request_id=leave_id).order_by(
-        "-created_at"
-    )
+    if request.GET.get("compensatory"):
+        comments = CompensatoryLeaverequestComment.objects.filter(
+            request_id=leave_id
+        ).order_by("-created_at")
+        template = "leave/compensatory_leave/compensatory_leave_comment.html"
+    else:
+        comments = LeaverequestComment.objects.filter(request_id=leave_id).order_by(
+            "-created_at"
+        )
+        template = "leave/leave_request/leave_comment.html"
     return render(
         request,
-        "leave/leave_request/leave_comment.html",
+        template,
         {
             "comments": comments,
             "request_id": leave_id,
@@ -4121,11 +4145,16 @@ def delete_leaverequest_comment(request, comment_id):
     """
     This method is used to delete Leave request comments
     """
-    comment = LeaverequestComment.objects.get(id=comment_id)
+    if request.GET.get("compensatory"):
+        comment = CompensatoryLeaverequestComment.objects.get(id=comment_id)
+        redirect_url = "view-compensatory-leave-comment"
+    else:
+        comment = LeaverequestComment.objects.get(id=comment_id)
+        redirect_url = "leave-request-view-comment"
     leave_id = comment.request_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return redirect("leave-request-view-comment", leave_id=leave_id)
+    return redirect(redirect_url, leave_id)
 
 
 @login_required
@@ -4339,5 +4368,487 @@ def view_clashes(request, leave_request_id):
             "requests_ids": requests_ids,
             "clashed_due_to_department": clashed_due_to_department,
             "clashed_due_to_job_position": clashed_due_to_job_position,
+        },
+    )
+
+
+@login_required
+def compensatory_leave_settings_view(request):
+    enabled_compensatory = (
+        LeaveGeneralSetting.objects.exists()
+        and LeaveGeneralSetting.objects.first().compensatory_leave
+    )
+    leave_type, create = LeaveType.objects.get_or_create(
+        is_compensatory_leave=True,
+        defaults={"name": "Compensatory Leave Type", "payment": "paid"},
+    )
+    context = {"enabled_compensatory": enabled_compensatory, "leave_type": leave_type}
+    return render(request, "compensatory_settings.html", context)
+
+
+@login_required
+@permission_required("attendance.add_leavegeneralsetting")
+def enable_compensatory_leave(request):
+    """
+    This method is used to enable/disable the compensatory leave feature
+    """
+    compensatory_leave = LeaveGeneralSetting.objects.first()
+    compensatory_leave = (
+        compensatory_leave if compensatory_leave else LeaveGeneralSetting()
+    )
+    compensatory_leave.compensatory_leave = "compensatory_leave" in request.GET.keys()
+    compensatory_leave.save()
+    return HttpResponse(
+        '<div class="oh-alert-container">\n\t<div class="oh-alert oh-alert--animated {tags}">\n\t\t{message}\n\t</div>\n</div>'.format(
+            tags="success", message="Compensatory leave enabled"
+        )
+    )
+
+
+@login_required
+def get_leave_attendance_dates(request):
+    """
+    function used to return attendance dates that taken on leave days .
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return attendance dates
+    """
+    if request.GET.get("employee_id"):
+        employee = Employee.objects.get(id=request.GET.get("employee_id"))
+        holiday_attendance = get_leave_day_attendance(employee)
+        # Get a list of tuples containing (id, attendance_date)
+        attendance_dates = list(holiday_attendance.values_list("id", "attendance_date"))
+        form = CompensatoryLeaveForm()
+        form.fields["attendance_id"].choices = attendance_dates
+        attendance_id = render_to_string(
+            "leave/compensatory_leave/attendance_id.html",
+            {
+                "form": form,
+            },
+        )
+        return HttpResponse(f"{attendance_id}")
+
+
+@login_required
+def view_compensatory_leave(request):
+    """
+    function used to view compensatory leave requests.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return compensetory leave request view template
+    """
+    employee = request.user.employee_get
+    queryset = CompensatoryLeaveRequest.objects.all().order_by("-id")
+    queryset = CompensatoryLeaveRequestFilter(request.GET, queryset).qs
+    queryset = filtersubordinates(
+        request, queryset, "leave.view_compensatoryleaverequest"
+    )
+    page_number = request.GET.get("page")
+    comp_leave_requests = paginator_qry(queryset, page_number)
+    requests_ids = json.dumps(
+        list(comp_leave_requests.object_list.values_list("id", flat=True))
+    )
+    my_comp_leave_requests = CompensatoryLeaveRequest.objects.filter(
+        employee_id=employee.id
+    ).order_by("-id")
+    my_comp_leave_requests = CompensatoryLeaveRequestFilter(
+        request.GET, my_comp_leave_requests
+    ).qs
+    my_page_number = request.GET.get("m_page")
+    my_comp_leave_requests = paginator_qry(my_comp_leave_requests, my_page_number)
+    my_requests_ids = json.dumps(
+        list(my_comp_leave_requests.object_list.values_list("id", flat=True))
+    )
+    comp_leave_requests_filter = CompensatoryLeaveRequestFilter()
+    previous_data = request.GET.urlencode()
+    data_dict = parse_qs(previous_data)
+    data_dict = get_key_instances(CompensatoryLeaveRequest, data_dict)
+    context = {
+        "my_comp_leave_requests": my_comp_leave_requests,
+        "comp_leave_requests": comp_leave_requests,
+        "pd": previous_data,
+        "form": comp_leave_requests_filter.form,
+        "filter_dict": data_dict,
+        "gp_fields": LeaveAllocationRequestReGroup.fields,
+        "requests_ids": requests_ids,
+        "my_requests_ids": my_requests_ids,
+    }
+    return render(
+        request, "leave/compensatory_leave/compensatory_leave_view.html", context
+    )
+
+
+@login_required
+def filter_compensatory_leave(request):
+    """
+    function used to view compensatory leave requests.
+    """
+    field = request.GET.get("field")
+    employee = request.user.employee_get
+    page_number = request.GET.get("page")
+    my_page_number = request.GET.get("m_page")
+    previous_data = request.GET.urlencode()
+    template = "leave/compensatory_leave/compensatory_leave_req_list.html"
+
+    # Filter compensatory leave requests
+    comp_leave_requests_filtered = CompensatoryLeaveRequestFilter(
+        request.GET
+    ).qs.order_by("-id")
+    my_comp_leave_requests_filtered = CompensatoryLeaveRequest.objects.filter(
+        employee_id=employee.id
+    ).order_by("-id")
+    my_comp_leave_requests_filtered = CompensatoryLeaveRequestFilter(
+        request.GET, my_comp_leave_requests_filtered
+    ).qs
+    comp_leave_requests_filtered = filtersubordinates(
+        request, comp_leave_requests_filtered, "leave.view_leaveallocationrequest"
+    )
+
+    # Sort compensatory leave requests if requested
+    if request.GET.get("sortby"):
+        comp_leave_requests_filtered = sortby(
+            request, comp_leave_requests_filtered, "sortby"
+        )
+        my_comp_leave_requests_filtered = sortby(
+            request, my_comp_leave_requests_filtered, "sortby"
+        )
+
+    # Group compensatory leave requests if field parameter is provided
+    if field:
+        comp_leave_requests = group_by_queryset(
+            comp_leave_requests_filtered, field, page_number, "page"
+        )
+        my_comp_leave_requests = group_by_queryset(
+            my_comp_leave_requests_filtered, field, my_page_number, "m_page"
+        )
+
+        # Convert IDs to JSON format for details view
+        list_values = [entry["list"] for entry in comp_leave_requests]
+        id_list = [
+            instance.id for value in list_values for instance in value.object_list
+        ]
+        requests_ids = json.dumps(list(id_list))
+
+        list_values = [entry["list"] for entry in my_comp_leave_requests]
+        id_list = [
+            instance.id for value in list_values for instance in value.object_list
+        ]
+        my_requests_ids = json.dumps(list(id_list))
+        template = (
+            "leave/leave_allocation_request/leave_allocation_request_group_by.html"
+        )
+    else:
+        comp_leave_requests = paginator_qry(comp_leave_requests_filtered, page_number)
+        my_comp_leave_requests = paginator_qry(
+            my_comp_leave_requests_filtered, my_page_number
+        )
+        requests_ids = json.dumps(
+            list(comp_leave_requests.object_list.values_list("id", flat=True))
+        )
+        my_requests_ids = json.dumps(
+            list(my_comp_leave_requests.object_list.values_list("id", flat=True))
+        )
+
+    # Parse previous data and construct context for filter tag
+    data_dict = parse_qs(previous_data)
+    data_dict = get_key_instances(CompensatoryLeaveRequest, data_dict)
+    data_dict.pop("m_page", None)
+
+    context = {
+        "comp_leave_requests": comp_leave_requests,
+        "my_comp_leave_requests": my_comp_leave_requests,
+        "pd": previous_data,
+        "filter_dict": data_dict,
+        "field": field,
+        "requests_ids": requests_ids,
+        "my_requests_ids": my_requests_ids,
+    }
+    return render(request, template, context=context)
+
+
+@login_required
+def create_compensatory_leave(request, comp_id=None):
+    """
+    function used to create or update compensatory leave request.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return leave allocation request form template
+    POST : return leave allocation request view
+    """
+    employee = request.user.employee_get
+    template = "leave/compensatory_leave/comp_leave_form.html"
+    instance = None
+    if comp_id != None:
+        instance = CompensatoryLeaveRequest.objects.get(id=comp_id)
+    form = CompensatoryLeaveForm(instance=instance)
+    if request.method == "POST":
+        form = CompensatoryLeaveForm(request.POST, instance=instance)
+        if form.is_valid():
+            comp_req = form.save()
+            comp_req.requested_days = attendance_days(
+                comp_req.employee_id, comp_req.attendance_id.all()
+            )
+            comp_req.save()
+            if comp_id != None:
+                messages.success(request, _("Compensatory Leave updated."))
+            else:
+                messages.success(request, _("Compensatory Leave created."))
+            return HttpResponse("<script>window.location.reload();</script>")
+
+    context = {
+        "employee": employee,
+        "form": form,
+    }
+    return render(request, template, context)
+
+
+@login_required
+def delete_compensatory_leave(request, comp_id):
+    """
+    function used to delete compensatory leave request,
+    and reload the list view of compensatory leave requests.
+    """
+    try:
+        comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_id).delete()
+        messages.success(request, _("Compensatory leave request deleted."))
+
+    except:
+        messages.error(request, _("Sorry, something went wrong!"))
+    return redirect(filter_compensatory_leave)
+
+
+@login_required
+def approve_compensatory_leave(request, comp_id):
+    """
+    function used to approve compensatory leave request,
+    and reload the list view of compensatory leave requests.
+    """
+    try:
+        comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_id)
+        if comp_leave_req.status == "requested":
+            comp_leave_req.status = "approved"
+            comp_leave_req.assign_compensatory_leave_type()
+            comp_leave_req.save()
+            messages.success(request, _("Compensatory leave request approved."))
+            with contextlib.suppress(Exception):
+                notify.send(
+                    request.user.employee_get,
+                    recipient=comp_leave_req.employee_id.employee_user_id,
+                    verb="Your compensatory leave request has been rejected",
+                    verb_ar="تمت الموافقة على طلب إجازة الاعتذار الخاص بك",
+                    verb_de="Ihr Antrag auf Freizeitausgleich wurde genehmigt",
+                    verb_es="Su solicitud de permiso compensatorio ha sido aprobada",
+                    verb_fr="Votre demande de congé compensatoire a été approuvée",
+                    redirect=f"/leave/view-compensatory-leave?id={comp_leave_req.id}",
+                )
+        else:
+            messages.info(
+                request,
+                _("The compensatory leave request is not in the 'requested' status."),
+            )
+    except:
+        messages.error(request, _("Sorry, something went wrong!"))
+    return redirect(filter_compensatory_leave)
+
+
+@login_required
+@permission_required(perm="leave.delete_compensatoryleaverequest")
+def reject_compensatory_leave(request, comp_id):
+    """
+    function used to Reject compensatoey leave request.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    comp_id : compensatory leave request id
+
+    Returns:
+    GET : It returns to the default compensatory leave request view template.
+
+    """
+    comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_id)
+    if comp_leave_req.status == "requested" or comp_leave_req.status == "approved":
+        form = CompensatoryLeaveRequestRejectForm()
+        if request.method == "POST":
+            form = CompensatoryLeaveRequestRejectForm(request.POST)
+            if form.is_valid():
+                comp_leave_req.reject_reason = form.cleaned_data["reason"]
+                comp_leave_req.status = "rejected"
+                comp_leave_req.exclude_compensatory_leave()
+                comp_leave_req.save()
+                messages.success(request, _("Compensatory Leave request rejected."))
+                with contextlib.suppress(Exception):
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=comp_leave_req.employee_id.employee_user_id,
+                        verb="Your compensatory leave request has been rejected",
+                        verb_ar="تم رفض طلبك للإجازة التعويضية",
+                        verb_de="Ihr Antrag auf Freizeitausgleich wurde abgelehnt",
+                        verb_es="Se ha rechazado su solicitud de permiso compensatorio",
+                        verb_fr="Votre demande de congé compensatoire a été rejetée",
+                        redirect=f"/leave/view-compensatory-leave?id={comp_leave_req.id}",
+                    )
+                return HttpResponse("<script>location.reload();</script>")
+        return render(
+            request,
+            "leave/compensatory_leave/compensatory_leave_reject_form..html",
+            {"form": form, "comp_id": comp_id},
+        )
+    else:
+        messages.error(request, _("The leave allocation request can't be rejected"))
+        return HttpResponse("<script>location.reload();</script>")
+
+
+@login_required
+def view_compensatory_leave_comment(request, comp_leave_id):
+    """
+    This method is used to show Leave request comments
+    """
+    comments = CompensatoryLeaverequestComment.objects.filter(
+        request_id=comp_leave_id
+    ).order_by("-created_at")
+    no_comments = False
+    if not comments.exists():
+        no_comments = True
+
+    if request.FILES:
+        files = request.FILES.getlist("files")
+        comment_id = request.GET["comment_id"]
+        comment = CompensatoryLeaverequestComment.objects.get(id=comment_id)
+        attachments = []
+        for file in files:
+            file_instance = LeaverequestFile()
+            file_instance.file = file
+            file_instance.save()
+            attachments.append(file_instance)
+        comment.files.add(*attachments)
+
+    return render(
+        request,
+        "leave/compensatory_leave/compensatory_leave_comment.html",
+        {"comments": comments, "no_comments": no_comments, "request_id": comp_leave_id},
+    )
+
+
+@login_required
+def create_compensatory_leave_comment(request, comp_leave_id):
+    """
+    This method renders form and template to create Compensatory leave comments
+    """
+    comp_leave = CompensatoryLeaveRequest.objects.filter(id=comp_leave_id).first()
+    emp = request.user.employee_get
+    form = CompensatoryLeaveRequestcommentForm(
+        initial={"employee_id": emp.id, "request_id": comp_leave}
+    )
+    target = request.GET.get("target")
+    url = "request-filter" if target == "leaveRequest" else "user-request-filter"
+    previous_data = request.GET.urlencode()
+    if request.method == "POST":
+        form = CompensatoryLeaveRequestcommentForm(request.POST)
+        if form.is_valid():
+            form.instance.employee_id = emp
+            form.instance.request_id = comp_leave
+            form.save()
+            comments = CompensatoryLeaverequestComment.objects.filter(
+                request_id=comp_leave
+            ).order_by("-created_at")
+            no_comments = False
+            if not comments.exists():
+                no_comments = True
+            form = CompensatoryLeaveRequestcommentForm(
+                initial={"employee_id": emp.id, "request_id": comp_leave}
+            )
+            messages.success(request, _("Comment added successfully!"))
+
+            if (
+                comp_leave.employee_id.employee_work_info.reporting_manager_id
+                is not None
+            ):
+                if request.user.employee_get.id == comp_leave.employee_id.id:
+                    rec = (
+                        comp_leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                    )
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=rec,
+                        verb=f"{comp_leave.employee_id}'s Compensatory leave request has received a comment.",
+                        verb_ar=f"تلقى طلب إجازة الاعتذار لـ {comp_leave.employee_id} تعليقًا.",
+                        verb_de=f"Der Antrag auf Freizeitausgleich von {comp_leave.employee_id} hat einen Kommentar erhalten.",
+                        verb_es=f"La solicitud de permiso compensatorio de {comp_leave.employee_id} ha recibido un comentario.",
+                        verb_fr=f"La demande de congé compensatoire de {comp_leave.employee_id} a reçu un commentaire.",
+                        redirect=f"/leave/view-compensatory-leave?id={comp_leave.id}",
+                        icon="chatbox-ellipses",
+                    )
+                elif (
+                    request.user.employee_get.id
+                    == comp_leave.employee_id.employee_work_info.reporting_manager_id.id
+                ):
+                    rec = comp_leave.employee_id.employee_user_id
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=rec,
+                        verb="Your compensatory leave request has received a comment.",
+                        verb_ar="تلقى طلب إجازة العوض الخاص بك تعليقًا.",
+                        verb_de="Ihr Antrag auf Freizeitausgleich hat einen Kommentar erhalten.",
+                        verb_es="Su solicitud de permiso compensatorio ha recibido un comentario.",
+                        verb_fr="Votre demande de congé compensatoire a reçu un commentaire.",
+                        redirect=f"/leave/view-compensatory-leave?id={comp_leave.id}",
+                        icon="chatbox-ellipses",
+                    )
+                else:
+                    rec = [
+                        comp_leave.employee_id.employee_user_id,
+                        comp_leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    ]
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=rec,
+                        verb=f"{comp_leave.employee_id}'s compensatory leave request has received a comment.",
+                        verb_ar=f"تلقى طلب إجازة التعويض لـ {comp_leave.employee_id} تعليقًا.",
+                        verb_de=f"Der Antrag auf Freizeitausgleich von {comp_leave.employee_id} hat einen Kommentar erhalten.",
+                        verb_es=f"El pedido de permiso compensatorio de {comp_leave.employee_id} ha recibido un comentario.",
+                        verb_fr=f"La demande de congé compensatoire de {comp_leave.employee_id} a reçu un commentaire.",
+                        redirect=f"/leave/view-compensatory-leave?id={comp_leave.id}",
+                        icon="chatbox-ellipses",
+                    )
+            else:
+                rec = comp_leave.employee_id.employee_user_id
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb="Your compensatory leave request has received a comment.",
+                    verb_ar="تلقى طلب إجازة العوض الخاص بك تعليقًا.",
+                    verb_de="Ihr Antrag auf Freizeitausgleich hat einen Kommentar erhalten.",
+                    verb_es="Su solicitud de permiso compensatorio ha recibido un comentario.",
+                    verb_fr="Votre demande de congé compensatoire a reçu un commentaire.",
+                    redirect=f"/leave/view-compensatory-leave?id={comp_leave.id}",
+                    icon="chatbox-ellipses",
+                )
+            return render(
+                request,
+                "leave/compensatory_leave/compensatory_leave_comment.html",
+                {
+                    "comments": comments,
+                    "no_comments": no_comments,
+                    "request_id": comp_leave_id,
+                },
+            )
+    return render(
+        request,
+        "leave/compensatory_leave/compensatory_leave_comment.html",
+        {
+            "form": form,
+            "request_id": comp_leave_id,
+            "pd": previous_data,
+            "target": target,
+            "url": url,
         },
     )

@@ -1,0 +1,71 @@
+{% load i18n %}
+{% include 'filter_tags.html' %}
+<style>
+  .oh-modal_close--custom {
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    opacity: 0.7;
+    position: absolute;
+    top: 25px;
+    right: 15px;
+  }
+  .oh-timeoff-card__stat-container, .oh-timeoff-modal__stats-container{
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .oh-timeoff-modal__stat-title{
+    margin-top: 10px;
+  }
+</style>
+<div class="oh-label__info" for="application_tracking">
+  <label class="oh-label fw-bold" for="application_tracking">{% trans "Compensatory Leave Type" %}</label> 
+  <span class="oh-info mr-2" title="{% trans "This leave type will be used for assigning compensatory leaves." %}">
+  </span> 
+</div>
+<div class="oh-layout--grid-3" >
+    {% comment %} {% for leave_type in leave_types %} {% endcomment %}
+          <div class="oh-kanban-card {% if leave_type.payment == 'paid' %} row-status--yellow {% else %} row-status--orange {% endif %}"
+            data-toggle="oh-modal-toggle" data-target="#objectDetailsModal"
+            hx-get="{% url 'leave-type-individual-view' leave_type.id %}?instances_ids={{requests_ids}}&compensatory=True" hx-target="#objectDetailsModalTarget">
+            <div class="oh-kanban-card__avatar">
+              <div class="oh-kanban-card__profile-container">
+                <img src="{{leave_type.get_avatar}}" class="oh-kanban-card__profile-image" alt="Username" />
+              </div>
+            </div>
+    
+            <div class="oh-kanban-card__details">
+              <span class="oh-card__title oh-card__title--sm fw-bold" style="font-size:18px;">{{leave_type.name}}</span>
+              <div class="oh-timeoff-modal__stats-container mb-1">
+                <div class="oh-timeoff-modal__stat mt-1">
+                  <span class="oh-timeoff-modal__stat-title fw-bold text-dark ">{% trans "Payment" %}</span>
+                  <span class="oh-timeoff-modal__stat-title">{{leave_type.get_payment_display}}</span>
+                </div>
+                <div class="oh-timeoff-modal__stat mt-1">
+                  <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Total Days" %}</span>
+                  <span class="oh-timeoff-modal__stat-title">{{leave_type.total_days}}</span>
+                </div>
+              </div>
+            </div>
+    
+            {% if perms.leave.change_leavetype or perms.leave.delete_leavetype %}
+              <div class="oh-kanban-card__dots" onclick="event.stopPropagation()">
+                <div class="oh-dropdown" x-data="{show: false}">
+                  <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show">
+                    <span title='{% trans "Actions" %}'> <ion-icon name="ellipsis-vertical-sharp"></ion-icon></span>
+                  </button>
+                  <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" style="display: none;"
+                    @click.outside="show = false">
+                    <ul class="oh-dropdown__items">
+                      {% if perms.leave.change_leavetype %}
+                      <li class="oh-dropdown__item">
+                        <a href="{% url 'type-update' leave_type.id %}?compensatory=True" class="oh-dropdown__link">{% trans "Edit" %}</a>
+                      </li>
+                      {% endif %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+    {% comment %} {% endfor %} {% endcomment %}
+    </div>

@@ -1,0 +1,33 @@
+{% extends 'settings.html' %}
+{% load i18n %}
+{% block settings %}{% load static %}
+<div class="oh-inner-sidebar-content">
+    {% comment %} {% if perms.helpdesk.view_tickettype %} {% endcomment %}
+        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Compensatory Leave" %}</h2>
+        </div>
+        <form  hx-get="{% url 'enable-compensatory-leave' %}" hx-swap="none">
+          <div class="oh-label__info" for="application_tracking">
+            <label class="oh-label" for="application_tracking">{% trans "Compensatory Leave Request" %}</label> 
+            <span class="oh-info mr-2" title="{% trans "By enabling this normal users can request for compensatory leave" %}">
+            </span> 
+          </div>
+          <div class="oh-switch p-3">
+            <input type="checkbox" class="oh-switch__checkbox" name="compensatory_leave" onchange="
+                  $(this).closest('form').find('input[type=submit]').click();
+                  setTimeout(function() {
+                      window.location.reload();
+                  }, 300); // Reload after 2 seconds
+              " {% if enabled_compensatory %} checked{% endif %} />
+
+            {% comment %} <input type="checkbox"class="oh-switch__checkbox" name="compensatory_leave" onchange="$(this).closest('form').find('input[type=submit]').click();$('#leave_type_div').toggleClass('d-none');window.location.reload()" {% if enabled_compensatory %} checked{% endif %} /> {% endcomment %}
+          </div>
+          <input type="submit" hidden />
+        </form>
+        <div class="oh-inner-sidebar-content__footer"></div>
+        <div class="{% if not enabled_compensatory %} d-none {% endif %}" id="leave_type_div">
+          {% include "leave/compensatory_leave/compensatory_leave_type.html" %} 
+        <div>
+			{% comment %} {% if perms.helpdesk.add_tickettype %} {% endcomment %}
+</div>
+{% endblock settings %}
