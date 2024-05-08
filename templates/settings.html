@@ -359,6 +359,32 @@
 						<li class="oh-inner-sidebar__item">
 							<div class="oh-accordion ms-2">
 								<div class="oh-accordion-header" style="font-size:16px;">
+									<ion-icon name="close-circle-outline" class="me-2"></ion-icon>
+									{% trans "Leave" %}
+								</div>
+									<div class="oh-accordion-body">
+										<div class="row">
+										<div class="col-sm-12 col-md-12 col-lg-12">
+											<div class="oh-input-group">
+												{% if perms.attendance.view_attendancevalidationcondition %}
+													<a
+														id="condition"
+														href="{% url 'compensatory-leave-settings-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Compensatory Leave" %}</a
+													>
+												{% endif %}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</li>
+						<hr>
+
+						<li class="oh-inner-sidebar__item">
+							<div class="oh-accordion ms-2">
+								<div class="oh-accordion-header" style="font-size:16px;">
 									<ion-icon name="headset" class="me-2"></ion-icon>
 									{% trans "Help Desk" %}
 								</div>

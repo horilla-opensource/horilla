@@ -499,6 +499,7 @@ form label {
 
 .d-none{
     display: none !important;
+}
 
 .oh-sidebar__company {
     position: sticky;

@@ -16,7 +16,7 @@
       title="{{ field.help_text|safe }}"
       >{% trans field.label %}</label
       >
-      <div style="width: 100%; padding: 12px;">
+      <div style="width: 100%; padding: 12px;" id="id_{{ field.name }}_parent_div">
 
         {{ field|add_class:"form-control" }}
       </div>

@@ -106,7 +106,8 @@ from horilla_documents.forms import (
     DocumentUpdateForm,
 )
 from horilla_documents.models import Document, DocumentRequest
-from leave.models import LeaveRequest
+from leave.methods import get_leave_day_attendance
+from leave.models import LeaveGeneralSetting, LeaveRequest
 from notifications.signals import notify
 from onboarding.models import OnboardingStage, OnboardingTask
 from payroll.methods.payslip_calc import dynamic_attr
@@ -174,7 +175,11 @@ def employee_profile(request):
     """
     user = request.user
     employee = request.user.employee_get
-    user_leaves = employee.available_leave.all()
+    user_leaves = employee.available_leave.all().exclude(
+        leave_type_id__is_compensatory_leave=True
+    )
+    if LeaveGeneralSetting.objects.first().compensatory_leave:
+        user_leaves = employee.available_leave.all()
     instances = LeaveRequest.objects.filter(employee_id=employee)
     leave_request_ids = json.dumps([instance.id for instance in instances])
     employee = Employee.objects.filter(employee_user_id=user).first()

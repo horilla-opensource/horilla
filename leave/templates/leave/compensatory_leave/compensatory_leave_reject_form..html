@@ -1,0 +1,38 @@
+{% load i18n %} {% if form.errors %}
+<!-- form errors  -->
+<div class="oh-wrapper">
+  <div class="oh-alert-container">
+    {% for error in form.non_field_errors %}
+    <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+<div class="oh-modal__dialog-header">
+  <h2 class="oh-modal__dialog-title" id="rejectTitle">
+    {% trans "Reject Compensatory Leave Request" %}
+  </h2>
+  <button
+    class="oh-modal_close--custom"
+    aria-label="Close"
+    onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<form
+  hx-post="{% url 'reject-compensatory-leave' comp_id %}"
+  hx-encoding="multipart/form-data"
+>
+  <div class="oh-modal__dialog-body">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <label class="oh-label">{% trans "Reason" %}</label>
+      {{form.reason}} {{form.errors}}
+    </div>
+    <div class="d-flex flex-row-reverse">
+      <button type="submit" class="oh-btn oh-btn--secondary">
+        {% trans "Submit" %}
+      </button>
+    </div>
+  </div>
+</form>

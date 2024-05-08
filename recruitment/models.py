@@ -464,15 +464,9 @@ class Candidate(HorillaModel):
             interview_info += "<tr><th>Sl No.</th><th>Date</th><th>Time</th><th>Is Completed</th></tr>"
             for index, interview in enumerate(interviews, start=1):
                 interview_info += f"<tr><td>{index}</td>"
-                interview_info += (
-                    f"<td class='dateformat_changer'>{interview.interview_date}</td>"
-                )
-                interview_info += (
-                    f"<td class='timeformat_changer'>{interview.interview_time}</td>"
-                )
-                interview_info += (
-                    f"<td>{'Yes' if interview.completed else 'No'}</td></tr>"
-                )
+                interview_info += f"<td class='dateformat_changer'>{interview.interview_date}</td>"
+                interview_info += f"<td class='timeformat_changer'>{interview.interview_time}</td>"
+                interview_info += f"<td>{'Yes' if interview.completed else 'No'}</td></tr>"
             interview_info += "</table>"
             return interview_info
         else:

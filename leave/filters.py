@@ -22,6 +22,7 @@ from employee.models import Employee
 from .models import (
     AvailableLeave,
     CompanyLeave,
+    CompensatoryLeaveRequest,
     Holiday,
     LeaveAllocationRequest,
     LeaveRequest,
@@ -575,3 +576,78 @@ class RestrictLeaveFilter(FilterSet):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+
+
+class CompensatoryLeaveRequestFilter(FilterSet):
+    """
+    Filter class for CompensatoryLeaveRequest model specific to user leave requests.
+    This filter allows searching user-specific LeaveRequest objects
+    based on leave type, date range, and status.
+    """
+
+    id = django_filters.NumberFilter(field_name="id")
+
+    leave_type = filters.CharFilter(
+        field_name="leave_type_id__name", lookup_expr="icontains"
+    )
+    search = filters.CharFilter(method="filter_by_name")
+    created_by__employee_get = django_filters.CharFilter(
+        field_name="created_by__employee_get",
+        lookup_expr="exact",
+        widget=forms.SelectMultiple(attrs={"class": "form-control"}),
+    )
+    number_of_days_up_to = filters.NumberFilter(
+        field_name="requested_days", lookup_expr="lte"
+    )
+    number_of_days_more_than = filters.NumberFilter(
+        field_name="requested_days", lookup_expr="gte"
+    )
+
+    class Meta:
+        """
+        Meta class defines the model and fields to filter
+        """
+
+        model = CompensatoryLeaveRequest
+        fields = {
+            "id": ["exact"],
+            "created_by__employee_get": ["exact"],
+            "status": ["exact"],
+            "leave_type_id": ["exact"],
+            "employee_id": ["exact"],
+        }
+
+    def filter_by_name(self, queryset, name, value):
+        # Call the imported function
+        filter_method = {
+            "leave_type": "leave_type_id__name__icontains",
+            "status": "status__icontains",
+            "department": "employee_id__employee_work_info__department_id__department__icontains",
+            "job_position": "employee_id__employee_work_info__job_position_id__job_position__icontains",
+            "company": "employee_id__employee_work_info__company_id__company__icontains",
+        }
+        search_field = self.data.get("search_field")
+        if not search_field:
+            parts = value.split()
+            first_name = parts[0]
+            last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
+
+            # Filter the queryset by first name and last name
+            if first_name and last_name:
+                queryset = queryset.filter(
+                    employee_id__employee_first_name__icontains=first_name,
+                    employee_id__employee_last_name__icontains=last_name,
+                )
+            elif first_name:
+                queryset = queryset.filter(
+                    employee_id__employee_first_name__icontains=first_name
+                )
+            elif last_name:
+                queryset = queryset.filter(
+                    employee_id__employee_last_name__icontains=last_name
+                )
+        else:
+            filter = filter_method.get(search_field)
+            queryset = queryset.filter(**{filter: value})
+
+        return queryset

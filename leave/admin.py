@@ -9,9 +9,11 @@ from simple_history.admin import SimpleHistoryAdmin
 from .models import (
     AvailableLeave,
     CompanyLeave,
+    CompensatoryLeaveRequest,
     Holiday,
     LeaveAllocationRequest,
     LeaveallocationrequestComment,
+    LeaveGeneralSetting,
     LeaveRequest,
     LeaverequestComment,
     LeaveRequestConditionApproval,
@@ -30,3 +32,5 @@ admin.site.register(LeaveRequestConditionApproval)
 admin.site.register(LeaverequestComment)
 admin.site.register(LeaveallocationrequestComment)
 admin.site.register(RestrictLeave)
+admin.site.register(CompensatoryLeaveRequest)
+admin.site.register(LeaveGeneralSetting)

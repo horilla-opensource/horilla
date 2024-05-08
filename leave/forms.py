@@ -10,13 +10,14 @@ from typing import Any
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.forms import ModelForm
 from django.forms.widgets import TextInput
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from base import thread_local_middleware
-from base.methods import reload_queryset
+from base.methods import filtersubordinates, reload_queryset
 from base.models import Department
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
@@ -28,12 +29,15 @@ from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from .methods import (
     calculate_requested_days,
     company_leave_dates_list,
+    get_leave_day_attendance,
     holiday_dates_list,
     leave_requested_dates,
 )
 from .models import (
     AvailableLeave,
     CompanyLeave,
+    CompensatoryLeaveRequest,
+    CompensatoryLeaverequestComment,
     Holiday,
     LeaveAllocationRequest,
     LeaveallocationrequestComment,
@@ -1250,3 +1254,129 @@ class RestrictLeaveForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(RestrictLeaveForm, self).__init__(*args, **kwargs)
         self.fields["title"].widget.attrs["autocomplete"] = "title"
+
+
+class CompensatoryLeaveForm(ModelForm):
+    """
+    Form for creating a leave allocation request.
+
+    This form allows users to create a leave allocation request by specifying
+    details such as leave type, employee, requested days, description, and attachment.
+
+    Methods:
+        - as_p: Render the form fields as HTML table rows with Bootstrap styling.
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        attendance_id = forms.MultipleChoiceField(required=True)
+        model = CompensatoryLeaveRequest
+        fields = [
+            # "leave_type_id",
+            "employee_id",
+            "attendance_id",
+            # "requested_days",
+            "description",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        from attendance.models import Attendance
+
+        super(CompensatoryLeaveForm, self).__init__(*args, **kwargs)
+
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        instance_id = None
+        if self.instance:
+            instance_id = self.instance.id
+        if (
+            request
+            and hasattr(request, "user")
+            and hasattr(request.user, "employee_get")
+        ):
+            employee = request.user.employee_get
+            holiday_attendance = get_leave_day_attendance(employee, comp_id=instance_id)
+            # Get a list of tuples containing (id, attendance_date)
+            attendance_dates = list(
+                holiday_attendance.values_list("id", "attendance_date")
+            )
+            # Set the queryset of attendance_id to the attendance_dates
+            self.fields["attendance_id"].choices = attendance_dates
+        self.fields["employee_id"].widget.attrs.update(
+            {
+                "hx-target": "#id_attendance_id_parent_div",
+                "hx-trigger": "change",
+                "hx-get": "/leave/get-leave-attendance-dates",
+            }
+        )
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
+
+    def clean(self):
+        cleaned_data = super().clean()
+        attendance_id = cleaned_data.get("attendance_id")
+        employee = cleaned_data.get("employee_id")
+        attendance_repeat = False
+        instance_id = None
+        if self.instance:
+            instance_id = self.instance.id
+        for attendance in attendance_id:
+            if (
+                CompensatoryLeaveRequest.objects.filter(
+                    employee_id=employee, attendance_id=attendance
+                )
+                .exclude(Q(id=instance_id) | Q(status="rejected"))
+                .exists()
+            ):
+                attendance_repeat = True
+                break
+        if attendance_repeat:
+            raise forms.ValidationError(
+                {
+                    "attendance_id": "This attendance is already converted to complimentory leave"
+                }
+            )
+        return cleaned_data
+
+
+class CompensatoryLeaveRequestRejectForm(forms.Form):
+    """
+    Form for rejecting a compensatory leave request.
+
+    This form allows administrators to provide a rejection reason when rejecting
+    a compensatory leave request.
+
+    Attributes:
+        - reason: A CharField representing the reason for rejecting the  compensatory leave request.
+    """
+
+    reason = forms.CharField(
+        label=_("Rejection Reason"),
+        widget=forms.Textarea(attrs={"rows": 4, "class": "p-4 oh-input w-100"}),
+    )
+
+    class Meta:
+        model = CompensatoryLeaveRequest
+        fields = ["reject_reason"]
+
+
+class CompensatoryLeaveRequestcommentForm(ModelForm):
+    """
+    LeaverequestComment form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = CompensatoryLeaverequestComment
+        fields = ("comment",)

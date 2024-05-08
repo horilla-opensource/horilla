@@ -1,6 +1,8 @@
 import calendar
 from datetime import datetime, timedelta
 
+from django.db.models import Q
+
 
 def calculate_requested_days(
     start_date, end_date, start_date_breakdown, end_date_breakdown
@@ -102,3 +104,63 @@ def company_leave_dates_list(company_leaves, start_date):
                         if date not in company_leave_dates:
                             company_leave_dates.append(date)
     return company_leave_dates
+
+
+def get_leave_day_attendance(employee, comp_id=None):
+    """
+    This function returns a queryset of attendance on leave dates
+    """
+    from attendance.filters import AttendanceFilters
+    from attendance.models import Attendance
+    from leave.models import CompensatoryLeaveRequest, LeaveRequest
+
+    holiday_dates = LeaveRequest.holiday_dates(None)
+    company_leave_dates = LeaveRequest.company_leave_dates(None)
+    leave_day_attendance = Attendance.objects.none()
+    converted_dates = []
+    if (
+        CompensatoryLeaveRequest.objects.filter(employee_id=employee)
+        .exclude(Q(id=comp_id) | Q(status="rejected"))
+        .exists()
+    ):
+        comp_leave_reqs = CompensatoryLeaveRequest.objects.filter(
+            employee_id=employee
+        ).exclude(Q(id=comp_id) | Q(status="rejected"))
+        attendances = Attendance.objects.none()  # Empty queryset to start with
+        for req in comp_leave_reqs:
+            attendances |= req.attendance_id.all()
+        converted_dates = [attendance.attendance_date for attendance in attendances]
+    leave_dates = set(company_leave_dates + holiday_dates) - set(converted_dates)
+    for leave_day in leave_dates:
+        attendance_qs = AttendanceFilters(
+            {"employee": employee.id, "attendance_date": leave_day}
+        ).qs
+        if attendance_qs.exists():
+            leave_day_attendance |= attendance_qs
+
+    return leave_day_attendance
+
+
+def attendance_days(employee, attendances):
+    """
+    This function returns count of workrecord from the attendance
+    """
+    from payroll.models.models import WorkRecord
+
+    attendance_days = 0
+    for attendance in attendances:
+        if WorkRecord.objects.filter(
+            employee_id=employee, date=attendance.attendance_date
+        ).exists():
+            work_record_type = (
+                WorkRecord.objects.filter(
+                    employee_id=employee, date=attendance.attendance_date
+                )
+                .first()
+                .work_record_type
+            )
+            if work_record_type == "HDP":
+                attendance_days += 0.5
+            elif work_record_type == "FDP":
+                attendance_days += 1
+    return attendance_days

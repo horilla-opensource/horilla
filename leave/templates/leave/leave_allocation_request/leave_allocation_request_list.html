@@ -58,7 +58,7 @@
                                 </div>
                                 <div class="oh-sticky-table__td ">{{leave_allocation_request.leave_type_id}}</div>
                                 <div class="oh-sticky-table__td ">{{leave_allocation_request.requested_days}}</div>
-                                <div class="oh-sticky-table__td ">{{leave_allocation_request.created_by}}</div>
+                                <div class="oh-sticky-table__td ">{{leave_allocation_request.created_by.employee_get}}</div>
                                 <div class="oh-sticky-table__td ">{{leave_allocation_request.get_status_display}}</div>
                                 <div class="oh-sticky-table__td ">{{ leave_allocation_request.description|truncatechars:25}}</div>
 
@@ -202,7 +202,7 @@
                                     </div>
                                     <div class="oh-sticky-table__td">{{leave_allocation_request.leave_type_id}}</div>
                                     <div class="oh-sticky-table__td">{{leave_allocation_request.requested_days}}</div>
-                                    <div class="oh-sticky-table__td">{{leave_allocation_request.created_by}}</div>
+                                    <div class="oh-sticky-table__td">{{leave_allocation_request.created_by.employee_get}}</div>
                                     <div class="oh-sticky-table__td">{{leave_allocation_request.get_status_display}}</div>
                                     <div class="oh-sticky-table__td">{{ leave_allocation_request.description|truncatechars:20}}</div>
 

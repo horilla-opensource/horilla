@@ -1,5 +1,5 @@
 {% load static %} {% load i18n %} {% load attendancefilters offboarding_filter %}
-{% load recruitmentfilters %} {% load onboardingfilters %} {% load basefilters %}
+{% load recruitmentfilters %} {% load onboardingfilters %} {% load basefilters %} {% load leavefilters %}
 <script>
   function activeNav(id) {
     const navElement = $(`#${id}`);
@@ -578,6 +578,15 @@
                 >{% trans "Leave Allocation Requests" %}</a
               >
             </li>
+            {% if request.user|is_compensatory %}
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="{% url 'view-compensatory-leave' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Compensatory Leave Requests" %}</a
+              >
+            </li>
+            {% endif %}
             {% if not perms.leave.add_holiday %}
 
               <li class="oh-sidebar__submenu-item">

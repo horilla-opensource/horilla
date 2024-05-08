@@ -52,7 +52,7 @@
               <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" style="display: none;"
                 @click.outside="show = false">
                 <ul class="oh-dropdown__items">
-                  {% if perms.leave.add_availableleave %}
+                  {% if perms.leave.add_availableleave and not leave_type.is_compensatory_leave %}
                     <li class="oh-dropdown__item">
                       <a href="#" class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#editModal"
                         hx-get="{% url 'assign-one' leave_type.id %}" hx-target="#leaveForm">{% trans "Assign Leave" %}</a>
