@@ -430,6 +430,13 @@
           $(".toggle-highlight").removeClass("toggle-highlight")
       }, 200);
     }
+
+$(document).on("htmx:beforeRequest", function (event, data) {
+  var response = event.detail.xhr.response;
+  var target = $(event.detail.elt.getAttribute("hx-target"));
+  target.html(`<div class="animated-background"></div>`)
+});
+
   </script>
   <script>
     document.body.addEventListener('htmx:configRequest', (event) => {
