@@ -1288,6 +1288,7 @@ def interview_filter_view(request):
     )
 
 
+@login_required
 def interview_view(request):
     """
     This method render all interviews to the template
@@ -1321,6 +1322,7 @@ def interview_view(request):
 
 
 @login_required
+@manager_can_enter(perm="recruitment.change_interviewschedule")
 def interview_employee_remove(request, interview_id, employee_id):
     """
     This view is used to remove the employees from the meeting ,

@@ -7,6 +7,9 @@ This module is used to register context processors without effecting the horilla
 from horilla.settings import TEMPLATES
 
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
+    "horilla.config.get_MENUS",
+)
+TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "base.context_processors.get_companies",
 )
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(

@@ -1329,6 +1329,31 @@ def contract_bulk_delete(request):
     return JsonResponse({"message": "Success"})
 
 
+def equalize_lists_length(allowances, deductions):
+    """
+    Equalize the lengths of two lists by appending empty dictionaries to the shorter list.
+
+    Args:
+    deductions (list): List of dictionaries representing deductions.
+    allowances (list): List of dictionaries representing allowances.
+
+    Returns:
+    tuple: Tuple containing two lists with equal lengths.
+    """
+    num_deductions = len(deductions)
+    num_allowances = len(allowances)
+
+    while num_deductions < num_allowances:
+        deductions.append({"title": "", "amount": ""})
+        num_deductions += 1
+
+    while num_allowances < num_deductions:
+        allowances.append({"title": "", "amount": ""})
+        num_allowances += 1
+
+    return deductions, allowances
+
+
 def payslip_pdf(request, id):
     payslip = Payslip.objects.get(id=id)
     if (
@@ -1396,6 +1421,18 @@ def payslip_pdf(request, id):
         data["json_data"]["payslip"] = payslip.id
         data["instance"] = payslip
         data["currency"] = PayrollSettings.objects.first().currency_symbol
+        data["all_deductions"] = []
+        for deduction_list in [
+            data["basic_pay_deductions"],
+            data["gross_pay_deductions"],
+            data["pretax_deductions"],
+            data["post_tax_deductions"],
+            data["tax_deductions"],
+            data["net_deductions"],
+        ]:
+            data["all_deductions"].extend(deduction_list)
+        equalize_lists_length(data["allowances"], data["all_deductions"])
+        data["zipped_data"] = zip(data["allowances"], data["all_deductions"])
 
     return generate_pdf("payroll/payslip/individual_pdf.html", context=data)
 

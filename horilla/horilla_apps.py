@@ -20,3 +20,17 @@ SETTINGS_EMAIL_BACKEND = getattr(settings, "EMAIL_BACKEND", False)
 setattr(settings, "EMAIL_BACKEND", "base.backends.ConfiguredEmailBackend")
 if SETTINGS_EMAIL_BACKEND:
     setattr(settings, "EMAIL_BACKEND", SETTINGS_EMAIL_BACKEND)
+
+
+SIDEBARS = [
+    "recruitment",
+    "onboarding",
+    "employee",
+    "attendance",
+    "leave",
+    "payroll",
+    "pms",
+    "offboarding",
+    "asset",
+    "helpdesk",
+]
