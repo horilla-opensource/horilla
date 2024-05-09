@@ -15,6 +15,11 @@
 </div>
 {% endif %}
 <!-- end of messages -->
+<div class="d-flex" style="flex-direction: row-reverse;">
+  <div id="successMessage" style="display:none;" class="oh-alert oh-alert--animated oh-alert--success w-25">
+    {% trans "Report added successfully." %}
+  </div>
+</div>
 <!-- new acordian  -->
   {% include 'filter_tags.html' %}
   <div class="oh-card" id="assetFiltered">

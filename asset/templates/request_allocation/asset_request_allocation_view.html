@@ -316,6 +316,12 @@
     </div>
   </section>
 
+  <div class="d-flex" style="flex-direction: row-reverse;">
+    <div id="successMessage" style="display:none;" class="oh-alert oh-alert--animated oh-alert--success w-25">
+      {% trans "Report added successfully." %}
+    </div>
+  </div>
+
   <div class="oh-wrapper">
     <div class="oh-tabs">
       <ul class="oh-tabs__tablist">
@@ -462,6 +468,17 @@
     $('#assetFineModal').removeClass('oh-modal--show');
   })
   });
+
+  function handleFormSubmit() {
+
+    $('#successMessage').show();
+
+    setTimeout(function() {
+        $('#successMessage').hide();
+    }, 3000);
+
+    return false; // Prevent the default form submission
+  }
 </script>
 <script src="{% static '/base/filter.js' %}"></script>
 

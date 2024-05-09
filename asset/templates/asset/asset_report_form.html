@@ -1,14 +1,37 @@
 {% load i18n %}
 
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    {% if requests_ids %}
+      setTimeout(function () {
+        $('.oh-modal__close--custom').click()
+      }, 1000);
+    {% else %}
+      setTimeout(function () {
+        $('.oh-modal__close').click()
+      }, 1000);
+    {% endif %}
+  </script>
+</div>
+{% endif %}
+
 <form
     id="add-form"
-    hx-post="{% url "add-asset-report" %}"
-    hx-swap='none'
-    hx-swap="innerHTML"
-    method="post"
+    hx-post="{% url 'add-asset-report' %}"
+    hx-target="#addAssetReportForm"
     hx-encoding="multipart/form-data"
+    onsubmit="return handleFormSubmit();"
 >
     {% csrf_token %}
+    <input type="text" hidden name="asset_id" value="{{asset_id}}">
     <div class="oh-profile-section pt-0">
         <div class="row">
             <div class="col-12 col-sm-12 col-md-4 col-lg-6">
@@ -28,7 +51,6 @@
             </div>
 
         </div>
-        {% comment %} {{ asset_report_form.as_p }} {% endcomment %}
         <div class="oh-input__group ">
             <label class="oh-input__label" for="fileUpload">{% trans "File" %}</label>
             <input name= "file" multiple="True" type="file" id="fileUpload" />

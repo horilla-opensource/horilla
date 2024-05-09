@@ -635,13 +635,13 @@
 		localStorageassetrequestCells = localStorage.getItem("assetrequests_tab")
 		localStorageassetallocationCells = localStorage.getItem("assetallocations_tab")
 		if (!localStorageownAssetCells) {
-		$("#ownAssetCells").find("[type=checkbox]").prop("checked",true)
+		$("#ownAssetCells").find("[type=checkbox]").prop("checked",true).change()
     	}
 		if (!localStorageassetrequestCells) {
-		$("#assetRequestCells").find("[type=checkbox]").prop("checked",true)
+		$("#assetRequestCells").find("[type=checkbox]").prop("checked",true).change()
 		}
 		if (!localStorageassetallocationCells) {
-		$("#assetallocationCells").find("[type=checkbox]").prop("checked",true)
+		$("#assetallocationCells").find("[type=checkbox]").prop("checked",true).change()
 		}
 		$("[type=checkbox]").change()
 	</script>

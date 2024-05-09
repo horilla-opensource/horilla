@@ -130,22 +130,25 @@ def add_asset_report(request, asset_id=None):
                 return redirect(asset_request_allocation_view)
 
     if request.method == "POST":
-        asset_report_form = AssetReportForm(request.POST, request.FILES)
+        asset_report_form = AssetReportForm(
+            request.POST, request.FILES, initial={"asset_id": asset_id}
+        )
+
         if asset_report_form.is_valid():
             asset_report = asset_report_form.save()
+            messages.success(request, _("Report added successfully."))
 
             if asset_report_form.is_valid() and request.FILES:
                 for file in request.FILES.getlist("file"):
                     AssetDocuments.objects.create(asset_report=asset_report, file=file)
 
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            # return HttpResponse("<script>window.location.reload()</script>")
 
     return render(
         request,
         "asset/asset_report_form.html",
-        {
-            "asset_report_form": asset_report_form,
-        },
+        {"asset_report_form": asset_report_form, "asset_id": asset_id},
     )
 
 
@@ -838,15 +841,15 @@ def filter_pagination_asset_request_allocation(request):
             [instance.id for instance in asset_allocation_filtered.object_list]
         )
 
-    assets_ids = paginator_qry(assets_filtered.qs, request.GET.get("page"))
+    assets_ids = paginator_qry(assets, request.GET.get("page"))
     assets_id = json.dumps([instance.id for instance in assets_ids.object_list])
     asset_paginator = Paginator(assets_filtered.qs, get_pagination())
-    asset_request_paginator = Paginator(asset_request_filtered, get_pagination())
-    asset_allocation_paginator = Paginator(asset_allocation_filtered, get_pagination())
+    # asset_request_paginator = Paginator(asset_request_filtered, get_pagination())
+    # asset_allocation_paginator = Paginator(asset_allocation_filtered, get_pagination())
     page_number = request.GET.get("page")
     assets = asset_paginator.get_page(page_number)
-    asset_requests = asset_request_paginator.get_page(page_number)
-    asset_allocations = asset_allocation_paginator.get_page(page_number)
+    # asset_requests = asset_request_paginator.get_page(page_number)
+    # asset_allocations = asset_allocation_paginator.get_page(page_number)
     # requests_ids = json.dumps([instance.id for instance in asset_requests.object_list])
     # allocations_ids = json.dumps(
     #     [instance.id for instance in asset_allocations.object_list]
@@ -858,8 +861,8 @@ def filter_pagination_asset_request_allocation(request):
     get_key_instances(Asset, data_dict)
     return {
         "assets": assets,
-        "asset_requests": asset_requests,
-        "asset_allocations": asset_allocations,
+        "asset_requests": asset_request_filtered,
+        "asset_allocations": asset_allocation_filtered,
         "assets_filter_form": assets_filtered.form,
         "asset_request_filter_form": AssetRequestFilter().form,
         "asset_allocation_filter_form": AssetAllocationFilter().form,
@@ -1005,7 +1008,7 @@ def asset_import(request):
                     purchase_date = convert_nan(row["Purchase date"])
                     purchase_cost = convert_nan(row["Purchase cost"])
                     category_name = convert_nan(row["Category"])
-                    lot_number = convert_nan(row["lot number"])
+                    lot_number = convert_nan(row["Batch number"])
                     status = convert_nan(row["Status"])
 
                     asset_category, create = AssetCategory.objects.get_or_create(
@@ -1047,7 +1050,7 @@ def asset_excel(_request):
             "Purchase cost",
             "Category",
             "Status",
-            "lot number",
+            "Batch number",
         ]
         # Create a pandas DataFrame with columns but no data
         dataframe = pd.DataFrame(columns=columns)

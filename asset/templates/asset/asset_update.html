@@ -24,6 +24,10 @@
 </div>
 {% endif %}
 
+<div id="successMessage" style="display:none" class="oh-alert oh-alert--animated oh-alert--success">
+  {% trans "Report added successfully." %}
+</div>
+
 {% if asset_form.errors %}
 <div class="oh-wrapper">
     {% for error in asset_form.non_field_errors %}
@@ -182,17 +186,30 @@
         <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
           {% trans "Save" %}
         </button>
-        <button
-          class=" oh-btn oh-btn--info oh-btn--shadow mr-2"
-          onclick="event.preventDefault();event.stopPropagation()"
-          hx-get="{% url "add-asset-report" asset_form.instance.id %}?asset_list=true"
-          hx-target="#addAssetReportForm"
-          data-toggle="oh-modal-toggle"
-          data-target="#addAssetReport"
-         >
-          {% trans "Add Report" %}
-        </button>
-
+        {% if asset_form.instance.assetassignment_set.all %}
+          <button
+            class=" oh-btn oh-btn--info oh-btn--shadow mr-2"
+            onclick="event.preventDefault();event.stopPropagation()"
+            hx-get="{% url "add-asset-report" asset_form.instance.id %}?asset_list=true"
+            hx-target="#addAssetReportForm"
+            data-toggle="oh-modal-toggle"
+            data-target="#addAssetReport"
+          >
+            {% trans "Add Report" %}
+          </button>
+        {% else %}
+          <button
+              class=" oh-btn oh-btn--info oh-btn--shadow mr-2"
+              disabled
+              onclick="event.preventDefault();event.stopPropagation()"
+              hx-get="{% url "add-asset-report" asset_form.instance.id %}?asset_list=true"
+              hx-target="#addAssetReportForm"
+              data-toggle="oh-modal-toggle"
+              data-target="#addAssetReport"
+            >
+              {% trans "Add Report" %}
+          </button>
+        {% endif %}
       </div>
     </div>
   </form>
@@ -207,5 +224,17 @@
     })
   })
   $("#id_expiry_date").change()
+
+  function handleFormSubmit() {
+
+    $('#successMessage').show();
+
+    setTimeout(function() {
+        $('#successMessage').hide();
+    }, 3000);
+
+    return false; // Prevent the default form submission
+  }
+
 
 </script>

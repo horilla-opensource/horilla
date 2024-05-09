@@ -42,6 +42,7 @@
 {% endif %}
 <!-- end of messages -->
 
+
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
     <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -328,6 +329,19 @@
 <div id="dynamicCreateModal" class="oh-modal" role="dialog" aria-hidden="true" style="z-index: 1022;">
     <div id="dynamicCreateModalTarget" class="oh-modal__dialog" style="max-width: 550px"></div>
 </div>
+<script>
+    function handleFormSubmit() {
+
+        $('#successMessage').show();
+
+        setTimeout(function() {
+            $('#successMessage').hide();
+        }, 3000);
+
+        return false; // Prevent the default form submission
+      }
+
+</script>
 <script src="{% static '/base/filter.js' %}"></script>
 <script src="{% static 'src/asset_category/assetCategoryView.js' %}"></script>
 {% endblock %}
