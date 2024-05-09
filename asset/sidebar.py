@@ -5,7 +5,6 @@ assets/sidebar.py
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as trans
 
-
 MENU = trans("Assets")
 IMG_SRC = "images/ui/assets.svg"
 

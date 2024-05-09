@@ -4,12 +4,12 @@ offboarding/sidebar.py
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as trans
+
 from base.context_processors import resignation_request_enabled
 from offboarding.templatetags.offboarding_filter import (
     any_manager,
     is_offboarding_employee,
 )
-
 
 MENU = trans("Offboarding")
 IMG_SRC = "images/ui/exit-outline.svg"

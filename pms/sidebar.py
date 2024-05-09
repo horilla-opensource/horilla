@@ -3,9 +3,9 @@ pms/sidebar.py
 """
 
 from django.urls import reverse
-from base.templatetags.basefilters import is_reportingmanager
 from django.utils.translation import gettext_lazy as trans
 
+from base.templatetags.basefilters import is_reportingmanager
 
 MENU = trans("Performance")
 IMG_SRC = "images/ui/pms.svg"
@@ -51,4 +51,6 @@ def key_result_accessibility(request, submenu, user_perms, *args, **kwargs):
 
 
 def question_template_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return request.user.has_perm("pms.view_questiontemplate") or is_reportingmanager(request.user)
+    return request.user.has_perm("pms.view_questiontemplate") or is_reportingmanager(
+        request.user
+    )

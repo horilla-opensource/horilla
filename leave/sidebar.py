@@ -3,10 +3,10 @@ leave/sidebar.py
 """
 
 from django.urls import reverse
-from base.templatetags.basefilters import is_leave_approval_manager, is_reportingmanager
-from leave.templatetags.leavefilters import is_compensatory
 from django.utils.translation import gettext_lazy as trans
 
+from base.templatetags.basefilters import is_leave_approval_manager, is_reportingmanager
+from leave.templatetags.leavefilters import is_compensatory
 
 MENU = trans("Leave")
 IMG_SRC = "images/ui/leave.svg"

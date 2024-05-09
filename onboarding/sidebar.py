@@ -4,10 +4,10 @@ onboarding/sidebar.py
 To set Horilla sidebar for onboarding
 """
 
-from django.urls import reverse
 from django.contrib.auth.context_processors import PermWrapper
-from onboarding.templatetags.onboardingfilters import is_taskmanager
+from django.urls import reverse
 
+from onboarding.templatetags.onboardingfilters import is_taskmanager
 
 MENU = "Onboarding"
 ACCESSIBILITY = "onboarding.sidebar.menu_accessibilty"
@@ -46,6 +46,6 @@ def onboarding_view_accessibility(
 
 
 def candidates_view_accessibility(
-    request, _submenu: dict = {}, user_perms: PermWrapper = [], * args, **kwargs
+    request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
     return request.user.has_perm("recruitment.view_candidate")

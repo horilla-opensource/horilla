@@ -4,24 +4,19 @@ horilla/config.py
 Horilla app configurations
 """
 
-import os, importlib, logging
+import importlib
+import logging
+import os
+
 from django.conf import settings
 from django.contrib.auth.context_processors import PermWrapper
+
 from horilla.horilla_apps import SIDEBARS
 
 logger = logging.getLogger(__name__)
 
 
 def get_apps_in_base_dir():
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    base_dir_apps = []
-
-    for app_name in settings.INSTALLED_APPS:
-        app_module = __import__(app_name)
-        app_path = os.path.dirname(os.path.abspath(app_module.__file__))
-        if app_path.startswith(base_dir):
-            base_dir_apps.append(app_name)
-
     return SIDEBARS
 
 

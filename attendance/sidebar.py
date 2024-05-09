@@ -3,12 +3,12 @@ attendance/sidebar.py
 """
 
 from datetime import datetime
+
 from django.urls import reverse
-from base.context_processors import biometric_app_exists
-from base.templatetags.basefilters import is_reportingmanager
 from django.utils.translation import gettext_lazy as trans
 
-
+from base.context_processors import biometric_app_exists
+from base.templatetags.basefilters import is_reportingmanager
 
 MENU = trans("Attendance")
 IMG_SRC = "images/ui/attendances.svg"
@@ -20,12 +20,7 @@ SUBMENUS = [
         "redirect": reverse("attendance-dashboard"),
     },
     {
-        "menu": trans("Attendance View"),
-        "redirect": reverse("attendance-view"),
-        "accessibility": "attendance.sidebar.attendances_accessibility",
-    },
-    {
-        "menu": trans("Attendance View"),
+        "menu": trans("Attendances"),
         "redirect": reverse("attendance-view"),
         "accessibility": "attendance.sidebar.attendances_accessibility",
     },

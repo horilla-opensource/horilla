@@ -4,12 +4,12 @@ recruitment/sidebar.py
 To set Horilla sidebar for onboarding
 """
 
-from django.urls import reverse
 from django.contrib.auth.context_processors import PermWrapper
-from recruitment.models import InterviewSchedule
-from recruitment.templatetags.recruitmentfilters import is_stagemanager
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as trans
 
+from recruitment.models import InterviewSchedule
+from recruitment.templatetags.recruitmentfilters import is_stagemanager
 
 MENU = trans("Recruitment")
 ACCESSIBILITY = "recruitment.sidebar.menu_accessibilty"

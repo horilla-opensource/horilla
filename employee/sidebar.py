@@ -5,9 +5,9 @@ To set Horilla sidebar for employee
 """
 
 from django.urls import reverse
-from base.templatetags.basefilters import is_reportingmanager
 from django.utils.translation import gettext_lazy as trans
 
+from base.templatetags.basefilters import is_reportingmanager
 
 MENU = trans("Employee")
 IMG_SRC = "images/ui/employees.svg"
