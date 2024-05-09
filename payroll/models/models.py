@@ -1378,6 +1378,11 @@ class Payslip(HorillaModel):
             else f"Payslip for {self.start_date}"
         )
 
+    def get_days_in_month(self):
+        year = self.start_date.year
+        month = self.start_date.month
+        return calendar.monthrange(year, month)[1]
+
     class Meta:
         """
         Meta class for additional options

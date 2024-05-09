@@ -1433,6 +1433,8 @@ def payslip_pdf(request, id):
             data["all_deductions"].extend(deduction_list)
         equalize_lists_length(data["allowances"], data["all_deductions"])
         data["zipped_data"] = zip(data["allowances"], data["all_deductions"])
+        data["host"] = request.get_host()
+        data["protocol"] = "https" if request.is_secure() else "http"
 
     return generate_pdf("payroll/payslip/individual_pdf.html", context=data)
 
