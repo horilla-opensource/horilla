@@ -2895,8 +2895,14 @@ def get_employees_birthday(_):
                 "name": name,
                 "dob": dob,
                 "daysUntilBirthday": days_till_birthday,
-                "department": emp.get_department().department,
-                "job_position": emp.get_job_position().job_position,
+                "department": (
+                    emp.get_department().department if emp.get_department() else ""
+                ),
+                "job_position": (
+                    emp.get_job_position().job_position
+                    if emp.get_job_position()
+                    else ""
+                ),
             }
         )
     return JsonResponse({"birthdays": birthdays})
