@@ -93,7 +93,7 @@
 	}
 </style>
 
-<div id="enlargeImageContainer" class="enlarge-image-container"></div>
+<div id="enlargeImageContainer"></div>
 
 <div class="oh-wrapper">
 	<div class="oh-card mt-4 mb-5">
@@ -117,8 +117,14 @@
 								alt="Username"
 								style="border-radius:10%"
 								{% if employee.employee_profile %}
-								onmouseover="enlargeImage(this)"
-								onmouseout="hideEnlargeImage()"
+								onmouseover="
+								enlargeImage(this)
+								$('#enlargeImageContainer').addClass('enlarge-image-container');
+								"
+								onmouseout="
+								hideEnlargeImage()
+								$('#enlargeImageContainer').removeClass('enlarge-image-container');
+								"
 								{% endif %}
 							/>
 						</div>

@@ -66,7 +66,7 @@
   }
 </style>
 
-<div id="showImageContainer" class="enlarge-image-container"></div>
+<div id="showImageContainer"></div>
 
 <div class="oh-wrapper" id="section">
   <div class="oh-card mt-4 mb-5">
@@ -98,8 +98,12 @@
                 class="oh-profile-section__avatar preview"
                 alt="Username"
                 style="border-radius:10%"
-                onmouseover="showImage(this)"
-                onmouseout="hideshowImage()"
+                onmouseover="showImage(this)
+                  $('#showImageContainer').addClass('enlarge-image-container');
+                "
+                onmouseout="hideshowImage()
+                  $('#showImageContainer').removeClass('enlarge-image-container');
+                "
               />
             </div>
             <span
@@ -454,8 +458,10 @@
                       target="_blank"
                       ><span
                         class="oh-file-icon oh-file-icon--pdf"
-                        onmouseover="enlargeImage('{{ file.files.url }}',$(this))"
-                        onmouseout = "hideEnlargeImage()"
+                        onmouseover="enlargeImage('{{ file.files.url }}',$(this))
+                        								$('#showImageContainer').addClass('enlarge-image-container');"
+                        onmouseout = "hideEnlargeImage()
+                        								$('#showImageContainer').removeClass('enlarge-image-container');"
                         style="width: 40px; height: 40px"
                         ><img
                           src="{% static 'images/ui/minus-icon.png' %}"
