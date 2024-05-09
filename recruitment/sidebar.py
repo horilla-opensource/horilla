@@ -32,7 +32,7 @@ SUBMENUS = [
     },
     {
         "menu": trans("Candidates"),
-        "redirect": reverse("candidates-view"),
+        "redirect": reverse("candidate-view"),
         "accessibility": "recruitment.sidebar.candidates_accessibility",
     },
     {

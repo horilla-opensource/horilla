@@ -1334,7 +1334,7 @@ def interview_employee_remove(request, interview_id, employee_id):
     interview.employee_id.remove(employee_id)
     messages.success(request, "Interviewer removed succesfully.")
     interview.save()
-    return HttpResponse("<script>window.location.reload()</script>")
+    return redirect(interview_filter_view)
 
 
 @login_required
@@ -1670,7 +1670,7 @@ def interview_delete(request, interview_id):
     interview.delete()
     messages.success(request, "Interview deleted successfully.")
     if view == "true":
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return redirect(interview_filter_view)
     else:
         return HttpResponse("<script>window.location.reload()</script>")
 

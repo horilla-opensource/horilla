@@ -1,5 +1,18 @@
 {% load i18n static %}
 {% include 'filter_tags.html' %}
+
+{% if messages %}
+    <div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+        {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+{% endif %}
+
     {% if data %}
     <div class="oh-card p-4">
         <div class="oh-card__body">
@@ -71,10 +84,10 @@
                                                 </div>
                                                 {% if perms.recruitment.change_interviewschedule or request.user.employee_get in interview.employee_id.all %}
                                                 <a
-                                                    hx-confirm="{% trans 'Are you sure to remove this interviewer?' %}"
+                                                    hx-confirm="{% trans 'Are you sure you want to remove this interviewer?' %}"
                                                     hx-post="{% url 'interview-employee-remove' interview.id employee.id %}"
                                                     title="{% trans "Remove" %}" hx-swap="outerHTML"
-                                                    hx-target="#employeeContainer{{employee.id}}-{{interview.id}}" class="oh-user-panel__remove"
+                                                    hx-target="#section"
                                                     onclick="event.stopPropagation()"
                                                 >
                                                     <ion-icon name="close-outline"></ion-icon>
@@ -128,8 +141,9 @@
 
                                                 {% if perms.recruitment.delete_interviewschedule %}
                                                     <form
-                                                        action="{% url 'delete-interview' interview.id %}?view=true"
-                                                        onsubmit="return confirm('{% trans "Are you sure to delete this interview?" %}')"
+                                                        hx-post="{% url 'delete-interview' interview.id %}?view=true"
+                                                        hx-target = "#section"
+                                                        hx-confirm="{% trans "Are you sure you want to delete this interview?" %}"
                                                         method="post"
                                                         style="display: contents;width:100%">
                                                         {% csrf_token %}
