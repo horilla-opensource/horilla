@@ -178,7 +178,10 @@ def employee_profile(request):
     user_leaves = employee.available_leave.all().exclude(
         leave_type_id__is_compensatory_leave=True
     )
-    if LeaveGeneralSetting.objects.first().compensatory_leave:
+    if (
+        LeaveGeneralSetting.objects.first()
+        and LeaveGeneralSetting.objects.first().compensatory_leave
+    ):
         user_leaves = employee.available_leave.all()
     instances = LeaveRequest.objects.filter(employee_id=employee)
     leave_request_ids = json.dumps([instance.id for instance in instances])
