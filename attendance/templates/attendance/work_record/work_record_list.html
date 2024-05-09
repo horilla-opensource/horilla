@@ -1,4 +1,31 @@
 {% load i18n %} {% load attendancefilters %}
+<div class="d-flex justify-content-between m-2 ms-0">
+    <button class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#exportRecords" onclick="window.location.href = `{% url 'work-record-export' %}?month={{leave_dates.0.month}}&year={{leave_dates.0.year}}`">
+        <ion-icon name="download-outline" class="mr-1 md hydrated" role="img" aria-label="download"></ion-icon>{% trans "Export" %}
+    </button>
+    <div class="d-flex flex-row-reverse m-2">
+        <span class="" style="margin-left: 10px;">
+            <span class="oh-dot oh-dot--small me-1" style="background-color:#ed4c4c"></span>
+            {% trans "Conflict" %}
+        </span>
+        <span class="me-3" style="margin-left: 10px;">
+            <span class="oh-dot oh-dot--small me-1" style="background-color:#a8b1ff"></span>
+            {% trans "Expected Working" %}
+        </span>
+        <span class="me-3" style="margin-left: 10px;">
+            <span class="oh-dot oh-dot--small me-1" style="background-color:#808080"></span>
+            {% trans "Absent" %}
+        </span>
+        <span class="me-3" style="margin-left: 10px;">
+            <span class="oh-dot oh-dot--small me-1" style="background-color:#dfdf52"></span>
+            {% trans "Half Day Present" %}
+        </span>
+        <span class="me-3" style="margin-left: 10px;">
+            <span class="oh-dot oh-dot--small me-1" style="background-color:#38c338"></span>
+            {% trans "Present" %}
+        </span>
+    </div>
+</div>
 <div class="oh-sticky-table">
     <table>
         <thead>

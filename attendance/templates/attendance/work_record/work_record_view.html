@@ -50,53 +50,25 @@
             <div>
                 <h4>{% trans "Work Records" %}</h4>
             </div>
-
-
-            <div class="me-3 d-flex flex-row-reverse align-items-center" >
-                <div>
-                    <h6 class="mb-2 fw-bold">{% trans "Date:" %} {{ current_date }}</h6>
-                    <h6>
-                        <div style = "cursor: pointer;">
-                            <label for="monthYearField" class="text-danger fw-bold" style = "cursor: pointer;">{% trans "Month" %}</label>
-                            <input class="oh-select p-2 w-75 m-1"
-                            type="month"
-                            id="monthYearField"
-                            value="{{ current_date|date:"Y-m" }}"
-                            name="month"
-                            hx-get="{% url 'work-records-change-month' %}"
-                            hx-target="#workRecordTable"
-                            hx-trigger="input">
-                        </div>
-                    </h6>
-                </div>
-                <div style="width:250px">
-                    <div class="d-flex oh-wrapper" style="align-items: center">
-                        <div>
-                            <div class="draft me-3" style="margin-left: 5px; margin-bottom:5px">
-                                <div class="oh-dot oh-dot--small me-1" style="background-color: #a8b1ff;"></div>
-                                {% trans "Expected Working" %}
-                            </div>
-                            <div class="review_ongoing me-3" onclick="$('[name=status]').val('review_ongoing'); $('[name=status]').first().change(); $('.filterButton').click()" style=" margin-left: 5px; margin-bottom:5px">
-                                <div class="oh-dot oh-dot--small me-1" style="background-color: #dfdf52;"></div>
-                                {% trans "Half Day Present" %}
-                            </div>
-                        </div>
-                        <div>
-                            <div class="confirmed me-3" onclick="$('[name=status]').val('confirmed'); $('[name=status]').first().change(); $('.filterButton').click()" style=" margin-left: 5px; margin-bottom:5px">
-                                <div class="oh-dot oh-dot--small me-1" style="background-color: #38c338;"></div>
-                                {% trans "Present" %}
-                            </div>
-                            <div class="paid me-3" onclick="$('[name=status]').val('paid'); $('[name=status]').first().change(); $('.filterButton').click()" style=" margin-left: 5px; margin-bottom:5px">
-                                <div class="oh-dot oh-dot--small me-1" style="background-color: #808080;"></div>
-                                {% trans "Absent" %}
-                            </div>
-                        </div>
+            <div class="me-3" >
+                <h6 class="mb-2 fw-bold">{% trans "Date:" %} {{ current_date }}</h6>
+                <h6>
+                    <div style = "cursor: pointer;">
+                        <label for="monthYearField" class="text-danger fw-bold" style = "cursor: pointer;">{% trans "Month" %}</label>
+                        <input class="oh-select p-2 w-75 m-1"
+                        type="month"
+                        id="monthYearField"
+                        value="{{ current_date|date:"Y-m" }}"
+                        name="month"
+                        hx-get="{% url 'work-records-change-month' %}"
+                        hx-target="#workRecordTable"
+                        hx-trigger="input">
                     </div>
-                </div>
+                </h6>
             </div>
         </div>
-        <div id="workRecordTable">
-            {% include "attendance/work_record/work_record_list.html" %}
+        <div id="workRecordTable" hx-get="{% url 'work-records-change-month' %}?month={{ current_date|date:"Y-m" }}" hx-trigger="load">
+            <div class="animated-background"></div>
         </div>
     </div>
 </div>
