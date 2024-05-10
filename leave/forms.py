@@ -17,7 +17,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from base import thread_local_middleware
-from base.methods import filtersubordinates, reload_queryset
+from base.methods import filtersubordinatesemployeemodel, reload_queryset
 from base.models import Department
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
@@ -1304,6 +1304,13 @@ class CompensatoryLeaveForm(ModelForm):
             )
             # Set the queryset of attendance_id to the attendance_dates
             self.fields["attendance_id"].choices = attendance_dates
+        queryset = (
+            filtersubordinatesemployeemodel(
+                request, Employee.objects.filter(is_active=True)
+            )
+            | Employee.objects.filter(employee_user_id=request.user)
+        ).distinct()
+        self.fields["employee_id"].queryset = queryset
         self.fields["employee_id"].widget.attrs.update(
             {
                 "hx-target": "#id_attendance_id_parent_div",

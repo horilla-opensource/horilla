@@ -38,6 +38,7 @@ from horilla.decorators import (
     hx_request_required,
     login_required,
     manager_can_enter,
+    owner_can_enter,
     permission_required,
 )
 from leave.decorators import *
@@ -4624,6 +4625,11 @@ def create_compensatory_leave(request, comp_id=None):
 
 
 @login_required
+@owner_can_enter(
+    perm="leave.delete_compensatoryleaverequest",
+    model=CompensatoryLeaveRequest,
+    manager_access=True,
+)
 def delete_compensatory_leave(request, comp_id):
     """
     function used to delete compensatory leave request,
@@ -4639,6 +4645,7 @@ def delete_compensatory_leave(request, comp_id):
 
 
 @login_required
+@manager_can_enter(perm="leave.change_compensatoryleaverequest")
 def approve_compensatory_leave(request, comp_id):
     """
     function used to approve compensatory leave request,
@@ -4669,11 +4676,13 @@ def approve_compensatory_leave(request, comp_id):
             )
     except:
         messages.error(request, _("Sorry, something went wrong!"))
+    if request.GET.get("individual"):
+        return redirect(view_compensatory_leave)
     return redirect(filter_compensatory_leave)
 
 
 @login_required
-@permission_required(perm="leave.delete_compensatoryleaverequest")
+@manager_can_enter(perm="leave.delete_compensatoryleaverequest")
 def reject_compensatory_leave(request, comp_id):
     """
     function used to Reject compensatoey leave request.
@@ -4717,6 +4726,37 @@ def reject_compensatory_leave(request, comp_id):
     else:
         messages.error(request, _("The leave allocation request can't be rejected"))
         return HttpResponse("<script>location.reload();</script>")
+
+
+@login_required
+def compensatory_leave_individual_view(request, comp_leave_id):
+    """
+    function used to present the compensatory leave request detailed view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    comp_leave_id : compensatory leave request id
+
+    Returns:
+    return compensatory leave request single view
+    """
+    requests_ids_json = request.GET.get("instances_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, comp_leave_id)
+    comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_leave_id)
+    context = {
+        "comp_leave_req": comp_leave_req,
+        "my_request": eval(request.GET.get("my_request")),
+        "instances_ids": requests_ids_json,
+        "previous": previous_id,
+        "next": next_id,
+    }
+    return render(
+        request,
+        "leave/compensatory_leave/individual_view_compensatory.html",
+        context=context,
+    )
 
 
 @login_required
