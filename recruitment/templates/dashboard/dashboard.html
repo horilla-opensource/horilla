@@ -242,16 +242,31 @@
 
 				<div class="oh-dashboard__movable-cards row mt-4">
 					{% if request.user|is_in_task_managers %}
-					<div
+						<div
+								class="col-12 col-sm-12 col-md-6 col-lg-7 oh-card-dashboard--moveable"
+								style="height: 455px;
+								background-color: white;"
+								id="taskStatus"
+								hx-get="{% url "task-report-onboarding" %}"
+								hx-trigger="load"
+								>
+						</div>
+					{% else %}
+						<div
 							class="col-12 col-sm-12 col-md-6 col-lg-7 oh-card-dashboard--moveable"
-							style="height: 438px;
-							background-color: white;"
-							id="taskStatus"
-							hx-get="{% url "task-report-onboarding" %}"
-							hx-trigger="load"
-							>
-					</div>
+						>
+						<div
+						class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" >
+						<span class="oh-card-dashboard__title">{% trans "My Onboarding Tasks" %}</span>
+								<div style="height: 403px; display:grid;align-items: center;justify-content: center;" class="">
+									<img style="display: block;width: 120px;margin: 20px auto ;" src="{% static 'images/ui/time-management.png' %}" class="mb-0"/>
+									<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No onboarding tasks are currently available." %}</h3>
+								</div>
+							</div>
+						</div>
 					{% endif %}
+
+
 					<div
 					class="col-12 col-sm-12 col-md-6 col-lg-5 oh-card-dashboard--moveable"
 					>
@@ -268,7 +283,7 @@
 							{% if stage_chart_count %}
 								<canvas id="recruitmentChart1" width="385" height="228"></canvas>
 							{% else %}
-								<div style="height: 334px; display:flex;align-items: center;justify-content: center;" class="">
+								<div style="height: 362px; display:flex;align-items: center;justify-content: center;" class="">
 									<div style="" class="">
 										<img style="display: block;width: 120px;margin: 20px auto ;" src="{% static 'images/ui/interview.png' %}" class=""/>
 										<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No recruitment stages currently available." %}</h3>
