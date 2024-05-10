@@ -32,11 +32,13 @@ FORMATS = [
 def document_create(instance):
     employees = instance.employee_id.all()
     for employee in employees:
-        Document.objects.get_or_create(
-            title=f"Upload {instance.title}",
+        document = Document.objects.get_or_create(
             employee_id=employee,
             document_request_id=instance,
+            defaults={"title": f"Upload {instance.title}"},
         )
+        document[0].title = f"Upload {instance.title}"
+        document[0].save()
 
 
 class DocumentRequest(HorillaModel):
