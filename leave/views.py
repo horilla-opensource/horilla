@@ -289,23 +289,27 @@ def leave_type_delete(request, id):
 @hx_request_required
 @manager_can_enter("leave.add_leaverequest")
 def get_employee_leave_types(request):
-    if request.GET.get("employee_id"):
-        employee = Employee.objects.get(id=request.GET.get("employee_id"))
-        available_leaves = employee.available_leave.all()
+    employee_id = request.GET.get("employee_id")
+    form = LeaveRequestCreationForm()
+
+    if employee_id:
+        employee = get_object_or_404(Employee, id=employee_id)
         assigned_leave_types = LeaveType.objects.filter(
-            id__in=available_leaves.values_list("leave_type_id", flat=True)
+            id__in=employee.available_leave.values_list("leave_type_id", flat=True)
         )
-        form = LeaveRequestCreationForm()
         form.fields["leave_type_id"].queryset = assigned_leave_types
-        leave_type_field_html = render_to_string(
-            "leave/leave_request/leave_type_field.html",
-            {
-                "form": form,
-                "field_name": "leave_type_id",
-                "field": form.fields["leave_type_id"],
-            },
-        )
-        return HttpResponse(f"{leave_type_field_html}")
+    else:
+        form.fields["leave_type_id"].queryset = LeaveType.objects.none()
+
+    leave_type_field_html = render_to_string(
+        "leave/leave_request/leave_type_field.html",
+        {
+            "form": form,
+            "field_name": "leave_type_id",
+            "field": form.fields["leave_type_id"],
+        },
+    )
+    return HttpResponse(leave_type_field_html)
 
 
 @login_required
@@ -326,7 +330,13 @@ def leave_request_creation(request, type_id=None, emp_id=None):
         part for part in request.META.get("HTTP_REFERER").split("/") if part != ""
     ]
     confirm = request.GET.get("confirm")
-    previous_data = unquote(request.GET.urlencode())[len("pd=") :]
+    if request.GET.urlencode().startswith("pd="):
+        previous_data = unquote(request.GET.urlencode())[len("pd=") :]
+    else:
+        request_copy = request.GET.copy()
+        if "confirm" in request_copy:
+            request_copy.pop("confirm")
+        previous_data = request_copy.urlencode()
     form = LeaveRequestCreationForm()
     if request:
         employee = request.user.employee_get
