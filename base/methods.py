@@ -640,7 +640,7 @@ def filter_conditional_leave_request(request):
             instance = LeaveRequestConditionApproval.objects.filter(
                 leave_request_id=leave_request_id, sequence=pre_sequence
             ).first()
-            if instance.is_approved:
+            if instance and instance.is_approved:
                 leave_request_ids.append(instance.leave_request_id.id)
         else:
             leave_request_ids.append(instance.leave_request_id.id)
