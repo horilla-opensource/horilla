@@ -30,11 +30,15 @@ SUBMENUS = [
 
 
 def offboarding_accessibility(request, menu, user_perms, *args, **kwargs):
-    return (
-        request.user.has_perm("offboarding.view_offboarding")
-        or any_manager(request.user.employee_get)
-        or is_offboarding_employee(request.user.employee_get)
-    )
+    accessible = False
+    try:
+        accessible = (
+            request.user.has_perm("offboarding.view_offboarding")
+            or any_manager(request.user.employee_get)
+            or is_offboarding_employee(request.user.employee_get)
+        )
+    finally:
+        return accessible
 
 
 def resignation_letter_accessibility(request, menu, user_perms, *args, **kwargs):

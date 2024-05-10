@@ -98,7 +98,10 @@ def interview_accessibility(
     for interview in interviews:
         for emp in interview.employee_id.all():
             interviewers.append(emp)
-    if request.user.employee_get in interviewers:
+    if (
+        getattr(request.user, "employee_get", None)
+        and request.user.employee_get in interviewers
+    ):
         view_interview = True
     else:
         view_interview = False
