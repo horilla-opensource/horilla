@@ -1,0 +1,182 @@
+{% load i18n %}
+{% load basefilters %}
+{% if instances_ids %}
+    <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+        <button
+            hx-get="{% url 'compensatory-leave-individual-view' previous %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"
+            hx-target="#objectDetailsModalW25Target"
+            class="oh-modal__diaglog-nav oh-modal__nav-prev">
+            <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+            aria-label="chevron back outline"></ion-icon>
+        </button>
+        <button
+            hx-get="{% url 'compensatory-leave-individual-view' next %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"
+            hx-target="#objectDetailsModalW25Target"
+            class="oh-modal__diaglog-nav oh-modal__nav-next">
+            <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+            aria-label="chevron forward outline"></ion-icon>
+        </button>
+    </div>
+{% endif %}
+</div>
+
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" id="objectDetailsModalLabel">
+      {% trans "Details" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;"
+        href ="{% url 'employee-view-individual' comp_leave_req.employee_id.id %}">
+        <div class="oh-profile mb-2">
+          <div class="oh-profile__avatar">
+            <img
+              src="{{comp_leave_req.employee_id.get_avatar}}"
+              class="oh-profile__image me-2"
+              alt="Mary Magdalene"
+            />
+          </div>
+          <div class="oh-timeoff-modal__profile-info">
+            <span class="oh-timeoff-modal__user fw-bold"
+              >{{comp_leave_req.employee_id}}</span
+            >
+            <span
+              class="oh-timeoff-modal__user m-0"
+              style="font-size: 18px; color: #4d4a4a"
+            >
+              {{comp_leave_req.employee_id.employee_work_info.department_id}} /
+              {{comp_leave_req.employee_id.employee_work_info.job_position_id}}</span
+            >
+          </div>
+        </div>
+    </a>
+    <div class="oh-modal__dialog-header pt-0">
+        <div class="oh-timeoff-modal__stats-container mt-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Requested Days" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{{comp_leave_req.requested_days}}</span>
+            </div>
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Leave Type" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{{comp_leave_req.leave_type_id}}</span>
+            </div>
+        </div>
+        <div class="oh-timeoff-modal__stats-container mt-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Created Date" %}</span>
+                <span class="oh-timeoff-modal__stat-count dateformat_changer">{{comp_leave_req.requested_date}}</span>
+            </div>
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Created By" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{{comp_leave_req.created_by.employee_get}}</span>
+            </div>
+        </div>
+
+        <div class="oh-timeoff-modal__stats-container mt-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Attendance Days" %}</span>
+                {% for attendance in comp_leave_req.attendance_id.all  %}
+                    <div class="oh-timeoff-modal__stat-count">{{attendance.attendance_date}}</div>
+                {% endfor %}
+            </div>
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
+                <div class="oh-timeoff-modal__stat-description">{{comp_leave_req.description}}</div>
+            </div>
+        </div>
+        {% if comp_leave_req.reject_reason %}
+            {% if comp_leave_req.status == "rejected" %}
+                <div class="oh-timeoff-modal__stats w-100 mt-3 p-2 row-status--red ">
+                    <div class="oh-timeoff-modal__stat">
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Rejection" %}</span>
+                        <div class="oh-timeoff-modal__stat-description">{{comp_leave_req.reject_reason}}</div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+    <div class="oh-modal__button-container text-center mt-3">
+        <div class="oh-btn-group">
+            {% if my_request %}
+                {% if comp_leave_req.status ==  'requested' %}
+                    <button
+                        class="oh-btn oh-btn--info w-100 "
+                        title="{% trans 'Edit' %}"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#editModal"
+                        hx-get="{% url 'leave-allocation-request-update' comp_leave_req.id %}"
+                        hx-target="#editTarget">
+                        <ion-icon name="create-outline" role="img"
+                        class="md hydrated" aria-label="create outline">
+                        </ion-icon>{% trans "Edit" %}
+                    </button>
+                {% else %}
+                    <button
+                        class="oh-btn oh-btn--info  w-100" disabled>
+                        <ion-icon name="create-outline" ></ion-icon>
+                    </button></td>
+                {% endif %}
+                {% if comp_leave_req.status !=  'approved' %}
+                    <a class="oh-btn oh-btn--danger w-100" id="delete-link"
+                        href="{% url 'delete-compensatory-leave' comp_leave_req.id %}"
+                        onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');"
+                        title="{% trans 'Delete' %}">
+                        <ion-icon
+                            name="trash-outline"
+                            role="img"
+                            class="md hydrated"
+                            aria-label="create outline"
+                        >
+                        </ion-icon>{% trans "Delete" %}
+                    </a>
+                {% else %}
+                    <button class="oh-btn oh-btn--danger  w-100" disabled>
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </button></td>
+                {% endif %}
+            {% else %}
+                {% if perms.leave.change_compensatoryleaverequest or request.user|is_reportingmanager %}
+                    {% if comp_leave_req.status == 'requested' %}
+                        <a
+                            href="{% url 'approve-compensatory-leave' comp_leave_req.id %}?individual=True"
+                            class="oh-btn oh-btn--success w-100"
+                            title="{% trans 'Approve' %}"                        >
+                            <ion-icon class="me-1 " name="checkmark-outline"></ion-icon>
+                            {% trans "Approve" %}
+                        </a>
+                    {% else %}
+                        <a href="" class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                            title="{% trans 'Approved' %}"
+                            onclick="event.preventDefault()">
+                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                            {% trans "Approve" %}
+                        </a>
+                    {% endif %}
+                    {% if comp_leave_req.status == 'requested' or comp_leave_req.status == 'approved' %}
+                        <a
+                            hx-get="{% url 'reject-compensatory-leave' comp_leave_req.id %}"
+                            data-target="{% if dashboard == 'true' %}#bigModal {% else %}#rejectModal {% endif %}"
+                            hx-target="{% if dashboard == 'true' %}#bigModalTarget {% else %}#rejectTarget{% endif %}"
+                            class="oh-btn oh-btn--danger w-100"
+                            data-toggle="oh-modal-toggle"
+                            title="{% trans 'Reject' %}"
+                        >
+                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                            {% trans "Reject" %}
+                        </a>
+                    {% else %}
+                        <a href="" class="oh-btn oh-btn--danger oh-btn--disabled w-100"
+                            title="{% trans 'Rejected' %}"
+                            onclick="event.preventDefault()">
+                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                            {% trans "Reject" %}
+                        </a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>

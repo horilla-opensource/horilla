@@ -404,6 +404,11 @@ urlpatterns = [
         name="reject-compensatory-leave",
     ),
     path(
+        "compensatory-leave-individual-view/<int:comp_leave_id>",
+        views.compensatory_leave_individual_view,
+        name="compensatory-leave-individual-view",
+    ),
+    path(
         "view-compensatory-leave-comment/<int:comp_leave_id>",
         views.view_compensatory_leave_comment,
         name="view-compensatory-leave-comment",
