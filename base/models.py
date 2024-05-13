@@ -1270,8 +1270,8 @@ class Announcement(HorillaModel):
 
     from employee.models import Employee
 
-    title = models.CharField(max_length=30)
-    description = models.TextField(null=True, max_length=255)
+    title = models.CharField(max_length=100)
+    description = models.TextField(null=True)
     attachments = models.ManyToManyField(
         Attachment, related_name="announcement_attachments", blank=True
     )
