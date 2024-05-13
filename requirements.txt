@@ -23,6 +23,7 @@ django-widget-tweaks
 et-xmlfile
 html5lib
 idna
+jinja2>=3.1.2
 lxml
 numpy
 openpyxl
