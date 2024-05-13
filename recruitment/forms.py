@@ -634,6 +634,8 @@ class QuestionForm(ModelForm):
     QuestionForm
     """
 
+    verbose_name = "Survey Questions"
+
     recruitment = forms.ModelMultipleChoiceField(
         queryset=Recruitment.objects.filter(is_active=True),
         required=False,

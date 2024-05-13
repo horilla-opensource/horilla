@@ -1,6 +1,13 @@
 {% load i18n %}{% load widget_tweaks %} {% load attendancefilters %}
 
 <div class="oh-general__tab-target oh-profile-section" id="personal">
+  {% if form.verbose_name %}
+    <div class="oh-payslip__header">
+      <div class="oh-payslip__header-left">
+        <div class="oh-payroll__component-title">{{ form.verbose_name }}</div>
+      </div>
+    </div>
+  {% endif %}
   <div class="oh-profile-section__card">
     <div class="row">
       <div class="col-12">{{form.non_field_errors}}</div>
