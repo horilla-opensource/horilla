@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header pb-0">
   <h5 class="oh-modal__dialog-title" id="objectCreateModalLabel">
     {% trans "Document Request" %}
   </h5>
@@ -17,6 +17,7 @@
     {% endif %}
     hx-target="#objectCreateModalTarget"
     hx-encoding="multipart/form-data"
+    class="oh-profile-section pt-3"
   >
     <div class="row">
       <div class="col-sm-12 col-md-12 col-lg-6">
@@ -64,11 +65,8 @@
         </div>
       </div>
     </div>
-    <div class="d-flex flex-row-reverse">
-      <button
-        type="submit"
-        class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-      >
+    <div class="oh-modal__dialog-footer p-0 mt-3">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
         {% trans "Save" %}
       </button>
     </div>

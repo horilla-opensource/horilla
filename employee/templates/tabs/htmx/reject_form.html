@@ -1,21 +1,23 @@
 {% load i18n %}
 <form
-	id="file-form"
-    hx-confirm="{% trans 'Do you want to reject this request' %}"
-	hx-post="{% url 'document-reject' document_obj.id %}"
-	hx-target="#uploadFileForm"
-	hx-encoding="multipart/form-data"
+  id="file-form"
+  hx-confirm="{% trans 'Do you want to reject this request' %}"
+  hx-post="{% url 'document-reject' document_obj.id %}"
+  hx-target="#uploadFileForm"
+  hx-encoding="multipart/form-data"
+  class="oh-profile-section pt-3"
 >
-	{% csrf_token %}
-	{{form.non_field_errors}}
-	{{form.reject_reason}}
-	{{form.reject_reason.errors}}
-    <div class="d-flex flex-row-reverse">
-        <button
-            type="submit"
-            class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-            >
-            {% trans "Save" %}
-        </button>
-    </div>
+  {% csrf_token %} {{form.non_field_errors}}
+
+  <div class="oh-input__group">
+    <label class="oh-input__label" for="{{form.reject_reason.id_for_label}}"
+      >{% trans "Reason" %}</label
+    >
+    {{form.reject_reason}} {{form.reject_reason.errors}}
+  </div>
+  <div class="oh-modal__dialog-footer p-0 mt-3">
+    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+      {% trans "Save" %}
+    </button>
+  </div>
 </form>

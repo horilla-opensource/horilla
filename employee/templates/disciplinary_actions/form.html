@@ -27,8 +27,10 @@
   <button
     class="oh-modal__close"
     aria-label="Close"
-    hx-get="{% url 'disciplinary-filter-view' %}"
-    hx-target="#actionContainer"
+    {% if messages %}
+      hx-get="{% url 'disciplinary-filter-view' %}"
+      hx-target="#actionContainer"
+    {% endif %}
     >
     <ion-icon name="close-outline"></ion-icon>
   </button>
@@ -37,7 +39,6 @@
   <form
     hx-post="{% url 'create-actions' %}"
     hx-target="#objectCreateModalTarget"
-    method="post"
     hx-encoding="multipart/form-data"
     id="disciplinaryActionForm"
     >
