@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header pb-0">
   <h2 class="oh-modal__dialog-title" id="rotatingShiftAssignModalLabel">
     {% trans "Rotating Shift Assign" %}
   </h2>
@@ -11,16 +11,13 @@
   <form
     hx-post="{% url 'rotating-shift-assign-add' %}"
     hx-target="#objectCreateModalTarget"
-    method="post"
-    >
-    {% csrf_token %}
-    <div class="oh-inner-sidebar-content__header"></div>
-    {{form}}
-    <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
-      <button type="submit" class="oh-btn oh-btn--secondary pl-5 pr-5">
+    class="oh-profile-section pt-3"
+  >
+    {% csrf_token %} {{form}}
+    <div class="oh-modal__dialog-footer p-0 mt-3">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
         {% trans "Save" %}
       </button>
     </div>
-    <div class="oh-inner-sidebar-content__footer"></div>
   </form>
 </div>
