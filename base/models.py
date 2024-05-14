@@ -1289,6 +1289,16 @@ class Announcement(HorillaModel):
         """
         return self.announcementview_set.filter(viewed=True)
 
+    def viewed_by(self):
+
+        viewed_by = AnnouncementView.objects.filter(
+            announcement_id__id=self.id, viewed=True
+        )
+        viewed_emp = []
+        for i in viewed_by:
+            viewed_emp.append(i.user)
+        return viewed_emp
+
     def __str__(self):
         return self.title
 
