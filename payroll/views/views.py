@@ -1664,8 +1664,10 @@ def delete_payrollrequest_comment(request, comment_id):
     """
     This method is used to delete Reimbursement request comments
     """
-    comment = ReimbursementrequestComment.objects.get(id=comment_id)
-    reimbursementrequest = comment.request_id.id
+    comment = ReimbursementrequestComment.objects.filter(id=comment_id)
+    if not request.user.has_perm("delete_reimbursementrequestcomment"):
+        comment = comment.filter(employee_id__employee_user_id=request.user)
+    reimbursementrequest = comment.first().request_id.id
     comment.delete()
 
     messages.success(request, _("Comment deleted successfully!"))
@@ -1678,7 +1680,12 @@ def delete_reimbursement_comment_file(request):
     Used to delete attachment
     """
     ids = request.GET.getlist("ids")
-    ReimbursementFile.objects.filter(id__in=ids).delete()
+    records = ReimbursementFile.objects.filter(id__in=ids)
+    if not request.user.has_perm("payroll.delete_reimbursmentfile"):
+        records = records.filter(employee_id__employee_user_id=request.user)
+
+    records.delete()
+
     payroll_id = request.GET["payroll_id"]
     comments = ReimbursementrequestComment.objects.filter(
         request_id=payroll_id
