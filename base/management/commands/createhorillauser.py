@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 
@@ -50,7 +52,7 @@ class Command(BaseCommand):
                 if bot is None:
                     User.objects.create_user(
                         username="Horilla Bot",
-                        password="#HorillaBot!!(*&*&^(33))",
+                        password=str(uuid.uuid4()),
                     )
 
                 self.stdout.write(
