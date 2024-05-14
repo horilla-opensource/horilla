@@ -12,11 +12,19 @@ from datetime import date, timedelta
 from typing import Any
 
 from django import forms
-from django.contrib.auth import authenticate
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import SetPasswordForm, _unicode_ci_compare
 from django.contrib.auth.models import Group, Permission, User
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
+from django.core.mail import EmailMultiAlternatives
 from django.forms import DateInput, HiddenInput, TextInput
+from django.template import loader
 from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _trans
 
@@ -51,6 +59,7 @@ from base.models import (
     WorkTypeRequest,
     WorkTypeRequestComment,
 )
+from base.thread_local_middleware import _thread_locals
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee, EmployeeTag
@@ -1444,12 +1453,12 @@ class ChangePasswordForm(forms.Form):
         return cleaned_data
 
 
-class ResetPasswordForm(forms.Form):
+class ResetPasswordForm(SetPasswordForm):
     """
     ResetPasswordForm
     """
 
-    password = forms.CharField(
+    new_password1 = forms.CharField(
         label=_("New password"),
         strip=False,
         widget=forms.PasswordInput(
@@ -1461,7 +1470,7 @@ class ResetPasswordForm(forms.Form):
         ),
         help_text=_("Enter your new password."),
     )
-    confirm_password = forms.CharField(
+    new_password2 = forms.CharField(
         label=_("New password confirmation"),
         strip=False,
         widget=forms.PasswordInput(
@@ -1474,32 +1483,12 @@ class ResetPasswordForm(forms.Form):
         help_text=_("Enter the same password as before, for verification."),
     )
 
-    def clean_password(self):
-        """
-        Validation to password field"""
-        password = self.cleaned_data.get("password")
-        try:
-            if len(password) < 7:
-                raise ValidationError(_("Password must contain at least 8 characters."))
-            elif not any(char.isupper() for char in password):
-                raise ValidationError(
-                    _("Password must contain at least one uppercase letter.")
-                )
-            elif not any(char.islower() for char in password):
-                raise ValidationError(
-                    _("Password must contain at least one lowercase letter.")
-                )
-            elif not any(char.isdigit() for char in password):
-                raise ValidationError(_("Password must contain at least one digit."))
-            elif all(
-                char not in "!@#$%^&*()_+-=[]{}|;:,.<>?'\"`~\\/" for char in password
-            ):
-                raise ValidationError(
-                    _("Password must contain at least one special character.")
-                )
-        except ValidationError as error:
-            raise forms.ValidationError(list(error)[0])
-        return password
+    def save(self, commit=True):
+        if self.is_valid():
+            request = getattr(_thread_locals, "request", None)
+            if request:
+                messages.success(request, _("Password changed successfully"))
+        return super().save()
 
     def clean_confirm_password(self):
         """
@@ -1510,14 +1499,6 @@ class ResetPasswordForm(forms.Form):
         if password == confirm_password:
             return confirm_password
         raise forms.ValidationError(_("Password must be same."))
-
-    def save(self, *args, user=None, **kwargs):
-        """
-        Save method to ResetPasswordForm
-        """
-        if user is not None:
-            user.set_password(self.data["password"])
-            user.save()
 
 
 excluded_fields = ["id", "is_active", "shift_changed", "work_type_changed"]
@@ -1850,3 +1831,111 @@ class DriverForm(forms.ModelForm):
     class Meta:
         model = DriverViewed
         fields = "__all__"
+
+
+UserModel = get_user_model()
+
+
+class PassWordResetForm(forms.Form):
+    email = forms.CharField()
+
+    def send_mail(
+        self,
+        subject_template_name,
+        email_template_name,
+        context,
+        from_email,
+        to_email,
+        html_email_template_name=None,
+    ):
+        """
+        Send a django.core.mail.EmailMultiAlternatives to `to_email`.
+        """
+        subject = loader.render_to_string(subject_template_name, context)
+        # Email subject *must not* contain newlines
+        subject = "".join(subject.splitlines())
+        body = loader.render_to_string(email_template_name, context)
+
+        email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
+        if html_email_template_name is not None:
+            html_email = loader.render_to_string(html_email_template_name, context)
+            email_message.attach_alternative(html_email, "text/html")
+
+        email_message.send()
+
+    def get_users(self, email):
+        """
+        Given an email, return matching user(s) who should receive a reset.
+
+        This allows subclasses to more easily customize the default policies
+        that prevent inactive users and users with unusable passwords from
+        resetting their password.
+        """
+        email_field_name = UserModel.get_email_field_name()
+        active_users = UserModel._default_manager.filter(
+            **{
+                "%s__iexact" % email_field_name: email,
+                "is_active": True,
+            }
+        )
+        return (
+            u
+            for u in active_users
+            if u.has_usable_password()
+            and _unicode_ci_compare(email, getattr(u, email_field_name))
+        )
+
+    def save(
+        self,
+        domain_override=None,
+        subject_template_name="registration/password_reset_subject.txt",
+        email_template_name="registration/password_reset_email.html",
+        use_https=False,
+        token_generator=default_token_generator,
+        from_email=None,
+        request=None,
+        html_email_template_name=None,
+        extra_email_context=None,
+    ):
+        """
+        Generate a one-use only link for resetting password and send it to the
+        user.
+        """
+        username = self.cleaned_data["email"]
+        user = User.objects.get(username=username)
+        employee = user.employee_get
+        email = employee.email
+        work_mail = None
+        try:
+            work_mail = employee.employee_work_info.email
+        except Exception as e:
+            pass
+        if work_mail:
+            email = work_mail
+
+        if not domain_override:
+            current_site = get_current_site(request)
+            site_name = current_site.name
+            domain = current_site.domain
+        else:
+            site_name = domain = domain_override
+        if email:
+            token = token_generator.make_token(user)
+            context = {
+                "email": email,
+                "domain": domain,
+                "site_name": site_name,
+                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                "user": user,
+                "token": token,
+                "protocol": "https" if use_https else "http",
+                **(extra_email_context or {}),
+            }
+            self.send_mail(
+                subject_template_name,
+                email_template_name,
+                context,
+                from_email,
+                email,
+                html_email_template_name=html_email_template_name,
+            )

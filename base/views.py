@@ -15,11 +15,13 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, Permission, User
+from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import F, ProtectedError, Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -61,6 +63,7 @@ from base.forms import (
     JobPositionForm,
     JobRoleForm,
     MultipleApproveConditionForm,
+    PassWordResetForm,
     ResetPasswordForm,
     RotatingShiftAssign,
     RotatingShiftAssignExportForm,
@@ -235,81 +238,52 @@ def include_employee_instance(request, form):
     return form
 
 
-reset_ids = []
+def reset_send_success(request):
+    return render(request, "reset_send.html")
 
 
-def forgot_password(request):
+class HorillaPasswordResetView(PasswordResetView):
     """
-    This method is used to send the reset password link to the employee email
+    Horilla View for Reset Password
     """
-    if request.method == "POST":
-        id = str(uuid.uuid4())
-        username = request.POST["email"]
+
+    template_name = "forgot_password.html"
+    form_class = PassWordResetForm
+    success_url = reverse_lazy("reset-send-success")
+
+    def form_valid(self, form):
+        email_backend = ConfiguredEmailBackend()
+        default = "base.backends.ConfiguredEmailBackend"
+        is_default_backend = True
+        EMAIL_BACKEND = getattr(settings, "EMAIL_BACKEND", "")
+        if EMAIL_BACKEND and default != EMAIL_BACKEND:
+            is_default_backend = False
+        if is_default_backend and not email_backend.configuration:
+            messages.error(self.request, _("Primary mail server is not configured"))
+            return redirect("forgot-password")
+
+        username = form.cleaned_data["email"]
         user = User.objects.filter(username=username).first()
-        if user is not None:
-            employee = Employee.objects.filter(employee_user_id=user).first()
-            if employee is not None:
-                if employee.email is not None:
-                    send_link(employee, request, id, user)
-                else:
-                    messages.error(request, _("No email found."))
-        else:
-            messages.error(request, "User not found")
-    return render(request, "forgot_password.html")
+        if user:
+            opts = {
+                "use_https": self.request.is_secure(),
+                "token_generator": self.token_generator,
+                "from_email": email_backend.dynamic_username_with_display_name,
+                "email_template_name": self.email_template_name,
+                "subject_template_name": self.subject_template_name,
+                "request": self.request,
+                "html_email_template_name": self.html_email_template_name,
+                "extra_email_context": self.extra_email_context,
+            }
+            form.save(**opts)
+            return redirect(reverse_lazy("reset-send-success"))
+        messages.info(self.request, _("No user found with the username"))
+        return redirect("forgot-password")
 
 
-def send_link(employee, request, id, user):
-    """
-    Here actually the link will send to the employee email
-    """
-    recipient = [
-        employee.email,
-    ]
-    subject = "Link To Rest Your Password!"
-    url = request.build_absolute_uri("/") + "reset-password/" + id
-    message = f"Reset Your Password {url}."
-    email_backend = ConfiguredEmailBackend()
-    default = "base.backends.ConfiguredEmailBackend"
-    is_default_backend = True
-    EMAIL_BACKEND = getattr(settings, "EMAIL_BACKEND", "")
-    if EMAIL_BACKEND and default != EMAIL_BACKEND:
-        is_default_backend = False
-
-    if is_default_backend and not email_backend.configuration:
-        messages.error(request, _("Primary mail server is not configured"))
-        return
-    reset_ids.append({"uuid": id, "user": user})
-    try:
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=email_backend.dynamic_username_with_display_name,
-            recipient_list=recipient,
-        )
-        response_success = _(
-            "Password reset link sent successfully to {recipient}."
-        ).format(recipient=recipient[0])
-        messages.success(request, response_success)
-    except Exception as e:
-        messages.error(request, e)
-
-
-def reset_password(request, uuid):
-    """
-    This method is used to reset the current password for the employee
-    """
-    user = next((item["user"] for item in reset_ids if item["uuid"] == uuid), None)
-    form = ResetPasswordForm()
-    if request.method == "POST":
-        form = ResetPasswordForm(request.POST)
-        if form.is_valid():
-            form.save(user=user)
-            messages.success(request, _("Password reset success"))
-            reset_ids.remove({"uuid": uuid, "user": user})
-            return redirect("/login")
-    if user is None:
-        return HttpResponse(_("Link Expired..."))
-    return render(request, "reset_password.html", {"form": form})
+setattr(PasswordResetConfirmView, "template_name", "reset_password.html")
+setattr(PasswordResetConfirmView, "form_class", ResetPasswordForm)
+setattr(PasswordResetConfirmView, "success_url", "/")
 
 
 @login_required
@@ -1291,11 +1265,8 @@ def rotating_work_type_create(request):
         if form.is_valid():
             form.save()
             form = RotatingWorkTypeForm()
-
             messages.success(request, _("Rotating work type created."))
             return HttpResponse("<script>window.location.reload()</script>")
-
-            return redirect(rotating_work_type_create)
     return render(
         request,
         "base/rotating_work_type/htmx/rotating_work_type_form.html",

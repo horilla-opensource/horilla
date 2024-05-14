@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Group
+from django.contrib.auth.views import PasswordResetConfirmView
 from django.urls import path
 
 from base import announcement, request_and_approve, views
@@ -32,8 +33,12 @@ from horilla_audit.models import AuditTag
 urlpatterns = [
     path("", views.home, name="home-page"),
     path("login/", views.login_user, name="login"),
-    path("forgot-password", views.forgot_password, name="forgot-password"),
-    path("reset-password/<uuid>/", views.reset_password, name="reset-password"),
+    path(
+        "forgot-password",
+        views.HorillaPasswordResetView.as_view(),
+        name="forgot-password",
+    ),
+    path("reset-send-success", views.reset_send_success, name="reset-send-success"),
     path("change-password", views.change_password, name="change-password"),
     path("logout", views.logout_user, name="logout"),
     path("settings", views.common_settings, name="settings"),

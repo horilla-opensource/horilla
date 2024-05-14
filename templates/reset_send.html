@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration Success - OpenHRMS Dashboard</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicons/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicons/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicons/favicon-16x16.png' %}">
+
+    <link rel="stylesheet" href="{% static '/build/css/style.min.css' %}" />
+  </head>
+  <body>
+    <div id="main">
+      {% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+      <main class="oh-onboarding">
+        <div class="oh-onboarding-card oh-onboarding-card--top-bar">
+          <div
+            class="oh-onboarding-card__container oh-onboarding-card__container--wide"
+          >
+            <div class="oh-onboarding__info-container">
+              <svg
+                width="48"
+                height="48"
+                fill="none"
+                stroke="#e54f38"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21 12c0-4.969-4.031-9-9-9s-9 4.031-9 9 4.031 9 9 9 9-4.031 9-9Z"
+                ></path>
+                <path d="m16.5 8.25-6.3 7.5-2.7-3"></path>
+              </svg>
+              <div class="oh-onboarding__title-container">
+                <h1 class="oh-onboarding__title">Forget Password Mail Send Successfully</h1>
+                <p class="oh-onboarding__content">
+                  Your link to reset a Password is ready, check your inbox and also check spam if not showing the inbox.
+                </p>
+                <!-- <a href="#" class="oh-btn oh-btn--secondary">Return home</a> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Upload Photo Modal -->
+    <div
+      class="oh-modal"
+      id="uploadPhotoModal"
+      role="dialog"
+      aria-labelledby="uploadPhotoModal"
+      aria-hidden="true"
+    >
+      <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+          <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel"
+            >Upload Photo</span
+          >
+          <button class="oh-modal__close" aria-label="Close">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </div>
+        <div class="oh-modal__dialog-body">
+          <div class="oh-profile-section__image-container">
+            <div class="oh-profile-section__modal-avatar">
+              <img
+                src="/static/images/ui/user.jpg"
+                class="oh-profile-section__modal-image oh-upload-photo"
+                alt="User Photo"
+              />
+            </div>
+            <input
+              type="file"
+              class="oh-input oh-input--file oh-input--file-sm mt-4 oh-upload-input"
+              data-target=".oh-upload-photo"
+            />
+            <div
+              class="d-flex justify-content-between w-100 align-items-center mt-4"
+            >
+              <button
+                class="oh-btn oh-btn--light-danger mr-1 oh-remove-image"
+                data-target=".oh-upload-photo"
+              >
+                <ion-icon class="me-1" name="trash-outline"></ion-icon>Delete
+                image
+              </button>
+              <button
+                type="submit"
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+              >
+                Update Image
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static '/build/js/web.frontend.min.js' %}"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
+    <script></script>
+  </body>
+</html>
