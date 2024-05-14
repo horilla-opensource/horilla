@@ -410,6 +410,7 @@ def asset_category_update(request, cat_id):
     return render(request, "category/asset_category_update.html", context)
 
 
+@login_required
 @permission_required(perm="asset.delete_assetcategory")
 def asset_category_delete(request, cat_id):
     """
