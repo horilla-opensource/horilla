@@ -796,7 +796,10 @@ def update_document_title(request, id):
 @login_required
 def document_delete(request, id):
     try:
-        document = Document.objects.filter(id=id).first()
+        document = Document.objects.filter(id=id)
+        # users can delete own documents
+        if not request.user.has_perm("horilla_documents.delete_document"):
+            document = document.filter(employee_id__employee_user_id=request.user)
         if document:
             document.delete()
             messages.success(
