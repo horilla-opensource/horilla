@@ -1,80 +1,78 @@
-{% extends 'settings.html' %}
-{% load i18n %}
-{% block settings %}{% load static %}
-
+{% extends 'settings.html' %} {% load i18n %} {% block settings %}
+{% load static %}
 
 <!-- ******************* AUDIT TAGS ******************* -->
 
 <div class="oh-inner-sidebar-content">
-    {% if perms.horilla_audit.view_audittag %}
-        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
-            <h2 class="oh-inner-sidebar-content__title">{% trans "Audit Tags" %}</h2>
-			{% if perms.horilla_audit.add_audittag %}
-				<button
-					class="oh-btn oh-btn--secondary oh-btn--shadow"
-					data-toggle="oh-modal-toggle"
-					data-target="#audittagModal"
-					hx-get="{% url 'audit-tag-create' %}"
-					hx-target="#audittagForm"
-				>
-					<ion-icon name="add-outline" class="me-1"></ion-icon>
-					{% trans "Create" %}
-				</button>
-			{% endif %}
-        </div>
-		{% if audittags %}
-			{% include 'base/audit_tag/audit_tag_view.html' %}
-		{% else %}
-			<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/price-tag.png' %}" class="" alt="Page not found. 404." />
-				<h5 class="oh-404__subtitle">{% trans "There is no audit tags at this moment." %}</h5>
-			</div>
-		{% endif %}
+  {% if perms.horilla_audit.view_audittag %}
+  <div
+    class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
+  >
+    <h2 class="oh-inner-sidebar-content__title">{% trans "Audit Tags" %}</h2>
+    {% if perms.horilla_audit.add_audittag %}
+    	<button
+    	  class="oh-btn oh-btn--secondary oh-btn--shadow"
+    	  data-toggle="oh-modal-toggle"
+    	  data-target="#audittagModal"
+    	  hx-get="{% url 'audit-tag-create' %}"
+    	  hx-target="#audittagForm"
+    		>
+    	  <ion-icon name="add-outline" class="me-1"></ion-icon>
+    	  {% trans "Create" %}
+    	</button>
     {% endif %}
-
+  </div>
+  {% if audittags %}
+  	{% include 'base/audit_tag/audit_tag_view.html' %}
+  {% else %}
+  <div
+    style="
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    "
+  >
+    <img
+      style="
+        display: block;
+        width: 15%;
+        margin: 20px auto;
+        filter: opacity(0.5);
+      "
+      src="{% static 'images/ui/price-tag.png' %}"
+      class=""
+      alt="Page not found. 404."
+    />
+    <h5 class="oh-404__subtitle">
+      {% trans "There is no audit tags at this moment." %}
+    </h5>
+  </div>
+  {% endif %} {% endif %}
 </div>
-
 
 <!-- start of create modal -->
 <div
-	class="oh-modal"
-	id="audittagModal"
-	role="dialog"
-	aria-labelledby="audittagModal"
-	aria-hidden="true"
+  class="oh-modal"
+  id="audittagModal"
+  role="dialog"
+  aria-labelledby="audittagModal"
+  aria-hidden="true"
 >
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="createModalTitle">
-				{% trans "Create Audit Tag" %}
-			</h2>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="audittagForm"></div>
-	</div>
+  <div class="oh-modal__dialog" id="audittagForm"></div>
 </div>
 <!-- end of create modal -->
+
 <!-- start of edit modal -->
 <div
-	class="oh-modal"
-	id="audittagEditModal"
-	role="dialog"
-	aria-labelledby="audittagEditModal"
-	aria-hidden="true"
+  class="oh-modal"
+  id="audittagEditModal"
+  role="dialog"
+  aria-labelledby="audittagEditModal"
+  aria-hidden="true"
 >
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="editModaltitle">
-				{% trans "Audit Tag Update" %}
-			</h2>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="audittagEditForm"></div>
-	</div>
+  <div class="oh-modal__dialog" id="audittagEditForm"></div>
 </div>
 <!-- end of edit modal -->
 

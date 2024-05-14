@@ -1,19 +1,28 @@
 {% load i18n %}
-
-<form
+<div class="oh-modal__dialog-header pb-0">
+  <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+    {% trans "Rotating Work Type" %}
+  </h2>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
     {% if r_type.id %}
-    hx-post="{% url 'rotating-work-type-update' r_type.id %}"
+        hx-post="{% url 'rotating-work-type-update' r_type.id %}"
+        hx-target="#objectUpdateModalTarget"
     {% else %}
-    hx-post="{% url 'rotating-work-type-create' %}"
+        hx-post="{% url 'rotating-work-type-create' %}"
+        hx-target="#objectCreateModalTarget"
     {% endif %}
-    hx-target="#RotatingWorkTypeForm"
-    method="post"
-    class="settings-label mb-1">
-	{% csrf_token %} {{form}}
-    <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
-        <button type="submit" class="oh-btn oh-btn--secondary pl-5 pr-5">
-          {% trans "Save" %}
-        </button>
+    class="oh-profile-section"
+  >
+    {% csrf_token %} {{form.as_p}}
+    <div class="oh-modal__dialog-footer p-0 mt-3">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
     </div>
-	<div class="oh-inner-sidebar-content__footer"></div>
-</form>
+  </form>
+</div>

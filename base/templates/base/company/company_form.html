@@ -6,8 +6,8 @@
 		hx-post="{% url 'company-create' %}"
 	{% endif %}
 	hx-target="#companyForm"
-	method="post"
 	hx-encoding="multipart/form-data"
+	class="oh-profile-section"
 >
 	{% csrf_token %}
 	<div class="oh-inner-sidebar-content__body">
@@ -16,8 +16,10 @@
 			{{form.company}} {{form.company.errors}}
 		</div>
 		<div class="oh-input-group mb-2">
-			<label for="id_{{form.hq.name}}" class="settings-label mb-1">{% trans "Hq" %}</label>
-			{{form.hq}}
+			<div class="oh-switch">
+			<label for="id_{{form.hq.name}}" class="settings-label mb-1 mr-3" style="padding-right: 15px;">{% trans "Hq" %}</label>
+				{{form.hq}}
+			</div>
 		</div>
 		<div class="oh-input-group mb-2">
 			<label for="id_{{form.address.name}}" class="settings-label mb-1">{% trans "Address" %}</label>
@@ -54,12 +56,11 @@
 			{{form.icon}} {{form.icon.errors}}
 		</div>
 	</div>
-	<div class="d-flex flex-row-reverse mt-3">
-		<button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
-		{% trans "Save" %}
+	<div class="oh-modal__dialog-footer p-0 mt-3">
+		<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" >
+			{% trans "Save" %}
 		</button>
 	</div>
-	<div class="oh-inner-sidebar-content__footer"></div>
 </form>
 
 <script>

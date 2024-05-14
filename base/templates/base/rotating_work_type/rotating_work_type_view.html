@@ -23,9 +23,9 @@
 							{% if perms.base.change_rotatingworktype %}
 							<a
 								data-toggle="oh-modal-toggle"
-								data-target="#RotatingWorkTypeModal"
+								data-target="#objectUpdateModal"
 								hx-get="{% url 'rotating-work-type-update' rwork.id %}"
-								hx-target="#RotatingWorkTypeForm"
+								hx-target="#objectUpdateModalTarget"
 								type="button"
 								class="oh-btn oh-btn--light-bkg w-50"
 								title="{% trans 'Edit' %}"

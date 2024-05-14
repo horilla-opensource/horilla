@@ -10,9 +10,9 @@
         <button
             class="oh-btn oh-btn--secondary oh-btn--shadow"
             data-toggle="oh-modal-toggle"
-            data-target="#RotatingWorkTypeModal"
+            data-target="#objectCreateModal"
             hx-get="{% url 'rotating-work-type-create' %}"
-            hx-target="#RotatingWorkTypeForm"
+            hx-target="#objectCreateModalTarget"
         >
             <ion-icon name="add-outline" class="me-1"></ion-icon>
             {% trans "Create" %}
@@ -30,25 +30,4 @@
     {% endif %}
 
 </div>
-
-<div
-	class="oh-modal"
-	id="RotatingWorkTypeModal"
-	role="dialog"
-	aria-labelledby="RotatingWorkTypeModal"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
-				{% trans "Rotating Work Type" %}
-			</h2>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="RotatingWorkTypeForm"></div>
-	</div>
-</div>
-
 {% endblock settings %}

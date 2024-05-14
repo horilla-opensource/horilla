@@ -1,12 +1,12 @@
 {% load i18n %}
 
 <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
+    <div class="oh-modal__dialog-header pb-0">
         <h2 class="oh-modal__dialog-title" id="createModalTitle">
             {% if dep_id %}
-            {% trans "Update department manager" %}
+                {% trans "Update Department Manager" %}
             {% else %}
-            {% trans "Create department manager" %}
+                {% trans "Create Department Manager" %}
             {% endif %}
         </h2>
         <button class="oh-modal__close" aria-label="Close">
@@ -28,13 +28,14 @@
         {% endif %}
         <form
             {% if dep_id %}
-            hx-post="{% url 'department-manager-update' dep_id %}"
+                hx-post="{% url 'department-manager-update' dep_id %}"
             {% else	%}
-            hx-post="{% url 'department-manager-create' %}"
+                hx-post="{% url 'department-manager-create' %}"
             {% endif %}
-            hx-target="#deparmentManagersForm"
-            method="post"
-            hx-encoding="multipart/form-data">
+                hx-target="#deparmentManagersForm"
+            hx-encoding="multipart/form-data"
+            class="oh-profile-section"
+            >
             {% csrf_token %}
             {{form.as_p}}
             <div class="d-flex flex-row-reverse mt-3">
