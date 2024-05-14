@@ -418,6 +418,7 @@ def attendance_delete(request, obj_id):
 
 
 @require_http_methods(["POST"])
+@permission_required("attendance.delete_attendance")
 def attendance_bulk_delete(request):
     """
     This method is used to delete bulk of attendances
