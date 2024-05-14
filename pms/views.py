@@ -2850,6 +2850,7 @@ def archive_anonymous_feedback(request, obj_id):
 
 
 @login_required
+@permission_required("pms.delete_anonymousfeedback")
 def delete_anonymous_feedback(request, obj_id):
     """
     Deletes an anonymous feedback entry.
