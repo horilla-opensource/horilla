@@ -4571,6 +4571,7 @@ def ticket_type_update(request, t_type_id):
 
 
 @login_required
+@permission_required("helpdesk.delete_tickettype")
 def ticket_type_delete(request, t_type_id):
     TicketType.objects.get(id=t_type_id).delete()
     messages.success(request, _("Ticket type has been deleted successfully!"))
@@ -4887,6 +4888,7 @@ def multiple_level_approval_edit(request, condition_id):
 
 
 @login_required
+@permission_required("base.delete_multipleapprovalcondition")
 def multiple_level_approval_delete(request, condition_id):
     condition = MultipleApprovalCondition.objects.get(id=condition_id)
     condition.delete()
@@ -5339,6 +5341,7 @@ def action_type_update(request, act_id):
 
 
 @login_required
+@permission_required("employee.delete_actiontype")
 def action_type_delete(request, act_id):
     """
     This method is used to delete the action type.
