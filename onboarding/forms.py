@@ -29,6 +29,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm as UserForm
 from django.contrib.auth.models import User
 from django.forms import DateInput, ValidationError
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from base import thread_local_middleware
@@ -322,6 +323,8 @@ class OnboardingViewStageForm(ModelForm):
     Form for OnboardingStageModel
     """
 
+    verbose_name = "Stage"
+
     class Meta:
         """
         Meta class for add some additional options
@@ -343,6 +346,14 @@ class OnboardingViewStageForm(ModelForm):
 
             # Set the widget's attributes with the unique ID
             field.widget.attrs.update({"id": unique_id})
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
 
 
 class EmployeeCreationForm(ModelForm):

@@ -11,30 +11,33 @@
     </div>
 </div>
 {% endif %}
-<form hx-post="{% url 'task-creation' %}?stage_id={{ stage_id }}">
-    <div hidden>{{ form.stage_id }}</div>
+<div class="p-3">
+    <div style="border:2px solid hsl(213, 22%, 84%);">
+        <form hx-post="{% url 'task-creation' %}?stage_id={{ stage_id }}">
+            <div hidden>{{ form.stage_id }}</div>
 
-    <div class="oh-modal__dialog-body pb-2">
-        <label class="oh-label d-block">{% trans "Task Title" %}</label>
-        {{ form.task_title }}
-        {{ form.task_title.errors }}
-    </div>
+            <div class="oh-modal__dialog-body pb-2">
+                <label class="oh-label d-block">{% trans "Task Title" %}</label>
+                {{ form.task_title }}
+                {{ form.task_title.errors }}
+            </div>
 
-    <div class="oh-modal__dialog-body pb-2">
-        <label class="oh-label d-block">{% trans "Task Managers" %}</label>
-        {{ form.managers }}
-        {{ form.managers.errors }}
-    </div>
+            <div class="oh-modal__dialog-body pb-2">
+                <label class="oh-label d-block">{% trans "Task Managers" %}</label>
+                {{ form.managers }}
+                {{ form.managers.errors }}
+            </div>
 
-    <div class="oh-modal__dialog-body pb-2">
-        <label class="oh-label d-block">{% trans "Candidates" %}</label>
-        {{ form.candidates }}
-        {{ form.candidates.errors }}
+            <div class="oh-modal__dialog-body pb-2">
+                <label class="oh-label d-block">{% trans "Candidates" %}</label>
+                {{ form.candidates }}
+                {{ form.candidates.errors }}
+            </div>
+            <div class="oh-modal__dialog-footer">
+                <button type="submit" class="oh-btn oh-btn--secondary w-100">
+                    {% trans "Apply" %}
+                </button>
+            </div>
+        </form>
     </div>
-
-    <div class="oh-modal__dialog-footer">
-        <button type="submit" class="oh-btn oh-btn--secondary w-100">
-            {% trans "Apply" %}
-        </button>
-    </div>
-</form>
+</div>

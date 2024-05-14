@@ -136,7 +136,7 @@
                     {% if request.user|task_manages:rec or perms.onboarding.add_candidatestage %}
                     <div class="oh-kanban__add-container">
                         <button class="oh-btn oh-btn--x-small oh-kanban__add-section" onclick="event.stopPropagation()"  data-action="toggle"
-                            data-target="#addStageModal" hx-get="{% url 'stage-creation' rec.id %}" hx-target="#stageForm" data-toggle="oh-modal-toggle" data-class="d-none">
+                            data-target="#addStageModal" hx-get="{% url 'stage-creation' rec.id %}" hx-target="#stageForm" data-toggle="oh-modal-toggle">
                             <ion-icon class="me-1" name="add-outline"></ion-icon>
                             {% trans "Stage" %}
                         </button>
@@ -202,10 +202,9 @@
 </div>
 <div class="messages"></div>
 
-<div class="oh-modal" id="editModal3" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
-    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+<div class="oh-modal" id="editModal3" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width:550px;">
         <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Stage" %}</span>
             <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
@@ -215,16 +214,14 @@
     </div>
 </div>
 
-<div class="oh-modal" id="addStageModal" role="dialog" aria-labelledby="addStageModal" aria-hidden="true">
-    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+<div class="oh-modal" id="addStageModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width:550px;">
         <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Stage" %}</span>
             <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
                 <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
             </button>
         </div>
-        <div id="stageForm" class="">
-
+        <div id="stageForm">
         </div>
     </div>
 </div>

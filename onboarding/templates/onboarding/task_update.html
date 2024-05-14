@@ -12,25 +12,29 @@
     </div>
 </div>
 {% endif %}
-<form  hx-post="{% url 'task-update' task_id %}">
-    <div class="oh-modal__dialog-body pb-2">
-        <label class="oh-label d-block">{% trans "Task Title" %}</label>
-        {{form.task_title}}
-        {{form.task_title.errors}}
+<div class="p-3">
+    <div style="border:2px solid hsl(213, 22%, 84%);">
+        <form  hx-post="{% url 'task-update' task_id %}">
+            <div class="oh-modal__dialog-body pb-2">
+                <label class="oh-label d-block">{% trans "Task Title" %}</label>
+                {{form.task_title}}
+                {{form.task_title.errors}}
+            </div>
+            <div class="oh-modal__dialog-body pb-2" id="taskUpdateEmployee">
+                <label class="oh-label d-block">{% trans "Task Managers" %}</label>
+                {{form.employee_id}}
+                {{form.employee_id.errors}}
+            </div>
+            <div class="oh-modal__dialog-body pb-2" >
+                <label class="oh-label d-block">{% trans "Candidates" %}</label>
+                {{form.candidates}}
+                {{form.candidates.errors}}
+            </div>
+            <div class="oh-modal__dialog-footer">
+                <button type="submit" class="oh-btn oh-btn--secondary w-100">
+                    {% trans "Update" %}
+                </button>
+            </div>
+        </form>
     </div>
-    <div class="oh-modal__dialog-body pb-2" id="taskUpdateEmployee">
-        <label class="oh-label d-block">{% trans "Task Managers" %}</label>
-        {{form.employee_id}}
-        {{form.employee_id.errors}}
-    </div>
-    <div class="oh-modal__dialog-body pb-2" >
-        <label class="oh-label d-block">{% trans "Candidates" %}</label>
-        {{form.candidates}}
-        {{form.candidates.errors}}
-    </div>
-    <div class="oh-modal__dialog-footer">
-        <button type="submit" class="oh-btn oh-btn--secondary w-100">
-            {% trans "Update" %}
-        </button>
-    </div>
-</form>
+</div>

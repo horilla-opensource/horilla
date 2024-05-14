@@ -13,26 +13,7 @@
 </div>
 {% endif %}
 <div class="oh-modal__dialog-body">
-    <form hx-post="{% url 'stage-update' stage_id recruitment_id %}" class="oh-profile-section">
-        <div>
-            <label class="oh-label d-block">{% trans "Stage Title" %}</label>
-            {{form.stage_title}}
-            {{form.stage_title.errors}}
-        </div>
-        <div id="updateEmployee">
-            <label class="oh-label d-block">{% trans "Manager" %}</label>
-            {{form.employee_id}}
-            {{form.employee_id.errors}}
-        </div>
-        <div id="stageEmployee">
-            <label class="oh-label me-2">{% trans "Is Final Stage" %}</label>
-            {{form.is_final_stage}}
-            {{form.is_final_stage.errors}}
-        </div>
-        <div class="d-flex flex-row-reverse w-100 align-items-right mt-2">
-            <button  type="submit" class="oh-btn oh-btn--secondary pl-5 pr-5">
-                {% trans "Update" %}
-            </button>
-        </div>
+    <form hx-post="{% url 'stage-update' stage_id recruitment_id %}">
+        {{form.as_p}}
     </form>
 </div>
