@@ -1008,7 +1008,9 @@ def comment_edit(request):
 
 @login_required
 def comment_delete(request, comment_id):
-    comment = Comment.objects.get(id=comment_id)
+    comment = Comment.objects.filter(id=comment_id)
+    if request.user.has_perm("helpdesk.delete_comment"):
+        comment = comment.filter(employee_id__employee_user_id=request.user)
     comment.delete()
     messages.success(
         request, _('The comment "{}" has been deleted successfully.').format(comment)
@@ -1117,6 +1119,7 @@ def tickets_bulk_archive(request):
 
 @login_required
 # @owner_can_enter("perms.helpdesk.helpdesk_changeticket", Ticket)
+@permission_required("helpdesk.delete_ticket")
 def tickets_bulk_delete(request):
     """
     This is a ajax method used to delete bulk of Ticket instances
