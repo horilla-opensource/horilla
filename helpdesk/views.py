@@ -1009,7 +1009,7 @@ def comment_edit(request):
 @login_required
 def comment_delete(request, comment_id):
     comment = Comment.objects.filter(id=comment_id)
-    if request.user.has_perm("helpdesk.delete_comment"):
+    if not request.user.has_perm("helpdesk.delete_comment"):
         comment = comment.filter(employee_id__employee_user_id=request.user)
     comment.delete()
     messages.success(
@@ -1214,6 +1214,7 @@ def update_department_manager(request, dep_id):
 
 
 @login_required
+@permission_required("helpdesk.delete_departmentmanager")
 def delete_department_manager(request, dep_id):
     department_manager = DepartmentManager.objects.get(id=dep_id)
     department_manager.delete()
