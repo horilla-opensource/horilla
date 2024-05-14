@@ -5115,8 +5115,10 @@ def delete_shiftrequest_comment(request, comment_id):
     """
     This method is used to delete shift request comments
     """
-    comment = ShiftRequestComment.objects.get(id=comment_id)
-    shift_id = comment.request_id.id
+    comment = ShiftRequestComment.objects.filter(id=comment_id)
+    if not request.user.has_perm("base.delete_shiftrequestcomment"):
+        comment = comment.filter(employee_id__employee_user_id=request.user)
+    shift_id = comment.first().request_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
     return redirect("view-shift-comment", shift_id=shift_id)
@@ -5235,8 +5237,10 @@ def delete_worktyperequest_comment(request, comment_id):
     """
     This method is used to delete Work type request comments
     """
-    comment = WorkTypeRequestComment.objects.get(id=comment_id)
-    worktype_id = comment.request_id.id
+    comment = WorkTypeRequestComment.objects.filter(id=comment_id)
+    if not request.user.has_perm("base.delete_worktyperequestcomment"):
+        comment = comment.filter(employee_id__employee_user_id=request.user)
+    worktype_id = comment.first().request_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
     return redirect("view-work-type-comment", work_type_id=worktype_id)
