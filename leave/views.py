@@ -1359,6 +1359,7 @@ def leave_assign_delete(request, obj_id):
 
 
 @require_http_methods(["POST"])
+@permission_required("leave.delete_availableleave")
 def leave_assign_bulk_delete(request):
     """
     This method is used to delete bulk of assigned leaves
@@ -1873,6 +1874,7 @@ def holiday_delete(request, id):
 
 
 @require_http_methods(["POST"])
+@permission_required("leave.delete_holiday")
 def bulk_holiday_delete(request):
     """
     This method is used to delete bulk of holidays
@@ -2707,7 +2709,7 @@ def overall_leave(request):
 
 
 @login_required
-@permission_required("leave_deleteleaverequest")
+@permission_required("leave.delete_leaverequest")
 def dashboard(request):
     """
     function used to view Admin dashboard in the leave module.
