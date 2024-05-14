@@ -3264,7 +3264,10 @@ def delete_employee_note_file(request, id):
         id : stage file instance id
     """
     file = NoteFiles.objects.get(id=id)
-    employee_id = file.employeenote_set.all().first().employee_id.id
+    notes = file.employeenote_set.all()
+    if not request.user.has_perm("employee.delete_notefile"):
+        file.employeenote_set.filter(employee_id__employee_user_id=request.user)
+    employee_id = notes.first().employee_id.id
     file.delete()
     return redirect(f"/employee/note-tab/{employee_id}")
 
