@@ -31,6 +31,16 @@
   </span>
 </div>
 <div class="oh-wrapper ">
+  <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
+    {% trans "Select All Records" %}
+  </div>
+  <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;display:none;">
+    {% trans "Unselect All Records" %}
+  </div>
+  <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display:none;" >
+  </div>
+  <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow" >
+  </div>
   <div class="oh-tabs">
     <ul class="oh-tabs__tablist">
       <li class="oh-tabs__tab oh-tabs__tab--active" data-target="#tab_1">
@@ -40,6 +50,7 @@
         {% trans "Attendances" %}
       </li>
     </ul>  {% include "requests/attendance/request_lines.html" %}
+  </div>
 </div>
 
 
@@ -82,6 +93,21 @@
   function submitForm(elem) {
     $(elem).siblings(".add_more_submit").click();
   }
+  $(document).ready(function(){
+    //start of select all //
+    $(".requested-attendances-select-all").change(function () {
+      setTimeout(function() {
+          addingRequestAttendanceIds();
+      }, 500); // Run after 2 seconds
+    });
+    $("#selectAllInstances").click(function () {
+      selectAllReqAttendance();
+    });
+    $("#unselectAllInstances").click(function () {
+      unselectAllReqAttendance();
+    });
+
+  })
 
 </script>
 

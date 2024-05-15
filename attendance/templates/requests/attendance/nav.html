@@ -102,7 +102,7 @@
   </div>
   <div class="oh-main__titlebar oh-main__titlebar--right">
 
-    <form hx-get='{% url "search-attendance-requests" %}' id="requestFilter" hx-target='#view-container' class="d-flex" >
+    <form hx-get='{% url "search-attendance-requests" %}' id="requestFilter" hx-target='#view-container' class="d-flex" onsubmit="event.preventDefault()" >
       <div
         class="oh-input-group oh-input__search-group"
         :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -122,7 +122,7 @@
       </div>
       <div class="oh-main__titlebar-button-container">
         <div class="oh-dropdown" x-data="{open: false}">
-          <button  type="button" class="oh-btn ml-2" @click="open = !open">
+          <button  type="button" class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
             <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
           </button>
           <div
@@ -171,16 +171,57 @@
             </div>
           </div>
         </div>
-      </div>
+        {% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager or perms.attendance.delete_attendanceovertime %}
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button
+              class="oh-btn oh-btn--dropdown ml-2"
+              @click="open = !open"
+              @click.outside="open = false"
+              onclick="event.preventDefault()"
+            >
+              {% trans "Actions" %}
+            </button>
+            <div
+                class="oh-dropdown__menu oh-dropdown__menu--right"
+                x-show="open"
+                style="display: none"
+              >
+                <ul class="oh-dropdown__items">
+                  {% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager %}
+                    <li class="oh-dropdown__item">
+                      <a
+                        href="#"
+                        class="oh-dropdown__link"
+                        id="reqAttendanceBulkApprove"
+                        data-toggle="oh-modal-toggle"
+                        >{% trans "Bulk Approve" %}</a
+                      >
+                    </li>
+                  {% endif %}
+                  {% if perms.attendance.delete_attendanceovertime %}
+                    <li class="oh-dropdown__item">
+                      <a
+                        href="#"
+                        id="reqAttendanceBulkReject"
+                        class="oh-dropdown__link oh-dropdown__link--danger"
+                        >{% trans "Bulk Reject" %}</a
+                      >
+                    </li>
+                  {% endif %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        {% endif %}
 
-      <button
+        <button
         class="oh-btn oh-btn--secondary ml-2"
         data-toggle="oh-modal-toggle"
         data-target="#objectCreateModal"
         hx-get="{% url 'request-new-attendance' %}"
         hx-target="#objectCreateModalTarget"
         onclick="event.preventDefault()"
-      >
+        >
         <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
       </button>
     </form>

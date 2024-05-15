@@ -61,6 +61,22 @@ var excelMessages = {
   en: "Do you want to download the excel file?",
   fr: "Voulez-vous télécharger le fichier Excel?",
 };
+var reqAttendanceApproveMessages = {
+  ar: "هل ترغب حقًا في الموافقة على جميع طلبات الحضور المحددة؟",
+  de: "Möchten Sie wirklich alle ausgewählten Anwesenheitsanfragen genehmigen?",
+  es: "¿Realmente quieres aprobar todas las solicitudes de asistencia seleccionadas?",
+  en: "Do you really want to approve all the selected attendance requests?",
+  fr: "Voulez-vous vraiment approuver toutes les demandes de présence sélectionnées?",
+};
+
+var reqAttendanceApproveMessages = {
+  ar: "هل ترغب حقًا في رفض جميع طلبات الحضور المحددة؟",
+  de: "Möchten Sie wirklich alle ausgewählten Anwesenheitsanfragen ablehnen?",
+  es: "¿Realmente quieres rechazar todas las solicitudes de asistencia seleccionadas?",
+  en: "Do you really want to reject all the selected attendance requests?",
+  fr: "Voulez-vous vraiment rejeter toutes les demandes de présence sélectionnées?",
+};
+
 tickCheckboxes();
 function makeListUnique(list) {
   return Array.from(new Set(list));
@@ -1364,6 +1380,337 @@ $("#lateComeBulkDelete").click(function (e) {
     }
   });
 });
+
+
+// attendance requests select all functions
+
+function requestedAttendanceTickCheckboxes() {
+  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+  uniqueIds = makeListUnique(ids);
+  toggleHighlight(uniqueIds);
+  click = $("#selectedInstances").attr("data-clicked");
+  if (click === "1") {
+    $(".requested-attendances-select-all").prop("checked", true);
+  }
+    uniqueIds.forEach(function (id) {
+      $("#" + id).prop("checked", true);
+    });
+
+  var selectedCount = uniqueIds.length;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    if (selectedCount > 0) {
+      $("#unselectAllInstances").css("display", "inline-flex");
+      $("#selectedShow").css("display", "inline-flex");
+      $("#selectedShow").text(selectedCount + " -" + message);
+    } else {
+      $("#selectedShow").css("display", "none");
+    }
+  });
+}
+
+function dictToQueryString(dict) {
+  const queryString = Object.keys(dict).map(key => {
+      const value = dict[key];
+      if (Array.isArray(value)) {
+          return value.map(val => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`).join('&');
+      } else {
+          return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+      }
+  }).join('&');
+  return queryString;
+}
+
+
+function selectAllReqAttendance() {
+  $("#unselectAllInstances").show();
+  $("#selectedShow").show();
+
+  $("#selectedInstances").attr("data-clicked", 1);
+  $("#selectedShow").removeAttr("style");
+  var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+
+  if (savedFilters && savedFilters["filterData"] !== null) {
+    var filter = savedFilters["filterData"];
+    // Convert the dictionary to a query string
+    var queryString = dictToQueryString(filter);
+    $.ajax({
+      url: `/attendance/select-all-filter-attendance-request?${queryString}`,
+      data: { page: "all", filter: JSON.stringify(filter) },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var employeeIds = response.employee_ids;
+
+        if (Array.isArray(employeeIds)) {
+          // Continue
+        } else {
+          console.error("employee_ids is not an array:", employeeIds);
+        }
+
+        var selectedCount = employeeIds.length;
+
+        for (var i = 0; i < employeeIds.length; i++) {
+          var empId = employeeIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedInstances").attr("data-ids", JSON.stringify(employeeIds));
+
+        count = makeListUnique(employeeIds);
+
+        requestedAttendanceTickCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  } else {
+    $.ajax({
+      url: "/attendance/select-all-filter-attendance-request",
+      data: { page: "all" },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var employeeIds = response.employee_ids;
+
+        if (Array.isArray(employeeIds)) {
+          // Continue
+        } else {
+          console.error("employee_ids is not an array:", employeeIds);
+        }
+
+        var selectedCount = employeeIds.length;
+
+        for (var i = 0; i < employeeIds.length; i++) {
+          var empId = employeeIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedInstances").attr("data-ids", JSON.stringify(employeeIds));
+        var previousIds = $("#selectedInstances").attr("data-ids");
+        $("#selectedInstances").attr(
+          "data-ids",
+          JSON.stringify(
+            Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))
+          )
+        );
+
+        count = makeListUnique(employeeIds);
+        requestedAttendanceTickCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  }
+}
+
+function unselectAllReqAttendance() {
+  $("#selectedInstances").attr("data-clicked", 0);
+
+  $.ajax({
+    url: "/attendance/select-all-filter-attendance-request",
+    data: { page: "all", filter: "{}" },
+    type: "GET",
+    dataType: "json",
+    success: function (response) {
+      var employeeIds = response.employee_ids;
+
+      if (Array.isArray(employeeIds)) {
+        // Continue
+      } else {
+        console.error("employee_ids is not an array:", employeeIds);
+      }
+
+      for (var i = 0; i < employeeIds.length; i++) {
+        var empId = employeeIds[i];
+        $("#" + empId).prop("checked", false);
+        $(".requested-attendances-select-all").prop("checked", false);
+      }
+      var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+      var uniqueIds = makeListUnique(ids);
+      toggleHighlight(uniqueIds);
+
+      $("#selectedInstances").attr("data-ids", JSON.stringify([]));
+
+      count = [];
+      $("#unselectAllInstances").hide();
+      requestedAttendanceTickCheckboxes(count);
+    },
+    error: function (xhr, status, error) {
+      console.error("Error:", error);
+    },
+  });
+}
+
+
+$("#reqAttendanceBulkApprove").click(function (e) {
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = reqAttendanceApproveMessages[languageCode];
+    var textMessage = noRowValidateMessages[languageCode];
+    var checkedRows = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+    if (checkedRows.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+          $.ajax({
+            type: "POST",
+            url: "/attendance/bulk-approve-attendance-request",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload();
+              }
+            },
+          });
+        }
+      });
+    }
+  });
+});
+
+$("#reqAttendanceBulkReject").click(function (e) {
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = reqAttendanceApproveMessages[languageCode];
+    var textMessage = noRowValidateMessages[languageCode];
+    var checkedRows = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+    if (checkedRows.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+          $.ajax({
+            type: "POST",
+            url: "/attendance/bulk-reject-attendance-request",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload();
+              }
+            },
+          });
+        }
+      });
+    }
+  });
+});
+
+
+function addingRequestAttendanceIds() {
+  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+  var selectedCount = 0;
+    $(".requested-attendance-row").each(function () {
+    if ($(this).is(":checked")) {
+      ids.push(this.id);
+    } else {
+      var index = ids.indexOf(this.id);
+      if (index > -1) {
+        ids.splice(index, 1);
+      }
+    }
+  });
+
+  ids = makeListUnique(ids);
+
+  selectedCount = ids.length;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+    if (selectedCount === 0) {
+      $("#unselectAllInstances").css("display", "none");
+      $("#selectedShow").css("display", "none");
+    } else {
+      $("#unselectAllInstances").css("display", "inline-flex");
+      $("#selectedShow").css("display", "inline-flex");
+      $("#selectedShow").text(selectedCount + " - " + message);
+    }
+  });
+}
+
+$(".requested-attendances-select-all").click(function (e) {
+  var is_checked = $(this).is(":checked");
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
+  if (is_checked) {
+    $(closest)
+      .children()
+      .find(".requested-attendance-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
+  } else {
+    $(closest)
+      .children()
+      .find(".requested-attendance-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
+  }
+  addingRequestAttendanceIds()
+});
+function checkReqAttentanceSelectAll(){
+  var parentTable = $(this).closest(".oh-sticky-table");
+  var body = parentTable.find(".oh-sticky-table__tbody");
+  var parentCheckbox = parentTable.find(".requested-attendances-select-all");
+  parentCheckbox.prop(
+    "checked",
+    body.find(".requested-attendance-row:checked").length ===
+      body.find(".requested-attendance-row").length
+  );
+}
+$(".requested-attendance-row").change(function () {
+  var parentTable = $(this).closest(".oh-sticky-table");
+  var body = parentTable.find(".oh-sticky-table__tbody");
+  var parentCheckbox = parentTable.find(".requested-attendances-select-all");
+  parentCheckbox.prop(
+    "checked",
+    body.find(".requested-attendance-row:checked").length ===
+      body.find(".requested-attendance-row").length
+  );
+  $("#selectedInstances").attr("data-clicked", 0);
+  addingRequestAttendanceIds();
+
+});
+
 
 // ------------------------------------------------------------------------------------------------------------------------------
 
