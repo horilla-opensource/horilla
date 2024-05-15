@@ -48,6 +48,14 @@ class TicketTypeForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
 
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
+
 
 class FAQForm(ModelForm):
     class Meta:
