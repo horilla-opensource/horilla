@@ -1,8 +1,13 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
   <span class="oh-modal__dialog-title" id="editModal1ModalLabel"
-    >{% trans "Employee Type" %}</span
-  >
+    >
+    {% if employee_type.id %}
+      {% trans "Update Employee Type" %}
+    {% else %}
+      {% trans "Create Employee Type" %}
+    {% endif %}
+</span>
   <button class="oh-modal__close" aria-label="Close">
     <ion-icon name="close-outline"></ion-icon>
   </button>
@@ -22,20 +27,7 @@
     class="oh-profile-section"
     >
     {% csrf_token %} {{form.non_field_errors}}
-    <div class="oh-inner-sidebar-content__body">
-      <label class="settings-label mb-1" for="">
-        {% trans "Employee Type" %}
-      </label>
-      <div class="oh-input-group">
-        {{form.employee_type.errors}} {{form.employee_type}}
-      </div>
-    </div>
-    <div class="oh-inner-sidebar-content__body">
-      <label class="settings-label mb-1" for=""> {% trans "Company" %} </label>
-      <div class="oh-input-group">
-        {{form.company_id.errors}} {{form.company_id}}
-      </div>
-    </div>
+    {{form.as_p}}
     <div class="oh-modal__dialog-footer p-0 mt-3">
       <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
         {% trans "Save" %}

@@ -1,7 +1,11 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
   <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
-    {% trans "Rotating Work Type" %}
+    {% if r_type.id %}
+      {% trans "Update Rotating Work Type" %}
+    {% else %}
+      {% trans "Create Rotating Work Type" %}
+    {% endif %}
   </h2>
   <button class="oh-modal__close" aria-label="Close">
     <ion-icon name="close-outline"></ion-icon>

@@ -1,8 +1,13 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
   <span class="oh-modal__dialog-title" id="createModal1ModalLabel"
-    >{% trans "Employee Shift" %}</span
-  >
+    >
+    {% if shift.id %}
+      {% trans "Update Employee Shift" %}
+    {% else %}
+      {% trans "Create Employee Shift" %}
+    {% endif %}
+    </span>
   <button class="oh-modal__close" aria-label="Close">
     <ion-icon name="close-outline"></ion-icon>
   </button>
@@ -22,36 +27,7 @@
     class="oh-profile-section"
     >
     {% csrf_token %} {{form.non_field_errors}}
-    <div class="oh-inner-sidebar-content__body">
-      <div class="oh-input-group mb-2">
-        <label class="settings-label mb-1" for=""> {% trans "Shift" %} </label>
-        {{form.employee_shift.errors}} {{form.employee_shift}}
-      </div>
-      <div class="oh-input-group mb-2">
-        <label class="settings-label mb-1" for="">
-          {% trans "Full Time Weekly" %}
-        </label>
-        {{form.weekly_full_time.errors}} {{form.weekly_full_time}}
-      </div>
-      <div class="oh-input-group mb-2">
-        <label class="settings-label mb-1" for="">
-          {% trans "Full Time" %}
-        </label>
-        {{form.full_time.errors}} {{form.full_time}}
-      </div>
-      <div class="oh-input-group mb-2">
-        <label class="settings-label mb-1" for="">
-          {% trans "Grace Time" %}
-        </label>
-        {{form.grace_time_id.errors}} {{form.grace_time_id}}
-      </div>
-      <div class="oh-input-group mb-2">
-        <label class="settings-label mb-1" for="">
-          {% trans "Company" %}
-        </label>
-        {{form.company_id.errors}} {{form.company_id}}
-      </div>
-    </div>
+    {{form.as_p}}
     <div class="oh-modal__dialog-footer p-0 mt-3">
       <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
         {% trans "Save" %}

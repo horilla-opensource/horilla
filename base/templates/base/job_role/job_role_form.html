@@ -1,8 +1,13 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
   <span class="oh-modal__dialog-title" id="confirmModalLabel"
-    >{% trans "Job Role" %}</span
-  >
+    >
+    {% if job_role.id %}
+      {% trans "Update Job Role" %}
+    {% else %}
+      {% trans "Create Job Role" %}
+    {% endif %}
+  </span>
   <button class="oh-modal__close" aria-label="Close">
     <ion-icon name="close-outline"></ion-icon>
   </button>
@@ -24,11 +29,11 @@
     {% csrf_token %} {{form.non_field_errors}}
     <div class="oh-inner-sidebar-content__body">
       <div class="oh-input-group mb-2">
-        <label class="settings-label mb-1"> {% trans "Job Position" %} </label>
+        <label class="mb-1"> {% trans "Job Position:" %} </label>
         {{form.job_position_id.errors}} {{form.job_position_id}}
       </div>
       <div class="oh-input-group mb-2">
-        <label class="settings-label mb-1"> {% trans "Job Role" %} </label>
+        <label class="mb-1"> {% trans "Job Role:" %} </label>
         {{form.job_role.errors}} {{form.job_role}}
       </div>
     </div>

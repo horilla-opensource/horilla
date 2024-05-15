@@ -1,7 +1,11 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
   <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
-    {% trans "Rotating Shift" %}
+    {% if rshift.id %}
+      {% trans "Update Rotating Shift" %}
+    {% else %}
+      {% trans "Create Rotating Shift" %}
+    {% endif %}
   </h2>
   <button class="oh-modal__close" aria-label="Close">
     <ion-icon name="close-outline"></ion-icon>

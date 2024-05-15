@@ -1,8 +1,13 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
   <span class="oh-modal__dialog-title" id="createModalLabel"
-    >{% trans "Work Type" %}</span
-  >
+    >
+    {% if work_type.id %}
+      {% trans "Update Work Type" %}
+    {% else %}
+      {% trans "Create Work Type" %}
+    {% endif %}
+  </span>
   <button class="oh-modal__close" aria-label="Close">
     <ion-icon name="close-outline"></ion-icon>
   </button>
@@ -22,22 +27,7 @@
     class="oh-profile-section"
   >
     {% csrf_token %} {{form.non_field_errors}}
-    <div class="oh-inner-sidebar-content__body">
-      <div class="oh-input-group mb-2">
-        <label class="settings-label mb-1" for="">
-          {% trans "Work Type" %}
-        </label>
-        {{form.work_type.errors}} {{form.work_type}}
-      </div>
-    </div>
-    <div class="oh-inner-sidebar-content__body">
-      <div class="oh-input-group mb-2">
-        <label class="settings-label mb-1" for="">
-          {% trans "Company" %}
-        </label>
-        {{form.company_id.errors}} {{form.company_id}}
-      </div>
-    </div>
+    {{form.as_p}}
     <div class="oh-modal__dialog-footer p-0 mt-3">
       <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
         {% trans "Save" %}
