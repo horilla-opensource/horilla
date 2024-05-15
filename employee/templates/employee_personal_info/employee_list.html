@@ -268,39 +268,19 @@
               {% endif %}
             {% endif %}
             {% if perms.employee.delete_employee %}
-
-              {% with emp.contract_set.first as contract %}
-                  {% if contract.contract_status == 'active' %}
-                    <form
-                        action="{% url 'employee-delete' emp.id %}?view=list"
-                        onsubmit="return confirm('{% trans "Are you sure want to delete this employee?" %}')"
-                        method="post" style = "width:100%"
-                      > {% csrf_token %}
-                        <button
-                          type="submit"
-                          class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                          title="{% trans 'Remove' %}"
-                        >
-                          <ion-icon name="trash-outline"></ion-icon>
-                        </button>
-                    </form>
-                  {% else %}
-                    <form
-                        action="{% url 'employee-delete' emp.id %}?view=list"
-                        onsubmit="return confirm('{% trans "The employee contract in" %} {{ contract.get_contract_status_display }} {% trans "state will also be deleted, Do you want to continue ?" %}')"
-                        method="post" style = "width:100%"
-                      > {% csrf_token %}
-                        <button
-                          type="submit"
-                          class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                          title="{% trans 'Remove' %}"
-                        >
-                          <ion-icon name="trash-outline"></ion-icon>
-                        </button>
-                    </form>
-                  {% endif %}
-              {% endwith %}
-
+              <form
+                  action="{% url 'employee-delete' emp.id %}?view=list"
+                  onsubmit="return confirm('{% trans "All non-active contracts of the employee will also be deleted. Do you want to continue ?" %}')"
+                  method="post" style = "width:100%"
+                > {% csrf_token %}
+                  <button
+                    type="submit"
+                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                    title="{% trans 'Remove' %}"
+                  >
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </button>
+              </form>
             {% endif %}
           </div>
         </div>

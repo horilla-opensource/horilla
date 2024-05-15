@@ -1906,10 +1906,11 @@ def employee_delete(request, obj_id):
     try:
         view = request.POST.get("view")
         employee = Employee.objects.get(id=obj_id)
-        if Contract.objects.get(employee_id=obj_id) is not None:
-            contract = Contract.objects.get(employee_id=obj_id)
-            if contract.contract_status != "active":
-                contract.delete()
+        if Contract.objects.filter(employee_id=obj_id).exists():
+            contracts = Contract.objects.filter(employee_id=obj_id)
+            for contract in contracts:
+                if contract.contract_status != "active":
+                    contract.delete()
         user = employee.employee_user_id
         user.delete()
         messages.success(request, _("Employee deleted"))
