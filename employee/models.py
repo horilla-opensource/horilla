@@ -366,7 +366,7 @@ class Employee(models.Model):
         Recruitment model
         """
 
-        unique_together = ("employee_first_name", "employee_last_name")
+        unique_together = ("employee_first_name", "employee_last_name", "email")
         permissions = (
             ("change_ownprofile", "Update own profile"),
             ("view_ownprofile", "View Own Profile"),
