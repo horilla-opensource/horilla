@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header pb-0">
 	<h2 class="oh-modal__dialog-title" id="editModaltitle">
 		{% if condition.id %}
 			{% trans "Update Attendance condition " %}
@@ -13,21 +13,20 @@
 	</button>
 </div>
 <div class="oh-modal__dialog-body" id="createForm">
-	<form {% if condition.id %}
-		hx-post="{% url 'attendance-settings-update' condition.id %}"
+	<form class="oh-profile-section"
+		{% if condition.id %}
+			hx-post="{% url 'attendance-settings-update' condition.id %}"
 		{% else %}
-		hx-post="{% url 'attendance-settings-create' %}"
+			hx-post="{% url 'attendance-settings-create' %}"
 		{% endif %}
-		hx-target='#conditionModalTarget' method="post" class="settings-label mb-1">
+		hx-target='#conditionModalTarget'
+		>
 		{% csrf_token %}
-		<div class="oh-inner-sidebar-content__body">
-			<div class="oh-input-group">{{form}}</div>
-		</div>
-		<div class="d-flex flex-row-reverse mt-3">
-			<button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
-			{% trans "Save" %}
+		{{form.as_p}}
+		<div class="oh-modal__dialog-footer p-0 mt-3">
+			<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+			  {% trans "Save" %}
 			</button>
 		</div>
-		<div class="oh-inner-sidebar-content__footer"></div>
 	</form>
 </div>
