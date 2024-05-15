@@ -54,16 +54,16 @@
 				{% trans "Create Announcements." %}
 			</h2>
       <button
-      type="button"
-      class="oh-modal_close--custom"
-      onclick="$('#anouncementModal').removeClass('oh-modal--show');"
-        >
-        <ion-icon
-          name="close-outline"
-          role="img"
-          aria-label="close outline"
-        ></ion-icon>
-    </button>
+        type="button"
+        class="oh-modal_close--custom"
+        onclick="$('#anouncementModal').removeClass('oh-modal--show');"
+          >
+          <ion-icon
+            name="close-outline"
+            role="img"
+            aria-label="close outline"
+          ></ion-icon>
+      </button>
 		</div>
 		<div class="oh-modal__dialog-body" id="createannouncementForm"></div>
 	</div>
@@ -169,6 +169,10 @@ aria-hidden="true"
 
 <!-- end of comment view modal -->
 
+
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1100">
+  <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+</div>
 
 <script>
   function showDetails() {
