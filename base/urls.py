@@ -898,6 +898,11 @@ urlpatterns = [
         name="announcement-single-view",
     ),
     path(
+        "announcement-delete-comment/<int:comment_id>/",
+        announcement.delete_announcement_comment,
+        name="announcement-delete-comment",
+    ),
+    path(
         "announcement-viewed-by", announcement.viewed_by, name="announcement-viewed-by"
     ),
     path("driver-viewed", views.driver_viewed_status, name="driver-viewed"),

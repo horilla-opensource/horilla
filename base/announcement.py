@@ -200,6 +200,9 @@ def create_announcement_comment(request, anoun_id):
         initial={"employee_id": emp.id, "request_id": anoun_id}
     )
     comments = AnnouncementComment.objects.filter(announcement_id=anoun_id)
+    no_comments = False
+    if not comments.exists():
+        no_comments = True
     commentators = []
     if comments:
         for i in comments:
@@ -227,10 +230,11 @@ def create_announcement_comment(request, anoun_id):
                 redirect="/",
                 icon="chatbox-ellipses",
             )
-            return HttpResponse("<script>window.location.reload()</script>")
+        return redirect("announcement-view-comment", anoun_id=anoun_id)
+
     return render(
         request,
-        "announcement/comment_form.html",
+        "announcement/comment_view.html",
         {"form": form, "request_id": anoun_id},
     )
 
@@ -243,6 +247,7 @@ def comment_view(request, anoun_id):
     comments = AnnouncementComment.objects.filter(announcement_id=anoun_id).order_by(
         "-created_at"
     )
+    announcement = Announcement.objects.get(id=anoun_id)
     comments = filter_own_records(request, comments, "base.view_announcementcomment")
     no_comments = False
     if not comments.exists():
@@ -251,8 +256,26 @@ def comment_view(request, anoun_id):
     return render(
         request,
         "announcement/comment_view.html",
-        {"comments": comments, "no_comments": no_comments},
+        {
+            "comments": comments,
+            "no_comments": no_comments,
+            "request_id": anoun_id,
+            "announcement": announcement,
+        },
     )
+
+
+@login_required
+@permission_required(perm="base.delete_announcementcomment")
+def delete_announcement_comment(request, comment_id):
+    """
+    This method is used to delete announcement comments
+    """
+    comment = AnnouncementComment.objects.get(id=comment_id)
+    anoun_id = comment.announcement_id.id
+    comment.delete()
+    messages.success(request, _("Comment deleted successfully!"))
+    return redirect("announcement-view-comment", anoun_id=anoun_id)
 
 
 @login_required

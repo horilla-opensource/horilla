@@ -109,14 +109,10 @@
                         </button>
                     {% endif %}
                     {% if not anoun.disable_comments %}
-                    <button class="oh-btn me-1 oh-announcement-btn" hx-get='{% url "announcement-add-comment" anoun.id %}' type="button"  title="Add Comment" hx-target="#commentForm"
-                        hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#commentModal">
-                        <ion-icon name="chatbox-outline" class="md hydrated" role="img" aria-label="chevron back outline"></ion-icon>
-                      </button>
-                      <button class="oh-btn me-1 oh-announcement-btn" type="button" hx-get="{% url 'announcement-view-comment' anoun.id %}"  hx-target="#commentviewTarget" data-toggle='oh-modal-toggle'
-                        data-target ='#commentviewModal' title="View Comment"  class="oh-btn oh-btn--light">
-                        <ion-icon name="eye-outline" class="md hydrated" role="img" aria-label="chevron back outline"></ion-icon>
-                    </button>
+                        <button class="oh-btn oh-btn--light oh-activity-sidebar__open" type="button" hx-get="{% url 'announcement-view-comment' anoun.id %}"  hx-target="#commentContainer"
+                            data-target ='#activitySidebar' title="Comments">
+                            <ion-icon name="chatbox-outline" style="font-size:18px;" class="md hydrated" role="img" aria-label="chevron back outline"></ion-icon>
+                        </button>
                     {% endif %}
 
                 </div>
