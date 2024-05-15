@@ -1,57 +1,56 @@
 {% load i18n %}
-
-<form
+<div class="oh-modal__dialog-header pb-0">
+  <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+    {% trans "Employee Shift Schedule" %}
+  </h2>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
     {% if shift_schedule.id %}
-    hx-post="{% url 'employee-shift-schedule-update' shift_schedule.id %}"
+        hx-post="{% url 'employee-shift-schedule-update' shift_schedule.id %}"
+        hx-target="#objectUpdateModalTarget"
     {% else %}
-    hx-post="{% url 'employee-shift-schedule-create' %}"
+        hx-post="{% url 'employee-shift-schedule-create' %}"
+        hx-target="#objectCreateModalTarget"
     {% endif %}
-    hx-target="#shiftScheduleForm"
-    method="post" >
-    {% csrf_token %}
-    {{ form.non_field_errors}}
+    class="oh-profile-section"
+  >
+    {% csrf_token %} {{ form.non_field_errors}}
     <div class="oh-inner-sidebar-content__body">
-        <div class="oh-input-group mb-2">
-            <label class='settings-label mb-1' for="">
-                {% trans "Shift" %}
-            </label>
-            {{form.shift_id.errors}}
-            {{form.shift_id}}
-        </div>
-        <div class="oh-input-group mb-2">
-            <label class='settings-label mb-1' for="">
-               {% trans "Days" %}
-            </label>
-            {{form.day.errors}}
-            {{form.day}}
-        </div>
-        <div class="oh-input-group mb-2">
-            <label class='settings-label mb-1' for="">
-                {% trans "Minimum Hour" %}
-            </label>
-            {{form.minimum_working_hour.errors}}
-            {{form.minimum_working_hour}}
-        </div>
-        <div class="oh-input-group mb-2">
-            <label class='settings-label mb-1' for="">
-                {% trans "Shift Start Time" %}
-            </label>
-            {{form.start_time.errors}}
-            {{form.start_time}}
-        </div>
-        <div class="oh-input-group mb-2">
-            <label class='settings-label mb-1' for="">
-                {% trans "Shift End Time" %}
-            </label>
-            {{form.end_time.errors}}
-            {{form.end_time}}
-        </div>
+      <div class="oh-input-group mb-2">
+        <label class="settings-label mb-1" for=""> {% trans "Shift" %} </label>
+        {{form.shift_id.errors}} {{form.shift_id}}
+      </div>
+      <div class="oh-input-group mb-2">
+        <label class="settings-label mb-1" for=""> {% trans "Days" %} </label>
+        {{form.day.errors}} {{form.day}}
+      </div>
+      <div class="oh-input-group mb-2">
+        <label class="settings-label mb-1" for="">
+          {% trans "Minimum Hour" %}
+        </label>
+        {{form.minimum_working_hour.errors}} {{form.minimum_working_hour}}
+      </div>
+      <div class="oh-input-group mb-2">
+        <label class="settings-label mb-1" for="">
+          {% trans "Shift Start Time" %}
+        </label>
+        {{form.start_time.errors}} {{form.start_time}}
+      </div>
+      <div class="oh-input-group mb-2">
+        <label class="settings-label mb-1" for="">
+          {% trans "Shift End Time" %}
+        </label>
+        {{form.end_time.errors}} {{form.end_time}}
+      </div>
     </div>
-	<div class="d-flex flex-row-reverse mt-3">
-		<button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
-		{% trans "Save" %}
-		</button>
-	</div>
-    <div class="oh-inner-sidebar-content__footer">
+    <div class="oh-modal__dialog-footer p-0 mt-3">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
     </div>
-</form>
+  </form>
+</div>

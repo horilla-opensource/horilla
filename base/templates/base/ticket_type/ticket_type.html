@@ -12,7 +12,7 @@
                 data-target="#ticketModal"
                 hx-get="{% url 'ticket-type-create' %}"
                 hx-target="#ticketForm"
-            >
+            	>
                 <ion-icon name="add-outline" class="me-1"></ion-icon>
                 {% trans "Create" %}
             </button>
@@ -42,14 +42,16 @@
 >
 	<div class="oh-modal__dialog">
 		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="createModalTitle">
+			<h2 class="oh-modal__dialog-title" id="createModaltitle">
 				{% trans "Create Ticket Type" %}
 			</h2>
 			<button class="oh-modal__close" aria-label="Close">
 				<ion-icon name="close-outline"></ion-icon>
 			</button>
 		</div>
-		<div class="oh-modal__dialog-body" id="ticketForm"></div>
+		<div>
+			<div class="oh-modal__dialog-body" id="ticketForm"></div>
+		</div>
 	</div>
 </div>
 <!-- end of create modal -->
@@ -64,7 +66,7 @@
 	<div class="oh-modal__dialog">
 		<div class="oh-modal__dialog-header">
 			<h2 class="oh-modal__dialog-title" id="editModaltitle">
-				{% trans "Ticket Type Update" %}
+				{% trans "Update Ticket Type" %}
 			</h2>
 			<button class="oh-modal__close" aria-label="Close">
 				<ion-icon name="close-outline"></ion-icon>

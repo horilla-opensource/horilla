@@ -434,10 +434,11 @@
     $(document).on("htmx:beforeRequest", function (event, data) {
       var response = event.detail.xhr.response;
       var target = $(event.detail.elt.getAttribute("hx-target"));
-      if (!target.closest("form").length){
-        target.html(`<div class="animated-background"></div>`)
+      var avoid_target = ["BiometricDeviceTestFormTarget"];
+      if (!target.closest("form").length && avoid_target.indexOf(target.attr("id")) === -1) {
+          target.html(`<div class="animated-background"></div>`);
       }
-    });
+      });
 
   </script>
   <script>

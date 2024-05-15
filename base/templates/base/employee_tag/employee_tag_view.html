@@ -29,9 +29,9 @@
 							{% if perms.employee.change_employeetag %}
 							<a
 								hx-get="{% url 'employee-tag-update' tag.id %}"
-								hx-target="#emptagEditForm"
+								hx-target="#objectUpdateModalTarget"
 								data-toggle="oh-modal-toggle"
-								data-target="#emptagEditModal"
+								data-target="#objectUpdateModal"
 								type="button"
 								class="oh-btn oh-btn--light-bkg w-50"
 								title="{% trans 'Edit' %}"

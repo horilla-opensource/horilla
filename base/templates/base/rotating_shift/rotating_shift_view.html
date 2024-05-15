@@ -21,9 +21,9 @@
 							{% if perms.base.change_rotatingshift %}
 							<a
 								data-toggle="oh-modal-toggle"
-								data-target="#shiftModal"
+								data-target="#objectUpdateModal"
 								hx-get="{% url 'rotating-shift-update' rshift.id %}"
-								hx-target="#shiftForm"
+								hx-target="#objectUpdateModalTarget"
 								type="button"
 								class="oh-btn oh-btn--light-bkg w-50"
 								title="{% trans 'Edit' %}"
