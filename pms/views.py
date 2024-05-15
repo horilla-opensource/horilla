@@ -1108,12 +1108,17 @@ def delete_employee_objective(request, emp_obj_id):
             redirect to detailed of employee objective
     """
     emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
-    employee = emp_objective.employee_id
-    objective = emp_objective.objective_id
     single_view = request.GET.get("single_view")
-    emp_objective.delete()
-    objective.assignees.remove(employee)
-    messages.success(request, _("Objective deleted successfully!."))
+    if emp_objective.employee_key_result.exists():
+        messages.warning(
+            request, _("You can't delete this objective,related entries exists")
+        )
+    else:
+        employee = emp_objective.employee_id
+        objective = emp_objective.objective_id
+        emp_objective.delete()
+        objective.assignees.remove(employee)
+        messages.success(request, _("Objective deleted successfully!."))
     if not single_view:
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     else:
