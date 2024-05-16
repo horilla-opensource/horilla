@@ -13,7 +13,7 @@
     hx-target="#objectCreateModalTarget"
     class="oh-profile-section pt-3"
   >
-    {% csrf_token %} {{form}}
+    {% csrf_token %} {{form.as_p}}
     <div class="oh-modal__dialog-footer p-0 mt-3">
       <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
         {% trans "Save" %}
