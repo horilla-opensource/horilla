@@ -27,7 +27,7 @@
 					{% trans "Allowances" %}
           </div>
 				</div>
-        {% if perms.payroll.add_allowance %}
+        {% if perms.payroll.add_allowance and active_contracts %}
         <button title="Add Bonus" class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" title="Add" hx-get="{% url "add-bonus" %}?employee_id={{employee.id}}" hx-target="#addBonusModalBody" data-target="#addBonusModal" data-toggle="oh-modal-toggle">
           <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
         </button>

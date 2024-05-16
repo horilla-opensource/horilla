@@ -1,7 +1,7 @@
 {% load static %} {% load i18n %}
 {% load audit_filters %}
 <div class="row">
-  {% if history %}
+  {% if employee.employee_work_info.tracking %}
     {% for history in employee.employee_work_info.tracking %}
       <div class="oh-history__container">
         <div class="oh-history_date oh-card__title oh-card__title--sm fw-bold me-2">

@@ -1090,7 +1090,8 @@ def employee_view(request):
     update_fields = BulkUpdateFieldForm()
     data_dict = parse_qs(previous_data)
     get_key_instances(Employee, data_dict)
-    emp = Employee.objects.all()
+    emp = Employee.objects.filter()
+
     return render(
         request,
         "employee_personal_info/employee_view.html",
