@@ -25,6 +25,7 @@
       hx-target="#view-container"
       id="filterForm"
       class="d-flex"
+      onsubmit = "event.preventDefault()"
       >
     <div class="oh-main__titlebar oh-main__titlebar--right">
       {% if data or allocated_data %}

@@ -2698,6 +2698,9 @@ def work_type_request(request):
             except Exception as error:
                 pass
             messages.success(request, _("Work type request added."))
+            work_type_requests = WorkTypeRequest.objects.all()
+            if len(work_type_requests) == 1:
+                return HttpResponse("<script>window.location.reload()</script>")
             form = WorkTypeRequestForm()
     context["form"] = form
     return render(request, "work_type_request/request_form.html", context=context)
@@ -2720,10 +2723,14 @@ def work_type_request_cancel(request, id):
     ):
         work_type_request.canceled = True
         work_type_request.approved = False
-        work_type_request.employee_id.employee_work_info.work_type_id = (
-            work_type_request.previous_work_type_id
+        work_info = EmployeeWorkInformation.objects.filter(
+            employee_id=work_type_request.employee_id
         )
-        work_type_request.employee_id.employee_work_info.save()
+        if work_info.exists():
+            work_type_request.employee_id.employee_work_info.work_type_id = (
+                work_type_request.previous_work_type_id
+            )
+            work_type_request.employee_id.employee_work_info.save()
         work_type_request.save()
         messages.success(request, _("Work type request has been rejected."))
         notify.send(
@@ -2946,7 +2953,12 @@ def work_type_request_delete(request, obj_id):
         )
     elif hx_target and hx_target == "view-container":
         previous_data = request.GET.urlencode()
-        return redirect(f"/work-type-request-search?{previous_data}")
+        work_type_requests = WorkTypeRequest.objects.all()
+        if work_type_requests.exists():
+            return redirect(f"/work-type-request-search?{previous_data}")
+        else:
+            return HttpResponse("<script>window.location.reload()</script>")
+
     elif hx_target and hx_target == "shift_target" and employee:
         return redirect(f"/employee/shift-tab/{employee.id}")
     else:
@@ -3552,17 +3564,22 @@ def shift_request_cancel(request, id):
     ):
         shift_request.canceled = True
         shift_request.approved = False
-        shift_request.employee_id.employee_work_info.shift_id = (
-            shift_request.previous_shift_id
-        )
 
-        if shift_request.reallocate_to:
+        work_info = EmployeeWorkInformation.objects.filter(
+            employee_id=shift_request.employee_id
+        )
+        if work_info.exists():
+            shift_request.employee_id.employee_work_info.shift_id = (
+                shift_request.previous_shift_id
+            )
+
+        if shift_request.reallocate_to and work_info.exists():
             shift_request.reallocate_to.employee_work_info.shift_id = (
                 shift_request.shift_id
             )
             shift_request.reallocate_to.employee_work_info.save()
-
-        shift_request.employee_id.employee_work_info.save()
+        if work_info.exists():
+            shift_request.employee_id.employee_work_info.save()
         shift_request.save()
         messages.success(request, _("Shift request rejected"))
         notify.send(
@@ -3590,7 +3607,7 @@ def shift_request_cancel(request, id):
             )
 
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-    return HttpResponse("You cant cancel the request")
+    return HttpResponse("You can't cancel the request")
 
 
 @login_required
@@ -3606,10 +3623,14 @@ def shift_allocation_request_cancel(request, id):
 
     shift_request.reallocate_canceled = True
     shift_request.reallocate_approved = False
-    shift_request.employee_id.employee_work_info.shift_id = (
-        shift_request.previous_shift_id
+    work_info = EmployeeWorkInformation.objects.filter(
+        employee_id=shift_request.employee_id
     )
-    shift_request.employee_id.employee_work_info.save()
+    if work_info.exists():
+        shift_request.employee_id.employee_work_info.shift_id = (
+            shift_request.previous_shift_id
+        )
+        shift_request.employee_id.employee_work_info.save()
     shift_request.save()
     messages.success(request, _("Shift request canceled"))
     notify.send(
