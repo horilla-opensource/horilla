@@ -9,13 +9,11 @@
 </div>
 <div class="oh-modal__dialog-body">
   <div class="oh-general__tab-target oh-profile-section" id="personal">
-    <form hx-post="{% url 'request-new-attendance' %}" hx-target="#objectCreateModalTarget">
+    <form hx-post="{% url 'request-new-attendance' %}?bulk={{bulk}}" hx-target="#objectCreateModalTarget">
     {% csrf_token %}
     <div class="oh-profile-section__card">
       <div class="row">
         <div class="col-12">{{form.non_field_errors}}</div>
-
-        {{form.non_field_errors}}
         {% for field in form.visible_fields %}
         {% if field.field.widget|is_select_multiple or field.field.widget|is_text_area %}
         <label

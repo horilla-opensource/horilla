@@ -103,7 +103,9 @@ def attendance_date_validate(date):
     :raises ValidationError: If the provided date is in the future.
     """
     today = datetime.today().date()
-    if date > today:
+    if not date:
+        raise ValidationError(_("Check date format."))
+    elif date > today:
         raise ValidationError(_("You cannot choose a future date."))
 
 

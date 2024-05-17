@@ -15,7 +15,11 @@ from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
 from attendance.filters import AttendanceFilters, AttendanceRequestReGroup
-from attendance.forms import AttendanceRequestForm, NewRequestForm
+from attendance.forms import (
+    AttendanceRequestForm,
+    BulkAttendanceRequestForm,
+    NewRequestForm,
+)
 from attendance.methods.differentiate import get_diff_dict
 from attendance.models import Attendance, AttendanceActivity, AttendanceLateComeEarlyOut
 from attendance.views.clock_in_out import early_out, late_come
@@ -128,6 +132,31 @@ def request_new(request):
     """
     This method is used to create new attendance requests
     """
+
+    if request.GET.get("bulk") and eval(request.GET.get("bulk")):
+        employee = request.user.employee_get
+        form = BulkAttendanceRequestForm(initial={"employee_id": employee})
+        if request.method == "POST":
+            form = BulkAttendanceRequestForm(request.POST)
+            form.instance.attendance_clock_in_date = request.POST.get("from_date")
+            form.instance.attendance_date = request.POST.get("from_date")
+
+            if form.is_valid():
+                instance = form.save(commit=False)
+                messages.success(request, _("Attendance request created"))
+                return HttpResponse(
+                    render(
+                        request,
+                        "requests/attendance/request_new_form.html",
+                        {"form": form},
+                    ).content.decode("utf-8")
+                    + "<script>location.reload();</script>"
+                )
+        return render(
+            request,
+            "requests/attendance/request_new_form.html",
+            {"form": form, "bulk": True},
+        )
     form = NewRequestForm()
     form = choosesubordinates(request, form, "attendance.change_attendance")
     form.fields["employee_id"].queryset = form.fields[
@@ -161,7 +190,11 @@ def request_new(request):
                 ).content.decode("utf-8")
                 + "<script>location.reload();</script>"
             )
-    return render(request, "requests/attendance/request_new_form.html", {"form": form})
+    return render(
+        request,
+        "requests/attendance/request_new_form.html",
+        {"form": form, "bulk": False},
+    )
 
 
 @login_required

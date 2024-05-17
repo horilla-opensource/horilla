@@ -35,6 +35,7 @@ from django.template.loader import render_to_string
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from attendance.filters import AttendanceFilters
 from attendance.models import (
     Attendance,
     AttendanceActivity,
@@ -45,17 +46,20 @@ from attendance.models import (
     AttendanceValidationCondition,
     GraceTime,
     PenaltyAccount,
+    attendance_date_validate,
     strtime_seconds,
+    validate_time_format,
 )
 from base import thread_local_middleware
 from base.forms import MultipleFileField
 from base.methods import reload_queryset
-from base.models import Company
+from base.models import Company, EmployeeShift
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from leave.models import LeaveType
+from payroll.methods.methods import get_working_days
 
 
 class ModelForm(forms.ModelForm):
@@ -455,6 +459,14 @@ class AttendanceOverTimeForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
 
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
+
 
 class AttendanceLateComeEarlyOutForm(ModelForm):
     """
@@ -602,6 +614,18 @@ class NewRequestForm(AttendanceRequestForm):
                 queryset=Employee.objects.filter(is_active=True),
                 label=_("Employee"),
                 widget=forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
+            ),
+            "create_bulk": forms.BooleanField(
+                required=False,
+                label=_("Create Bulk"),
+                widget=forms.CheckboxInput(
+                    attrs={
+                        "class": "oh-checkbox",
+                        "hx-target": "#objectCreateModalTarget",
+                        "hx-get": "/attendance/request-new-attendance?bulk=True",
+                        "hx-trigger": "change",
+                    }
+                ),
             ),
         }
         self.fields["request_description"].label = _("Request description")
@@ -848,3 +872,162 @@ class AttendanceRequestCommentForm(ModelForm):
 
         model = AttendanceRequestComment
         fields = ("comment",)
+
+
+def get_date_list(employee_id, from_date, to_date):
+    """
+    This method will return a list of company working dates
+    """
+    working_dates = get_working_days(from_date, to_date)
+    working_date_list = working_dates["working_days_on"]
+    working_date_list.sort()
+    attendance_dates = []
+    if len(working_date_list) > 0:
+        attendance_filters = AttendanceFilters(
+            data={
+                "attendance_date__gte": working_date_list[0],
+                "attendance_date__lte": working_date_list[-1],
+                "employee_id": employee_id,
+            }
+        )
+        existing_attendance = attendance_filters.qs
+        # Extract the list of attendance dates
+        attendance_dates = list(
+            existing_attendance.values_list("attendance_date", flat=True)
+        )
+    # Calculate the dates that need new attendance records
+    date_list = [date for date in working_date_list if date not in attendance_dates]
+    return date_list
+
+
+class BulkAttendanceRequestForm(ModelForm):
+    """
+    Bulk attendance request create form
+    """
+
+    create_bulk = forms.BooleanField(
+        required=False,
+        initial=True,
+        label=_("Create Bulk"),
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "oh-checkbox",
+                "hx-target": "#objectCreateModalTarget",
+                "hx-get": "/attendance/request-new-attendance?bulk=False",
+                "hx-trigger": "change",
+            }
+        ),
+    )
+
+    from_date = forms.DateField(
+        required=False,
+        label=_("From Date"),
+        widget=forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+    )
+    to_date = forms.DateField(
+        required=False,
+        label=_("To Date"),
+        widget=forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+    )
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = Attendance
+        fields = (
+            "employee_id",
+            "create_bulk",
+            "from_date",
+            "to_date",
+            "shift_id",
+            "attendance_worked_hour",
+            "attendance_clock_in",
+            "attendance_clock_out",
+            "minimum_hour",
+            "request_description",
+        )
+
+    def __init__(self, *args, **kwargs):
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        employee = request.user.employee_get
+        super().__init__(*args, **kwargs)
+        if employee and hasattr(employee, "employee_work_info"):
+            shift = employee.employee_work_info.shift_id
+            self.fields["shift_id"].initial = shift
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        from_date = cleaned_data.get("from_date")
+        to_date = cleaned_data.get("to_date")
+        attendance_worked_hour = cleaned_data.get("attendance_worked_hour")
+        minimum_hour = cleaned_data.get("minimum_hour")
+        employee_id = cleaned_data.get("employee_id")
+        validate_time_format(attendance_worked_hour)
+        validate_time_format(minimum_hour)
+        attendance_date_validate(from_date)
+        attendance_date_validate(to_date)
+        date_list = get_date_list(employee_id, from_date, to_date)
+        if from_date and to_date and from_date > to_date:
+            raise ValidationError({"to_date": _("To date should be after from date")})
+        if employee_id and not hasattr(employee_id, "employee_work_info"):
+            raise ValidationError(_("Employee work info not found"))
+        if len(date_list) <= 0:
+            raise ValidationError(
+                _(
+                    "There is no valid date to create attendance request between this date range"
+                )
+            )
+        return cleaned_data
+
+    def save(self, commit=True):
+        # Access cleaned data
+        cleaned_data = self.cleaned_data
+        employee_id = cleaned_data.get("employee_id")
+        from_date = cleaned_data.get("from_date")
+        to_date = cleaned_data.get("to_date")
+        shift_id = cleaned_data.get("shift_id")
+        attendance_clock_in = cleaned_data.get("attendance_clock_in")
+        attendance_clock_out = cleaned_data.get("attendance_clock_out")
+        request_description = cleaned_data.get("request_description")
+        attendance_worked_hour = cleaned_data.get("attendance_worked_hour")
+        minimum_hour = cleaned_data.get("minimum_hour")
+        work_type_id = employee_id.employee_work_info.work_type_id
+        date_list = get_date_list(employee_id, from_date, to_date)
+        # Prepare initial data for the form
+        initial_data = {
+            "employee_id": employee_id,
+            "shift_id": shift_id,
+            "work_type_id": work_type_id,
+            "attendance_clock_in": attendance_clock_in,
+            "attendance_clock_out": attendance_clock_out,
+            "attendance_worked_hour": attendance_worked_hour,
+            "is_validate_request": True,
+            "minimum_hour": minimum_hour,
+            "request_description": request_description,
+        }
+        # Iterate over the dates and create attendance requests
+        for date in date_list:
+            initial_data.update(
+                {
+                    "attendance_date": date,
+                    "attendance_clock_in_date": date,
+                    "attendance_clock_out_date": date,
+                    "attendance_clock_in_date": date,
+                }
+            )
+            form = NewRequestForm(data=initial_data)
+            if form.is_valid():
+                instance = form.save(commit=False)
+                instance.is_validate_request = True
+                instance.employee_id = employee_id
+                instance.request_type = "create_request"
+                instance.save()
+            else:
+                raise ValidationError(_("Something went wrong"))
+        instance = super().save(commit=False)
+        if commit:
+            instance.save()
+
+        return instance

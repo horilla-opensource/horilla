@@ -167,7 +167,7 @@
                 <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
                 <input
                   type="number"
-                  name="page"
+                  name="rpage"
                   class="oh-pagination__input"
                   value="{{requests.number}}"
                   hx-get="{% url 'search-attendance-requests' %}?{{pd}}"
@@ -233,7 +233,7 @@
             <div class="oh-sticky-table__table oh-table--sortable">
               <div class="oh-sticky-table__thead">
                   <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__sd oh-sticky-table__top  {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#view-container' hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=employee_id__employee_first_name">{% trans "Employee" %}</div>
+                    <div class="oh-sticky-table__th oh-sticky-table__top  {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#view-container' hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=employee_id__employee_first_name">{% trans "Employee" %}</div>
                     <div data-cell-index="21" data-cell-title='{% trans "Date" %}' class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_date' %}arrow-up {% elif request.sort_option.order == 'attendance_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#view-container' hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=attendance_date">{% trans "Date" %}</div>
                     <div data-cell-index="22" data-cell-title='{% trans "Day" %}' class="oh-sticky-table__th">{% trans "Day" %}</div>
                     <div data-cell-index="23" data-cell-title='{% trans "Check-In" %}' class="oh-sticky-table__th">{% trans "Check-In" %}</div>
