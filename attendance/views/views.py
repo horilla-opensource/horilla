@@ -723,7 +723,11 @@ def attendance_overtime_delete(request, obj_id):
         if hx_target == "ot-table":
             messages.error(request, _("You cannot delete this hour account"))
     if hx_target and hx_target == "ot-table":
-        return redirect(f"/attendance/attendance-overtime-search?{previous_data}")
+        hour_account = AttendanceOverTime.objects.all()
+        if hour_account.exists():
+            return redirect(f"/attendance/attendance-overtime-search?{previous_data}")
+        else:
+            return HttpResponse("<script>window.location.reload()</script>")
     elif hx_target:
         return HttpResponse()
 
