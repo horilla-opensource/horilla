@@ -3105,7 +3105,67 @@ def create_meetings(request):
     if request.method == "POST":
         form = MeetingsForm(request.POST, instance=instance)
         if form.is_valid():
-            form.save()
+            instance = form.save()
+            managers = [
+                manager.employee_user_id for manager in form.cleaned_data["manager"]
+            ]
+            answer_employees = [
+                answer_emp.employee_user_id
+                for answer_emp in form.cleaned_data["answer_employees"]
+            ]
+            employees = form.cleaned_data["employee_id"]
+            employees = [
+                employee.employee_user_id
+                for employee in employees.exclude(
+                    id__in=form.cleaned_data["answer_employees"]
+                )
+            ]
+
+            try:
+                notify.send(
+                    request.user.employee_get,
+                    recipient=answer_employees,
+                    verb=f"You have been added as an answerable employee for the meeting {instance.title}",
+                    verb_ar=f"لقد تمت إضافتك كموظف مسؤول عن الاجتماع {instance.title}",
+                    verb_de=f"Du wurden als Mitarbeiter zum Ausfüllen für das {instance.title}-Meeting hinzugefügt",
+                    verb_es=f"Se le ha agregado como empleado responsable de la reunión {instance.title}",
+                    verb_fr=f"Vous avez été ajouté en tant que employé responsable pour la réunion {instance.title}",
+                    icon="information",
+                    redirect=f"/pms/view-meetings?search={instance.title}",
+                )
+            except Exception as error:
+                pass
+
+            try:
+                notify.send(
+                    request.user.employee_get,
+                    recipient=employees,
+                    verb=f"You have been added to the meeting {instance.title}",
+                    verb_ar=f"لقد تمت إضافتك إلى اجتماع {instance.title}.",
+                    verb_de=f"Sie wurden zur {instance.title} Besprechung hinzugefügt",
+                    verb_es=f"Te han agregado a la reunión {instance.title}",
+                    verb_fr=f"Vous avez été ajouté à la réunion {instance.title}",
+                    icon="information",
+                    redirect=f"/pms/view-meetings?search={instance.title}",
+                )
+            except Exception as error:
+                pass
+
+            try:
+                notify.send(
+                    request.user.employee_get,
+                    recipient=managers,
+                    verb=f"You have been added as a manager for the meeting {instance.title}",
+                    verb_ar=f"لقد تمت إضافتك كمدير للاجتماع {instance.title}",
+                    verb_de=f"Sie wurden als Manager für das Meeting {instance.title} hinzugefügt",
+                    verb_es=f"Se le ha agregado como administrador de la reunión {instance.title}",
+                    verb_fr=f"Vous avez été ajouté en tant que responsable de réunion {instance.title}",
+                    icon="information",
+                    redirect=f"/pms/view-meetings?search={instance.title}",
+                )
+            except Exception as error:
+                pass
+
             messages.success(request, _("Meeting added successfully"))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
