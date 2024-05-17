@@ -721,6 +721,9 @@ class RecruitmentMailTemplate(HorillaModel):
         verbose_name=_("Company"),
     )
 
+    def __str__(self) -> str:
+        return f"{self.title}"
+
 
 class SkillZone(HorillaModel):
     """ "
