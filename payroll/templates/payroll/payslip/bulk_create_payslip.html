@@ -1,0 +1,61 @@
+{% load i18n %}
+<form
+  action="{% url 'generate-payslip' %}"
+  class="oh-profile-section pt-2"
+  method="post"
+>
+  {% csrf_token %}
+  <div class="row">
+    <div class="col-12">
+      <div class="oh-input__group">
+        <label
+          class="oh-input__label"
+          for="{{bulk_form.group_name.id_for_label}}"
+          >{% trans "Batch Name" %}</label
+        >
+        {{bulk_form.group_name}} {{bulk_form.group_name.errors}}
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="oh-input__group">
+        <label
+          class="oh-input__label"
+          for="{{bulk_form.employee_id.id_for_label}}"
+          >{% trans "Employee" %}</label
+        >
+        {{bulk_form.employee_id}} {{bulk_form.employee_id.errors}}
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+      <div class="oh-input__group">
+        <label
+          class="oh-input__label"
+          for="{{bulk_form.start_date.id_for_label}}"
+          >{% trans "Start Date" %}</label
+        >
+        {{bulk_form.start_date}} {{bulk_form.start_date.errors}}
+      </div>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+      <div class="oh-input__group">
+        <label
+          class="oh-input__label"
+          for="{{bulk_form.end_date.id_for_label}}"
+          >{% trans "End Date" %}</label
+        >
+        {{bulk_form.end_date}} {{bulk_form.end_date.errors }}
+      </div>
+    </div>
+  </div>
+  <div class="oh-modal__dialog-footer p-0 pt-4">
+    <input
+      type="submit"
+      value="Generate Payslips"
+      class="oh-btn oh-btn--secondary oh-btn--shadow"
+    />
+  </div>
+</form>

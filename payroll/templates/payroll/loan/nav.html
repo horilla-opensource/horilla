@@ -6,11 +6,12 @@
 
   <form hx-get="{% url 'search-loan' %}" hx-target="#loanContainer" onsubmit="event.stopPropagation()">
     <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
-      <div class="oh-input-group oh-input__search-group mr-4">
-        <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
-        <input type="text" id="pipelineSearch" placeholder="Search" style="margin-right:10px" onkeyup="$('.filterButton').click()" name="search" class="oh-input oh-input__icon mr-3" aria-label="Search Input" />
-      </div>
-      <input type="hidden" name="view" value="{{request.GET.view}}" id="loanViewType">
+      {% if records %}
+        <div class="oh-input-group oh-input__search-group mr-4">
+          <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
+          <input type="text" id="pipelineSearch" placeholder="Search" style="margin-right:10px" onkeyup="$('.filterButton').click()" name="search" class="oh-input oh-input__icon mr-3" aria-label="Search Input" />
+        </div>
+        <input type="hidden" name="view" value="{{request.GET.view}}" id="loanViewType">
         <ul class="oh-view-types ml-2" style="margin-bottom: 0">
           <li class="oh-view-type employee-view-type" data-view="list">
             <a
@@ -36,6 +37,7 @@
           </li>
         </ul>
       {% include 'payroll/loan/filter.html' %}
+      {% endif %}
       {% if perms.payroll.add_loanaccount %}
         <div class="oh-main__titlebar-button-container">
           <div class="oh-main__titlebar-button-container">

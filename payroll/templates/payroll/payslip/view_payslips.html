@@ -15,28 +15,18 @@
   role="dialog"
   aria-labelledby="individualPayslipModal"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
+    <div class="oh-modal__dialog-header pb-0">
       <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
         {% trans "Create Payslip" %}
-        <div class="oh-payslip__header mt-3 mb-0"></div>
       </h1>
       <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
     <div class="oh-modal__dialog-body" id="individualPayslipModal">
-      <form action="{% url 'create-payslip' %}" class="" method="post">
-        {% csrf_token %} {{individual_form}}
-        <div class="oh-modal__dialog-footer pe-0 mt-4">
-          <input
-            type="submit"
-            value="Save"
-            class="oh-btn oh-btn--secondary oh-btn--shadow"
-          />
-        </div>
-      </form>
+      {% include "payroll/payslip/create_payslip.html" %}
     </div>
   </div>
 </div>
@@ -47,28 +37,18 @@
   role="dialog"
   aria-labelledby="bulkPayslipModal"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
+    <div class="oh-modal__dialog-header pb-0">
       <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
         {% trans "Bulk Payslip" %}
-        <div class="oh-payslip__header mt-3 mb-0"></div>
       </h1>
       <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
     <div class="oh-modal__dialog-body" id="bulkPayslipModal">
-      <form action="{% url 'generate-payslip' %}" class="" method="post">
-        {% csrf_token %} {{bulk_form}}
-        <div class="oh-modal__dialog-footer mt-4">
-          <input
-            type="submit"
-            value="Generate Payslips"
-            class="oh-btn oh-btn--secondary oh-btn--shadow"
-          />
-        </div>
-      </form>
+      {% include "payroll/payslip/bulk_create_payslip.html" %}
     </div>
   </div>
 </div>
@@ -79,7 +59,7 @@
   role="dialog"
   aria-labelledby="payslipExport"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="employeeExportLavel">
@@ -115,7 +95,7 @@
       role="button"
       aria-label="Toggle Search"
       @click="searchShow = !searchShow"
-    >
+      >
       <ion-icon
         name="search-outline"
         class="oh-main__titlebar-serach-icon md hydrated"
@@ -133,92 +113,92 @@
       hx-target="#payslips-table"
       onsubmit="event.preventDefault()"
     >
-      {% if perms.payroll.view_payslip %}
-      <div
-        class="oh-input-group oh-input__search-group"
-        :class="searchShow ? 'oh-input__search-group--show' : ''"
-      >
-        <ion-icon
-          name="search-outline"
-          class="oh-input-group__icon oh-input-group__icon--left"
-        ></ion-icon>
-        <input
-          type="text"
-          class="oh-input oh-input__icon"
-          aria-label="Search Input"
-          id="payslip-search"
-          name="search"
-          placeholder="{% trans 'Search' %}"
-          onkeyup="$('.filterButton')[0].click();"
-        />
-      </div>
-      <input
-        type="hidden"
-        name="view"
-        value="{{request.GET.view}}"
-        id="payslipViewType"
-      />
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button
-          class="oh-btn ml-2 h-100"
-          @click="open = !open"
-          onclick="event.preventDefault()"
-        >
-          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-          <div id="filterCount"></div>
-        </button>
+      {% if perms.payroll.view_payslip and payslips %}
         <div
-          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-          x-show="open"
-          @click.outside="open = false"
-          style="display: none"
-        >
-          {% include 'payroll/payslip/filter_payslips.html' %}
+          class="oh-input-group oh-input__search-group"
+          :class="searchShow ? 'oh-input__search-group--show' : ''"
+          >
+          <ion-icon
+            name="search-outline"
+            class="oh-input-group__icon oh-input-group__icon--left"
+          ></ion-icon>
+          <input
+            type="text"
+            class="oh-input oh-input__icon"
+            aria-label="Search Input"
+            id="payslip-search"
+            name="search"
+            placeholder="{% trans 'Search' %}"
+            onkeyup="$('.filterButton')[0].click();"
+          />
         </div>
-      </div>
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button
-          class="oh-btn ml-2 h-100"
-          @click="open = !open"
-          onclick="event.preventDefault()"
-        >
-          <ion-icon name="library-outline" class="mr-1"></ion-icon>
-          {% trans "Group By" %}
-          <div id="filterCount"></div>
-        </button>
-        <div
-          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-          x-show="open"
-          @click.outside="open = false"
-          style="display: none"
-        >
-          <div class="oh-accordion">
-            <label>{% trans "Group By" %}</label>
-            <div class="row">
-              <div class="col-sm-12 col-md-12 col-lg-6">
-                <div class="oh-input-group">
-                  <label class="oh-label">{% trans "Field" %}</label>
+        <input
+          type="hidden"
+          name="view"
+          value="{{request.GET.view}}"
+          id="payslipViewType"
+        />
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            class="oh-btn ml-2 h-100"
+            @click="open = !open"
+            onclick="event.preventDefault()"
+          >
+            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+            <div id="filterCount"></div>
+          </button>
+          <div
+            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+            x-show="open"
+            @click.outside="open = false"
+            style="display: none"
+          >
+            {% include 'payroll/payslip/filter_payslips.html' %}
+          </div>
+        </div>
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            class="oh-btn ml-2 h-100"
+            @click="open = !open"
+            onclick="event.preventDefault()"
+          >
+            <ion-icon name="library-outline" class="mr-1"></ion-icon>
+            {% trans "Group By" %}
+            <div id="filterCount"></div>
+          </button>
+          <div
+            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+            x-show="open"
+            @click.outside="open = false"
+            style="display: none"
+          >
+            <div class="oh-accordion">
+              <label>{% trans "Group By" %}</label>
+              <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label">{% trans "Field" %}</label>
+                  </div>
                 </div>
-              </div>
-              <div class="col-sm-12 col-md-12 col-lg-6">
-                <div class="oh-input-group">
-                  <select
-                    class="oh-select mt-1 w-100"
-                    id="id_field"
-                    name="field"
-                    class="select2-selection select2-selection--single"
-                    onchange="$('.filterButton')[0].click();"
-                  >
-                    {% for field in gp_fields %}
-                    <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                    {% endfor %}
-                  </select>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                  <div class="oh-input-group">
+                    <select
+                      class="oh-select mt-1 w-100"
+                      id="id_field"
+                      name="field"
+                      class="select2-selection select2-selection--single"
+                      onchange="$('.filterButton')[0].click();"
+                    >
+                      {% for field in gp_fields %}
+                        <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
       {% endif %}
       {% if perms.payroll.add_payslip %}
         <div class="oh-dropdown" x-data="{open: false}">
@@ -237,57 +217,61 @@
           >
             <ul class="oh-dropdown__items">
               {% if perms.payroll.add_payslip %}
-              <li class="oh-dropdown__item">
-                <a
-                  class="oh-dropdown__link"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#bulkPayslipModal"
-                  >{% trans "Generate" %}</a
-                >
-              </li>
-              {% endif %} {% if perms.payroll.add_payslip %}
-              <li class="oh-dropdown__item">
-                <a
-                  class="oh-dropdown__link"
-                  data-toggle="oh-modal-toggle"
-                  id="payslipBulkSend"
-                  >{% trans "Send via mail" %}</a
-                >
-              </li>
-              {% endif %} {% if perms.payroll.change_payslip %}
-              <li class="oh-dropdown__item" onclick="event.stopPropagation()">
-                <a class="oh-dropdown__link"
-                  >{% trans "Bulk Status Update" %}</a
-                >
-                <select name="update_selected" class="oh-select">
-                  <option value="">------</option>
-                  <option value="draft">{% trans "Draft" %}</option>
-                  <option value="review_ongoing">
-                    {% trans "Review Ongoing" %}
-                  </option>
-                  <option value="confirmed">{% trans "Confirmed" %}</option>
-                  <option value="paid">{% trans "Paid" %}</option>
-                </select>
-              </li>
-              {% endif %} {% if perms.payroll.add_payslip %}
-              <li class="oh-dropdown__item">
-                <a
-                  href="#"
-                  class="oh-dropdown__link"
-                  id="employee-payslip-export"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#payslipExport"
-                  >{% trans "Export" %}</a
-                >
-              </li>
-              {% endif %} {% if perms.payroll.delete_payslip %}
-              <li class="oh-dropdown__item">
-                <a
-                  class="oh-dropdown__link oh-dropdown__link--danger"
-                  id="deletePayslipBulk"
-                  >{% trans "Delete" %}</a
-                >
-              </li>
+                <li class="oh-dropdown__item">
+                  <a
+                    class="oh-dropdown__link"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#bulkPayslipModal"
+                    >{% trans "Generate" %}</a
+                  >
+                </li>
+              {% endif %}
+              {% if perms.payroll.add_payslip and payslips %}
+                <li class="oh-dropdown__item">
+                  <a
+                    class="oh-dropdown__link"
+                    data-toggle="oh-modal-toggle"
+                    id="payslipBulkSend"
+                    >{% trans "Send via mail" %}</a
+                  >
+                </li>
+              {% endif %}
+              {% if perms.payroll.change_payslip and payslips %}
+                <li class="oh-dropdown__item" onclick="event.stopPropagation()">
+                  <a class="oh-dropdown__link"
+                    >{% trans "Bulk Status Update" %}</a
+                  >
+                  <select name="update_selected" class="oh-select">
+                    <option value="">------</option>
+                    <option value="draft">{% trans "Draft" %}</option>
+                    <option value="review_ongoing">
+                      {% trans "Review Ongoing" %}
+                    </option>
+                    <option value="confirmed">{% trans "Confirmed" %}</option>
+                    <option value="paid">{% trans "Paid" %}</option>
+                  </select>
+                </li>
+              {% endif %}
+              {% if perms.payroll.add_payslip and payslips %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link"
+                    id="employee-payslip-export"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#payslipExport"
+                    >{% trans "Export" %}</a
+                  >
+                </li>
+              {% endif %}
+              {% if perms.payroll.delete_payslip and payslips %}
+                <li class="oh-dropdown__item">
+                  <a
+                    class="oh-dropdown__link oh-dropdown__link--danger"
+                    id="deletePayslipBulk"
+                    >{% trans "Delete" %}</a
+                  >
+                </li>
               {% endif %}
             </ul>
           </div>

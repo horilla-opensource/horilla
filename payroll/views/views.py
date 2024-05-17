@@ -569,6 +569,8 @@ def delete_payslip(request, payslip_id):
         messages.error(request, _("Payslip not found."))
     except ProtectedError:
         messages.error(request, _("Something went wrong"))
+    if not Payslip.objects.filter():
+        return HttpResponse("<script>window.location.reload()</script>")
     return redirect(filter_payslip)
 
 

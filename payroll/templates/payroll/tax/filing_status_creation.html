@@ -14,7 +14,7 @@
   </script>
 </div>
 {% endif %}
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header pb-0">
   <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
     <h5>{% trans "Filing Status" %}</h5>
   </span>
@@ -31,12 +31,15 @@
   >
     <ion-icon name="close-outline"></ion-icon>
   </button>
+</div>
+<div class="oh-modal__dialog-body">
   <form
     hx-post="{%url 'create-filing-status' %}"
     hx-target="#objectCreateModalTarget"
-  >
+    class="oh-profile-section"
+    >
     {% csrf_token %} {{ form.as_p }}
-    <div class="oh-modal__dialog-footer">
+    <div class="oh-modal__dialog-footer p-0">
       <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
         {% trans "Save" %}
       </button>

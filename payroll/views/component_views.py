@@ -363,7 +363,10 @@ def delete_allowance(request, allowance_id):
     except Exception as exception:
         messages.error(request, _("An error occurred while deleting the allowance"))
         messages.error(request, str(exception))
-    if request.path.split("/")[2] == "delete-employee-allowance":
+    if (
+        request.path.split("/")[2] == "delete-employee-allowance"
+        or not payroll.models.models.Allowance.objects.filter()
+    ):
         return HttpResponse("<script>window.location.reload();</script>")
     return redirect(filter_allowance)
 
@@ -527,12 +530,18 @@ def delete_deduction(request, deduction_id, emp_id=None):
     }
     http_hx_target = request.META.get("HTTP_HX_TARGET")
     redirected_path = paths.get(http_hx_target)
-    if http_hx_target and redirected_path:
-        return redirect(redirected_path)
-
-    return HttpResponseRedirect(
+    if http_hx_target:
+        if (
+            http_hx_target == "payroll-deduction-container"
+            and not Deduction.objects.filter()
+        ):
+            return HttpResponse("<script>window.location.reload();</script>")
+        if redirected_path:
+            return redirect(redirected_path)
+    default_redirect = (
         request.path if http_hx_target else request.META.get("HTTP_REFERER", "/")
     )
+    return HttpResponseRedirect(default_redirect)
 
 
 @login_required

@@ -14,7 +14,7 @@ import math
 from urllib.parse import parse_qs
 
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
@@ -58,6 +58,8 @@ def create_filing_status(request):
             filing_status_form.save()
             messages.success(request, _("Filing status created successfully "))
             filing_status_form = FilingStatusForm()
+            if len(FilingStatus.objects.filter()) == 1:
+                return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "payroll/tax/filing_status_creation.html",
@@ -117,7 +119,8 @@ def filing_status_delete(request, filing_status_id):
         messages.info(request, _("Filing status successfully deleted."))
     except:
         messages.error(request, _("This filing status not found"))
-
+    if not FilingStatus.objects.filter():
+        return HttpResponse(("<script>window.location.reload()</script>"))
     return redirect(filing_status_search)
 
 

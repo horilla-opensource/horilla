@@ -226,8 +226,16 @@ class PayslipForm(ModelForm):
         ]
         exclude = ["is_active"]
         widgets = {
-            "start_date": forms.DateInput(attrs={"type": "date"}),
-            "end_date": forms.DateInput(attrs={"type": "date"}),
+            "start_date": forms.DateInput(
+                attrs={
+                    "type": "date",
+                }
+            ),
+            "end_date": forms.DateInput(
+                attrs={
+                    "type": "date",
+                }
+            ),
         }
 
 
