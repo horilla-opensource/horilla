@@ -144,7 +144,7 @@
 									{{currency}}{{basic_pay|floatformat:2}}
 								</td>
 							</tr>
-							{% for allowance in allowances %}
+							{% for allowance in all_allowances %}
 							<tr>
 								<td class="oh-payslip__table-td">{{allowance.title}}</td>
 								<td class="oh-payslip__table-td">

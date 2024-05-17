@@ -1431,6 +1431,8 @@ def payslip_pdf(request, id):
             data["net_deductions"],
         ]:
             data["all_deductions"].extend(deduction_list)
+
+        data["all_allowances"] = data["allowances"].copy()
         equalize_lists_length(data["allowances"], data["all_deductions"])
         data["zipped_data"] = zip(data["allowances"], data["all_deductions"])
         data["host"] = request.get_host()
