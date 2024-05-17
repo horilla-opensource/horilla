@@ -71,14 +71,21 @@
       hx-get="{% url 'employee-shift-create' %}?dynamic=true"
       hx-target="#dynamicCreateModalBody"
     ></span>
-    <div class="oh-profile-section__card" data-select2-id="select2-data-29-vht3">
+    <div
+      class="oh-profile-section__card"
+      data-select2-id="select2-data-29-vht3"
+    >
       <div id="workMessage"></div>
       <form method="post" action="">
         {{history_form.as_history_modal}} {% csrf_token %}
         <div class="row" data-select2-id="select2-data-27-19z8">
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
-              <label class="oh-label" for="{{work_form.department_id.id_for_label}}">{% trans "Department" %}</label>
+              <label
+                class="oh-label"
+                for="{{work_form.department_id.id_for_label}}"
+                >{% trans "Department" %}</label
+              >
               {{work_form.department_id}}
             </div>
           </div>
@@ -87,21 +94,31 @@
             data-select2-id="select2-data-26-o2rs"
           >
             <div class="oh-input-group" data-select2-id="select2-data-25-5380">
-              <label class="oh-label" for="{{work_form.job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
+              <label
+                class="oh-label"
+                for="{{work_form.job_position_id.id_for_label}}"
+                >{% trans "Job Position" %}</label
+              >
               {{work_form.job_position_id}}
             </div>
           </div>
         </div>
         <div class="row">
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group">
-              <label class="oh-label" for="{{work_form.job_role_id.id_for_label}}">{% trans "Job Role" %}</label>
+            <div class="oh-input-group">
+              <label
+                class="oh-label"
+                for="{{work_form.job_role_id.id_for_label}}"
+                >{% trans "Job Role" %}</label
+              >
               {{work_form.job_role_id}}
             </div>
           </div>
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
-              <label class="oh-label" for="{{work_form.shift_id.id_for_label}}">{% trans "Shift Information" %}</label>
+              <label class="oh-label" for="{{work_form.shift_id.id_for_label}}"
+                >{% trans "Shift Information" %}</label
+              >
               {{work_form.shift_id}}
             </div>
           </div>
@@ -109,7 +126,11 @@
         <div class="row" data-select2-id="select2-data-27-95a0">
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
-              <label class="oh-label" for="{{work_form.work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
+              <label
+                class="oh-label"
+                for="{{work_form.work_type_id.id_for_label}}"
+                >{% trans "Work Type" %}</label
+              >
               {{work_form.work_type_id}}
             </div>
           </div>
@@ -118,7 +139,11 @@
             data-select2-id="select2-data-26-u84a"
           >
             <div class="oh-input-group" data-select2-id="select2-data-25-5l0x">
-              <label class="oh-label" for="{{work_form.employee_type_id.id_for_label}}">{% trans "Employee Type" %}</label>
+              <label
+                class="oh-label"
+                for="{{work_form.employee_type_id.id_for_label}}"
+                >{% trans "Employee Type" %}</label
+              >
               {{work_form.employee_type_id}}
             </div>
           </div>
@@ -129,13 +154,21 @@
             data-select2-id="select2-data-38-ofph"
           >
             <div class="oh-input-group" data-select2-id="select2-data-37-p4f9">
-              <label class="oh-label" for="{{work_form.reporting_manager_id.id_for_label}}">{% trans "Reporting Manager" %}</label>
+              <label
+                class="oh-label"
+                for="{{work_form.reporting_manager_id.id_for_label}}"
+                >{% trans "Reporting Manager" %}</label
+              >
               {{work_form.reporting_manager_id}}
             </div>
           </div>
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
-              <label class="oh-label" for="{{work_form.company_id.id_for_label}}">{% trans "Company" %}</label>
+              <label
+                class="oh-label"
+                for="{{work_form.company_id.id_for_label}}"
+                >{% trans "Company" %}</label
+              >
               {{work_form.company_id}}
             </div>
           </div>
@@ -143,13 +176,18 @@
         <div class="row">
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
-              <label class="oh-label" for="{{work_form.location.id_for_label}}">{% trans "Work Location" %}</label>
+              <label class="oh-label" for="{{work_form.location.id_for_label}}"
+                >{% trans "Work Location" %}</label
+              >
               {{work_form.location}}
             </div>
           </div>
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
-              <label class="oh-label" for="{{work_form.email.id_for_label}}" for="workEmail"
+              <label
+                class="oh-label"
+                for="{{work_form.email.id_for_label}}"
+                for="workEmail"
                 >{% trans "Work Email" %}</label
               >
               {{work_form.email}}
@@ -159,7 +197,10 @@
         <div class="row">
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
-              <label class="oh-label" for="{{work_form.date_joining.id_for_label}}" for="startDate"
+              <label
+                class="oh-label"
+                for="{{work_form.date_joining.id_for_label}}"
+                for="startDate"
                 >{% trans "Joining Date" %}</label
               >
               {{work_form.date_joining}}
@@ -167,7 +208,10 @@
           </div>
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
-              <label class="oh-label" for="{{work_form.contract_end_date.id_for_label}}" for="endDate"
+              <label
+                class="oh-label"
+                for="{{work_form.contract_end_date.id_for_label}}"
+                for="endDate"
                 >{% trans "Contract End Date" %}</label
               >
               {{work_form.contract_end_date}}
@@ -177,13 +221,20 @@
         <div class="row">
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
-              <label class="oh-label" for="{{work_form.basic_salary.id_for_label}}">{% trans "Basic Salary" %}</label>
+              <label
+                class="oh-label"
+                for="{{work_form.basic_salary.id_for_label}}"
+                >{% trans "Basic Salary" %}</label
+              >
               {{work_form.basic_salary}}
             </div>
           </div>
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
-              <label class="oh-label" for="{{work_form.salary_hour.id_for_label}}" for="workEmail"
+              <label
+                class="oh-label"
+                for="{{work_form.salary_hour.id_for_label}}"
+                for="workEmail"
                 >{% trans "Salary Per Hour" %}</label
               >
               {{work_form.salary_hour}}
@@ -194,7 +245,9 @@
         <div class="row">
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
-              <label class="oh-label" for="{{work_form.tags.id_for_label}}">{% trans "Employee tag" %}</label>
+              <label class="oh-label" for="{{work_form.tags.id_for_label}}"
+                >{% trans "Employee Tag" %}</label
+              >
               {{work_form.tags}}
             </div>
           </div>
@@ -214,141 +267,133 @@
   </div>
 </div>
 <script>
-
   function onDynamicCreate(value, id) {
-    if (value == "create") {
+    if (value === "create") {
       $(id).click();
+      return;
     }
-  }
-  function onDynamicCreateDep(value, id) {
-    if (value == "create") {
-      $(id).click();
-    }
-    else {
-      var departmentId = value; // Get the selected department ID
-      console.log('---------------------------')
-      console.log(departmentId)
 
-      // Make AJAX request to fetch available job positions for the selected department
+    let url, dropdownId, createText, emptyText;
+    const data =
+      id === "#dynamicDept" ? { department_id: value } : { job_id: value };
+
+    if (id === "#dynamicDept") {
+      url = '{% url "get_job_positions" %}';
+      dropdownId = "#id_job_position_id";
+      createText = "Create New Job Position";
+      emptyText = "---Choose Job Position---";
+      $("#id_job_role_id").html(
+        '<option value="">---Choose Job Role---</option>'
+      );
+    } else if (id === "#dynamicJobPosition") {
+      url = '{% url "get_job_roles" %}';
+      dropdownId = "#id_job_role_id";
+      createText = "Create New Job Role";
+      emptyText = "---Choose Job Role---";
+    }
+
+    if (value) {
       $.ajax({
-        url: '{% url "get_job_positions" %}',
-        method: 'GET',
-        data: {
-          'department_id': departmentId
-        },
-        success: function(data) {
+        url: url,
+        method: "GET",
+        data: data,
+        success: function (data) {
+          const dropdown = $(dropdownId);
+          const options = [`<option value="">${emptyText}</option>`];
 
-          // Clear existing options in the Job Position dropdown
-          $('#id_job_position_id').empty();
-
-          // Append new options based on the response
-          $.each(data.job_positions, function(key, value) {
-            $('#id_job_position_id').append($('<option>', {
-              value: key,
-              text: value
-            }));
+          $.each(data.job_positions || data.job_roles, function (key, value) {
+            options.push(`<option value="${key}">${value}</option>`);
           });
-          $('#id_job_position_id').change();
-        }
+
+          options.push(`<option value="create">${createText}</option>`);
+          dropdown.html(options.join(""));
+        },
       });
-    }
+    } else {
+      const resetOptions = `<option value="">${emptyText}</option><option value="create">${createText}</option>`;
+      $(dropdownId).html(resetOptions);
 
-  }
-
-  // Add event listener to the Job Position dropdown
-  function jobChange(selectElement){
-
-    var jobId = selectElement.val(); // Get the selected jobposition ID
-
-    // Make AJAX request to fetch available job roles for the selected job positions
-    $.ajax({
-      url: '{% url "get_job_roles" %}',
-      method: 'GET',
-      data: {
-        'job_id': jobId
-      },
-      success: function(data) {
-        // Clear existing options in the Job role dropdown
-        $('#id_job_role_id').empty();
-
-        // Append new options based on the response
-        $.each(data.job_roles, function(key, value) {
-          $('#id_job_role_id').append($('<option>', {
-            value: key,
-            text: value
-          }));
-        });
+      if (id === "#dynamicDept") {
+        $("#id_job_role_id").append(
+          $("<option>", {
+            value: "create",
+            text: "Create New Job Role",
+          })
+        );
       }
-    });
-  };
-
+    }
+  }
 </script>
 
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Get the selected department ID and the initial selected job position
-    var departmentId = $('#id_department_id').val();
-    var selectedJobPosition = $('#id_job_position_id').val();
-    var selectedJobRole = $('#id_job_role_id').val();
-
+    var departmentId = $("#id_department_id").val();
+    var selectedJobPosition = $("#id_job_position_id").val();
+    var selectedJobRole = $("#id_job_role_id").val();
 
     // Make AJAX request to fetch available job positions for the selected department
     $.ajax({
       url: '{% url "get_job_positions" %}',
-      method: 'GET',
+      method: "GET",
       data: {
-        'department_id': departmentId
+        department_id: departmentId,
       },
-      success: function(data) {
+      success: function (data) {
         // Clear existing options in the Job Position dropdown
-        $('#id_job_position_id').empty();
-
+        $("#id_job_position_id").empty();
+        $("#id_job_position_id").append(
+          $("<option>", {
+            value: "",
+            text: "---Choose Job Position---",
+          })
+        );
         // Append new options based on the response
-        $.each(data.job_positions, function(key, value) {
-          $('#id_job_position_id').append($('<option>', {
-            value: key,
-            text: value
-          }));
-
+        $.each(data.job_positions, function (key, value) {
+          $("#id_job_position_id").append(
+            $("<option>", {
+              value: key,
+              text: value,
+            })
+          );
         });
-
+        $("#id_job_position_id").append(
+          $("<option>", {
+            value: "create",
+            text: "Create New Job Position",
+          })
+        );
         // Set the selected job position back to the dropdown
         if (selectedJobPosition) {
-          $('#id_job_position_id').val(selectedJobPosition);
+          $("#id_job_position_id").val(selectedJobPosition);
         }
-      }
+      },
     });
 
     if (selectedJobPosition) {
       $.ajax({
-
-        url : '{% url "get_job_roles" %}',
-        method : 'GET',
-        data : {
-          'job_id' : selectedJobPosition
+        url: '{% url "get_job_roles" %}',
+        method: "GET",
+        data: {
+          job_id: selectedJobPosition,
         },
-        success : function(data){
+        success: function (data) {
+          $("#id_job_role_id").empty();
 
-          $('#id_job_role_id').empty();
-
-          $.each(data.job_roles, function(key, value) {
-            $('#id_job_role_id').append($('<option>', {
-
-                value : key,
-                text : value
-
-              }))
-          })
+          $.each(data.job_roles, function (key, value) {
+            $("#id_job_role_id").append(
+              $("<option>", {
+                value: key,
+                text: value,
+              })
+            );
+          });
           // Set the selected job position back to the dropdown
           if (selectedJobRole) {
-            $('#id_job_role_id').val(selectedJobRole);
+            $("#id_job_role_id").val(selectedJobRole);
           }
-
-        }
-      })
-
+        },
+      });
     }
-
   });
-
 </script>

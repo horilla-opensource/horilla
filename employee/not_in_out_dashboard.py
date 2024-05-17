@@ -146,19 +146,24 @@ def send_mail_to_employee(request):
         {"instance": employee, "self": request.user.employee_get}
     )
     render_bdy = template_bdy.render(context)
+    send_to_mail = (
+        employee.employee_work_info.email
+        if employee.employee_work_info and employee.employee_work_info.email
+        else employee.email
+    )
 
     email = EmailMessage(
         subject,
         render_bdy,
         host,
-        [employee.employee_work_info.email],
+        [send_to_mail],
     )
     email.content_subtype = "html"
 
     email.attachments = attachments
     try:
         email.send()
-        if employee.employee_work_info.email:
+        if employee.employee_work_info.email or employee.email:
             messages.success(request, f"Mail sent to {employee.get_full_name()}")
         else:
             messages.info(request, f"Email not set for {employee.get_full_name()}")
