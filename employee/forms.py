@@ -282,16 +282,16 @@ class EmployeeWorkInformationForm(ModelForm):
                 self.fields[field].disabled = True
         field_names = {
             "Department": "department",
-            # "Job Position": "job_position",
-            # "Job Role": "job_role",
+            "Job Position": "job_position",
+            "Job Role": "job_role",
             "Work Type": "work_type",
             "Employee Type": "employee_type",
             "Shift": "employee_shift",
         }
         urls = {
             "Department": "#dynamicDept",
-            # "Job Position": "#dynamicJobPosition",
-            # "Job Role": "#dynamicJobRole",
+            "Job Position": "#dynamicJobPosition",
+            "Job Role": "#dynamicJobRole",
             "Work Type": "#dynamicWorkType",
             "Employee Type": "#dynamicEmployeeType",
             "Shift": "#dynamicShift",
@@ -301,57 +301,27 @@ class EmployeeWorkInformationForm(ModelForm):
             if isinstance(field, forms.ModelChoiceField) and field.label in field_names:
                 if field.label is not None:
                     field_name = field_names.get(field.label)
-                    # print(field.label)
-                    if field.label == "Department":
-                        if field.queryset.model != Employee and field_name:
-                            translated_label = _(field.label)
-                            empty_label = _("---Choose {label}---").format(
-                                label=translated_label
-                            )
-                            self.fields[label] = forms.ChoiceField(
-                                choices=[("", empty_label)]
-                                + list(
-                                    field.queryset.values_list("id", f"{field_name}")
-                                ),
-                                required=field.required,
-                                label=translated_label,
-                                initial=field.initial,
-                                widget=forms.Select(
-                                    attrs={
-                                        "class": "oh-select oh-select-2 select2-hidden-accessible",
-                                        "onchange": f'onDynamicCreateDep(this.value,"{urls.get(field.label)}");',
-                                    }
-                                ),
-                            )
-                            self.fields[label].choices += [
-                                ("create", _("Create New {} ").format(translated_label))
-                            ]
-
-                    else:
-
-                        if field.queryset.model != Employee and field_name:
-                            translated_label = _(field.label)
-                            empty_label = _("---Choose {label}---").format(
-                                label=translated_label
-                            )
-                            self.fields[label] = forms.ChoiceField(
-                                choices=[("", empty_label)]
-                                + list(
-                                    field.queryset.values_list("id", f"{field_name}")
-                                ),
-                                required=field.required,
-                                label=translated_label,
-                                initial=field.initial,
-                                widget=forms.Select(
-                                    attrs={
-                                        "class": "oh-select oh-select-2 select2-hidden-accessible",
-                                        "onchange": f'onDynamicCreate(this.value,"{urls.get(field.label)}");',
-                                    }
-                                ),
-                            )
-                            self.fields[label].choices += [
-                                ("create", _("Create New {} ").format(translated_label))
-                            ]
+                    if field.queryset.model != Employee and field_name:
+                        translated_label = _(field.label)
+                        empty_label = _("---Choose {label}---").format(
+                            label=translated_label
+                        )
+                        self.fields[label] = forms.ChoiceField(
+                            choices=[("", empty_label)]
+                            + list(field.queryset.values_list("id", f"{field_name}")),
+                            required=field.required,
+                            label=translated_label,
+                            initial=field.initial,
+                            widget=forms.Select(
+                                attrs={
+                                    "class": "oh-select oh-select-2 select2-hidden-accessible",
+                                    "onchange": f'onDynamicCreate(this.value,"{urls.get(field.label)}");',
+                                }
+                            ),
+                        )
+                        self.fields[label].choices += [
+                            ("create", _("Create New {} ").format(translated_label))
+                        ]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -696,9 +666,6 @@ class ActiontypeForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        account_block_unblock = AccountBlockUnblock.objects.first()
-        if not account_block_unblock.is_enabled:
-            self.fields.pop("block_option")
 
         self.fields["action_type"].widget.attrs.update(
             {

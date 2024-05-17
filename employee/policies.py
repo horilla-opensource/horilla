@@ -270,6 +270,9 @@ def create_actions(request):
                 redirect="/employee/disciplinary-actions/",
                 icon="chatbox-ellipses",
             )
+        dis = DisciplinaryAction.objects.all()
+        if len(dis) == 1:
+            return HttpResponse("<script>window.location.reload()</script>")
 
     return render(
         request, "disciplinary_actions/form.html", {"form": form, "dynamic": dynamic}
@@ -373,7 +376,11 @@ def delete_actions(request, action_id):
 
     dis.delete()
     messages.success(request, _("Disciplinary action deleted."))
-    return redirect(disciplinary_filter_view)
+    dis_actions = DisciplinaryAction.objects.all()
+
+    if dis_actions.exists():
+        return redirect(disciplinary_filter_view)
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
