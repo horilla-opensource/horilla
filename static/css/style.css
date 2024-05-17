@@ -508,3 +508,7 @@ form label {
     backdrop-filter: blur(8px);
     z-index: 9 !important;
 }
+
+.note-modal-backdrop {
+    display: none !important;
+}
