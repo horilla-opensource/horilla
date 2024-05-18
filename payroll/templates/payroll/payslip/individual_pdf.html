@@ -14,9 +14,19 @@
 	</head>
 	<body>
 		<style>
+			@font-face {
+				font-family: 'Poppins';
+				src: url('{% static "payroll/fonts/Poppins_Regular.ttf" %}') format('truetype');
+				font-weight: normal;
+				font-style: normal;
+			}
+			body {
+				font-family: "Poppins", sans-serif;
+			}
+
 			li {
 				font-size: 12px;
-				font-family: "poppins";
+				font-family: "Poppins";
 			}
 			.oh-payslip__table-th,
 			.oh-payslip__table-tf {
