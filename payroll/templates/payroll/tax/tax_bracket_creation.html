@@ -4,6 +4,19 @@
   <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
   {% endfor %}
 </div>
+<script>
+  setTimeout(function () {
+    $(".oh-span__class").click();
+  }, 1000);
+</script>
+<span
+  class="oh-span__class"
+  data-toggle="oh-modal-toggle"
+  data-target="#filingStatus{{filing_status_id}}"
+  hx-get="{%url 'tax-bracket-list' filing_status_id=filing_status_id %}"
+  hx-target="#taxbracketList{{filing_status_id}}"
+  onclick="$(`[data-target='#filingStatus{{filing_status_id}}']`).addClass('oh-accordion-meta__header--show');$('#filingStatus{{filing_status_id}}').removeClass('d-none')"
+></span>
 {% endif %}
 <div class="oh-modal__dialog-header pb-0">
   <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
@@ -14,11 +27,6 @@
     class="oh-modal__close"
     data-dismiss="oh-modal"
     aria-label="Close"
-    data-toggle="oh-modal-toggle"
-    data-target="#filingStatus{{filing_status_id}}"
-    hx-get="{%url 'tax-bracket-list' filing_status_id=filing_status_id %}"
-    hx-target="#taxbracketList{{filing_status_id}}"
-    onclick="$(`[data-target='#filingStatus{{filing_status_id}}']`).addClass('oh-accordion-meta__header--show');$('#filingStatus{{filing_status_id}}').removeClass('d-none')"
   >
     <ion-icon name="close-outline"></ion-icon>
   </button>
