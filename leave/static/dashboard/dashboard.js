@@ -385,6 +385,40 @@ $(document).ready(function () {
 		});
 	});
 
+	// Taking the current year and month in the format YYYY-MM
+	const currentDate = new Date();
+	const currentYear = currentDate.getFullYear();
+	const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
+	const formattedDate = `${currentYear}-${currentMonth}`;
+	$.ajax({
+		type: "GET",
+		url: "/leave/department-leave-chart",
+		dataType: "json",
+		data: {
+			date: formattedDate,
+		},
+		success: function (response) {
+			if (isChartEmpty(response.dataset)) {
+				$("#department_leave_canvas").html(
+					`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+							<div style="" class="">
+							<img style=" display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/attendance.png" class="" alt=""/>
+							<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+						</div>
+					</div>`
+				);
+			} else {
+				$("#department_leave_canvas").html(
+					'<canvas id="departmentLeave" class="pointer"></canvas>'
+				);
+				department_leave_chart(response);
+			}
+		},
+		error: (error) => {
+			console.log("Error", error);
+		},
+	});
+
 	$("#dash_department_month").on("change", function () {
 		let month = $(this).val();
 		$.ajax({
@@ -415,6 +449,35 @@ $(document).ready(function () {
 				console.log("Error", error);
 			},
 		});
+	});
+
+	$.ajax({
+		type: "GET",
+		url: "/leave/leave-type-chart",
+		dataType: "json",
+		data: {
+			date: formattedDate,
+		},
+		success: function (response) {
+			if (isChartEmpty(response.dataset)) {
+				$("#leave_type_canvas").html(
+					`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+							<div style="" class="">
+							<img style=" display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/leave_types.png" class="" alt=""/>
+							<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+						</div>
+					</div>`
+				);
+			} else {
+				$("#leave_type_canvas").html(
+					'<canvas id="leaveType" class="pointer"></canvas>'
+				);
+				leave_type_chart(response);
+			}
+		},
+		error: (error) => {
+			console.log("Error", error);
+		},
 	});
 
 	$("#dash_leave_type_month").on("change", function () {

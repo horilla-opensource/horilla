@@ -24,7 +24,7 @@ from base.models import (
     MultipleApprovalCondition,
     clear_messages,
 )
-from employee.models import Employee
+from employee.models import Employee, EmployeeWorkInformation
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
@@ -626,14 +626,18 @@ class LeaveRequest(HorillaModel):
 
         self.update_leave_clashes_count()
         super().save(*args, **kwargs)
-
-        department_id = self.employee_id.employee_work_info.department_id
+        work_info = EmployeeWorkInformation.objects.filter(employee_id=self.employee_id)
+        department_id = None
+        conditions = None
+        if work_info.exists():
+            department_id = self.employee_id.employee_work_info.department_id
         requested_days = self.requested_days
         applicable_condition = False
-        conditions = MultipleApprovalCondition.objects.filter(
-            department=department_id
-        ).order_by("condition_value")
-        if conditions:
+        if department_id != None:
+            conditions = MultipleApprovalCondition.objects.filter(
+                department=department_id
+            ).order_by("condition_value")
+        if conditions != None:
             for condition in conditions:
                 operator = condition.condition_operator
                 if operator == "range":
@@ -664,9 +668,10 @@ class LeaveRequest(HorillaModel):
     def clean(self):
         cleaned_data = super().clean()
         restricted_leave = RestrictLeave.objects.all()
-
-        emp_dep = self.employee_id.employee_work_info.department_id
-        emp_job = self.employee_id.employee_work_info.job_position_id
+        work_info = EmployeeWorkInformation.objects.filter(employee_id=self.employee_id)
+        if work_info.exists():
+            emp_dep = self.employee_id.employee_work_info.department_id
+            emp_job = self.employee_id.employee_work_info.job_position_id
 
         request = getattr(thread_local_middleware._thread_locals, "request", None)
 
@@ -823,18 +828,20 @@ class LeaveRequest(HorillaModel):
         Method to count leave clashes where this employee's leave request overlaps
         with other employees' requested dates.
         """
-        overlapping_requests = LeaveRequest.objects.exclude(id=self.id).filter(
-            Q(
-                employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+        work_info = EmployeeWorkInformation.objects.filter(employee_id=self.employee_id)
+        if work_info.exists():
+            overlapping_requests = LeaveRequest.objects.exclude(id=self.id).filter(
+                Q(
+                    employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+                )
+                | Q(
+                    employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
+                ),
+                start_date__lte=self.end_date,
+                end_date__gte=self.start_date,
             )
-            | Q(
-                employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
-            ),
-            start_date__lte=self.end_date,
-            end_date__gte=self.start_date,
-        )
-
-        return overlapping_requests.count()
+            return overlapping_requests.count()
+        return 0
 
 
 class LeaverequestFile(models.Model):

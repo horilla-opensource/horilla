@@ -433,6 +433,10 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                         "admin": admin,
                     },
                 )
+            leave_requests = LeaveRequest.objects.all()
+            if len(leave_requests) == 1:
+                return HttpResponse("<script>window.location.reload()</script>")
+
     return render(
         request,
         "leave/leave_request/leave_request_form.html",
@@ -725,7 +729,11 @@ def leave_request_delete(request, id):
         messages.error(request, _("Related entries exists"))
     hx_target = request.META.get("HTTP_HX_TARGET", None)
     if hx_target == "leaveRequest":
-        return redirect(f"/leave/request-filter?{previous_data}")
+        leave_requests = LeaveRequest.objects.all()
+        if leave_requests.exists():
+            return redirect(f"/leave/request-filter?{previous_data}")
+        else:
+            return HttpResponse("<script>window.location.reload();</script>")
     return redirect(leave_request_view)
 
 
