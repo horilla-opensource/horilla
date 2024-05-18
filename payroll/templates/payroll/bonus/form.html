@@ -7,24 +7,14 @@
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
+
 <div class="oh-modal__dialog-body">
   <form
     hx-post="{% url 'add-bonus' %}?employee_id={{employee_id}}&payslip_id={{payslip_id}}"
     hx-target="#addBonusModalBody"
-    class="oh-profile-section pt-2"
+    class="oh-profile-section"
   >
-    <div class="oh-input__group">
-      <label class="oh-input__label" for="{{form.title.id_for_label}}"
-        >{% trans "Title" %}</label
-      >
-      {{form.title}} {{form.title.errors}}
-    </div>
-    <div class="oh-input__group">
-      <label class="oh-input__label" for="{{form.amount.id_for_label}}"
-        >{% trans "Amount" %}</label
-      >
-      {{form.amount}} {{form.amount.errors}}
-    </div>
+    {{ form.as_p }}
     <div class="oh-modal__dialog-footer p-0">
       <button
         type="submit"
