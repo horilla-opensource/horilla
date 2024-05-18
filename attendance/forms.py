@@ -887,7 +887,7 @@ def get_date_list(employee_id, from_date, to_date):
             data={
                 "attendance_date__gte": working_date_list[0],
                 "attendance_date__lte": working_date_list[-1],
-                "employee_id": employee_id,
+                "employee": employee_id.id,
             }
         )
         existing_attendance = attendance_filters.qs
@@ -905,6 +905,17 @@ class BulkAttendanceRequestForm(ModelForm):
     Bulk attendance request create form
     """
 
+    employee_id = forms.ModelChoiceField(
+        queryset=Employee.objects.filter(is_active=True),
+        widget=forms.Select(
+            attrs={
+                "hx-target": "[name='shift_id']",
+                "hx-get": "/attendance/request-new-attendance?bulk=False",
+                "hx-trigger": "change",
+            }
+        ),
+        label=_("Employee"),
+    )
     create_bulk = forms.BooleanField(
         required=False,
         initial=True,
