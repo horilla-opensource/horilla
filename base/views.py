@@ -4943,27 +4943,62 @@ def create_shiftrequest_comment(request, shift_id):
                 initial={"employee_id": emp.id, "request_id": shift_id}
             )
             messages.success(request, _("Comment added successfully!"))
-
-            if shift.employee_id.employee_work_info.reporting_manager_id is not None:
-                if request.user.employee_get.id == shift.employee_id.id:
-                    rec = (
-                        shift.employee_id.employee_work_info.reporting_manager_id.employee_user_id
-                    )
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=rec,
-                        verb=f"{shift.employee_id}'s shift request has received a comment.",
-                        verb_ar=f"تلقت طلب تحويل {shift.employee_id} تعليقًا.",
-                        verb_de=f"{shift.employee_id}s Schichtantrag hat einen Kommentar erhalten.",
-                        verb_es=f"La solicitud de turno de {shift.employee_id} ha recibido un comentario.",
-                        verb_fr=f"La demande de changement de poste de {shift.employee_id} a reçu un commentaire.",
-                        redirect=f"/employee/shift-request-view?id={shift.id}",
-                        icon="chatbox-ellipses",
-                    )
-                elif (
-                    request.user.employee_get.id
-                    == shift.employee_id.employee_work_info.reporting_manager_id.id
+            work_info = EmployeeWorkInformation.objects.filter(
+                employee_id=shift.employee_id
+            )
+            if work_info.exists():
+                if (
+                    shift.employee_id.employee_work_info.reporting_manager_id
+                    is not None
                 ):
+                    if request.user.employee_get.id == shift.employee_id.id:
+                        rec = (
+                            shift.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                        )
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=rec,
+                            verb=f"{shift.employee_id}'s shift request has received a comment.",
+                            verb_ar=f"تلقت طلب تحويل {shift.employee_id} تعليقًا.",
+                            verb_de=f"{shift.employee_id}s Schichtantrag hat einen Kommentar erhalten.",
+                            verb_es=f"La solicitud de turno de {shift.employee_id} ha recibido un comentario.",
+                            verb_fr=f"La demande de changement de poste de {shift.employee_id} a reçu un commentaire.",
+                            redirect=f"/employee/shift-request-view?id={shift.id}",
+                            icon="chatbox-ellipses",
+                        )
+                    elif (
+                        request.user.employee_get.id
+                        == shift.employee_id.employee_work_info.reporting_manager_id.id
+                    ):
+                        rec = shift.employee_id.employee_user_id
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=rec,
+                            verb="Your shift request has received a comment.",
+                            verb_ar="تلقت طلبك للتحول تعليقًا.",
+                            verb_de="Ihr Schichtantrag hat einen Kommentar erhalten.",
+                            verb_es="Tu solicitud de turno ha recibido un comentario.",
+                            verb_fr="Votre demande de changement de poste a reçu un commentaire.",
+                            redirect=f"/employee/shift-request-view?id={shift.id}",
+                            icon="chatbox-ellipses",
+                        )
+                    else:
+                        rec = [
+                            shift.employee_id.employee_user_id,
+                            shift.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                        ]
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=rec,
+                            verb=f"{shift.employee_id}'s shift request has received a comment.",
+                            verb_ar=f"تلقت طلب تحويل {shift.employee_id} تعليقًا.",
+                            verb_de=f"{shift.employee_id}s Schichtantrag hat einen Kommentar erhalten.",
+                            verb_es=f"La solicitud de turno de {shift.employee_id} ha recibido un comentario.",
+                            verb_fr=f"La demande de changement de poste de {shift.employee_id} a reçu un commentaire.",
+                            redirect=f"/employee/shift-request-view?id={shift.id}",
+                            icon="chatbox-ellipses",
+                        )
+                else:
                     rec = shift.employee_id.employee_user_id
                     notify.send(
                         request.user.employee_get,
@@ -4976,35 +5011,6 @@ def create_shiftrequest_comment(request, shift_id):
                         redirect=f"/employee/shift-request-view?id={shift.id}",
                         icon="chatbox-ellipses",
                     )
-                else:
-                    rec = [
-                        shift.employee_id.employee_user_id,
-                        shift.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                    ]
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=rec,
-                        verb=f"{shift.employee_id}'s shift request has received a comment.",
-                        verb_ar=f"تلقت طلب تحويل {shift.employee_id} تعليقًا.",
-                        verb_de=f"{shift.employee_id}s Schichtantrag hat einen Kommentar erhalten.",
-                        verb_es=f"La solicitud de turno de {shift.employee_id} ha recibido un comentario.",
-                        verb_fr=f"La demande de changement de poste de {shift.employee_id} a reçu un commentaire.",
-                        redirect=f"/employee/shift-request-view?id={shift.id}",
-                        icon="chatbox-ellipses",
-                    )
-            else:
-                rec = shift.employee_id.employee_user_id
-                notify.send(
-                    request.user.employee_get,
-                    recipient=rec,
-                    verb="Your shift request has received a comment.",
-                    verb_ar="تلقت طلبك للتحول تعليقًا.",
-                    verb_de="Ihr Schichtantrag hat einen Kommentar erhalten.",
-                    verb_es="Tu solicitud de turno ha recibido un comentario.",
-                    verb_fr="Votre demande de changement de poste a reçu un commentaire.",
-                    redirect=f"/employee/shift-request-view?id={shift.id}",
-                    icon="chatbox-ellipses",
-                )
             return render(
                 request,
                 "shift_request/htmx/shift_comment.html",
@@ -5173,29 +5179,62 @@ def create_worktyperequest_comment(request, worktype_id):
             )
             messages.success(request, _("Comment added successfully!"))
 
-            if (
-                work_type.employee_id.employee_work_info.reporting_manager_id
-                is not None
-            ):
-                if request.user.employee_get.id == work_type.employee_id.id:
-                    rec = (
-                        work_type.employee_id.employee_work_info.reporting_manager_id.employee_user_id
-                    )
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=rec,
-                        verb=f"{work_type.employee_id}'s work type request has received a comment.",
-                        verb_ar=f"تلقت طلب نوع العمل {work_type.employee_id} تعليقًا.",
-                        verb_de=f"{work_type.employee_id}s Arbeitsart-Antrag hat einen Kommentar erhalten.",
-                        verb_es=f"La solicitud de tipo de trabajo de {work_type.employee_id} ha recibido un comentario.",
-                        verb_fr=f"La demande de type de travail de {work_type.employee_id} a reçu un commentaire.",
-                        redirect=f"/employee/work-type-request-view?id={work_type.id}",
-                        icon="chatbox-ellipses",
-                    )
-                elif (
-                    request.user.employee_get.id
-                    == work_type.employee_id.employee_work_info.reporting_manager_id.id
+            work_info = EmployeeWorkInformation.objects.filter(
+                employee_id=work_type.employee_id
+            )
+            if work_info.exists():
+                if (
+                    work_type.employee_id.employee_work_info.reporting_manager_id
+                    is not None
                 ):
+                    if request.user.employee_get.id == work_type.employee_id.id:
+                        rec = (
+                            work_type.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                        )
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=rec,
+                            verb=f"{work_type.employee_id}'s work type request has received a comment.",
+                            verb_ar=f"تلقت طلب نوع العمل {work_type.employee_id} تعليقًا.",
+                            verb_de=f"{work_type.employee_id}s Arbeitsart-Antrag hat einen Kommentar erhalten.",
+                            verb_es=f"La solicitud de tipo de trabajo de {work_type.employee_id} ha recibido un comentario.",
+                            verb_fr=f"La demande de type de travail de {work_type.employee_id} a reçu un commentaire.",
+                            redirect=f"/employee/work-type-request-view?id={work_type.id}",
+                            icon="chatbox-ellipses",
+                        )
+                    elif (
+                        request.user.employee_get.id
+                        == work_type.employee_id.employee_work_info.reporting_manager_id.id
+                    ):
+                        rec = work_type.employee_id.employee_user_id
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=rec,
+                            verb="Your work type request has received a comment.",
+                            verb_ar="تلقى طلب نوع العمل الخاص بك تعليقًا.",
+                            verb_de="Ihr Arbeitsart-Antrag hat einen Kommentar erhalten.",
+                            verb_es="Tu solicitud de tipo de trabajo ha recibido un comentario.",
+                            verb_fr="Votre demande de type de travail a reçu un commentaire.",
+                            redirect=f"/employee/work-type-request-view?id={work_type.id}",
+                            icon="chatbox-ellipses",
+                        )
+                    else:
+                        rec = [
+                            work_type.employee_id.employee_user_id,
+                            work_type.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                        ]
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=rec,
+                            verb=f"{work_type.employee_id}'s work type request has received a comment.",
+                            verb_ar=f"تلقت طلب نوع العمل {work_type.employee_id} تعليقًا.",
+                            verb_de=f"{work_type.employee_id}s Arbeitsart-Antrag hat einen Kommentar erhalten.",
+                            verb_es=f"La solicitud de tipo de trabajo de {work_type.employee_id} ha recibido un comentario.",
+                            verb_fr=f"La demande de type de travail de {work_type.employee_id} a reçu un commentaire.",
+                            redirect=f"/employee/work-type-request-view?id={work_type.id}",
+                            icon="chatbox-ellipses",
+                        )
+                else:
                     rec = work_type.employee_id.employee_user_id
                     notify.send(
                         request.user.employee_get,
@@ -5208,35 +5247,6 @@ def create_worktyperequest_comment(request, worktype_id):
                         redirect=f"/employee/work-type-request-view?id={work_type.id}",
                         icon="chatbox-ellipses",
                     )
-                else:
-                    rec = [
-                        work_type.employee_id.employee_user_id,
-                        work_type.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                    ]
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=rec,
-                        verb=f"{work_type.employee_id}'s work type request has received a comment.",
-                        verb_ar=f"تلقت طلب نوع العمل {work_type.employee_id} تعليقًا.",
-                        verb_de=f"{work_type.employee_id}s Arbeitsart-Antrag hat einen Kommentar erhalten.",
-                        verb_es=f"La solicitud de tipo de trabajo de {work_type.employee_id} ha recibido un comentario.",
-                        verb_fr=f"La demande de type de travail de {work_type.employee_id} a reçu un commentaire.",
-                        redirect=f"/employee/work-type-request-view?id={work_type.id}",
-                        icon="chatbox-ellipses",
-                    )
-            else:
-                rec = work_type.employee_id.employee_user_id
-                notify.send(
-                    request.user.employee_get,
-                    recipient=rec,
-                    verb="Your work type request has received a comment.",
-                    verb_ar="تلقى طلب نوع العمل الخاص بك تعليقًا.",
-                    verb_de="Ihr Arbeitsart-Antrag hat einen Kommentar erhalten.",
-                    verb_es="Tu solicitud de tipo de trabajo ha recibido un comentario.",
-                    verb_fr="Votre demande de type de travail a reçu un commentaire.",
-                    redirect=f"/employee/work-type-request-view?id={work_type.id}",
-                    icon="chatbox-ellipses",
-                )
             return render(
                 request,
                 "work_type_request/htmx/work_type_comment.html",
