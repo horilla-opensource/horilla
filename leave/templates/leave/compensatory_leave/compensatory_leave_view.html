@@ -35,155 +35,157 @@
 	</div>
 	<div class="oh-main__titlebar oh-main__titlebar--right">
 
-		<form
-			method="post"
-			hx-get="{% url 'filter-compensatory-leave' %}"
-			hx-target="#comp-leave-tabs"
-			id="filterForm"
-			class="d-flex"
-			onsubmit="event.preventDefault()"
-		>
-			<div
-				class="oh-input-group oh-input__search-group"
-				:class="searchShow ? 'oh-input__search-group--show' : ''"
+		{% if comp_leave_requests or my_comp_leave_requests %}
+			<form
+				method="post"
+				hx-get="{% url 'filter-compensatory-leave' %}"
+				hx-target="#comp-leave-tabs"
+				id="filterForm"
+				class="d-flex"
+				onsubmit="event.preventDefault()"
 			>
-				<ion-icon
-					name="search-outline"
-					class="oh-input-group__icon oh-input-group__icon--left"
-				></ion-icon>
-				<input
-					type="text"
-					class="oh-input oh-input__icon"
-					aria-label="Search Input"
-					placeholder="{% trans 'Search' %}"
-					name="search"
-					onkeyup="$('.filterButton')[0].click()"
-				/>
-			</div>
-			<div class="oh-dropdown" x-data="{open: false}">
-				<button
-					class="oh-btn ml-2"
-					@click="open = !open"
-					onclick="event.preventDefault()"
-				>
-					<ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-					<div id="filterCount"></div>
-				</button>
 				<div
-					class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-					x-show="open"
-					style="display: none"
-					@click.outside="open = false"
+					class="oh-input-group oh-input__search-group"
+					:class="searchShow ? 'oh-input__search-group--show' : ''"
 				>
-					<div class="oh-dropdown__filter-body">
-						<div class="oh-accordion">
-							<div
-								class="oh-accordion-header"
-								onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+					<ion-icon
+						name="search-outline"
+						class="oh-input-group__icon oh-input-group__icon--left"
+					></ion-icon>
+					<input
+						type="text"
+						class="oh-input oh-input__icon"
+						aria-label="Search Input"
+						placeholder="{% trans 'Search' %}"
+						name="search"
+						onkeyup="$('.filterButton')[0].click()"
+					/>
+				</div>
+				<div class="oh-dropdown" x-data="{open: false}">
+					<button
+						class="oh-btn ml-2"
+						@click="open = !open"
+						onclick="event.preventDefault()"
+					>
+						<ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+						<div id="filterCount"></div>
+					</button>
+					<div
+						class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+						x-show="open"
+						style="display: none"
+						@click.outside="open = false"
+					>
+						<div class="oh-dropdown__filter-body">
+							<div class="oh-accordion">
+								<div
+									class="oh-accordion-header"
+									onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+								>
+									{% trans "Compensatory Leave Request" %}
+								</div>
+								<div class="oh-accordion-body">
+									<div class="row">
+										<div class="col-sm-12 col-md-12 col-lg-12">
+											<div class="oh-input-group">
+												<label class="oh-label">{% trans "Leave Type" %}</label>
+												{{form.leave_type_id}}
+											</div>
+										</div>
+										<div class="col-sm-12 col-md-12 col-lg-6">
+											<div class="oh-input-group">
+												<label class="oh-label">{% trans "Employee" %}</label>
+												{{form.employee_id}}
+											</div>
+										</div>
+										<div class="col-sm-12 col-md-12 col-lg-6">
+											<div class="oh-input-group">
+												<label class="oh-label">{% trans "Created By" %}</label>
+												{{form.created_by__employee_get}}
+											</div>
+										</div>
+										<div class="col-sm-12 col-md-12 col-lg-6">
+											<div class="oh-input-group">
+												<label class="oh-label"
+													>{% trans "Requested days Up To" %}</label
+												>
+												{{form.number_of_days_up_to}}
+											</div>
+										</div>
+										<div class="col-sm-12 col-md-12 col-lg-6">
+											<div class="oh-input-group">
+												<label class="oh-label"
+													>{% trans "Requested days More Than " %}</label
+												>
+												{{form.number_of_days_more_than}}
+											</div>
+										</div>
+
+										<div class="col-sm-12 col-md-12">
+											<div class="oh-input-group">
+												<label class="oh-label">{% trans "Status" %}</label>
+												{{form.status}}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="oh-dropdown__filter-footer">
+							<button
+								class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+								type="submit"
 							>
-								{% trans "Compensatory Leave Request" %}
-							</div>
-							<div class="oh-accordion-body">
-								<div class="row">
-									<div class="col-sm-12 col-md-12 col-lg-12">
-										<div class="oh-input-group">
-											<label class="oh-label">{% trans "Leave Type" %}</label>
-											{{form.leave_type_id}}
-										</div>
-									</div>
-									<div class="col-sm-12 col-md-12 col-lg-6">
-										<div class="oh-input-group">
-											<label class="oh-label">{% trans "Employee" %}</label>
-											{{form.employee_id}}
-										</div>
-									</div>
-									<div class="col-sm-12 col-md-12 col-lg-6">
-										<div class="oh-input-group">
-											<label class="oh-label">{% trans "Created By" %}</label>
-											{{form.created_by__employee_get}}
-										</div>
-									</div>
-									<div class="col-sm-12 col-md-12 col-lg-6">
-										<div class="oh-input-group">
-											<label class="oh-label"
-												>{% trans "Requested days Up To" %}</label
-											>
-											{{form.number_of_days_up_to}}
-										</div>
-									</div>
-									<div class="col-sm-12 col-md-12 col-lg-6">
-										<div class="oh-input-group">
-											<label class="oh-label"
-												>{% trans "Requested days More Than " %}</label
-											>
-											{{form.number_of_days_more_than}}
-										</div>
-									</div>
+								{% trans "Filter" %}
+							</button>
+						</div>
+					</div>
+				</div>
 
-									<div class="col-sm-12 col-md-12">
-										<div class="oh-input-group">
-											<label class="oh-label">{% trans "Status" %}</label>
-											{{form.status}}
-										</div>
+				{% comment %} <div class="oh-dropdown" x-data="{open: false}">
+					<button
+						class="oh-btn ml-2"
+						@click="open = !open"
+						onclick="event.preventDefault()"
+					>
+						<ion-icon name="library-outline" class="mr-1"></ion-icon>
+						{% trans "Group By" %}
+					</button>
+					<div
+						class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+						x-show="open"
+						@click.outside="open = false"
+						style="display: none"
+					>
+						<div class="oh-accordion">
+							<label>{% trans "Group By" %}</label>
+							<div class="row">
+								<div class="col-sm-12 col-md-12 col-lg-6">
+									<div class="oh-input-group">
+										<label class="oh-label">{% trans "Field" %}</label>
+									</div>
+								</div>
+								<div class="col-sm-12 col-md-12 col-lg-6">
+									<div class="oh-input-group">
+										<select
+											class="oh-select mt-1 w-100"
+											id="id_field"
+											name="field"
+											class="select2-selection select2-selection--single"
+										>
+											{% for field in gp_fields %}
+											<option value="{{ field.0 }}">{% trans field.1 %}</option>
+											{% endfor %}
+										</select>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div class="oh-dropdown__filter-footer">
-						<button
-							class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-							type="submit"
-						>
-							{% trans "Filter" %}
-						</button>
-					</div>
-				</div>
-			</div>
-
-			{% comment %} <div class="oh-dropdown" x-data="{open: false}">
-				<button
-					class="oh-btn ml-2"
-					@click="open = !open"
-					onclick="event.preventDefault()"
-				>
-					<ion-icon name="library-outline" class="mr-1"></ion-icon>
-					{% trans "Group By" %}
-				</button>
-				<div
-					class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-					x-show="open"
-					@click.outside="open = false"
-					style="display: none"
-				>
-					<div class="oh-accordion">
-						<label>{% trans "Group By" %}</label>
-						<div class="row">
-							<div class="col-sm-12 col-md-12 col-lg-6">
-								<div class="oh-input-group">
-									<label class="oh-label">{% trans "Field" %}</label>
-								</div>
-							</div>
-							<div class="col-sm-12 col-md-12 col-lg-6">
-								<div class="oh-input-group">
-									<select
-										class="oh-select mt-1 w-100"
-										id="id_field"
-										name="field"
-										class="select2-selection select2-selection--single"
-									>
-										{% for field in gp_fields %}
-										<option value="{{ field.0 }}">{% trans field.1 %}</option>
-										{% endfor %}
-									</select>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div> {% endcomment %}
-		</form>
-		<!-- end of filter  -->
+				</div> {% endcomment %}
+			</form>
+			<!-- end of filter  -->
+		{% endif %}
 
 		<!-- start of create button  -->
 		<div class="oh-btn-group ml-2">

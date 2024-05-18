@@ -1330,6 +1330,8 @@ class CompensatoryLeaveForm(ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         attendance_id = cleaned_data.get("attendance_id")
+        if attendance_id is None:
+            raise forms.ValidationError({"attendance_id": _("This field is required.")})
         employee = cleaned_data.get("employee_id")
         attendance_repeat = False
         instance_id = None
