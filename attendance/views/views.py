@@ -72,7 +72,7 @@ from base.methods import (
     get_pagination,
 )
 from base.models import EmployeeShiftSchedule
-from employee.models import Employee
+from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
     hx_request_required,
     login_required,
@@ -1798,29 +1798,62 @@ def create_attendancerequest_comment(request, attendance_id):
                 initial={"employee_id": emp.id, "request_id": attendance_id}
             )
             messages.success(request, _("Comment added successfully!"))
-            if (
-                attendance.employee_id.employee_work_info.reporting_manager_id
-                is not None
-            ):
-                if request.user.employee_get.id == attendance.employee_id.id:
-                    rec = (
-                        attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
-                    )
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=rec,
-                        verb=f"{attendance.employee_id}'s attendance request has received a comment.",
-                        verb_ar=f"تلقت طلب الحضور {attendance.employee_id} تعليقًا.",
-                        verb_de=f"{attendance.employee_id}s Anfrage zur Anwesenheit hat einen Kommentar erhalten.",
-                        verb_es=f"La solicitud de asistencia de {attendance.employee_id} ha recibido un comentario.",
-                        verb_fr=f"La demande de présence de {attendance.employee_id} a reçu un commentaire.",
-                        redirect=f"/attendance/request-attendance-view?id={attendance.id}",
-                        icon="chatbox-ellipses",
-                    )
-                elif (
-                    request.user.employee_get.id
-                    == attendance.employee_id.employee_work_info.reporting_manager_id.id
+            work_info = EmployeeWorkInformation.objects.filter(
+                employee_id=attendance.employee_id
+            )
+            if work_info.exists():
+                if (
+                    attendance.employee_id.employee_work_info.reporting_manager_id
+                    is not None
                 ):
+                    if request.user.employee_get.id == attendance.employee_id.id:
+                        rec = (
+                            attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                        )
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=rec,
+                            verb=f"{attendance.employee_id}'s attendance request has received a comment.",
+                            verb_ar=f"تلقت طلب الحضور {attendance.employee_id} تعليقًا.",
+                            verb_de=f"{attendance.employee_id}s Anfrage zur Anwesenheit hat einen Kommentar erhalten.",
+                            verb_es=f"La solicitud de asistencia de {attendance.employee_id} ha recibido un comentario.",
+                            verb_fr=f"La demande de présence de {attendance.employee_id} a reçu un commentaire.",
+                            redirect=f"/attendance/request-attendance-view?id={attendance.id}",
+                            icon="chatbox-ellipses",
+                        )
+                    elif (
+                        request.user.employee_get.id
+                        == attendance.employee_id.employee_work_info.reporting_manager_id.id
+                    ):
+                        rec = attendance.employee_id.employee_user_id
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=rec,
+                            verb="Your attendance request has received a comment.",
+                            verb_ar="تلقى طلب الحضور الخاص بك تعليقًا.",
+                            verb_de="Ihr Antrag auf Anwesenheit hat einen Kommentar erhalten.",
+                            verb_es="Tu solicitud de asistencia ha recibido un comentario.",
+                            verb_fr="Votre demande de présence a reçu un commentaire.",
+                            redirect=f"/attendance/request-attendance-view?id={attendance.id}",
+                            icon="chatbox-ellipses",
+                        )
+                    else:
+                        rec = [
+                            attendance.employee_id.employee_user_id,
+                            attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                        ]
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=rec,
+                            verb=f"{attendance.employee_id}'s attendance request has received a comment.",
+                            verb_ar=f"تلقت طلب الحضور {attendance.employee_id} تعليقًا.",
+                            verb_de=f"{attendance.employee_id}s Anfrage zur Anwesenheit hat einen Kommentar erhalten.",
+                            verb_es=f"La solicitud de asistencia de {attendance.employee_id} ha recibido un comentario.",
+                            verb_fr=f"La demande de présence de {attendance.employee_id} a reçu un commentaire.",
+                            redirect=f"/attendance/request-attendance-view?id={attendance.id}",
+                            icon="chatbox-ellipses",
+                        )
+                else:
                     rec = attendance.employee_id.employee_user_id
                     notify.send(
                         request.user.employee_get,
@@ -1833,35 +1866,6 @@ def create_attendancerequest_comment(request, attendance_id):
                         redirect=f"/attendance/request-attendance-view?id={attendance.id}",
                         icon="chatbox-ellipses",
                     )
-                else:
-                    rec = [
-                        attendance.employee_id.employee_user_id,
-                        attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                    ]
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=rec,
-                        verb=f"{attendance.employee_id}'s attendance request has received a comment.",
-                        verb_ar=f"تلقت طلب الحضور {attendance.employee_id} تعليقًا.",
-                        verb_de=f"{attendance.employee_id}s Anfrage zur Anwesenheit hat einen Kommentar erhalten.",
-                        verb_es=f"La solicitud de asistencia de {attendance.employee_id} ha recibido un comentario.",
-                        verb_fr=f"La demande de présence de {attendance.employee_id} a reçu un commentaire.",
-                        redirect=f"/attendance/request-attendance-view?id={attendance.id}",
-                        icon="chatbox-ellipses",
-                    )
-            else:
-                rec = attendance.employee_id.employee_user_id
-                notify.send(
-                    request.user.employee_get,
-                    recipient=rec,
-                    verb="Your attendance request has received a comment.",
-                    verb_ar="تلقى طلب الحضور الخاص بك تعليقًا.",
-                    verb_de="Ihr Antrag auf Anwesenheit hat einen Kommentar erhalten.",
-                    verb_es="Tu solicitud de asistencia ha recibido un comentario.",
-                    verb_fr="Votre demande de présence a reçu un commentaire.",
-                    redirect=f"/attendance/request-attendance-view?id={attendance.id}",
-                    icon="chatbox-ellipses",
-                )
             return render(
                 request,
                 "requests/attendance/attendance_comment.html",

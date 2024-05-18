@@ -909,8 +909,8 @@ class BulkAttendanceRequestForm(ModelForm):
         queryset=Employee.objects.filter(is_active=True),
         widget=forms.Select(
             attrs={
-                "hx-target": "[name='shift_id']",
-                "hx-get": "/attendance/request-new-attendance?bulk=False",
+                "hx-target": "#id_shift_id_div",
+                "hx-get": "/attendance/get-employee-shift",
                 "hx-trigger": "change",
             }
         ),

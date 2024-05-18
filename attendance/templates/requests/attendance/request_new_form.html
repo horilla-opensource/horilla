@@ -28,7 +28,7 @@
         </div>
 
         {% else %}
-        <div class="col-12 col-md-6">
+        <div class="col-12 col-md-6" id="id_{{field.name}}_div">
           <label
             class="oh-label"
             for="id_{{ field.name }}"
@@ -62,3 +62,11 @@
     </div>
   </div>
 </div>
+<script>
+  $(document).ready(function () {
+    $("select").on("select2:select", function (e) {
+      $(".leave-message").hide()
+      $(this).closest("select")[0].dispatchEvent(new Event("change"));
+    });
+  });
+</script>

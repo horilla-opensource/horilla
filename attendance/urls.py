@@ -386,4 +386,9 @@ urlpatterns = [
         name="work-records-change-month",
     ),
     path("enable-timerunner", views.enable_timerunner, name="enable-timerunner"),
+    path(
+        "get-employee-shift",
+        attendance.views.requests.get_employee_shift,
+        name="get-employee-shift",
+    ),
 ]

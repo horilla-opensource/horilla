@@ -12,6 +12,7 @@ from urllib.parse import parse_qs
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from attendance.filters import AttendanceFilters, AttendanceRequestReGroup
@@ -31,7 +32,7 @@ from base.methods import (
     get_key_instances,
     is_reportingmanager,
 )
-from base.models import EmployeeShiftDay
+from base.models import EmployeeShift, EmployeeShiftDay
 from employee.models import Employee
 from horilla.decorators import login_required, manager_can_enter
 from notifications.signals import notify
@@ -734,3 +735,25 @@ def edit_validate_attendance(request, attendance_id):
                                 """
             )
     return render(request, "requests/attendance/update_form.html", {"form": form})
+
+
+@login_required
+def get_employee_shift(request):
+    """
+    method used to get employee shift
+    """
+    employee_id = request.GET.get("employee_id")
+    shift = None
+    if employee_id:
+        employee = Employee.objects.get(id=employee_id)
+        shift = employee.get_shift
+    form = BulkAttendanceRequestForm()
+    form.fields["shift_id"].queryset = EmployeeShift.objects.all()
+    form.fields["shift_id"].initial = shift
+    shift_id = render_to_string(
+        "requests/attendance/form_shift_id.html",
+        {
+            "field": form["shift_id"],
+        },
+    )
+    return HttpResponse(f"{shift_id}")
