@@ -194,6 +194,7 @@ def asset_update(request, asset_id):
         "asset_form": asset_form,
         "asset_under": asset_under,
         "pg": previous_data,
+        "asset_cat_id": instance.asset_category_id.id,
     }
     requests_ids_json = request.GET.get("requests_ids")
     if requests_ids_json:
@@ -252,6 +253,7 @@ def asset_delete(request, asset_id):
     except Asset.DoesNotExist:
         messages.error(request, _("Asset not found"))
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    asset_cat_id = asset.asset_category_id.id
     status = asset.asset_status
     asset_list_filter = request.GET.get("asset_list")
     asset_allocation = AssetAssignment.objects.filter(asset_id=asset).first()
@@ -289,16 +291,14 @@ def asset_delete(request, asset_id):
         if status == "In use":
             # if asset under the category
             messages.info(request, _("Asset is in use"))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
         elif asset_allocation:
             # if this asset is used in any allocation
             messages.error(request, _("Asset is used in allocation!."))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        else:
+            asset_del(request, asset)
 
-        asset_del(request, asset)
-
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return redirect(f"/asset/asset-list/{asset_cat_id}")
 
 
 @login_required

@@ -45,9 +45,7 @@
   {% if messages %}
     {% if asset_under == 'asset_filter' %}
       <button
-        type="button" class="oh-modal__close"
-        id="asset_update_close_btn_asset_list"
-        data-dismiss="oh-modal"
+        class="oh-modal__close"
         aria-label="Close"
         hx-get="{%url 'asset-list' cat_id=0 %}?asset_list=asset_filter&{{pg}}"
         hx-target="#assetCategoryList">
@@ -63,13 +61,10 @@
       </button>
     {% else %}
       <button
-        type="button"
-        class="oh-modal__close asset_update_close_btn"
-        id="asset_update_close_btn_category"
-        data-dismiss="oh-modal"
+        class="oh-modal__close"
         aria-label="Close"
-        hx-get="{%url 'asset-list' cat_id=asset_form.instance.asset_category_id.id %}?{{pg}}"
-        hx-target="#assetList{{asset_form.instance.asset_category_id.id}}">
+        hx-get="{%url 'asset-list' cat_id=asset_cat_id %}?{{pg}}"
+        hx-target="#assetCategory{{asset_cat_id}}">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     {% endif %}
