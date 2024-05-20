@@ -939,6 +939,11 @@ class Allowance(HorillaModel):
                         "If the 'Is fixed' field is disabled, the 'Based on' field is required."
                     )
                 )
+        if not self.is_fixed and self.based_on and self.based_on == "basic_pay":
+            if not self.rate:
+                raise ValidationError(
+                    _("Rate must be specified for allowances based on basic pay.")
+                )
         if self.is_condition_based:
             if not self.field or not self.value or not self.condition:
                 raise ValidationError(
@@ -1206,6 +1211,13 @@ class Deduction(HorillaModel):
                         "If the 'Is fixed' field is disabled, the 'Based on' field is required."
                     )
                 )
+        if not self.is_fixed and self.based_on and not self.rate:
+            raise ValidationError(
+                _(
+                    "Employee rate must be specified for deductions that are not fixed amount"
+                )
+            )
+
         if self.is_pretax and self.based_on in ["taxable_gross_pay"]:
             raise ValidationError(
                 {
