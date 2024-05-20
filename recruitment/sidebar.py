@@ -123,11 +123,6 @@ def stage_accessibility(
 def skill_zone_accessibility(
     request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
-    print("==========skill_zone_accessibility==========")
-    print(request.user)
-    print("is_stagemanager", is_stagemanager(request.user))
-    print("perms", request.user.has_perm("recruitment.view_skillzone"))
-
     return is_stagemanager(request.user) or request.user.has_perm(
         "recruitment.view_skillzone"
     )

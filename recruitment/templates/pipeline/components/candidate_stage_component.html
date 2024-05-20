@@ -87,9 +87,8 @@
                     </div>
                     <input type="text" name="order" value="{{cand.id}}" hidden>
                 </div>
-                <div class="oh-sticky-table__sd oh-table-config__td"
+                <div class="oh-sticky-table__td oh-table-config__td"
                     style="text-decoration: none;width: 400px !important;">
-
                     {% for interview_schedule in cand.candidate_interview.all %}
                         {% if interview_schedule.interview_date|date:"Y-m-d" == now|date:"Y-m-d" %}
                             <div class="d-flex" style="flex-direction: row-reverse; margin-bottom:-30px;">
