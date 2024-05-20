@@ -983,7 +983,10 @@ class BulkAttendanceRequestForm(ModelForm):
         to_date = cleaned_data.get("to_date")
         attendance_worked_hour = cleaned_data.get("attendance_worked_hour")
         minimum_hour = cleaned_data.get("minimum_hour")
+        attendance_clock_out = cleaned_data.get("attendance_clock_out")
         employee_id = cleaned_data.get("employee_id")
+        now = datetime.datetime.now().time()
+        today = datetime.datetime.today().date()
         validate_time_format(attendance_worked_hour)
         validate_time_format(minimum_hour)
         attendance_date_validate(from_date)
@@ -991,6 +994,14 @@ class BulkAttendanceRequestForm(ModelForm):
         date_list = get_date_list(employee_id, from_date, to_date)
         if from_date and to_date and from_date > to_date:
             raise ValidationError({"to_date": _("To date should be after from date")})
+        if to_date == today and attendance_clock_out > now:
+            raise ValidationError(
+                {
+                    "attendance_clock_out": (
+                        f"Check out time is in the future for the date {to_date}."
+                    )
+                }
+            )
         if employee_id and not hasattr(employee_id, "employee_work_info"):
             raise ValidationError(_("Employee work info not found"))
         if len(date_list) <= 0:
