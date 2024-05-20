@@ -55,6 +55,11 @@ SUBMENUS = [
         "redirect": reverse("rec-stage-view"),
         "accessibility": "recruitment.sidebar.stage_accessibility",
     },
+    {
+        "menu": trans("Skill Zone"),
+        "redirect": reverse("skill-zone-view"),
+        "accessibility": "recruitment.sidebar.skill_zone_accessibility",
+    },
 ]
 
 
@@ -113,3 +118,16 @@ def stage_accessibility(
     request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
     return request.user.has_perm("recruitment.view_stage")
+
+
+def skill_zone_accessibility(
+    request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
+) -> bool:
+    print("==========skill_zone_accessibility==========")
+    print(request.user)
+    print("is_stagemanager", is_stagemanager(request.user))
+    print("perms", request.user.has_perm("recruitment.view_skillzone"))
+
+    return is_stagemanager(request.user) or request.user.has_perm(
+        "recruitment.view_skillzone"
+    )

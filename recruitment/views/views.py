@@ -2341,7 +2341,7 @@ def to_skill_zone(request, cand_id):
                     zone_candidate.skill_zone_id = zone
                     zone_candidate.reason = form.cleaned_data["reason"]
                     zone_candidate.save()
-            messages.success(request, "Candidate Added to skill zone successfullu")
+            messages.success(request, "Candidate Added to skill zone successfully")
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, template, {"form": form, "cand_id": cand_id})
 
