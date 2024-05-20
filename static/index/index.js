@@ -336,14 +336,15 @@ function shiftChange(selectElement) {
   var shiftId =selectElement.val()
   let parentForm = selectElement.parents().closest("form")
   var attendanceDate = parentForm.find("[name=attendance_date]").first().val()
+  var employeeId = parentForm.find("[name=employee_id]").first().val()
   $.ajax({
     type: "post",
     url: "/attendance/update-shift-details",
     data: {
       csrfmiddlewaretoken: getCookie("csrftoken"),
       "shift_id":shiftId,
-      "attendance_date":attendanceDate
-
+      "attendance_date":attendanceDate,
+      'employee_id':employeeId
     },
     success: function (response) {
       parentForm.find("[name=attendance_clock_in]").val(response.shift_start_time)
@@ -352,6 +353,7 @@ function shiftChange(selectElement) {
       parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
       parentForm.find("[name=attendance_clock_out_date]").val(response.checkout_date)
       parentForm.find("[name=attendance_clock_in_date]").val(response.checkin_date)
+      parentForm.find("[name=work_type_id]").val(response.work_type).change()
       if (parentForm.find("[name=attendance_date]").val().length == 0) {
         parentForm.find("[name=attendance_date]").val(response.checkin_date)
       }

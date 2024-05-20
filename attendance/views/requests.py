@@ -747,11 +747,13 @@ def get_employee_shift(request):
     if employee_id:
         employee = Employee.objects.get(id=employee_id)
         shift = employee.get_shift
-    form = BulkAttendanceRequestForm()
+    form = NewRequestForm()
+    if request.GET.get("bulk") and eval(request.GET.get("bulk")):
+        form = BulkAttendanceRequestForm()
     form.fields["shift_id"].queryset = EmployeeShift.objects.all()
     form.fields["shift_id"].initial = shift
     shift_id = render_to_string(
-        "requests/attendance/form_shift_id.html",
+        "requests/attendance/form_field.html",
         {
             "field": form["shift_id"],
         },
