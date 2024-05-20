@@ -1384,16 +1384,31 @@ def form_shift_dynamic_data(request):
     """
     This method is used to update the shift details to the form
     """
-    shift_id = request.POST["shift_id"]
+    work_type = None
+    if "employee_id" in request.POST and request.POST["employee_id"]:
+        shift_id = request.POST["shift_id"]
+    # Check if 'employee_id' is present in POST request and not empty
+    if "employee_id" in request.POST and request.POST["employee_id"]:
+        employee_id = request.POST["employee_id"]
+        try:
+            employee = Employee.objects.get(id=employee_id)
+            # Use getattr to get the work type
+            work_type = employee.get_work_type()
+            if work_type:
+                work_type = work_type.id
+        except Employee.DoesNotExist:
+            pass
     attendance_date_str = request.POST.get("attendance_date")
     today = datetime.now()
     attendance_date = date(day=today.day, month=today.month, year=today.year)
     if attendance_date_str is not None and attendance_date_str != "":
         attendance_date = datetime.strptime(attendance_date_str, "%Y-%m-%d").date()
     day = attendance_date.strftime("%A").lower()
-    schedule_today = EmployeeShiftSchedule.objects.filter(
-        shift_id__id=shift_id, day__day=day
-    ).first()
+    schedule_today = None
+    if shift_id:
+        schedule_today = EmployeeShiftSchedule.objects.filter(
+            shift_id__id=shift_id, day__day=day
+        ).first()
     shift_start_time = ""
     shift_end_time = ""
     minimum_hour = "00:00"
@@ -1419,6 +1434,7 @@ def form_shift_dynamic_data(request):
             "minimum_hour": minimum_hour,
             "worked_hour": worked_hour,
             "checkout_date": attendance_clock_out_date.strftime("%Y-%m-%d"),
+            "work_type": str(work_type),
         }
     )
 

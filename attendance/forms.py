@@ -613,7 +613,14 @@ class NewRequestForm(AttendanceRequestForm):
             "employee_id": forms.ModelChoiceField(
                 queryset=Employee.objects.filter(is_active=True),
                 label=_("Employee"),
-                widget=forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
+                widget=forms.Select(
+                    attrs={
+                        "class": "oh-select oh-select-2 w-100",
+                        "hx-target": "#id_shift_id_div",
+                        "hx-get": "/attendance/get-employee-shift?bulk=False",
+                        "hx-trigger": "change",
+                    }
+                ),
             ),
             "create_bulk": forms.BooleanField(
                 required=False,
@@ -650,6 +657,8 @@ class NewRequestForm(AttendanceRequestForm):
         attendances = Attendance.objects.filter(
             employee_id=employee, attendance_date=attendance_date
         )
+        if employee and not hasattr(employee, "employee_work_info"):
+            raise ValidationError(_("Employee work info not found"))
         data = {
             "employee_id": employee,
             "attendance_date": attendance_date,
@@ -910,7 +919,7 @@ class BulkAttendanceRequestForm(ModelForm):
         widget=forms.Select(
             attrs={
                 "hx-target": "#id_shift_id_div",
-                "hx-get": "/attendance/get-employee-shift",
+                "hx-get": "/attendance/get-employee-shift?bulk=True",
                 "hx-trigger": "change",
             }
         ),
