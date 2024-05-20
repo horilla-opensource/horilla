@@ -106,6 +106,16 @@ sidebar_urls = [
     "action-type",
     "general-settings",
     "view-biometric-devices",
+    "employee-tag-view",
+    "grace-settings-view",
+    "helpdesk-tag-view",
+    "restrict-view",
+    "asset-history",
+    "view-key-result",
+    "view-meetings",
+    "interview-view",
+    "view-compensatory-leave",
+    "compensatory-leave-settings-view",
 ]
 remove_urls = [
     "feedback-detailed-view",

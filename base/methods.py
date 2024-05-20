@@ -355,6 +355,7 @@ def get_key_instances(model, data_dict):
             "csrfmiddlewaretoken",
             "assign_sortby",
             "request_sortby",
+            "asset_under",
         ]
         or "dynamic_page" in key
     ]
