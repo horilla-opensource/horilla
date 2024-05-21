@@ -24,7 +24,7 @@ SUBMENUS = [
     {
         "menu": trans("Resignation Letters"),
         "redirect": reverse("resignation-request-view"),
-        "accessability": "resignation_letter_accessibility",
+        "accessibility": "offboarding.sidebar.resignation_letter_accessibility",
     },
 ]
 

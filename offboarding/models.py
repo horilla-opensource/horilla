@@ -337,5 +337,5 @@ class OffboardingGeneralSetting(HorillaModel):
     OffboardingGeneralSettings
     """
 
-    resignation_request = models.BooleanField(default=True)
+    resignation_request = models.BooleanField(default=False)
     company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)

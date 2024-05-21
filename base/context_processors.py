@@ -104,7 +104,7 @@ def resignation_request_enabled(request):
     Check weather resignation_request enabled of not in offboarding
     """
     first = OffboardingGeneralSetting.objects.first()
-    enabled_resignation_request = True
+    enabled_resignation_request = False
     if first:
         enabled_resignation_request = first.resignation_request
     return {"enabled_resignation_request": enabled_resignation_request}
