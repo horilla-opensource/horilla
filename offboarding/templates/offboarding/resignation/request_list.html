@@ -136,7 +136,7 @@
 
                           </div>
                     </div>
-                    <div class="oh-sticky-table__td oh-sticky-table__right">
+                    <div class="oh-sticky-table__td oh-sticky-table__right"  onclick="event.stopPropagation()">
                         <form action="{% url 'update-letter-status' %}">
                             {% if perms.offboarding.change_resignationletter %}
                             <div class="oh-btn-group">
@@ -144,7 +144,7 @@
                                 <button
                                     title="By approving the request employee will added to the offboarding pipeline"
                                     type="button"
-                                    onclick="$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true);"
+                                    onclick="event.stopPropagation();$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true);"
                                     class="oh-btn oh-btn--success w-100 oh-btn--block w-100"
                                 >
                                     <ion-icon
@@ -169,7 +169,7 @@
                                 {% endif %}
                                 <button
                                     type="button"
-                                    onclick="$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
+                                    onclick="event.stopPropagation();$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
                                     class="oh-btn oh-btn--danger oh-btn--block w-100"
                                 >
                                     <ion-icon
@@ -325,13 +325,13 @@
         <div class="oh-label__info" for="notice_period_starts">
           <label class="oh-label" for="notice_period_starts">Planned to leave on</label>
         </div>
-          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value);alert()" name="notice_period_starts" value="{% now "Y-m-d" %}"  class="oh-input w-100 form-control" required id="notice_period_starts">
+          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value);" name="notice_period_starts" value="{% now "Y-m-d" %}"  class="oh-input w-100 form-control" required id="notice_period_starts">
       </div>
       <div class="col-6 col-md-6">
         <div class="oh-label__info" for="notice_period_ends">
           <label class="oh-label" for="notice_period_ends">Notice period end</label>
         </div>
-          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value);alert()" name="notice_period_ends"  class="oh-input w-100 form-control" required id="notice_period_ends">
+          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value);" name="notice_period_ends"  class="oh-input w-100 form-control" required id="notice_period_ends">
       </div>
     </div>
     ` + "</div>" }

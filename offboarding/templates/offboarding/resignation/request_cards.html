@@ -150,8 +150,8 @@
 {% else %}
 <div class="d-flex justify-content-center align-items-center" style="height: 40vh;">
   <div class="text-center">
-      <img class="oh-404__image mb-3" style="width: 150px; height: 150px;" src="{% static 'images/ui/no_resignation.png' %}" alt="No documents">
-      <h5 class="oh-404__subtitle">{% trans "No resignation has been created yet." %}</h5>
+      <img class="oh-404__image mb-3" style="width: 150px; height: 150px;" src="{% static 'images/ui/no-results.png' %}" alt="No documents">
+      <h5 class="oh-404__subtitle">{% trans "No search results found!" %}</h5>
   </div>
 </div>
 {% endif %}
@@ -186,13 +186,13 @@
         <div class="oh-label__info" for="notice_period_starts">
           <label class="oh-label" for="notice_period_starts">Planned to leave on</label>
         </div>
-          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value);alert()" name="notice_period_starts" value="{% now "Y-m-d" %}"  class="oh-input w-100 form-control" required id="notice_period_starts">
+          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value);" name="notice_period_starts" value="{% now "Y-m-d" %}"  class="oh-input w-100 form-control" required id="notice_period_starts">
       </div>
       <div class="col-6 col-md-6">
         <div class="oh-label__info" for="notice_period_ends">
           <label class="oh-label" for="notice_period_ends">Notice period end</label>
         </div>
-          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value);alert()" name="notice_period_ends"  class="oh-input w-100 form-control" required id="notice_period_ends">
+          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value);" name="notice_period_ends"  class="oh-input w-100 form-control" required id="notice_period_ends">
       </div>
     </div>
     ` + "</div>" }
