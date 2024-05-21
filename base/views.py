@@ -143,6 +143,7 @@ from notifications.signals import notify
 from payroll.forms.component_forms import PayrollSettingsForm
 from payroll.models.models import EncashmentGeneralSettings
 from payroll.models.tax_models import PayrollSettings
+from pms.models import KeyResult
 from recruitment.models import RejectReason
 
 
@@ -790,6 +791,16 @@ def object_delete(request, id, **kwargs):
             request,
             _("This {} is already in use for {}.").format(instance, model_names_str),
         ),
+
+    if redirect_path == "/pms/filter-key-result/":
+        key_results = KeyResult.objects.all()
+        if key_results.exists():
+            previous_data = request.GET.urlencode()
+            redirect_path = redirect_path + "?" + previous_data
+            return redirect(redirect_path)
+        else:
+            return HttpResponse("<script>window.location.reload()</script>")
+
     if redirect_path:
         previous_data = request.GET.urlencode()
         redirect_path = redirect_path + "?" + previous_data
