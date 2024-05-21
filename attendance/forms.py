@@ -56,6 +56,7 @@ from base.methods import reload_queryset
 from base.models import Company, EmployeeShift
 from employee.filters import EmployeeFilter
 from employee.models import Employee
+from horilla.decorators import logger
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from leave.models import LeaveType
@@ -1056,7 +1057,7 @@ class BulkAttendanceRequestForm(ModelForm):
                 instance.request_type = "create_request"
                 instance.save()
             else:
-                raise ValidationError(_("Something went wrong"))
+                logger(form.errors)
         instance = super().save(commit=False)
         if commit:
             instance.save()
