@@ -3568,9 +3568,13 @@ def employee_get_mail_log(request):
     """
     employee_id = request.GET["emp_id"]
     employee = Employee.objects.get(id=employee_id)
-    tracked_mails = EmailLog.objects.filter(to__icontains=employee.email).order_by(
-        "-created_at"
-    )
+    tracked_mails = EmailLog.objects.filter(to__icontains=employee.email)
+    if employee.employee_work_info and employee.employee_work_info.email:
+        tracked_mails = tracked_mails | EmailLog.objects.filter(
+            to__icontains=employee.employee_work_info.email
+        )
+    tracked_mails = tracked_mails.order_by("-created_at")
+
     return render(request, "tabs/mail_log.html", {"tracked_mails": tracked_mails})
 
 
