@@ -28,7 +28,7 @@
 </script>
 <form
   hx-post='{% if create %}{% url "add-anonymous-feedback" %} {% else %} {% url "edit-anonymous-feedback" form.instance.id %}{% endif %}'
-  hx-target="#anonymousFeedbackFormModal"
+  hx-target="#anonymousFeedbackFormModal" class="oh-profile-section"
 >
   {% csrf_token %}
   <div class="oh-input__group">
@@ -63,10 +63,12 @@
     >
     {{form.feedback_description}} {{form.feedback_description.errors}}
   </div>
-  <button
-    type="submit"
-    class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
-  >
-    {% trans "Save" %}
-  </button>
+  <div class="w-100 d-flex align-items-center justify-content-end">
+    <button
+      type="submit"
+      class="oh-btn oh-btn--secondary mt-3 oh-btn--w-100-resp"
+    >
+      {% trans "Save" %}
+    </button>
+  </div>
 </form>

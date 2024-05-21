@@ -256,6 +256,13 @@ class AddAssigneesForm(BaseForm):
                 "assignees"
             ].queryset.exclude(id__in=self.instance.assignees.all())
 
+    def clean(self):
+        cleaned_data = super().clean()
+        assignees = cleaned_data.get("assignees")
+        if len(assignees) == 0:
+            raise forms.ValidationError({"assignees": _("This field is required.")})
+        return cleaned_data
+
 
 class EmployeeObjectiveForm(BaseForm):
     """
@@ -765,6 +772,14 @@ class QuestionTemplateForm(ModelForm):
             }
         )
 
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
 
 class QuestionForm(ModelForm):
     """
@@ -919,6 +934,14 @@ class PeriodForm(ModelForm):
                 "class": "oh-select oh-select-2 w-100",
             }
         )
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
 
     def clean(self):
         cleaned_data = super().clean()

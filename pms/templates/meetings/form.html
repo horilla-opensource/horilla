@@ -17,7 +17,7 @@
 </div>
 <div class="oh-modal__dialog-body" id="formBody">
     <form hx-post="{% url "create-meeting" %}?instance_id={{form.instance.id}}" hx-target="#objectCreateModalTarget">
-        {{form.errors}} {{form.as_p}}
+        {{form.as_p}}
     </form>
 </div>
 

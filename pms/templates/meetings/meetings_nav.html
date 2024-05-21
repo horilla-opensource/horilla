@@ -14,64 +14,64 @@
             ></ion-icon>
         </a>
     </div>
+    {% if all_meetings %}
+        <form
+            hx-get="{% url 'filter-meeting' %}"
+            hx-target="#meeting_list"
+            hx-swap="innerHTML"
+            method="get"
+            id="filterForm"
+            onsubmit="event.preventDefault()"
+        >
+            <div class="oh-main__titlebar oh-main__titlebar--right">
+                <div
+                    class="oh-input-group oh-input__search-group"
+                    :class="searchShow ? 'oh-input__search-group--show' : ''"
+                >
+                    <ion-icon
+                        name="search-outline"
+                        class="oh-input-group__icon oh-input-group__icon--left"
+                    ></ion-icon>
+                    <input
+                        name="search"
+                        onkeyup="$('.filterButton').click()"
+                        type="text"
+                        class="oh-input oh-input__icon"
+                        aria-label="Search Input"
+                        placeholder="{% trans 'Search' %}"
+                    />
+                </div>
+                <div class="oh-main__titlebar-button-container">
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button
+                            class="oh-btn ml-2"
+                            @click="open = !open"
+                            onclick="event.preventDefault()"
+                        >
+                            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                            <div id="filterCount"></div>
+                        </button>
+                        <div
+                            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                            x-show="open"
+                            @click.outside="open = false"
+                            style="display: none"
+                        >
+                            <div class="oh-dropdown__filter-body">
+                                {% include "meetings/meetings_filter.html" %}
 
-    <form
-        hx-get="{% url 'filter-meeting' %}"
-        hx-target="#meeting_list"
-        hx-swap="innerHTML"
-        method="get"
-        id="filterForm"
-        onsubmit="event.preventDefault()"
-    >
-        <div class="oh-main__titlebar oh-main__titlebar--right">
-            <div
-                class="oh-input-group oh-input__search-group"
-                :class="searchShow ? 'oh-input__search-group--show' : ''"
-            >
-                <ion-icon
-                    name="search-outline"
-                    class="oh-input-group__icon oh-input-group__icon--left"
-                ></ion-icon>
-                <input
-                    name="search"
-                    onkeyup="$('.filterButton').click()"
-                    type="text"
-                    class="oh-input oh-input__icon"
-                    aria-label="Search Input"
-                    placeholder="{% trans 'Search' %}"
-                />
-            </div>
-            <div class="oh-main__titlebar-button-container">
-                <div class="oh-dropdown" x-data="{open: false}">
-                    <button
-                        class="oh-btn ml-2"
-                        @click="open = !open"
-                        onclick="event.preventDefault()"
-                    >
-                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-                        <div id="filterCount"></div>
-                    </button>
-                    <div
-                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-                        x-show="open"
-                        @click.outside="open = false"
-                        style="display: none"
-                    >
-                        <div class="oh-dropdown__filter-body">
-                            {% include "meetings/meetings_filter.html" %}
-
-                        </div>
-                        <div class="oh-dropdown__filter-footer">
-                            <button
-                                class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-                                id="feedback-filter-form-submit"
-                            >
-                                {% trans "Filter" %}
-                            </button>
+                            </div>
+                            <div class="oh-dropdown__filter-footer">
+                                <button
+                                    class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+                                    id="feedback-filter-form-submit"
+                                >
+                                    {% trans "Filter" %}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-
+    {% endif %}
                 <!-- checking  user permission for objective creation -->
                 {% if perms.pms.add_meetings %}
                 <div class="oh-btn-group ml-2">

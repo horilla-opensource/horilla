@@ -617,14 +617,25 @@
 </div>
 <!-- end of tabs -->
 <script>
-    $(document).ready(function() {
-        $(".oh-permission-table--toggle").on("click", function(){
-            $(this).siblings(".oh-sticky-table__td").children(".count-span").toggleClass("d-none")
-        })
-        activeTab = $(".oh-tabs__tab.oh-tabs__tab--active");
-        if (!activeTab.length) {
-            $('[data-target="#self_objective"]').click()
+
+    $(document).ready(function () {
+        var activeTab = localStorage.getItem("activeTabokr");
+        if (activeTab != null) {
+          var tab = $(`[data-target="${activeTab}"]`);
+          var tabContent = $(activeTab);
+          $(tab).attr("class", "oh-tabs__tab oh-tabs__tab--active");
+          $(tabContent).attr("class", "oh-tabs__content oh-tabs__content--active");
+        } else {
+          $('[data-target="#all_objective"]').attr(
+            "class",
+            "oh-tabs__tab oh-tabs__tab--active"
+          );
+          $("#all_objective").attr("class", "oh-tabs__content oh-tabs__content--active");
         }
+        $(".oh-tabs__tab").click(function (e) {
+          var activeTab = $(this).attr("data-target");
+          localStorage.setItem("activeTabokr", activeTab);
+        });
     });
 
     toggleColumns("all_objective-table", "allObjectiveCells");

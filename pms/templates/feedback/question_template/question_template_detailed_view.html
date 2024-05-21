@@ -9,6 +9,11 @@
 <!-- end of messages -->
 
 
+<style>
+    #id_question_template_error{
+
+    }
+</style>
 <div class="oh-wrapper">
     <div id="questionView" style="overflow-y: auto; overflow-x: hidden; max-height: 450px; margin-top: 50px; border:1px solid hsl(213,22%,84%);">
 
@@ -40,7 +45,8 @@
                                     <div class="col-sm-12 col-md-12 col-lg-9" id="questionCreationFormCol">
                                         <label class="oh-label text-muted fw-bold">{% trans "Question" %}</label>
                                         {{form.question}}
-                                    <!-- <li id="id_question_template_error"></li>  -->
+
+                                    <p id="id_question_template_error" class="text-danger mt-1 p-2"></p>
 
                                     </div>
                                     <div x-data="{showAnswers: true}" class="oh-link__expanded d-none">
@@ -102,7 +108,7 @@
 </div>
 
 </div>
-<!--
+
 <script>
 $(document).ready(function () {
     $('form').on('submit',function(e){
@@ -112,7 +118,6 @@ $(document).ready(function () {
     var errorElement = $('#questionCreationFormCol #id_question_template_error')
 
     if (questionValue.trim() === '') {
-        alert('empty')
         errorElement.text('This field is required.');
         errorElement.insertAfter($('#questionCreationFormCol #id_question'));
     } else {
@@ -124,6 +129,6 @@ $(document).ready(function () {
     });
 });
 </script>
-!-->
+
 
 {% endblock %}

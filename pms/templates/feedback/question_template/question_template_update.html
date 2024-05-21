@@ -15,23 +15,8 @@
   </script>
 </div>
 {% endif %}
-<form hx-post="{% url 'question-template-update' template_id=question_update_form.instance.id %}" hx-target="#questionTemplateUpdateModalTarget">
-  {% csrf_token %}
-  <div class="oh-modal__dialog-body m-2">
-    <div class="oh-input__group">
-      <label class="oh-input__label mt-0" for="keyTitle">{% trans "Title" %}</label>
-      {{question_update_form.question_template }}
-      <!-- <span id="id_question_template_error" style="color: red;"></span> -->
-    </div>
-    <div class="oh-input__group">
-      <label class="oh-input__label mt-2" for="keyTitle">{% trans "Company" %}</label>
-      {{question_update_form.company_id }}
-      <!-- <span id="id_question_template_error" style="color: red;"></span> -->
-    </div>
-  </div>
-  <div class="oh-modal__dialog-footer">
-    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
-      {% trans "Save" %}
-    </button>
-  </div>
+<form hx-post="{% url 'question-template-update' template_id=question_update_form.instance.id %}" hx-target="#questionTemplateUpdateModalTarget"
+      class="oh-profile-section">
+  {% csrf_token %}{{question_update_form.errors}}
+  {{question_update_form.as_p}}
 </form>

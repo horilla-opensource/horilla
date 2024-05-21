@@ -1705,9 +1705,11 @@ def feedback_detailed_view(request, id, **kwargs):
         it will return the feedback object to feedback_detailed_view template .
     """
     feedback = Feedback.objects.get(id=id)
+    feedback_started = Answer.objects.filter(feedback_id=id)
     current_date = datetime.datetime.now()
     context = {
         "feedback": feedback,
+        "feedback_started": feedback_started,
         "feedback_status": Feedback.STATUS_CHOICES,
         "current_date": current_date,
     }
@@ -2357,7 +2359,7 @@ def period_update(request, period_id):
         form = PeriodForm(request.POST, instance=period)
         if form.is_valid():
             form.save()
-            messages.info(request, _("Period updated  Successfully. "))
+            messages.success(request, _("Period updated  Successfully. "))
         else:
             context["form"] = form
     return render(request, "period/period_update.html", context)
@@ -2376,7 +2378,7 @@ def period_delete(request, period_id):
     try:
         obj_period = Period.objects.get(id=period_id)
         obj_period.delete()
-        messages.info(request, _("Period deleted successfully."))
+        messages.success(request, _("Period deleted successfully."))
     except Period.DoesNotExist:
         messages.error(request, _("Period not found."))
     except ProtectedError:
@@ -3075,8 +3077,10 @@ def view_meetings(request):
     requests_ids = json.dumps([instance.id for instance in meetings.object_list])
     data_dict = parse_qs(previous_data)
     get_key_instances(Meetings, data_dict)
+    all_meetings = Meetings.objects.filter()
 
     context = {
+        "all_meetings": all_meetings,
         "meetings": meetings,
         "filter_form": filter_form.form,
         "requests_ids": requests_ids,

@@ -27,7 +27,7 @@
 </div>
 <!-- Feedback form'-->
 <main class="oh-onboarding">
-    <div class="oh-onboarding-card">
+    <div class="oh-onboarding-card oh-profile-section" style="max-width: 868px;">
         <form action="{%url 'feedback-creation' %}" id="feedbackCreationForm" method="post">
             {% csrf_token %}
             <div class="oh-onboarding-card__address-group">
@@ -154,9 +154,17 @@
                 </div>
             </div>
             </section>
-            <button type="submit" onclick="validateFeedBack(event)" class=" w-100 oh-btn oh-btn--secondary oh-btn--shadow mt-4 mb-4">
-                {% trans "Save" %}
-            </button>
+
+            <div class="w-100 d-flex align-items-center justify-content-end">
+                <button
+                    type="submit"
+                    onclick="validateFeedBack(event)"
+                    class="oh-btn oh-btn--secondary oh-btn--w-100-resp"
+                >
+                    {% trans "Save" %}
+                </button>
+            </div>
+
         </form>
     </div>
 

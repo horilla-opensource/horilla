@@ -63,21 +63,8 @@
         </div>
         <form method="post" action="{% url 'question-template-creation' %}">
           {% csrf_token %}
-          <div class="oh-modal__dialog-body m-3w">
-            <div class="oh-input__group">
-              <label class="oh-input__label mt-0" for="keyTitle">{% trans "Title" %}</label>
-              {{form.question_template }}
-              <ul class="errorlist" id="id_question_template_error" ></ul>
-            </div>
-            <div class="oh-input__group">
-              <label class="oh-input__label mt-2" for="keyTitle">{% trans "Company" %}</label>
-              {{form.company_id }}
-            </div>
-          </div>
-          <div class="oh-modal__dialog-footer">
-            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
-              {% trans "Save" %}
-            </button>
+          <div class="oh-modal__dialog-body m-3w oh-profile-section">
+            {{form.as_p}}
           </div>
         </form>
       </div>

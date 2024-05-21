@@ -96,12 +96,12 @@
                                                 {% csrf_token %}
                                                 {% if perms.pms.delete_question or request.user|filtersubordinates %}
                                                       <a type="submit" href="{% url 'question-delete' id=form.instance.id %}"
-                                                            class="oh-btn oh-btn--danger-link oh-section-edit--delete deleteRow" onclick="return confirm('{% trans "Do you want to delete the question?" %}')">{% trans "Delete" %}</a>
+                                                            class="float-end oh-btn oh-btn--danger-link  deleteRow" onclick="return confirm('{% trans "Do you want to delete the question?" %}')">{% trans "Delete" %}</a>
                                                 {% endif %}
                                                 <a href="#"
                                                       class="oh-btn oh-btn--light me-2 oh-section-edit--cancel">{% trans "Cancel" %}</a>
 
-                                                <button type="submit" class="oh-btn oh-btn--secondary d-inline-flex "
+                                                <button type="submit" class="oh-btn oh-btn--secondary d-inline-flex me-2"
                                                       data-id-save="updateQuestion">{% trans "Save" %}</button>
                                           </div>
                                     </div>

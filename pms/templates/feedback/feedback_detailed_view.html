@@ -58,7 +58,7 @@
   </section>
   <div class="oh-wrapper mb-2">
     <div class="oh-card p-4">
-      {% if perms.pms.change_feedback %}
+      {% if perms.pms.change_feedback and not feedback_started %}
         <div class="d-flex flex-row-reverse">
           <button
             class="oh-btn oh-btn--x-small d-flex align-items-center ms-2 "
@@ -334,7 +334,7 @@
 
   <!-- update modal  -->
   <div class="oh-modal" id="feedbackModalPopup" role="dialog" aria-labelledby="" aria-hidden="true">
-    <div class="oh-modal__dialog" id="">
+    <div class="oh-modal__dialog" style="max-width:885px;" id="">
       <div class="oh-modal__dialog-header">
         <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">{% trans "Update Feedback" %}</span>
         <button type="button" class="oh-modal__close reloadButton" aria-label="Close">
