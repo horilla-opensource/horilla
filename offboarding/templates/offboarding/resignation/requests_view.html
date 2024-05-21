@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+{% extends "index.html" %} {% load static i18n %}
 {% block content %}
 <style>
     .resign-status {
@@ -12,11 +12,20 @@
       }
 </style>
 {% include "offboarding/resignation/nav.html" %}
-<div id="resignationLetterContianer">
-    {% if request.GET.view == 'list' %}
-    {% include "offboarding/resignation/request_list.html" %}
+{% if letters %}
+    <div id="resignationLetterContianer" hx-get="{% url 'search-resignation-request' %}?status=requested" hx-trigger="load">
+        {% if request.GET.view == 'list' %}
+            {% include "offboarding/resignation/request_list.html" %}
+        {% else %}
+            {% include "offboarding/resignation/request_cards.html" %}
+        {% endif %}
+    </div>
     {% else %}
-    {% include "offboarding/resignation/request_cards.html" %}
-    {% endif %}
-</div>
+    <div class="d-flex justify-content-center align-items-center" style="height: 40vh;">
+        <div class="text-center">
+            <img class="oh-404__image mb-3" style="width: 150px; height: 150px;" src="{% static 'images/ui/no_resignation.png' %}" alt="No documents">
+            <h5 class="oh-404__subtitle">{% trans "No resignation has been created yet." %}</h5>
+        </div>
+    </div>
+{% endif %}
 {% endblock content %}

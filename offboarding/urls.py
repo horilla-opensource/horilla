@@ -11,7 +11,11 @@ from offboarding import views
 urlpatterns = [
     path("offboarding-pipeline", views.pipeline, name="offboarding-pipeline"),
     path("create-offboarding", views.create_offboarding, name="create-offboarding"),
-    path("delete-offboarding", views.delete_offboarding, name="delete-offboarding"),
+    path(
+        "delete-offboarding/<int:id>",
+        views.delete_offboarding,
+        name="delete-offboarding",
+    ),
     path(
         "create-offboarding-stage", views.create_stage, name="create-offboarding-stage"
     ),

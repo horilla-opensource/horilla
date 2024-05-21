@@ -151,7 +151,6 @@ def is_employee_tasks(employee_tasks, task):
     """
     try:
         if task.title in employee_tasks.values_list("task_id__title", flat=True):
-            print("true")
             return True
         return False
     except:

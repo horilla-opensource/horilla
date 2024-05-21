@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends 'index.html' %} {% load static i18n %}
 {% block content %}
 <style>
   .search-highlight {
@@ -8,7 +8,14 @@
 
 {% include 'offboarding/pipeline/nav.html' %}
 <div id="offboardingContainer">
-  {% include 'offboarding/pipeline/offboardings.html' %}
+  {% if offboardings %}
+    {% include 'offboarding/pipeline/offboardings.html' %}
+  {% else %}
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+        <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/notice.png' %}" class="" alt="Page not found. 404." />
+        <h5 class="oh-404__subtitle">{% trans "There is no offboardings at this moment." %}</h5>
+    </div>
+  {% endif %}
 </div>
 
 <script>

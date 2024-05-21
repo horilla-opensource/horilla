@@ -5,12 +5,14 @@
   </div>
   {% if perms.offboarding.change_offboardingstage or request.user.employee_get|any_manager %}
     <form onsubmit="event.preventDefault()" hx-target="#offboardingContainer" hx-get="{% url 'offboarding-pipeline-filter' %}"  class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small" >
-      <div class="oh-input-group oh-input__search-group mr-4">
-        <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated"  role="img" aria-label="search outline"></ion-icon>
-        <input name="search" onkeyup="$('#hiddenSubmit').click()" id="pipelineSearch" type="text" placeholder="Search"  style="margin-right:10px" class="oh-input oh-input__icon mr-3" autocomplete="false" aria-label="Search Input" />
-      </div>
-      <input type="submit" id="hiddenSubmit" hidden>
-      {% include 'offboarding/pipeline/filter.html' %}
+      {% if offboardings %}
+        <div class="oh-input-group oh-input__search-group mr-4">
+          <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated"  role="img" aria-label="search outline"></ion-icon>
+          <input name="search" onkeyup="$('#hiddenSubmit').click()" id="pipelineSearch" type="text" placeholder="Search"  style="margin-right:10px" class="oh-input oh-input__icon mr-3" autocomplete="false" aria-label="Search Input" />
+        </div>
+        <input type="submit" id="hiddenSubmit" hidden>
+        {% include 'offboarding/pipeline/filter.html' %}
+      {% endif %}
       {% if perms.offboarding.add_offboarding %}
         <div class="oh-main__titlebar-button-container">
           <div class="oh-main__titlebar-button-container">

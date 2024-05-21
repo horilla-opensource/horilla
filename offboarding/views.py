@@ -192,14 +192,17 @@ def create_offboarding(request):
 
 @login_required
 @permission_required("offboarding.delete_offboarding")
-def delete_offboarding(request):
+def delete_offboarding(request, id):
     """
     This method is used to delete offboardings
     """
-    ids = request.GET.getlist("id")
-    Offboarding.objects.filter(id__in=ids).delete()
-    messages.success(request, _("Offboarding deleted"))
-    return redirect(pipeline)
+    try:
+        offboarding = Offboarding.objects.get(id=id)
+        offboarding.delete()
+        messages.success(request, _("Offboarding deleted"))
+    except (Offboarding.DoesNotExist, OverflowError):
+        messages.error(request, _("Offboarding not found"))
+    return redirect(filter_pipeline)
 
 
 @login_required
@@ -298,8 +301,8 @@ def delete_employee(request):
             icon="information",
         )
     else:
-        messages.error(request, _("Employees note found"))
-    return redirect(pipeline)
+        messages.error(request, _("Employees not found"))
+    return redirect(filter_pipeline)
 
 
 @login_required
@@ -309,9 +312,16 @@ def delete_stage(request):
     This method  is used to delete the offboarding stage
     """
     ids = request.GET.getlist("ids")
-    OffboardingStage.objects.filter(id__in=ids).delete()
-    messages.success(request, _("Stage deleted"))
-    return redirect(pipeline)
+    try:
+        instances = OffboardingStage.objects.filter(id__in=ids)
+        if instances:
+            instances.delete()
+            messages.success(request, _("Stage deleted"))
+        else:
+            messages.error(request, _("Stage not found"))
+    except OverflowError:
+        messages.error(request, _("Stage not found"))
+    return redirect(filter_pipeline)
 
 
 @login_required
@@ -488,7 +498,6 @@ def add_task(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Task Added"))
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "offboarding/task/form.html",
@@ -591,9 +600,13 @@ def delete_task(request):
     This method is used to delete the task
     """
     task_ids = request.GET.getlist("task_ids")
-    OffboardingTask.objects.filter(id__in=task_ids).delete()
-    messages.success(request, _("Task deleted"))
-    return redirect(pipeline)
+    tasks = OffboardingTask.objects.filter(id__in=task_ids)
+    if tasks:
+        tasks.delete()
+        messages.success(request, _("Task deleted"))
+    else:
+        messages.error(request, _("Task not found"))
+    return redirect(filter_pipeline)
 
 
 @login_required
@@ -638,14 +651,15 @@ def request_view(request):
     This method is used to view the resignation request
     """
     defatul_filter = {"status": "requested"}
-    filter_instance = LetterFilter(defatul_filter)
+    filter_instance = LetterFilter()
+    letters = ResignationLetter.objects.all()
     offboardings = Offboarding.objects.all()
 
     return render(
         request,
         "offboarding/resignation/requests_view.html",
         {
-            "letters": paginator_qry(filter_instance.qs, request.GET.get("page")),
+            "letters": paginator_qry(letters, request.GET.get("page")),
             "f": filter_instance,
             "filter_dict": {"status": ["Requested"]},
             "offboardings": offboardings,

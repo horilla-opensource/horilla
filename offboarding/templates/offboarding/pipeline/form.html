@@ -1,10 +1,10 @@
 <div class="oh-modal__dialog" style="max-width: 550px">
     <div class="oh-modal__dialog-header">
-      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
     </div>
 
     <div class="oh-modal__dialog-body">
-        <form hx-post="{% url "create-offboarding" %}?instance_id={{form.instance.id}}">
+        <form hx-post="{% url "create-offboarding" %}?instance_id={{form.instance.id}}" hx-target="#objectDetailsModalTarget">
             {{form.as_p}}
         </form>
     </div>
