@@ -11,6 +11,7 @@ cryptography
 cssselect2
 Django>=4.2.11,<5.0
 django-apscheduler
+django-auditlog
 django-cors-headers
 django-environ
 django-filter
