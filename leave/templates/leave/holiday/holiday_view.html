@@ -90,7 +90,9 @@
                 class="oh-dropdown__link"
                 id="holidays-export"
                 data-toggle="oh-modal-toggle"
-                data-target="#holidayExport"
+                data-target="#holidayExportModal"
+                hx-target="#holidayExportModalTarget"
+                hx-get="{% url 'holiday-info-export' %}"
                 >{% trans "Export" %}</a
               >
             </li>
@@ -251,36 +253,12 @@
 <!-- start of holiday export modal -->
 <div
   class="oh-modal"
-  id="holidayExport"
+  id="holidayExportModal"
   role="dialog"
-  aria-labelledby="holidayExport"
+  aria-labelledby="holidayExportModal"
   aria-hidden="true"
 >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="holidayExportLavel">
-        {% trans "Export Holidays" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-      <div class="oh-modal__dialog-body p-0 pt-2" id="holidayExportModalBody">
-        <form
-          action="{%url 'holiday-info-export' %}"
-          method="get"
-          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-          id="holidayExportForm"
-        >
-          {% csrf_token %}
-          {% include "leave/holiday/holiday_export_filter.html" %}
-          <div class="oh-dropdown__filter-footer">
-            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
-              {% trans "Export" %}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+  <div class="oh-modal__dialog" id="holidayExportModalTarget">
   </div>
 </div>
 <!-- end of holiday export modal -->

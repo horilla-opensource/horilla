@@ -1117,8 +1117,6 @@ def leave_assign_view(request):
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset.order_by("-id"), page_number)
     assigned_leave_filter = AssignedLeaveFilter()
-    export_filter = AssignedLeaveFilter()
-    export_column = AvailableLeaveColumnExportForm()
     assign_form = AssignLeaveForm()
 
     # default group by configuration
@@ -1141,8 +1139,6 @@ def leave_assign_view(request):
         {
             "available_leaves": page_obj,
             "f": assigned_leave_filter,
-            "export_filter": export_filter,
-            "export_column": export_column,
             "pd": previous_data,
             "filter_dict": data_dict,
             "gp_fields": LeaveAssignReGroup.fields,
@@ -1244,7 +1240,7 @@ def leave_assign(request):
     """
     form = AssignLeaveForm()
     form = choosesubordinates(request, form, "leave.add_availableleave")
-
+    page_reload = AvailableLeave.objects.filter().count() == 0
     if request.method == "POST":
         leave_type_ids = request.POST.getlist("leave_type_id")
         employee_ids = request.POST.getlist("employee_id")
@@ -1282,7 +1278,8 @@ def leave_assign(request):
                                 request,
                                 _("Leave type is already assigned to the employee.."),
                             )
-        return HttpResponse("<script>window.location.reload()</script>")
+        if page_reload:
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request, "leave/leave_assign/leave_assign_form.html", {"assign_form": form}
     )
@@ -1352,6 +1349,8 @@ def leave_assign_delete(request, obj_id):
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
     if not request.GET.get("instances_ids"):
+        if not AvailableLeave.objects.filter():
+            return HttpResponse("<script>window.location.reload()</script>")
         return redirect(f"/leave/assign-filter?{pd}")
     else:
         instances_ids = request.GET.get("instances_ids")
@@ -1477,166 +1476,25 @@ def assign_leave_type_import(request):
 
 @login_required
 def assigned_leaves_export(request):
+    hx_request = request.META.get("HTTP_HX_REQUEST")
+    if hx_request:
+        export_filter = AssignedLeaveFilter()
+        export_column = AvailableLeaveColumnExportForm()
+        content = {
+            "export_filter": export_filter,
+            "export_column": export_column,
+        }
+        return render(
+            request,
+            "leave/leave_assign/assigned_leaves_export_form.html",
+            context=content,
+        )
     return export_data(
         request=request,
         model=AvailableLeave,
         filter_class=AssignedLeaveFilter,
         form_class=AvailableLeaveColumnExportForm,
         file_name="Assign_Leave",
-    )
-
-
-@login_required
-@hx_request_required
-@permission_required("leave.add_holiday")
-def holiday_creation(request):
-    """
-    function used to create holidays.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return holiday creation form template
-    POST : return holiday view template
-    """
-
-    query_string = request.GET.urlencode()
-    if query_string.startswith("pd="):
-        previous_data = unquote(query_string[len("pd=") :])
-    else:
-        previous_data = unquote(query_string)
-    form = HolidayForm()
-    if request.method == "POST":
-        form = HolidayForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("New holiday created successfully.."))
-    return render(
-        request, "leave/holiday/holiday_form.html", {"form": form, "pd": previous_data}
-    )
-
-
-def holidays_excel_template(request):
-    try:
-        columns = [
-            "Name of Holiday",
-            "Start Date",
-            "End Date",
-            "Recurring",
-        ]
-        data_frame = pd.DataFrame(columns=columns)
-        response = HttpResponse(content_type="application/ms-excel")
-        response["Content-Disposition"] = (
-            'attachment; filename="assign_leave_type_excel.xlsx"'
-        )
-        data_frame.to_excel(response, index=False)
-        return response
-    except Exception as exception:
-        return HttpResponse(exception)
-
-
-def holidays_info_import(request):
-    file_name = "HolidaysImportError.xlsx"
-    error_list = []
-    error_data = {
-        "Name of Holiday": [],
-        "Start Date": [],
-        "End Date": [],
-        "Recurring": [],
-        "Error1": [],
-        "Error2": [],
-        "Error3": [],
-        "Error4": [],
-    }
-    if request.method == "POST":
-        file = request.FILES["holidays_import"]
-        data_frame = pd.read_excel(file)
-        holiday_dicts = data_frame.to_dict("records")
-        for holiday in holiday_dicts:
-            save = True
-            try:
-                name = holiday["Name of Holiday"]
-                try:
-                    start_date = pd.to_datetime(holiday["Start Date"]).date()
-                except Exception as e:
-                    save = False
-                    holiday["Error1"] = _("Invalid start date format {}").format(
-                        holiday["Start Date"]
-                    )
-                try:
-                    end_date = pd.to_datetime(holiday["End Date"]).date()
-                except Exception as e:
-                    save = False
-                    holiday["Error2"] = _("Invalid end date format {}").format(
-                        holiday["End Date"]
-                    )
-                if holiday["Recurring"].lower() in ["yes", "no"]:
-                    recurring = True if holiday["Recurring"].lower() == "yes" else False
-                else:
-                    save = False
-                    holiday["Error3"] = _("Recurring must be {} or {}").format(
-                        "yes", "no"
-                    )
-                if save:
-                    holiday = Holiday(
-                        name=name,
-                        start_date=start_date,
-                        end_date=end_date,
-                        recurring=recurring,
-                    )
-                    holiday.save()
-                else:
-                    error_list.append(holiday)
-
-            except Exception as e:
-                holiday["Error4"] = f"{str(e)}"
-                error_list.append(holiday)
-        if error_list:
-            response = generate_error_report(error_list, error_data, file_name)
-        else:
-            return JsonResponse()
-
-
-@login_required
-def holiday_info_export(request):
-    return export_data(
-        request=request,
-        model=Holiday,
-        filter_class=HolidayFilter,
-        form_class=HolidaysColumnExportForm,
-        file_name="Holidays_export",
-    )
-
-
-@login_required
-def holiday_view(request):
-    """
-    function used to view holidays.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return holiday view  template
-    """
-    queryset = Holiday.objects.all()[::-1]
-    previous_data = request.GET.urlencode()
-    page_number = request.GET.get("page")
-    page_obj = paginator_qry(queryset, page_number)
-    holiday_filter = HolidayFilter()
-    export_filter = HolidayFilter()
-    export_column = HolidaysColumnExportForm()
-    return render(
-        request,
-        "leave/holiday/holiday_view.html",
-        {
-            "holidays": page_obj,
-            "form": holiday_filter.form,
-            "pd": previous_data,
-            "export_filter": export_filter,
-            "export_column": export_column,
-        },
     )
 
 
@@ -1797,6 +1655,169 @@ def restrict_delete(request, id):
 
 @login_required
 @hx_request_required
+@permission_required("leave.add_holiday")
+def holiday_creation(request):
+    """
+    function used to create holidays.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return holiday creation form template
+    POST : return holiday view template
+    """
+
+    query_string = request.GET.urlencode()
+    if query_string.startswith("pd="):
+        previous_data = unquote(query_string[len("pd=") :])
+    else:
+        previous_data = unquote(query_string)
+    form = HolidayForm()
+    if request.method == "POST":
+        form = HolidayForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("New holiday created successfully.."))
+            if Holiday.objects.filter().count() == 1:
+                return HttpResponse("<script>window.location.reload();</script>")
+    return render(
+        request, "leave/holiday/holiday_form.html", {"form": form, "pd": previous_data}
+    )
+
+
+def holidays_excel_template(request):
+    try:
+        columns = [
+            "Name of Holiday",
+            "Start Date",
+            "End Date",
+            "Recurring",
+        ]
+        data_frame = pd.DataFrame(columns=columns)
+        response = HttpResponse(content_type="application/ms-excel")
+        response["Content-Disposition"] = (
+            'attachment; filename="assign_leave_type_excel.xlsx"'
+        )
+        data_frame.to_excel(response, index=False)
+        return response
+    except Exception as exception:
+        return HttpResponse(exception)
+
+
+def holidays_info_import(request):
+    file_name = "HolidaysImportError.xlsx"
+    error_list = []
+    error_data = {
+        "Name of Holiday": [],
+        "Start Date": [],
+        "End Date": [],
+        "Recurring": [],
+        "Error1": [],
+        "Error2": [],
+        "Error3": [],
+        "Error4": [],
+    }
+    if request.method == "POST":
+        file = request.FILES["holidays_import"]
+        data_frame = pd.read_excel(file)
+        holiday_dicts = data_frame.to_dict("records")
+        for holiday in holiday_dicts:
+            save = True
+            try:
+                name = holiday["Name of Holiday"]
+                try:
+                    start_date = pd.to_datetime(holiday["Start Date"]).date()
+                except Exception as e:
+                    save = False
+                    holiday["Error1"] = _("Invalid start date format {}").format(
+                        holiday["Start Date"]
+                    )
+                try:
+                    end_date = pd.to_datetime(holiday["End Date"]).date()
+                except Exception as e:
+                    save = False
+                    holiday["Error2"] = _("Invalid end date format {}").format(
+                        holiday["End Date"]
+                    )
+                if holiday["Recurring"].lower() in ["yes", "no"]:
+                    recurring = True if holiday["Recurring"].lower() == "yes" else False
+                else:
+                    save = False
+                    holiday["Error3"] = _("Recurring must be {} or {}").format(
+                        "yes", "no"
+                    )
+                if save:
+                    holiday = Holiday(
+                        name=name,
+                        start_date=start_date,
+                        end_date=end_date,
+                        recurring=recurring,
+                    )
+                    holiday.save()
+                else:
+                    error_list.append(holiday)
+
+            except Exception as e:
+                holiday["Error4"] = f"{str(e)}"
+                error_list.append(holiday)
+        if error_list:
+            response = generate_error_report(error_list, error_data, file_name)
+        else:
+            return JsonResponse()
+
+
+@login_required
+def holiday_info_export(request):
+    if request.META.get("HTTP_HX_REQUEST"):
+        export_filter = HolidayFilter()
+        export_column = HolidaysColumnExportForm()
+        content = {
+            "export_filter": export_filter,
+            "export_column": export_column,
+        }
+        return render(
+            request, "leave/holiday/holiday_export_filter_form.html", context=content
+        )
+    return export_data(
+        request=request,
+        model=Holiday,
+        filter_class=HolidayFilter,
+        form_class=HolidaysColumnExportForm,
+        file_name="Holidays_export",
+    )
+
+
+@login_required
+def holiday_view(request):
+    """
+    function used to view holidays.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return holiday view  template
+    """
+    queryset = Holiday.objects.all()[::-1]
+    previous_data = request.GET.urlencode()
+    page_number = request.GET.get("page")
+    page_obj = paginator_qry(queryset, page_number)
+    holiday_filter = HolidayFilter()
+
+    return render(
+        request,
+        "leave/holiday/holiday_view.html",
+        {
+            "holidays": page_obj,
+            "form": holiday_filter.form,
+            "pd": previous_data,
+        },
+    )
+
+
+@login_required
+@hx_request_required
 def holiday_filter(request):
     """
     function used to filter holidays.
@@ -1878,6 +1899,8 @@ def holiday_delete(request, id):
         messages.error(request, _("Holiday not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
+    if not Holiday.objects.filter():
+        return HttpResponse("<script>window.location.reload();</script>")
     return redirect(f"/leave/holiday-filter?{query_string}")
 
 
@@ -1923,15 +1946,8 @@ def company_leave_creation(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("New company leave created successfully.."))
-            response = render(
-                request,
-                "leave/company_leave/company_leave_creation_form.html",
-                {"form": form},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8")
-                + "<script>location. reload();</script>"
-            )
+            if CompanyLeave.objects.filter().count() == 1:
+                return HttpResponse("<script>window.location.reload();</script>")
     return render(
         request, "leave/company_leave/company_leave_creation_form.html", {"form": form}
     )
@@ -2021,15 +2037,6 @@ def company_leave_update(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Company leave updated successfully.."))
-            response = render(
-                request,
-                "leave/company_leave/company_leave_update_form.html",
-                {"form": form, "id": id},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8")
-                + "<script>location. reload();</script>"
-            )
     return render(
         request,
         "leave/company_leave/company_leave_update_form.html",
@@ -2058,6 +2065,8 @@ def company_leave_delete(request, id):
         messages.error(request, _("Company leave not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
+    if not CompanyLeave.objects.filter():
+        return HttpResponse("<script>window.location.reload();</script>")
     return redirect(f"/leave/company-leave-filter?{query_string}")
 
 

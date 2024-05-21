@@ -35,25 +35,27 @@
       hx-get="{% url 'assign-filter' %}?{{pd}}"
       hx-target="#assignedLeaves"
     {% endif %}
-  >
+    >
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
-<form
-  hx-post="{% url 'available-leave-update' id %}?{{pd}}"
-  hx-target="#objectUpdateModalTarget"
->
-  <div class="oh-modal__dialog-body pb-2">
-    <label class="oh-label d-block">{% trans "Available Days" %}</label>
-    {{form.available_days}} {{form.available_days.errors}}
-  </div>
-  <div class="oh-modal__dialog-body pb-2">
-    <label class="oh-label d-block">{% trans "Carryforward Days" %}</label>
-    {{form.carryforward_days}} {{form.carryforward_days.errors}}
-  </div>
-  <div class="oh-modal__dialog-footer">
-    <button type="submit" class="oh-btn oh-btn--secondary w-100">
-      {% trans "Apply" %}
-    </button>
-  </div>
-</form>
+<div class="oh-modal__dialog-body">
+  <form hx-post="{% url 'available-leave-update' id %}?{{pd}}"
+    hx-target="#objectUpdateModalTarget"
+    class="oh-profile-section p-0"
+    >
+    <div class="oh-modal__dialog-body pb-2">
+      <label class="oh-label d-block">{% trans "Available Days" %}</label>
+      {{form.available_days}} {{form.available_days.errors}}
+    </div>
+    <div class="oh-modal__dialog-body pb-2">
+      <label class="oh-label d-block">{% trans "Carryforward Days" %}</label>
+      {{form.carryforward_days}} {{form.carryforward_days.errors}}
+    </div>
+    <div class="oh-modal__dialog-footer pb-3">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
+    </div>
+  </form>
+</div>
