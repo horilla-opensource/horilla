@@ -57,7 +57,7 @@
                     {{ employee.employeetask_set|completed_tasks }} / {{employee.employeetask_set.all|length}}
                 </div>
             </div>
-            <div class="oh-sticky-table__td">
+            <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                 <div class="oh-btn-group">
                     {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or	perms.offboarding.change_offboardingemployee %}
                         <button
@@ -130,8 +130,9 @@
                         <a
                             type="button"
                             style="flex: 1 0 auto; width: 20px; height: 40.68px; padding: 0"
-                            onclick="event.stopPropagation();return confirm('Do you want to delete this offboarding user?')"
-                            href="{% url "delete-offboarding-employee" %}?employee_ids={{employee.id}}"
+                            hx-confirm="Do you want to delete this offboarding user?"
+                            hx-post="{% url "delete-offboarding-employee" %}?employee_ids={{employee.id}}"
+                            hx-target = "#offboardingContainer"
                             title="{% trans 'Delete' %}"
                             class="oh-btn oh-btn--light"
                             ><ion-icon name="trash-outline"></ion-icon>
