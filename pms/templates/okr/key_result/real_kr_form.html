@@ -13,7 +13,7 @@
     </h2>
   {% endif %}
 
-  <button type="button" class="oh-modal__close--custom" onclick="$('#objectDetailsModal').removeClass('oh-modal--show');">
+  <button type="button" class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
     <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
   </button>
 </div>
@@ -21,13 +21,13 @@
   {% if form.instance.id %}
     <form
       hx-post="{% url 'update-key-result' form.instance.id %}"
-      hx-target="#objectDetailsModalTarget"
+      hx-target="#objectUpdateModalTarget"
       id="realKeyResultForm"
     >
   {% else %}
     <form
       hx-post="{% url 'create-key-result' %}"
-      hx-target="#objectDetailsModalTarget"
+      hx-target="#objectCreateModalTarget"
       id="realKeyResultForm"
     >
   {% endif %}
