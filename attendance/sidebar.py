@@ -60,10 +60,11 @@ def attendances_accessibility(request, submenu, user_perms, *args, **kwargs):
 
 
 def hour_account_accessibility(request, submenu, user_perms, *args, **kwargs):
-    submenu["redirect"] = reverse("attendance-overtime-view")
     submenu["redirect"] = submenu["redirect"] + f"?year={datetime.now().year}"
     return True
 
 
 def work_record_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return request.user.has_perm("view_attendance") or is_reportingmanager(request.user)
+    return request.user.has_perm("attendance.view_attendance") or is_reportingmanager(
+        request.user
+    )
