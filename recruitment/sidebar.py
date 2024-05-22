@@ -22,7 +22,7 @@ SUBMENUS = [
     },
     {
         "menu": trans("Recruitment Pipeline"),
-        "redirect": reverse("pipeline") + "?closed=false",
+        "redirect": reverse("pipeline"),
         "accessibility": "recruitment.sidebar.pipeline_accessibility",
     },
     {
@@ -72,6 +72,7 @@ def menu_accessibilty(
 def pipeline_accessibility(
     request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
+    _submenu["redirect"] = _submenu["redirect"] + "?closed=false"
     return is_stagemanager(request.user) or request.user.has_perm(
         "recruitment.view_recruitment"
     )
