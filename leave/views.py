@@ -1533,6 +1533,8 @@ def restrict_creation(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Restricted day created successfully.."))
+            if RestrictLeave.objects.filter().count() == 1:
+                return HttpResponse("<script>window.location.reload();</script>")
     return render(
         request,
         "leave/restrict/restrict_form.html",
@@ -1650,7 +1652,70 @@ def restrict_delete(request, id):
         messages.error(request, _("Restricted day not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
+    if not RestrictLeave.objects.filter():
+        return HttpResponse("<script>window.location.reload();</script>")
     return redirect(f"/leave/restrict-filter?{query_string}")
+
+
+@login_required
+@permission_required("leave.delete_restrictleave")
+def restrict_days_bulk_delete(request):
+    """
+    function used to delete multiple restricted days.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return restricted days view template
+    """
+    pd = request.GET.urlencode()
+    if request.method == "POST":
+        restrict_day_ids = request.POST.getlist("ids")
+        try:
+            restrict_days = RestrictLeave.objects.filter(
+                id__in=restrict_day_ids
+            ).delete()
+            count = len(restrict_day_ids)
+            messages.success(
+                request,
+                _("{} Leave restricted days deleted successfully").format(count),
+            )
+        except (OverflowError, ValueError):
+            messages.error(request, _("Restricted Days not found"))
+        except:
+            messages.error(request, _("Something went wrong"))
+    return redirect(f"/leave/restrict-filter?{pd}")
+
+
+@login_required
+@permission_required("leave.add_restrictleave")
+def restrict_day_select(request):
+    page_number = request.GET.get("page")
+    if page_number == "all":
+        restrict_days = RestrictLeave.objects.all()
+    restrict_day_ids = [str(day.id) for day in restrict_days]
+    total_count = len(restrict_day_ids)
+    context = {"restrict_day_ids": restrict_day_ids, "total_count": total_count}
+    return JsonResponse(context)
+
+
+@login_required
+@permission_required("leave.add_restrictleave")
+def restrict_day_select_filter(request):
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
+    filters = json.loads(filtered) if filtered else {}
+
+    if page_number == "all":
+        restrictday_filter = RestrictLeaveFilter(
+            filters, queryset=RestrictLeave.objects.all()
+        )
+        restrictday_filter = restrictday_filter.qs
+        restrictday_ids = [str(restrictday.id) for restrictday in restrictday_filter]
+        total_count = restrictday_filter.count()
+        context = {"restrict_day_ids": restrictday_ids, "total_count": total_count}
+        return JsonResponse(context)
 
 
 @login_required

@@ -1,21 +1,45 @@
 {% load i18n %} {% load static %} {% include 'filter_tags.html' %}
 {% if messages %}
-  <div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-      <div class="oh-alert oh-alert--animated {{ message.tags }}">
-        {{ message }}
-      </div>
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{ message.tags }}">
+      {{ message }}
     </div>
-    {% endfor %}
   </div>
-{% endif %}
-{% if holidays %}
+  {% endfor %}
+</div>
+{% endif %} {% if holidays %}
+<div class="oh-checkpoint-badge text-success mb-2"
+    id="selectAllHolidays" style="cursor: pointer"
+  >
+    {% trans "Select All Holidays" %}
+</div>
+<div class="oh-checkpoint-badge text-secondary mb-2"
+  id="unselectAllHolidays" style="cursor: pointer"
+  >
+  {% trans "Unselect All Holidays" %}
+</div>
+<div class="oh-checkpoint-badge text-info mb-2"
+  id="exportHolidays" style="cursor: pointer; display: none"
+  >
+  {% trans "Export Holidays" %}
+</div>
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowHolidays" style="display: none"></div>
 <!-- end of selection buttons -->
 <div class="oh-sticky-table">
   <div class="oh-sticky-table__table">
     <div class="oh-sticky-table__thead">
       <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th" style="width: 10px">
+          <div class="centered-div">
+            <input
+              type="checkbox"
+              title='{% trans "Select All" %}'
+              class="oh-input oh-input__checkbox all-holidays"
+            />
+          </div>
+        </div>
         <div
           class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %}arrow-up-down {% endif %}"
           hx-get="{% url 'holiday-filter' %}?{{pd}}&sortby=name"
@@ -39,14 +63,24 @@
         </div>
         <div class="oh-sticky-table__th">{% trans "Recurring" %}</div>
         {% if perms.leave.change_holiday or perms.leave.delete_holiday %}
-        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
         {% endif %}
       </div>
     </div>
     <div class="oh-sticky-table__tbody">
       {% for holiday in holidays %}
-      <div class="oh-sticky-table__tr" >
-        <div class="oh-sticky-table__sd ps-4">{{holiday.name}}</div>
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__sd">
+          <div class="centered-div">
+            <input
+              type="checkbox"
+              id="{{holiday.id}}"
+              onchange="highlightRow($(this))"
+              class="oh-input holiday-checkbox oh-input__checkbox all-holidays-row"
+            />
+          </div>
+        </div>
+        <div class="oh-sticky-table__td ps-4">{{holiday.name}}</div>
         <div class="oh-sticky-table__td dateformat_changer">
           {{holiday.start_date}}
         </div>
@@ -97,7 +131,8 @@
 
 <div class="oh-pagination" data-pd="{{pd}}">
   <span class="oh-pagination__page">
-    {% trans "Page" %} {{ holidays.number }} {% trans "of" %} {{ holidays.paginator.num_pages }}.
+    {% trans "Page" %} {{ holidays.number }}
+    {% trans "of" %} {{ holidays.paginator.num_pages }}.
   </span>
   <nav class="oh-pagination__nav">
     <div class="oh-pagination__input-container me-3">

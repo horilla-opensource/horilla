@@ -102,6 +102,17 @@ urlpatterns = [
     path("restrict-update/<int:id>", views.restrict_update, name="restrict-update"),
     path("restrict-delete/<int:id>", views.restrict_delete, name="restrict-delete"),
     path(
+        "restrict-days-bulk-delete",
+        views.restrict_days_bulk_delete,
+        name="restrict-days-bulk-delete",
+    ),
+    path(
+        "restrict-day-select-filter",
+        views.restrict_day_select_filter,
+        name="restrict-day-select-filter",
+    ),
+    path("restrict-day-select", views.restrict_day_select, name="restrict-day-select"),
+    path(
         "holidays-excel-template",
         views.holidays_excel_template,
         name="holidays-excel-template",

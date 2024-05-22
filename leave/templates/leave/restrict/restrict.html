@@ -1,4 +1,11 @@
 {% load i18n %} {% load static %} {% include 'filter_tags.html' %}
+
+<span
+  id="bulkDeleteSpan"
+  hx-post="{% url 'restrict-days-bulk-delete' %}?{{pd}}"
+  hx-target="#restrictday"
+></span>
+
 {% if messages %}
   <div class="oh-wrapper">
     {% for message in messages %}
@@ -11,287 +18,240 @@
   </div>
 {% endif %}
 {% if restrictday %}
-<!-- start of selection buttons -->
-{% comment %} {% if perms.leave.add_restrictleave %}
-<div
-  class="oh-checkpoint-badge text-success mb-2"
-  id="selectAllHolidays"
-  style="cursor: pointer"
->
-  {% trans "Select All Holidays" %}
-</div>
-<div
-  class="oh-checkpoint-badge text-secondary mb-2"
-  id="unselectAllHolidays"
-  style="cursor: pointer; display: none"
->
-  {% trans "Unselect All Holidays" %}
-</div>
-<div
-  class="oh-checkpoint-badge text-info mb-2"
-  id="exportHolidays"
-  style="cursor: pointer; display: none"
->
-  {% trans "Export Holidays" %}
-</div>
-<div
-  class="oh-checkpoint-badge text-danger mb-2"
-  id="selectedShowHolidays"
-  style="display: none"
-></div>
-{% endif %} {% endcomment %}
-<!-- end of selection buttons -->
-<div class="oh-sticky-table">
-  <div class="oh-sticky-table__table oh-table--sortable">
-    <div class="oh-sticky-table__thead">
-      <div class="oh-sticky-table__tr">
-        {% comment %} <div class="oh-sticky-table__th" style="width: 10px">
-          <div class="centered-div">
-            <input
-              id="allHolidays"
-              type="checkbox"
-              title="{% trans 'Select All' %}"
-              class="oh-input oh-input__checkbox all-holidays"
-            />
-          </div>
-        </div> {% endcomment %}
-        <div
-          class="oh-sticky-table__th {% if request.sort_option.order == '-title' %}arrow-up {% elif request.sort_option.order == 'title' %}arrow-down {% else %}arrow-up-down {% endif %}"
-          hx-get="{% url 'restrict-filter' %}?{{pd}}&sortby=title"
-          hx-target="#restrictday"
-        >
-          {% trans "Title" %}
-        </div>
-        <div
-          class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-          hx-get="{% url 'restrict-filter' %}?{{pd}}&sortby=start_date"
-          hx-target="#restrictday"
-        >
-          {% trans "Start Date" %}
-        </div>
-        <div
-          class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-          hx-get="{% url 'restrict-filter' %}?{{pd}}&sortby=end_date"
-          hx-target="#restrictday"
-        >
-          {% trans "End Date" %}
-        </div>
-        <div
-          class="oh-sticky-table__th {% if request.sort_option.order == '-department' %}arrow-up {% elif request.sort_option.order == 'department' %}arrow-down {% else %}arrow-up-down {% endif %}"
-          hx-get="{% url 'restrict-filter' %}?{{pd}}&sortby=department"
-          hx-target="#restrictday"
-        >
-          {% trans "Department" %}
-        </div>
-        <div
-          class="oh-sticky-table__th"
-          hx-target="#restrictday"
-        >
-          {% trans "Job Position" %}
-        </div>
-        <div class="oh-sticky-table__th">{% trans "Description" %}</div>
-        {% if perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
-        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-        {% endif %}
-      </div>
+  {% if perms.leave.add_restrictleave %}
+    <div class="oh-checkpoint-badge text-success mb-2"
+      id="selectAllRestrictDays" style="cursor: pointer"
+      >
+      {% trans "Select All Days" %}
     </div>
-    <div class="oh-sticky-table__tbody">
-      {% for day in restrictday %}
-      <div class="oh-sticky-table__tr">
-        {% comment %} <div class="oh-sticky-table__sd">
-          <div class="centered-div">
-            <input
-              type="checkbox"
-              id="{{day.id}}"
-              onchange="highlightRow($(this))"
-              class="oh-input holiday-checkbox oh-input__checkbox all-holidays-row"
-            />
+    <div class="oh-checkpoint-badge text-secondary mb-2"
+      id="unselectAllRestrictDays" style="cursor: pointer; display: none"
+      >
+      {% trans "Unselect All Days" %}
+    </div>
+    {% comment %} <div class="oh-checkpoint-badge text-info mb-2"
+      id="exportRestrictDays" style="cursor: pointer; display: none"
+      >
+      {% trans "Export Days" %}
+    </div> {% endcomment %}
+    <div class="oh-checkpoint-badge text-danger mb-2"
+      id="showSelectedDays" style="display: none"
+    ></div>
+  {% endif %}
+  <div class="oh-sticky-table">
+    <div class="oh-sticky-table__table oh-table--sortable">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th" style="width: 10px">
+            <div class="centered-div">
+              <input
+                id="allRestricDays"
+                type="checkbox"
+                title="{% trans 'Select All' %}"
+                class="oh-input oh-input__checkbox all-restrict-days"
+              />
+            </div>
           </div>
-        </div> {% endcomment %}
-        <div class="oh-sticky-table__td sticky">{{day.title}}</div>
-        <div class="oh-sticky-table__td dateformat_changer">
-          {{day.start_date}}
-        </div>
-        <div class="oh-sticky-table__td dateformat_changer">
-          {{day.end_date}}
-        </div>
-        <div class="oh-sticky-table__td">
-          {{day.department}}
-        </div>
-        <div class="oh-sticky-table__td">
-          {% if day.job_position.all  %}
-            {% for i in  day.job_position.all %}
-              <span class="d-flex">{{forloop.counter}}. {{i}}</span>
-            {% endfor %}
-          {% else %}
-            All
+          <div
+            class="oh-sticky-table__th {% if request.sort_option.order == '-title' %}arrow-up {% elif request.sort_option.order == 'title' %}arrow-down {% else %}arrow-up-down {% endif %}"
+            hx-get="{% url 'restrict-filter' %}?{{pd}}&sortby=title"
+            hx-target="#restrictday"
+          >
+            {% trans "Title" %}
+          </div>
+          <div
+            class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
+            hx-get="{% url 'restrict-filter' %}?{{pd}}&sortby=start_date"
+            hx-target="#restrictday"
+          >
+            {% trans "Start Date" %}
+          </div>
+          <div
+            class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
+            hx-get="{% url 'restrict-filter' %}?{{pd}}&sortby=end_date"
+            hx-target="#restrictday"
+          >
+            {% trans "End Date" %}
+          </div>
+          <div
+            class="oh-sticky-table__th {% if request.sort_option.order == '-department' %}arrow-up {% elif request.sort_option.order == 'department' %}arrow-down {% else %}arrow-up-down {% endif %}"
+            hx-get="{% url 'restrict-filter' %}?{{pd}}&sortby=department"
+            hx-target="#restrictday"
+          >
+            {% trans "Department" %}
+          </div>
+          <div
+            class="oh-sticky-table__th"
+            hx-target="#restrictday"
+          >
+            {% trans "Job Position" %}
+          </div>
+          <div class="oh-sticky-table__th">{% trans "Description" %}</div>
+          {% if perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
+          <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
           {% endif %}
         </div>
-        <div class="oh-sticky-table__td">
-          {{day.description}}
-        </div>
-        {% if perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
-        <div class="oh-sticky-table__td">
-          <div class="oh-btn-group">
-            {% if perms.leave.change_restrictleave %}
-            <button
-              class="oh-btn oh-btn--light-bkg w-100"
-              title="{% trans 'Edit' %}"
-              data-toggle="oh-modal-toggle"
-              data-target="#objectUpdateModal"
-              hx-get="{% url 'restrict-update' day.id %}?{{pd}}"
-              hx-target="#objectUpdateModalTarget"
-            >
-              <ion-icon name="create-outline"></ion-icon>
-            </button>
-            {% endif %} {% if perms.leave.delete_restrictleave %}
-            <a
-              class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-              id="delete-link"
-              hx-confirm="{% trans 'Are you sure you want to delete?' %}"
-              hx-post="{% url 'restrict-delete' day.id %}?{{pd}}"
-              hx-target="#restrictday"
-              title="{% trans 'Delete' %}"
-            >
-              <ion-icon name="trash-outline"></ion-icon>
-            </a>
+      </div>
+      <div class="oh-sticky-table__tbody">
+        {% for day in restrictday %}
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__sd">
+            <div class="centered-div">
+              <input
+                type="checkbox"
+                id="{{day.id}}"
+                onchange="highlightRow($(this))"
+                class="oh-input oh-input__checkbox all-restrict-days-row"
+              />
+            </div>
+          </div>
+          <div class="oh-sticky-table__td sticky">{{day.title}}</div>
+          <div class="oh-sticky-table__td dateformat_changer">
+            {{day.start_date}}
+          </div>
+          <div class="oh-sticky-table__td dateformat_changer">
+            {{day.end_date}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{day.department}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {% if day.job_position.all  %}
+              {% for i in  day.job_position.all %}
+                <span class="d-flex">{{forloop.counter}}. {{i}}</span>
+              {% endfor %}
+            {% else %}
+              All
             {% endif %}
           </div>
+          <div class="oh-sticky-table__td">
+            {{day.description}}
+          </div>
+          {% if perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
+          <div class="oh-sticky-table__td">
+            <div class="oh-btn-group">
+              {% if perms.leave.change_restrictleave %}
+              <button
+                class="oh-btn oh-btn--light-bkg w-100"
+                title="{% trans 'Edit' %}"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectUpdateModal"
+                hx-get="{% url 'restrict-update' day.id %}?{{pd}}"
+                hx-target="#objectUpdateModalTarget"
+              >
+                <ion-icon name="create-outline"></ion-icon>
+              </button>
+              {% endif %} {% if perms.leave.delete_restrictleave %}
+              <a
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                id="delete-link"
+                hx-confirm="{% trans 'Are you sure you want to delete?' %}"
+                hx-post="{% url 'restrict-delete' day.id %}?{{pd}}"
+                hx-target="#restrictday"
+                title="{% trans 'Delete' %}"
+              >
+                <ion-icon name="trash-outline"></ion-icon>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
         </div>
-        {% endif %}
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
   </div>
-</div>
 
-<div class="oh-pagination" data-pd="{{pd}}">
-  <span class="oh-pagination__page">
-    {% trans "Page" %} {{ restrictday.number }} {% trans "of" %} {{ restrictday.paginator.num_pages }}.
-  </span>
-  <nav class="oh-pagination__nav">
-    <div class="oh-pagination__input-container me-3">
-      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-      <input
-        type="number"
-        name="page"
-        class="oh-pagination__input"
-        value="{{restrictday.number}}"
-        hx-get="{% url 'restrict-filter' %}?{{pd}}"
-        hx-target="#restrictday"
-        min="1"
-      />
-      <span class="oh-pagination__label"
-        >{% trans "of" %} {{restrictday.paginator.num_pages}}</span
-      >
-    </div>
-    <ul class="oh-pagination__items">
-      {% if restrictday.has_previous %}
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
+  <div class="oh-pagination" data-pd="{{pd}}">
+    <span class="oh-pagination__page">
+      {% trans "Page" %} {{ restrictday.number }} {% trans "of" %} {{ restrictday.paginator.num_pages }}.
+    </span>
+    <nav class="oh-pagination__nav">
+      <div class="oh-pagination__input-container me-3">
+        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+        <input
+          type="number"
+          name="page"
+          class="oh-pagination__input"
+          value="{{restrictday.number}}"
+          hx-get="{% url 'restrict-filter' %}?{{pd}}"
           hx-target="#restrictday"
-          hx-get="{% url 'restrict-filter' %}?{{pd}}&page=1"
-          class="oh-pagination__link"
-          >{% trans "First" %}</a
+          min="1"
+        />
+        <span class="oh-pagination__label"
+          >{% trans "of" %} {{restrictday.paginator.num_pages}}</span
         >
-      </li>
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#restrictday"
-          hx-get="{% url 'restrict-filter' %}?{{pd}}&page={{ restrictday.previous_page_number }}"
-          class="oh-pagination__link"
-          >{% trans "Previous" %}</a
-        >
-      </li>
-      {% endif %} {% if restrictday.has_next %}
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#restrictday"
-          hx-get="{% url 'restrict-filter' %}?{{pd}}&page={{ restrictday.next_page_number }}"
-          class="oh-pagination__link"
-          >{% trans "Next" %}</a
-        >
-      </li>
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#restrictday"
-          hx-get="{% url 'restrict-filter' %}?{{pd}}&page={{ restrictday.paginator.num_pages }}"
-          class="oh-pagination__link"
-          >{% trans "Last" %}</a
-        >
-      </li>
-      {% endif %}
-    </ul>
-  </nav>
-</div>
+      </div>
+      <ul class="oh-pagination__items">
+        {% if restrictday.has_previous %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a
+            hx-target="#restrictday"
+            hx-get="{% url 'restrict-filter' %}?{{pd}}&page=1"
+            class="oh-pagination__link"
+            >{% trans "First" %}</a
+          >
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a
+            hx-target="#restrictday"
+            hx-get="{% url 'restrict-filter' %}?{{pd}}&page={{ restrictday.previous_page_number }}"
+            class="oh-pagination__link"
+            >{% trans "Previous" %}</a
+          >
+        </li>
+        {% endif %} {% if restrictday.has_next %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a
+            hx-target="#restrictday"
+            hx-get="{% url 'restrict-filter' %}?{{pd}}&page={{ restrictday.next_page_number }}"
+            class="oh-pagination__link"
+            >{% trans "Next" %}</a
+          >
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a
+            hx-target="#restrictday"
+            hx-get="{% url 'restrict-filter' %}?{{pd}}&page={{ restrictday.paginator.num_pages }}"
+            class="oh-pagination__link"
+            >{% trans "Last" %}</a
+          >
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  <script>
+    $(document).ready(function () {
+      tickRestrictDaysCheckboxes();
+      $("#selectAllRestrictDays").click(selectAllRestrictDays);
+      $(".all-restrict-days-row").change(updateParentCheckbox);
+      $(".all-restrict-days").change(toggleAllCheckboxes);
+      $("#unselectAllRestrictDays").click(unselectAllRestrictDays);
+    });
+  </script>
 {% else %}
-<!--start of empty page  -->
-<div
-  style="
-    height: 70vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  "
-  class=""
->
-  <div style="" class="oh-404">
-    <img
-      style="display: block; width: 150px; height: 150px; margin: 10px auto"
-      src="{% static 'images/ui/restrict.png' %}"
-      class="mb-4"
-      alt=""
-    />
-    <h3 style="font-size: 20px" class="oh-404__subtitle">
-      {% trans "No restricted date available." %}
-    </h3>
+  <!--start of empty page  -->
+  <div
+    style="
+      height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    "
+    class=""
+    >
+    <div style="" class="oh-404">
+      <img
+        style="display: block; width: 150px; height: 150px; margin: 10px auto"
+        src="{% static 'images/ui/restrict.png' %}"
+        class="mb-4"
+        alt=""
+      />
+      <h3 style="font-size: 20px" class="oh-404__subtitle">
+        {% trans "No restricted date available." %}
+      </h3>
+    </div>
   </div>
-</div>
-<!-- end of empty page -->
+  <!-- end of empty page -->
 {% endif %}
-
-<script>
-  $(".all-holidays").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    if (is_checked) {
-      $(".all-holidays-row")
-        .prop("checked", true)
-        .closest(".oh-sticky-table__tr")
-        .addClass("highlight-selected");
-    } else {
-      $(".all-holidays-row")
-        .prop("checked", false)
-        .closest(".oh-sticky-table__tr")
-        .removeClass("highlight-selected");
-    }
-  });
-
-  $(document).ready(function () {
-    tickHolidayCheckboxes();
-    $(".all-holidays-row").change(function () {
-      var parentTable = $(this).closest(".oh-sticky-table");
-      var body = parentTable.find(".oh-sticky-table__tbody");
-      var parentCheckbox = parentTable.find(".all-holidays");
-      parentCheckbox.prop(
-        "checked",
-        body.find(".all-holidays-row:checked").length ===
-          body.find(".all-holidays-row").length
-      );
-      addingHolidayIds();
-    });
-
-    $(".all-holidays").change(function () {
-      addingHolidayIds();
-    });
-    $("#selectAllHolidays").click(function () {
-      selectAllHolidays();
-    });
-    $("#unselectAllHolidays").click(function () {
-      unselectAllHolidays();
-    });
-    $("#exportHolidays").click(function (e) {
-      exportHolidays();
-    });
-  });
-</script>
-<script src="{% static '/holiday/action.js' %}"></script>
