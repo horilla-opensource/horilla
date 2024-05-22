@@ -12,7 +12,7 @@
 </div>
 {% endif %}
 <div class="oh-wrapper">
-  {% if perms.base.view_shiftrequest %}
+  {% if perms.base.view_shiftrequest and rshift_assign %}
     <div
     class="oh-checkpoint-badge text-success mb-2"
     id="selectAllRShifts"
@@ -37,7 +37,7 @@
   </div>
   <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowRShifts" style="display: none"></div>
 </div>
-
+{% if rshift_assign %}
 <div class="oh-card oh-wrapper">
     {% for rshift_request_list in rshift_assign %}
     <div class="oh-accordion-meta">
@@ -271,7 +271,7 @@
                   {% endif %}
               </ul>
           </nav>
-      </div>
+        </div>
 			</div>
 		</div>
 	</div>
@@ -335,6 +335,20 @@
           </ul>
         </nav>
       </div>
+      {% else %}
+        <div class="oh-wrapper">
+          <div class="oh-404">
+            <img
+              style="width: 150px; height: 150px"
+              src="{% static 'images/ui/no_request.png' %}"
+              class="oh-404__image mb-4"
+            />
+            <h5 class="oh-404__subtitle">
+              {% trans "No group result found!" %}
+            </h5>
+          </div>
+        </div>
+      {% endif %}
 </div>
 <script>
   function addingRShiftIds() {

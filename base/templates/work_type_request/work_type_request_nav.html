@@ -20,7 +20,7 @@ x-data="{searchShow: false}"
     ></ion-icon>
   </a>
 </div>
-<form hx-get="{% url 'work-type-request-search' %}" hx-target='#view-container' id='filterForm' class="d-flex">
+<form hx-get="{% url 'work-type-request-search' %}" hx-target='#view-container' id='filterForm' class="d-flex" onsubmit="event.preventDefault();">
 <div class="oh-main__titlebar oh-main__titlebar--right">
   {% if data %}
     <div
