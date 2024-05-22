@@ -69,6 +69,9 @@ def sidebar(request):
 
                         if submenu.get("accessibility"):
                             accessibility = import_method(submenu["accessibility"])
+                        redirect: str = submenu["redirect"]
+                        redirect = redirect.split("?")
+                        submenu["redirect"] = redirect[0]
 
                         if not accessibility or accessibility(
                             request,
