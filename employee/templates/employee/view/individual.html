@@ -127,23 +127,27 @@
 			{% if enabled_block_unblock %}
 				{% if perms.change_employee %}
 					{% if employee.employee_user_id.is_active %}
-						<form action = "{% url 'employee-account-block-unblock' employee.id %}"
-							  onsubmit="return confirm('{% trans "Do you really want to prevent this employee from accessing and logging into this webpage?" %}');"
-				  			>
-				  			{% csrf_token %}
-				  			<button type="submit" style=" width: 30px; height: 29px; margin-right: 22px; border: none; background: transparent;" title="{% trans 'Block Account' %}">
-								  <img src="{% static 'images/ui/block-user.png' %}" style="width: 26px; height: 25px; " >
-				  			</button>
-		  				</form>
+						{% if not employee.employee_user_id.is_superuser %}
+							<form action = "{% url 'employee-account-block-unblock' employee.id %}"
+								  onsubmit="return confirm('{% trans "Do you really want to prevent this employee from accessing and logging into this webpage?" %}');"
+				  				>
+				  				{% csrf_token %}
+				  				<button type="submit" style=" width: 30px; height: 29px; margin-right: 22px; border: none; background: transparent;" title="{% trans 'Block Account' %}">
+									  <img src="{% static 'images/ui/block-user.png' %}" style="width: 26px; height: 25px; " >
+				  				</button>
+		  					</form>
+						{% endif %}
 					{% else %}
-						<form action = "{% url 'employee-account-block-unblock' employee.id %}"
-            	              onsubmit="return confirm('{% trans "Do you really want to allow this employee to access and log into this webpage?" %}');"
-            	            >
-            	            {% csrf_token %}
-            	            <button type="submit" style=" width: 30px; height: 29px; margin-right: 22px; border: none; background: transparent;" title="{% trans 'Un-Block Account' %}">
-								<img src="{% static 'images/ui/unlock.png' %}" style="width: 30px; height: 27px; " >
-            	            </button>
-            	        </form>
+						{% if not employee.employee_user_id.is_superuser %}
+							<form action = "{% url 'employee-account-block-unblock' employee.id %}"
+            	        	      onsubmit="return confirm('{% trans "Do you really want to allow this employee to access and log into this webpage?" %}');"
+            	        	    >
+            	        	    {% csrf_token %}
+            	        	    <button type="submit" style=" width: 30px; height: 29px; margin-right: 22px; border: none; background: transparent;" title="{% trans 'Un-Block Account' %}">
+									<img src="{% static 'images/ui/unlock.png' %}" style="width: 30px; height: 27px; " >
+            	        	    </button>
+            	        	</form>
+						{% endif %}
 					{% endif %}
 				{% endif %}
 			{% endif %}

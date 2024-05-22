@@ -1401,15 +1401,23 @@ def employee_account_block_unblock(request, emp_id):
     if not user:
         messages.info(request, _("Employee not found"))
         return redirect(employee_view)
-    user.is_active = not user.is_active
-    action_message = _("blocked") if not user.is_active else _("unblocked")
-    user.save()
-    messages.success(
-        request,
-        _("{employee}'s account {action_message} successfully!").format(
-            employee=employee, action_message=action_message
-        ),
-    )
+    if not user.is_superuser:
+        user.is_active = not user.is_active
+        action_message = _("blocked") if not user.is_active else _("unblocked")
+        user.save()
+        messages.success(
+            request,
+            _("{employee}'s account {action_message} successfully!").format(
+                employee=employee, action_message=action_message
+            ),
+        )
+    else:
+        messages.info(
+            request,
+            _("{employee} is a superuser and cannot be blocked.").format(
+                employee=employee
+            ),
+        )
     return redirect(employee_view_individual, obj_id=emp_id)
 
 
