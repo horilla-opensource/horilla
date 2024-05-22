@@ -67,14 +67,14 @@ def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
 
 def leave_request_accessibility(request, submenu, user_perms, *args, **kwargs):
     return (
-        request.user.has_perm("leave.view_leavereqeust")
+        request.user.has_perm("leave.view_leaverequest")
         or is_leave_approval_manager(request.user)
         or is_reportingmanager(request.user)
     )
 
 
 def type_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return request.user.has_perm("leave.view_leawvetype")
+    return request.user.has_perm("leave.view_leavetype")
 
 
 def assign_accessibility(request, submenu, user_perm, *args, **kwargs):
