@@ -237,7 +237,7 @@
                                                                 <span class="count-span">{{ objective.employee_objective.all|length}} {% trans "Assignees" %}</span>
                                                             </div>
                                                             <div data-cell-index="4" class="oh-sticky-table__td ">
-                                                                {{objective.duration}}
+                                                                {{objective.duration}} {{objective.get_duration_unit_display}}
                                                             </div>
                                                             <div data-cell-index="5" class="oh-sticky-table__td">
                                                                 {{objective.description}}

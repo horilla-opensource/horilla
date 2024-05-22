@@ -136,7 +136,7 @@
                     </li>
                     <li class="helpdesk__card-item">
                         <span class="helpdesk__card-label">{% trans "Duration:" %}</span>
-                        <span class="helpdesk__card-value" name="" id="">{{objective.duration}} {% trans "days" %}</span>
+                        <span class="helpdesk__card-value" name="" id="">{{objective.duration}} {{objective.get_duration_unit_display}}</span>
                     </li>
                     <li class="helpdesk__card-item">
                         <span class="helpdesk__card-label">{% trans "Description:" %}</span>

@@ -73,6 +73,11 @@ class KeyResult(HorillaModel):
 class Objective(HorillaModel):
     """Model used for creating objectives"""
 
+    DURATION_UNIT = (
+        ("days", _("Days")),
+        ("months", _("Months")),
+        ("years", _("Years")),
+    )
     title = models.CharField(
         null=False, blank=False, max_length=100, verbose_name="Title"
     )
@@ -93,6 +98,14 @@ class Objective(HorillaModel):
         blank=True,
         related_name="objective",
         verbose_name="Default Key results",
+    )
+    duration_unit = models.CharField(
+        max_length=20,
+        choices=DURATION_UNIT,
+        null=True,
+        blank=True,
+        default="days",
+        verbose_name="Duration Unit",
     )
     duration = models.IntegerField(default=1, validators=[MinValueValidator(0)])
     add_assignees = models.BooleanField(default=False)
@@ -199,7 +212,12 @@ class EmployeeObjective(HorillaModel):
     def save(self, *args, **kwargs):
         if not self.pk and self.objective_id and self.start_date:
             duration = self.objective_id.duration
-            self.end_date = self.start_date + relativedelta(days=duration)
+            if self.objective_id.duration_unit == "days":
+                self.end_date = self.start_date + relativedelta(days=duration)
+            elif self.objective_id.duration_unit == "months":
+                self.end_date = self.start_date + relativedelta(months=duration)
+            elif self.objective_id.duration_unit == "years":
+                self.end_date = self.start_date + relativedelta(years=duration)
         super().save(*args, **kwargs)
 
     def tracking(self):

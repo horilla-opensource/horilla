@@ -116,9 +116,10 @@ class ObjectiveForm(BaseForm):
         fields = [
             "title",
             "managers",
-            "description",
+            "duration_unit",
             "duration",
             "key_result_id",
+            "description",
             "add_assignees",
             "assignees",
             "start_date",
