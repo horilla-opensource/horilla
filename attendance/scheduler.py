@@ -1,14 +1,15 @@
 import datetime
 from datetime import datetime
+
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
 def auto_check_out():
 
     from attendance.models import AttendanceActivity
+    from attendance.views.clock_in_out import clock_out_attendance_and_activity
     from base.models import EmployeeShiftSchedule
     from employee.models import Employee
-    from attendance.views.clock_in_out import clock_out_attendance_and_activity
 
     try:
         today = datetime.now()
@@ -33,7 +34,10 @@ def auto_check_out():
                     and shift_schedule.start_time <= today.time()
                 ):
                     clock_out_attendance_and_activity(
-                        employee=employee, date_today=today.date(), now=today.time().strftime("%H:%M"), out_datetime=today
+                        employee=employee,
+                        date_today=today.date(),
+                        now=today.time().strftime("%H:%M"),
+                        out_datetime=today,
                     )
 
     except:

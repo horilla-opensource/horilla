@@ -11,13 +11,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from .models.models import Contract
 
 
-def generate_work_entry():
-    """
-    This is a automated task on time
-    """
-    return
-
-
 def expire_contract():
     """
     Finds all active contracts whose end date is earlier than the current date
@@ -30,6 +23,5 @@ def expire_contract():
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(generate_work_entry, "interval", seconds=10)
-scheduler.add_job(expire_contract, "interval", seconds=5)
+scheduler.add_job(expire_contract, "interval", hours=4)
 scheduler.start()
