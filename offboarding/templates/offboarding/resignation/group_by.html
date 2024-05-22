@@ -113,7 +113,7 @@ style="cursor: pointer; display: none"
                                     {{letter.status}}
                                 </div>
                                 <div data-cell-index="4" class="oh-sticky-table__td">
-                                    {{letter.description|safe|truncatechars:30}}
+                                    {{letter.description|safe|truncatechars_html:30}}
                                 </div>
                                 <div class="oh-sticky-table__td oh-sticky-table__right">
                                     <form action="{% url 'update-letter-status' %}">
@@ -188,6 +188,7 @@ style="cursor: pointer; display: none"
                         {% endfor %}
                     </div>
 				</div>
+                {% if letter_list.list.has_previous or letter_list.list.has_next %}
 				<div class="oh-pagination">
                     <span class="oh-pagination__page">
                         {% trans "Page" %} {{ letter_list.list.number }}
@@ -259,6 +260,7 @@ style="cursor: pointer; display: none"
                         </ul>
                     </nav>
                 </div>
+                {% endif %}
 			</div>
     	</div>
 	</div>
