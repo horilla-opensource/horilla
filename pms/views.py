@@ -64,7 +64,7 @@ from pms.models import (
 from .forms import (
     AddAssigneesForm,
     AnonymousFeedbackForm,
-    EmployeekeyResultForm,
+    EmployeeKeyResultForm,
     EmployeeObjectiveForm,
     FeedbackForm,
     KeyResultForm,
@@ -290,7 +290,7 @@ def view_key_result(request):
 
 
 @login_required
-@permission_required("payroll.view_key_result")
+@permission_required("pms.view_key_result")
 def filter_key_result(request):
     """
     Filter and retrieve a list of key results based on the provided query parameters.
@@ -318,12 +318,13 @@ def filter_key_result(request):
 
 
 @login_required
+@permission_required("pms.add_key_result")
 def key_result_create(request):
     """
-    This method renders form and template to create Ticket type
+    This method renders form and template to create key result
     """
     form = KRForm()
-    redirect_url = None
+    redirect_url = request.GET.get("data")
     if request.method == "POST":
         form = KRForm(request.POST)
         if form.is_valid():
@@ -333,14 +334,18 @@ def key_result_create(request):
                 _("Key result %(key_result)s created successfully")
                 % {"key_result": instance},
             )
+            mutable_get = request.GET.copy()
 
-            if request.POST.get("dynamic_create"):
-                obj_data = request.POST.get("dyanamic_create")
-                obj_data = obj_data.replace("create_new_key_result", str(instance.id))
+            key_result_ids = mutable_get.getlist("key_result_id", [])
+            if "create_new_key_result" in key_result_ids:
+                key_result_ids.remove("create_new_key_result")
+            key_result_ids.append(str(instance.id))
+            mutable_get.setlist("key_result_id", key_result_ids)
 
-                # Redirect to the desired URL with encoded query parameters
-                redirect_url = f"/pms/objective-creation?{obj_data}"
-                form = KRForm()
+            redirect_url = f"/pms/objective-creation/?data={mutable_get.urlencode()}"
+        else:
+            redirect_url = request.GET.urlencode()
+
     return render(
         request,
         "okr/key_result/key_result_form.html",
@@ -349,7 +354,7 @@ def key_result_create(request):
 
 
 @login_required
-@permission_required("payroll.add_key_result")
+@permission_required("pms.add_key_result")
 def kr_create_or_update(request, kr_id=None):
     """
     View function for creating or updating a Key Result.
@@ -361,11 +366,6 @@ def kr_create_or_update(request, kr_id=None):
     Returns:
     Renders a form to create or update a Key Result.
     """
-    form = KRForm()
-    key_result = False
-
-
-def kr_create_or_update(request, kr_id=None):
     form = KRForm()
     kr = False
     key_result = False
@@ -394,8 +394,6 @@ def kr_create_or_update(request, kr_id=None):
                     % {"key_result": instance},
                 )
                 return HttpResponse("<script>window.location.reload()</script>")
-
-    return render(request, "okr/key_result/real_kr_form.html", {"form": form})
 
     return render(request, "okr/key_result/real_kr_form.html", {"form": form})
 
@@ -2917,11 +2915,11 @@ def employee_keyresult_creation(request, emp_obj_id):
     """
     emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
     employee = emp_objective.employee_id
-    emp_key_result = EmployeekeyResultForm(
+    emp_key_result = EmployeeKeyResultForm(
         initial={"employee_objective_id": emp_objective}
     )
     if request.method == "POST":
-        emp_key_result = EmployeekeyResultForm(request.POST)
+        emp_key_result = EmployeeKeyResultForm(request.POST)
         if emp_key_result.is_valid():
             emp_key_result.save()
             emp_objective.update_objective_progress()
@@ -2965,9 +2963,9 @@ def employee_keyresult_update(request, kr_id):
     """
     emp_kr = EmployeeKeyResult.objects.get(id=kr_id)
     employee = emp_kr.employee_objective_id.employee_id
-    emp_key_result = EmployeekeyResultForm(instance=emp_kr)
+    emp_key_result = EmployeeKeyResultForm(instance=emp_kr)
     if request.method == "POST":
-        emp_key_result = EmployeekeyResultForm(request.POST, instance=emp_kr)
+        emp_key_result = EmployeeKeyResultForm(request.POST, instance=emp_kr)
         if emp_key_result.is_valid():
             emp_key_result.save()
             emp_kr.employee_objective_id.update_objective_progress()

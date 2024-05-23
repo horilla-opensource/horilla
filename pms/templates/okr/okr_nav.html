@@ -1,4 +1,27 @@
 {% load i18n %}{% load widget_tweaks %} {% load mathfilters %} {% load basefilters %}
+<span
+  name=""
+  id="dynamicKeyResult"
+  style="display: none"
+  data-toggle="oh-modal-toggle"
+  data-target="#dynamicCreateModal"
+  hx-get="{% url 'key-result-creation' %}"
+  hx-target="#dynamicCreateModalBody"
+>
+</span>
+<div
+  class="oh-modal"
+  id="dynamicCreateModal"
+  role="dialog"
+  aria-hidden="true"
+  style="z-index: 1022"
+  >
+  <div
+    class="oh-modal__dialog"
+    style="max-width: 550px"
+    id="dynamicCreateModalBody"
+  ></div>
+</div>
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <h1 class="oh-main__titlebar-title fw-bold">
@@ -202,9 +225,9 @@
                         <button
                             class="oh-btn oh-btn--secondary ml-2"
                             data-toggle="oh-modal-toggle"
-                            data-target="#objectDetailsModal"
+                            data-target="#objectCreateModal"
                             hx-get="{%url 'objective-creation' %}"
-                            hx-target="#objectDetailsModalTarget"
+                            hx-target="#objectCreateModalTarget"
                             onclick="event.preventDefault()"
                         >
                             <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}

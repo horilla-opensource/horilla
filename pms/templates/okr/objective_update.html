@@ -19,53 +19,7 @@
 </div>
 <form
   hx-post="{%url 'objective-update' obj_id=objective_form.instance.id %}"
-  hx-target="#objectivesTarget"
->
-{% csrf_token %}
-{{objective_form.as_p}}
-  {% comment %} <div class="oh-modal__dialog-body">
-    {% csrf_token %}
-    <div class="oh-input__group">
-      <label class="oh-input__label" for="{{objective_form.objective.id_for_label}}"
-        >{% trans "Objective" %}</label
-      >
-      {{objective_form.objective}} {{objective_form.objective.errors}}
-    </div>
-    <div class="oh-input__group">
-      <label class="oh-input__label" for="{{objective_form.objective_description.id_for_label}}"
-        >{% trans "Objective Description" %}</label
-      >
-      {{objective_form.objective_description}}
-      {{objective_form.objective_description.errors}}
-    </div>
-    <div class="row">
-      <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-        <div class="oh-input__group">
-          <label class="oh-input__label" for="{{objective_form.start_date.id_for_label}}"
-            >{% trans "Start Date" %}</label
-          >
-          {{objective_form.start_date}} {{objective_form.start_date.errors}}
-        </div>
-      </div>
-      <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-        <div class="oh-input__group">
-          <label class="oh-input__label" for="{{objective_form.end_date.id_for_label}}"
-            >{% trans "End Date" %}</label
-          >
-          {{objective_form.end_date}} {{objective_form.end_date.errors}}
-        </div>
-      </div>
-    </div>
-    <div class="oh-input__group">
-      <label class="oh-input__label" for="{{objective_form.employee_id.id_for_label}}"
-        >{% trans "Employee" %}</label
-      >
-      {{ objective_form.employee_id }} {{ objective_form.employee_id.errors }}
-    </div>
-  </div>
-  <div class="oh-modal__dialog-footer">
-    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-      {% trans "Save" %}
-    </button>
-  </div> {% endcomment %}
+  hx-target="#objectCreateModalTarget"
+  >
+  {% csrf_token %} {{objective_form.as_p}}
 </form>

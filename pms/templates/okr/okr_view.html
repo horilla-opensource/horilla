@@ -135,16 +135,15 @@
 
   //create key result dynamically
   function keyResultChange(element) {
+    var selectedValue = $(element).val();
+    if(selectedValue.includes("create_new_key_result")){
+      var parentForm = element.parents().closest("form");
+      var view = parentForm.serialize();
+      let dynamicKeyResult = $("#dynamicKeyResult");
+      dynamicKeyResult.attr("hx-vals", `{"data":"${view}"}`);
+      dynamicKeyResult.click();
 
-    var kr = $(element).val();
-    // Check if 'create_new_key_result' exists in the list
-    if (kr.includes('create_new_key_result')) {
-      var objData = $('#objectiveForm').serialize()
-      $("[name=dyanamic_create]").val(objData)
-      $("#kRModal").show();
     }
-
-
   }
 
     function removeCreateKR(){

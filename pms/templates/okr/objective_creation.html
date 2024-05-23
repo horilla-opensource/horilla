@@ -44,7 +44,7 @@
     </h2>
   {% endif %}
 
-  <button type="button" class="oh-modal__close--custom" onclick="$('#objectDetailsModal').removeClass('oh-modal--show');">
+  <button type="button" class="oh-modal__close--custom" onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')">
     <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
   </button>
 </div>
@@ -52,13 +52,13 @@
   {% if update %}
     <form
       hx-post="{%url 'objective-update' objective_form.instance.id %}"
-      hx-target="#objectDetailsModalTarget"
+      hx-target="#objectCreateModalTarget"
       id="objectiveForm"
     >
   {% else %}
     <form
       hx-post="{%url 'objective-creation' %}"
-      hx-target="#objectDetailsModalTarget"
+      hx-target="#objectCreateModalTarget"
       id="objectiveForm"
     >
   {% endif %}

@@ -255,7 +255,9 @@
                                                                     {% if perms.pms.change_objective %}
                                                                         <a
                                                                             onclick="event.preventDefault();event.stopPropagation()"
-                                                                            hx-get="{% url 'objective-update' objective.id %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"
+                                                                            data-toggle='oh-modal-toggle' data-target='#objectCreateModal'
+                                                                            hx-get="{% url 'objective-update' objective.id %}" hx-target='#objectCreateModalTarget'
+                                                                            class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
                                                                         ><ion-icon name="create-outline"></ion-icon></a>
                                                                     {% endif %}
                                                                         {% comment %} <a hx-get="" hx-target='#duplicateFormContainer' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#duplicateRecruitmentModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Duplicate' %}"><ion-icon name="copy-outline"></ion-icon></a> {% endcomment %}
