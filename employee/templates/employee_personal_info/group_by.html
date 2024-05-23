@@ -8,33 +8,36 @@
 </div>
 {% endif %}
 
-{% if perms.employee.view_employee or request.user|is_reportingmanager %}
-<div
-  class="oh-checkpoint-badge text-success mb-2"
-  id="selectAllEmployees"
-  style="cursor: pointer"
->
-  {% trans "Select All Employees" %}
-</div>
-<div
-  class="oh-checkpoint-badge text-secondary mb-2"
-  id="unselectAllEmployees"
-  style="cursor: pointer;display: none;"
->
-  {% trans "Unselect All Employees" %}
-</div>
-<div
-  class="oh-checkpoint-badge text-info mb-2"
-  id="exportEmployees"
-  style="cursor: pointer;display: none;"
->
-  {% trans "Export Employees" %}
-</div>
+{% if data %}
+  {% if perms.employee.view_employee or request.user|is_reportingmanager %}
+  <div
+    class="oh-checkpoint-badge text-success mb-2"
+    id="selectAllEmployees"
+    style="cursor: pointer"
+  >
+    {% trans "Select All Employees" %}
+  </div>
+  <div
+    class="oh-checkpoint-badge text-secondary mb-2"
+    id="unselectAllEmployees"
+    style="cursor: pointer;display: none;"
+  >
+    {% trans "Unselect All Employees" %}
+  </div>
+  <div
+    class="oh-checkpoint-badge text-info mb-2"
+    id="exportEmployees"
+    style="cursor: pointer;display: none;"
+  >
+    {% trans "Export Employees" %}
+  </div>
+  {% endif %}
 {% endif %}
 
 <span name="" id="filterEmployee" style="display: none" hx-get="{% url 'employee-filter-view' %}?{{pd}}" hx-target="#view-container"></span>
 <div id="relatedModel"></div>
 <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow"></div>
+{% if data %}
 <div class="oh-card">
     {% for employee_list in data %}
     <div class="oh-accordion-meta">
@@ -372,6 +375,14 @@
           </ul>
         </nav>
       </div>
+      {% else %}
+        <div class="oh-wrapper">
+          <div class="oh-404">
+              <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/employees_empty.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+              <h5 class="oh-404__subtitle">{% trans "No group result found!" %}</h5>
+          </div>
+        </div>
+      {% endif %}
   </div>
   <script src="{% static 'employee/actions.js' %}"></script>
   <script>

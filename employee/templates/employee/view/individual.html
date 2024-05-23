@@ -115,7 +115,7 @@
 <div class="oh-wrapper" id="view-container">
 	<div class="oh-card mt-4 mb-5">
 		<div class="d-flex flex-row-reverse">
-			{% if perms.change_employee %}
+			{% if perms.employee.change_employee %}
 			<a href="{% url 'employee-view-update' employee.id %}" class="">
 				<img
 				src="{% static 'images/ui/edit_btn.png' %}"
@@ -125,7 +125,7 @@
 			</a>
 			{% endif %}
 			{% if enabled_block_unblock %}
-				{% if perms.change_employee %}
+				{% if perms.employee.change_employee %}
 					{% if employee.employee_user_id.is_active %}
 						{% if not employee.employee_user_id.is_superuser %}
 							<form action = "{% url 'employee-account-block-unblock' employee.id %}"
