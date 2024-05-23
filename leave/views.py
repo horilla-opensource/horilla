@@ -1500,8 +1500,12 @@ def assigned_leaves_export(request):
 
 def get_job_positions(request):
     department_id = request.GET.get("department_id")
-    job_positions = JobPosition.objects.filter(department_id=department_id).values_list(
-        "id", "job_position"
+    job_positions = (
+        JobPosition.objects.filter(department_id=department_id).values_list(
+            "id", "job_position"
+        )
+        if department_id
+        else []
     )
     return JsonResponse({"job_positions": dict(job_positions)})
 
