@@ -15,13 +15,13 @@
     var at_work_seconds = {{ request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds }}
     var run = 0
   </script>
-  <title class="time-runner stop-runner">Horilla</title>
-  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicons/apple-touch-icon.png' %}">
+  <title class="time-runner stop-runner">{{white_label_company_name}}</title>
   <link rel="stylesheet" href="{% static 'build/css/driver.min.css' %}"/>
   <meta name="theme-color" content="orangered">
   <link rel="manifest" href="{% static 'build/manifest.json' %}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicons/favicon-32x32.png' %}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicons/favicon-16x16.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.css">
 
   <meta name="msapplication-TileColor" content="#da532c">
@@ -517,12 +517,12 @@
   }
     // accessing initial worked hours from the user
     $(".time-runner").not("title").html(secondsToDuration(at_work_seconds));
-    $("title.time-runner").html("Horilla | "+secondsToDuration(at_work_seconds));
+    $("title.time-runner").html("{{white_label_company_name}} | "+secondsToDuration(at_work_seconds));
     setInterval(() => {
       if (run) {
         at_work_seconds = at_work_seconds + 1
         $("div.time-runner").html(secondsToDuration(at_work_seconds));
-        $("title").html("Horilla | "+secondsToDuration(at_work_seconds));
+        $("title").html("{{white_label_company_name}} | "+secondsToDuration(at_work_seconds));
       }
     }, 1000);
   </script>

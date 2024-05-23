@@ -114,7 +114,7 @@ def dashboard(request):
         managers = []
 
         for manager in rec.recruitment_managers.all():
-            name = manager.employee_first_name + " " + manager.employee_last_name
+            name = manager.get_full_name()
             managers.append(name)
 
         recruitment_manager_mapping[recruitment_title] = managers
