@@ -430,6 +430,11 @@
 <script>
   requestedAttendanceTickCheckboxes()
   $(document).ready(function () {
+      {% if requests %}
+        $('#selectAllInstances').show();
+      {% else %}
+        $('#selectAllInstances').hide();
+      {% endif %}
       const activeTab = localStorage.getItem('attendanceRequestActiveTab')
       if (activeTab!=null) {
           $(".oh-tabs__content--active").toggleClass('oh-tabs__content--active');

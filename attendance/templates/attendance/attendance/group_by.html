@@ -43,6 +43,7 @@
   </div>
 </div>
 <div class="oh-tabs__content"  id="tab_3">
+ {% if overtime_attendances %}
   <div class="oh-card">
     {% for attendance_list in overtime_attendances %}
     <div class="oh-accordion-meta">
@@ -325,9 +326,25 @@
       </nav>
     </div>
   </div>
+  {% else %}
+    <!-- start of empty page -->
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;" >
+
+      <img
+        style="width: 150px; height: 150px"
+        src="{% static 'images/ui/present.png' %}"
+        class="oh-404__image mb-4"
+      />
+      <h5 class="oh-404__subtitle">
+        {% trans "No group result found!" %}
+      </h5>
+    </div>
+    <!-- end of empty page -->
+  {% endif %}
 </div>
 
 <div class="oh-tabs__content"  id="tab_1">
+  {% if validate_attendances %}
   <div class="oh-card">
     {% for attendance_list in validate_attendances %}
     <div class="oh-accordion-meta">
@@ -603,8 +620,24 @@
       </nav>
     </div>
   </div>
+  {% else %}
+    <!-- start of empty page -->
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;" >
+
+      <img
+        style="width: 150px; height: 150px"
+        src="{% static 'images/ui/present.png' %}"
+        class="oh-404__image mb-4"
+      />
+      <h5 class="oh-404__subtitle">
+        {% trans "No group result found!" %}
+      </h5>
+    </div>
+    <!-- end of empty page -->
+  {% endif %}
 </div>
 <div class="oh-tabs__content"  id="tab_2">
+  {% if attendances %}
   <div class="oh-card">
     {% for attendance_list in attendances %}
     <div class="oh-accordion-meta">
@@ -867,6 +900,21 @@
       </nav>
     </div>
   </div>
+  {% else %}
+    <!-- start of empty page -->
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;" >
+
+      <img
+        style="width: 150px; height: 150px"
+        src="{% static 'images/ui/present.png' %}"
+        class="oh-404__image mb-4"
+      />
+      <h5 class="oh-404__subtitle">
+        {% trans "No group result found!" %}
+      </h5>
+    </div>
+    <!-- end of empty page -->
+  {% endif %}
 </div>
 
 <script>

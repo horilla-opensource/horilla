@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 {% load attendancefilters %}
 {% load basefilters %}
 {% include 'filter_tags.html' %}
@@ -13,6 +14,7 @@
   {% endfor %}
 </div>
 {% endif %}
+{% if data %}
 <div class="oh-card">
 {% for attendance_list in data %}
 <div class="oh-accordion-meta">
@@ -242,6 +244,22 @@
   </nav>
 </div>
 </div>
+
+{% else %}
+  <div
+  class="oh-wrapper-main"
+  >
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+
+      <div class="oh-wrapper">
+        <div class="oh-404">
+            <img style="    width: 190px;height:  200px;" src="{% static 'images/ui/present.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+            <h5 class="oh-404__subtitle">{% trans "No group result found!" %}</h5>
+        </div>
+      </div>
+    </main>
+  </div>
+{% endif %}
 <script>
   $(".oh-table__sticky-collaspable-sort").click(function (e) {
     e.preventDefault();
@@ -255,4 +273,11 @@
       toggleBtn.toggleClass("oh-table__toggle-button--show");
     }
   });
+  $(document).ready(function() {
+    {% if data %}
+      $('#selectAllLatecome').show();
+    {% else %}
+      $('#selectAllLatecome').hide();
+    {% endif %}
+  })
 </script>
