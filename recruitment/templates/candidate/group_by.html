@@ -1,17 +1,20 @@
 {% load attendancefilters recruitmentfilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %}
 
-<div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
-    {% trans "Select All Candidates" %}
-  </div>
-  <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;">
-    {% trans "Unselect All Candidates" %}
-  </div>
-  <div class="oh-checkpoint-badge text-info mb-2" id="exportsection" style="cursor: pointer;">
-      {% trans "Export Candidates" %}
-  </div>
-  <div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" >
-  </div>
+{% if data %}
+	<div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
+		{% trans "Select All Candidates" %}
+	</div>
+	<div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;">
+		{% trans "Unselect All Candidates" %}
+	</div>
+	<div class="oh-checkpoint-badge text-info mb-2" id="exportsection" style="cursor: pointer;">
+		{% trans "Export Candidates" %}
+	</div>
+	<div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" >
+	</div>
+{% endif %}
+{% if data %}
 <div class="oh-card">
     {% for candidate_list in data %}
     <div class="oh-accordion-meta">
@@ -296,6 +299,15 @@
 		</nav>
 	</div>
 </div>
+{% else %}
+	<div class="oh-wrapper">
+		<div class="oh-404">
+			<img style="    width: 150px;height: 150px;" src="{% static 'images/ui/candidate.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+			<h5 class="oh-404__subtitle">{% trans "No group result found!" %}</h5>
+		</div>
+	</div>
+{% endif %}
+
 
 <script>
 	var archive_CanMessages = {
