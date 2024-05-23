@@ -378,6 +378,8 @@ def asset_category_creation(request):
             asset_category_form.save()
             messages.success(request, _("Asset category created successfully"))
             asset_category_form = AssetCategoryForm()
+            if AssetCategory.objects.filter().count() == 1:
+                return HttpResponse("<script>window.location.reload();</script>")
     context = {"asset_category_form": asset_category_form}
     return render(request, "category/asset_category_creation.html", context)
 
@@ -412,39 +414,19 @@ def asset_category_update(request, cat_id):
 
 @login_required
 @permission_required(perm="asset.delete_assetcategory")
-def asset_category_delete(request, cat_id):
+def delete_asset_category(request, cat_id):
     """
-    Deletes an asset category and redirects to the asset category view.
-    Args:
-        request (HttpRequest): The HTTP request object.
-        id (int): The ID of the asset category to be deleted.
-    Returns:
-        HttpResponseRedirect: A redirect to the asset category view.
-    Raises:
-        None.
+    This method is used to delete asset category
     """
+    previous_data = request.GET.urlencode()
     try:
-        asset_category = AssetCategory.objects.get(id=cat_id)
-    except AssetCategory.DoesNotExist:
-        messages.error(request, _("Asset not found"))
-        return redirect(asset_category_view_search_filter)
-    asset_status = Asset.objects.filter(asset_category_id=asset_category).filter(
-        asset_status="In use"
-    )
-
-    if asset_status:
-        messages.info(
-            request,
-            _("There are assets in use in the %(asset_category)s category.")
-            % {"asset_category": asset_category},
-        )
-        return redirect(asset_category_view_search_filter)
-    try:
-        asset_category.delete()
-        messages.success(request, _("Asset Category Deleted"))
-    except ProtectedError:
-        messages.error(request, _("You cannot delete this asset category."))
-    return redirect(asset_category_view_search_filter)
+        AssetCategory.objects.get(id=cat_id).delete()
+        messages.success(request, _("Asset category deleted."))
+    except:
+        messages.error(request, _("Assets are located within this category."))
+    if not AssetCategory.objects.filter():
+        return HttpResponse("<script>window.location.reload();</script>")
+    return redirect(f"/asset/asset-category-view-search-filter?{previous_data}")
 
 
 def filter_pagination_asset_category(request):
@@ -1199,6 +1181,8 @@ def asset_batch_number_creation(request):
             asset_batch_form.save()
             asset_batch_form = AssetBatchForm()
             messages.success(request, _("Batch number created successfully."))
+            if AssetLot.objects.filter().count() == 1 and not hx_vals:
+                return HttpResponse("<script>location.reload();</script>")
             if hx_vals:
                 category_id = request.GET.get("asset_category_id")
                 url = reverse("asset-creation", args=[category_id])
@@ -1302,6 +1286,8 @@ def asset_batch_number_delete(request, batch_id):
         messages.error(request, _("Batch number not found"))
     except ProtectedError:
         messages.error(request, _("You cannot delete this Batch number."))
+    if not AssetLot.objects.filter():
+        return HttpResponse("<script>location.reload();</script>")
     return redirect(f"/asset/asset-batch-number-search?{previous_data}")
 
 
@@ -1353,21 +1339,6 @@ def asset_count_update(request):
             asset_count = category.asset_set.count()
             return HttpResponse(asset_count)
         return HttpResponse("error")
-
-
-@login_required
-@permission_required(perm="asset.delete_assetcategory")
-def delete_asset_category(request, cat_id):
-    """
-    This method is used to delete asset category
-    """
-    previous_data = request.GET.urlencode()
-    try:
-        AssetCategory.objects.get(id=cat_id).delete()
-        messages.success(request, _("Asset category deleted."))
-    except:
-        messages.error(request, _("Assets are located within this category."))
-    return redirect(f"/asset/asset-category-view-search-filter?{previous_data}")
 
 
 @login_required
