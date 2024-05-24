@@ -17,6 +17,7 @@ from base.forms import Form, ModelForm
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import BonusPoint, Employee
+from horilla.decorators import logger
 from horilla_widgets.forms import HorillaForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
@@ -98,7 +99,7 @@ class AllowanceForm(forms.ModelForm):
                     condition.save()
                     multiple_conditions.append(condition)
         except Exception as e:
-            print(e)
+            logger(e)
         if commit:
             self.instance.other_conditions.add(*multiple_conditions)
         return multiple_conditions

@@ -29,7 +29,12 @@ from base.methods import (
 )
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.decorators import login_required, owner_can_enter, permission_required
+from horilla.decorators import (
+    hx_request_required,
+    login_required,
+    owner_can_enter,
+    permission_required,
+)
 from notifications.signals import notify
 from payroll.context_processors import get_active_employees
 from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter
@@ -120,6 +125,7 @@ def contract_update(request, contract_id, **kwargs):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.change_contract")
 def contract_status_update(request, contract_id):
     from payroll.forms.forms import ContractForm
@@ -197,6 +203,7 @@ def update_contract_filing_status(request, contract_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.delete_contract")
 def contract_delete(request, contract_id):
     """
@@ -256,6 +263,7 @@ def contract_view(request):
 
 
 @login_required
+@hx_request_required
 @owner_can_enter("payroll.view_contract", Contract)
 def view_single_contract(request, contract_id):
     """
@@ -299,6 +307,7 @@ def view_single_contract(request, contract_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.view_contract")
 def contract_filter(request):
     """

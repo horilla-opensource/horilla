@@ -25,7 +25,12 @@ from base.backends import ConfiguredEmailBackend
 from base.methods import closest_numbers, filter_own_records, get_key_instances, sortby
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.decorators import login_required, owner_can_enter, permission_required
+from horilla.decorators import (
+    hx_request_required,
+    login_required,
+    owner_can_enter,
+    permission_required,
+)
 from leave.models import AvailableLeave
 from notifications.signals import notify
 from payroll.filters import (
@@ -292,6 +297,7 @@ def view_single_allowance(request, allowance_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.view_allowance")
 def filter_allowance(request):
     """
@@ -341,6 +347,7 @@ def update_allowance(request, allowance_id, **kwargs):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.delete_allowance")
 def delete_allowance(request, allowance_id):
     """
@@ -460,6 +467,7 @@ def view_single_deduction(request, deduction_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.view_allowance")
 def filter_deduction(request):
     """
@@ -507,6 +515,7 @@ def update_deduction(request, deduction_id, **kwargs):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.delete_deduction")
 def delete_deduction(request, deduction_id, emp_id=None):
     instances_ids = request.GET.get("instances_ids")
