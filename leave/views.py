@@ -4573,6 +4573,7 @@ def get_leave_attendance_dates(request):
 
 
 @login_required
+@is_compensatory_leave_enabled()
 def view_compensatory_leave(request):
     """
     function used to view compensatory leave requests.
@@ -4625,6 +4626,7 @@ def view_compensatory_leave(request):
 
 
 @login_required
+@is_compensatory_leave_enabled()
 @hx_request_required
 def filter_compensatory_leave(request):
     """
@@ -4714,6 +4716,7 @@ def filter_compensatory_leave(request):
 
 
 @login_required
+@is_compensatory_leave_enabled()
 @hx_request_required
 def create_compensatory_leave(request, comp_id=None):
     """
@@ -4754,6 +4757,7 @@ def create_compensatory_leave(request, comp_id=None):
 
 
 @login_required
+@is_compensatory_leave_enabled()
 @hx_request_required
 @owner_can_enter(
     perm="leave.delete_compensatoryleaverequest",
@@ -4779,6 +4783,7 @@ def delete_compensatory_leave(request, comp_id):
 
 
 @login_required
+@is_compensatory_leave_enabled()
 @hx_request_required
 @manager_can_enter(perm="leave.change_compensatoryleaverequest")
 def approve_compensatory_leave(request, comp_id):
@@ -4817,6 +4822,7 @@ def approve_compensatory_leave(request, comp_id):
 
 
 @login_required
+@is_compensatory_leave_enabled()
 @hx_request_required
 @manager_can_enter(perm="leave.delete_compensatoryleaverequest")
 def reject_compensatory_leave(request, comp_id):
@@ -4865,6 +4871,7 @@ def reject_compensatory_leave(request, comp_id):
 
 
 @login_required
+@is_compensatory_leave_enabled()
 @hx_request_required
 def compensatory_leave_individual_view(request, comp_leave_id):
     """
@@ -4897,6 +4904,7 @@ def compensatory_leave_individual_view(request, comp_leave_id):
 
 
 @login_required
+@is_compensatory_leave_enabled()
 @hx_request_required
 def view_compensatory_leave_comment(request, comp_leave_id):
     """
@@ -4929,6 +4937,7 @@ def view_compensatory_leave_comment(request, comp_leave_id):
 
 
 @login_required
+@is_compensatory_leave_enabled()
 @hx_request_required
 def create_compensatory_leave_comment(request, comp_leave_id):
     """

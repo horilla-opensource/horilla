@@ -7,6 +7,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
+from leave.models import LeaveGeneralSetting
+
 from .models import LeaveAllocationRequest
 
 decorator_with_arguments = (
@@ -111,3 +113,22 @@ def leave_allocation_reject_permission(function=None, *args, **kwargs):
             return redirect("/leave/leave-allocation-request-view/")
 
     return check_permission
+
+
+@decorator_with_arguments
+def is_compensatory_leave_enabled(func=None, *args, **kwargs):
+    def function(request, *args, **kwargs):
+        """
+        This function check whether the compensatory leave feature is enabled
+        """
+        if (
+            LeaveGeneralSetting.objects.exists()
+            and LeaveGeneralSetting.objects.all().first().compensatory_leave
+        ):
+            return func(request, *args, **kwargs)
+        messages.info(request, _("Sorry,Compensatory leave is not enabled."))
+        previous_url = request.META.get("HTTP_REFERER", "/")
+        script = f'<script>window.location.href = "{previous_url}"</script>'
+        return HttpResponse(script)
+
+    return function

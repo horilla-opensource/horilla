@@ -701,9 +701,6 @@ class LeaveRequest(HorillaModel):
                             raise ValidationError(
                                 "You cannot request leave for this date range. The requestesd dates are restricted, Please contact admin."
                             )
-                else:
-                    print("NO PROBS")
-                    pass
 
         return cleaned_data
 
