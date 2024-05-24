@@ -6,7 +6,7 @@ import contextlib
 import json
 from collections import defaultdict
 from datetime import date, datetime, timedelta
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, unquote
 
 import pandas as pd
 from django.contrib import messages
@@ -156,6 +156,7 @@ def leave_type_view(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("leave.view_leavetype")
 def leave_type_individual_view(request, id):
     """
@@ -706,6 +707,7 @@ def leave_request_update(request, id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("leave.delete_leaverequest")
 def leave_request_delete(request, id):
     """
@@ -956,6 +958,7 @@ def leave_request_cancel(request, id, emp_id=None):
 
 
 @login_required
+@hx_request_required
 def user_leave_cancel(request, id):
     """
     function used to cancel approved leave request by employee.
@@ -1004,6 +1007,7 @@ def user_leave_cancel(request, id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("leave.view_leaverequest")
 def one_request_view(request, id):
     """
@@ -1148,6 +1152,9 @@ def leave_assign_view(request):
     )
 
 
+@login_required
+@hx_request_required
+@manager_can_enter("leave.view_availableleave")
 def available_leave_single_view(request, obj_id):
     previous_data = request.GET.urlencode()
     available_leave = AvailableLeave.objects.filter(id=obj_id).first()
@@ -1328,6 +1335,7 @@ def available_leave_update(request, id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("leave.delete_availableleave")
 def leave_assign_delete(request, obj_id):
     """
@@ -1636,6 +1644,7 @@ def restrict_update(request, id):
 
 
 @login_required
+@hx_request_required
 @permission_required("leave.delete_restrictleave")
 def restrict_delete(request, id):
     """
@@ -1662,6 +1671,7 @@ def restrict_delete(request, id):
 
 
 @login_required
+@hx_request_required
 @permission_required("leave.delete_restrictleave")
 def restrict_days_bulk_delete(request):
     """
@@ -1948,6 +1958,7 @@ def holiday_update(request, id):
 
 
 @login_required
+@hx_request_required
 @permission_required("leave.delete_holiday")
 def holiday_delete(request, id):
     """
@@ -2114,6 +2125,7 @@ def company_leave_update(request, id):
 
 
 @login_required
+@hx_request_required
 @permission_required("leave.delete_companyleave")
 def company_leave_delete(request, id):
     """
@@ -2460,6 +2472,7 @@ def user_request_update(request, id):
 
 
 @login_required
+@hx_request_required
 def user_request_delete(request, id):
     """
     function used to delete user leave request.
@@ -3182,10 +3195,8 @@ def leave_over_period(request):
     return JsonResponse(response)
 
 
-from urllib.parse import unquote
-
-
 @login_required
+@hx_request_required
 def leave_request_create(request):
     """
     function used to create leave request from calendar.
@@ -3365,6 +3376,7 @@ def leave_allocation_request_view(request):
 
 
 @login_required
+@hx_request_required
 def leave_allocation_request_single_view(request, req_id):
     """
     function used to present the leave allocation request detailed view.
@@ -3400,6 +3412,7 @@ def leave_allocation_request_single_view(request, req_id):
 
 
 @login_required
+@hx_request_required
 def leave_allocation_request_create(request):
     """
     function used to create leave allocation request.
@@ -3454,6 +3467,7 @@ def leave_allocation_request_create(request):
 
 
 @login_required
+@hx_request_required
 def leave_allocation_request_filter(request):
     field = request.GET.get("field")
     employee = request.user.employee_get
@@ -3538,6 +3552,7 @@ def leave_allocation_request_filter(request):
 
 
 @login_required
+@hx_request_required
 @leave_allocation_change_permission()
 def leave_allocation_request_update(request, req_id):
     """
@@ -3654,6 +3669,7 @@ def leave_allocation_request_approve(request, req_id):
 
 
 @login_required
+@hx_request_required
 @leave_allocation_reject_permission()
 def leave_allocation_request_reject(request, req_id):
     """
@@ -3718,6 +3734,7 @@ def leave_allocation_request_reject(request, req_id):
 
 
 @login_required
+@hx_request_required
 @leave_allocation_delete_permission()
 def leave_allocation_request_delete(request, req_id):
     """
@@ -3984,29 +4001,6 @@ def user_request_select_filter(request):
         return JsonResponse(context)
 
 
-# @login_required
-# def leave_type_widget_filter(request):
-#     """
-#     This method is used to return all the ids of the filtered employees
-#     """
-#     page_number = request.GET.get("page")
-#     filtered = request.GET.get("filter")
-#     filters = json.loads(filtered) if filtered else {}
-
-#     if page_number == "all":
-#         leave_type_filter = LeaveTypeFilter(filters, queryset=LeaveType.objects.all())
-
-#         # Get the filtered queryset
-#         filtered_leave_type = leave_type_filter.qs
-
-#         employee_ids = [str(emp.id) for emp in filtered_leave_type]
-#         total_count = filtered_leave_type.count()
-
-#         context = {"employee_ids": employee_ids, "total_count": total_count}
-
-#         return JsonResponse(context)
-
-
 @login_required
 def employee_leave_details(request):
     balance_count = ""
@@ -4033,6 +4027,7 @@ def employee_leave_details(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("leave.change_availableleave")
 def cut_available_leave(request, instance_id):
     """
@@ -4084,6 +4079,7 @@ def view_penalties(request):
 
 
 @login_required
+@hx_request_required
 def create_leaverequest_comment(request, leave_id):
     """
     This method renders form and template to create Leave request comments
@@ -4203,6 +4199,7 @@ def create_leaverequest_comment(request, leave_id):
 
 
 @login_required
+@hx_request_required
 def view_leaverequest_comment(request, leave_id):
     """
     This method is used to show Leave request comments
@@ -4261,6 +4258,7 @@ def delete_comment_file(request):
 
 
 @login_required
+@hx_request_required
 def delete_leaverequest_comment(request, comment_id):
     """
     This method is used to delete Leave request comments
@@ -4282,6 +4280,7 @@ def delete_leaverequest_comment(request, comment_id):
 
 
 @login_required
+@hx_request_required
 def create_allocationrequest_comment(request, leave_id):
     """
     This method renders form and template to create Allocation request comments
@@ -4394,6 +4393,7 @@ def create_allocationrequest_comment(request, leave_id):
 
 
 @login_required
+@hx_request_required
 def view_allocationrequest_comment(request, leave_id):
     """
     This method is used to show Allocation request comments
@@ -4425,6 +4425,7 @@ def view_allocationrequest_comment(request, leave_id):
 
 
 @login_required
+@hx_request_required
 def delete_allocationrequest_comment(request, comment_id):
     """
     This method is used to delete Allocation request comments
@@ -4466,6 +4467,7 @@ def delete_allocation_comment_file(request):
 
 
 @login_required
+@hx_request_required
 def view_clashes(request, leave_request_id):
     """
     This method is used to filter or view the leave clashes
@@ -4623,6 +4625,7 @@ def view_compensatory_leave(request):
 
 
 @login_required
+@hx_request_required
 def filter_compensatory_leave(request):
     """
     function used to view compensatory leave requests.
@@ -4711,6 +4714,7 @@ def filter_compensatory_leave(request):
 
 
 @login_required
+@hx_request_required
 def create_compensatory_leave(request, comp_id=None):
     """
     function used to create or update compensatory leave request.
@@ -4750,6 +4754,7 @@ def create_compensatory_leave(request, comp_id=None):
 
 
 @login_required
+@hx_request_required
 @owner_can_enter(
     perm="leave.delete_compensatoryleaverequest",
     model=CompensatoryLeaveRequest,
@@ -4774,6 +4779,7 @@ def delete_compensatory_leave(request, comp_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="leave.change_compensatoryleaverequest")
 def approve_compensatory_leave(request, comp_id):
     """
@@ -4811,6 +4817,7 @@ def approve_compensatory_leave(request, comp_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="leave.delete_compensatoryleaverequest")
 def reject_compensatory_leave(request, comp_id):
     """
@@ -4858,6 +4865,7 @@ def reject_compensatory_leave(request, comp_id):
 
 
 @login_required
+@hx_request_required
 def compensatory_leave_individual_view(request, comp_leave_id):
     """
     function used to present the compensatory leave request detailed view.
@@ -4889,6 +4897,7 @@ def compensatory_leave_individual_view(request, comp_leave_id):
 
 
 @login_required
+@hx_request_required
 def view_compensatory_leave_comment(request, comp_leave_id):
     """
     This method is used to show Leave request comments
@@ -4920,6 +4929,7 @@ def view_compensatory_leave_comment(request, comp_leave_id):
 
 
 @login_required
+@hx_request_required
 def create_compensatory_leave_comment(request, comp_leave_id):
     """
     This method renders form and template to create Compensatory leave comments
