@@ -1,4 +1,19 @@
 {% load i18n recruitmentfilters %}
+
+<!-- start of messages -->
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+<!-- end of messages -->
+
 <div class="oh-sticky-table oh-table--configurable candidate-table" id="candidateTable{{stage.id}}"
     data-stage-id="{{stage.id}}">
     <div class="oh-sticky-table__table oh-table__movable">
@@ -193,7 +208,9 @@
                                 <option value="{{sg.id}}" {% if sg == cand.stage_id %} selected{% endif %}>{{sg}}</option>
                             {% endfor %}
                         </select>
-                        <input onclick="$('#stageReloadContainer{{rec.id}}').click()" type="submit" hidden>
+                        <input onclick="setTimeout(() => {
+                            $('#stageReloadContainer{{rec.id}}').click()
+                                }, 100);" type="submit" hidden>
                     </form>
                 </div>
                 <div onclick="event.stopPropagation()" class="oh-sticky-table__td oh-table-config__td">
