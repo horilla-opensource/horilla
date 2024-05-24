@@ -131,6 +131,7 @@ from helpdesk.models import DepartmentManager, TicketType
 from horilla.decorators import (
     delete_permission,
     duplicate_permission,
+    hx_request_required,
     login_required,
     manager_can_enter,
     permission_required,
@@ -810,6 +811,7 @@ def object_delete(request, id, **kwargs):
 
 
 @login_required
+@hx_request_required
 @duplicate_permission()
 def object_duplicate(request, obj_id, **kwargs):
     model = kwargs["model"]
@@ -1367,6 +1369,7 @@ def rotating_work_type_assign(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("base.add_rotatingworktypeassign")
 def rotating_work_type_assign_add(request):
     """
@@ -1416,6 +1419,7 @@ def rotating_work_type_assign_add(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("base.view_rotatingworktypeassign")
 def rotating_work_type_assign_view(request):
     """
@@ -1474,6 +1478,7 @@ def rotating_work_type_assign_view(request):
 
 
 @login_required
+@hx_request_required
 def rotating_work_individual_view(request, instance_id):
     """
     This view is used render detailed view of the rotating work type assign
@@ -1508,6 +1513,7 @@ def rotating_work_individual_view(request, instance_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("base.change_rotatingworktypeassign")
 def rotating_work_type_assign_update(request, id):
     """
@@ -1580,6 +1586,7 @@ def rotating_work_type_assign_redirect(request, obj_id, employee_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("base.change_rotatingworktypeassign")
 def rotating_work_type_assign_archive(request, obj_id):
     """
@@ -1680,6 +1687,7 @@ def rotating_work_type_assign_bulk_delete(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.delete_rotatingworktypeassign")
 @require_http_methods(["POST"])
 def rotating_work_type_assign_delete(request, obj_id):
@@ -2002,6 +2010,7 @@ def rotating_shift_assign(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("base.add_rotatingshiftassign")
 def rotating_shift_assign_add(request):
     """
@@ -2051,6 +2060,7 @@ def rotating_shift_assign_add(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("base.view_rotatingshiftassign")
 def rotating_shift_assign_view(request):
     """
@@ -2102,6 +2112,7 @@ def rotating_shift_assign_view(request):
 
 
 @login_required
+@hx_request_required
 def rotating_shift_individual_view(request, instance_id):
     """
     This view is used render detailed view of the rotating shit assign
@@ -2136,6 +2147,7 @@ def rotating_shift_individual_view(request, instance_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("base.change_rotatingshiftassign")
 def rotating_shift_assign_update(request, id):
     """
@@ -2213,6 +2225,7 @@ def rotating_shift_assign_redirect(request, obj_id, employee_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("base.change_rotatingshiftassign")
 def rotating_shift_assign_archive(request, obj_id):
     """
@@ -2313,6 +2326,7 @@ def rotating_shift_assign_bulk_delete(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("base.delete_rotatingshiftassign")
 @require_http_methods(["POST"])
 def rotating_shift_assign_delete(request, obj_id):
@@ -2589,6 +2603,7 @@ def work_type_request_export(request):
 
 
 @login_required
+@hx_request_required
 def work_type_request_search(request):
     """
     This method is used to search work type request.
@@ -2640,6 +2655,7 @@ def work_type_request_search(request):
 
 
 @login_required
+@hx_request_required
 def work_type_request(request):
     """
     This method is used to create request for work type  .
@@ -2887,6 +2903,7 @@ def work_type_request_bulk_approve(request):
 
 
 @login_required
+@hx_request_required
 @work_type_request_change_permission()
 def work_type_request_update(request, work_type_request_id):
     """
@@ -2921,6 +2938,7 @@ def work_type_request_update(request, work_type_request_id):
 
 
 @login_required
+@hx_request_required
 @require_http_methods(["POST"])
 def work_type_request_delete(request, obj_id):
     """
@@ -3046,6 +3064,7 @@ def work_type_request_bulk_delete(request):
 
 
 @login_required
+@hx_request_required
 def shift_request(request):
     """
     This method is used to create shift request
@@ -3128,6 +3147,7 @@ def update_employee_allocation(request):
 
 
 @login_required
+@hx_request_required
 def shift_request_allocation(request):
     """
     This method is used to create shift request reallocation
@@ -3401,6 +3421,7 @@ def shift_request_search(request):
 
 
 @login_required
+@hx_request_required
 def shift_request_details(request, id):
     """
     This method is used to show shift request details in a modal
@@ -3427,6 +3448,7 @@ def shift_request_details(request, id):
 
 
 @login_required
+@hx_request_required
 def shift_allocation_request_details(request, id):
     """
     This method is used to show shift request details in a modal
@@ -3453,6 +3475,7 @@ def shift_allocation_request_details(request, id):
 
 
 @login_required
+@hx_request_required
 @shift_request_change_permission()
 def shift_request_update(request, shift_request_id):
     """
@@ -4928,11 +4951,12 @@ def multiple_level_approval_delete(request, condition_id):
 
 
 @login_required
+@hx_request_required
 def create_shiftrequest_comment(request, shift_id):
     """
     This method renders form and template to create shift request comments
     """
-    shift = ShiftRequest.objects.filter(id=shift_id).first()
+    shift = ShiftRequest.find(shift_id)
     emp = request.user.employee_get
     form = ShiftRequestCommentForm(
         initial={"employee_id": emp.id, "request_id": shift_id}
@@ -5039,6 +5063,7 @@ def create_shiftrequest_comment(request, shift_id):
 
 
 @login_required
+@hx_request_required
 def view_shift_comment(request, shift_id):
     """
     This method is used to render all the notes of the employee
@@ -5095,6 +5120,7 @@ def delete_shift_comment_file(request):
 
 
 @login_required
+@hx_request_required
 def view_work_type_comment(request, work_type_id):
     """
     This method is used to render all the notes of the employee
@@ -5149,11 +5175,12 @@ def delete_work_type_comment_file(request):
 
 
 @login_required
+@hx_request_required
 def delete_shiftrequest_comment(request, comment_id):
     """
     This method is used to delete shift request comments
     """
-    comment = ShiftRequestComment.objects.filter(id=comment_id)
+    comment = ShiftRequestComment.find(comment_id)
     if not request.user.has_perm("base.delete_shiftrequestcomment"):
         comment = comment.filter(employee_id__employee_user_id=request.user)
     shift_id = comment.first().request_id.id
@@ -5163,6 +5190,7 @@ def delete_shiftrequest_comment(request, comment_id):
 
 
 @login_required
+@hx_request_required
 def create_worktyperequest_comment(request, worktype_id):
     """
     This method renders form and template to create Work type request comments
@@ -5275,6 +5303,7 @@ def create_worktyperequest_comment(request, worktype_id):
 
 
 @login_required
+@hx_request_required
 def delete_worktyperequest_comment(request, comment_id):
     """
     This method is used to delete Work type request comments

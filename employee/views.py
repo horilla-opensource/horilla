@@ -612,6 +612,7 @@ def document_request_view(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("horilla_documents.view_documentrequests")
 def document_filter_view(request):
     """
@@ -644,6 +645,7 @@ def document_filter_view(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("horilla_documents.add_documentrequests")
 def document_request_create(request):
     """
@@ -687,6 +689,7 @@ def document_request_create(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("horilla_documents.change_documentrequests")
 def document_request_update(request, id):
     """
@@ -717,6 +720,7 @@ def document_request_update(request, id):
 
 
 @login_required
+@hx_request_required
 @owner_can_enter("horilla_documents.view_document", Employee)
 def document_tab(request, emp_id):
     """
@@ -741,6 +745,7 @@ def document_tab(request, emp_id):
 
 
 @login_required
+@hx_request_required
 @owner_can_enter("horilla_documents.add_document", Employee)
 def document_create(request, emp_id):
     """
@@ -794,6 +799,7 @@ def update_document_title(request, id):
 
 
 @login_required
+@hx_request_required
 def document_delete(request, id):
     try:
         document = Document.objects.filter(id=id)
@@ -821,6 +827,7 @@ def document_delete(request, id):
 
 
 @login_required
+@hx_request_required
 def file_upload(request, id):
     """
     This function is used to upload documents of an employee in employee individual & profile view.
@@ -859,6 +866,7 @@ def file_upload(request, id):
 
 
 @login_required
+@hx_request_required
 def view_file(request, id):
     """
     This function used to view the uploaded document in the modal.
@@ -918,6 +926,7 @@ def get_content_type(file_extension):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("horilla_documents.add_document")
 def document_approve(request, id):
     """
@@ -942,6 +951,7 @@ def document_approve(request, id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("horilla_documents.add_document")
 def document_reject(request, id):
     """

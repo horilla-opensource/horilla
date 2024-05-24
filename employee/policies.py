@@ -26,7 +26,7 @@ from employee.models import (
     Policy,
     PolicyMultipleFile,
 )
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import hx_request_required, login_required, permission_required
 from notifications.signals import notify
 
 
@@ -46,6 +46,7 @@ def view_policies(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("employee.add_policy")
 def create_policy(request):
     """
@@ -66,6 +67,7 @@ def create_policy(request):
 
 
 @login_required
+@hx_request_required
 def search_policies(request):
     """
     This method is used to search in policies
@@ -84,6 +86,7 @@ def search_policies(request):
 
 
 @login_required
+@hx_request_required
 def view_policy(request):
     """
     This method is used to view the policy
@@ -235,6 +238,7 @@ def employee_account_block_unblock(emp_id, result):
 
 
 @login_required
+@hx_request_required
 @permission_required("employee.add_disciplinaryaction")
 def create_actions(request):
     """
@@ -280,6 +284,7 @@ def create_actions(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("employee.change_disciplinaryaction")
 def update_actions(request, action_id):
     """
@@ -317,6 +322,7 @@ def update_actions(request, action_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("employee.change_disciplinaryaction")
 def remove_employee_disciplinary_action(request, action_id, emp_id):
     dis_action = DisciplinaryAction.objects.get(id=action_id)
@@ -350,6 +356,7 @@ def remove_employee_disciplinary_action(request, action_id, emp_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("employee.delete_disciplinaryaction")
 def delete_actions(request, action_id):
     """
@@ -404,6 +411,7 @@ def action_type_name(request):
 
 
 @login_required
+@hx_request_required
 def disciplinary_filter_view(request):
     """
     This method is used to filter Disciplinary Action.
