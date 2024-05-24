@@ -26,6 +26,8 @@ class HorillaCompanyManager(models.Manager):
         """
         get_queryset method
         """
+        from horilla.decorators import logger
+
         queryset = super().get_queryset()
         request = getattr(_thread_locals, "request", None)
         selected_company = None
@@ -38,7 +40,7 @@ class HorillaCompanyManager(models.Manager):
                 else queryset
             )
         except Exception as e:
-            print(e)
+            logger(e)
         try:
             has_duplicates = queryset.count() != queryset.distinct().count()
             if has_duplicates:
