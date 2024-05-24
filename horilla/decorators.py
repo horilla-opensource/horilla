@@ -203,7 +203,60 @@ def hx_request_required(view_func):
     def wrapped_view(request, *args, **kwargs):
         key = "HTTP_HX_REQUEST"
         if key not in request.META.keys():
-            return HttpResponse("method not allowed...")
+            html_content = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Method Not Allowed</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f8f9fa;
+                        color: #333;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        height: 100vh;
+                        margin: 0;
+                    }
+                    .container {
+                        text-align: center;
+                        background: #fff;
+                        padding: 20px;
+                        border: 1px solid #ddd;
+                        border-radius: 5px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+                    h1 {
+                        font-size: 24px;
+                        margin-bottom: 10px;
+                    }
+                    p {
+                        font-size: 18px;
+                        margin-bottom: 20px;
+                    }
+                    a {
+                        color: #007bff;
+                        text-decoration: none;
+                        font-weight: bold;
+                    }
+                    a:hover {
+                        text-decoration: underline;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>405 Method Not Allowed</h1>
+                    <p>The request method is not allowed. Please make sure you are sending a proper request.</p>
+                    <a href="/">Go Back to Home</a>
+                </div>
+            </body>
+            </html>
+            """
+            return HttpResponse(html_content, content_type="text/html", status=405)
         return view_func(request, *args, **kwargs)
 
     return wrapped_view
@@ -221,7 +274,11 @@ def owner_can_enter(function, perm: str, model: object, manager_access=False):
         if model == Employee:
             employee = Employee.objects.get(id=instance_id)
         else:
-            employee = model.objects.get(id=instance_id).employee_id
+            try:
+                employee = model.objects.get(id=instance_id).employee_id
+            except:
+                messages.error(request, ("Sorry, something went wrong!"))
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         can_enter = (
             request.user.employee_get == employee
             or request.user.has_perm(perm)
