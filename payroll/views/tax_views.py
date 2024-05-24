@@ -14,12 +14,12 @@ import math
 from urllib.parse import parse_qs
 
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import get_key_instances
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import hx_request_required, login_required, permission_required
 from payroll.forms.tax_forms import FilingStatusForm, TaxBracketForm
 from payroll.models.models import FilingStatus
 from payroll.models.tax_models import TaxBracket
@@ -42,6 +42,7 @@ def filing_status_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.add_filingstatus")
 def create_filing_status(request):
     """
@@ -70,6 +71,7 @@ def create_filing_status(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.change_filingstatus")
 def update_filing_status(request, filing_status_id):
     """
@@ -80,16 +82,12 @@ def update_filing_status(request, filing_status_id):
 
     :param tax_bracket_id: The ID of the filing status to update.
     """
-    filing_status = FilingStatus.objects.get(id=filing_status_id)
+    filing_status = FilingStatus.find(filing_status_id)
+    if not filing_status:
+        messages.error(request, _("Filing status not found"))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     filing_status_form = FilingStatusForm(instance=filing_status)
     if request.method == "POST":
-        response = render(
-            request,
-            "payroll/tax/filing_status_edit.html",
-            {
-                "form": filing_status_form,
-            },
-        )
         filing_status_form = FilingStatusForm(request.POST, instance=filing_status)
         if filing_status_form.is_valid():
             filing_status_form.save()
@@ -104,6 +102,7 @@ def update_filing_status(request, filing_status_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.delete_filingstatus")
 def filing_status_delete(request, filing_status_id):
     """
@@ -113,20 +112,29 @@ def filing_status_delete(request, filing_status_id):
     database and redirects to the filing status view.
 
     """
-    try:
-        filing_status = FilingStatus.objects.get(id=filing_status_id)
+    filing_status = FilingStatus.find(filing_status_id)
+    if filing_status:
         filing_status.delete()
         messages.info(request, _("Filing status successfully deleted."))
-    except:
-        messages.error(request, _("This filing status not found"))
-    if not FilingStatus.objects.filter():
-        return HttpResponse(("<script>window.location.reload()</script>"))
+    else:
+        messages.error(request, _("This filing status was not found."))
+    if not FilingStatus.objects.exists():
+        return HttpResponse("<script>window.location.reload()</script>")
     return redirect(filing_status_search)
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.view_filingstatus")
 def filing_status_search(request):
+    """
+    Display the filing status search view.
+
+    This view handles the search functionality for filing statuses. It retrieves
+    the search term from the GET parameters, filters the FilingStatus objects
+    based on the search term, and renders the 'payroll/tax/filing_status_list.html'
+    template with the filtered filing statuses.
+    """
     search = request.GET.get("search") if request.GET.get("search") else ""
     status = FilingStatus.objects.filter(filing_status__icontains=search)
     previous_data = request.GET.urlencode()
@@ -141,6 +149,7 @@ def filing_status_search(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.view_taxbracket")
 def tax_bracket_list(request, filing_status_id):
     """
@@ -167,6 +176,7 @@ def tax_bracket_list(request, filing_status_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.add_taxbracket")
 def create_tax_bracket(request, filing_status_id):
     """
@@ -200,6 +210,7 @@ def create_tax_bracket(request, filing_status_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.change_taxbracket")
 def update_tax_bracket(request, tax_bracket_id):
     """
@@ -210,30 +221,33 @@ def update_tax_bracket(request, tax_bracket_id):
 
     :param tax_bracket_id: The ID of the tax bracket to update.
     """
-    tax_bracket = TaxBracket.objects.get(id=tax_bracket_id)
-    filing_status_id = tax_bracket.filing_status_id.id
-    tax_bracket_form = TaxBracketForm(instance=tax_bracket)
+    tax_bracket = TaxBracket.find(tax_bracket_id)
+    if tax_bracket:
+        filing_status_id = tax_bracket.filing_status_id.id
+        tax_bracket_form = TaxBracketForm(instance=tax_bracket)
+        if request.method == "POST":
+            tax_bracket_form = TaxBracketForm(request.POST, instance=tax_bracket)
+            if tax_bracket_form.is_valid():
+                max_income = tax_bracket_form.cleaned_data.get("max_income")
+                if not max_income:
+                    messages.info(request, _("The maximum income will be infinite"))
+                    tax_bracket_form.instance.max_income = math.inf
+                tax_bracket_form.save()
+                messages.success(
+                    request, _("The tax bracket has been updated successfully.")
+                )
 
-    if request.method == "POST":
-        tax_bracket_form = TaxBracketForm(request.POST, instance=tax_bracket)
-        if tax_bracket_form.is_valid():
-            max_income = tax_bracket_form.cleaned_data.get("max_income")
-            if not max_income:
-                messages.info(request, _("The maximum income will be infinite"))
-                tax_bracket_form.instance.max_income = math.inf
-            tax_bracket_form.save()
-            messages.success(
-                request, _("The tax bracket has been updated successfully.")
-            )
-
-    context = {
-        "form": tax_bracket_form,
-        "filing_status_id": filing_status_id,
-    }
-    return render(request, "payroll/tax/tax_bracket_edit.html", context)
+        context = {
+            "form": tax_bracket_form,
+            "filing_status_id": filing_status_id,
+        }
+        return render(request, "payroll/tax/tax_bracket_edit.html", context)
+    messages.error(request, _("Tax bracket not found"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.delete_taxbracket")
 def delete_tax_bracket(request, tax_bracket_id):
     """
@@ -244,11 +258,18 @@ def delete_tax_bracket(request, tax_bracket_id):
 
     :param tax_bracket_id: The ID of the tax bracket to delete.
     """
-    try:
-        tax_bracket = TaxBracket.objects.get(id=tax_bracket_id)
-        filing_status_id = tax_bracket.filing_status_id.id
-        tax_bracket.delete()
+    tax_bracket = TaxBracket.find(tax_bracket_id)
+    filing_status_id = (
+        tax_bracket.filing_status_id.id
+        if tax_bracket and tax_bracket.delete()
+        else None
+    )
+    if filing_status_id:
         messages.success(request, _("Tax bracket successfully deleted."))
-    except:
+    else:
         messages.error(request, _("Tax bracket not found"))
-    return redirect(tax_bracket_list, filing_status_id=filing_status_id)
+    return (
+        redirect(tax_bracket_list, filing_status_id=filing_status_id)
+        if filing_status_id
+        else HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    )
