@@ -62,7 +62,11 @@ class HorillaModel(models.Model):
 
     @classmethod
     def find(cls, object_id):
-        return cls.objects.filter(id=object_id).first()
+        try:
+            object = cls.objects.filter(id=object_id).first()
+            return object
+        except:
+            return None
 
     @classmethod
     def activate_deactivate(cls, object_id):
