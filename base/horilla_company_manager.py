@@ -40,7 +40,7 @@ class HorillaCompanyManager(models.Manager):
                 else queryset
             )
         except Exception as e:
-            logger(e)
+            logger.error(e)
         try:
             has_duplicates = queryset.count() != queryset.distinct().count()
             if has_duplicates:
