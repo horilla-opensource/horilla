@@ -107,5 +107,5 @@ class TicketReGroup:
         ("priority", "Priority"),
         ("tags", "Tags"),
         ("assigned_to", "Assigner"),
-        ("employee_id.employee_work_info.company_id", "Company"),
+        ("employee_id__employee_work_info__company_id", "Company"),
     ]

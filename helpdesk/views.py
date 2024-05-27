@@ -1114,7 +1114,9 @@ def tickets_bulk_archive(request):
         ticket.is_active = is_active
         ticket.save()
     messages.success(request, _("The Ticket updated successfully."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    previous_url = request.META.get("HTTP_REFERER", "/")
+    script = f'<script>window.location.href = "{previous_url}"</script>'
+    return HttpResponse(script)
 
 
 @login_required
@@ -1162,7 +1164,9 @@ def tickets_bulk_delete(request):
             )
         except ProtectedError:
             messages.error(request, _("You cannot delete this Ticket."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    previous_url = request.META.get("HTTP_REFERER", "/")
+    script = f'<script>window.location.href = "{previous_url}"</script>'
+    return HttpResponse(script)
 
 
 @login_required
