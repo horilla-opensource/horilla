@@ -978,10 +978,6 @@ class DynamicEmailConfiguration(HorillaModel):
     SingletonModel to keep the mail server configurations
     """
 
-    is_primary = models.BooleanField(
-        default=False, verbose_name=_("Primary Mail Server")
-    )
-
     host = models.CharField(null=True, max_length=256, verbose_name=_("Email Host"))
 
     port = models.SmallIntegerField(null=True, verbose_name=_("Email Port"))
@@ -1013,6 +1009,10 @@ class DynamicEmailConfiguration(HorillaModel):
     use_ssl = models.BooleanField(default=False, verbose_name=_("Use SSL"))
 
     fail_silently = models.BooleanField(default=False, verbose_name=_("Fail Silently"))
+
+    is_primary = models.BooleanField(
+        default=False, verbose_name=_("Primary Mail Server")
+    )
 
     timeout = models.SmallIntegerField(
         null=True, verbose_name=_("Email Send Timeout (seconds)")
@@ -1382,6 +1382,7 @@ class BiometricAttendance(models.Model):
         on_delete=models.PROTECT,
         related_name="biometric_enabled_company",
     )
+    objects = models.Manager()
 
     def __str__(self):
         return f"{self.is_installed}"
