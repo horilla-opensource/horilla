@@ -15,6 +15,7 @@ import calendar
 import contextlib
 import io
 import json
+from collections import defaultdict
 from datetime import date, datetime, timedelta
 from urllib.parse import parse_qs
 
@@ -2008,46 +2009,11 @@ def monthly_leave_days(month, year):
 
 @login_required
 def work_records(request):
-    employees = Employee.objects.filter(is_active=True)
-    data = []
     today = date.today()
-    month_matrix = calendar.monthcalendar(today.year, today.month)
     previous_data = request.GET.urlencode()
-
-    days = [day for week in month_matrix for day in week if day != 0]
-    current_month_date_list = [
-        datetime(today.year, today.month, day).date() for day in days
-    ]
-
-    for employee in employees:
-        work_record_list = []
-        work_records_dict = {
-            record.date: record
-            for record in WorkRecord.objects.filter(
-                employee_id=employee, date__in=current_month_date_list
-            )
-        }
-
-        for day in current_month_date_list:
-            work_record = work_records_dict.get(day, None)
-            work_record_list.append(work_record)
-        data.append(
-            {
-                "employee": employee,
-                "work_record": work_record_list,
-            }
-        )
-    leave_dates = monthly_leave_days(today.month, today.year)
-    page_number = request.GET.get("page")
-    paginator = Paginator(data, 20)
-    data = paginator.get_page(page_number)
 
     context = {
         "current_date": today,
-        "current_month_dates_list": current_month_date_list,
-        "leave_dates": leave_dates,
-        "shift_schedule": EmployeeShiftSchedule.objects.all(),
-        "data": data,
         "pd": previous_data,
     }
     return render(
@@ -2067,31 +2033,50 @@ def work_records_change_month(request):
         month = date.today().month
         year = date.today().year
 
-    employees = Employee.objects.filter(is_active=True)
+    schedules = list(EmployeeShiftSchedule.objects.all())
+    employees = list(Employee.objects.filter(is_active=True))
     data = []
     month_matrix = calendar.monthcalendar(year, month)
 
     days = [day for week in month_matrix for day in week if day != 0]
     current_month_date_list = [datetime(year, month, day).date() for day in days]
 
-    for employee in employees:
-        work_record_list = []
-        work_records_dict = {
-            record.date: record
-            for record in WorkRecord.objects.filter(
-                employee_id=employee, date__in=current_month_date_list
-            )
-        }
+    all_work_records = WorkRecord.objects.filter(
+        date__in=current_month_date_list
+    ).select_related("employee_id")
 
-        for day in current_month_date_list:
-            work_record = work_records_dict.get(day, None)
+    work_records_dict = defaultdict(lambda: defaultdict(lambda: None))
+    for record in all_work_records:
+        work_records_dict[record.employee_id.id][record.date] = record
+
+    schedules_dict = defaultdict(dict)
+    for schedule in schedules:
+        schedules_dict[schedule.shift_id][schedule.day.day.lower()] = schedule
+
+    for employee in employees:
+        shift = getattr(getattr(employee, "employee_work_info", None), "shift_id", None)
+        work_record_list = []
+
+        for current_date in current_month_date_list:
+            day = current_date.strftime("%A").lower()
+            schedule = schedules_dict.get(shift, {}).get(day, None)
+            work_record = work_records_dict[employee.id].get(current_date, None)
+
+            if not work_record:
+                work_record = (
+                    None
+                    if not schedule or schedule.minimum_working_hour == "00:00"
+                    else "EW"
+                )
             work_record_list.append(work_record)
+
         data.append(
             {
                 "employee": employee,
                 "work_record": work_record_list,
             }
         )
+
     leave_dates = monthly_leave_days(month, year)
     page_number = request.GET.get("page")
     paginator = Paginator(data, 20)

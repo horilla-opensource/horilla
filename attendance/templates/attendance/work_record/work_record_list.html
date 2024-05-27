@@ -30,7 +30,7 @@
     <table>
         <thead>
             <tr>
-                <th class="oh-sticky-table__th header">{% trans "Work Records" %}</th>
+                <th class="oh-sticky-table__th header">{% trans "Employee" %}</th>
                 {% for day in current_month_dates_list %}
                 <th class="oh-sticky-table__th {% if day in leave_dates %}holiday {% else %}header{% endif %}">{{ day.day }}</th>
                 {% endfor %}
@@ -45,20 +45,34 @@
 
                 <td class="days {% if date in leave_dates %}holiday{% endif %}"
                 style="text-align:center; cursor:default;
-                    {% if work_record %}
+                    {% if work_record == 'EW' and date <= current_date and not date in leave_dates %}
+                        background-color: #a8b1ff; color: #fff
+                    {% elif work_record %}
                         {% if work_record.work_record_type == 'CONF' %}background-color: #ed4c4c; color: #fff
                         {% elif work_record.work_record_type == 'FDP' %}background-color: #38c338;  color: #fff
                         {% elif work_record.work_record_type == 'HDP' %}background-color: #dfdf52;
                         {% elif work_record.work_record_type == 'ABS' %}background-color: #808080; color: #fff
                         {% endif %}
-                        {% elif employee_data.employee|shift_exists:date and date <= current_date and not date in leave_dates %}
-                        background-color: #a8b1ff; color: #fff
                     {% endif %}
                 "
                 >
-                    {% if work_record %}
-                    <div title="{{work_record.message}}" class="fw-bold">
-                        <a class="text-decoration-none" href={% url "attendance-view" %}?employee_id={{work_record.employee_id.id}}&attendance_date={{work_record.date|date:'Y-m-d'}}>
+                    {% if work_record == 'EW' and date <= current_date and not date in leave_dates %}
+                        EW
+                    {% elif work_record %}
+                    <div title="{{work_record.message}}" role="button" class="fw-bold"
+                        onclick="{% if work_record.work_record_type == 'ABS' %}
+                            window.location.href=`{% url 'request-view' %}?employee_id={{work_record.employee_id.id}}&from_date={{work_record.date|date:'Y-m-d'}}&to_date={{work_record.date|date:'Y-m-d'}}`;
+                        {% else %}
+                            {% if work_record.work_record_type == 'CONF' %}
+                                localStorage.setItem('activeTabAttendance','#tab_1')
+                            {% else %}
+                                localStorage.setItem('activeTabAttendance','#tab_2')
+                            {% endif %}
+                            window.location.href=`{% url 'attendance-view' %}?employee_id={{work_record.employee_id.id}}&attendance_date={{work_record.date|date:'Y-m-d'}}`
+                        {% endif %}"
+                    >
+
+                    <a class="text-decoration-none">
                             {% if work_record.work_record_type == 'CONF' %}!
                             {% elif work_record.work_record_type == 'FDP' %} P
                             {% elif work_record.work_record_type == 'HDP' %} HP
@@ -66,8 +80,6 @@
                             {% endif %}
                         </a>
                     </div>
-                    {% elif employee_data.employee|shift_exists:date and date <= current_date and not date in leave_dates %}
-                    EW
                     {% endif %}
                 </td>
 
