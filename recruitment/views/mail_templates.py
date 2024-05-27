@@ -9,7 +9,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import hx_request_required, login_required, permission_required
 from recruitment.forms import OfferLetterForm
 from recruitment.models import Candidate, RecruitmentMailTemplate
 
@@ -35,6 +35,7 @@ def view_mail_templates(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("recruitment.change_recruitmentmailtemplate")
 def view_letter(request, obj_id):
     """

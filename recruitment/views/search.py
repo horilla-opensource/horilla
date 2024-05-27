@@ -14,7 +14,7 @@ from django.shortcuts import render
 from attendance.methods.group_by import group_by_queryset
 from attendance.methods.group_by import group_by_queryset as general_group_by
 from base.methods import get_key_instances, get_pagination, sortby
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import hx_request_required, login_required, permission_required
 from recruitment.filters import (
     CandidateFilter,
     RecruitmentFilter,
@@ -33,6 +33,7 @@ from recruitment.views.paginator_qry import paginator_qry
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.view_recruitment")
 def recruitment_search(request):
     """
@@ -61,6 +62,7 @@ def recruitment_search(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.view_stage")
 def stage_search(request):
     """
@@ -89,6 +91,7 @@ def stage_search(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.view_candidate")
 def candidate_search(request):
     """
@@ -151,6 +154,7 @@ def pipeline_candidate_search(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.view_candidate")
 def candidate_filter_view(request):
     """
@@ -174,6 +178,7 @@ def candidate_filter_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.view_recruitmentsurvey")
 def filter_survey(request):
     """

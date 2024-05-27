@@ -16,7 +16,7 @@ from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import closest_numbers, get_pagination
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import hx_request_required, login_required, permission_required
 from recruitment.filters import SurveyFilter
 from recruitment.forms import (
     AddQuestionForm,
@@ -192,6 +192,7 @@ def view_question_template(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.change_recruitmentsurvey")
 def update_question_template(request, survey_id):
     """
@@ -220,6 +221,7 @@ def update_question_template(request, survey_id):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.add_recruitmentsurvey")
 def create_question_template(request):
     """
@@ -320,6 +322,7 @@ def application_form(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.view_recruitmentsurvey")
 def single_survey(request, survey_id):
     """
@@ -338,6 +341,7 @@ def single_survey(request, survey_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("recruitment.add_surveytemplate")
 def create_template(request):
     """
@@ -374,6 +378,7 @@ def delete_template(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("recruitment.change_surveytemplate")
 def question_add(request):
     """

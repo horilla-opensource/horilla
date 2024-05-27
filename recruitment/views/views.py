@@ -191,6 +191,7 @@ def pipeline_grouper(request, recruitments):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.add_recruitment")
 def recruitment(request):
     """
@@ -386,6 +387,7 @@ cache = {}
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.view_recruitment")
 def filter_pipeline(request):
     """
@@ -519,6 +521,7 @@ def limited_paginator_qry(queryset, page):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.view_recruitment")
 def candidate_component(request):
     """
@@ -605,6 +608,7 @@ def recruitment_archive(request, rec_id):
 
 
 @login_required
+@hx_request_required
 @recruitment_manager_can_enter(perm="recruitment.change_stage")
 def stage_update_pipeline(request, stage_id):
     """
@@ -643,6 +647,7 @@ def stage_update_pipeline(request, stage_id):
 
 
 @login_required
+@hx_request_required
 @recruitment_manager_can_enter(perm="recruitment.change_recruitment")
 def recruitment_update_pipeline(request, rec_id):
     """
@@ -1121,6 +1126,7 @@ def stage_update(request, stage_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("recruitment.add_candidate")
 def add_candidate(request):
     """
@@ -1255,6 +1261,7 @@ def candidate_view(request):
 
 
 @login_required
+@hx_request_required
 def interview_filter_view(request):
     """
     This method is used to filter Disciplinary Action.
@@ -1373,6 +1380,7 @@ def candidate_view_list(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.view_candidate")
 def candidate_view_card(request):
     """
@@ -1581,6 +1589,7 @@ def form_send_mail(request, cand_id=None):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.add_interviewschedule")
 def interview_schedule(request, cand_id):
     """
@@ -1620,6 +1629,7 @@ def interview_schedule(request, cand_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.add_interviewschedule")
 def create_interview_schedule(request):
     """
@@ -1658,6 +1668,7 @@ def create_interview_schedule(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.delete_interviewschedule")
 def interview_delete(request, interview_id):
     """
@@ -1676,6 +1687,7 @@ def interview_delete(request, interview_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.change_interviewschedule")
 def interview_edit(request, interview_id):
     """
@@ -1964,6 +1976,7 @@ def skill_zone_view(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.add_skillzone")
 def skill_zone_create(request):
     """
@@ -1984,6 +1997,7 @@ def skill_zone_create(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.change_skillzone")
 def skill_zone_update(request, sz_id):
     """
@@ -2071,6 +2085,7 @@ def skill_zone_archive(request, sz_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.view_skillzone")
 def skill_zone_filter(request):
     """
@@ -2155,6 +2170,7 @@ def skill_zone_cand_card_view(request, sz_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.add_skillzonecandidate")
 def skill_zone_candidate_create(request, sz_id):
     """
@@ -2181,6 +2197,7 @@ def skill_zone_candidate_create(request, sz_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.change_skillzonecandidate")
 def skill_zone_cand_edit(request, sz_cand_id):
     """
@@ -2311,6 +2328,7 @@ def skill_zone_cand_delete(request, sz_cand_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.change_candidate")
 def to_skill_zone(request, cand_id):
     """
@@ -2403,6 +2421,7 @@ def get_mail_log(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("recruitment.add_recruitmentgeneralsetting")
 def candidate_self_tracking(request):
     """
@@ -2416,6 +2435,7 @@ def candidate_self_tracking(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("recruitment.add_recruitmentgeneralsetting")
 def candidate_self_tracking_rating_option(request):
     """
@@ -2452,6 +2472,7 @@ def candidate_self_status_tracking(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("recruitment.add_rejectreason")
 def create_reject_reason(request):
     """
