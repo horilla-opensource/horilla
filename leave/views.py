@@ -457,8 +457,8 @@ def leave_request_view(request):
     Returns:
     GET : return leave request view template
     """
-    queryset = LeaveRequestFilter(request.GET).qs.order_by("-id")
-    multiple_approvals = filter_conditional_leave_request(request)
+    queryset = LeaveRequestFilter(request.GET).qs.order_by("-id").distinct()
+    multiple_approvals = filter_conditional_leave_request(request).distinct()
     queryset = (
         filtersubordinates(request, queryset, "leave.view_leaverequest")
         | multiple_approvals
