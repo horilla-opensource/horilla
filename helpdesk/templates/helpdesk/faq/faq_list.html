@@ -5,9 +5,9 @@
 		<ul class="oh-faq__items">
 			{% for faq in faqs %}
 			<li class="oh-faq__item">
-				<div class="oh-faq__item-header">
-					<div class="oh-faq__item-header__left">
-						<span class="oh-faq__item-title"> {{faq.question}} </span>
+				<div class="oh-faq__item-header icon-inner" onclick="show_answer(this)">
+					<div class="oh-faq__item-header__left icon-inner">
+						<span class="oh-faq__item-title icon-inner"> {{faq.question}} </span>
 						<ul class="oh-faq__tags">
 							{% for tag in faq.tags.all %}
 							<li class="oh-faq__tag text-light" style="background:{{tag.color}};">{{tag|capfirst}}</li>
@@ -20,9 +20,9 @@
 							class="oh-btn oh-btn--sq oh-btn--transparent"
 							title="{% trans 'Edit' %}"
 							data-toggle="oh-modal-toggle"
-							data-target="#faqCreate"
+							data-target="#objectCreateModal"
 							hx-get="{% url 'faq-update' faq.id %}"
-							hx-target="#faqCreate"
+							hx-target="#objectCreateModalTarget"
 							onclick='event.stopPropagation()'
 						>
 							<ion-icon name="create-outline"></ion-icon>

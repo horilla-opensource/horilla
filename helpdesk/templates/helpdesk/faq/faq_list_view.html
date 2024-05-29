@@ -120,11 +120,19 @@
           	return $(this).val();
         }).get();
 
-        // Check if 'create_new_tag' exists in the list
         if (selectedValues.includes('create_new_tag')) {
 			$("#addTagModal").addClass("oh-modal--show");
         }
     }
+
+	function show_answer(element){
+		if ($(element).parent(".oh-faq__item--show").length !=0){
+			$(".oh-faq__item--show").removeClass("oh-faq__item--show");
+		} else {
+			$(".oh-faq__item--show").removeClass("oh-faq__item--show");
+			$(element).parent('.oh-faq__item').addClass("oh-faq__item--show");
+		}
+	}
 
 	$("#addTagForm").on('submit', function(){
 		event.preventDefault();

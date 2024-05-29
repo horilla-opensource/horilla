@@ -27,9 +27,10 @@
                         <li class="oh-dropdown__item">
                             <a
                                 hx-get="{% url 'faq-category-update' category.id %}"
-                                hx-target="#faqCategoryCreate"
+                                hx-target="#objectCreateModalTarget"
                                 data-toggle="oh-modal-toggle"
-                                data-target="#faqCategoryCreate"
+                                data-target="#objectCreateModal"
+                                role="button"
                                 class="oh-dropdown__link"
                                 >{% trans "Edit" %}</a
                             >
