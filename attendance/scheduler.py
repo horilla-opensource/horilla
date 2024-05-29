@@ -2,6 +2,7 @@ import datetime
 from datetime import datetime
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from django.utils import timezone
 
 
 def auto_check_out():
@@ -12,7 +13,7 @@ def auto_check_out():
     from employee.models import Employee
 
     try:
-        today = datetime.now()
+        today = timezone.now()
         shift_schedules = EmployeeShiftSchedule.objects.all()
         employees = Employee.objects.all()
         for employee in employees:
