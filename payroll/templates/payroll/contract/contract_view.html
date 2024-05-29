@@ -178,7 +178,22 @@
                                     >{% trans "Export" %}</a
                                 >
                             </li>
-                            {% endif %} {% if perms.contract.delete_contract %}
+                            {% endif %}
+                            {% if perms.payroll.change_contract %}
+                                <li class="oh-dropdown__item" onclick="event.stopPropagation()">
+                                    <a class="oh-dropdown__link"
+                                        >{% trans "Bulk Status Update" %}</a
+                                    >
+                                    <select name="update_selected" class="oh-select">
+                                        <option value="">------</option>
+                                        <option value="draft">{% trans "Draft" %}</option>
+                                        <option value="active">{% trans "Active" %}</option>
+                                        <option value="expired">{% trans "Expired" %}</option>
+                                        <option value="terminated">{% trans "Terminated" %}</option>
+                                    </select>
+                                </li>
+                            {% endif %}
+                            {% if perms.contract.delete_contract %}
                             <li class="oh-dropdown__item">
                                 <a
                                     class="oh-dropdown__link oh-dropdown__link--danger"
@@ -301,6 +316,37 @@
 
 </main>
 <script>
+    function updateBulkStatus(element){
+        status = element.val();
+        selectedContracts = $(".all-contract-row:checked");
+        ids = [];
+        $.each(selectedContracts, function (indexInArray, valueOfElement) {
+            ids.push($(valueOfElement).val());
+        });
+
+        $.ajax({
+            type: "post",
+            url: "{% url 'bulk-update-contract-status' %}",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+              status: status,
+            },
+            success: function (response) {
+                    window.location.reload()
+            },
+            error: function (response) {
+                console.log("An error occurred")
+            }
+        })
+    }
+
+    $("[name=update_selected]").change(function (e) {
+        updateBulkStatus($(this));
+        e.preventDefault();
+    });
+
+
     $(document).ready(function () {
         $("#id_field").on("change", function () {
             $(".filterButton")[0].click();

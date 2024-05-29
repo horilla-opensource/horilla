@@ -26,6 +26,11 @@ urlpatterns = [
         name="update-contract-status",
     ),
     path(
+        "bulk-update-contract-status",
+        views.bulk_contract_status_update,
+        name="bulk-update-contract-status",
+    ),
+    path(
         "update-contract-filing-status/<int:contract_id>",
         views.update_contract_filing_status,
         name="update-contract-filing-status",

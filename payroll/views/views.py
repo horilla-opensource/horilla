@@ -180,6 +180,42 @@ def contract_status_update(request, contract_id):
 
 @login_required
 @permission_required("payroll.change_contract")
+def bulk_contract_status_update(request):
+    status = request.POST.get("status")
+    ids = eval(request.POST.get("ids"))
+    all_contracts = Contract.objects.all()
+    contracts = all_contracts.filter(id__in=ids)
+
+    for contract in contracts:
+        save = True
+        if status in ["active", "draft"]:
+            active_contract = all_contracts.filter(
+                contract_status="active", employee_id=contract.employee_id
+            ).exists()
+            draft_contract = all_contracts.filter(
+                contract_status="draft", employee_id=contract.employee_id
+            ).exists()
+            if (status == "active" and active_contract) or (
+                status == "draft" and draft_contract
+            ):
+                save = False
+                messages.info(
+                    request,
+                    _("An {} contract already exists for {}").format(
+                        status, contract.employee_id
+                    ),
+                )
+        if save:
+            contract.contract_status = status
+            contract.save()
+            messages.success(
+                request, _("The contract status has been updated successfully.")
+            )
+    return HttpResponse("success")
+
+
+@login_required
+@permission_required("payroll.change_contract")
 def update_contract_filing_status(request, contract_id):
     if request.method == "POST":
         contract = get_object_or_404(Contract, id=contract_id)
