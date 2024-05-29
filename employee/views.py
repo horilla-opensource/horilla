@@ -3429,7 +3429,7 @@ def redeem_points(request, emp_id):
                 description=f"{user} want to redeem {points} points",
                 allowance_on=date.today(),
             )
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HttpResponse("<script>window.location.reload();</script>")
     return render(
         request,
         "tabs/forms/redeem_points_form.html",
