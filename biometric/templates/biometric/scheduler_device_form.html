@@ -1,0 +1,36 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header pb-0">
+  <h2 class="oh-modal__dialog-title" id="scheduleDeviceLavel">
+    {% trans "Schedule Biometric Device" %}
+  </h2>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body" id="scheduleDeviceModalBody">
+  <form
+    id="biometricDeviceScheduleForm"
+    hx-post="{% url 'biometric-device-schedule' device_id %}"
+    hx-target="#BiometricDeviceFormTarget"
+    class="oh-profile-section class p-3 pt-0"
+    >
+    {% csrf_token %}
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      {{scheduler_form.scheduler_duration.errors}}
+      <label class="oh-label" for="{{scheduler_form.scheduler_duration.id_for_label}}">{% trans "Interval duration" %}</label>
+      <div class="oh-input-group">{{scheduler_form.scheduler_duration}}</div>
+    </div>
+    <div class="oh-modal__dialog-footer p-0 pt-3">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Schedule" %}
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  $("#biometricDeviceScheduleForm").submit(function (event) {
+    $("#BiometricDeviceTestModal").toggleClass("oh-modal--show");
+    $("#BiometricDeviceModal").removeClass("oh-modal--show");
+  });
+</script>

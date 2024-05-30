@@ -1,0 +1,36 @@
+{% load static %} {% load i18n %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Biometric Devices" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for = "{{f.form.machine_type.id_for_label}}">{% trans "Device Type" %}</label>
+                        {{f.form.machine_type}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for = "{{f.form.is_scheduler.id_for_label}}">{% trans "Is Scheduled" %}</label>
+                        {{f.form.is_scheduler}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for = "{{f.form.is_active.id_for_label}}">{% trans "Is Active" %}</label>
+                        {{f.form.is_active}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for = "{{f.form.is_live.id_for_label}}">{% trans "Is Live" %}</label>
+                        {{f.form.is_live}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="oh-dropdown__filter-footer">
+    <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">
+        {% trans "Filter" %}
+    </button>
+</div>
+<script src="{% static '/base/filter.js' %}"></script>
