@@ -290,6 +290,7 @@ def view_key_result(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("pms.view_key_result")
 def filter_key_result(request):
     """
@@ -318,6 +319,7 @@ def filter_key_result(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("pms.add_key_result")
 def key_result_create(request):
     """
@@ -354,6 +356,7 @@ def key_result_create(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("pms.add_key_result")
 def kr_create_or_update(request, kr_id=None):
     """
@@ -399,6 +402,7 @@ def kr_create_or_update(request, kr_id=None):
 
 
 @login_required
+@hx_request_required
 def add_assignees(request, obj_id):
     """
     this function is used to add assigneesto the objective
@@ -620,7 +624,7 @@ def objective_filter_pagination(request, objective_own, objective_all):
 
 
 @login_required
-# @hx_request_required
+@hx_request_required
 def objective_list_search(request):
     """
     This view is used to to search objective,  returns searched and filtered objects.
@@ -855,7 +859,7 @@ def objective_detailed_view_comment(request, id):
 
 
 @login_required
-# @hx_request_required
+@hx_request_required
 def emp_objective_search(request, obj_id):
     """
     This view is used to to search employee objective,returns searched and filtered objects.
@@ -884,6 +888,7 @@ def emp_objective_search(request, obj_id):
 
 
 @login_required
+@hx_request_required
 def kr_table_view(request, emp_objective_id):
     """
     Renders a table view of Key Results associated with an employee objective.
@@ -1031,6 +1036,7 @@ def objective_archive(request, id):
 
 
 @login_required
+@hx_request_required
 @pms_owner_and_manager_can_enter(perm="pms.view_employeeobjective")
 def view_employee_objective(request, emp_obj_id):
     """
@@ -1049,6 +1055,7 @@ def view_employee_objective(request, emp_obj_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="pms.add_employeeobjective")
 def update_employee_objective(request, emp_obj_id):
     """
@@ -1576,7 +1583,7 @@ def filter_pagination_feedback(
 
 
 @login_required
-# @hx_request_required
+@hx_request_required
 def feedback_list_search(request):
     """
     This view is used to filter or search the feedback object  ,
@@ -2182,6 +2189,7 @@ def question_template_view(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="pms.view_questiontemplate")
 def question_template_hx_view(request):
     """
@@ -2232,6 +2240,7 @@ def question_template_detailed_view(request, template_id, **kwargs):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="pms.change_questiontemplate")
 def question_template_update(request, template_id):
     """
@@ -2759,6 +2768,7 @@ def objective_select_filter(request):
 
 
 @login_required
+@hx_request_required
 def anonymous_feedback_add(request):
     """
     View function for adding anonymous feedback.
@@ -2805,6 +2815,7 @@ def anonymous_feedback_add(request):
 
 
 @login_required
+@hx_request_required
 def edit_anonymous_feedback(request, obj_id):
     """
     View function for editing anonymous feedback.
@@ -2887,6 +2898,7 @@ def delete_anonymous_feedback(request, obj_id):
 
 
 @login_required
+@hx_request_required
 def view_single_anonymous_feedback(request, obj_id):
     """
     Renders a view to display a single anonymous feedback entry.
@@ -2903,6 +2915,7 @@ def view_single_anonymous_feedback(request, obj_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="pms.add_employeekeyresult")
 def employee_keyresult_creation(request, emp_obj_id):
     """
@@ -2951,6 +2964,7 @@ def employee_keyresult_creation(request, emp_obj_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="pms.add_employeekeyresult")
 def employee_keyresult_update(request, kr_id):
     """
@@ -3087,6 +3101,7 @@ def view_meetings(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("pms.add_meetings")
 def create_meetings(request):
     """
@@ -3231,6 +3246,7 @@ def meeting_employee_remove(request, meet_id, employee_id):
 
 
 @login_required
+@hx_request_required
 def filter_meetings(request):
     """
     This view is used to filter the meeting ,
@@ -3285,6 +3301,7 @@ def add_response(request, id):
 
 
 @login_required
+@hx_request_required
 @meeting_manager_can_enter("pms.change_meetings", answerable=True)
 def meeting_answer_get(request, id, **kwargs):
     """
@@ -3377,6 +3394,7 @@ def meeting_answer_view(request, id, emp_id, **kwargs):
 
 
 @login_required
+@hx_request_required
 @meeting_manager_can_enter("pms.change_meetings", answerable=True)
 def meeting_question_template_view(request, meet_id):
     """
