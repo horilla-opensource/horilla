@@ -463,6 +463,7 @@ def candidate_delete(request, obj_id):
 
 
 @login_required
+@hx_request_required
 @all_manager_can_enter("onboarding.view_candidatestage")
 def candidates_single_view(request, id, **kwargs):
     """
@@ -587,6 +588,7 @@ def hired_candidate_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("candidate.view_candidate")
 def candidate_filter(request):
     """
@@ -1570,6 +1572,7 @@ def stage_name_update(request, stage_id):
 
 
 @login_required
+@hx_request_required
 @stage_manager_can_enter("recruitment.change_candidate")
 def onboarding_send_mail(request, candidate_id):
     """
@@ -1616,6 +1619,7 @@ def update_probation_end(request):
 
 
 @login_required
+@hx_request_required
 @all_manager_can_enter("onboarding.change_onboardingtask")
 def task_report(request):
     """
@@ -1697,6 +1701,7 @@ def update_offer_letter_status(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("recruitment.add_rejectedcandidate")
 def add_to_rejected_candidates(request):
     """
