@@ -41,6 +41,7 @@ from helpdesk.models import (
 )
 from helpdesk.threading import AddAssigneeThread, RemoveAssigneeThread, TicketSendThread
 from horilla.decorators import (
+    hx_request_required,
     login_required,
     manager_can_enter,
     owner_can_enter,
@@ -79,6 +80,7 @@ def faq_category_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("helpdesk_addfaqcategory")
 def faq_category_create(request):
     """
@@ -106,6 +108,7 @@ def faq_category_create(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("helpdesk_changefaqcategory")
 def faq_category_update(request, id):
     """
@@ -148,6 +151,7 @@ def faq_category_delete(request, id):
 
 
 @login_required
+@hx_request_required
 def faq_category_search(request):
     """
     This function is responsible for search and filter the FAQ.
@@ -195,6 +199,7 @@ def faq_view(request, cat_id, **kwargs):
 
 
 @login_required
+@hx_request_required
 @permission_required("helpdesk_addfaq")
 def create_faq(request, cat_id):
     """
@@ -223,6 +228,7 @@ def create_faq(request, cat_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("helpdesk_changefaq")
 def faq_update(request, id):
     """
@@ -253,6 +259,7 @@ def faq_update(request, id):
 
 
 @login_required
+@hx_request_required
 def faq_search(request):
     """
     This function is responsible for search and filter the FAQ.
@@ -302,6 +309,7 @@ def faq_search(request):
 
 
 @login_required
+@hx_request_required
 def faq_filter(request, id):
     """
     This function is responsible for filter the FAQ.
@@ -416,6 +424,7 @@ def ticket_view(request):
 
 
 @login_required
+@hx_request_required
 def ticket_create(request):
     """
     This function is responsible for creating the Ticket.
@@ -472,6 +481,7 @@ def ticket_create(request):
 
 
 @login_required
+@hx_request_required
 @owner_can_enter("perms.helpdesk.helpdesk_changeticket", Ticket)
 def ticket_update(request, ticket_id):
     """
@@ -674,6 +684,7 @@ def get_allocated_tickets(request):
 
 
 @login_required
+@hx_request_required
 def ticket_filter(request):
     """
     This function is responsible for search and filter the Ticket.
@@ -856,6 +867,7 @@ def ticket_update_tag(request):
 
 
 @login_required
+@hx_request_required
 @owner_can_enter("perms.helpdesk.helpdesk_changeticket", Ticket)
 def ticket_change_raised_on(request, ticket_id):
     ticket = Ticket.objects.get(id=ticket_id)
@@ -874,6 +886,7 @@ def ticket_change_raised_on(request, ticket_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("helpdesk_changeticket")
 def ticket_change_assignees(request, ticket_id):
     ticket = Ticket.objects.get(id=ticket_id)
@@ -1185,6 +1198,7 @@ def add_department_manager(request):
 
 
 @login_required
+@hx_request_required
 def create_department_manager(request):
     form = DepartmentManagerCreateForm()
     if request.method == "POST":
@@ -1201,6 +1215,7 @@ def create_department_manager(request):
 
 
 @login_required
+@hx_request_required
 def update_department_manager(request, dep_id):
     department_manager = DepartmentManager.objects.get(id=dep_id)
     form = DepartmentManagerCreateForm(instance=department_manager)
