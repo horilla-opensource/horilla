@@ -1674,6 +1674,7 @@ def create_payrollrequest_comment(request, payroll_id):
 
 
 @login_required
+@hx_request_required
 def view_payrollrequest_comment(request, payroll_id):
     """
     This method is used to show Reimbursement request comments

@@ -274,6 +274,7 @@ def view_allowance(request):
 
 
 @login_required
+@hx_request_required
 def view_single_allowance(request, allowance_id):
     """
     This method is used render template to view the selected allowance instances
@@ -419,6 +420,7 @@ def view_deduction(request):
 
 
 @login_required
+@hx_request_required
 def view_single_deduction(request, deduction_id):
     """
     This method is used render template to view all the deduction instances
@@ -797,6 +799,7 @@ def view_payslip(request):
 
 
 @login_required
+@hx_request_required
 def filter_payslip(request):
     """
     Filter and retrieve a list of payslips based on the provided query parameters.
@@ -956,6 +959,7 @@ def hx_create_allowance(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.add_payslip")
 def send_slip(request):
     """
@@ -1132,6 +1136,7 @@ def view_loans(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.add_loanaccount")
 def create_loan(request):
     """
@@ -1195,6 +1200,7 @@ def delete_loan(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.view_loanaccount")
 def search_loan(request):
     """
@@ -1307,6 +1313,7 @@ def view_reimbursement(request):
 
 
 @login_required
+@hx_request_required
 def create_reimbursement(request):
     """
     This method is used to create reimbursement
@@ -1326,6 +1333,7 @@ def create_reimbursement(request):
 
 
 @login_required
+@hx_request_required
 def search_reimbursement(request):
     """
     This method is used to search/filter reimbursement
