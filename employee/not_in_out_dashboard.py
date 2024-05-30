@@ -4,6 +4,7 @@ employee/context_processors.py
 This module is used to write context processor methods
 """
 
+import json
 from datetime import date
 
 from django import template
@@ -73,16 +74,20 @@ def not_out_yet(request):
 
 @login_required
 @manager_can_enter("employee.change_employee")
-def send_mail(request, emp_id):
+def send_mail(request, emp_id=None):
     """
     This method used send mail to the employees
     """
-    employeee = Employee.objects.get(id=emp_id)
+    employee = None
+    if emp_id:
+        employee = Employee.objects.get(id=emp_id)
+    employees = Employee.objects.all()
+
     templates = RecruitmentMailTemplate.objects.all()
     return render(
         request,
         "employee/send_mail.html",
-        {"employee": employeee, "templates": templates},
+        {"employee": employee, "templates": templates, "employees": employees},
     )
 
 
@@ -113,60 +118,71 @@ def send_mail_to_employee(request):
     employee_id = request.POST["id"]
     subject = request.POST.get("subject")
     bdy = request.POST.get("body")
+
+    employee_ids = request.POST.getlist("employees")
+    employees = Employee.objects.filter(id__in=employee_ids)
+
     other_attachments = request.FILES.getlist("other_attachments")
     attachments = [
         (file.name, file.read(), file.content_type) for file in other_attachments
     ]
     email_backend = ConfiguredEmailBackend()
     host = email_backend.dynamic_username
-    employee = Employee.objects.get(id=employee_id)
+
+    if employee_id:
+        employee_obj = Employee.objects.filter(id=employee_id)
+    else:
+        employee_obj = Employee.objects.none()
+    employees = (employees | employee_obj).distinct()
+
     template_attachment_ids = request.POST.getlist("template_attachments")
-    bodys = list(
-        RecruitmentMailTemplate.objects.filter(
-            id__in=template_attachment_ids
-        ).values_list("body", flat=True)
-    )
-    for html in bodys:
-        # due to not having solid template we first need to pass the context
-        template_bdy = template.Template(html)
+    for employee in employees:
+        bodys = list(
+            RecruitmentMailTemplate.objects.filter(
+                id__in=template_attachment_ids
+            ).values_list("body", flat=True)
+        )
+        for html in bodys:
+            # due to not having solid template we first need to pass the context
+            template_bdy = template.Template(html)
+            context = template.Context(
+                {"instance": employee, "self": request.user.employee_get}
+            )
+            render_bdy = template_bdy.render(context)
+            attachments.append(
+                (
+                    "Document",
+                    generate_pdf(render_bdy, {}, path=False, title="Document").content,
+                    "application/pdf",
+                )
+            )
+
+        template_bdy = template.Template(bdy)
         context = template.Context(
             {"instance": employee, "self": request.user.employee_get}
         )
         render_bdy = template_bdy.render(context)
-        attachments.append(
-            (
-                "Document",
-                generate_pdf(render_bdy, {}, path=False, title="Document").content,
-                "application/pdf",
-            )
+        send_to_mail = (
+            employee.employee_work_info.email
+            if employee.employee_work_info and employee.employee_work_info.email
+            else employee.email
         )
 
-    template_bdy = template.Template(bdy)
-    context = template.Context(
-        {"instance": employee, "self": request.user.employee_get}
-    )
-    render_bdy = template_bdy.render(context)
-    send_to_mail = (
-        employee.employee_work_info.email
-        if employee.employee_work_info and employee.employee_work_info.email
-        else employee.email
-    )
+        email = EmailMessage(
+            subject,
+            render_bdy,
+            host,
+            [send_to_mail],
+        )
+        email.content_subtype = "html"
 
-    email = EmailMessage(
-        subject,
-        render_bdy,
-        host,
-        [send_to_mail],
-    )
-    email.content_subtype = "html"
-
-    email.attachments = attachments
-    try:
-        email.send()
-        if employee.employee_work_info.email or employee.email:
-            messages.success(request, f"Mail sent to {employee.get_full_name()}")
-        else:
-            messages.info(request, f"Email not set for {employee.get_full_name()}")
-    except Exception as e:
-        messages.error(request, "Something went wrong")
+        email.attachments = attachments
+        try:
+            email.send()
+            if employee.employee_work_info.email or employee.email:
+                messages.success(request, f"Mail sent to {employee.get_full_name()}")
+            else:
+                messages.info(request, f"Email not set for {employee.get_full_name()}")
+        except Exception as e:
+            messages.error(request, "Something went wrong")
     return HttpResponse("<script>window.location.reload()</script>")

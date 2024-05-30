@@ -15,5 +15,14 @@
     {% endif %}
   </div>
 </div>
+<div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <span class="oh-modal__dialog-title" id="sendMailModalLabel"><h5>{% trans 'Send Mail' %}</h5></span>
+      <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+    <div class="oh-modal__dialog-body" id="mail-content"></div>
+  </div>
+</div>
 <script src="{% static 'employee/actions.js' %}"></script>
 {% endblock %}

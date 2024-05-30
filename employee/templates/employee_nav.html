@@ -446,6 +446,18 @@
                     </li>
                     <li class="oh-dropdown__item">
                       <a
+                        hx-get="{% url 'employee-bulk-mail' %}"
+                        hx-target="#mail-content"
+                        href="#"
+                        class="oh-dropdown__link "
+                        data-toggle="oh-modal-toggle"
+                        data-target="#sendMailModal"
+                      >
+                        {% trans "Bulk Mail" %}
+                      </a>
+                    </li>
+                    <li class="oh-dropdown__item">
+                      <a
                         href="#"
                         class="oh-dropdown__link"
                         id="employeeBulkUpdateId"

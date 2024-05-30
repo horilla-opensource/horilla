@@ -258,6 +258,9 @@ urlpatterns = [
         name="send-mail-employee",
     ),
     path(
+        "employee-bulk-mail", not_in_out_dashboard.send_mail, name="employee-bulk-mail"
+    ),
+    path(
         "send-mail",
         not_in_out_dashboard.send_mail_to_employee,
         name="send-mail-to-employee",
