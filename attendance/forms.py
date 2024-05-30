@@ -59,6 +59,7 @@ from employee.models import Employee
 from horilla.decorators import logger
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from leave.filters import LeaveRequestFilter
 from leave.models import LeaveType
 from payroll.methods.methods import get_working_days
 
@@ -893,11 +894,26 @@ def get_date_list(employee_id, from_date, to_date):
     working_date_list.sort()
     attendance_dates = []
     if len(working_date_list) > 0:
+        # filter through approved leave of employee
+        approved_leave_dates_filtered = LeaveRequestFilter(
+            data={
+                "from_date": working_date_list[0],
+                "to_date": working_date_list[-1],
+                "employee_id": employee_id,
+                "status": "approved",
+            }
+        )
+        approved_leave_dates_filtered = approved_leave_dates_filtered.qs
+        approved_leave_dates = []
+        # Extract the list of approved leave dates
+        if len(approved_leave_dates_filtered) > 0:
+            for leave in approved_leave_dates_filtered:
+                approved_leave_dates += leave.requested_dates()
         attendance_filters = AttendanceFilters(
             data={
                 "attendance_date__gte": working_date_list[0],
                 "attendance_date__lte": working_date_list[-1],
-                "employee": employee_id.id,
+                "employee_id": employee_id,
             }
         )
         existing_attendance = attendance_filters.qs
@@ -906,7 +922,11 @@ def get_date_list(employee_id, from_date, to_date):
             existing_attendance.values_list("attendance_date", flat=True)
         )
     # Calculate the dates that need new attendance records
-    date_list = [date for date in working_date_list if date not in attendance_dates]
+    date_list = [
+        date
+        for date in working_date_list
+        if date not in attendance_dates and date not in approved_leave_dates
+    ]
     return date_list
 
 
