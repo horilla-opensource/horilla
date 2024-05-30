@@ -34,7 +34,7 @@ from base.methods import (
 )
 from base.models import EmployeeShift, EmployeeShiftDay
 from employee.models import Employee
-from horilla.decorators import login_required, manager_can_enter
+from horilla.decorators import hx_request_required, login_required, manager_can_enter
 from notifications.signals import notify
 
 
@@ -129,6 +129,7 @@ def request_attendance_view(request):
 
 
 @login_required
+@hx_request_required
 def request_new(request):
     """
     This method is used to create new attendance requests
@@ -738,6 +739,7 @@ def edit_validate_attendance(request, attendance_id):
 
 
 @login_required
+@hx_request_required
 def get_employee_shift(request):
     """
     method used to get employee shift

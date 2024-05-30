@@ -13,11 +13,12 @@ from attendance.filters import PenaltyFilter
 from attendance.forms import PenaltyAccountForm
 from attendance.models import AttendanceLateComeEarlyOut, PenaltyAccount
 from employee.models import Employee
-from horilla.decorators import login_required, manager_can_enter
+from horilla.decorators import hx_request_required, login_required, manager_can_enter
 from leave.models import AvailableLeave
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("leave.change_availableleave")
 def cut_available_leave(request, instance_id):
     """
@@ -65,6 +66,7 @@ def cut_available_leave(request, instance_id):
 
 
 @login_required
+@hx_request_required
 def view_penalties(request):
     """
     This method is used to filter or view the penalties

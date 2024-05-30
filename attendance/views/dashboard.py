@@ -28,7 +28,7 @@ from base.methods import filtersubordinates
 from base.models import Department, EmployeeShiftSchedule
 from employee.models import Employee
 from employee.not_in_out_dashboard import paginator_qry
-from horilla.decorators import login_required
+from horilla.decorators import hx_request_required, login_required
 from leave.models import LeaveRequest
 
 
@@ -131,6 +131,7 @@ def dashboard(request):
 
 
 @login_required
+@hx_request_required
 def validated_attendances_table(request):
     page_number = request.GET.get("page")
     previous_data = request.GET.urlencode()

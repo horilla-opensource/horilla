@@ -211,6 +211,7 @@ def attendance_day_checking(attendance_date, minimum_hour):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("attendance.add_attendance")
 def attendance_create(request):
     """
@@ -310,6 +311,7 @@ def attendance_import(request):
 
 
 @login_required
+@hx_request_required
 def attendance_export(request):
     resolver_match = request.resolver_match
     if (
@@ -423,6 +425,7 @@ def attendance_view(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("attendance.change_attendance")
 def attendance_update(request, obj_id):
     """
@@ -599,6 +602,7 @@ def view_my_attendance(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("attendance.add_attendanceovertime")
 def attendance_overtime_create(request):
     """
@@ -2208,6 +2212,7 @@ def work_record_export(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.add_attendancegeneralsetting")
 def enable_timerunner(request):
     """
