@@ -13,7 +13,12 @@ from base.context_processors import intial_notice_period
 from base.methods import closest_numbers, sortby
 from base.views import paginator_qry
 from employee.models import Employee
-from horilla.decorators import login_required, manager_can_enter, permission_required
+from horilla.decorators import (
+    hx_request_required,
+    login_required,
+    manager_can_enter,
+    permission_required,
+)
 from notifications.signals import notify
 from offboarding.decorators import (
     any_manager_can_enter,
@@ -140,6 +145,7 @@ def pipeline(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("offboarding_view_offboardingemployee")
 def filter_pipeline(request):
     """
@@ -164,6 +170,7 @@ def filter_pipeline(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("offboarding.add_offboarding")
 def create_offboarding(request):
     """
@@ -325,6 +332,7 @@ def delete_stage(request):
 
 
 @login_required
+@hx_request_required
 @any_manager_can_enter("offboarding.change_offboarding")
 def change_stage(request):
     """
@@ -376,6 +384,7 @@ def change_stage(request):
 
 
 @login_required
+@hx_request_required
 @any_manager_can_enter(
     "offboarding.view_offboardingnote", offboarding_employee_can_enter=True
 )
@@ -610,6 +619,7 @@ def delete_task(request):
 
 
 @login_required
+@hx_request_required
 def offboarding_individual_view(request, emp_id):
     """
     This method is used to get the individual view of the offboarding employees
@@ -690,6 +700,7 @@ def request_single_view(request, id):
 
 
 @login_required
+@hx_request_required
 @check_feature_enabled("resignation_request")
 def search_resignation_request(request):
     """
@@ -766,6 +777,7 @@ def delete_resignation_request(request):
 
 
 @login_required
+@hx_request_required
 @check_feature_enabled("resignation_request")
 def create_resignation_request(request):
     """
@@ -846,6 +858,7 @@ def update_status(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("offboarding.add_offboardinggeneralsetting")
 def enable_resignation_request(request):
     """
