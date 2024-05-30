@@ -13,6 +13,7 @@ Django==4.2.11
 django-auditlog
 django-apscheduler
 django-cors-headers
+django-environ
 django-filter
 django-haystack
 django-jsonfield
