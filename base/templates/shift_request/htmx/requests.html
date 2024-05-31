@@ -53,7 +53,8 @@
                   hx-get="{% url 'shift-request-search' %}?{{pd}}&sortby=requested_till"
                   hx-target="#view-container"
                 >{% trans "Requested Till" %}</div>
-                <div data-cell-index="6" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
+                <div data-cell-index="6" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
+                <div data-cell-index="7" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
                 <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
                 <div class="oh-sticky-table__th" style="width: 192px;">{% trans "Actions" %}</div>
                 {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
@@ -97,7 +98,8 @@
                     <div class="oh-sticky-table__td" data-cell-index="3">{{shift_request.previous_shift_id}}</div>
                     <div class="oh-sticky-table__td dateformat_changer" data-cell-index="4">{{shift_request.requested_date}}</div>
                     <div class="oh-sticky-table__td dateformat_changer" data-cell-index="5">{{shift_request.requested_till}}</div>
-                    <div class="oh-sticky-table__td" data-cell-index="6">{{shift_request.description|truncatechars:17}}</div>
+                    <div class="oh-sticky-table__td" data-cell-index="6">{% if shift_request.approved %}{% trans "Approved" %}{% elif shift_request.canceled %}{% trans "Cancelled" %}{% else %}{% trans "Requested" %}{% endif %}</div>
+                    <div class="oh-sticky-table__td" data-cell-index="7">{{shift_request.description|truncatechars:30}}</div>
 
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 

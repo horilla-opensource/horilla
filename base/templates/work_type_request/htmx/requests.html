@@ -82,7 +82,8 @@
               hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=requested_till"
               hx-target="#view-container"
             >{% trans "Requested Till" %}</div>
-            <div data-cell-index="5" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
+            <div data-cell-index="5" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
+            <div data-cell-index="6" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
             <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
             <div class="oh-sticky-table__th" style="width: 190px;">{% trans "Actions" %}</div>
             {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
@@ -126,7 +127,8 @@
             <div class="oh-sticky-table__td" data-cell-index="2">{{work_type_request.previous_work_type_id}}</div>
             <div class="oh-sticky-table__td dateformat_changer" data-cell-index="3">{{work_type_request.requested_date}}</div>
             <div class="oh-sticky-table__td dateformat_changer" data-cell-index="4">{{work_type_request.requested_till}}</div>
-            <div class="oh-sticky-table__td" data-cell-index="5">{{work_type_request.description|truncatechars:25}}</div>
+            <div class="oh-sticky-table__td" data-cell-index="5">{% if work_type_request.approved %}{% trans "Approved" %}{% elif work_type_request.canceled %}{% trans "Cancelled" %}{% else %}{% trans "Requested" %}{% endif %}</div>
+            <div class="oh-sticky-table__td" data-cell-index="6">{{work_type_request.description|truncatechars:25}}</div>
             <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 
                 <button type="button" hx-get="{% url 'view-work-type-comment' work_type_request.id %}" hx-target="#commentContainer"
