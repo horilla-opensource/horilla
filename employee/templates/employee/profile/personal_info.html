@@ -208,6 +208,7 @@
           <form
             hx-post="{% url 'update-own-profile-image' %}"
             hx-target="#uploadPhotoModal"
+            hx-encoding="multipart/form-data"
             method="post"
             id="file-form"
           >

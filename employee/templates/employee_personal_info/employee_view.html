@@ -4,6 +4,27 @@
     {% trans "Selected Employees" %}
   </div>
   <div id="view-container">
+
+    {% if error_message %}
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const errorMessage = '{{ error_message|escapejs }}';
+          const formattedErrorMessage = errorMessage.replace(/,\s*/g, '<br>');
+          const finalErrorMessage = formattedErrorMessage.replace(/-\s*/g, '<span class="material-symbols-outlined me-2" style="font-size: 14px;"">adjust</span>');
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              html: `
+              <div style='text-align:left;'>
+                  <h5 class='mb-2 fw-bold ms-2'>This employee is already related in,</h5>
+                  <p class='ms-2'>${finalErrorMessage}</p>
+              </div>
+              `,
+          });
+        });
+      </script>
+    {% endif %}
+
     {% if data %}
       {% if view_type == 'list' %}
         {% include 'employee_personal_info/employee_list.html' %}

@@ -1089,6 +1089,7 @@ def employee_view(request):
     view_type = request.GET.get("view")
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
+    error_message = request.session.pop("error_message", None)
     queryset = (
         Employee.objects.filter(is_active=True)
         if isinstance(request.GET, QueryDict) and not request.GET
@@ -1116,6 +1117,7 @@ def employee_view(request):
             "filter_dict": data_dict,
             "emp": emp,
             "gp_fields": EmployeeReGroup.fields,
+            "error_message": error_message,
         },
     )
 
@@ -1940,10 +1942,11 @@ def employee_delete(request, obj_id):
         model_verbose_names_set = set()
         for obj in e.protected_objects:
             model_verbose_names_set.add(__(obj._meta.verbose_name.capitalize()))
-        model_names_str = ", ".join(model_verbose_names_set)
-        messages.error(
-            request, _("This employee already related in {}.".format(model_names_str))
-        )
+        model_names_str = ", - ".join(model_verbose_names_set)
+        error_message = _("- {}.".format(model_names_str))
+        error_message = str(error_message)
+        request.session["error_message"] = error_message
+        return redirect(employee_view)
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", f"/view={view}"))
 
 
