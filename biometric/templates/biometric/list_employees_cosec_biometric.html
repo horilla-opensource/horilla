@@ -19,11 +19,11 @@
         <div class="oh-sticky-table__th">{% trans "Reference ID" %}</div>
         <div class="oh-sticky-table__th">{% trans "Active" %}</div>
         <div class="oh-sticky-table__th">
-          {% if employees.users %} 
-            {% if employees.users.0.finger_count %} 
-              {% trans "Finger Count" %} 
-            {% else %} 
-              {% trans "Face Count" %} 
+          {% if employees.users %}
+            {% if employees.users.0.finger_count %}
+              {% trans "Finger Count" %}
+            {% else %}
+              {% trans "Face Count" %}
             {% endif %}
           {% else %}
             {% trans "Biometric Template" %}
@@ -58,10 +58,10 @@
         <div class="oh-sticky-table__td">{{employee.user_id}}</div>
         <div class="oh-sticky-table__td">{{employee.ref_user_id}}</div>
         <div class="oh-sticky-table__td">
-          {% if employee.user_active == "1" %} 
-            {% trans "Yes" %} 
-          {% else %} 
-            {% trans "No" %} 
+          {% if employee.user_active == "1" %}
+            {% trans "Yes" %}
+          {% else %}
+            {% trans "No" %}
           {% endif %}
         </div>
         <div class="oh-sticky-table__td">
@@ -69,7 +69,7 @@
             {% if employee.finger_count %}
               {{employee.finger_count}}
             {% else %}
-              {{employee.face_count}}  
+              {{employee.face_count}}
             {% endif %}
           {% else %}
             {% trans "Not Enrolled" %}
@@ -142,7 +142,7 @@
 
 <div class="oh-pagination">
   <span class="oh-pagination__page">
-    {% trans "Page" %} {{ employees.paginator.number }} 
+    {% trans "Page" %} {{ employees.paginator.number }}
     {% trans "of" %} {{ employees.paginator.num_pages }}.
   </span>
   <nav class="oh-pagination__nav">

@@ -1,9 +1,9 @@
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as trans
-from attendance.sidebar import SUBMENUS
-from biometric.context_processors import biometric_is_installed
-from base.context_processors import biometric_app_exists
 
+from attendance.sidebar import SUBMENUS
+from base.context_processors import biometric_app_exists
+from biometric.context_processors import biometric_is_installed
 
 biometric_submenu = {
     "menu": trans("Biometric Devices"),

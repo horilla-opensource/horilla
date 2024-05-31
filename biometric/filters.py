@@ -6,6 +6,7 @@ which is used to filter instances of BiometricDevices
 """
 
 import django_filters
+
 from base.filters import FilterSet
 from biometric.models import BiometricDevices
 

@@ -7,6 +7,7 @@ with the Django admin site, allowing them to be managed via the admin interface.
 """
 
 from django.contrib import admin
+
 from .models import BiometricDevices, BiometricEmployees, COSECAttendanceArguments
 
 # Register your models here.

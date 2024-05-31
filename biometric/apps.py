@@ -17,9 +17,10 @@ class BiometricConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "biometric"
-    
+
     def ready(self):
         from django.urls import include, path
+
         from horilla.urls import urlpatterns
 
         urlpatterns.append(
@@ -27,4 +28,5 @@ class BiometricConfig(AppConfig):
         )
 
         from biometric import sidebar
+
         super().ready()

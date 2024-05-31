@@ -1,50 +1,48 @@
 """
 Module for managing biometric devices and employee attendance.
 
-Includes classes and functions for adding, editing, and deleting biometric devices, 
+Includes classes and functions for adding, editing, and deleting biometric devices,
 as well as scheduling attendance capture. Also provides views for managing employees,
 registered on biometric devices.
 """
 
 import json
 from datetime import datetime
-from urllib.parse import parse_qs
-from urllib.parse import unquote
 from threading import Thread
+from urllib.parse import parse_qs, unquote
+
 import pytz
 import requests
-from django.shortcuts import render, redirect
-from django.utils.translation import gettext_lazy as _
-from django.utils.translation import gettext as __
+from apscheduler.schedulers.background import BackgroundScheduler
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from apscheduler.schedulers.background import BackgroundScheduler
+from django.shortcuts import redirect, render
+from django.utils.translation import gettext as __
+from django.utils.translation import gettext_lazy as _
 from zk import ZK
-from horilla import settings
-from horilla.filters import HorillaPaginator
-from horilla.decorators import (
-    install_required,
-    permission_required,
-    login_required,
-    hx_request_required,
-)
+
 from attendance.views.clock_in_out import clock_in, clock_out
 from base.methods import get_key_instances, get_pagination
 from employee.models import Employee, EmployeeWorkInformation
-from .filters import BiometricDeviceFilter
+from horilla import settings
+from horilla.decorators import (
+    hx_request_required,
+    install_required,
+    login_required,
+    permission_required,
+)
+from horilla.filters import HorillaPaginator
+
 from .cosec import COSECBiometric
+from .filters import BiometricDeviceFilter
 from .forms import (
     BiometricDeviceForm,
     BiometricDeviceSchedulerForm,
-    COSECUserForm,
     CosecUserAddForm,
+    COSECUserForm,
     EmployeeBiometricAddForm,
 )
-from .models import (
-    BiometricDevices,
-    BiometricEmployees,
-    COSECAttendanceArguments,
-)
+from .models import BiometricDevices, BiometricEmployees, COSECAttendanceArguments
 
 
 def str_time_seconds(time):
@@ -106,7 +104,7 @@ def biometric_set_time(conn):
     conn.set_time(new_time)
 
 
-class META():
+class META:
     @classmethod
     def keys(cls):
         return ["HTTP_HX_REQUEST"]
@@ -138,9 +136,6 @@ class Request:
         self.time = time
         self.datetime = datetime
         self.META = META()
-
-        
-    
 
 
 class ZKBioAttendance(Thread):
@@ -258,7 +253,7 @@ class AnvizBiometricDeviceManager:
                 "nameSpace": "attendance.record",
                 "nameAction": "getrecord",
                 "version": "1.0",
-                "requestId": "f1becc28-ad01-b5b2-7cef-392eb1526f39",
+                "requestId": self.device.anviz_request_id,
                 "timestamp": "2022-10-21T07:39:07+00:00",
             },
             "authorize": {
@@ -285,7 +280,7 @@ class AnvizBiometricDeviceManager:
                 "nameSpace": "authorize.token",
                 "nameAction": "token",
                 "version": "1.0",
-                "requestId": "f1becc28-ad01-b5b2-7cef-392eb1526f39",
+                "requestId": self.device.anviz_request_id,
                 "timestamp": "2022-10-21T07:39:07+00:00",
             },
             "payload": {
@@ -446,10 +441,10 @@ def biometric_device_schedule(request, device_id):
                           text: "Please double-check the accuracy of the provided IP Address and Port Number for correctness",
                           icon: "warning",
                           showConfirmButton: false,
-                          timer: 3500, 
+                          timer: 3500,
                           timerProgressBar: true,
                           didClose: () => {
-                            location.reload(); 
+                            location.reload();
                             },
                         });
                     </script>
@@ -703,10 +698,10 @@ def biometric_device_test(request, device_id):
                   text: "Please double-check the accuracy of the provided IP Address and Port Number for correctness",
                   icon: "warning",
                   showConfirmButton: false,
-                  timer: 3500, 
+                  timer: 3500,
                   timerProgressBar: true,
                   didClose: () => {
-                    location.reload(); 
+                    location.reload();
                     },
                 });
             </script>
@@ -720,7 +715,7 @@ def biometric_device_test(request, device_id):
                 "nameSpace": "authorize.token",
                 "nameAction": "token",
                 "version": "1.0",
-                "requestId": "f1becc28-ad01-b5b2-7cef-392eb1526f39",
+                "requestId": device.anviz_request_id,
                 "timestamp": "2022-10-21T07:39:07+00:00",
             },
             "payload": {"api_key": device.api_key, "api_secret": device.api_secret},
@@ -736,10 +731,10 @@ def biometric_device_test(request, device_id):
                   text: "Please double-check the accuracy of the provided API Url , API Key and API Secret for correctness",
                   icon: "warning",
                   showConfirmButton: false,
-                  timer: 3500, 
+                  timer: 3500,
                   timerProgressBar: true,
                   didClose: () => {
-                    location.reload(); 
+                    location.reload();
                     },
                 });
             </script>
@@ -807,10 +802,10 @@ def biometric_device_test(request, device_id):
                   text: "Please double-check the accuracy of the provided Machine IP , Username and Password for correctness",
                   icon: "warning",
                   showConfirmButton: false,
-                  timer: 3500, 
+                  timer: 3500,
                   timerProgressBar: true,
                   didClose: () => {
-                    location.reload(); 
+                    location.reload();
                     },
                 });
             </script>
@@ -823,10 +818,10 @@ def biometric_device_test(request, device_id):
                   text: "Please select a valid biometric device",
                   icon: "warning",
                   showConfirmButton: false,
-                  timer: 3500, 
+                  timer: 3500,
                   timerProgressBar: true,
                   didClose: () => {
-                    location.reload(); 
+                    location.reload();
                     },
                 });
             </script>

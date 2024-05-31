@@ -7,9 +7,11 @@ employee biometric data, COSEC users, and related configurations.
 
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from employee.models import Employee
+
 from attendance.forms import ModelForm
 from base.forms import Form
+from employee.models import Employee
+
 from .models import BiometricDevices, BiometricEmployees
 
 
@@ -39,6 +41,7 @@ class BiometricDeviceForm(ModelForm):
             "name": _("Device Name"),
             "machine_ip": _("IP Address"),
             "port": _("TCP COMM.Port"),
+            "anviz_request_id": _("Header Request ID"),
         }
         widgets = {
             "machine_type": forms.Select(

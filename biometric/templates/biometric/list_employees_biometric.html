@@ -4,9 +4,9 @@
     var hand = $("#" + handId)
     var designFingers = hand.find("[data-finger]")
     fingers.forEach(fingerId => {
-      $.each(designFingers, function (indexInArray, finger) { 
+      $.each(designFingers, function (indexInArray, finger) {
         dataFingerId = $(finger).attr("data-finger")
-        var temp1 = toString(dataFingerId) 
+        var temp1 = toString(dataFingerId)
         var temp2 = toString(fingerId)
         if (temp2 === temp1) {
           $("#"+handId).find(`[data-finger=${fingerId}]`).attr("fill","green")
@@ -53,7 +53,7 @@
           </div>
           <div class="oh-sticky-table__td">
            {{employee.badge_id}}
-            
+
           </div>
           <div class="oh-sticky-table__td">
            <div class="d-flex justify-content-center text-align-center">
@@ -68,7 +68,7 @@
                 <rect x="35.3237" y="16.1914" width="16.1029" height="1.67647"fill="#bdc3c7"/>
                 <path d="M31.8825 25.8092L31.1987 23.5372L31.0884 23.2283L34.1766 22.1475L34.5957 23.6475L34.9707 24.221L35.059 24.6622L31.8825 25.8092Z"fill="#bdc3c7"/>
                 <path d="M31.0884 23.2275L31.309 24.3746L31.5075 24.4849L32.3678 24.9261L31.7281 23.2275H31.0884Z"fill="#bdc3c7"/>
-                
+
                 <path d="M3.90157 41.1622H15.3722V32.6916L20.9751 27.1328V24.1769L16.9604 22.6989V16.8975H0.28392V29.3386L3.90157 32.6916V41.1622Z"fill="#bdc3c7" stroke="#7f8c8d" stroke-width="0.5"/>
                 <rect x="-0.25" y="0.25"data-hand-target="hand{{employee.badge_id}}" data-finger="1" width="4.22059" height="14.1471" transform="matrix(-1 0 0 1 7.44141 2.25)"fill="#bdc3c7" stroke="#7f8c8d" stroke-width="0.5"/>
                 <rect x="-0.25" y="0.25"data-hand-target="hand{{employee.badge_id}}" data-finger="3" width="4.88235" height="12.7794" transform="matrix(-1 0 0 1 16.7061 3.61719)"fill="#bdc3c7" stroke="#7f8c8d" stroke-width="0.5"/>
@@ -78,7 +78,7 @@
                 <rect width="16.1029" height="1.67647" transform="matrix(-1 0 0 1 16.6763 16.1914)"fill="#bdc3c7"/>
                 <path d="M20.1175 25.8092L20.8013 23.5372L20.9116 23.2283L17.8234 22.1475L17.4043 23.6475L17.0293 24.221L16.941 24.6622L20.1175 25.8092Z"fill="#bdc3c7"/>
                 <path d="M20.9116 23.2275L20.691 24.3746L20.4925 24.4849L19.6322 24.9261L20.2719 23.2275H20.9116Z"fill="#bdc3c7"/>
-              </svg>                          
+              </svg>
             </div>
            </div>
           <script>
@@ -90,7 +90,7 @@
           </div>
           <div class="oh-sticky-table__td">
           {{employee.phone}}
-            
+
           </div>
           <div class="oh-sticky-table__td">
             {{employee.job_position}}
@@ -116,7 +116,7 @@
                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                 href="{% url 'delete-biometric-user' uid=employee.uid device_id=device_id %}"
                 onclick = "event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this user from the biometric device?' %}`)"
-                title='{% trans "Delete" %}'  
+                title='{% trans "Delete" %}'
               >
                 <ion-icon
                   name="trash-outline"
@@ -132,7 +132,7 @@
       {% endfor %}
     </div>
   </div>
-  
+
 <div class="oh-pagination">
     <span
       class="oh-pagination__page"
@@ -171,7 +171,7 @@
           <a hx-target='#section' hx-get="{% url 'search-employee-in-device' %}?{{pd}}&view=list&page={{ employees.paginator.num_pages }}&device={{device_id}}" class="oh-pagination__link">{% trans "Last" %}</a>
         </li>
         {% endif %}
-  
+
       </ul>
     </nav>
-</div> 
+</div>

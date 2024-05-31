@@ -47,20 +47,20 @@
       <ul class="oh-view-types ml-2" style="margin-bottom: 0" id="view-type">
         <li class="oh-view-type devices-view-type" data-view="list">
           <a id = 'list' hx-get="{% url 'search-devices' %}?view=list"
-            hx-target='#section' title = {% trans "List" %} 
-            class="oh-btn oh-btn--view 
-              {% if request.GET.view == 'list' %} 
+            hx-target='#section' title = {% trans "List" %}
+            class="oh-btn oh-btn--view
+              {% if request.GET.view == 'list' %}
                 oh-btn--view-active
-              {% endif %}" 
+              {% endif %}"
             >
             <ion-icon name="list-outline"></ion-icon>
           </a>
         </li>
         <li class="oh-view-type devices-view-type" data-view="card">
           <a id="card" hx-get="{% url 'search-devices' %}?view=card"
-            hx-target='#section' class="oh-btn oh-btn--view 
-            {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}" 
-            title = {% trans "Card" %} 
+            hx-target='#section' class="oh-btn oh-btn--view
+            {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+            title = {% trans "Card" %}
             >
             <ion-icon name="grid-outline"></ion-icon>
           </a>

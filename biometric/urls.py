@@ -2,16 +2,17 @@
 Module: urls
 
 Description:
-This module defines URL patterns for routing HTTP requests to views 
+This module defines URL patterns for routing HTTP requests to views
 in the biometric management application.
-It imports the `path` function from `django.urls` for defining URL 
+It imports the `path` function from `django.urls` for defining URL
 patterns and imports views for handling requests.
-Additionally, it imports the `BiometricDevices` model for use in URL patterns 
+Additionally, it imports the `BiometricDevices` model for use in URL patterns
 that require device IDs.
 
 """
 
 from django.urls import path
+
 from . import views
 from .models import BiometricDevices
 

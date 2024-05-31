@@ -8,7 +8,7 @@
   </div>
   {% endfor %}
 </div>
-{% endif %} {% include 'filter_tags.html' %} 
+{% endif %} {% include 'filter_tags.html' %}
 {% if devices %}
   <div class="oh-layout--grid-3">
     {% for device in devices %}
@@ -85,7 +85,7 @@
                   >{% trans "Edit" %}</a
                 >
               </li>
-              {% if perms.biometric.change_biometricdevices %} 
+              {% if perms.biometric.change_biometricdevices %}
                 {% if device.is_active %}
                   <li class="oh-dropdown__item">
                     <a
@@ -106,8 +106,8 @@
                       >{% trans "Un-Archive" %}</a
                     >
                   </li>
-                {% endif %} 
-              {% endif %} 
+                {% endif %}
+              {% endif %}
               {% if perms.biometric.delete_biometricdevices %}
                 <li class="oh-dropdown__item">
                   <form
@@ -157,7 +157,7 @@
           hx-target="#BiometricDeviceFormTarget"
           >{% trans "Schedule" %}</a
         >
-        {% endif %} 
+        {% endif %}
       {% if device.machine_type == "zk" or device.machine_type == "cosec" %}
         <a
           href="{% url 'biometric-device-employees' device.id %}"

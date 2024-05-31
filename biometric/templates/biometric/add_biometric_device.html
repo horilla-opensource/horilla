@@ -84,6 +84,11 @@
           ></ion-icon>
         </button>
       </div>
+      <div class="oh-input-group" id="apiRequestIDInput" style="display: none">
+        {{biometric_form.anviz_request_id.errors}}
+        <label class="oh-label" for="{{biometric_form.anviz_request_id.id_for_label}}">{% trans "Request ID" %}</label>
+        {{biometric_form.anviz_request_id}}
+      </div>
       <div class="oh-input-group" id="apiUrlInput" style="display: none">
         {{biometric_form.api_url.errors}}
         <label class="oh-label" for="{{biometric_form.api_url.id_for_label}}">{% trans "API Url" %}</label>

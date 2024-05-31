@@ -1,14 +1,16 @@
 """
-This module contains Django models for managing biometric devices 
+This module contains Django models for managing biometric devices
 and employee attendance within a company.
 """
 
 import uuid
+
 import requests
-from django.db import models
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from django.core.validators import MaxValueValidator
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
 from base.models import Company
 from employee.models import Employee
 from horilla.models import HorillaModel
@@ -59,6 +61,7 @@ class BiometricDevices(HorillaModel):
     port = models.IntegerField(null=True, blank=True)
     cosec_username = models.CharField(max_length=100, null=True, blank=True, default="")
     cosec_password = models.CharField(max_length=100, null=True, blank=True)
+    anviz_request_id = models.CharField(max_length=200, null=True, blank=True)
     api_url = models.CharField(max_length=200, null=True, blank=True)
     api_key = models.CharField(max_length=100, null=True, blank=True)
     api_secret = models.CharField(max_length=100, null=True, blank=True)
@@ -117,6 +120,14 @@ class BiometricDevices(HorillaModel):
                     }
                 )
         if self.machine_type == "anviz":
+            if not self.anviz_request_id:
+                raise ValidationError(
+                    {
+                        "anviz_request_id": _(
+                            "The Request ID required for the Anviz Biometric Device."
+                        )
+                    }
+                )
             if not self.api_url:
                 raise ValidationError(
                     {"api_url": _("The API Url required for Anviz Biometric Device")}
@@ -133,13 +144,13 @@ class BiometricDevices(HorillaModel):
                         )
                     }
                 )
-            if self.api_key and self.api_secret:
+            if self.anviz_request_id and self.api_key and self.api_secret:
                 payload = {
                     "header": {
                         "nameSpace": "authorize.token",
                         "nameAction": "token",
                         "version": "1.0",
-                        "requestId": "f1becc28-ad01-b5b2-7cef-392eb1526f39",
+                        "requestId": self.anviz_request_id,
                         "timestamp": "2022-10-21T07:39:07+00:00",
                     },
                     "payload": {"api_key": self.api_key, "api_secret": self.api_secret},

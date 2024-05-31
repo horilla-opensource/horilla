@@ -45,14 +45,14 @@
     </span>
   </div>
   <div id="biometricDeviceList">
-    {% if devices %} 
-      {% comment %} {% if view_type == 'list' %} 
-        {% include 'attendance/biometric/list_biometric_devices.html' %} 
+    {% if devices %}
+      {% comment %} {% if view_type == 'list' %}
+        {% include 'attendance/biometric/list_biometric_devices.html' %}
       {% else %}  {% endcomment %}
-        {% include 'biometric/card_biometric_devices.html' %} 
+        {% include 'biometric/card_biometric_devices.html' %}
       {% comment %} {% endif %} {% endcomment %}
-    {% else %} 
-      {% include 'biometric/empty_view_biometric.html' %} 
+    {% else %}
+      {% include 'biometric/empty_view_biometric.html' %}
     {% endif %}
   </div>
   <div
@@ -77,6 +77,7 @@
       $("#machinPortInput").hide();
       $("#machinUserName").hide();
       $("#machinPassword").hide();
+      $("#apiRequestIDInput").show();
       $("#apiUrlInput").show();
       $("#apiKeyInput").show();
       $("#apiSecretInput").show();
@@ -85,6 +86,7 @@
       $("#machinPortInput").show();
       $("#machinUserName").hide();
       $("#machinPassword").hide();
+      $("#apiRequestIDInput").hide();
       $("#apiUrlInput").hide();
       $("#apiKeyInput").hide();
       $("#apiSecretInput").hide();
@@ -95,6 +97,7 @@
       $("#machinPortInput").show();
       $("#machinUserName").show();
       $("#machinPassword").show();
+      $("#apiRequestIDInput").hide();
       $("#apiUrlInput").hide();
       $("#apiKeyInput").hide();
       $("#apiSecretInput").hide();

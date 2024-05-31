@@ -6,6 +6,7 @@ managing users, retrieving attendance events, etc.
 
 import xml.etree.ElementTree as ET
 from base64 import b64encode
+
 import requests
 
 cosec_api_response_codes = {
