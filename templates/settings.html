@@ -113,16 +113,6 @@
 													>
 												{% endif %}
 											</div>
-											{% if biometric_app_exists %}
-												<div class="oh-input-group">
-													<a
-														id="condition"
-														href="{% url 'enable-biometric-attendance' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Biometric Attendance" %}
-													</a>
-												</div>
-											{% endif %}
 										</div>
 									</div>
 								</div>
@@ -348,7 +338,16 @@
 													>
 												{% endif %}
 											</div>
-
+											{% if biometric_app_exists %}
+												<div class="oh-input-group">
+													<a
+														id="condition"
+														href="{% url 'enable-biometric-attendance' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Biometric Attendance" %}
+													</a>
+												</div>
+											{% endif %}
 										</div>
 									</div>
 								</div>
