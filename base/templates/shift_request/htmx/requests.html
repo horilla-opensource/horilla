@@ -304,8 +304,8 @@
                 >{% trans "Requested Till" %}</div>
                 <div data-cell-index="16" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
                 <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                 {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
-                  <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                   <div class="oh-sticky-table__th oh-sticky-table__right" style="width:180px;">{% trans "Confirmation" %}</div>
                 {% endif %}
               </div>
@@ -409,7 +409,7 @@
 
                       <div class="oh-btn-group" >
 
-                        {% if request.user.employee_get == shift_request.reallocate_to %}
+                        {% if request.user.employee_get == shift_request.reallocate_to and not request.user|is_reportingmanager %}
                           {% if shift_request.approved == True or shift_request.canceled == True or shift_request.reallocate_approved == True %}
                             <button class='oh-btn oh-btn--success w-100' disabled>
                               <ion-icon name="checkmark-outline"></ion-icon>
@@ -434,7 +434,7 @@
                           {% endif %}
                         {% endif %}
 
-                        {% if request.user.employee_get == shift_request.reallocate_to %}
+                        {% if request.user.employee_get == shift_request.reallocate_to and not request.user|is_reportingmanager %}
                           {% if shift_request.reallocate_canceled == True or shift_request.approved == True %}
                             <button class='oh-btn oh-btn--danger w-100' disabled>
                               <ion-icon name="close-circle-outline"></ion-icon>
