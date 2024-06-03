@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from base import thread_local_middleware
 from base.horilla_company_manager import HorillaCompanyManager
 from base.thread_local_middleware import _thread_locals
 from horilla.models import HorillaModel
@@ -765,8 +766,10 @@ class WorkTypeRequest(HorillaModel):
         return False
 
     def clean(self):
-        if self.requested_date < django.utils.timezone.now().date():
-            raise ValidationError(_("Date must be greater than or equal to today"))
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        if not request.user.is_superuser:
+            if self.requested_date < django.utils.timezone.now().date():
+                raise ValidationError(_("Date must be greater than or equal to today"))
         if self.requested_till and self.requested_till < self.requested_date:
             raise ValidationError(
                 _("End date must be greater than or equal to start date")
@@ -874,8 +877,11 @@ class ShiftRequest(HorillaModel):
         ]
 
     def clean(self):
-        if not self.pk and self.requested_date < django.utils.timezone.now().date():
-            raise ValidationError(_("Date must be greater than or equal to today"))
+
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        if not request.user.is_superuser:
+            if not self.pk and self.requested_date < django.utils.timezone.now().date():
+                raise ValidationError(_("Date must be greater than or equal to today"))
         if self.requested_till and self.requested_till < self.requested_date:
             raise ValidationError(
                 _("End date must be greater than or equal to start date")
