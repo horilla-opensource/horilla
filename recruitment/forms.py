@@ -816,6 +816,31 @@ class OfferLetterForm(ModelForm):
             ),
         }
 
+    def get_template_language(self):
+        mail_data = {
+            "Receiver|Full name": "instance.get_full_name",
+            "Sender|Full name": "self.get_full_name",
+            "Receiver|Recruitment": "instance.recruitment_id",
+            "Sender|Recruitment": "self.recruitment_id",
+            "Receiver|Company": "instance.get_company",
+            "Sender|Company": "self.get_company",
+            "Receiver|Job position": "instance.get_job_position",
+            "Sender|Job position": "self.get_job_position",
+            "Receiver|Email": "instance.get_mail",
+            "Sender|Email": "self.get_mail",
+            "Receiver|Employee Type": "instance.get_employee_type",
+            "Sender|Employee Type": "self.get_employee_type",
+            "Receiver|Work Type": "instance.get_work_type",
+            "Sender|Work Type": "self.get_work_type",
+            "Candidate|Full name": "instance.get_full_name",
+            "Candidate|Recruitment": "instance.recruitment_id",
+            "Candidate|Company": "instance.get_company",
+            "Candidate|Job position": "instance.get_job_position",
+            "Candidate|Email": "instance.get_email",
+            "Candidate|Interview Table": "instance.get_interview|safe",
+        }
+        return mail_data
+
 
 class SkillZoneCreateForm(ModelForm):
     verbose_name = "Skill Zone"
