@@ -26,11 +26,11 @@ def view_mail_templates(request):
         template = "offerletter/view_templates.html"
     else:
         template = "offerletter/empty_mail_template.html"
-
+    searchWords = form.get_template_language()
     return render(
         request,
         template,
-        {"templates": templates, "form": form},
+        {"templates": templates, "form": form, "searchWords": searchWords},
     )
 
 
@@ -43,6 +43,7 @@ def view_letter(request, obj_id):
     """
     template = RecruitmentMailTemplate.objects.get(id=obj_id)
     form = OfferLetterForm(instance=template)
+    searchWords = form.get_template_language()
     if request.method == "POST":
         form = OfferLetterForm(request.POST, instance=template)
         if form.is_valid():
@@ -51,7 +52,9 @@ def view_letter(request, obj_id):
             return HttpResponse("<script>window.location.reload()</script>")
 
     return render(
-        request, "offerletter/htmx/form.html", {"form": form, "duplicate": False}
+        request,
+        "offerletter/htmx/form.html",
+        {"form": form, "duplicate": False, "searchWords": searchWords},
     )
 
 
