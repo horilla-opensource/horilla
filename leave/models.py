@@ -674,12 +674,9 @@ class LeaveRequest(HorillaModel):
             emp_job = self.employee_id.employee_work_info.job_position_id
 
         request = getattr(thread_local_middleware._thread_locals, "request", None)
-
-        if self.start_date < date.today() and not request.user.has_perm(
-            "leave.add_leavereaquest"
-        ):
-            raise ValidationError(_("Requests cannot be made for past dates."))
-
+        if not request.user.is_superuser:
+            if self.start_date < date.today():
+                raise ValidationError(_("Requests cannot be made for past dates."))
         if request.user.has_perm("leave.add_restrictleave") == False:
             for restrict in restricted_leave:
                 restri = restrict.id
