@@ -1,0 +1,114 @@
+{% load i18n %} {% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    setTimeout(function () {
+      $(".oh-modal__close").click();
+    }, 1000);
+  </script>
+</div>
+{% endif %}
+<div class="oh-modal__dialog-header pb-0">
+  <h2 class="oh-modal__dialog-title" id="objectUpdateModalLabel">
+    {% trans "Multiple Approval Condition" %}
+  </h2>
+  <button
+    class="oh-modal__close"
+    aria-label="Close"
+    {% if messages %}
+      hx-get="{% url 'hx-multiple-approval-condition' %}"
+      hx-target="#multipleApproveCondition"
+    {% endif %}
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
+    hx-post="{% url 'multiple-level-approval-create' %}"
+    hx-target="#objectCreateModalTarget"
+    class="oh-profile-section pt-0"
+  >
+    <div class="row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="oh-input__group">
+          <label class="oh-input__label" for="{{form.department.id_for_label}}"
+            >{% trans "Department" %}</label
+          >
+          {{form.department }} {{form.department.errors }}
+        </div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="oh-input__group">
+          <label
+            class="oh-input__label"
+            for="{{form.condition_field.id_for_label}}"
+            >{% trans "Condition Field" %}</label
+          >
+          {{form.condition_field }} {{form.condition_field.errors}}
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="oh-input__group">
+          <label
+            class="oh-input__label"
+            for="{{ form.condition_operator.id_for_label }}"
+          >
+            {% trans "Condition Operator" %}
+          </label>
+          {{ form.condition_operator }} {{ form.condition_operator.errors }}
+        </div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="conditionValueDiv">
+        <div class="oh-input__group">
+          <label
+            class="oh-input__label"
+            for="{{ form.condition_value.id_for_label }}"
+          >
+            {% trans "Condition Value" %}
+          </label>
+          {{ form.condition_value }} {{ form.condition_value.errors }}
+        </div>
+      </div>
+    </div>
+    <div class="oh-input__group">
+      <label
+        class="oh-input__label"
+        for="{{ form.multi_approval_manager.id_for_label }}"
+      >
+        {% trans "Approval Managers" %}
+      </label>
+      {{ form.multi_approval_manager }} {{ form.multi_approval_manager.errors }}
+    </div>
+    <div id="multiApprovalManager_0" class="pt-2" style="text-align: end">
+      <a
+        hx-target="#multiApprovalManager_0"
+        hx-swap="outerHTML"
+        hx-get="{% url 'add-more-approval-managers' %}"
+        role="button"
+        style="color: green"
+        >{% trans "Add more managers.." %}</a
+      >
+    </div>
+    <div class="oh-modal__dialog-footer pb-0" style="padding: 1rem 0.2rem 1rem">
+      <button type="submit" class="oh-btn oh-btn--secondary">
+        {% trans "Apply" %}
+      </button>
+    </div>
+  </form>
+</div>
+<script>
+  $(document).ready(function () {
+    $("select").on("select2:select", function (e) {
+      $(this).closest("select")[0].dispatchEvent(new Event("change"));
+    });
+  });
+</script>

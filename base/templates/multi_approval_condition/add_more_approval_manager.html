@@ -1,0 +1,55 @@
+{% load i18n %} {% if field_html %}
+<div
+  class="oh-input__group pt-3"
+  id="{{ currnet_hx_target }}"
+  style="display: flex"
+>
+  {{field_html}}
+  <a
+    hx-get="{% url 'remove-approval-manager' %}"
+    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg"
+    hx-target="#{{ currnet_hx_target }}"
+    hx-swap="outerHTML"
+    id="delete-link"
+  >
+    <ion-icon name="trash-outline"></ion-icon>
+  </a>
+</div>
+<div id="{{ next_hx_target }}" style="text-align: end">
+  <a
+    hx-target="#{{ next_hx_target }}"
+    hx-swap="outerHTML"
+    hx-get="{% url 'add-more-approval-managers' %}?managers_count={{ managers_count }}"
+    role="button"
+    style="color: green"
+    >{% trans "Add more managers.." %}</a
+  >
+</div>
+{% else %}
+<div
+  class="oh-input__group pt-3"
+  id="{{ currnet_hx_target }}"
+  style="display: flex"
+>
+  {{ form.multi_approval_manager }} {{ form.multi_approval_manager.errors }}
+  <a
+    hx-get="{% url 'remove-approval-manager' %}"
+    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg"
+    hx-target="#{{ currnet_hx_target }}"
+    hx-swap="outerHTML"
+    id="delete-link"
+  >
+    <ion-icon name="trash-outline"></ion-icon>
+  </a>
+</div>
+<div id="{{ next_hx_target }}" style="text-align: end">
+  <a
+    hx-target="#{{ next_hx_target }}"
+    hx-swap="outerHTML"
+    hx-get="{% url 'add-more-approval-managers' %}"
+    role="button"
+    style="color: green"
+    >{% trans "Add more managers.." %}</a
+  >
+</div>
+{% endif %}

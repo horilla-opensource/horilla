@@ -750,6 +750,26 @@ urlpatterns = [
         name="multiple-approval-condition",
     ),
     path(
+        "configuration/condition-value-fields",
+        views.get_condition_value_fields,
+        name="condition-value-fields",
+    ),
+    path(
+        "configuration/add-more-approval-managers",
+        views.add_more_approval_managers,
+        name="add-more-approval-managers",
+    ),
+    path(
+        "configuration/remove-approval-manager",
+        views.remove_approval_manager,
+        name="remove-approval-manager",
+    ),
+    path(
+        "configuration/hx-multiple-approval-condition",
+        views.hx_multiple_approval_condition,
+        name="hx-multiple-approval-condition",
+    ),
+    path(
         "multiple-level-approval-create",
         views.multiple_level_approval_create,
         name="multiple-level-approval-create",

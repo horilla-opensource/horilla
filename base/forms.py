@@ -1716,7 +1716,9 @@ class MultipleApproveConditionForm(ModelForm):
         widget=forms.Select(
             attrs={
                 "class": "oh-select oh-select-2 mb-2",
-                "onChange": "toggleFields($('#id_condition_operator'))",
+                "hx-trigger": "change",
+                "hx-target": "#conditionValueDiv",
+                "hx-get": "condition-value-fields",
             },
         ),
     )

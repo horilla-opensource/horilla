@@ -21,6 +21,7 @@ from django.core.paginator import Paginator
 from django.db.models import F, ProtectedError, Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
@@ -4808,12 +4809,93 @@ def multiple_approval_condition(request):
     create = True
     return render(
         request,
-        "leave/leave_request/penalty/condition.html",
+        "multi_approval_condition/condition.html",
         {"form": form, "conditions": conditions, "create": create},
     )
 
 
 @login_required
+@hx_request_required
+@permission_required("base.view_multipleapprovalcondition")
+def hx_multiple_approval_condition(request):
+    conditions = MultipleApprovalCondition.objects.all().order_by("department")[::-1]
+    return render(
+        request,
+        "multi_approval_condition/condition_table.html",
+        {"conditions": conditions},
+    )
+
+
+@login_required
+@hx_request_required
+@permission_required("base.add_multipleapprovalcondition")
+def get_condition_value_fields(request):
+    operator = request.GET.get("condition_operator")
+    form = MultipleApproveConditionForm()
+    is_range = True if operator and operator == "range" else False
+    context = {"form": form, "range": is_range}
+    field_html = render_to_string(
+        "multi_approval_condition/condition_value_fields.html", context
+    )
+    return HttpResponse(field_html)
+
+
+@login_required
+@hx_request_required
+@permission_required("base.add_multipleapprovalcondition")
+def add_more_approval_managers(request):
+    currnet_hx_target = request.META.get("HTTP_HX_TARGET")
+    hx_target_split = currnet_hx_target.split("_")
+    next_hx_target = "_".join([hx_target_split[0], str(int(hx_target_split[-1]) + 1)])
+
+    form = MultipleApproveConditionForm()
+    managers_count = request.GET.get("managers_count")
+    context = {
+        "next_hx_target": next_hx_target,
+        "currnet_hx_target": currnet_hx_target,
+    }
+    if managers_count:
+        managers_count = int(managers_count) + 1
+        field_name = f"multi_approval_manager_{managers_count}"
+        form.fields[field_name] = forms.ModelChoiceField(
+            queryset=Employee.objects.all(),
+            widget=forms.Select(
+                attrs={
+                    "class": "oh-select oh-select-2 mb-3",
+                    "name": field_name,
+                    "id": f"id_{field_name}",
+                }
+            ),
+            required=False,
+        )
+        context["managers_count"] = managers_count
+        context["field_html"] = form[field_name].as_widget()
+    else:
+        form.fields["multi_approval_manager"].widget.attrs.update(
+            {
+                "name": f"multi_approval_manager_{str(int(hx_target_split[-1]) + 1)}",
+                "id": f"id_multi_approval_manager_{str(int(hx_target_split[-1]) + 1)}",
+            }
+        )
+        context["form"] = form
+
+    field_html = render_to_string(
+        "multi_approval_condition/add_more_approval_manager.html", context
+    )
+
+    return HttpResponse(field_html)
+
+
+@login_required
+@hx_request_required
+@permission_required("base.add_multipleapprovalcondition")
+def remove_approval_manager(request):
+    return HttpResponse()
+
+
+@login_required
+@hx_request_required
+@permission_required("base.add_multipleapprovalcondition")
 def multiple_level_approval_create(request):
     form = MultipleApproveConditionForm()
     create = True
@@ -4825,6 +4907,7 @@ def multiple_level_approval_create(request):
         condition_value = request.POST.get("condition_value")
         condition_start_value = request.POST.get("condition_start_value")
         condition_end_value = request.POST.get("condition_end_value")
+        condition_approval_managers = request.POST.getlist("multi_approval_manager")
         department = Department.objects.get(id=dept_id)
         instance = MultipleApprovalCondition()
         if form.is_valid():
@@ -4841,22 +4924,22 @@ def multiple_level_approval_create(request):
                 instance.condition_end_value = condition_end_value
             instance.save()
             sequence = 0
-            for key, value in request.POST.items():
-                if key.startswith("multi_approval_manager"):
-                    if value:
-                        sequence += 1
-                        employee_id = int(value)
-                        MultipleApprovalManagers.objects.create(
-                            condition_id=instance,
-                            sequence=sequence,
-                            employee_id=employee_id,
-                        )
+            for emp_id in condition_approval_managers:
+                sequence += 1
+                employee_id = int(emp_id)
+                MultipleApprovalManagers.objects.create(
+                    condition_id=instance,
+                    sequence=sequence,
+                    employee_id=employee_id,
+                )
             form = MultipleApproveConditionForm()
-    conditions = MultipleApprovalCondition.objects.all().order_by("department")[::-1]
+            messages.success(
+                request, _("Multiple approval condition created successfully")
+            )
     return render(
         request,
-        "leave/leave_request/penalty/create.html",
-        {"form": form, "conditions": conditions, "create": create},
+        "multi_approval_condition/condition_create_form.html",
+        {"form": form, "create": create},
     )
 
 
@@ -4876,15 +4959,9 @@ def edit_approval_managers(form, managers):
     return form
 
 
-def clear_form_fields_and_remove_extra_fields(form, managers):
-    for i, _ in enumerate(managers, start=1):
-        field_name = f"multi_approval_manager_{i}"
-        if field_name in form.cleaned_data:
-            del form.cleaned_data[field_name]
-            form.fields.pop(field_name, None)
-
-
 @login_required
+@hx_request_required
+@permission_required("base.change_multipleapprovalcondition")
 def multiple_level_approval_edit(request, condition_id):
     create = False
     condition = MultipleApprovalCondition.objects.get(id=condition_id)
@@ -4896,48 +4973,30 @@ def multiple_level_approval_edit(request, condition_id):
     if request.method == "POST":
         form = MultipleApproveConditionForm(request.POST, instance=condition)
         if form.is_valid():
-            form.save()
+            instance = form.save()
             sequence = 0
+            MultipleApprovalManagers.objects.filter(condition_id=condition).delete()
             for key, value in request.POST.items():
                 if key.startswith("multi_approval_manager"):
                     sequence += 1
-                    if value:
-                        employee_id = int(value)
-                        instance = MultipleApprovalManagers.objects.filter(
-                            condition_id=condition,
-                            sequence=sequence,
-                        )
-                        if instance:
-                            instance.update(employee_id=employee_id)
-                        else:
-                            MultipleApprovalManagers.objects.create(
-                                condition_id=condition,
-                                sequence=sequence,
-                                employee_id=employee_id,
-                            )
-                    else:
-                        MultipleApprovalManagers.objects.filter(
-                            condition_id=condition, sequence=sequence
-                        ).delete()
-                        managers_sequence = MultipleApprovalManagers.objects.filter(
-                            condition_id=condition, sequence__gt=sequence
-                        ).order_by("sequence")
-
-                        for upt_manager in managers_sequence:
-                            upt_manager.sequence = F("sequence") - 1
-                            upt_manager.save()
-                        sequence -= 1
+                    employee_id = int(value)
+                    MultipleApprovalManagers.objects.create(
+                        condition_id=instance,
+                        sequence=sequence,
+                        employee_id=employee_id,
+                    )
             return HttpResponse("<script>window.location.reload()</script>")
 
     conditions = MultipleApprovalCondition.objects.all().order_by("department")[::-1]
     return render(
         request,
-        "leave/leave_request/penalty/create.html",
+        "multi_approval_condition/condition_edit_form.html",
         {
             "form": form,
             "conditions": conditions,
             "create": create,
             "condition": condition,
+            "managers_count": len(managers),
         },
     )
 
@@ -4947,7 +5006,8 @@ def multiple_level_approval_edit(request, condition_id):
 def multiple_level_approval_delete(request, condition_id):
     condition = MultipleApprovalCondition.objects.get(id=condition_id)
     condition.delete()
-    return redirect(multiple_approval_condition)
+    messages.success(request, _("Multiple approval condition deleted successfully"))
+    return redirect(hx_multiple_approval_condition)
 
 
 @login_required

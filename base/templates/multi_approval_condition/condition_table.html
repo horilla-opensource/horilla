@@ -1,0 +1,92 @@
+{% load static %} {% load i18n %}  {% load basefilters %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% if conditions %}
+<div class="oh-sticky-table">
+  <div class="oh-sticky-table__table oh-table--sortable">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th">{% trans "Department" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Condition Field" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Condition Operator" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Condition Value" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Approval Managers" %}</div>
+        {% if perms.leave.change_availableleave or perms.leave.delete_availableleave or request.user|is_reportingmanager %}
+            <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="oh-sticky-table__tbody">
+      {% for condition in conditions %}
+        <div class="oh-sticky-table__tr" draggable="true">
+          <div class="oh-sticky-table__td">{{condition.department}}</div>
+          <div class="oh-sticky-table__td">
+            {{condition.get_condition_field_display}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{condition.get_condition_operator_display}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {% if condition.condition_operator == "range" %}
+              {{condition.condition_start_value}} - {{condition.condition_end_value}} 
+            {% else %}
+              {{condition.condition_value}} 
+            {% endif %}
+          </div>
+          <div class="oh-sticky-table__td">
+            {% for manager in condition.approval_managers %} 
+                {{ forloop.counter}}. {{ manager }}<br />
+            {% endfor %}
+          </div>
+          {% if perms.leave.change_availableleave or perms.leave.delete_availableleave or request.user|is_reportingmanager %}
+              <div class="oh-sticky-table__td">
+                <div class="oh-btn-group">
+                  {% if request.user|is_reportingmanager or perms.leave.change_availableleave %}
+                      <button
+                        title="{% trans 'Edit' %}"
+                        class="oh-btn oh-btn--light-bkg w-100"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectUpdateModal"
+                        hx-target="#objectUpdateModalTarget"
+                        hx-get="{% url 'multiple-level-approval-edit' condition.id %}"
+                          >
+                        <ion-icon name="create-outline"></ion-icon>
+                      </button>
+                  {% endif %} 
+                  {% if request.user|is_reportingmanager or perms.leave.delete_availableleave %} 
+                      <a hx-confirm="{% trans 'Are you sure you want to delete ?' %}" hx-get={% url "multiple-level-approval-delete" condition.id %} 
+                        hx-target="#multipleApproveCondition" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
+                        id="delete-link" title="{% trans 'Delete' %}">
+                        <ion-icon name="trash-outline"></ion-icon>
+                      </a>
+                  {% endif %}
+                </div>
+              </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="oh-404">
+  <img
+    style="width: 150px; height: 150px"
+    src="{% static 'images/ui/approve.png' %}"
+    class="oh-404__image mb-4"
+    alt="Page not found. 404."
+  />
+  <h5 class="oh-404__subtitle">
+    {% trans "There are currently no multiple approvals to consider." %}
+  </h5>
+</div>
+{% endif %}

@@ -1,0 +1,33 @@
+{% load i18n %} {% if range %}
+<div class="row" id="conditionRangeValueRow">
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+    <div class="oh-input__group">
+      <label
+        class="oh-input__label"
+        for="{{ form.condition_start_value.id_for_label }}"
+      >
+        {% trans "Starting Value" %}
+      </label>
+      {{ form.condition_start_value }} {{ form.condition_start_value.errors }}
+    </div>
+  </div>
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+    <div class="oh-input__group">
+      <label
+        class="oh-input__label"
+        for="{{ form.condition_end_value.id_for_label }}"
+      >
+        {% trans "Ending Value" %}
+      </label>
+      {{ form.condition_end_value }} {{ form.condition_end_value.errors }}
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="oh-input__group">
+  <label class="oh-input__label" for="{{ form.condition_value.id_for_label }}">
+    {% trans "Condition Value" %}
+  </label>
+  {{ form.condition_value }} {{ form.condition_value.errors }}
+</div>
+{% endif %}

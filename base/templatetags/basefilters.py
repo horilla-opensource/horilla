@@ -134,3 +134,9 @@ def config_perms(user):
     for perm in permissions:
         if user.has_perm(perm):
             return True
+
+
+@register.filter(name="startswith")
+def startswith(value, arg):
+    """Checks if the value starts with the provided argument."""
+    return value.startswith(arg)
