@@ -88,18 +88,21 @@ from django import template
 
 
 @login_required
-def get_template(request, obj_id):
+def get_template(request, obj_id=None):
     """
     This method is used to return the mail template
     """
-    body = RecruitmentMailTemplate.objects.get(id=obj_id).body
+    if obj_id:
+        body = RecruitmentMailTemplate.objects.get(id=obj_id).body
+        template_bdy = template.Template(body)
+    if request.GET.get("word"):
+        word = request.GET.get("word")
+        template_bdy = template.Template("{{" + word + "}}")
     candidate_id = request.GET.get("candidate_id")
     if candidate_id:
         candidate_obj = Candidate.objects.get(id=candidate_id)
-        template_bdy = template.Template(body)
         context = template.Context(
             {"instance": candidate_obj, "self": request.user.employee_get}
         )
-        body = template_bdy.render(context)
-
+        body = template_bdy.render(context) or " "
     return JsonResponse({"body": body})

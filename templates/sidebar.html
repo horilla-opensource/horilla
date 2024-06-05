@@ -5,6 +5,47 @@
     const navElement = $(`#${id}`);
     const activeNavElement = navElement.after();
   }
+  function preloadData(item, candId,preloadedData,callback) {
+    $.ajax({
+        type: "get",
+        url: `/recruitment/get-template-hint/`,
+        data: { "candidate_id": candId, 'word': item },
+        success: function(response) {
+            preloadedData[item] = response.body;
+            callback();
+            $('.note-hint-popover').hide()
+        }
+    });
+}
+
+function initializeSummernote(candId,searchWords,) {
+    var preloadedData = {};
+    var searchWords = searchWords;
+    var mentions = Object.keys(searchWords);
+    $("[name='body']").summernote({
+        hint: {
+            mentions: mentions,
+            match: /\B\{(\w*)$/,
+            search: function(keyword, callback) {
+                var pattern = new RegExp(keyword, "i"); // Case-insensitive search
+                callback($.grep(this.mentions, function(item) {
+                    return pattern.test(item);
+                }));
+            },
+            content: function(item) {
+                var word = searchWords[item];
+                if (preloadedData[word]) {
+                    $("[name='body']").summernote('insertText', preloadedData[word]);
+                    $('.note-hint-popover').hide();
+                } else {
+                    preloadData(word,candId,preloadedData, function() {
+                      $("[name='body']").summernote('insertText',preloadedData[word]);
+                  });
+                }
+            }
+        }
+    });
+}
 </script>
 <div
   class="oh-sidebar"

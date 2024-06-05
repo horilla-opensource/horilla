@@ -70,8 +70,11 @@
       <label for="body">
         <h6>{% trans "Message Body" %}</h6>
       </label>
-      <textarea hidden data-summernote name="body" required class="oh-input w-100" id="body" cols="30"
+      <textarea hidden name="body" required class="oh-input w-100" id="body" cols="30"
         rows="2"></textarea>
+    </div>
+    <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
+      {% trans "Hint: Type '{' to get sender or receiver data" %}
     </div>
     <div class="form-group mt-2">
       <label for="template_attachments">
@@ -158,4 +161,12 @@
       }
     });
   });
+</script>
+<script>
+
+  {% if form.instance.title %}
+  setModalLabel("{{ form.instance.title|escapejs }}", "#viewTemplateModalLabel");
+  {% endif %}
+  initializeSummernote({{cand.id}},{{ searchWords|safe }});
+
 </script>

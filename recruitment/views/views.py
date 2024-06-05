@@ -60,6 +60,7 @@ from recruitment.forms import (
     AddCandidateForm,
     CandidateCreationForm,
     CandidateExportForm,
+    OfferLetterForm,
     RecruitmentCreationForm,
     RejectReasonForm,
     ScheduleInterviewForm,
@@ -1584,6 +1585,7 @@ def form_send_mail(request, cand_id=None):
             "templates": templates,
             "candidates": candidates,
             "stage_id": stage_id,
+            "searchWords": OfferLetterForm().get_template_language(),
         },
     )
 
