@@ -1818,11 +1818,15 @@ def cosec_biometric_device_attendance(device_id):
         device_id (uuid): The ID of the COSEC biometric device.
     """
     device = BiometricDevices.objects.get(id=device_id)
+    if not device.is_scheduler:
+        return
+
     device_args = COSECAttendanceArguments.objects.filter(device_id=device).first()
     last_fetch_roll_ovr_count = (
         int(device_args.last_fetch_roll_ovr_count) if device_args else 0
     )
     last_fetch_seq_number = int(device_args.last_fetch_seq_number) if device_args else 1
+
     cosec = COSECBiometric(
         device.machine_ip,
         device.port,
@@ -1833,56 +1837,55 @@ def cosec_biometric_device_attendance(device_id):
     attendances = cosec.get_attendance_events(
         last_fetch_roll_ovr_count, last_fetch_seq_number
     )
-    if isinstance(attendances, list):
-        if device_args and attendances:
-            attendances.pop(0)
-        for attendance in attendances:
-            employee = BiometricEmployees.objects.filter(
-                ref_user_id=attendance["detail-1"]
-            ).first()
-            if employee:
-                date_str = attendance["date"]
-                time_str = attendance["time"]
-                attendance_date = datetime.strptime(date_str, "%d/%m/%Y").date()
-                attendance_time = datetime.strptime(time_str, "%H:%M:%S").time()
-                attendance_datetime = datetime.combine(attendance_date, attendance_time)
-                punch_code = attendance["detail-2"]
-                if punch_code in ["1", "3", "5", "7", "9"]:
-                    try:
-                        clock_in(
-                            Request(
-                                user=employee.employee_id.employee_user_id,
-                                date=attendance_date,
-                                time=attendance_time,
-                                datetime=attendance_datetime,
-                            )
-                        )
-                    except Exception as error:
-                        print(f"Error in clock in {error}")
-                elif punch_code in ["2", "4", "6", "8", "10"]:
-                    try:
-                        clock_out(
-                            Request(
-                                user=employee.employee_id.employee_user_id,
-                                date=attendance_date,
-                                time=attendance_time,
-                                datetime=attendance_datetime,
-                            )
-                        )
-                    except Exception as error:
-                        print(f"Error in clock out {error}")
-                else:
-                    pass
 
-        if attendances:
-            last_attendance = attendances[-1]
-            COSECAttendanceArguments.objects.update_or_create(
-                device_id=device,
-                defaults={
-                    "last_fetch_roll_ovr_count": last_attendance["roll-over-count"],
-                    "last_fetch_seq_number": last_attendance["seq-No"],
-                },
-            )
+    if not isinstance(attendances, list):
+        return
+
+    if device_args and attendances:
+        attendances.pop(0)
+
+    for attendance in attendances:
+        ref_user_id = attendance["detail-1"]
+        employee = BiometricEmployees.objects.filter(ref_user_id=ref_user_id).first()
+        if not employee:
+            continue
+
+        date_str = attendance["date"]
+        time_str = attendance["time"]
+        attendance_date = datetime.strptime(date_str, "%d/%m/%Y").date()
+        attendance_time = datetime.strptime(time_str, "%H:%M:%S").time()
+        attendance_datetime = datetime.combine(attendance_date, attendance_time)
+        punch_code = attendance["detail-2"]
+
+        request_data = Request(
+            user=employee.employee_id.employee_user_id,
+            date=attendance_date,
+            time=attendance_time,
+            datetime=attendance_datetime,
+        )
+
+        try:
+            if punch_code in ["1", "3", "5", "7", "9"]:
+                clock_in(request_data)
+            elif punch_code in ["2", "4", "6", "8", "10"]:
+                clock_out(request_data)
+            else:
+                if device.attendance_activity_type == "clock_in":
+                    clock_in(request_data)
+                elif device.attendance_activity_type == "clock_out":
+                    clock_out(request_data)
+        except Exception as error:
+            print(f"Error processing attendance: {error}")
+
+    if attendances:
+        last_attendance = attendances[-1]
+        COSECAttendanceArguments.objects.update_or_create(
+            device_id=device,
+            defaults={
+                "last_fetch_roll_ovr_count": last_attendance["roll-over-count"],
+                "last_fetch_seq_number": last_attendance["seq-No"],
+            },
+        )
 
 
 try:
