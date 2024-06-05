@@ -37,13 +37,13 @@
           </div>
           <div class="oh-sticky-table__td">
             {% if condition.condition_operator == "range" %}
-              {{condition.condition_start_value}} - {{condition.condition_end_value}} 
+              {{condition.condition_start_value}} - {{condition.condition_end_value}}
             {% else %}
-              {{condition.condition_value}} 
+              {{condition.condition_value}}
             {% endif %}
           </div>
           <div class="oh-sticky-table__td">
-            {% for manager in condition.approval_managers %} 
+            {% for manager in condition.approval_managers %}
                 {{ forloop.counter}}. {{ manager }}<br />
             {% endfor %}
           </div>
@@ -61,10 +61,10 @@
                           >
                         <ion-icon name="create-outline"></ion-icon>
                       </button>
-                  {% endif %} 
-                  {% if request.user|is_reportingmanager or perms.leave.delete_availableleave %} 
-                      <a hx-confirm="{% trans 'Are you sure you want to delete ?' %}" hx-get={% url "multiple-level-approval-delete" condition.id %} 
-                        hx-target="#multipleApproveCondition" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
+                  {% endif %}
+                  {% if request.user|is_reportingmanager or perms.leave.delete_availableleave %}
+                      <a hx-confirm="{% trans 'Are you sure you want to delete ?' %}" hx-get={% url "multiple-level-approval-delete" condition.id %}
+                        hx-target="#multipleApproveCondition" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                         id="delete-link" title="{% trans 'Delete' %}">
                         <ion-icon name="trash-outline"></ion-icon>
                       </a>

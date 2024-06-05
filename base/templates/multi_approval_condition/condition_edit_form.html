@@ -81,7 +81,7 @@
               >
                 {% trans "Starting Value" %}
               </label>
-              {{ form.condition_start_value }} 
+              {{ form.condition_start_value }}
               {{ form.condition_start_value.errors }}
             </div>
           </div>
@@ -93,7 +93,7 @@
               >
                 {% trans "Ending Value" %}
               </label>
-              {{ form.condition_end_value }} 
+              {{ form.condition_end_value }}
               {{ form.condition_end_value.errors }}
             </div>
           </div>
@@ -106,7 +106,7 @@
           >
             {% trans "Condition Value" %}
           </label>
-          {{ form.condition_value }} 
+          {{ form.condition_value }}
           {{ form.condition_value.errors }}
         </div>
         {% endif %}
@@ -122,7 +122,7 @@
       {{ form.multi_approval_manager }}
       {{ form.multi_approval_manager.errors }}
     </div>
-    {% for field in form.visible_fields %} 
+    {% for field in form.visible_fields %}
       {% if field.name|startswith:"multi_approval_manager_" %}
       <div id="{{field.name}}">
         <div class="oh-input__group pt-2" style="display: flex">
