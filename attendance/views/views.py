@@ -311,7 +311,6 @@ def attendance_import(request):
 
 
 @login_required
-@hx_request_required
 def attendance_export(request):
     resolver_match = request.resolver_match
     if (
