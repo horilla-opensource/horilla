@@ -61,45 +61,45 @@ x-data="{searchShow: false}"
                   <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-6">
                       <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Employee" %}</label>
+                        <label class="oh-label" for="{{f.form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
                         {{f.form.employee_id}}
                       </div>
                       <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Job Position" %}</label>
+                        <label class="oh-label" for="{{f.form.employee_id__employee_work_info__job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
                         {{f.form.employee_id__employee_work_info__job_position_id}}
                       </div>
                       <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Shift" %}</label>
+                        <label class="oh-label" for="{{f.form.employee_id__employee_work_info__shift_id.id_for_label}}">{% trans "Shift" %}</label>
                         {{f.form.employee_id__employee_work_info__shift_id}}
                       </div>
                       <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Company" %}</label>
+                        <label class="oh-label" for="{{f.form.employee_id__employee_work_info__company_id.id_for_label}}">{% trans "Company" %}</label>
                         {{f.form.employee_id__employee_work_info__company_id}}
                       </div>
                       <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Is Active" %}?</label>
+                        <label class="oh-label" for="{{f.form.employee_id__is_active.id_for_label}}">{% trans "Is Active" %}?</label>
                         {{f.form.employee_id__is_active}}
                       </div>
                     </div>
                     <div class="col-sm-12 col-md-12 col-lg-6">
                       <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Department" %}</label>
+                        <label class="oh-label" for="{{f.form.employee_id__employee_work_info__department_id.id_for_label}}">{% trans "Department" %}</label>
                         {{f.form.employee_id__employee_work_info__department_id}}
                       </div>
                     <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Job Role" %}</label>
+                      <label class="oh-label" for="{{f.form.employee_id__employee_work_info__job_role_id.id_for_label}}">{% trans "Job Role" %}</label>
                       {{f.form.employee_id__employee_work_info__job_role_id}}
                     </div>
                     <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Work Type" %}</label>
+                      <label class="oh-label" for="{{f.form.employee_id__employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
                       {{f.form.employee_id__employee_work_info__work_type_id}}
                     </div>
                     <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Reporting Manager" %}</label>
+                      <label class="oh-label" for="{{f.form.employee_id__employee_work_info__reporting_manager_id.id_for_label}}">{% trans "Reporting Manager" %}</label>
                       {{f.form.employee_id__employee_work_info__reporting_manager_id}}
                     </div>
                     <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Gender" %}</label>
+                      <label class="oh-label" for="{{f.form.employee_id__gender.id_for_label}}">{% trans "Gender" %}</label>
                       {{f.form.employee_id__gender}}
                     </div>
                   </div>
@@ -112,25 +112,25 @@ x-data="{searchShow: false}"
                 <div class="row">
                   <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Requested Date" %}</label>
+                      <label class="oh-label" for="{{f.form.requested_date.id_for_label}}">{% trans "Requested Date" %}</label>
                       {{f.form.requested_date}}
                     </div>
                     <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Approved" %}?</label>
+                      <label class="oh-label" for="{{f.form.approved.id_for_label}}">{% trans "Approved" %}?</label>
                       {{f.form.approved}}
                     </div>
                     <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Canceled" %}?</label>
+                      <label class="oh-label" for="{{f.form.canceled.id_for_label}}">{% trans "Canceled" %}?</label>
                       {{f.form.canceled}}
                     </div>
                   </div>
                   <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Requested Work Type" %}</label>
+                      <label class="oh-label" for="{{f.form.work_type_id.id_for_label}}">{% trans "Requested Work Type" %}</label>
                       {{f.form.work_type_id}}
                     </div>
                     <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Previous Work Type" %}</label>
+                      <label class="oh-label" for="{{f.form.previous_work_type_id.id_for_label}}">{% trans "Previous Work Type" %}</label>
                       {{f.form.previous_work_type_id}}
                     </div>
 
@@ -144,14 +144,14 @@ x-data="{searchShow: false}"
                 <div class="row">
                   <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Requested Date From" %}</label>
+                      <label class="oh-label" for="{{f.form.requested_date__gte.id_for_label}}">{% trans "Requested Date From" %}</label>
                       {{f.form.requested_date__gte}}
                     </div>
 
                   </div>
                   <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Requested Date Till" %}</label>
+                      <label class="oh-label" for="{{f.form.requested_date__lte.id_for_label}}">{% trans "Requested Date Till" %}</label>
                       {{f.form.requested_date__lte}}
                     </div>
                   </div>
@@ -176,11 +176,11 @@ x-data="{searchShow: false}"
         style="display: none"
         >
         <div class="oh-accordion">
-          <label>{% trans "Group By" %}</label>
+          <label class="oh-label" for="id_field">{% trans "Group By" %}</label>
             <div class="row">
               <div class="col-sm-12 col-md-12 col-lg-6">
                 <div class="oh-input-group">
-                  <label class="oh-label">{% trans "Field" %}</label>
+                  <label class="oh-label" for="id_field">{% trans "Field" %}</label>
                 </div>
               </div>
               <div class="col-sm-12 col-md-12 col-lg-6">

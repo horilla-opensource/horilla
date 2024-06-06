@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">
+            <label class="oh-label" for="select-all-fields">
               <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
             </label>
           </div>
@@ -16,7 +16,9 @@
         {% for field in export_fields.selected_fields %}
         <div class="col-sm-12 col-md-12 col-lg-4">
           <div class="oh-input-group">
-            <label class="oh-label"> {{ field }} </label>
+            <label class="oh-label">
+              {{ field }}
+            </label>
           </div>
         </div>
         {% endfor %}
@@ -29,45 +31,85 @@
       <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Employee" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_id.id_for_label}}"
+              >{% trans "Employee" %}</label
+            >
             {{export_filter.form.employee_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Job Position" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_id__employee_work_info__job_position_id.id_for_label}}"
+              >{% trans "Job Position" %}</label
+            >
             {{export_filter.form.employee_id__employee_work_info__job_position_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Shift" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_id__employee_work_info__shift_id.id_for_label}}"
+              >{% trans "Shift" %}</label
+            >
             {{export_filter.form.employee_id__employee_work_info__shift_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Company" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_id__employee_work_info__company_id.id_for_label}}"
+              >{% trans "Company" %}</label
+            >
             {{export_filter.form.employee_id__employee_work_info__company_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Is Active" %}?</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_id__is_active.id_for_label}}"
+              >{% trans "Is Active" %}?</label
+            >
             {{export_filter.form.employee_id__is_active}}
           </div>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Department" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_id__employee_work_info__department_id.id_for_label}}"
+              >{% trans "Department" %}</label
+            >
             {{export_filter.form.employee_id__employee_work_info__department_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Job Role" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_id__employee_work_info__job_role_id.id_for_label}}"
+              >{% trans "Job Role" %}</label
+            >
             {{export_filter.form.employee_id__employee_work_info__job_role_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Work Type" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_id__employee_work_info__work_type_id.id_for_label}}"
+              >{% trans "Work Type" %}</label
+            >
             {{export_filter.form.employee_id__employee_work_info__work_type_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Reporting Manager" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_id__employee_work_info__reporting_manager_id.id_for_label}}"
+              >{% trans "Reporting Manager" %}</label
+            >
             {{export_filter.form.employee_id__employee_work_info__reporting_manager_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Gender" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_id__gender.id_for_label}}"
+              >{% trans "Gender" %}</label
+            >
             {{export_filter.form.employee_id__gender}}
           </div>
         </div>
@@ -80,25 +122,45 @@
       <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Requested Date" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.requested_date.id_for_label}}"
+              >{% trans "Requested Date" %}</label
+            >
             {{export_filter.form.requested_date}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Approved" %}?</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.approved.id_for_label}}"
+              >{% trans "Approved" %}?</label
+            >
             {{export_filter.form.approved}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Canceled" %}?</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.canceled.id_for_label}}"
+              >{% trans "Canceled" %}?</label
+            >
             {{export_filter.form.canceled}}
           </div>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Requested Work Type" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.work_type_id.id_for_label}}"
+              >{% trans "Requested Work Type" %}</label
+            >
             {{export_filter.form.work_type_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Previous Work Type" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.previous_work_type_id.id_for_label}}"
+              >{% trans "Previous Work Type" %}</label
+            >
             {{export_filter.form.previous_work_type_id}}
           </div>
         </div>
@@ -111,13 +173,21 @@
       <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Requested Date From" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.requested_date__gte.id_for_label}}"
+              >{% trans "Requested Date From" %}</label
+            >
             {{export_filter.form.requested_date__gte}}
           </div>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Requested Date Till" %}</label>
+            <label
+              class="oh-label"
+              for="{{export_filter.form.requested_date__lte.id_for_label}}"
+              >{% trans "Requested Date Till" %}</label
+            >
             {{export_filter.form.requested_date__lte}}
           </div>
         </div>
