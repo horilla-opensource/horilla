@@ -253,13 +253,13 @@
             <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
               role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
             <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-            <ul class="oh-dropdown__items" id="shiftRequestCells2">
+            <ul class="oh-dropdown__items" id="allocationRequestCells">
             </ul>
             </div>
           </div>
         </div>
       </div>
-      <div id="shift-allocation-request-table" data-table-name="shift_request_tab2">
+      <div id="shift-allocation-request-table" data-table-name="allocation_request_tab">
         <!-- start of sticky table -->
         <div class="oh-sticky-table">
           <div class="oh-sticky-table__table oh-table--sortable">
@@ -724,10 +724,10 @@
   }
   $("[type=checkbox]").change();
 
-  toggleColumns("shift-allocation-request-table", "shiftRequestCells2");
-  localStorageShiftRequestCells = localStorage.getItem("shift_request_tab2");
+  toggleColumns("shift-allocation-request-table", "allocationRequestCells");
+  localStorageShiftRequestCells = localStorage.getItem("allocation_request_tab");
   if (!localStorageShiftRequestCells) {
-    $("#shiftRequestCells").find("[type=checkbox]").prop("checked", true);
+    $("#allocationRequestCells").find("[type=checkbox]").prop("checked", true);
   }
   $("[type=checkbox]").change();
 
