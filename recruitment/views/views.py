@@ -12,12 +12,15 @@ provide the main entry points for interacting with the application's functionali
 """
 
 import contextlib
-import datetime
+import io
 import json
 import os
+import re
+from datetime import datetime
 from itertools import chain
 from urllib.parse import parse_qs
 
+import fitz
 from django import template
 from django.conf import settings
 from django.contrib import messages
@@ -2506,3 +2509,143 @@ def delete_reject_reason(request):
         reasons.delete()
         messages.success(request, f"{reason.title} is deleted.")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+from pprint import pprint
+
+from base.countries import country_arr, s_a, states
+
+
+def extract_text_with_font_info(pdf):
+    pdf_bytes = pdf.read()
+    pdf_doc = io.BytesIO(pdf_bytes)
+    doc = fitz.open("pdf", pdf_doc)
+    text_info = []
+
+    for page_num in range(len(doc)):
+        page = doc[page_num]
+        blocks = page.get_text("dict")["blocks"]
+        for block in blocks:
+            try:
+                for line in block["lines"]:
+                    for span in line["spans"]:
+                        # print(span["text"])
+                        text_info.append(
+                            {
+                                "text": span["text"],
+                                "font_size": span["size"],
+                                "capitalization": sum(
+                                    1 for c in span["text"] if c.isupper()
+                                )
+                                / len(span["text"]),
+                            }
+                        )
+            except:
+                pass
+
+    return text_info
+
+
+def rank_text(text_info):
+    ranked_text = sorted(
+        text_info, key=lambda x: (x["font_size"], x["capitalization"]), reverse=True
+    )
+    return ranked_text
+
+
+def dob_matching(dob):
+    date_formats = [
+        "%Y-%m-%d",
+        "%Y/%m/%d",
+        "%d-%m-%Y",
+        "%d/%m/%Y",
+        "%Y.%m.%d",
+        "%d.%m.%Y",
+    ]
+
+    for fmt in date_formats:
+        try:
+            parsed_date = datetime.strptime(dob, fmt)
+            return parsed_date.strftime("%Y-%m-%d")
+        except ValueError:
+            continue
+
+    return dob
+
+
+def extract_info(pdf):
+    text_info = extract_text_with_font_info(pdf)
+    ranked_text = rank_text(text_info)
+
+    phone_pattern = re.compile(r"\b\+?\d{1,2}\s?\d{9,10}\b")
+    dob_pattern = re.compile(
+        r"\b(?:\d{1,2}|\d{4})[-/.,]\d{1,2}[-/.,](?:\d{1,2}|\d{4})\b"
+    )
+    email_pattern = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b")
+    zip_code_pattern = re.compile(r"\b\d{5,6}(?:-\d{4})?\b")
+
+    extracted_info = {
+        "full_name": "",
+        "address": "",
+        "country": "",
+        "state": "",
+        "phone_number": "",
+        "dob": "",
+        "email_id": "",
+        "zip": "",
+    }
+
+    name_candidates = [
+        item["text"]
+        for item in ranked_text
+        if item["font_size"] == max(item["font_size"] for item in ranked_text)
+    ]
+
+    if name_candidates:
+        extracted_info["full_name"] = " ".join(name_candidates)
+
+    for item in ranked_text:
+        text = item["text"]
+
+        if not text:
+            continue
+
+        if not extracted_info["phone_number"]:
+            phone_match = phone_pattern.search(text)
+            if phone_match:
+                extracted_info["phone_number"] = phone_match.group()
+
+        if not extracted_info["dob"]:
+            dob_match = dob_pattern.search(text)
+            if dob_match:
+                extracted_info["dob"] = dob_matching(dob_match.group())
+
+        if not extracted_info["zip"]:
+            zip_match = zip_code_pattern.search(text)
+            if zip_match:
+                extracted_info["zip"] = zip_match.group()
+
+        if not extracted_info["email_id"]:
+            email_match = email_pattern.search(text)
+            if email_match:
+                extracted_info["email_id"] = email_match.group()
+
+        if "address" in text.lower() and not extracted_info["address"]:
+            extracted_info["address"] = text.replace("Address:", "").strip()
+
+        for item in text.split(" "):
+            if item.capitalize() in country_arr:
+                extracted_info["country"] = item
+
+        for item in text.split(" "):
+            if item.capitalize() in states:
+                extracted_info["state"] = item
+
+    return extracted_info
+
+
+def resume_completion(request):
+    resume_file = request.FILES["resume"]
+    contact_info = extract_info(resume_file)
+
+    return JsonResponse(contact_info)

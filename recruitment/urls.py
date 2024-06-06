@@ -540,4 +540,9 @@ urlpatterns = [
         views.delete_reject_reason,
         name="delete-reject-reasons",
     ),
+    path(
+        "resume-completion",
+        views.resume_completion,
+        name="resume-completion",
+    ),
 ]

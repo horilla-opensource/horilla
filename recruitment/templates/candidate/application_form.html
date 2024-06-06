@@ -70,7 +70,7 @@
                               class="me-1"
                               name="trash-outline"
                             ></ion-icon
-                            >Delete image
+                            >{% trans "Delete image" %}
                           </button>
                         </div>
                       </div>
@@ -86,7 +86,7 @@
                     <img
                       src="/static/images/ui/user.jpg"
                       class="oh-profile-section__avatar oh-upload-photo"
-                      alt="Lizaveta Ivanovna"
+                      alt=""
                     />
                   </div>
                 </div>
@@ -95,8 +95,8 @@
                 </ul>
                 <div class="col-sm-12 col-md-12 col-lg-12">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="name"
-                      >* {% trans "Name" %}</label
+                    <label class="oh-label required-star" for="name"
+                      >{% trans "Name" %}</label
                     >
                     <input
                       type="text"
@@ -113,16 +113,16 @@
                 {% if not request.GET.recruitmentId %}
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="recuitment"
-                      >* {% trans "Open Recruitment" %}
+                    <label class="oh-label required-star" for="recuitment"
+                      > {% trans "Open Recruitment" %}
                     </label>
                     {{form.recruitment_id}} {{form.recruitment_id.errors}}
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="recuitment"
-                      >* {% trans "Choose Open Position" %}
+                    <label class="oh-label required-star" for="recuitment"
+                      >{% trans "Choose Open Position" %}
                     </label>
                     {{form.job_position_id}} {{form.job_position_id.errors}}
                   </div>
@@ -153,8 +153,8 @@
 
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="email"
-                      >* {% trans "Email" %}</label
+                    <label class="oh-label required-star" for="email"
+                      >{% trans "Email" %}</label
                     >
                     <input
                       type="email"
@@ -170,8 +170,8 @@
 
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="phone"
-                      >* {% trans "Phone" %}</label
+                    <label class="oh-label required-star" for="phone"
+                      >{% trans "Phone" %}</label
                     >
                     <input
                       type="text"
@@ -201,8 +201,8 @@
 
                 <div class="col-sm-12 col-md-12 col-lg-6">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="resume"
-                      >* {% trans "Resume" %}</label
+                    <label class="oh-label required-star" for="resume"
+                      >{% trans "Resume" %}</label
                     >
                     <input
                       type="file"
@@ -216,16 +216,16 @@
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="gender"
-                      >* {% trans "Gender" %}</label
+                    <label class="oh-label required-star" for="gender"
+                      >{% trans "Gender" %}</label
                     >
                     {{form.gender}} {{form.gender.errros}}
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-12">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="address"
-                      >* {% trans "Address" %}</label
+                    <label class="oh-label required-star" for="address"
+                      >{% trans "Address" %}</label
                     >
                     <textarea
                       id="address"
@@ -239,8 +239,8 @@
 
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="id_country"
-                      >* {% trans "Country" %}</label
+                    <label class="oh-label required-star" for="id_country"
+                      >{% trans "Country" %}</label
                     >
                     <select
                       name="country"
@@ -254,8 +254,8 @@
 
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="id_state"
-                      >* {% trans "State" %}</label
+                    <label class="oh-label required-star" for="id_state"
+                      >{% trans "State" %}</label
                     >
                     <select
                       name="state"
@@ -269,8 +269,8 @@
 
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="city"
-                      >* {% trans "City" %}</label
+                    <label class="oh-label required-star" for="city"
+                      >{% trans "City" %}</label
                     >
                     <input
                       type="text"
@@ -286,8 +286,8 @@
 
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="zip"
-                      >* {% trans "Zip Code" %}</label
+                    <label class="oh-label required-star" for="zip"
+                      >{% trans "Zip Code" %}</label
                     >
                     <input
                       type="text"
@@ -314,7 +314,7 @@
 
                 <div class="col-sm-12 col-md-12 col-lg-12">
                   <p class="small text-muted text-center">
-                    &copy; 2023 {{white_label_company_name}}. All rights resevered.
+                    &copy; {% now 'Y' %} {{white_label_company_name}}. All rights resevered.
                   </p>
                 </div>
               </div>
@@ -359,6 +359,74 @@
       errorList.style.display = "none"; // Hide error message
     }
   }
+  $(document).ready(function(){
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    function setIfEmpty(selector, value) {
+      if ($(selector).val() === "" ){
+        $(selector).val(value);
+        $(selector).change();
+
+        $("[name=country]").parent().find("span").remove()
+        $("[name=country]").select2()
+      }
+    }
+
+    $("[name='resume']").on("change", function(){
+      var formData = new FormData();
+      var file = this.files[0];
+      formData.append('resume', file);
+
+      $.ajax({
+        url: "{% url 'resume-completion' %}",
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            'X-CSRFToken': getCookie("csrftoken")
+        },
+        success: function(response) {
+
+          var full_name = response.full_name;
+          var address = response.address;
+          var country = response.country;
+          var state = response.state;
+          var phone = response.phone_number;
+          var dob = response.dob;
+          var email = response.email_id;
+          var zip = response.zip;
+
+          setIfEmpty("[name='name']", full_name);
+          setIfEmpty("[name='email']", email);
+          setIfEmpty("[name='mobile']", phone);
+          setIfEmpty("[name='address']", address);
+          setIfEmpty("[name='country']", country);
+          setIfEmpty("[name='state']", state);
+          setIfEmpty("[name='zip']", zip);
+          $("[name='dob']").val(dob);
+
+        },
+        error: function(xhr, status, error) {
+            console.error('File upload failed: ', status, error);
+        }
+      });
+    })
+  })
 </script>
 
 {% endblock content %}

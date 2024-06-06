@@ -279,6 +279,61 @@
 
               reader.readAsDataURL(file);
             });
+            {% if not form.instance.pk %}
+              function setIfEmpty(selector, value) {
+                if ($(selector).val() === "" ){
+                  $(selector).val(value);
+                }
+                if ($(selector).val() == "None") {
+                  $(selector).val(value);
+                  $(selector).change();
+
+                  $("[name=country]").parent().find("span").remove()
+                  $("[name=country]").select2()
+                }
+              }
+
+              $("[name='resume']").on("change", function(){
+                var formData = new FormData();
+                var file = this.files[0];
+                formData.append('resume', file);
+
+                $.ajax({
+                  url: "{% url 'resume-completion' %}",
+                  type: 'POST',
+                  data: formData,
+                  processData: false,
+                  contentType: false,
+                  headers: {
+                      'X-CSRFToken': getCookie("csrftoken")
+                  },
+                  success: function(response) {
+
+                    var full_name = response.full_name;
+                    var address = response.address;
+                    var country = response.country;
+                    var state = response.state;
+                    var phone = response.phone_number;
+                    var dob = response.dob;
+                    var email = response.email_id;
+                    var zip = response.zip;
+
+                    setIfEmpty("[name='name']", full_name);
+                    setIfEmpty("[name='email']", email);
+                    setIfEmpty("[name='mobile']", phone);
+                    setIfEmpty("[name='address']", address);
+                    setIfEmpty("[name='country']", country);
+                    setIfEmpty("[name='state']", state);
+                    setIfEmpty("[name='zip']", zip);
+                    $("[name='dob']").val(dob);
+
+                  },
+                  error: function(xhr, status, error) {
+                      console.error('File upload failed: ', status, error);
+                  }
+                });
+              })
+            {% endif %}
           });
         </script>
       </div>
