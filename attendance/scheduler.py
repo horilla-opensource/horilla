@@ -13,7 +13,7 @@ def auto_check_out():
     from employee.models import Employee
 
     try:
-        today = timezone.now()
+        today = datetime.now()
         shift_schedules = EmployeeShiftSchedule.objects.all()
         employees = Employee.objects.all()
         for employee in employees:
