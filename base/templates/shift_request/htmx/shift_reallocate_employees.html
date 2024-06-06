@@ -1,0 +1,8 @@
+{% load i18n %}
+<label
+  class="oh-label"
+  for="id_{{ form.reallocate_to.name }}"
+  title="{{ form.reallocate_to.help_text|safe }}"
+  >{% trans form.reallocate_to.label %}</label
+>
+{{form.reallocate_to}}

@@ -15,7 +15,7 @@
 </div>
 {% endif %}
 
-<div class="oh-modal__dialog-body" style="padding: 0;">
+<div class="oh-modal__dialog-body" style="padding: 0">
   <form
     hx-post="{% url 'shift-request-reallocate' %}?emp_id={{request.user.employee_get.id}}"
     hx-target="#shiftRequestTargetModal"
@@ -25,36 +25,11 @@
   </form>
 </div>
 
-
 <script>
-
-  $("#id_shift_id").change(function(e){
-    var selectedElement = $("#id_shift_id")
-    var selectElement = $("#id_shift_id").val();
-    let parentForm = selectedElement.parents().closest("form")
-    $.ajax({
-      type: "post",
-      url: "{% url 'update-employee-allocation' %}",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        "shift_id":selectElement
-      },
-      success: function (response) {
-
-        var reallocateToSelect = parentForm.find("[name=reallocate_to]");
-        reallocateToSelect.empty(); // Clear existing options
-
-        for (var i = 0; i < response.employee_data.length; i++) {
-            var employee = response.employee_data[i];
-
-            // Log the values being added
-
-            reallocateToSelect.append('<option value="' + employee[0] + '">' + employee[1] + ' ' + employee[2] + '</option>');
-        }
-
-      }
+  $(document).ready(function () {
+    $("select").on("select2:select", function (e) {
+      $(".leave-message").hide()
+      $(this).closest("select")[0].dispatchEvent(new Event("change"));
     });
-
   });
-
 </script>

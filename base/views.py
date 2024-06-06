@@ -3128,23 +3128,19 @@ def shift_request(request):
 @login_required
 def update_employee_allocation(request):
 
-    shift = request.POST["shift_id"]
-
+    shift = request.GET.get("shift_id")
+    form = ShiftAllocationForm()
     shift = EmployeeShift.objects.filter(id=shift).first()
-
-    return JsonResponse(
-        {
-            "shift_name": shift.employee_shift,
-            "employee_data": list(
-                shift.employeeworkinformation_set.values_list(
-                    "employee_id",
-                    "employee_id__employee_first_name",
-                    "employee_id__employee_last_name",
-                    "employee_id__badge_id",
-                )
-            ),
-        }
+    employee_ids = shift.employeeworkinformation_set.values_list(
+        "employee_id", flat=True
     )
+    employees = Employee.objects.filter(id__in=employee_ids)
+    form.fields["reallocate_to"].queryset = employees
+    context = {"form": form}
+    html_template = render_to_string(
+        "shift_request/htmx/shift_reallocate_employees.html", context
+    )
+    return HttpResponse(html_template)
 
 
 @login_required
