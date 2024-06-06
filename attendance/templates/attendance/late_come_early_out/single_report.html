@@ -9,6 +9,16 @@
   </div>
   {% endfor %}
 </div>
+<script>
+  setTimeout(function () {
+    $(".oh-span__class").click();
+  }, 1000);
+</script>
+<span
+  class="oh-span__class"
+  hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
+  hx-target="#report-container"
+></span>
 {% endif %}
 {% if late_in_early_out %}
 <div class="oh-modal__dialog-header">
@@ -18,8 +28,7 @@
   >
     {% trans "Details" %}
   </h2>
-  <button class="oh-modal__close" aria-label="Close" hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
-          hx-swap="innerHTML" hx-target="#report-container" >
+  <button class="oh-modal__close" aria-label="Close">
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
