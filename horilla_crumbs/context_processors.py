@@ -146,7 +146,11 @@ def breadcrumbs(request):
 
         if len(parts) > 1:
             last_path = parts[-1]
-            if last_path in sidebar_urls or parts[-2] == "employee-view":
+            if (
+                last_path in sidebar_urls
+                or parts[-2] == "employee-view"
+                or parts[-2] == "candidate-view"
+            ):
                 breadcrumbs = user_breadcrumbs[user_id]
                 first_path = breadcrumbs[0]
                 user_breadcrumbs[user_id].clear()
