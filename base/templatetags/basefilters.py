@@ -65,7 +65,12 @@ def is_leave_approval_manager(user):
     This method will return true if the user is comes in MultipleApprovalCondition model as approving manager
     """
     employee = Employee.objects.filter(employee_user_id=user).first()
-    return MultipleApprovalManagers.objects.filter(employee_id=employee.id).exists()
+    manager = (
+        MultipleApprovalManagers.objects.filter(employee_id=employee.id).exists()
+        if employee
+        else False
+    )
+    return manager
 
 
 @register.filter(name="check_manager")
