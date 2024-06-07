@@ -11,6 +11,7 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
+import ast
 import contextlib
 import io
 import json
@@ -1231,6 +1232,10 @@ def candidate_view(request):
     previous_data = request.GET.urlencode()
     candidates = Candidate.objects.filter(is_active=True)
     candidate_all = Candidate.objects.all()
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    print(candidates)
+    print(candidate_all)
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 
     mails = list(Candidate.objects.values_list("email", flat=True))
     # Query the User model to check if any email is present
@@ -1247,6 +1252,10 @@ def candidate_view(request):
         template = "candidate/candidate_empty.html"
     data_dict = parse_qs(previous_data)
     get_key_instances(Candidate, data_dict)
+
+    # Store the candidates in the session
+    request.session["filtered_candidates"] = [candidate.id for candidate in candidates]
+
     return render(
         request,
         template,
@@ -1426,6 +1435,31 @@ def candidate_view_individual(request, cand_id, **kwargs):
     if len(rating_list) != 0:
         avg_rate = round(sum(rating_list) / len(rating_list))
 
+    # Retrieve the filtered candidate from the session
+    filtered_candidate_ids = request.session.get("filtered_candidates", [])
+
+    # Convert the string to an actual list of integers
+    requests_ids = (
+        ast.literal_eval(filtered_candidate_ids)
+        if isinstance(filtered_candidate_ids, str)
+        else filtered_candidate_ids
+    )
+
+    # employee_id = cand_id
+
+    for index, req_id in enumerate(requests_ids):
+        if req_id == cand_id:
+
+            if index == len(requests_ids) - 1:
+                next_id = None
+            else:
+                next_id = requests_ids[index + 1]
+            if index == 0:
+                previous_id = None
+            else:
+                previous_id = requests_ids[index - 1]
+            break
+
     now = timezone.now()
 
     return render(
@@ -1433,6 +1467,9 @@ def candidate_view_individual(request, cand_id, **kwargs):
         "candidate/individual.html",
         {
             "candidate": candidate_obj,
+            "previous": previous_id,
+            "next": next_id,
+            "requests_ids": requests_ids,
             "emp_list": existing_emails,
             "average_rate": avg_rate,
             "now": now,

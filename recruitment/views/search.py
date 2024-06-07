@@ -119,6 +119,11 @@ def candidate_search(request):
             candidates, field, request.GET.get("page"), "page"
         )
         template = "candidate/group_by.html"
+    else:
+        # Store the Candidates in the session
+        request.session["filtered_candidates"] = [
+            candidate.id for candidate in candidates
+        ]
 
     candidates = paginator_qry(candidates, request.GET.get("page"))
 
