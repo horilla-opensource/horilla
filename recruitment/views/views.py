@@ -1232,10 +1232,6 @@ def candidate_view(request):
     previous_data = request.GET.urlencode()
     candidates = Candidate.objects.filter(is_active=True)
     candidate_all = Candidate.objects.all()
-    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-    print(candidates)
-    print(candidate_all)
-    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 
     mails = list(Candidate.objects.values_list("email", flat=True))
     # Query the User model to check if any email is present
@@ -1534,24 +1530,23 @@ def candidate_conversion(request, cand_id, **kwargs):
         can_mail = detail.email
         can_gender = detail.gender
         can_company = detail.recruitment_id.company_id
-
-    user_exists = User.objects.filter(email=can_mail).exists()
+    user_exists = User.objects.filter(username=can_mail).exists()
     if user_exists:
         messages.error(request, _("Employee instance already exist"))
-    elif not Employee.objects.filter(email=can_mail).exists():
+    elif not Employee.objects.filter(employee_user_id__username=can_mail).exists():
         new_employee = Employee.objects.create(
             employee_first_name=can_name,
             email=can_mail,
             phone=can_mob,
             gender=can_gender,
         )
-        new_employee.save()
-        EmployeeWorkInformation.objects.create(
-            employee_id=new_employee,
-            job_position_id=can_job,
-            department_id=can_dep,
-            company_id=can_company,
+        work_info, created = EmployeeWorkInformation.objects.get_or_create(
+            employee_id=new_employee
         )
+        work_info.job_position_id = can_job
+        work_info.department_id = can_dep
+        work_info.company_id = can_company
+        work_info.save()
         messages.success(request, _("Employee instance created successfully"))
     else:
         messages.info(request, "A employee with this mail already exists")

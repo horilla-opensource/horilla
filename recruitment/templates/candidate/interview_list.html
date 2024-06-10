@@ -46,7 +46,10 @@
                                 <div data-cell-index="3" data-cell-title='{% trans "Interview Time" %}'
                                     class="oh-sticky-table__th"
                                 >{% trans "Interview Time" %}</div>
-                                <div data-cell-index="4" data-cell-title='{% trans "Status" %}'
+                                <div data-cell-index="4" data-cell-title='{% trans "Description" %}'
+                                    class="oh-sticky-table__th"
+                                >{% trans "Description" %}</div>
+                                <div data-cell-index="5" data-cell-title='{% trans "Status" %}'
                                     class="oh-sticky-table__th"
                                 >{% trans "Status" %}</div>
                                 <div class="oh-sticky-table__th oh-sticky-table__right" align="center" style="width: 220px;">{% trans "Actions" %}</div>
@@ -105,7 +108,14 @@
                                     <div data-cell-index="3" class="oh-sticky-table__td timeformat_changer">
                                         {{interview.interview_time}}
                                     </div>
-                                    <div data-cell-index="4" class="oh-sticky-table__td ">
+                                    <div data-cell-index="4" class="oh-sticky-table__td">
+                                        {% if interview.description %}
+                                            {{interview.description}}
+                                        {% else %}
+                                            {% trans "None" %}
+                                        {% endif %}
+                                    </div>
+                                    <div data-cell-index="5" class="oh-sticky-table__td">
                                         {% if interview.completed %}
                                             <div class="d-flex" style="color:green;">
                                                 <i id="fabIcon" style="font-size:18px;" class="material-icons ms-3 mt-2">check_circle</i>

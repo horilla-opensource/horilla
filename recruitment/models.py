@@ -837,6 +837,9 @@ class InterviewSchedule(HorillaModel):
     employee_id = models.ManyToManyField(Employee, verbose_name=_("interviewer"))
     interview_date = models.DateField(verbose_name=_("Interview Date"))
     interview_time = models.TimeField(verbose_name=_("Interview Time"))
+    description = models.TextField(
+        verbose_name=_("Description"), blank=True, max_length=255
+    )
     completed = models.BooleanField(
         default=False, verbose_name=_("Is Interview Completed")
     )
