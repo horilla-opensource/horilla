@@ -16,24 +16,24 @@
       }
     </script>
     {% if show_assign %}
-    {% if perms.auth.add_permission %}
-      <button
-      style="margin-left: 10px;"
-        class="oh-btn oh-btn--secondary oh-btn--shadow"
-        data-toggle="oh-modal-toggle"
-        data-target="#Permissions"
-        hx-get="{% url "permission-table" %}"
-        hx-target="#permissionForm"
-      >
-        <ion-icon
-          name="add-outline"
-          class="me-1 md hydrated"
-          role="img"
-          aria-label="add outline"
-        ></ion-icon>
-        {% trans "Assign" %}
-      </button>
-    {% endif %}
+      {% if perms.auth.add_permission %}
+        <button
+        style="margin-left: 10px;"
+          class="oh-btn oh-btn--secondary oh-btn--shadow"
+          data-toggle="oh-modal-toggle"
+          data-target="#Permissions"
+          hx-get="{% url "permission-table" %}"
+          hx-target="#permissionForm"
+        >
+          <ion-icon
+            name="add-outline"
+            class="me-1 md hydrated"
+            role="img"
+            aria-label="add outline"
+          ></ion-icon>
+          {% trans "Assign" %}
+        </button>
+      {% endif %}
     {% endif %}
   </div>
 </div>
@@ -69,9 +69,29 @@
 <script>
   function updateBadge() {
     var panels = $(".panel");
-    $.each(panels, function (indexInArray, valueOfElement) {
-      var check = $(valueOfElement).find("[name=permissions]:checked").length;
-      $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+      $.each(panels, function (indexInArray, valueOfElement) {
+        var check = $(valueOfElement).find("[name=permissions]:checked").length;
+        $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+        $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title",check + " Permissions");
     });
+
+      var permissionLine = $(".oh-sticky-table__tr");
+      $.each(permissionLine, function(index,value){
+        var check = $(value).find("[name=permissions]:checked").length;
+        if (check === 4) {
+          $(value).find(".row-permission").prop("checked", true);
+        }
+      })
+
+      var permissionApps = $(".oh-sticky-table__tbody")
+      $.each(permissionApps, function(index,value){
+        var total_permission_count = $(value).find("[name=permissions]").length;
+        var checked_permission_count = $(value).find("[name=permissions]:checked").length
+        if (checked_permission_count===total_permission_count){
+          $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked",true);
+        } else {
+          $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked",false)
+        }
+      })
   }
 </script>

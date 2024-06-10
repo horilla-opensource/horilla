@@ -60,3 +60,70 @@
   </div>
 </div>
 {% endif %}
+
+<script>
+  function selectAllPermissions(elem) {
+      $(elem).closest('.oh-sticky-table__thead').siblings('.oh-sticky-table__tbody').find('.row-permission').prop('checked',$(elem).is(':checked')).change()
+  }
+	$(document).ready(function () {
+		updateBadge();
+		$("[type=checkbox]").change(function (e) {
+			e.preventDefault();
+		});
+	});
+	var timeout
+
+	function updatePermissions(elem){
+		var permissions = [];
+		var panelId =
+		"#" +
+		$(elem).closest(".panel.view-employees").closest(".panel").attr("id");
+		var userId = $(panelId).attr("data-user-id");
+
+		$(panelId + " [name=permissions]").each(function () {
+			if ($(this).is(":checked")) {
+				var permissionValue = $(this).val();
+				permissions.push(permissionValue);
+			}
+		});
+
+		$.ajax({
+			type: "post",
+			url: '{% url "update-user-permission" %}',
+			traditional: true,
+			data: {
+				csrfmiddlewaretoken: getCookie("csrftoken"),
+				permissions: permissions,
+				employee: userId,
+			},
+			success: function (response) {
+				$("#messages").html(
+					$(`
+						<div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+							${response.message}.
+						</div>
+					`)
+				);
+			},
+			error: function (response) {
+				$("#messages").html(
+					$(`
+						<div class="oh-alert oh-alert--animated oh-alert--danger">
+							Sever error.
+						</div>
+					`)
+				);
+			},
+		});
+	}
+
+	$(".view-employees [name=permissions]").on("change",function (e) {
+		e.preventDefault();
+		clearTimeout(timeout);
+		timeout = setTimeout(function() {
+      updateBadge($(this));
+			updatePermissions(e.target);
+		}, 100);
+	});
+
+</script>

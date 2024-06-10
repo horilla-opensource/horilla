@@ -11,7 +11,7 @@
       font-size: 1rem !important;
     }
   </style>
-  <div id="messages"></div>
+  <div id="messages" class="oh-alert-container"></div>
   <div class="oh-inner-sidebar-content">
     <div
       class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
@@ -93,24 +93,22 @@
   </div>
 
   <script>
-    function updateBadge(element=false) {
-      var panels = $(".panel");
-      $.each(panels, function (indexInArray, valueOfElement) {
-        var check = $(valueOfElement).find("[name=permissions]:checked").length;
-        $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+    function selectAllPermissions(elem) {
+      $(elem).closest('.oh-sticky-table__thead').siblings('.oh-sticky-table__tbody').find('.row-permission').prop('checked',$(elem).is(':checked')).change()
+    }
+
+    function updateGroupPermissions(elem) {
+      var groupId = elem.attr("data-group-id");
+      var name = elem.attr("data-group-name")
+      var permissions = [];
+      var panel = elem.closest(".oh-general__tab-target.oh-profile-section")
+      panel.find("[type=checkbox][name=permissions]").each(function () {
+        if ($(this).is(":checked")) {
+          var permissionValue = $(this).val();
+          permissions.push(permissionValue);
+        }
       });
-      if (element) {
-        var groupId = element.attr("data-group-id");
-        var name = element.attr("data-group-name")
-        var permissions = [];
-        var panel = element.closest(".oh-general__tab-target.oh-profile-section")
-        panel.find("[type=checkbox][name=permissions]").each(function () {
-          if ($(this).is(":checked")) {
-            var permissionValue = $(this).val();
-            permissions.push(permissionValue);
-          }
-        });
-        $.ajax({
+      $.ajax({
         type: "post",
         url: '{% url "update-group-permission" %}',
         traditional: true,
@@ -139,7 +137,45 @@
           );
         },
       });
-
-      }
     }
+    function updateBadge(element=false) {
+      var panels = $(".panel");
+      $.each(panels, function (indexInArray, valueOfElement) {
+        var check = $(valueOfElement).find("[name=permissions]:checked").length;
+        $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+        $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title",check + " Permissions");
+    });
+
+      var permissionLine = $(".oh-sticky-table__tr");
+      $.each(permissionLine, function(index,value){
+        var check = $(value).find("[name=permissions]:checked").length;
+        if (check === 4) {
+          $(value).find(".row-permission").prop("checked", true);
+        }
+      })
+
+      var permissionApps = $(".oh-sticky-table__tbody")
+      $.each(permissionApps, function(index,value){
+        var total_permission_count = $(value).find("[name=permissions]").length;
+        var checked_permission_count = $(value).find("[name=permissions]:checked").length
+        if (checked_permission_count===total_permission_count){
+          $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked",true);
+        } else {
+          $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked",false)
+        }
+      })
+
+    }
+    $(document).ready(function(){
+      updateBadge();
+        var timeout;
+        $("#permissionContainer [name=permissions]").on("change", function(e){
+            e.preventDefault();
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                updateBadge($(this));
+                updateGroupPermissions($(e.target));
+            }, 100);
+        })
+    });
   </script>

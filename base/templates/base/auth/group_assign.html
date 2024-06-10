@@ -11,3 +11,42 @@
     {% trans "Save" %}
   </button>
 </div>
+
+<script>
+  function updateBadge() {
+      var panels = $(".panel");
+      $.each(panels, function (indexInArray, valueOfElement) {
+        var check = $(valueOfElement).find("[name=permissions]:checked").length;
+        $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+      });
+
+      var permissionLine = $(".oh-sticky-table__tr");
+      $.each(permissionLine, function(index,value){
+        var check = $(value).find("[name=permissions]:checked").length;
+        if (check === 4) {
+          $(value).find(".row-permission").prop("checked", true);
+        }
+      });
+
+      var permissionApps = $(".oh-sticky-table__tbody")
+      $.each(permissionApps, function(index,value){
+        var total_permission_count = $(value).find("[name=permissions]").length;
+        var checked_permission_count = $(value).find("[name=permissions]:checked").length
+        if (checked_permission_count === total_permission_count){
+          $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked",true);
+        } else {
+          $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked",false)
+        }
+      });
+  };
+$(document).ready(function(){
+  var timeout_assign;
+  $("#permTable [name=permissions]").on("change",function (e) {
+    e.preventDefault();
+		clearTimeout(timeout_assign);
+		timeout_assign = setTimeout(function() {
+      updateBadge($(this));
+		}, 100);
+	});
+})
+</script>
