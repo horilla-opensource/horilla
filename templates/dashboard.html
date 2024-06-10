@@ -839,7 +839,7 @@
         </div>
       </div>
 
-        {% if perms.leave.view_leaverequest or request.user|is_reportingmanager%}
+        {% if request.user.employee_get.employee_user_id.is_superuser %}
         <div
           class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
         >
