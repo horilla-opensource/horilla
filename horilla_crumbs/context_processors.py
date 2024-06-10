@@ -3,7 +3,9 @@ from urllib.parse import urlparse
 from django.shortcuts import redirect
 from django.urls import Resolver404, path, resolve, reverse
 
+from employee.models import Employee
 from horilla.urls import urlpatterns
+from recruitment.models import Candidate
 
 
 def _split_path(self, path=None):
@@ -140,6 +142,22 @@ def breadcrumbs(request):
 
         parts = _split_path(request)
         path = base_url
+
+        candidates = Candidate.objects.filter(is_active=True)
+
+        if len(parts) > 1:
+            if "search-candidate" in parts:
+                pass
+            elif "candidate-view" in parts:
+                pass
+            elif "get-mail-log-rec" in parts:
+                pass
+            else:
+                # Store the candidates in the session
+                request.session["filtered_candidates"] = [
+                    candidate.id for candidate in candidates
+                ]
+
         if len(parts) == 0:
             user_breadcrumbs[user_id].clear()
             user_breadcrumb.append({"url": base_url, "name": "Horilla", "found": True})
