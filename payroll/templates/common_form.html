@@ -19,7 +19,7 @@
       {% for field in form.visible_fields %}
         <div class="col-12 col-md-6">
           <div class="oh-label__info" for="id_{{ field.name }}">
-            <label class="oh-label" for="id_{{ field.name }}">{% trans field.label %}</label>
+            <label class="oh-label {% if field.field.required %} required-star{% endif %}" for="id_{{ field.name }}">{% trans field.label %}</label>
             {% if field.help_text != '' %}
               <span class="oh-info mr-2" title="{{ field.help_text|safe }}"></span>
             {% endif %}

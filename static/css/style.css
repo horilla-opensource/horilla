@@ -435,7 +435,7 @@ form label {
 .required-star::after {
     content: "*";
     padding-left: 5px;
-    color: red;
+    color: #000000;
 }
 
 .oh-badge--small {
