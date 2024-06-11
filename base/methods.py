@@ -616,7 +616,7 @@ def link_callback(uri, rel):
     Convert HTML URIs to absolute system paths so xhtml2pdf can access those
     resources
     """
-
+    print(uri)
     uri = "payroll/fonts/Poppins_Regular.ttf"
     result = finders.find(uri)
     if result:
@@ -645,7 +645,7 @@ def link_callback(uri, rel):
     return path
 
 
-def generate_pdf(template_path, context, path=True, title=None):
+def generate_pdf(template_path, context, path=True, title=None, html=True):
     template_path = template_path
     context_data = context
     title = (
@@ -657,8 +657,11 @@ def generate_pdf(template_path, context, path=True, title=None):
     response = HttpResponse(content_type="application/pdf")
     response["Content-Disposition"] = f"attachment; filename={title}"
 
-    template = get_template(template_path)
-    html = template.render(context_data)
+    if html:
+        html = template_path
+    else:
+        template = get_template(template_path)
+        html = template.render(context_data)
 
     pisa_status = pisa.CreatePDF(
         html.encode("utf-8"),

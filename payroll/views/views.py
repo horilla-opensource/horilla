@@ -1485,7 +1485,7 @@ def payslip_pdf(request, id):
         data["host"] = request.get_host()
         data["protocol"] = "https" if request.is_secure() else "http"
 
-    return generate_pdf("payroll/payslip/individual_pdf.html", context=data)
+    return generate_pdf("payroll/payslip/individual_pdf.html", context=data, html=False)
 
 
 @login_required
