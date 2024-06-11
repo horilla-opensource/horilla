@@ -601,13 +601,16 @@ def recruitment_archive(request, rec_id):
     args:
         rec_id: The id of the Recruitment
     """
-
-    recruitment = Recruitment.objects.get(id=rec_id)
-    if recruitment.is_active:
-        recruitment.is_active = False
-    else:
-        recruitment.is_active = True
-    recruitment.save()
+    try:
+        recruitment = Recruitment.objects.get(id=rec_id)
+        if recruitment.is_active:
+            recruitment.is_active = False
+        else:
+            recruitment.is_active = True
+        recruitment.save()
+    except (Recruitment.DoesNotExist, OverflowError):
+        messages.error(request, _("Recruitment Does not exists.."))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -700,11 +703,13 @@ def recruitment_close_pipeline(request, rec_id):
     """
     This method is used to close recruitment from pipeline view
     """
-    recruitment_obj = Recruitment.objects.get(id=rec_id)
-    recruitment_obj.closed = True
-    recruitment_obj.save()
-
-    messages.success(request, "Recruitment closed successfully")
+    try:
+        recruitment_obj = Recruitment.objects.get(id=rec_id)
+        recruitment_obj.closed = True
+        recruitment_obj.save()
+        messages.success(request, "Recruitment closed successfully")
+    except (Recruitment.DoesNotExist, OverflowError):
+        messages.error(request, _("Recruitment Does not exists.."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -1441,7 +1446,8 @@ def candidate_view_individual(request, cand_id, **kwargs):
         else filtered_candidate_ids
     )
 
-    # employee_id = cand_id
+    next_id = None
+    previous_id = None
 
     for index, req_id in enumerate(requests_ids):
         if req_id == cand_id:
@@ -1481,36 +1487,41 @@ def candidate_update(request, cand_id, **kwargs):
     Args:
         id : candidate_id
     """
-    candidate_obj = Candidate.objects.get(id=cand_id)
-    form = CandidateCreationForm(instance=candidate_obj)
-    path = "/recruitment/candidate-view"
-    if request.method == "POST":
-        form = CandidateCreationForm(
-            request.POST, request.FILES, instance=candidate_obj
-        )
-        if form.is_valid():
-            candidate_obj = form.save()
-            if candidate_obj.stage_id is None:
-                candidate_obj.stage_id = Stage.objects.filter(
-                    recruitment_id=candidate_obj.recruitment_id, stage_type="initial"
-                ).first()
-            if candidate_obj.stage_id is not None:
-                if (
-                    candidate_obj.stage_id.recruitment_id
-                    != candidate_obj.recruitment_id
-                ):
-                    candidate_obj.stage_id = (
-                        candidate_obj.recruitment_id.stage_set.filter(
-                            stage_type="initial"
-                        ).first()
-                    )
-            if request.GET.get("onboarding") == "True":
-                candidate_obj.hired = True
-                path = "/onboarding/candidates-view"
-            candidate_obj.save()
-            messages.success(request, _("Candidate Updated Successfully."))
-            return redirect(path)
-    return render(request, "candidate/candidate_create_form.html", {"form": form})
+    try:
+        candidate_obj = Candidate.objects.get(id=cand_id)
+        form = CandidateCreationForm(instance=candidate_obj)
+        path = "/recruitment/candidate-view"
+        if request.method == "POST":
+            form = CandidateCreationForm(
+                request.POST, request.FILES, instance=candidate_obj
+            )
+            if form.is_valid():
+                candidate_obj = form.save()
+                if candidate_obj.stage_id is None:
+                    candidate_obj.stage_id = Stage.objects.filter(
+                        recruitment_id=candidate_obj.recruitment_id,
+                        stage_type="initial",
+                    ).first()
+                if candidate_obj.stage_id is not None:
+                    if (
+                        candidate_obj.stage_id.recruitment_id
+                        != candidate_obj.recruitment_id
+                    ):
+                        candidate_obj.stage_id = (
+                            candidate_obj.recruitment_id.stage_set.filter(
+                                stage_type="initial"
+                            ).first()
+                        )
+                if request.GET.get("onboarding") == "True":
+                    candidate_obj.hired = True
+                    path = "/onboarding/candidates-view"
+                candidate_obj.save()
+                messages.success(request, _("Candidate Updated Successfully."))
+                return redirect(path)
+        return render(request, "candidate/candidate_create_form.html", {"form": form})
+    except (Candidate.DoesNotExist, OverflowError):
+        messages.error(request, _("Candidate Does not exists.."))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -1521,35 +1532,39 @@ def candidate_conversion(request, cand_id, **kwargs):
     Args:
         cand_id : candidate instance id
     """
-    candidate_obj = Candidate.objects.filter(id=cand_id)
-    for detail in candidate_obj:
-        can_name = detail.name
-        can_mob = detail.mobile
-        can_job = detail.job_position_id
-        can_dep = can_job.department_id
-        can_mail = detail.email
-        can_gender = detail.gender
-        can_company = detail.recruitment_id.company_id
-    user_exists = User.objects.filter(username=can_mail).exists()
-    if user_exists:
-        messages.error(request, _("Employee instance already exist"))
-    elif not Employee.objects.filter(employee_user_id__username=can_mail).exists():
-        new_employee = Employee.objects.create(
-            employee_first_name=can_name,
-            email=can_mail,
-            phone=can_mob,
-            gender=can_gender,
-        )
-        work_info, created = EmployeeWorkInformation.objects.get_or_create(
-            employee_id=new_employee
-        )
-        work_info.job_position_id = can_job
-        work_info.department_id = can_dep
-        work_info.company_id = can_company
-        work_info.save()
-        messages.success(request, _("Employee instance created successfully"))
-    else:
-        messages.info(request, "A employee with this mail already exists")
+    try:
+        candidate_obj = Candidate.objects.filter(id=cand_id)
+        for detail in candidate_obj:
+            can_name = detail.name
+            can_mob = detail.mobile
+            can_job = detail.job_position_id
+            can_dep = can_job.department_id
+            can_mail = detail.email
+            can_gender = detail.gender
+            can_company = detail.recruitment_id.company_id
+        user_exists = User.objects.filter(username=can_mail).exists()
+        if user_exists:
+            messages.error(request, _("Employee instance already exist"))
+        elif not Employee.objects.filter(employee_user_id__username=can_mail).exists():
+            new_employee = Employee.objects.create(
+                employee_first_name=can_name,
+                email=can_mail,
+                phone=can_mob,
+                gender=can_gender,
+            )
+            work_info, created = EmployeeWorkInformation.objects.get_or_create(
+                employee_id=new_employee
+            )
+            work_info.job_position_id = can_job
+            work_info.department_id = can_dep
+            work_info.company_id = can_company
+            work_info.save()
+            messages.success(request, _("Employee instance created successfully"))
+        else:
+            messages.info(request, "A employee with this mail already exists")
+
+    except (Candidate.DoesNotExist, OverflowError):
+        messages.error(request, _("Candidate Does not exists.."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
