@@ -171,6 +171,9 @@ def manager_can_enter(function, perm):
     return _function
 
 
+from urllib.parse import urlparse
+
+
 def login_required(view_func):
     def wrapped_view(request, *args, **kwargs):
         path = request.path
@@ -190,7 +193,17 @@ def login_required(view_func):
         try:
             func = view_func(request, *args, **kwargs)
         except Exception as e:
-            logger.exception(e)
+            logger.error(e)
+            if (
+                "notifications_notification" in str(e)
+                and request.headers.get("X-Requested-With") != "XMLHttpRequest"
+            ):
+                referer = request.META.get("HTTP_REFERER", "/")
+                messages.warning(request, str(e))
+                return HttpResponse(
+                    f"<script>window.location.href ='{str(referer)}'</script>"
+                )
+
             if not settings.DEBUG:
                 return render(request, "went_wrong.html")
             return view_func(request, *args, **kwargs)
