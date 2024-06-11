@@ -649,6 +649,7 @@ class EmployeeBankDetails(HorillaModel):
 
 class NoteFiles(HorillaModel):
     files = models.FileField(upload_to="employee/NoteFiles", blank=True, null=True)
+    objects = models.Manager()
 
     def __str__(self):
         return self.files.name.split("/")[-1]
@@ -826,4 +827,5 @@ class EmployeeGeneralSetting(HorillaModel):
     """
 
     badge_id_prefix = models.CharField(max_length=5, default="PEP")
+    objects = models.Manager()
     company_id = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)

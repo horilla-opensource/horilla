@@ -209,12 +209,12 @@ urlpatterns = [
         name="employee-note-update",
     ),
     path(
-        "add-more-files-employee/<int:id>/",
+        "add-more-files-employee/<int:note_id>/",
         views.add_more_employee_files,
         name="add-more-files-employee",
     ),
     path(
-        "delete-employee-note-file/<int:id>/",
+        "delete-employee-note-file/<int:note_file_id>/",
         views.delete_employee_note_file,
         name="delete-employee-note-file",
     ),

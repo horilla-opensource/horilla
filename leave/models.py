@@ -1035,12 +1035,13 @@ class LeaveGeneralSetting(HorillaModel):
     """
 
     compensatory_leave = models.BooleanField(default=True)
+    objects = models.Manager()
     company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
 
 
 class CompensatoryLeaverequestComment(HorillaModel):
     """
-    LeaveallocationrequestComment Model
+    CompensatoryLeaverequestComment Model
     """
 
     request_id = models.ForeignKey(CompensatoryLeaveRequest, on_delete=models.CASCADE)

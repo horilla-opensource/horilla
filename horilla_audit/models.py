@@ -125,3 +125,4 @@ class HistoryTrackingFields(HorillaModel):
 
 class AccountBlockUnblock(HorillaModel):
     is_enabled = models.BooleanField(default=False, null=True, blank=True)
+    objects = models.Manager()
