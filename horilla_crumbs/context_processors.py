@@ -144,18 +144,35 @@ def breadcrumbs(request):
         path = base_url
 
         candidates = Candidate.objects.filter(is_active=True)
+        employees = Employee.objects.all()
 
         if len(parts) > 1:
-            if "search-candidate" in parts:
+
+            if "recruitment" in parts:
+                if "search-candidate" in parts:
+                    pass
+                elif "candidate-view" in parts:
+                    pass
+                elif "get-mail-log-rec" in parts:
+                    pass
+                else:
+                    # Store the candidates in the session
+                    request.session["filtered_candidates"] = [
+                        candidate.id for candidate in candidates
+                    ]
+
+            if "employee-filter-view" in parts:
                 pass
-            elif "candidate-view" in parts:
+            elif "employee-view" in parts:
                 pass
-            elif "get-mail-log-rec" in parts:
+            elif "view-penalties" in parts:
+                pass
+            elif parts[0] == "employee" and parts[-1].isdigit():
                 pass
             else:
-                # Store the candidates in the session
-                request.session["filtered_candidates"] = [
-                    candidate.id for candidate in candidates
+                # Store the employees in the session
+                request.session["filtered_employees"] = [
+                    employee.id for employee in employees
                 ]
 
         if len(parts) == 0:
