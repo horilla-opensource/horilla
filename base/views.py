@@ -5472,6 +5472,7 @@ def action_type_update(request, act_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("employee.delete_actiontype")
 def action_type_delete(request, act_id):
     """
