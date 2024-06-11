@@ -423,7 +423,11 @@ class COSECBiometric:
         of the COSEC biometric device,
         such as setting up card types and their corresponding formats.
         """
-        url = f"{self.__base_url}/smart-card-format?action={action}&card-type={card_type}&index={index}"
+        url = (
+            f"{self.__base_url}/smart-card-format?action={action}"
+            f"&card-type={card_type}&index={index}"
+        )
+
         if action == "set":
             self.__authenticate_arguments("smart-card-format", kwargs)
             url += "&" + "&".join(
@@ -463,7 +467,11 @@ class COSECBiometric:
             ref_user_id = 1
             code = "13"
             while code != "0":
-                url = f"{self.__base_url}/users?action=set&user-id={user_id}&ref-user-id={ref_user_id}&format=xml"
+                url = (
+                    f"{self.__base_url}/users?action=set&user-id={user_id}"
+                    f"&ref-user-id={ref_user_id}&format=xml"
+                )
+
                 response = requests.get(
                     url, headers=self.__header, timeout=self.__timeout
                 )
@@ -524,8 +532,10 @@ class COSECBiometric:
                 "Both user_id and ref_id are mandatory for create & edit a user"
             )
         # user_id : Mandatory To set or retrieve the alphanumeric user ID for the selected user.
-        # Note: If a set request is sent against an existing user ID, then configuration for this user will be updated with the new values.
-        # ref_user_id : Mandatory for the set action.Maximum 8 digits.To select the numeric user ID on which the specified operation is to be done.
+        # Note: If a set request is sent against an existing user ID, then configuration for this
+        # user will be updated with the new values.
+        # ref_user_id : Mandatory for the set action.Maximum 8 digits.To select the numeric user
+        # ID on which the specified operation is to be done.
         url_arguments = []
         url = f"{self.__base_url}/users?action=set"
         url_arguments.append(f"user-id={user_id}")
@@ -556,13 +566,15 @@ class COSECBiometric:
             url_arguments.append(f"validity-enable={int(validity_enable)}")
 
         if validity_date_dd and validity_date_mm and validity_date_yyyy:
-            # To define the end date for user validity.Valid Values : validity_date_dd = 1-31 & validity_date_mm = 1-12 validity_date_yyyy = based on device model
+            # To define the end date for user validity.Valid Values : validity_date_dd = 1-31 &
+            # validity_date_mm = 1-12 validity_date_yyyy = based on device model
             url_arguments.append(f"validity-date-dd={validity_date_dd}")
             url_arguments.append(f"validity-date-mm={validity_date_mm}")
             url_arguments.append(f"validity-date-yyyy={validity_date_yyyy}")
 
         if validity_time_hh and validity_time_mm:
-            # To define the end time for user validity.Valid Values : validity_time_hh = 00-23 & validity_time_mm = 00-59
+            # To define the end time for user validity.Valid Values : validity_time_hh = 00-23
+            # & validity_time_mm = 00-59
             url_arguments.append(f"validity-time-hh={validity_time_hh}")
             url_arguments.append(f"validity-time-mm={validity_time_mm}")
 
@@ -582,7 +594,8 @@ class COSECBiometric:
             url_arguments.append(f"by-pass-palm={int(by_pass_palm)}")
 
         if card1:
-            # Values : 64 Bits (8 bytes) (max value - 18446744073709551615).defines the value of access card 1 and 2.
+            # Values : 64 Bits (8 bytes) (max value - 18446744073709551615).
+            # Defines the value of access card 1 and 2.
             url_arguments.append(f"card1={card1}")
         if card2:
             url_arguments.append(f"card2={card2}")
@@ -594,7 +607,8 @@ class COSECBiometric:
             url_arguments.append(f"dob-enable={int(dob_enable)}")
 
         if dob_dd and dob_mm and dob_yyyy:
-            # To set or delete the date of birth for a user Valid Values : dob_dd = 1-31 & dob_mm = 1-12 dob_yyyy = 1990-2037
+            # To set or delete the date of birth for a user Valid Values :
+            # dob_dd = 1-31 & dob_mm = 1-12 dob_yyyy = 1990-2037
             url_arguments.append(f"dob-dd={dob_dd}")
             url_arguments.append(f"dob-mm={dob_mm}")
             url_arguments.append(f"dob-yyyy={dob_yyyy}")
@@ -639,7 +653,10 @@ class COSECBiometric:
         """
         Enable or disable face recognition for a user in cosec biometric device.
         """
-        url = f"{self.__base_url}/users?action=set&user-id={user_id}&enable-fr={int(enable_fr)}&format=xml"
+        url = (
+            f"{self.__base_url}/users?action=set&user-id={user_id}"
+            f"&enable-fr={int(enable_fr)}&format=xml"
+        )
         return self.__send_request(url)
 
     def get_user_credential(self, user_id, credential_type=1, finger_index=1):
@@ -651,7 +668,8 @@ class COSECBiometric:
         device based on the provided user ID
         and credential type.
         """
-        # type values: 1 = Finger , 2 = Card , 3 = Palm , 4 = Palm template with guide mode , 5 = Face Template , 6 = Face Image
+        # type values: 1 = Finger , 2 = Card , 3 = Palm , 4 = Palm template with
+        # guide mode , 5 = Face Template , 6 = Face Image
         if not isinstance(credential_type, int) or not isinstance(finger_index, int):
             raise ValueError("type and finger_index arguments value must be integers")
 
@@ -661,7 +679,10 @@ class COSECBiometric:
         if finger_index < 1 or finger_index > 10:
             raise ValueError("Finger index must be between 1 and 10")
 
-        url = f"{self.__base_url}/credential?action=get&type={credential_type}&user-id={user_id}&finger-index={finger_index}"
+        url = (
+            f"{self.__base_url}/credential?action=get&type={credential_type}"
+            f"&user-id={user_id}&finger-index={finger_index}"
+        )
         return self.__send_request(url)
 
     def get_user_credential_count(self, user_id):
@@ -686,7 +707,8 @@ class COSECBiometric:
         card, palm template, face template, or face image,
         from the COSEC biometric device.
         """
-        # type values: 0 = All , 1 = Finger , 2 = Card , 3 = Palm , 4 = Palm template with guide mode , 5 = Face Template , 6 = Face Image
+        # type values: 0 = All , 1 = Finger , 2 = Card , 3 = Palm , 4 = Palm template
+        # with guide mode , 5 = Face Template , 6 = Face Image
         # type= 5 and 6 are applicable only for ARGO FACE.
         if type < 0 or type > 6:
             raise ValueError("Type must be between 0 and 6")
@@ -709,5 +731,8 @@ class COSECBiometric:
         This method retrieves attendance events, such as punch-in and punch-out records,
         from the COSEC biometric device.
         """
-        url = f"{self.__base_url}/events?action=getevent&roll-over-count={roll_over_count}&seq-number={seq_num}&no-of-events={no_of_events}"
+        url = (
+            f"{self.__base_url}/events?action=getevent&roll-over-count={roll_over_count}"
+            f"&seq-number={seq_num}&no-of-events={no_of_events}"
+        )
         return self.__send_request(url)

@@ -15,7 +15,7 @@ import pytz
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
@@ -105,8 +105,18 @@ def biometric_set_time(conn):
 
 
 class META:
+    """
+    Provides access to HTTP metadata keys.
+    """
+
     @classmethod
     def keys(cls):
+        """
+        Retrieve the list of available HTTP metadata keys.
+
+        Returns:
+            list: A list of HTTP metadata keys.
+        """
         return ["HTTP_HX_REQUEST"]
 
 
@@ -502,12 +512,12 @@ def biometric_device_unschedule(request, device_id):
     Returns:
     - HttpResponseRedirect: Redirects to the biometric devices view after unscheduling.
     """
-    pd = request.GET.urlencode()
+    previous_data = request.GET.urlencode()
     device = BiometricDevices.objects.get(id=device_id)
     device.is_scheduler = False
     device.save()
     messages.success(request, _("Biometric device unscheduled successfully"))
-    return redirect(f"/biometric/search-devices?{pd}")
+    return redirect(f"/biometric/search-devices?{previous_data}")
 
 
 @login_required
@@ -574,13 +584,13 @@ def biometric_device_archive(request, device_id):
     """
     This method is used to archive or un-archive devices
     """
-    pd = request.GET.urlencode()
+    previous_data = request.GET.urlencode()
     device_obj = BiometricDevices.objects.get(id=device_id)
     device_obj.is_active = not device_obj.is_active
     device_obj.save()
     message = _("archived") if not device_obj.is_active else _("un-archived")
     messages.success(request, _("Device is %(message)s") % {"message": message})
-    return redirect(f"/biometric/search-devices?{pd}")
+    return redirect(f"/biometric/search-devices?{previous_data}")
 
 
 @login_required
@@ -602,9 +612,9 @@ def biometric_device_delete(request, device_id):
     """
     device = BiometricDevices.objects.get(id=device_id)
     device.delete()
-    pd = request.GET.urlencode()
+    previous_data = request.GET.urlencode()
     messages.success(request, _("Biometric device deleted successfully."))
-    return redirect(f"/biometric/search-devices?{pd}")
+    return redirect(f"/biometric/search-devices?{previous_data}")
 
 
 @login_required
@@ -1287,17 +1297,16 @@ def edit_cosec_user(request, user_id, device_id):
                         request, _("Biometric user data updated successfully")
                     )
                     return HttpResponse("<script>window.location.reload()</script>")
-                else:
-                    if update_user.get("error"):
-                        error = update_user.get("error")
-                        if "validity-date-yyyy" in error:
-                            form.add_error(
-                                None,
-                                _(
-                                    "This date cannot be used as the Validity End Date for\
-                                    the COSEC Biometric."
-                                ),
-                            )
+                if update_user.get("error"):
+                    error = update_user.get("error")
+                    if "validity-date-yyyy" in error:
+                        form.add_error(
+                            None,
+                            _(
+                                "This date cannot be used as the Validity End Date for\
+                                the COSEC Biometric."
+                            ),
+                        )
         return render(
             request,
             "biometric/edit_cosec_user.html",
@@ -1384,8 +1393,8 @@ def bio_users_bulk_delete(request):
             ommit_ping=False,
         )
         conn = zk_device.connect()
-        for id in ids:
-            user_id = int(id)
+        for user_id in ids:
+            user_id = int(user_id)
             conn.delete_user(user_id=user_id)
             employee_bio = BiometricEmployees.objects.filter(user_id=user_id).first()
             employee_bio.delete()
@@ -1427,21 +1436,19 @@ def cosec_users_bulk_delete(request):
             device.cosec_username,
             device.cosec_password,
         )
-        for id in ids:
-            cosec.delete_cosec_user(user_id=id)
+        for user_id in ids:
+            cosec.delete_cosec_user(user_id=user_id)
             employee_bio = BiometricEmployees.objects.filter(
-                user_id=id, device_id=device
+                user_id=user_id, device_id=device
             ).first()
             if employee_bio:
                 employee_bio.delete()
             messages.success(
                 request,
-                _(
-                    "{} successfully removed from the biometric device.".format(
-                        employee_bio.employee_id
-                    ),
-                ),
+                f"{employee_bio.employee_id} "
+                + _("successfully removed from the biometric device."),
             )
+
     except Exception as error:
         print(f"An error occurred: {error}")
     return JsonResponse({"messages": "Success"})
@@ -1575,7 +1582,7 @@ def add_biometric_user(request, device_id):
                         )
                         response = user.get("Response-Code")
                         if response and response == "0":
-                            employee_bio = BiometricEmployees.objects.create(
+                            BiometricEmployees.objects.create(
                                 ref_user_id=ref_user_id,
                                 user_id=user_id,
                                 employee_id=employee,
@@ -1607,7 +1614,7 @@ def biometric_device_live(request):
     is_live = request.GET.get("is_live")
     device_id = request.GET.get("deviceId")
     device = BiometricDevices.objects.get(id=device_id)
-    is_live = True if is_live == "on" else False
+    is_live = is_live == "on"
     if is_live:
         port_no = device.port
         machine_ip = device.machine_ip
@@ -1643,7 +1650,7 @@ def biometric_device_live(request):
                     });
                     </script>
                 """
-        except Exception as error:
+        except TimeoutError as error:
             device.is_live = False
             device.save()
             print(f"An error comes in biometric_device_live {error}")
@@ -1729,28 +1736,20 @@ def zk_biometric_device_attendance(device_id):
                 time = date_time.time()
                 bio_id = BiometricEmployees.objects.filter(user_id=user_id).first()
                 if bio_id:
+                    request_data = Request(
+                        user=bio_id.employee_id.employee_user_id,
+                        date=date,
+                        time=time,
+                        datetime=date_time,
+                    )
                     if punch_code in {0, 3, 4}:
                         try:
-                            clock_in(
-                                Request(
-                                    user=bio_id.employee_id.employee_user_id,
-                                    date=date,
-                                    time=time,
-                                    datetime=date_time,
-                                )
-                            )
+                            clock_in(request_data)
                         except Exception as error:
                             print(f"Got an error : {error}")
                     else:
                         try:
-                            clock_out(
-                                Request(
-                                    user=bio_id.employee_id.employee_user_id,
-                                    date=date,
-                                    time=time,
-                                    datetime=date_time,
-                                )
-                            )
+                            clock_out(request_data)
                         except Exception as error:
                             print(f"Got an error : {error}")
         except Exception as error:
@@ -1870,10 +1869,7 @@ def cosec_biometric_device_attendance(device_id):
             elif punch_code in ["2", "4", "6", "8", "10"]:
                 clock_out(request_data)
             else:
-                if device.attendance_activity_type == "clock_in":
-                    clock_in(request_data)
-                elif device.attendance_activity_type == "clock_out":
-                    clock_out(request_data)
+                pass
         except Exception as error:
             print(f"Error processing attendance: {error}")
 

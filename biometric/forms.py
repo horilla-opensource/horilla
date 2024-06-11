@@ -97,8 +97,7 @@ class EmployeeBiometricAddForm(Form):
     )
 
     def __init__(self, *args, **kwargs):
-        super(EmployeeBiometricAddForm, self).__init__(*args, **kwargs)
-
+        super().__init__(*args, **kwargs)
         zk_employee_ids = BiometricEmployees.objects.filter(
             device_id__machine_type="zk"
         ).values_list("employee_id", flat=True)
@@ -124,7 +123,7 @@ class CosecUserAddForm(Form):
     )
 
     def __init__(self, *args, **kwargs):
-        super(CosecUserAddForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         cosec_employee_ids = BiometricEmployees.objects.filter(
             device_id__machine_type="cosec"
         ).values_list("employee_id", flat=True)
