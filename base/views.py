@@ -480,6 +480,7 @@ def candidate_reject_reasons(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("auth.add_group")
 def user_group_table(request):
     """
@@ -655,12 +656,13 @@ def user_group_search(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("auth.add_group")
 def group_assign(request):
     """
     This method is used to assign user group to the users.
     """
-    group_id = request.GET["group"]
+    group_id = request.GET.get("group")
     form = AssignUserGroup(
         initial={
             "group": group_id,
@@ -917,6 +919,7 @@ def replace_primary_mail(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_dynamicemailconfiguration")
 def mail_server_create_or_update(request):
     instance_id = request.GET.get("instance_id")
@@ -935,6 +938,7 @@ def mail_server_create_or_update(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_company")
 def company_create(request):
     """
@@ -971,6 +975,7 @@ def company_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.change_company")
 def company_update(request, id, **kwargs):
     """
@@ -993,6 +998,7 @@ def company_update(request, id, **kwargs):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_department")
 def department_create(request):
     """
@@ -1017,6 +1023,7 @@ def department_create(request):
 
 
 @login_required
+@permission_required("base.view_department")
 def department_view(request):
     """
     This method view department
@@ -1032,6 +1039,7 @@ def department_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.change_department")
 def department_update(request, id, **kwargs):
     """
@@ -1079,6 +1087,7 @@ def job_position(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_jobposition")
 def job_position_creation(request):
     """
@@ -1103,6 +1112,7 @@ def job_position_creation(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.change_jobposition")
 def job_position_update(request, id, **kwargs):
     """
@@ -1127,6 +1137,7 @@ def job_position_update(request, id, **kwargs):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_jobrole")
 def job_role_create(request):
     """
@@ -1173,6 +1184,7 @@ def job_role_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.change_jobrole")
 def job_role_update(request, id, **kwargs):
     """
@@ -1202,6 +1214,7 @@ def job_role_update(request, id, **kwargs):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_worktype")
 def work_type_create(request):
     """
@@ -1242,6 +1255,7 @@ def work_type_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.change_worktype")
 def work_type_update(request, id, **kwargs):
     """
@@ -1267,6 +1281,7 @@ def work_type_update(request, id, **kwargs):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_rotatingworktype")
 def rotating_work_type_create(request):
     """
@@ -1303,6 +1318,7 @@ def rotating_work_type_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.change_rotatingworktype")
 def rotating_work_type_update(request, id, **kwargs):
     """
@@ -1726,6 +1742,7 @@ def employee_type_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_employeetype")
 def employee_type_create(request):
     """
@@ -1749,6 +1766,7 @@ def employee_type_create(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.change_employeetype")
 def employee_type_update(request, id, **kwargs):
     """
@@ -1788,6 +1806,7 @@ def employee_shift_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_employeeshift")
 def employee_shift_create(request):
     """
@@ -1813,6 +1832,7 @@ def employee_shift_create(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.change_employeeshiftupdate")
 def employee_shift_update(request, id, **kwargs):
     """
@@ -1853,6 +1873,7 @@ def employee_shift_schedule_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_employeeshiftschedule")
 def employee_shift_schedule_create(request):
     """
@@ -1877,6 +1898,7 @@ def employee_shift_schedule_create(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.change_employeeshiftschedule")
 def employee_shift_schedule_update(request, id, **kwargs):
     """
@@ -1917,6 +1939,7 @@ def rotating_shift_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_rotatingshift")
 def rotating_shift_create(request):
     """
@@ -1940,6 +1963,7 @@ def rotating_shift_create(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.change_rotatingshift")
 def rotating_shift_update(request, id, **kwargs):
     """
@@ -2493,6 +2517,7 @@ def update_permission(
 
 
 @login_required
+@hx_request_required
 @permission_required("auth.add_permission")
 def permission_table(request):
     """
@@ -4357,6 +4382,7 @@ def validation_condition_create(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.change_attendancevalidationcondition")
 def validation_condition_update(request, obj_id):
     """
@@ -4557,6 +4583,7 @@ def rotating_work_type_select_filter(request):
 
 
 @login_required
+@permission_required("helpdesk.view_tickettype")
 def ticket_type_view(request):
     """
     This method is used to show Ticket type
@@ -4568,6 +4595,8 @@ def ticket_type_view(request):
 
 
 @login_required
+@hx_request_required
+@permission_required("helpdesk.create_tickettype")
 def ticket_type_create(request):
     """
     This method renders form and template to create Ticket type
@@ -4602,6 +4631,8 @@ def ticket_type_create(request):
 
 
 @login_required
+@hx_request_required
+@permission_required("helpdesk.update_tickettype")
 def ticket_type_update(request, t_type_id):
     """
     This method renders form and template to create Ticket type
@@ -4623,14 +4654,20 @@ def ticket_type_update(request, t_type_id):
 
 
 @login_required
+@require_http_methods(["POST", "DELETE"])
 @permission_required("helpdesk.delete_tickettype")
 def ticket_type_delete(request, t_type_id):
-    TicketType.objects.get(id=t_type_id).delete()
-    messages.success(request, _("Ticket type has been deleted successfully!"))
+    ticket_type = TicketType.find(t_type_id)
+    if ticket_type:
+        ticket_type.delete()
+        messages.success(request, _("Ticket type has been deleted successfully!"))
+    else:
+        messages.error(request, _("Ticket type not found"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
+@permission_required("horilla_audit.view_audittag")
 def tag_view(request):
     """
     This method is used to show Audit tags
@@ -4644,6 +4681,7 @@ def tag_view(request):
 
 
 @login_required
+@permission_required("employee.view_employeetag")
 def employee_tag_view(request):
     """
     This method is used to Employee tags
@@ -4657,6 +4695,7 @@ def employee_tag_view(request):
 
 
 @login_required
+@permission_required("helpdesk.view_tag")
 def helpdesk_tag_view(request):
     """
     This method is used to show Help desk tags
@@ -4670,6 +4709,8 @@ def helpdesk_tag_view(request):
 
 
 @login_required
+@hx_request_required
+@permission_required("helpdesk.add_tag")
 def tag_create(request):
     """
     This method renders form and template to create Ticket type
@@ -4692,6 +4733,8 @@ def tag_create(request):
 
 
 @login_required
+@hx_request_required
+@permission_required("helpdesk.change_tag")
 def tag_update(request, tag_id):
     """
     This method renders form and template to create Ticket type
@@ -4713,6 +4756,8 @@ def tag_update(request, tag_id):
 
 
 @login_required
+@hx_request_required
+@permission_required("employee.add_employeetag")
 def employee_tag_create(request):
     """
     This method renders form and template to create Ticket type
@@ -4735,6 +4780,8 @@ def employee_tag_create(request):
 
 
 @login_required
+@hx_request_required
+@permission_required("employee.add_employeetag")
 def employee_tag_update(request, tag_id):
     """
     This method renders form and template to create Ticket type
@@ -4756,6 +4803,8 @@ def employee_tag_update(request, tag_id):
 
 
 @login_required
+@hx_request_required
+@permission_required("horilla_audit.add_audittag")
 def audit_tag_create(request):
     """
     This method renders form and template to create Ticket type
@@ -4778,6 +4827,8 @@ def audit_tag_create(request):
 
 
 @login_required
+@hx_request_required
+@permission_required("horilla_audit.change_audittag")
 def audit_tag_update(request, tag_id):
     """
     This method renders form and template to create Ticket type
@@ -5396,6 +5447,7 @@ def pagination_settings_view(request):
 
 
 @login_required
+@permission_required("base.view_actiontype")
 def action_type_view(request):
     """
     This method is used to show Action Type
@@ -5407,6 +5459,8 @@ def action_type_view(request):
 
 
 @login_required
+@hx_request_required
+@permission_required("base.add_actiontype")
 def action_type_create(request):
     """
     This method renders form and template to create Action Type
@@ -5443,6 +5497,8 @@ def action_type_create(request):
 
 
 @login_required
+@hx_request_required
+@permission_required("base.change_actiontype")
 def action_type_update(request, act_id):
     """
     This method renders form and template to update Action type
@@ -5624,6 +5680,8 @@ def employee_chart_show(request):
     return render(request, "dashboard_chart_form.html", context)
 
 
+@login_required
+@permission_required("base.view_biometricattendance")
 def enable_biometric_attendance_view(request):
     biometric = BiometricAttendance.objects.first()
     return render(
@@ -5633,6 +5691,8 @@ def enable_biometric_attendance_view(request):
     )
 
 
+@login_required
+@permission_required("base.add_biometricattendance")
 def activate_biometric_attendance(request):
     if request.method == "GET":
         is_installed = request.GET.get("is_installed")

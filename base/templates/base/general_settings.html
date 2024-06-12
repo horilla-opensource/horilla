@@ -28,12 +28,20 @@
     {% include "settings/encashment_settings.html" %}
 {% endif %}
 
-{% include "base/audit_tag/history_tracking_fields.html" %}
-{% include "base/audit_tag/employee_account_block_unblock.html" %}
+{% if perms.base.view_historytrackingfields %}
+    {% include "base/audit_tag/history_tracking_fields.html" %}
+{% endif %}
+
+{% if perms.horilla_audit.view_accountblockunblock %}
+    {% include "base/audit_tag/employee_account_block_unblock.html" %}
+{% endif %}
 
 {% if perms.payroll.view_payrollsettings %}
     {% include "payroll/settings/payroll_settings.html" %}
 {% endif %}
 
-{% include "base/dynamic_pagination/pagination_settings.html" %}
+{% if perms.base.view_dynamicpagination %}
+    {% include "base/dynamic_pagination/pagination_settings.html" %}
+{% endif %}
+
 {% endblock settings %}

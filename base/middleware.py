@@ -4,6 +4,7 @@ middleware.py
 
 from django.apps import apps
 from django.db.models import Q
+from django.http import HttpResponse, HttpResponseNotAllowed
 
 from base.context_processors import AllCompany
 from base.horilla_company_manager import HorillaCompanyManager
@@ -99,4 +100,68 @@ class CompanyMiddleware:
                         )
 
         response = self.get_response(request)
+        return response
+
+
+class MethodNotAllowedMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        if isinstance(response, HttpResponseNotAllowed):
+            html_content = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Method Not Allowed</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f8f9fa;
+                        color: #333;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        height: 100vh;
+                        margin: 0;
+                    }
+                    .container {
+                        text-align: center;
+                        background: #fff;
+                        padding: 20px;
+                        border: 1px solid #ddd;
+                        border-radius: 5px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+                    h1 {
+                        font-size: 24px;
+                        margin-bottom: 10px;
+                    }
+                    p {
+                        font-size: 18px;
+                        margin-bottom: 20px;
+                    }
+                    a {
+                        color: #007bff;
+                        text-decoration: none;
+                        font-weight: bold;
+                    }
+                    a:hover {
+                        text-decoration: underline;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>405 Method Not Allowed</h1>
+                    <p>The request method is not allowed. Please make sure you are sending a proper request.</p>
+                    <a href="/">Go Back to Home</a>
+                </div>
+            </body>
+            </html>
+            """
+            return HttpResponse(html_content, content_type="text/html", status=405)
         return response
