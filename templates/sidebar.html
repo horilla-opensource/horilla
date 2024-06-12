@@ -248,6 +248,16 @@ function initializeSummernote(candId,searchWords,) {
               >
             </li>
             {% endif %}
+            {% if perms.recruitment.view_mailautomation %}
+            <li class="oh-sidebar__submenu-item">
+              <a
+                class="oh-sidebar__submenu-link"
+                href="{% url 'mail-automations' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Mail Automations" %}</a
+              >
+            </li>
+            {% endif %}
             {% if perms.leave.add_holiday %}
             <li class="oh-sidebar__submenu-item">
               <a
@@ -456,5 +466,24 @@ function initializeSummernote(candId,searchWords,) {
       return false;
     }
     $(this).closest("form").submit();
+  }
+
+  function filterFormSubmit(formId) {
+    var formData = $("#" + formId).serialize();
+    var count = 0;
+    formData.split("&").forEach(function (field) {
+      var parts = field.split("=");
+      var value = parts[1];
+      if (parts[0] !== "view" && parts[0] !== "filter_applied"){
+        if (value && value !== "unknown") {
+          console.log(parts[0],parts[1])
+          count++;
+        }
+      }
+    });
+    $("#filterCount").empty();
+    if (count > 0) {
+      $("#filterCount").text(`(${count})`);
+    }
   }
 </script>

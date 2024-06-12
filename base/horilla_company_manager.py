@@ -3,10 +3,30 @@ horilla_company_manager.py
 """
 
 import threading
+from typing import Coroutine, Sequence
 
 from django.db import models
+from django.db.models.query import QuerySet
 
 from base.thread_local_middleware import _thread_locals
+from horilla.signals import post_bulk_update, pre_bulk_update
+
+django_filter_update = QuerySet.update
+
+
+def update(self, *args, **kwargs):
+    # pre_update signal
+    request = getattr(_thread_locals, "request", None)
+    self.request = request
+    pre_bulk_update.send(sender=self.model, queryset=self, args=args, kwargs=kwargs)
+    result = django_filter_update(self, *args, **kwargs)
+    # post_update signal
+    post_bulk_update.send(sender=self.model, queryset=self, args=args, kwargs=kwargs)
+
+    return result
+
+
+setattr(QuerySet, "update", update)
 
 
 class HorillaCompanyManager(models.Manager):
@@ -75,4 +95,9 @@ class HorillaCompanyManager(models.Manager):
                     pass
         except:
             pass
+        return queryset
+
+    def filter(self, *args, **kwargs):
+        queryset = super().filter(*args, **kwargs)
+        setattr(_thread_locals, "queryset_filter", queryset)
         return queryset

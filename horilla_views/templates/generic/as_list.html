@@ -1,0 +1,32 @@
+{% load i18n %}
+<form hx-get="{% url "toggle-columns" %}" hx-swap="none">
+  <input type="hidden" name="path" value="{{request.path_info}}">
+  <ul class="oh-dropdown__items">
+    <div class="oh-dropdown_btn-header">
+      <button class="oh-btn oh-btn--success-outline">
+        {% trans "Select All Records" %}
+      </button>
+      <button class="oh-btn oh-btn--primary-outline">
+        {% trans "Unselect All Records" %}
+      </button>
+    </div>
+
+    {% for field in form.visible_fields %}
+    <li class="oh-dropdown__item oh-sticy-dropdown-item">
+      <span>{{field.label}}</span>
+      <span class="oh-table__checkbox">
+        <input type="hidden" name="{{field.name}}" onchange="$(this).closest('form').find('[type=submit]').click();" {% if not field.initial %} value ="false" {% endif %}>
+        <input type="checkbox" id="toggle_{{field.name}}" {% if field.initial %} checked {% endif %} onclick="
+        value='';
+        if (!$(this).is(':checked')) {
+          value = 'off'
+        }
+        $(this).siblings('input[type=hidden]').val(value).change();
+        "
+        >
+      </span>
+    </li>
+    {% endfor %}
+  </ul>
+  <input type="submit" hidden>
+</form>

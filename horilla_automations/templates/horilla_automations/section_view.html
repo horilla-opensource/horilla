@@ -1,0 +1,17 @@
+{% include "generic/horilla_section.html" %}
+<script>
+  function confirm(message, url) {
+    Swal.fire({
+      text: message,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = url;
+      }
+    });
+  }
+</script>

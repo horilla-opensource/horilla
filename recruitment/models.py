@@ -437,6 +437,10 @@ class Candidate(HorillaModel):
         """
         return self.email
 
+    def get_mail(self):
+        """ """
+        return self.get_email()
+
     def tracking(self):
         """
         This method is used to return the tracked history of the instance
@@ -521,6 +525,9 @@ class Candidate(HorillaModel):
             ("archive_candidate", "Archive Candidate"),
         )
         ordering = ["sequence"]
+
+
+from horilla.signals import pre_bulk_update
 
 
 class RejectReason(HorillaModel):

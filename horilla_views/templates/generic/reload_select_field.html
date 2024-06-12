@@ -1,0 +1,13 @@
+<div id="{{dynamic_id}}">
+    {{field}}
+</dic>
+
+<script>
+$("#{{dynamic_id}} [name={{field.name}}]").change(function (e) { 
+    if (this.value=="dynamic_create") {
+    $("#modalButton{{field.name}}").click()
+    $(this).val("").change();
+    }
+});
+</script>
+  

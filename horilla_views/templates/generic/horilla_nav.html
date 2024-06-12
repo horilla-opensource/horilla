@@ -1,0 +1,223 @@
+{% load i18n %}
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold mb-0">{{nav_title}}</h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon"
+      ></ion-icon>
+    </a>
+  </div>
+  <form autocomplete="off" id="filterForm" onsubmit="event.preventDefault()" hx-get="{{search_url}}" hx-replace-url="true" hx-target="{{search_swap_target}}" class="oh-main__titlebar oh-main__titlebar--right">
+    <div class="oh-input-group oh-input__search-group" id="searchGroup">
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        type="text"
+        class="oh-input oh-input__icon"
+        name="search"
+        aria-label="Search Input"
+        placeholder="Search"
+        autocomplete="false"
+        autofocus ="true"
+        onkeyup="
+        $(this).closest('form').find('#applyFilter').click();
+        {% if search_in %}
+        $('#applyFilter')[0].click();if(this.value) {
+          $('.search_text').html(this.value)
+          $(this).parent().find('#dropdown').show()
+        }else{
+          $(this).parent().find('#dropdown').hide()
+        }
+        {% endif %}
+        "
+        {% if search_in %}
+        onfocus="
+        if (this.value) {
+          $(this).parent().find('#dropdown').show()
+        }"
+        onfocusout="
+        setTimeout(function() {
+          $('#dropdown').hide()
+        }, 300);
+        "
+        {% endif %}
+        {{search_input_attrs|safe}}
+      />
+      {% if search_in %}
+      <input type="text" hidden name="search_field">
+      <div class="custom-dropdown" id="dropdown">
+        <ul class="search_content">
+          {% for option in search_in %}
+          <li>
+            <a href="#" onclick="$('[name=search_field]').val('{{option.0}}'); $(this).closest('form').find('#applyFilter').click()">
+              {% trans "Search" %} <b>{{option.1}}</b> {% trans "for:" %}
+              <b class="search_text"></b>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="oh-main__titlebar-button-container">
+      {% if view_types %}
+      <ul class="oh-view-types">
+        {% for type in view_types %}
+        <li class="oh-view-type" onclick="$(this).closest('form').attr('hx-get','{{type.url}}');$(this).closest('form').find('#applyFilter').click();
+           ">
+          <a class="oh-btn oh-btn--view" {{type.attrs|safe}}
+          ><ion-icon name="{{type.icon}}"></ion-icon
+          ></a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if filter_body_template %}
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" onclick="event.preventDefault()" @click="open = !open">
+          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+          <div id="filterCount"></div>
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+          x-show="open"
+          @click.outside="open = false"
+        >
+          {% include filter_body_template %}
+          <input type="radio" name="filter_applied" checked hidden>
+          <div class="oh-dropdown__filter-footer">
+            <button 
+             type="submit"
+             id="applyFilter"
+             onclick="filterFormSubmit('filterForm')"
+             class="oh-btn oh-btn--secondary oh-btn--small w-100">
+              {% trans "Filter" %}
+            </button>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <button 
+        hidden
+        type="submit"
+        id="applyFilter"
+        class="oh-btn oh-btn--secondary oh-btn--small w-100">
+        {% trans "Filter" %}
+      </button>
+      {% endif %}
+      {% if group_by_fields %}
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+          <ion-icon name="library-outline" class="mr-1 md hydrated" role="img" aria-label="library outline"></ion-icon>
+          {% trans "Group By" %}
+          <div id="filterCount"></div>
+        </button>
+        <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none">
+          <div class="oh-accordion">
+            <label for="id_field">{% trans "Group By" %}</label>
+            <div class="row">
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label" for="id_field">{% trans "Field" %}</label>
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <select onchange="$(this).closest('form').find('#applyFilter').click()" class="oh-select mt-1 w-100" id="id_field" name="field" style="width:100%;">
+                    <option value="">{% trans "Select" %}</option>
+                    {% for field in group_by_fields %}
+                    <option value="{{field.0}}">{{field.1}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% if actions %}
+      <div class="oh-btn-group ml-2">
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            onclick="event.preventDefault()"
+            class="oh-btn oh-btn--dropdown"
+            @click="open = !open"
+            @click.outside="open = false"
+          >
+            {% trans "Actions" %}
+          </button>
+          <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
+            <ul class="oh-dropdown__items">
+              {% for action in actions %}
+              <li class="oh-dropdown__item">
+                <a class="oh-dropdown__link" {{action.attrs|safe}}>{{action.action}}</a>
+              </li>
+              {% endfor %}              
+            </ul>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      <input type="hidden" id="pageInput">
+      <input type="hidden" id="sortInput">
+    </form>
+    {% if create_attrs %}
+    <a 
+      onclick="event.preventDefault();event.stopPropagation()"
+      class="oh-btn oh-btn--secondary ml-2"
+      {{create_attrs|safe}}
+      >
+      <ion-icon
+        name="add-sharp"
+        class="mr-1 md hydrated"
+        role="img"
+        aria-label="add sharp"
+      ></ion-icon
+      >{% trans "Create" %}
+    </a>
+    {% endif %}
+
+  </div>
+  <script>
+    $(".oh-btn--view").click(function (e) { 
+      e.preventDefault();
+      $(".oh-btn--view-active").removeClass("oh-btn--view-active");      
+      $(this).addClass("oh-btn--view-active");
+    });
+    if (!$(".oh-btn--view-active").length) {
+      // $("a.oh-btn--view:first").trigger("click")
+    }
+    $(".oh-accordion-header").click(function (e) { 
+      e.preventDefault();
+      $(this).parent().toggleClass("oh-accordion--show");
+    });
+    $(document).ready(function() {
+        $("#filterForm").on("htmx:configRequest", function(event) {
+          if (event.detail.verb == "get" && event.target.tagName == "FORM") {
+            event.detail.path = $(this).attr("hx-get");
+          }
+        });
+    });
+  </script>
+</section>
+<div id="filterTagContainerSectionNav"  class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"></div>
+<script>
+  filterFormSubmit("filterForm")
+  $(document).ready(function () {
+    $("#filterForm select").select2("destroy")
+    $("#filterForm select").parent().find("span").remove()
+    $("#filterForm select").select2()
+  });
+</script>

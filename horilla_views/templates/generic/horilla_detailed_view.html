@@ -1,0 +1,97 @@
+{% load generic_template_filters %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="genericModalLabel">
+    {{title}}
+  </span>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+
+<div
+  class="oh-modal__dialog-body oh-modal__dialog-relative"
+  style="padding-bottom: 0px"
+>
+  {% if instance_ids %}
+  <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button
+      hx-get="{{previous_url}}?{{ids_key}}={{instance_id}}&{{request.GET.urlencode}}"
+      hx-target="#genericModalBody"
+      class="oh-modal__diaglog-nav oh-modal__nav-prev"
+    >
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </button>
+
+    <button
+      hx-get="{{next_url}}?{{ids_key}}={{instance_id}}&{{request.GET.urlencode}}"
+      hx-target="#genericModalBody"
+      class="oh-modal__diaglog-nav oh-modal__nav-next"
+    >
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+  </div>
+  {% endif %}
+  <div id="keyResultsContainer">
+    <div class="my-3" id="keyResultCard">
+      <div class="oh-card oh-card--no-shadow oh-card__body">
+        <a
+          class="oh-timeoff-modal__profile-content"
+          style="text-decoration: none"
+          {{header.attrs|format:object|safe}}
+        >
+          <div class="oh-profile mb-3">
+            <div class="oh-profile__avatar">
+              <img
+                src="{{object|getattribute:header.avatar}}"
+                class="oh-profile__image me-2"
+              />
+            </div>
+            <div class="oh-timeoff-modal__profile-info">
+              <span class="oh-timeoff-modal__user fw-bold">
+                {{object|getattribute:header.title}}
+              </span>
+              <span
+                class="oh-timeoff-modal__user m-0"
+                style="font-size: 18px; color: #4d4a4a"
+              >
+                {{object|getattribute:header.subtitle}}</span
+              >
+            </div>
+          </div>
+        </a>
+
+        <div
+          class="oh-modal__dialog-header {% if header %} oh-card__footer--border-top{% endif %}"
+          style="padding-top: 5px; padding-rigth: 0px; padding-left: 0px"
+        >
+          <div class="row">
+            {% for col in body %}
+            <div class="col-6 mt-3">
+              <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{{col.0}}</span>
+                <span class="oh-timeoff-modal__stat-count"
+                  >{{object|getattribute:col.1|safe}}</span
+                >
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="oh-modal__dialog-footer">
+  {% if actions or action_method %}
+  {% if actions and not action_method %}
+  <div class="oh-btn-group" style="width: 100%">
+    {% for action in actions %}
+    <button {{action.attrs|format:object|safe}}>
+      <ion-icon name="{{action.icon}}"></ion-icon>
+      {{action.action}}
+    </button>
+    {% endfor %}
+  </div>
+  {% else %} {{object|getattribute:action_method|safe}} {% endif %}
+  {% endif %}
+</div>

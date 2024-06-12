@@ -156,6 +156,9 @@ class Employee(models.Model):
         """
         return getattr(getattr(self, "employee_work_info", None), "email", self.email)
 
+    def get_email(self):
+        return self.get_mail()
+
     def get_work_type(self):
         """
         This method is used to return the work type of the employee

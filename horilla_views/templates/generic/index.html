@@ -1,0 +1,38 @@
+{% extends "index.html" %}
+{% block content %}
+<style>
+  .male--custom{
+    border-left: 3.4px solid rgb(32, 128, 218) !important;
+    border-radius: 4px 0 0 4px;
+  }
+  .female--custom{
+    border-left: 3.4px solid pink !important;
+    border-radius: 4px 0 0 4px;
+  }
+  .male--dot{
+    background-color:blue;
+  }
+  .female--dot{
+    background-color:pink;
+  }
+
+  .oh-tabs__tab--active{
+    border-right: 1px solid hsl(213,22%,84%) !important;
+  }
+</style>
+<div hx-get="{% url "horilla-navbar" %}" hx-trigger="load">
+</div>
+{% include "generic/components.html" %}
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  >
+</div>
+  {% comment %} path to the horilla tab view {% endcomment %}
+<div class="oh-wrapper" hx-get="{% url "htv" %}?{{request.GET.urlencode}}" hx-trigger="load" id="listContainer">
+  <div class="animated-background"></div>
+</div>
+{% endblock content %}

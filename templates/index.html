@@ -36,6 +36,7 @@
   <script src="{% static '/base/toggleColumn.js' %}"></script>
   <script src="{% static '/build/js/orgChart.js' %}"></script>
   <script src="{% static 'build/js/driver.js' %}"></script>
+  <script src="{% static "build/js/clearFilter.js" %}"></script>
 
 
   <!-- Popper.JS -->
@@ -54,6 +55,9 @@
 {% comment %} </div> {% endcomment %}
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
   <span class="logged-in" data-user-id="{{request.user.id}}"></span>
+    <div id="reloadMessages">
+      {% include "generic/messages.html" %}
+    </div>
     {% if messages %}
     <div class="oh-alert-container">
         {% for message in messages %}
@@ -63,7 +67,7 @@
         {% endfor %}
     </div>
     {% endif %}
-
+    <button id="reloadMessagesButton" hx-get="{% url 'reload-messages' %}" hidden hx-target="#reloadMessages"></button>
 
     <div class="oh-wrapper-main" :class="!sidebarOpen ? 'oh-wrapper-main--closed' : ''" x-data="{sidebarOpen: true}"
     @load.window="
@@ -434,7 +438,7 @@
     $(document).on("htmx:beforeRequest", function (event, data) {
       var response = event.detail.xhr.response;
       var target = $(event.detail.elt.getAttribute("hx-target"));
-      var avoid_target = ["BiometricDeviceTestFormTarget"];
+      var avoid_target = ["BiometricDeviceTestFormTarget","reloadMessages"];
       if (!target.closest("form").length && avoid_target.indexOf(target.attr("id")) === -1) {
           target.html(`<div class="animated-background"></div>`);
       }
@@ -531,6 +535,76 @@
     setTimeout(()=>{$("[name='search']").focus()},100)
   </script>
 
+  <script>
+    function addToSelectedId(newIds){
+      ids = JSON.parse(
+        $("#selectedInstances").attr("data-ids") || "[]"
+      );
+
+      ids = [...ids,...newIds.map(String)]
+      ids = Array.from(new Set(ids));
+      $("#selectedInstances").attr("data-ids",JSON.stringify(ids))
+    }
+    function selectSelected(viewId){
+      ids = JSON.parse(
+          $("#selectedInstances").attr("data-ids") || "[]"
+        );
+      $.each(ids, function (indexInArray, valueOfElement) {
+        $(`${viewId} .oh-sticky-table__tbody .list-table-row[value=${valueOfElement}]`).prop("checked",true).change()
+      });
+      $(`${viewId} .oh-sticky-table__tbody .list-table-row`).change(function (
+        e
+      ) {
+        id = $(this).val()
+        ids = JSON.parse(
+            $("#selectedInstances").attr("data-ids") || "[]"
+          );
+        ids = Array.from(new Set(ids));
+        let index = ids.indexOf(id);
+        if (!ids.includes(id)) {
+          ids.push(id);
+        } else {
+          if (!$(this).is(":checked")) {
+            ids.splice(index, 1);
+          }
+        }
+        $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+        }
+      );
+      reloadSelectedCount($('#count_{{view_id|safe}}'));
+
+    }
+    function reloadSelectedCount(targetElement) {
+      count = JSON.parse($("#selectedInstances").attr("data-ids") || "[]").length
+      id =targetElement.attr("id")
+      if (id) {
+        id =id.split("count_")[1]
+      }
+      if (count) {
+        targetElement.html(count)
+        targetElement.parent().removeClass("d-none");
+        $(`#unselect_${id}, #export_${id}`).removeClass("d-none");
+
+
+      }else{
+        targetElement.parent().addClass("d-none")
+        $(`#unselect_${id}, #export_${id}`).addClass("d-none")
+
+      }
+    }
+    function removeId(element){
+      id = element.val();
+      viewId = element.attr("data-view-id")
+      ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]")
+      let elementToRemove = 5;
+      if (ids[ids.length - 1] === id) {
+          ids.pop();
+      }
+      ids = JSON.stringify(ids)
+      $("#selectedInstances").attr("data-ids", ids);
+
+    }
+  </script>
 </body>
 
 </html>

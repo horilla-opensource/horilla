@@ -1,0 +1,80 @@
+{% load i18n %} {% load basefilters %}
+
+<!-- filter items showing here -->
+<div style="display: none">{{filter_dict}}</div>
+<script>
+  function fieldLabel(value, field) {
+    fiedlElem = $(`#applyFilter`).closest(`form`).find(`[name=${field}]`);
+    if (fiedlElem.is("select")) {
+      // my conditions
+      if (fiedlElem.is("select[multiple]")) {
+        values = fiedlElem.val();
+        values.push(field);
+        $.each(values, function (index, value) {
+          fiedlElem.append(
+            $("<option>", {
+              value: value,
+              text: fiedlElem.find(`[value=${field}]`).html(),
+            })
+          );
+        });
+      } else {
+        fiedlElem.val(value)
+        if (!fiedlElem == "field") {
+          fiedlElem.change();
+        }else{
+          fiedlElem.select2('destroy');
+          fiedlElem.select2()
+        }
+      }
+    } else {
+      if (!fiedlElem.is(":focus")) {
+        fiedlElem.val(value);
+      }
+    }
+    if (field == "field") {
+      return $(`option[value="${value}"]`).html();
+    }
+    return value;
+  }
+  $(document).ready(function () {
+    var nav = $("#filterTagContainerSectionNav");
+    tags = $(`
+    {% if filter_dict %}
+    <span class="oh-titlebar__tag oh-titlebar__tag--custom"
+      >{% trans 'Filters' %}:</span
+    >
+    {% endif %} 
+    {%for field,values in filter_dict.items %} {% if values %} 
+    {% with translation_field=field|filter_field %}
+    <span class="oh-titlebar__tag filter-field" >
+      {% trans translation_field %} : 
+	  {% for value in values %}
+		${fieldLabel("{% trans value %}", "{{field}}")}
+	  {% endfor %}
+      <button class="oh-titlebar__tag-close" onclick="clearFilterFromTag($(this))" data-x-field="{{field}}">
+        <ion-icon
+          name="close-outline"
+          role="img"
+          class="md hydrated close-icon"
+          aria-label="close outline"
+        >
+        </ion-icon>
+      </button>
+    </span>
+    {% endwith %} {% endif %} {% endfor %}
+    {% if filter_dict %}
+    <span class="oh-titlebar__tag oh-titlebar__tag--custom" title="{% trans 'Clear All' %}" role="button" onclick="clearAllFilter($(this));"
+      ><ion-icon class="close-icon" name="close-outline"></ion-icon></span
+    > 
+    {% endif %} 
+    `);
+
+    nav.html(tags);
+    $("oh-tabs__tab oh-tabs__tab--active:first").click();
+  });
+</script>
+<div
+  id="filterTagContainerSectionNav"
+  class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"
+></div>
