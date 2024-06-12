@@ -1,8 +1,41 @@
-{% load i18n %} {% load attendancefilters %}
+{% load i18n %} {% load attendancefilters %} {% include "filter_tags.html" %}
 <div class="d-flex justify-content-between m-2 ms-0">
-    <button class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#exportRecords" onclick="window.location.href = `{% url 'work-record-export' %}?month={{leave_dates.0.month}}&year={{leave_dates.0.year}}`">
-        <ion-icon name="download-outline" class="mr-1 md hydrated" role="img" aria-label="download"></ion-icon>{% trans "Export" %}
-    </button>
+    <div class="d-flex justify-content-between">
+        <button class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#exportRecords" onclick="window.location.href = `{% url 'work-record-export' %}?month={{leave_dates.0.month}}&year={{leave_dates.0.year}}`">
+            <ion-icon name="download-outline" class="mr-1 md hydrated" role="img" aria-label="download"></ion-icon>{% trans "Export" %}
+        </button>
+        <div class="oh-dropdown" x-data="{open: false}">
+            <button
+                class="oh-btn ml-2"
+                @click="open = !open"
+                onclick="event.preventDefault()"
+            >
+                <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                <div id="filterCount"></div>
+            </button>
+            <div
+                class="oh-dropdown__menu oh-dropdown__filter p-4"
+                x-show="open"
+                @click.outside="open = false"
+                style="display: none"
+            >
+                <form
+                    hx-post="{% url 'work-records-change-month' %}"
+                    hx-target="#workRecordTable"
+                >
+                    {% include 'employee_filters.html' %}
+                    <div class="oh-dropdown__filter-footer">
+                        <button
+                            class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+                            id="#employeeFilter"
+                        >
+                            {% trans "Filter" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div class="d-flex flex-row-reverse m-2">
         <span class="" style="margin-left: 10px;">
             <span class="oh-dot oh-dot--small me-1" style="background-color:#ed4c4c"></span>
@@ -38,7 +71,7 @@
         </thead>
         {% for employee_data in data %}
         <tr>
-            <td style="width:12%">{{ employee_data.employee }}</td>
+            <td style="width:12%"><a style="text-decoration:none;" href ="{% url 'employee-view-individual' employee_data.employee.id %}">{{ employee_data.employee }}</a></td>
 
             {% for date in current_month_dates_list %}
                 {% with work_record=employee_data.work_record|get_item:forloop.counter0 %}

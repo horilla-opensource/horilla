@@ -295,7 +295,7 @@ def clock_out_attendance_and_activity(employee, date_today, now, out_datetime=No
     """
 
     attendance_activities = AttendanceActivity.objects.filter(
-        employee_id=employee
+        employee_id=employee, clock_out__isnull=True
     ).order_by("attendance_date", "id")
     if attendance_activities.exists():
         attendance_activity = attendance_activities.last()

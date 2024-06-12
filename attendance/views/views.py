@@ -73,6 +73,7 @@ from base.methods import (
     get_pagination,
 )
 from base.models import EmployeeShiftSchedule
+from employee.filters import EmployeeFilter
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
     hx_request_required,
@@ -2030,6 +2031,7 @@ def work_records(request):
 @hx_request_required
 def work_records_change_month(request):
     previous_data = request.GET.urlencode()
+    employee_filter_form = EmployeeFilter()
     if request.GET.get("month"):
         date_obj = request.GET.get("month")
         month = int(date_obj.split("-")[1])
@@ -2040,6 +2042,9 @@ def work_records_change_month(request):
 
     schedules = list(EmployeeShiftSchedule.objects.all())
     employees = list(Employee.objects.filter(is_active=True))
+    if request.method == "POST":
+        employee_filter_form = EmployeeFilter(request.POST)
+        employees = list(employee_filter_form.qs)
     data = []
     month_matrix = calendar.monthcalendar(year, month)
 
@@ -2093,6 +2098,7 @@ def work_records_change_month(request):
         "data": data,
         "pd": previous_data,
         "current_date": date.today(),
+        "f": employee_filter_form,
     }
     return render(
         request, "attendance/work_record/work_record_list.html", context=context
