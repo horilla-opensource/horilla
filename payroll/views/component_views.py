@@ -1472,8 +1472,8 @@ def delete_reimbursements(request):
     reimbursements = Reimbursement.objects.filter(id__in=ids)
     for reimbursement in reimbursements:
         user = reimbursement.employee_id.employee_user_id
-        reimbursement.delete()
-    # messages.success(request, "Reimbursements deleted")
+    reimbursements.delete()
+    messages.success(request, "Reimbursements deleted")
     notify.send(
         request.user.employee_get,
         recipient=user,

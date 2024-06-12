@@ -656,12 +656,13 @@ class ReimbursementForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
         if self.instance.pk:
             employee_id = self.instance.employee_id
             type = self.instance.type
 
         else:
-            employee_id = cleaned_data["employee_id"]
+            employee_id = request.user.employee_get
             type = cleaned_data["type"]
 
         available_points = BonusPoint.objects.filter(employee_id=employee_id).first()
