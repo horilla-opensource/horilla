@@ -1765,45 +1765,37 @@ def anviz_biometric_device_attendance(device_id):
 
     :param device_id: The Object Id of the Anviz biometric device.
     """
-    anviz_device = AnvizBiometricDeviceManager(device_id)
-    attendance_records = anviz_device.get_attendance_records()
-    for attendance in attendance_records["payload"]["list"]:
-        badge_id = attendance["employee"]["workno"]
-        punch_code = attendance["checktype"]
-        date_time_obj = datetime.strptime(
-            attendance["checktime"], "%Y-%m-%dT%H:%M:%S%z"
-        )
-        target_timezone = pytz.timezone(settings.TIME_ZONE)
-
-        date_time_obj = date_time_obj.astimezone(target_timezone)
-        employee = Employee.objects.filter(badge_id=badge_id).first()
-        if employee:
-            if punch_code in {0, 128}:
-                try:
-                    clock_in(
-                        Request(
-                            user=employee.employee_user_id,
-                            date=date_time_obj.date(),
-                            time=date_time_obj.time(),
-                            datetime=date_time_obj,
-                        )
-                    )
-                except Exception as error:
-                    print(f"Error in clock in {error}")
-
-            else:
-                try:
-                    # // 1 , 129 checktype check out and door close
-                    clock_out(
-                        Request(
-                            user=employee.employee_user_id,
-                            date=date_time_obj.date(),
-                            time=date_time_obj.time(),
-                            datetime=date_time_obj,
-                        )
-                    )
-                except Exception as error:
-                    print(f"Error in clock out {error}")
+    device = BiometricDevices.objects.get(id=device_id)
+    if device.is_scheduler:
+        anviz_device = AnvizBiometricDeviceManager(device_id)
+        attendance_records = anviz_device.get_attendance_records()
+        for attendance in attendance_records["payload"]["list"]:
+            badge_id = attendance["employee"]["workno"]
+            punch_code = attendance["checktype"]
+            date_time_obj = datetime.strptime(
+                attendance["checktime"], "%Y-%m-%dT%H:%M:%S%z"
+            )
+            target_timezone = pytz.timezone(settings.TIME_ZONE)
+            date_time_obj = date_time_obj.astimezone(target_timezone)
+            employee = Employee.objects.filter(badge_id=badge_id).first()
+            if employee:
+                request_data = Request(
+                    user=employee.employee_user_id,
+                    date=date_time_obj.date(),
+                    time=date_time_obj.time(),
+                    datetime=date_time_obj,
+                )
+                if punch_code in {0, 128}:
+                    try:
+                        clock_in(request_data)
+                    except Exception as error:
+                        print(f"Error in clock in {error}")
+                else:
+                    try:
+                        # // 1 , 129 check type check out and door close
+                        clock_out(request_data)
+                    except Exception as error:
+                        print(f"Error in clock out {error}")
 
 
 def cosec_biometric_device_attendance(device_id):

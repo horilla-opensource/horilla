@@ -4513,6 +4513,7 @@ def view_clashes(request, leave_request_id):
 
 
 @login_required
+@permission_required("leave.view_leavegeneralsetting")
 def compensatory_leave_settings_view(request):
     enabled_compensatory = (
         LeaveGeneralSetting.objects.exists()
@@ -4527,7 +4528,7 @@ def compensatory_leave_settings_view(request):
 
 
 @login_required
-@permission_required("attendance.add_leavegeneralsetting")
+@permission_required("leave.add_leavegeneralsetting")
 def enable_compensatory_leave(request):
     """
     This method is used to enable/disable the compensatory leave feature

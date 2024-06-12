@@ -1031,7 +1031,7 @@ class CompensatoryLeaveRequest(HorillaModel):
 
 class LeaveGeneralSetting(HorillaModel):
     """
-    AttendanceGeneralSettings
+    LeaveGeneralSettings
     """
 
     compensatory_leave = models.BooleanField(default=True)
