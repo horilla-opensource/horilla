@@ -8,3 +8,4 @@ from horilla.settings import MIDDLEWARE
 
 MIDDLEWARE.append("base.middleware.CompanyMiddleware")
 MIDDLEWARE.append("base.thread_local_middleware.ThreadLocalMiddleware")
+MIDDLEWARE.append("base.middleware.MethodNotAllowedMiddleware")
