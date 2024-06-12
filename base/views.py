@@ -5665,6 +5665,8 @@ def employee_chart_show(request):
     ]
     charts = check_permission(request, charts)
     if request.method == "POST":
+        employee_charts.charts = []
+        employee_charts.save()
         data = request.POST
         for chart in charts:
             if chart[0] not in data.keys() and chart[0] not in employee_charts.charts:
