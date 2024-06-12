@@ -1678,6 +1678,7 @@ def latecome_attendance_select_filter(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.add_gracetime")
 def create_grace_time(request):
     """
@@ -1707,6 +1708,7 @@ def create_grace_time(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.change_gracetime")
 def update_grace_time(request, grace_id):
     """
