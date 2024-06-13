@@ -616,7 +616,8 @@ def link_callback(uri, rel):
     Convert HTML URIs to absolute system paths so xhtml2pdf can access those
     resources
     """
-    print(uri)
+    if not uri.startswith("/static"):
+        return uri
     uri = "payroll/fonts/Poppins_Regular.ttf"
     result = finders.find(uri)
     if result:
