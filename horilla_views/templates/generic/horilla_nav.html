@@ -97,7 +97,7 @@
           {% include filter_body_template %}
           <input type="radio" name="filter_applied" checked hidden>
           <div class="oh-dropdown__filter-footer">
-            <button 
+            <button
              type="submit"
              id="applyFilter"
              onclick="filterFormSubmit('filterForm')"
@@ -108,7 +108,7 @@
         </div>
       </div>
       {% else %}
-      <button 
+      <button
         hidden
         type="submit"
         id="applyFilter"
@@ -164,7 +164,7 @@
               <li class="oh-dropdown__item">
                 <a class="oh-dropdown__link" {{action.attrs|safe}}>{{action.action}}</a>
               </li>
-              {% endfor %}              
+              {% endfor %}
             </ul>
           </div>
         </div>
@@ -174,7 +174,7 @@
       <input type="hidden" id="sortInput">
     </form>
     {% if create_attrs %}
-    <a 
+    <a
       onclick="event.preventDefault();event.stopPropagation()"
       class="oh-btn oh-btn--secondary ml-2"
       {{create_attrs|safe}}
@@ -191,15 +191,15 @@
 
   </div>
   <script>
-    $(".oh-btn--view").click(function (e) { 
+    $(".oh-btn--view").click(function (e) {
       e.preventDefault();
-      $(".oh-btn--view-active").removeClass("oh-btn--view-active");      
+      $(".oh-btn--view-active").removeClass("oh-btn--view-active");
       $(this).addClass("oh-btn--view-active");
     });
     if (!$(".oh-btn--view-active").length) {
       // $("a.oh-btn--view:first").trigger("click")
     }
-    $(".oh-accordion-header").click(function (e) { 
+    $(".oh-accordion-header").click(function (e) {
       e.preventDefault();
       $(this).parent().toggleClass("oh-accordion--show");
     });

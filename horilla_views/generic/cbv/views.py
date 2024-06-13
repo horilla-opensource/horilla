@@ -3,34 +3,31 @@ horilla/generic/views.py
 """
 
 import json
+from typing import Any
+from urllib.parse import parse_qs
+
 from django import forms
+from django.core.paginator import Page
 from django.http import HttpRequest, HttpResponse, QueryDict
 from django.shortcuts import render
-from django.urls import reverse
-from typing import Any
-from django.urls import resolve
-from urllib.parse import parse_qs
-from django.core.paginator import Page
-from django.views.generic import ListView, DetailView, TemplateView, FormView
+from django.urls import resolve, reverse
+from django.views.generic import DetailView, FormView, ListView, TemplateView
+
 from attendance.methods.group_by import group_by_queryset
-from base.methods import (
-    closest_numbers,
-    get_key_instances,
-)
+from base.methods import closest_numbers, get_key_instances
+from base.thread_local_middleware import _thread_locals
 from horilla.filters import FilterSet
 from horilla_views import models
 from horilla_views.cbv_methods import (
     get_short_uuid,
     paginator_qry,
-    update_initial_cache,
     sortby,
+    structured,
+    update_initial_cache,
     update_saved_filter_cache,
 )
-from base.thread_local_middleware import _thread_locals
-from horilla_views.cbv_methods import structured
 from horilla_views.forms import ToggleColumnForm
 from horilla_views.templatetags.generic_template_filters import getattribute
-
 
 cache = {}
 saved_filters = {}
@@ -198,7 +195,7 @@ class HorillaListView(ListView):
                 groups, self._saved_filters.get("page"), 10
             )
         cache[self.request.session.session_key][HorillaListView] = context
-        from horilla.urls import urlpatterns, path
+        from horilla.urls import path, urlpatterns
 
         self.export_path = f"export-list-view-{get_short_uuid(4)}/"
 
@@ -216,7 +213,7 @@ class HorillaListView(ListView):
         """
         Export list view visible columns
         """
-        from import_export import resources, fields
+        from import_export import fields, resources
 
         request = getattr(_thread_locals, "request", None)
         ids = eval(request.GET["ids"])
@@ -598,7 +595,7 @@ class HorillaFormView(FormView):
                     "form": form,
                 }
 
-                from horilla.urls import urlpatterns, path
+                from horilla.urls import path, urlpatterns
 
                 urlpatterns.append(
                     path(

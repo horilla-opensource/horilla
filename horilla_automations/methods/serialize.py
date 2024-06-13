@@ -70,9 +70,7 @@ def serialize_form(form, prefix=""):
                 related_field_structure = {
                     "name": prefix + field_name + "__" + related_field["name"],
                     "type": related_field["type"],
-                    "label": related_field["label"].capitalize()
-                    + " | "
-                    + field.label,
+                    "label": related_field["label"].capitalize() + " | " + field.label,
                     "required": related_field["required"],
                 }
                 if related_field.get("options"):

@@ -3,11 +3,11 @@
 </dic>
 
 <script>
-$("#{{dynamic_id}} [name={{field.name}}]").change(function (e) { 
+$("#{{dynamic_id}} [name={{field.name}}]").change(function (e) {
     if (this.value=="dynamic_create") {
     $("#modalButton{{field.name}}").click()
     $(this).val("").change();
     }
 });
 </script>
-  
+

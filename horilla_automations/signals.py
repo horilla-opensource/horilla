@@ -6,14 +6,16 @@ horilla_automation/signals.py
 import copy
 import threading
 import types
+
 from django import template
-from django.db.models.signals import post_save, pre_save, post_delete
-from django.dispatch import receiver
-from django.db.models.query import QuerySet
-from django.db import models
 from django.core.mail import EmailMessage
+from django.db import models
+from django.db.models.query import QuerySet
+from django.db.models.signals import post_delete, post_save, pre_save
+from django.dispatch import receiver
+
 from base.thread_local_middleware import _thread_locals
-from horilla.signals import pre_bulk_update, post_bulk_update
+from horilla.signals import post_bulk_update, pre_bulk_update
 
 
 @classmethod
@@ -35,11 +37,8 @@ def start_automation():
     """
     Automation signals
     """
+    from horilla_automations.methods.methods import get_model_class, split_query_string
     from horilla_automations.models import MailAutomation
-    from horilla_automations.methods.methods import (
-        split_query_string,
-        get_model_class,
-    )
 
     @receiver(post_delete, sender=MailAutomation)
     @receiver(post_save, sender=MailAutomation)
@@ -327,14 +326,14 @@ def send_mail(request, automation, instance):
     """
     mail sending method
     """
-    from horilla_views.templatetags.generic_template_filters import getattribute
+    from base.backends import ConfiguredEmailBackend
+    from base.methods import generate_pdf
+    from horilla.decorators import logger
     from horilla_automations.methods.methods import (
         get_model_class,
         get_related_field_model,
     )
-    from base.methods import generate_pdf
-    from base.backends import ConfiguredEmailBackend
-    from horilla.decorators import logger
+    from horilla_views.templatetags.generic_template_filters import getattribute
 
     mail_template = automation.mail_template
     pk = getattribute(instance, automation.mail_details)

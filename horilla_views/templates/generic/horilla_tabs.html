@@ -1,5 +1,5 @@
-{% comment %} {% extends "index.html" %} 
-{% block content %} 
+{% comment %} {% extends "index.html" %}
+{% block content %}
 {% comment %} {% include "generic/components.html" %}  {% endcomment %}
 {% comment %} {% include "attendance/attendance/attendance_nav.html" %} {% endcomment %}
 {% load i18n generic_template_filters %}
@@ -79,7 +79,7 @@
 </div>
 
 <script>
-  $("li.oh-tabs__tab").click(function (e) { 
+  $("li.oh-tabs__tab").click(function (e) {
     var target = `li[data-target="${$(this).attr("data-target")}"]`
     e.preventDefault();
     $.ajax({
@@ -90,7 +90,7 @@
         "target":target,
       },
       success: function (response) {
-        
+
       }
     });
   });

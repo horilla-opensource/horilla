@@ -3,8 +3,9 @@ horilla_views/forms.py
 """
 
 from django import forms
-from django.utils.safestring import SafeText
 from django.template.loader import render_to_string
+from django.utils.safestring import SafeText
+
 from base.thread_local_middleware import _thread_locals
 
 

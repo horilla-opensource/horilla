@@ -3,13 +3,15 @@ horilla_automations/views/cbvs.py
 """
 
 from typing import Any
+
+from django.contrib import messages
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _trans
+
+from horilla_automations import models
 from horilla_automations.filters import AutomationFilter
 from horilla_automations.forms import AutomationForm
 from horilla_views.generic.cbv import views
-from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _trans
-from django.contrib import messages
-from horilla_automations import models
 
 
 class AutomationSectionView(views.HorillaSectionView):

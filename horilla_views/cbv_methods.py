@@ -2,26 +2,27 @@
 horilla/cbv_methods.py
 """
 
-from urllib.parse import urlencode
 import uuid
+from urllib.parse import urlencode
 from venv import logger
+
 from django import template
+from django.contrib import messages
+from django.core.paginator import Paginator
+from django.http import HttpResponse
+from django.middleware.csrf import get_token
 from django.shortcuts import redirect, render
 from django.template import loader
-from django.template.loader import render_to_string
 from django.template.defaultfilters import register
+from django.template.loader import render_to_string
 from django.urls import reverse
-from django.contrib import messages
-from django.http import HttpResponse
-from django.core.paginator import Paginator
-from django.middleware.csrf import get_token
-from django.utils.html import format_html
 from django.utils.functional import lazy
+from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
+from base.thread_local_middleware import _thread_locals
 from horilla import settings
 from horilla_views.templatetags.generic_template_filters import getattribute
-from base.thread_local_middleware import _thread_locals
 
 
 def decorator_with_arguments(decorator):
@@ -117,7 +118,6 @@ def permission_required(function, perm):
             return HttpResponse(script)
 
     return _function
-
 
 
 def csrf_input(request):

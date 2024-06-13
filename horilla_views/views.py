@@ -1,8 +1,10 @@
 import importlib
+
 from django import forms
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views import View
+
 from horilla_views import models
 from horilla_views.cbv_methods import get_short_uuid
 from horilla_views.generic.cbv.views import dynamic_create_cache
@@ -14,6 +16,7 @@ class ToggleColumn(View):
     """
     ToggleColumn
     """
+
     def get(self, *args, **kwargs):
         """
         method to toggle columns
@@ -43,6 +46,7 @@ class ReloadField(View):
     """
     ReloadField
     """
+
     def get(self, request, *args, **kwargs):
         """
         Http method to reload dynamic create fields
@@ -89,7 +93,7 @@ class ReloadField(View):
 
 class ActiveTab(View):
     def get(self, *args, **kwargs):
-        """ 
+        """
         CBV method to handle active tab
         """
         path = self.request.GET.get("path")

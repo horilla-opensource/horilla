@@ -5,11 +5,12 @@ This module is used to write custom template filters.
 
 """
 
-import re, types
-from django import template
-from django.template.defaultfilters import register
-from django.conf import settings
+import re
+import types
 
+from django import template
+from django.conf import settings
+from django.template.defaultfilters import register
 
 register = template.Library()
 

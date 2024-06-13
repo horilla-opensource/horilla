@@ -61,7 +61,7 @@ function getToMail(element) {
         </td>
         <td>
         <div class="oh-btn-group">
-          <button 
+          <button
            class="oh-btn oh-btn oh-btn--light p-2 w-50"
            onclick="
             event.preventDefault();
@@ -75,9 +75,9 @@ function getToMail(element) {
             $('#multipleConditionTable').find('select').select2()
            "
           >
-            <ion-icon name="copy-outline"></ion-icon>          
+            <ion-icon name="copy-outline"></ion-icon>
           </button>
-          <button 
+          <button
            class="oh-btn oh-btn oh-btn--light p-2 w-50"
            onclick="
             event.preventDefault();
@@ -110,7 +110,7 @@ function getHtml() {
           <th>Value</th>
           <th>Logic</th>
           <th>
-          Action 
+          Action
           <span title="Reload" onclick="$('[name=model]').change()">
             <ion-icon name="refresh-circle"></ion-icon>
           </span>

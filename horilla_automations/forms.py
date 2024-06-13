@@ -3,11 +3,13 @@ horilla_automations/forms.py
 """
 
 from typing import Any
+
 from django import forms
 from django.template.loader import render_to_string
+
+from base.forms import ModelForm
 from horilla_automations.methods.methods import generate_choices
 from horilla_automations.models import MODEL_CHOICES, MailAutomation
-from base.forms import ModelForm
 
 
 class AutomationForm(ModelForm):

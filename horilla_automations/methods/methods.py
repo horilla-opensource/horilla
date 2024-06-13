@@ -4,8 +4,10 @@ horilla_automations/methods/methods.py
 """
 
 import operator
-from django.http import QueryDict
+
 from django.core.exceptions import FieldDoesNotExist
+from django.http import QueryDict
+
 from employee.models import Employee
 from horilla.models import HorillaModel
 from recruitment.models import Candidate

@@ -15,7 +15,7 @@
   </button>
     {% if show_filter_tags %}
     {% include "generic/filter_tags.html" %}
-    {% endif %}  
+    {% endif %}
   <div class="oh-layout--grid-3">
     {% for instance in queryset %}
     <div class="oh-kanban-card {{card_status_class|format:instance|safe}}" {{card_attrs|format:instance|safe}}>

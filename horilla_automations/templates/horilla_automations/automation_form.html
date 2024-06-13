@@ -2,7 +2,7 @@
 {% include "generic/horilla_form.html" %}
 </div>
 <script>
-  $("form#{{view_id}} button").click(function (e) { 
+  $("form#{{view_id}} button").click(function (e) {
     const form = document.getElementById('multipleConditionForm');
     const elements = form.elements;
     const queryString = Array.from(elements)
@@ -25,7 +25,7 @@
       toolbar: false,
     })
     .summernote("code", getHtml());
- 
+
   {% if form.instance.pk %}
   $("#id_mail_to").val({{form.instance.mail_to|safe}}).change()
   $("#dynamic_field_condition .note-editable").html($("<form id='multipleConditionForm'></form>"));

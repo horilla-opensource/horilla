@@ -1,11 +1,13 @@
 from typing import Any
+
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from horilla.models import HorillaModel
 from django.utils.translation import gettext_lazy as _trans
-from horilla_automations.methods.methods import get_related_models
+
 from employee.models import Employee
+from horilla.models import HorillaModel
+from horilla_automations.methods.methods import get_related_models
 from horilla_views.cbv_methods import render_template
 from recruitment.models import RecruitmentMailTemplate
 

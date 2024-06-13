@@ -16,8 +16,8 @@
         style="cursor: pointer;">
         {% trans "Select All" %}{{select_all_path}}
       </div>
-      <div 
-      id="unselect_{{view_id}}" 
+      <div
+      id="unselect_{{view_id}}"
       class="oh-checkpoint-badge text-secondary d-none"
       style="cursor: pointer;"
       onclick="
@@ -38,8 +38,8 @@
           0
         </span> {% trans "Selected" %}
       </div>
-      <div 
-      id="export_{{view_id}}" 
+      <div
+      id="export_{{view_id}}"
       class="oh-checkpoint-badge text-info d-none"
       style="cursor: pointer;"
       onclick="
@@ -63,7 +63,7 @@
   </div>
   {% endif %}
 
-  
+
   <div class="oh-table_sticky--wrapper">
     <div class="oh-sticky-dropdown--header" style="z-index:13;">
       <div class="oh-dropdown" x-data="{open: false}">
@@ -116,11 +116,11 @@
               </div>
             </div>
             {% endif %} {% for cell in columns %}
-            <div 
-              
+            <div
+
               class="oh-sticky-table__th"
               style="z-index: 11;width:100px;">
-              <div 
+              <div
               {% for sort_map in sortby_mapping %}
               {% if sort_map.0 == cell.0 %}
               hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
@@ -136,7 +136,7 @@
                 "
               {% endif %}
               {% endfor %}
-                
+
                 style="width: 200px;"
               >
                 {{cell.0}}
@@ -190,7 +190,7 @@
                 />
               </div>
             </div>
-            {% endif %} {% for cell in columns %} 
+            {% endif %} {% for cell in columns %}
             {% with attribute=cell.1 index=forloop.counter %} {% if not cell.2 %}
             <div
               class="{% if index == 1 %} oh-sticky-table__sd {% else %} oh-sticky-table__td{% endif %}"
@@ -338,11 +338,11 @@
   <script>
     selectSelected("#{{view_id|safe}}")
   </script>
-  {% endif %} 
+  {% endif %}
   {% endif %}
   </div>
   <script>
-    $("ul[data-search-url] a").click(function (e) { 
+    $("ul[data-search-url] a").click(function (e) {
       e.preventDefault();
       const url =  $(this).attr("hx-get")
       const $urlObj = $('<a>', { href: url });

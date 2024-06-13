@@ -26,7 +26,7 @@
   Reload Field
 </button>
 <script>
-  $("#{{view_id}} [name={{field_tuple.0}}]").change(function (e) { 
+  $("#{{view_id}} [name={{field_tuple.0}}]").change(function (e) {
     if (this.value=="dynamic_create") {
       $("#modalButton{{field_tuple.0}}").click()
       $(this).val("").change();
@@ -34,4 +34,3 @@
   });
 </script>
 {% endfor %}
-

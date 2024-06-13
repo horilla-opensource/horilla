@@ -12,8 +12,8 @@
         style="cursor: pointer;">
         {% trans "Select All" %}{{select_all_path}}
       </div>
-      <div 
-      id="unselect_{{view_id}}" 
+      <div
+      id="unselect_{{view_id}}"
       class="oh-checkpoint-badge text-secondary d-none"
       style="cursor: pointer;"
       onclick="
@@ -34,8 +34,8 @@
           0
         </span> {% trans "Selected" %}
       </div>
-      <div 
-      id="export_{{view_id}}" 
+      <div
+      id="export_{{view_id}}"
       class="oh-checkpoint-badge text-info d-none"
       style="cursor: pointer;"
       onclick="
@@ -66,7 +66,7 @@
     <div class="oh-accordion-meta">
       <div class="oh-accordion-meta__item">
         <div class="oh-accordion-meta__header"
-          data-field="{{saved_filters.field}}" 
+          data-field="{{saved_filters.field}}"
           data-path="{{request.path}}"
           data-group="{{forloop.counter}}"
           data-open=false
@@ -122,7 +122,7 @@
                   {% endif %}
                   {% for cell in columns %}
                   <div class="oh-sticky-table__th"
-                  
+
                   >{{cell.0}}</div>
                   {% endfor %}{% if options or option_method%}
                   <div class="oh-sticky-table__th" >
@@ -171,7 +171,7 @@
                     </div>
                   </div>
                   {% endif %}
-                  {% for cell in columns %} 
+                  {% for cell in columns %}
                   {% with attribute=cell.1 index=forloop.counter %} {% if not cell.2 %}
                   <div
                     class="{% if index == 1 %} oh-sticky-table__sd {% else %} oh-sticky-table__td{% endif %}"
@@ -234,7 +234,7 @@
           </div>
           <div class="oh-pagination">
             <span class="oh-pagination__page">
-              {% trans "Page" %} {{ group.list.number }} 
+              {% trans "Page" %} {{ group.list.number }}
               {% trans "of" %} {{ group.list.paginator.num_pages }}.
             </span>
             <nav class="oh-pagination__nav">
@@ -370,7 +370,7 @@
         ids = JSON.parse(
             $("#selectedInstances").attr("data-ids") || "[]"
           );
-        ids = Array.from(new Set(ids));        
+        ids = Array.from(new Set(ids));
         let index = ids.indexOf(id);
         if (!ids.includes(id)) {
           ids.push(id);
@@ -382,13 +382,13 @@
         $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
         }
       );
-        
+
     </script>
     {% endif %}
     {% endif %}
-    
+
 <script>
-  $(".oh-accordion-meta__header").click(function (e) { 
+  $(".oh-accordion-meta__header").click(function (e) {
     var open = $(this).attr("data-open");
     open = JSON.parse(open)
     $(this).attr("data-open", !open);
