@@ -22,7 +22,7 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
-from base.models import Company, EmailLog, JobPosition
+from base.models import Company, JobPosition
 from employee.models import Employee
 from horilla.decorators import logger
 from horilla.models import HorillaModel
@@ -302,6 +302,14 @@ class Candidate(HorillaModel):
         null=True,
         verbose_name=_("Stage"),
     )
+    converted_employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="candidate_get",
+        verbose_name=_("Employee"),
+    )
     schedule_date = models.DateTimeField(
         blank=True, null=True, verbose_name=_("Schedule date")
     )
@@ -451,6 +459,8 @@ class Candidate(HorillaModel):
         """
         This method is used to get last send mail
         """
+        from base.models import EmailLog
+
         return (
             EmailLog.objects.filter(to__icontains=self.email)
             .order_by("-created_at")
@@ -509,6 +519,16 @@ class Candidate(HorillaModel):
                     sequence=50,
                 )
             self.stage_id = cancelled_stage
+        if (
+            self.converted_employee_id
+            and Candidate.objects.filter(
+                converted_employee_id=self.converted_employee_id
+            )
+            .exclude(id=self.id)
+            .exists()
+        ):
+            raise ValidationError(_("Employee is uniques for candidate"))
+
         super().save(*args, **kwargs)
 
     class Meta:

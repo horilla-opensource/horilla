@@ -131,21 +131,20 @@
                 <span class="oh-file-icon oh-file-icon--pdf"></span> &nbsp {% trans "View" %}
               </a>
             </div>
-
             <div class="oh-sticky-table__td">
               {% if perms.recruitment.change_candidate %}
               <div class="oh-btn-group">
-                {% if cand.email in emp_list %}
-                <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
-                  <ion-icon name="person-circle-outline"></ion-icon></button>
+                {% if not cand.email in emp_list and not cand.start_onboard %}
+                  <a href="{% url 'candidate-conversion' cand.id %}"
+                    onclick="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
+                    class="oh-btn oh-btn--light-bkg w-100"
+                    title='{% trans "To employee " %}'
+                    style="padding:0.8rem 1rem"
+                  >
+                    <ion-icon name="person-circle-outline"></ion-icon></a>
               {% else %}
-                <a href="{% url 'candidate-conversion' cand.id %}"
-                  onclick="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
-                  class="oh-btn oh-btn--light-bkg w-100"
-                  title='{% trans "To employee " %}'
-                  style="padding:0.8rem 1rem"
-                >
-                  <ion-icon name="person-circle-outline"></ion-icon></a>
+                <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Converted " %}' style="opacity: 30%; padding:0.8rem 1rem" disabled>
+                  <ion-icon name="person-circle-outline"></ion-icon></button>
               {% endif %}
               {% if cand.email in emp_list %}
                 <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">

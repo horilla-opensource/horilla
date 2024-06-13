@@ -373,6 +373,7 @@ def recruitment_pipeline(request):
     recruitments = paginator_qry_recruitment_limited(
         filter_obj.qs, request.GET.get("page")
     )
+
     now = timezone.now()
 
     return render(
@@ -1247,7 +1248,7 @@ def candidate_view(request):
     filter_obj = CandidateFilter(request.GET, queryset=candidates)
     export_fields = CandidateExportForm()
     export_obj = CandidateFilter(request.GET, queryset=candidates)
-    if candidate_all.exists():
+    if Candidate.objects.exists():
         template = "candidate/candidate_view.html"
     else:
         template = "candidate/candidate_empty.html"
@@ -1532,39 +1533,36 @@ def candidate_conversion(request, cand_id, **kwargs):
     Args:
         cand_id : candidate instance id
     """
-    try:
-        candidate_obj = Candidate.objects.filter(id=cand_id)
-        for detail in candidate_obj:
-            can_name = detail.name
-            can_mob = detail.mobile
-            can_job = detail.job_position_id
-            can_dep = can_job.department_id
-            can_mail = detail.email
-            can_gender = detail.gender
-            can_company = detail.recruitment_id.company_id
-        user_exists = User.objects.filter(username=can_mail).exists()
-        if user_exists:
-            messages.error(request, _("Employee instance already exist"))
-        elif not Employee.objects.filter(employee_user_id__username=can_mail).exists():
-            new_employee = Employee.objects.create(
-                employee_first_name=can_name,
-                email=can_mail,
-                phone=can_mob,
-                gender=can_gender,
-            )
-            work_info, created = EmployeeWorkInformation.objects.get_or_create(
-                employee_id=new_employee
-            )
-            work_info.job_position_id = can_job
-            work_info.department_id = can_dep
-            work_info.company_id = can_company
-            work_info.save()
-            messages.success(request, _("Employee instance created successfully"))
-        else:
-            messages.info(request, "A employee with this mail already exists")
-
-    except (Candidate.DoesNotExist, OverflowError):
-        messages.error(request, _("Candidate Does not exists.."))
+    candidate_obj = Candidate.objects.filter(id=cand_id).first()
+    can_name = candidate_obj.name
+    can_mob = candidate_obj.mobile
+    can_job = candidate_obj.job_position_id
+    can_dep = can_job.department_id
+    can_mail = candidate_obj.email
+    can_gender = candidate_obj.gender
+    can_company = candidate_obj.recruitment_id.company_id
+    user_exists = User.objects.filter(username=can_mail).exists()
+    if user_exists:
+        messages.error(request, _("Employee instance already exist"))
+    elif not Employee.objects.filter(employee_user_id__username=can_mail).exists():
+        new_employee = Employee.objects.create(
+            employee_first_name=can_name,
+            email=can_mail,
+            phone=can_mob,
+            gender=can_gender,
+        )
+        candidate_obj.converted_employee_id = new_employee
+        candidate_obj.save()
+        work_info, created = EmployeeWorkInformation.objects.get_or_create(
+            employee_id=new_employee
+        )
+        work_info.job_position_id = can_job
+        work_info.department_id = can_dep
+        work_info.company_id = can_company
+        work_info.save()
+        messages.success(request, _("Employee instance created successfully"))
+    else:
+        messages.info(request, "A employee with this mail already exists")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -2576,7 +2574,6 @@ def extract_text_with_font_info(pdf):
             try:
                 for line in block["lines"]:
                     for span in line["spans"]:
-                        # print(span["text"])
                         text_info.append(
                             {
                                 "text": span["text"],

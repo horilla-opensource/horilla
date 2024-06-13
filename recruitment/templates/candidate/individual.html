@@ -73,8 +73,7 @@
     <div class="d-flex flex-row-reverse">
       {% if perms.recruitment.change_candidate %}
         <div class='d-flex float-end ms-4'>
-          {% if candidate.email in emp_list %}
-          {% else %}
+          {% if not candidate.email in emp_list and not candidate.start_onboard %}
             <form action="{% url 'candidate-conversion' candidate.id %}" style="color: inherit;text-decoration: none;"
               onsubmit="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
               >

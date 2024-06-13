@@ -654,9 +654,6 @@ def email_send(request):
         ).values_list("body", flat=True)
     )
 
-    if not candidates:
-        messages.info(request, "Please choose candidates")
-
     attachments_other = []
     for file in other_attachments:
         attachments_other.append((file.name, file.read(), file.content_type))
@@ -664,6 +661,11 @@ def email_send(request):
     for cand_id in candidates:
         attachments = list(set(attachments_other) | set([]))
         candidate = Candidate.objects.get(id=cand_id)
+        if candidate.converted_employee_id:
+            messages.info(
+                request, _(f"{candidate} has already been converted to employee.")
+            )
+            continue
         for html in bodys:
             # due to not having solid template we first need to pass the context
             template_bdy = template.Template(html)
