@@ -2000,7 +2000,10 @@ def employee_delete(request, obj_id):
                 if contract.contract_status != "active":
                     contract.delete()
         user = employee.employee_user_id
-        user.delete()
+        try:
+            user.delete()
+        except AttributeError:
+            employee.delete()
         messages.success(request, _("Employee deleted"))
 
     except Employee.DoesNotExist:
