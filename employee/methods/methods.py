@@ -48,7 +48,10 @@ def get_ordered_badge_ids():
     # Sort each subgroup alphabetically and numerically
     for group in grouped_data:
         group.sort()
-        group.sort(key=lambda x: int("".join(filter(str.isdigit, x))))
+        filtered_group = [
+            item for item in group if any(char.isdigit() for char in item)
+        ]
+        filtered_group.sort(key=lambda x: int("".join(filter(str.isdigit, x))))
 
     # Create a list containing the first and last items from each group
     result = [[group[0], group[-1]] for group in grouped_data]
