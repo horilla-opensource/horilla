@@ -127,3 +127,7 @@ def skill_zone_accessibility(
     return is_stagemanager(request.user) or request.user.has_perm(
         "recruitment.view_skillzone"
     )
+
+
+def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return is_stagemanager(request.user) or "recruitment" in user_perms
