@@ -80,7 +80,9 @@ class HorillaCompanyManager(models.Manager):
                 try:
                     model_name = queryset.model._meta.model_name
                     if model_name == "employee":
-                        queryset = queryset.filter(is_active=True)
+                        request = getattr(_thread_locals, "request", None)
+                        if not getattr(request, "is_filtering", None):
+                            queryset = queryset.filter(is_active=True)
                     else:
                         for field in queryset.model._meta.fields:
                             if isinstance(field, models.ForeignKey):
