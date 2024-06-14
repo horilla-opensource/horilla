@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static basefilters %}
 <div
     class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
 >
@@ -62,7 +62,7 @@
                         >
                         {% trans "Pending Hour" %}
                         </div>
-                        <div class="oh-sticky-table__th oh-sticky-table__right"></div>
+                        <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
                     </div>
                 </div>
                 {% for attendance in validate_attendances %}
@@ -111,7 +111,7 @@
                             </div>
                             <div class="oh-sticky-table__td">{{attendance.hours_pending}}</div>
                             <div class="oh-sticky-table__td oh-sticky-table__right">
-                                {% if perms.attendance.change_attendance %}
+                                {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
                                     <a
                                     href='{% url "validate-this-attendance" attendance.id %}'
                                     hx-target="#updateAttendanceBody"

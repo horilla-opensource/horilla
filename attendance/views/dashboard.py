@@ -105,9 +105,20 @@ def dashboard(request):
         employee_id__is_active=True,
         attendance_overtime_approve=False,
     )
+    ot_attendances = filtersubordinates(
+        request=request,
+        perm="attendance.change_overtime",
+        queryset=ot_attendances,
+    )
 
     validate_attendances = Attendance.objects.filter(
         attendance_validated=False, employee_id__is_active=True
+    )
+
+    validate_attendances = filtersubordinates(
+        request=request,
+        perm="attendance.change_overtime",
+        queryset=validate_attendances,
     )
 
     return render(
@@ -138,6 +149,12 @@ def validated_attendances_table(request):
     validate_attendances = Attendance.objects.filter(
         attendance_validated=False, employee_id__is_active=True
     )
+    validate_attendances = filtersubordinates(
+        request=request,
+        perm="attendance.change_attendance",
+        queryset=validate_attendances,
+    )
+
     context = {
         "validate_attendances": paginator_qry(validate_attendances, page_number),
         "pd": previous_data,
