@@ -49,7 +49,7 @@
             <ul class="oh-dropdown__items">
                 {% for action in actions %}
                 <li class="oh-dropdown__item">
-                  <a {{action.attrs|format:instance|safe}}>{{action.action}}</a>
+                  <a {{action.attrs|format:instance|safe}}>{{instance|getattribute:action.action|default:action.action}}</a>
                 </li>
                 {% endfor %}
             </ul>

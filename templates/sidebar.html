@@ -468,9 +468,10 @@ function initializeSummernote(candId,searchWords,) {
     $(this).closest("form").submit();
   }
 
-  function filterFormSubmit(formId) {
+  function filterCountUpdate(formId) {
     var formData = $("#" + formId).serialize();
     var count = 0;
+    console.log(formData)
     formData.split("&").forEach(function (field) {
       var parts = field.split("=");
       var value = parts[1];

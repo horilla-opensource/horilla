@@ -100,7 +100,7 @@
             <button
              type="submit"
              id="applyFilter"
-             onclick="filterFormSubmit('filterForm')"
+             onclick="filterCountUpdate('filterForm')"
              class="oh-btn oh-btn--secondary oh-btn--small w-100">
               {% trans "Filter" %}
             </button>
@@ -214,7 +214,7 @@
 </section>
 <div id="filterTagContainerSectionNav"  class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"></div>
 <script>
-  filterFormSubmit("filterForm")
+  filterCountUpdate("filterForm")
   $(document).ready(function () {
     $("#filterForm select").select2("destroy")
     $("#filterForm select").parent().find("span").remove()
