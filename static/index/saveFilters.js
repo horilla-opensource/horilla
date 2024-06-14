@@ -56,4 +56,8 @@ $(document).ready(function () {
     };
     localStorage.setItem("savedFilters", JSON.stringify(filterDetails));
   });
+
+  var url = window.location.href;
+  var newUrl = url.split('?')[0];
+  history.replaceState(null, '', newUrl);
 });

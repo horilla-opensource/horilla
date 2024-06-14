@@ -140,6 +140,19 @@ def breadcrumbs(request):
     try:
         user_breadcrumb = user_breadcrumbs[user_id]
 
+        qs = request.META.get("QUERY_STRING", "")
+        pairs = qs.split("&")
+        filtered_pairs = [pair for pair in pairs if "=" in pair and pair.split("=")[1]]
+        filtered_query_string = "&".join(filtered_pairs)
+        emp_query_string = None
+
+        for item in user_breadcrumb:
+            if item["name"] in ["employee-view", "candidate-view"]:
+                items = item["url"].split("?", 1)
+                if len(items) > 1:
+                    emp_query_string = items[1]
+                    break
+
         parts = _split_path(request)
         path = base_url
 
@@ -216,13 +229,27 @@ def breadcrumbs(request):
                         pass
 
             key = "HTTP_HX_REQUEST"
+            names = [d["name"] for d in user_breadcrumb]
             if (
                 new_dict not in user_breadcrumb
-                and new_dict["name"] not in remove_urls
+                and new_dict["name"] not in remove_urls + names
                 and key not in request.META.keys()
                 and not new_dict["name"].isdigit()
             ):
+                if new_dict["name"] in ["employee-view", "candidate-view"]:
+                    new_dict["url"] = f'{new_dict["url"]}?{emp_query_string}'
+
                 user_breadcrumb.append(new_dict)
+
+        try:
+            prev_url = user_breadcrumb[-1]
+            prev_url["url"] = prev_url["url"].split("?")[0]
+            if filtered_query_string:
+                prev_url["url"] = f'{prev_url["url"]}?{filtered_query_string}'
+            else:
+                prev_url["url"] = f'{prev_url["url"]}'
+        except:
+            pass
 
         user_breadcrumbs[user_id] = user_breadcrumb
 
