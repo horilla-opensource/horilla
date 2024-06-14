@@ -18,6 +18,7 @@ SUBMENUS = [
     {
         "menu": trans("Dashboard"),
         "redirect": reverse("attendance-dashboard"),
+        "accessibility": "attendance.sidebar.dashboard_accessibility",
     },
     {
         "menu": trans("Attendances"),
@@ -65,6 +66,12 @@ def hour_account_accessibility(request, submenu, user_perms, *args, **kwargs):
 
 
 def work_record_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("attendance.view_attendance") or is_reportingmanager(
+        request.user
+    )
+
+
+def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("attendance.view_attendance") or is_reportingmanager(
         request.user
     )
