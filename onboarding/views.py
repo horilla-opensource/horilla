@@ -810,6 +810,8 @@ def onboarding_view(request):
             )
     recruitments = recruitments.filter(is_active=True).distinct()
     status = request.GET.get("closed")
+    if not status:
+        recruitments = recruitments.filter(closed=False)
 
     onboarding_stages = OnboardingStage.objects.all()
     choices = CandidateTask.choice
