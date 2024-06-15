@@ -1,0 +1,97 @@
+{% load static %}
+{% load i18n %}
+<div id="pending" >
+
+  <div class="oh-table" style="max-height: 425px; overflow-y: auto;" >
+    <table>
+      <thead>
+        <tr>
+          <th style="font-weight:bold; font-size:15px; color:black;">{% trans "Employee" %}</th>
+          <th style="font-weight:bold; font-size:15px; color:black;">{% trans "Progress" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for employee_info in employees_with_pending %}
+        <tr>
+          <td>
+            <a href="{% url 'employee-view-update' employee_info.employee.employee_id.id %}">
+              {{ employee_info.employee.employee_id }}</a>
+          </td>
+          <td style="position: relative;">
+            <a href="{% url 'employee-view-update' employee_info.employee.employee_id.id %}">
+              <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: {{ employee_info.completed_field_count }}%;"></div>
+              </div>
+              <div class="progress-text">{{ employee_info.completed_field_count }}% {% trans "Completed" %}</div>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination controls -->
+  <div class=" float-end mt-3 mb-3">
+    {% if employees_with_pending.has_previous %}
+    <span
+        class="oh-card-dashboard__title"
+        style="cursor: pointer"
+        hx-target="#pending"
+        hx-get='{% url "emp-workinfo-complete" %}?page={{ employees_with_pending.previous_page_number }}'
+        hx-trigger="click delay:0.3s"
+        title="Previous Page"
+    >
+        <ion-icon
+            name="caret-back-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="caret back outline"
+        ></ion-icon>
+    </span>
+    {% endif %}
+
+    {% if employees_with_pending.has_next %}
+    <span
+        class="oh-card-dashboard__title float-end ms-2"
+        style="cursor: pointer"
+        hx-target="#pending"
+        hx-get='{% url "emp-workinfo-complete" %}?page={{ employees_with_pending.next_page_number }}'
+        hx-trigger="click delay:0.3s"
+        title="Next Page"
+    >
+        <ion-icon
+            name="caret-forward-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="caret back outline"
+        ></ion-icon>
+    </span>
+    {% endif %}
+    {% if employees_with_pending.has_next or employees_with_pending.has_previous %}
+    <span class="oh-pagination__page float-end fw-bold">
+        {% trans "Page" %} {{ employees_with_pending.number }} {%trans "of" %}
+        {{employees_with_pending.paginator.num_pages }}
+    </span>
+    {% endif %}
+  </div>
+
+</div>
+<script>
+    $(document).ready(function() {
+        // Add an input event listener to the search bar
+        $("#employeeSearch").on("input", function() {
+            // Get the value entered in the search bar
+            var searchValue = $(this).val().toLowerCase();
+  
+            // Iterate through each table row and hide/show based on the search value
+            $("table tbody tr").each(function() {
+                var employeeId = $(this).find("td:first-child").text().toLowerCase();
+
+                // Toggle the visibility of the row based on whether it contains the search value
+                $(this).toggle(employeeId.includes(searchValue));
+            });
+        });
+    });
+</script>
+  

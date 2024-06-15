@@ -838,55 +838,28 @@
         hx-trigger="load">
         </div>
       </div>
+      <div
+        class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
 
-        {% if request.user.employee_get.employee_user_id.is_superuser %}
-        <div
-          class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
-        >
-
-          <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-            <span class="oh-card-dashboard__title">{% trans "Employee Work Information" %}</span>
-          </div>
-
-          <!-- Search bar -->
-          <div class="oh-search-bar mb-3">
-            <input type="text" id="employeeSearch" placeholder="Search Employee">
-          </div>
-
-          <div class="oh-table" style="max-height: 425px; overflow-y: auto;">
-            <table>
-                <thead>
-                  <tr>
-                    <th style="font-weight:bold; font-size:15px; color:black;">{% trans "Employee" %}</th>
-                    <!-- Add more table headers as needed -->
-                    <th style="font-weight:bold; font-size:15px; color:black;">{% trans "Progress" %}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for employee_info in employees_with_pending %}
-                    <tr>
-                      <td>
-                        <a href="{% url 'employee-view-update' employee_info.employee.employee_id.id %}">
-                          {{ employee_info.employee.employee_id }}</a>
-                      </td>
-                      <td style="position: relative;">
-                        <a href="{% url 'employee-view-update' employee_info.employee.employee_id.id %}">
-                          <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: {{ employee_info.completed_field_count }}%;"></div>
-                          </div>
-                          <div class="progress-text">{{ employee_info.completed_field_count }}% {% trans "Completed" %}</div>
-                        </a>
-                      </td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-            </table>
-          </div>
-
+        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+          <span class="oh-card-dashboard__title">{% trans "Employee Work Information" %}</span>
         </div>
-        {% endif %}
+
+        <!-- Search bar -->
+        <div class="oh-search-bar mb-3">
+          <input type="text" hx-get="{% url 'emp-workinfo-complete' %}" hx-target="#pending"
+                 hx-trigger="keyup  changed dealy:0.3s" id="employeeSearch" name="search" placeholder="Search Employee">
+        </div>
+
+          {% if request.user.employee_get.employee_user_id.is_superuser or request.user|is_reportingmanager %}
+            <div class="oh-card-dashboard__body"
+                  hx-get="{% url 'emp-workinfo-complete' %}"
+                  hx-trigger="load">
+                  </div>
+          {% endif %}
 
       </div>
+    </div>
     </div>
   </div>
   <div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
@@ -1062,21 +1035,6 @@
     $(anchorElement).parent().find('#newTab').hide();
   }
 
-  $(document).ready(function() {
-      // Add an input event listener to the search bar
-      $("#employeeSearch").on("input", function() {
-          // Get the value entered in the search bar
-          var searchValue = $(this).val().toLowerCase();
-
-          // Iterate through each table row and hide/show based on the search value
-          $("table tbody tr").each(function() {
-              var employeeId = $(this).find("td:first-child").text().toLowerCase();
-
-              // Toggle the visibility of the row based on whether it contains the search value
-              $(this).toggle(employeeId.includes(searchValue));
-          });
-      });
-  });
 </script>
 <script src="{% static 'build/js/dashboardDriver.js' %}"></script>
 
