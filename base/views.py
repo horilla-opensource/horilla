@@ -359,56 +359,56 @@ def home(request):
     first_day_of_week = today - timedelta(days=today_weekday)
     last_day_of_week = first_day_of_week + timedelta(days=6)
 
-    employees_with_pending = []
+    # employees_with_pending = []
     employee_charts = DashboardEmployeeCharts.objects.get_or_create(
         employee=request.user.employee_get
     )[0]
 
     # List of field names to focus on
-    fields_to_focus = [
-        "job_position_id",
-        "department_id",
-        "work_type_id",
-        "employee_type_id",
-        "job_role_id",
-        "reporting_manager_id",
-        "company_id",
-        "location",
-        "email",
-        "mobile",
-        "shift_id",
-        "date_joining",
-        "contract_end_date",
-        "basic_salary",
-        "salary_hour",
-    ]
+    # fields_to_focus = [
+    #     "job_position_id",
+    #     "department_id",
+    #     "work_type_id",
+    #     "employee_type_id",
+    #     "job_role_id",
+    #     "reporting_manager_id",
+    #     "company_id",
+    #     "location",
+    #     "email",
+    #     "mobile",
+    #     "shift_id",
+    #     "date_joining",
+    #     "contract_end_date",
+    #     "basic_salary",
+    #     "salary_hour",
+    # ]
 
-    for employee in EmployeeWorkInformation.objects.filter(employee_id__is_active=True):
-        completed_field_count = sum(
-            1
-            for field_name in fields_to_focus
-            if getattr(employee, field_name) is not None
-        )
-        if completed_field_count < 14:
-            # Create a dictionary with employee information and pending field count
-            percent = f"{((completed_field_count / 14) * 100):.1f}"
-            employee_info = {
-                "employee": employee,
-                "completed_field_count": percent,
-            }
-            employees_with_pending.append(employee_info)
-        else:
-            pass
+    # for employee in EmployeeWorkInformation.objects.filter(employee_id__is_active=True):
+    #     completed_field_count = sum(
+    #         1
+    #         for field_name in fields_to_focus
+    #         if getattr(employee, field_name) is not None
+    #     )
+    #     if completed_field_count < 14:
+    #         # Create a dictionary with employee information and pending field count
+    #         percent = f"{((completed_field_count / 14) * 100):.1f}"
+    #         employee_info = {
+    #             "employee": employee,
+    #             "completed_field_count": percent,
+    #         }
+    #         employees_with_pending.append(employee_info)
+    #     else:
+    #         pass
 
-    emps = Employee.objects.filter(employee_work_info__isnull=True)
-    for emp in emps:
-        employees_with_pending.insert(
-            0,
-            {
-                "employee": Workinfo(employee=emp),
-                "completed_field_count": "0",
-            },
-        )
+    # emps = Employee.objects.filter(employee_work_info__isnull=True)
+    # for emp in emps:
+    #     employees_with_pending.insert(
+    #         0,
+    #         {
+    #             "employee": Workinfo(employee=emp),
+    #             "completed_field_count": "0",
+    #         },
+    #     )
     announcements = Announcement.objects.all()
     general_expire = AnnouncementExpire.objects.all().first()
     general_expire_date = 30 if not general_expire else general_expire.days
@@ -440,13 +440,82 @@ def home(request):
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
-        "employees_with_pending": employees_with_pending,
+        # "employees_with_pending": employees_with_pending,
         "announcement": announcement_list,
         "general_expire_date": general_expire_date,
         "charts": employee_charts.charts,
     }
 
     return render(request, "index.html", context)
+
+
+@login_required
+def employee_workinfo_complete(request):
+
+    employees_with_pending = []
+
+    # List of field names to focus on
+    fields_to_focus = [
+        "job_position_id",
+        "department_id",
+        "work_type_id",
+        "employee_type_id",
+        "job_role_id",
+        "reporting_manager_id",
+        "company_id",
+        "location",
+        "email",
+        "mobile",
+        "shift_id",
+        "date_joining",
+        "contract_end_date",
+        "basic_salary",
+        "salary_hour",
+    ]
+    search = request.GET.get("search", "")
+    print("----------------")
+    print(search)
+    print("----------------")
+    for employee in EmployeeWorkInformation.objects.filter(
+        employee_id__employee_first_name__icontains=search, employee_id__is_active=True
+    ):
+        completed_field_count = sum(
+            1
+            for field_name in fields_to_focus
+            if getattr(employee, field_name) is not None
+        )
+        if completed_field_count < 14:
+            # Create a dictionary with employee information and pending field count
+            percent = f"{((completed_field_count / 14) * 100):.1f}"
+            employee_info = {
+                "employee": employee,
+                "completed_field_count": percent,
+            }
+            employees_with_pending.append(employee_info)
+        else:
+            pass
+
+    emps = Employee.objects.filter(employee_work_info__isnull=True)
+    for emp in emps:
+        employees_with_pending.insert(
+            0,
+            {
+                "employee": Workinfo(employee=emp),
+                "completed_field_count": "0",
+            },
+        )
+
+    employees_with_pending.sort(key=lambda x: float(x["completed_field_count"]))
+
+    employees_with_pending = paginator_qry(
+        employees_with_pending, request.GET.get("page")
+    )
+
+    return render(
+        request,
+        "work_info_complete.html",
+        {"employees_with_pending": employees_with_pending},
+    )
 
 
 @login_required

@@ -938,4 +938,9 @@ urlpatterns = [
         views.activate_biometric_attendance,
         name="activate-biometric-attendance",
     ),
+    path(
+        "emp-workinfo-complete",
+        views.employee_workinfo_complete,
+        name="emp-workinfo-complete",
+    ),
 ]
