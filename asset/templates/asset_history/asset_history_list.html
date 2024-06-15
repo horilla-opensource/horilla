@@ -22,7 +22,7 @@
 						<div data-cell-index="1" data-cell-title="{% trans "Asset" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-asset_id__asset_name' %}arrow-up {% elif request.sort_option.order == 'asset_id__asset_name' %}arrow-down {% else %}arrow-up-down {% endif %}"  hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=asset_id__asset_name" hx-target="#historyTable">{% trans "Asset" %}</div>
 						<div class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_to_employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'assigned_to_employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=assigned_to_employee_id__employee_first_name" hx-target="#historyTable">{% trans "Employee" %}</div>
 						<div data-cell-index="2" data-cell-title="{% trans "Assigned Date" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_date' %}arrow-up {% elif request.sort_option.order == 'assigned_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=assigned_date" hx-target="#historyTable">{% trans "Assigned Date" %}</div>
-						<div data-cell-index="3" data-cell-title="{% trans "Hours to Validate" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-return_date' %}arrow-up {% elif request.sort_option.order == 'return_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=return_date" hx-target="#historyTable">{% trans "Returned Date" %}</div>
+						<div data-cell-index="3" data-cell-title="{% trans "Returned date" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-return_date' %}arrow-up {% elif request.sort_option.order == 'return_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=return_date" hx-target="#historyTable">{% trans "Returned Date" %}</div>
 						<div class="oh-sticky-table__th">{% trans "Return Status" %}</div>
 					</div>
 				</div>
@@ -44,8 +44,8 @@
 							<div class="oh-sticky-table__td">
 								{{asset_assignement.assigned_to_employee_id}}
 							</div>
-							<div class="oh-sticky-table__td" data-cell-index="2">{{asset_assignement.assigned_date}} </div>
-							<div class="oh-sticky-table__td" data-cell-index="3">{{asset_assignement.return_date}}</div>
+							<div class="oh-sticky-table__td dateformat_changer" data-cell-index="2">{{asset_assignement.assigned_date}} </div>
+							<div class="oh-sticky-table__td dateformat_changer" data-cell-index="3">{{asset_assignement.return_date}}</div>
 							<div class="oh-sticky-table__td">{{asset_assignement.return_status}}</div>
 						</div>
 					{% endfor %}
