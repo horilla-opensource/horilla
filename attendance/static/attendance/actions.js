@@ -1721,10 +1721,12 @@ $(".requested-attendance-row").change(function () {
 // Iterate through all elements with the 'dateformat_changer' class and format their content
 
 $(".dateformat_changer").each(function (index, element) {
-  var currentDate = $(element).text();
+  var currentDate = $(element).text().trim();
   // Checking currentDate value is a date or None value.
   if (/[\.,\-\/]/.test(currentDate)) {
     var formattedDate = dateFormatter.getFormattedDate(currentDate);
+  } else if (currentDate) {
+    var formattedDate = currentDate;
   } else {
     var formattedDate = "None";
   }
@@ -1741,11 +1743,13 @@ var formattedDate = dateFormatter.getFormattedDate(currentDate);
 
 // Iterate through all elements with the 'timeformat_changer' class and format their content
 $(".timeformat_changer").each(function (index, element) {
-  var currentTime = $(element).text();
+  var currentTime = $(element).text().trim();
 
   // Checking currentTime value is a valid time.
   if (/[\.:]/.test(currentTime)) {
     var formattedTime = timeFormatter.getFormattedTime(currentTime);
+  } else if (currentTime) {
+    var formattedTime = currentTime;
   } else {
     var formattedTime = "None";
   }
