@@ -116,7 +116,7 @@ class HorillaFilterSet(FilterSet):
         """
         Search in generic method for filter field
         """
-        search = value.lower()
+        search = self.data.get("search", "")
         search_field = self.data.get("search_field")
         if not search_field:
             search_field = self.filters[name].field_name
