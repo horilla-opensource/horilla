@@ -2,6 +2,7 @@
 horilla/cbv_methods.py
 """
 
+import types
 import uuid
 from urllib.parse import urlencode
 from venv import logger
@@ -236,6 +237,14 @@ def sortby(
         )
     reverse = cache[request.session.session_key].reverse
     none_ids = []
+    none_queryset = []
+    model = queryset.model
+    model_attr = getattribute(model, sort_key)
+    is_method = isinstance(model_attr, types.FunctionType)
+    if not is_method:
+        none_queryset = queryset.filter(**{f"{sort_key}__isnull": True})
+        none_ids = list(none_queryset.values_list("id", flat=True))
+        queryset = queryset.exclude(id__in=none_ids)
 
     def _sortby(object):
         result = getattribute(object, attr=sort_key)
@@ -258,10 +267,14 @@ def sortby(
     except TypeError:
         none_queryset = list(queryset.filter(id__in=none_ids))
         queryset = sorted(queryset.exclude(id__in=none_ids), key=_sortby, reverse=order)
-        queryset = queryset + none_queryset
 
     cache[request.session.session_key].reverse = order
-    order = "asc" if not order else "desc"
+    if order:
+        order = "asc"
+        queryset = list(queryset) + list(none_queryset)
+    else:
+        queryset = list(none_queryset) + list(queryset)
+        order = "desc"
     setattr(request, "sort_order", order)
     setattr(request, "sort_key", sort_key)
     return queryset

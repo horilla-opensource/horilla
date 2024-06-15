@@ -10,7 +10,11 @@ import types
 
 from django import template
 from django.conf import settings
+from django.contrib.auth.context_processors import PermWrapper
 from django.template.defaultfilters import register
+
+from base.thread_local_middleware import _thread_locals
+from horilla.config import import_method
 
 register = template.Library()
 
@@ -60,3 +64,16 @@ def format(string: str, instance: object):
     formatted_string = string.format(**format_context)
 
     return formatted_string
+
+
+@register.filter("accessibility")
+def accessibility(method: str, instance=None):
+    if method:
+        request = getattr(_thread_locals, "request")
+        method = import_method(method)
+        return method(
+            request,
+            instance,
+            PermWrapper(request.user),
+        )
+    return True

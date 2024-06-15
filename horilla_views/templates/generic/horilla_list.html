@@ -218,13 +218,15 @@
               {% if not option_method %}
               <div class="oh-btn-group">
                 {% for option in options %}
-                <a
-                  href="#"
-                  title="{{option.option|safe}}"
-                  {{option.attrs|format:instance|safe}}
-                >
-                  <ion-icon name="{{option.icon}}"></ion-icon>
-                </a>
+                  {% if option.accessibility|accessibility:instance %}
+                  <a
+                    href="#"
+                    title="{{option.option|safe}}"
+                    {{option.attrs|format:instance|safe}}
+                  >
+                    <ion-icon name="{{option.icon}}"></ion-icon>
+                  </a>
+                  {% endif %}
                 {% endfor %}
               </div>
               {% else %} {{instance|getattribute:option_method|safe}} {% endif %}
@@ -234,13 +236,15 @@
               {% if not action_method %}
               <div class="oh-btn-group">
                 {% for action in actions %}
-                <a
-                  href="#"
-                  title="{{action.action|safe}}"
-                  {{action.attrs|format:instance|safe}}
-                >
-                  <ion-icon name="{{action.icon}}"></ion-icon>
-                </a>
+                  {% if action.accessibility|accessibility:instance %}
+                  <a
+                    href="#"
+                    title="{{action.action|safe}}"
+                    {{action.attrs|format:instance|safe}}
+                  >
+                    <ion-icon name="{{action.icon}}"></ion-icon>
+                  </a>
+                  {% endif %}
                 {% endfor %}
               </div>
               {% else %} {{instance|getattribute:action_method|safe}} {% endif %}

@@ -48,9 +48,11 @@
           >
             <ul class="oh-dropdown__items">
                 {% for action in actions %}
+                {% if action.accessibility|accessibility:instance %}
                 <li class="oh-dropdown__item">
                   <a {{action.attrs|format:instance|safe}}>{{instance|getattribute:action.action|default:action.action}}</a>
                 </li>
+                {% endif %}
                 {% endfor %}
             </ul>
           </div>

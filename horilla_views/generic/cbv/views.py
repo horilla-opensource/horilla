@@ -52,6 +52,23 @@ class HorillaListView(ListView):
     bulk_select_option: bool = True
 
     action_method: str = """"""
+    """
+    eg:
+    def accessibility(
+        request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+    )->bool:
+        # True if accessible to the action else False
+        return True
+
+    actions = [
+        {
+            "action": "Edit",
+            "accessibility": "path_to_your.accessibility", # path to your accessibility method
+            "attrs": '''{instance_attributes_called_like_this}''',
+        },
+        etc..
+    ]
+    """
     actions: list = []
 
     option_method: str = ""
@@ -392,7 +409,23 @@ class HorillaCardView(ListView):
     search_url: str = ""
 
     details: dict = {}
+    """
+    eg:
+    def accessibility(
+        request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+    )->bool:
+        # True if accessible to the action else False
+        return True
 
+    actions = [
+        {
+            "action": "Edit",
+            "accessibility": "path_to_your.accessibility", # path to your accessibility method
+            "attrs": '''{instance_attributes_called_like_this}''',
+        },
+        etc..
+    ]
+    """
     actions: list = []
 
     card_attrs: str = """"""
