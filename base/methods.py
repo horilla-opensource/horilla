@@ -560,7 +560,8 @@ def export_data(request, model, form_class, filter_class, file_name):
                     for format_name, format_string in date_formats.items():
                         if format_name == date_format:
                             value = start_date.strftime(format_string)
-
+                if isinstance(value, datetime):
+                    value = str(value)
                 data_export[verbose_name].append(value)
 
     data_frame = pd.DataFrame(data=data_export)
