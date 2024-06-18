@@ -116,10 +116,12 @@ class HorillaListView(ListView):
             query_dict = self.request.GET
             if "filter_applied" in query_dict.keys():
                 update_saved_filter_cache(self.request, saved_filters)
-            elif saved_filters.get(self.request.session.session_key):
-                query_dict = saved_filters[self.request.session.session_key][
-                    "query_dict"
-                ]
+            elif saved_filters.get(
+                str(self.request.session.session_key) + self.request.path
+            ):
+                query_dict = saved_filters[
+                    str(self.request.session.session_key) + self.request.path
+                ]["query_dict"]
 
             self._saved_filters = query_dict
             queryset = self.filter_class(query_dict, queryset).qs
