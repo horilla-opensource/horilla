@@ -10,7 +10,7 @@
         reloadSelectedCount($('#count_{{view_id|safe}}'));
         "
         style="cursor: pointer;">
-        {% trans "Select All" %} {{queryset.paginator.count}}
+        {% trans "Select All" %} ({{queryset.paginator.count}})
       </div>
       <div
       id="unselect_{{view_id}}"
