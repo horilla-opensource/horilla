@@ -1,11 +1,5 @@
 from django.contrib import admin
 
-from horilla_views.models import (
-    ActiveGroup,
-    ActiveTab,
-    ParentModel,
-    ToggleColumn,
-    childModel,
-)
+from horilla_views.models import ActiveGroup, ActiveTab, ToggleColumn
 
-admin.site.register([ToggleColumn, ParentModel, childModel, ActiveTab, ActiveGroup])
+admin.site.register([ToggleColumn, ActiveTab, ActiveGroup])
