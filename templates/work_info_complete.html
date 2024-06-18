@@ -83,7 +83,7 @@
         $("#employeeSearch").on("input", function() {
             // Get the value entered in the search bar
             var searchValue = $(this).val().toLowerCase();
-  
+
             // Iterate through each table row and hide/show based on the search value
             $("table tbody tr").each(function() {
                 var employeeId = $(this).find("td:first-child").text().toLowerCase();
@@ -94,4 +94,4 @@
         });
     });
 </script>
-  
+
