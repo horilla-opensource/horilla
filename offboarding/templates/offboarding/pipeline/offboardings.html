@@ -78,7 +78,7 @@
         {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding.offboarding %}
           <li class="oh-tabs__tab" onclick="localStorage.setItem('activeTabOffboarding',$(this).attr('data-target'));" data-target="#Offboarding{{ offboarding.offboarding.id }}">
             {{ offboarding.offboarding.title }}
-            <div class="d-flex">
+            <div class="d-flex" onclick="event.stopPropagation()">
               <div class="oh-tabs__input-badge-container">
                 <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="recruitmentCandidateCount1" title="{{ offboarding.offboarding.stages|length }} Stages" onclick="event.stopPropagation()">
                   {{ offboarding.offboarding.stages|length }}
