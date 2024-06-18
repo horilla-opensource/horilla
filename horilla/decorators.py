@@ -104,9 +104,9 @@ def duplicate_permission(function):
 
         app_label = kwargs["model"]._meta.app_label
         model_name = kwargs["model"]._meta.model_name
-        obj_id = kwargs["obj_id"]
-        object_instance = kwargs["model"].objects.filter(pk=obj_id).first()
         try:
+            obj_id = kwargs["obj_id"]
+            object_instance = kwargs["model"].objects.filter(pk=obj_id).first()
             if object_instance.employee_id == employee:
                 return function(request, *args, **kwargs)
         except:
