@@ -638,6 +638,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
             "current_work_type",
             "next_work_type",
             "is_active",
+            "additional_data",
         ]
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
@@ -758,6 +759,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
                 employee.employee_work_info.work_type_id
             )
             rotating_work_type_assign.next_work_type = rotating_work_type.work_type2
+            rotating_work_type_assign.additional_data["next_shift_index"] = 1
             based_on = self.cleaned_data["based_on"]
             start_date = self.cleaned_data["start_date"]
             if based_on == "weekly":
@@ -795,6 +797,7 @@ class RotatingWorkTypeAssignUpdateForm(forms.ModelForm):
             "current_work_type",
             "next_work_type",
             "is_active",
+            "additional_data",
         ]
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
@@ -1158,7 +1161,13 @@ class RotatingShiftAssignForm(forms.ModelForm):
 
         model = RotatingShiftAssign
         fields = "__all__"
-        exclude = ["next_change_date", "current_shift", "next_shift", "is_active"]
+        exclude = [
+            "next_change_date",
+            "current_shift",
+            "next_shift",
+            "is_active",
+            "additional_data",
+        ]
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
         }
@@ -1277,7 +1286,8 @@ class RotatingShiftAssignForm(forms.ModelForm):
             ]
             rotating_shift_assign.next_change_date = self.cleaned_data["start_date"]
             rotating_shift_assign.current_shift = employee.employee_work_info.shift_id
-            rotating_shift_assign.next_shift = rotating_shift.shift2
+            rotating_shift_assign.next_shift = rotating_shift.shift1
+            rotating_shift_assign.additional_data["next_shift_index"] = 1
             based_on = self.cleaned_data["based_on"]
             start_date = self.cleaned_data["start_date"]
             if based_on == "weekly":
@@ -1309,7 +1319,13 @@ class RotatingShiftAssignUpdateForm(ModelForm):
 
         model = RotatingShiftAssign
         fields = "__all__"
-        exclude = ["next_change_date", "current_shift", "next_shift", "is_active"]
+        exclude = [
+            "next_change_date",
+            "current_shift",
+            "next_shift",
+            "is_active",
+            "additional_data",
+        ]
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
         }

@@ -366,7 +366,11 @@ class RotatingWorkTypeAssign(HorillaModel):
         choices=DAY_DATE,
         verbose_name=_("Rotate Every Month"),
     )
-
+    additional_data = models.JSONField(
+        default=dict,
+        blank=True,
+        null=True,
+    )
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -700,6 +704,11 @@ class RotatingShiftAssign(HorillaModel):
         default="1",
         choices=DAY_DATE,
         verbose_name=_("Rotate Every Month"),
+    )
+    additional_data = models.JSONField(
+        default=dict,
+        blank=True,
+        null=True,
     )
     history = HorillaAuditLog(
         related_name="history_set",

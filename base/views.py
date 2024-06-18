@@ -473,9 +473,6 @@ def employee_workinfo_complete(request):
         "salary_hour",
     ]
     search = request.GET.get("search", "")
-    print("----------------")
-    print(search)
-    print("----------------")
     for employee in EmployeeWorkInformation.objects.filter(
         employee_id__employee_first_name__icontains=search, employee_id__is_active=True
     ):
