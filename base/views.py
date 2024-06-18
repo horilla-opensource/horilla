@@ -920,6 +920,45 @@ def object_duplicate(request, obj_id, **kwargs):
 
 
 @login_required
+@hx_request_required
+@duplicate_permission()
+def add_remove_dynamic_fields(request, **kwargs):
+    if request.method == "POST":
+        model = kwargs["model"]
+        form_class = kwargs["form_class"]
+        template = kwargs["template"]
+        empty_label = kwargs["empty_label"]
+        field_name_pre = kwargs["field_name_pre"]
+        hx_target = request.META.get("HTTP_HX_TARGET")
+        if hx_target:
+            field_counts = int(hx_target.split("_")[-1]) + 1
+            next_hx_target = f"{hx_target.rsplit('_', 1)[0]}_{field_counts}"
+            form = form_class()
+            field_name = f"{field_name_pre}{field_counts}"
+            form.fields[field_name] = forms.ModelChoiceField(
+                queryset=model.objects.all(),
+                widget=forms.Select(
+                    attrs={
+                        "class": "oh-select oh-select-2 mb-3",
+                        "name": field_name,
+                        "id": f"id_{field_name}",
+                    }
+                ),
+                required=False,
+                empty_label=empty_label,
+            )
+            context = {
+                "field_counts": field_counts,
+                "field_html": form[field_name].as_widget(),
+                "current_hx_target": hx_target,
+                "next_hx_target": next_hx_target,
+            }
+            field_html = render_to_string(template, context)
+            return HttpResponse(field_html)
+    return HttpResponse()
+
+
+@login_required
 @permission_required("base.view_dynamicemailconfiguration")
 def mail_server_conf(request):
     mail_servers = DynamicEmailConfiguration.objects.all()
@@ -2023,7 +2062,8 @@ def rotating_shift_create(request):
             form = RotatingShiftForm()
             messages.success(request, _("Rotating shift created."))
             return HttpResponse("<script>window.location.reload();</script>")
-
+    else:
+        form = RotatingShiftForm()
     return render(
         request,
         "base/rotating_shift/htmx/rotating_shift_form.html",

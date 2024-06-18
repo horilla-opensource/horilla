@@ -512,7 +512,95 @@ class RotatingWorkTypeForm(ModelForm):
         exclude = ["employee_id", "is_active"]
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
+            "additional_data": forms.HiddenInput(),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        work_type_counts = 0
+
+        def create_work_type_field(work_type_key, required, initial=None):
+            self.fields[work_type_key] = forms.ModelChoiceField(
+                queryset=WorkType.objects.all(),
+                widget=forms.Select(
+                    attrs={
+                        "class": "oh-select oh-select-2 mb-3",
+                        "name": work_type_key,
+                        "id": f"id_{work_type_key}",
+                    }
+                ),
+                required=required,
+                empty_label=_("---Choose Work Type---"),
+                initial=initial,
+            )
+
+        for key in self.data.keys():
+            if key.startswith("work_type"):
+                work_type_counts += 1
+                create_work_type_field(key, work_type_counts <= 2)
+
+        additional_data = self.initial.get("additional_data")
+        additional_work_types = (
+            additional_data.get("additional_work_types") if additional_data else None
+        )
+        if additional_work_types:
+            work_type_counts = 3
+            for work_type_id in additional_work_types:
+                create_work_type_field(
+                    f"work_type{work_type_counts}",
+                    work_type_counts <= 2,
+                    initial=work_type_id,
+                )
+                work_type_counts += 1
+
+        self.work_type_counts = work_type_counts
+
+    def as_p(self, *args, **kwargs):
+        context = {"form": self}
+        return render_to_string(
+            "base/rotating_work_type/htmx/rotating_work_type_as_p.html", context
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        additional_work_types = []
+        model_fields = list(self.instance.__dict__.keys())
+
+        for key, value in self.data.items():
+            if (
+                f"{key}_id" not in model_fields
+                and key.startswith("work_type")
+                and value
+            ):
+                additional_work_types.append(value)
+
+        if additional_work_types:
+            if (
+                "additional_data" not in cleaned_data
+                or cleaned_data["additional_data"] is None
+            ):
+                cleaned_data["additional_data"] = {}
+            cleaned_data["additional_data"][
+                "additional_work_types"
+            ] = additional_work_types
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.cleaned_data.get("additional_data"):
+            if instance.additional_data is None:
+                instance.additional_data = {}
+            instance.additional_data["additional_work_types"] = self.cleaned_data[
+                "additional_data"
+            ].get("additional_work_types")
+        else:
+            instance.additional_data = None
+
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
 
 
 class RotatingWorkTypeAssignForm(ModelForm):
@@ -956,6 +1044,88 @@ class RotatingShiftForm(ModelForm):
         model = RotatingShift
         fields = "__all__"
         exclude = ["employee_id", "is_active"]
+        widgets = {"additional_data": forms.HiddenInput()}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        shift_counts = 0
+
+        def create_shift_field(shift_key, required, initial=None):
+            self.fields[shift_key] = forms.ModelChoiceField(
+                queryset=EmployeeShift.objects.all(),
+                widget=forms.Select(
+                    attrs={
+                        "class": "oh-select oh-select-2 mb-3",
+                        "name": shift_key,
+                        "id": f"id_{shift_key}",
+                    }
+                ),
+                required=required,
+                empty_label=_("---Choose Shift---"),
+                initial=initial,
+            )
+
+        for key in self.data.keys():
+            if key.startswith("shift") and self.data[key]:
+                shift_counts += 1
+                create_shift_field(key, shift_counts <= 2)
+
+        additional_data = self.initial.get("additional_data")
+        additional_shifts = (
+            additional_data.get("additional_shifts") if additional_data else None
+        )
+        if additional_shifts:
+            shift_counts = 3
+            for shift_id in additional_shifts:
+                if shift_id:
+                    create_shift_field(
+                        f"shift{shift_counts}", shift_counts <= 2, initial=shift_id
+                    )
+                    shift_counts += 1
+
+        self.shift_counts = shift_counts
+
+    def as_p(self, *args, **kwargs):
+        context = {"form": self}
+        return render_to_string(
+            "base/rotating_shift/htmx/rotating_shift_as_p.html", context
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        additional_shifts = []
+        model_fields = list(self.instance.__dict__.keys())
+
+        for key, value in self.data.items():
+            if f"{key}_id" not in model_fields and key.startswith("shift") and value:
+                additional_shifts.append(value)
+
+        if additional_shifts:
+            if (
+                "additional_data" not in cleaned_data
+                or cleaned_data["additional_data"] is None
+            ):
+                cleaned_data["additional_data"] = {}
+            cleaned_data["additional_data"]["additional_shifts"] = additional_shifts
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.cleaned_data.get("additional_data"):
+            if instance.additional_data is None:
+                instance.additional_data = {}
+            instance.additional_data["additional_shifts"] = self.cleaned_data[
+                "additional_data"
+            ].get("additional_shifts")
+        else:
+            instance.additional_data = None
+
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
 
 
 class RotatingShiftAssignForm(forms.ModelForm):

@@ -1,0 +1,27 @@
+{% load i18n %}
+<div
+  class="oh-input__group pt-3"
+  id="{{ current_hx_target }}"
+  style="display: flex"
+>
+  {{field_html}}
+  <a
+    hx-get="{% url 'add-remove-work-type-fields' %}"
+    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg"
+    hx-target="#{{ current_hx_target }}"
+    hx-swap="outerHTML"
+    id="delete-link"
+  >
+    <ion-icon name="trash-outline"></ion-icon>
+  </a>
+</div>
+<div id="{{ next_hx_target }}" style="text-align: end">
+  <a
+    hx-target="#{{ next_hx_target }}"
+    hx-swap="outerHTML"
+    hx-post="{% url 'add-remove-work-type-fields' %}"
+    role="button"
+    style="color: green"
+    >{% trans "Add more work types.." %}</a
+  >
+</div>

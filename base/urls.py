@@ -1,10 +1,12 @@
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import PasswordResetConfirmView
 from django.urls import path
+from django.utils.translation import gettext_lazy as _
 
 from base import announcement, request_and_approve, views
 from base.forms import (
     RotatingShiftAssignForm,
+    RotatingShiftForm,
     RotatingWorkTypeAssignForm,
     RotatingWorkTypeForm,
     ShiftRequestForm,
@@ -193,6 +195,18 @@ urlpatterns = [
         kwargs={"model": WorkType, "redirect": "/settings/work-type-view"},
     ),
     path(
+        "add-remove-work-type-fields",
+        views.add_remove_dynamic_fields,
+        name="add-remove-work-type-fields",
+        kwargs={
+            "model": WorkType,
+            "form_class": RotatingWorkTypeForm,
+            "template": "base/rotating_work_type/htmx/add_more_work_type_fields.html",
+            "empty_label": _("---Choose Work Type---"),
+            "field_name_pre": "work_type",
+        },
+    ),
+    path(
         "settings/rotating-work-type-create/",
         views.rotating_work_type_create,
         name="rotating-work-type-create",
@@ -351,6 +365,18 @@ urlpatterns = [
         "settings/rotating-shift-create/",
         views.rotating_shift_create,
         name="rotating-shift-create",
+    ),
+    path(
+        "add-remove-shift-fields",
+        views.add_remove_dynamic_fields,
+        name="add-remove-shift-fields",
+        kwargs={
+            "model": EmployeeShift,
+            "form_class": RotatingShiftForm,
+            "template": "base/rotating_shift/htmx/add_more_shift_fields.html",
+            "empty_label": _("---Choose Shift---"),
+            "field_name_pre": "shift",
+        },
     ),
     path(
         "settings/rotating-shift-view/",

@@ -231,6 +231,11 @@ class RotatingWorkType(HorillaModel):
         through="RotatingWorkTypeAssign",
         verbose_name=_("Employee"),
     )
+    additional_data = models.JSONField(
+        default=dict,
+        blank=True,
+        null=True,
+    )
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
@@ -246,7 +251,45 @@ class RotatingWorkType(HorillaModel):
 
     def clean(self):
         if self.work_type1 == self.work_type2:
-            raise ValidationError(_("Choose different work type"))
+            raise ValidationError(_("Select different work type continuously"))
+
+        additional_work_types = (
+            self.additional_data.get("additional_work_types", [])
+            if self.additional_data
+            else []
+        )
+
+        if (
+            additional_work_types
+            and str(self.work_type2.id) == additional_work_types[0]
+        ):
+            raise ValidationError(_("Select different work type continuously"))
+
+        if (
+            additional_work_types
+            and str(self.work_type1.id) == additional_work_types[-1]
+        ):
+            raise ValidationError(_("Select different work type continuously"))
+
+        for i in range(len(additional_work_types) - 1):
+            if additional_work_types[i] and additional_work_types[i + 1]:
+                if additional_work_types[i] == additional_work_types[i + 1]:
+                    raise ValidationError(_("Select different work type continuously"))
+
+    def additional_work_types(self):
+        rotating_work_type = RotatingWorkType.objects.get(id=self.pk)
+        additional_data = rotating_work_type.additional_data
+        if additional_data:
+            additional_work_type_ids = additional_data.get("additional_work_types")
+            if additional_work_type_ids:
+                additional_work_types = WorkType.objects.filter(
+                    id__in=additional_work_type_ids
+                )
+            else:
+                additional_work_types = None
+        else:
+            additional_work_types = None
+        return additional_work_types
 
 
 DAY_DATE = [(str(i), str(i)) for i in range(1, 32)]
@@ -548,6 +591,11 @@ class RotatingShift(HorillaModel):
         on_delete=models.PROTECT,
         verbose_name=_("Shift 2"),
     )
+    additional_data = models.JSONField(
+        default=dict,
+        blank=True,
+        null=True,
+    )
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
@@ -563,7 +611,39 @@ class RotatingShift(HorillaModel):
 
     def clean(self):
         if self.shift1 == self.shift2:
-            raise ValidationError(_("Choose different shifts"))
+            raise ValidationError(_("Select different shift continuously"))
+
+        additional_shifts = (
+            self.additional_data.get("additional_shifts", [])
+            if self.additional_data
+            else []
+        )
+
+        if additional_shifts and str(self.shift2.id) == additional_shifts[0]:
+            raise ValidationError(_("Select different shift continuously"))
+
+        if additional_shifts and str(self.shift1.id) == additional_shifts[-1]:
+            raise ValidationError(_("Select different shift continuously"))
+
+        for i in range(len(additional_shifts) - 1):
+            if additional_shifts[i] and additional_shifts[i + 1]:
+                if additional_shifts[i] == additional_shifts[i + 1]:
+                    raise ValidationError(_("Select different shift continuously"))
+
+    def additional_shifts(self):
+        rotating_shift = RotatingShift.objects.get(id=self.pk)
+        additional_data = rotating_shift.additional_data
+        if additional_data:
+            additional_shift_ids = additional_data.get("additional_shifts")
+            if additional_shift_ids:
+                additional_shifts = EmployeeShift.objects.filter(
+                    id__in=additional_shift_ids
+                )
+            else:
+                additional_shifts = None
+        else:
+            additional_shifts = None
+        return additional_shifts
 
 
 class RotatingShiftAssign(HorillaModel):
