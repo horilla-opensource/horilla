@@ -55,9 +55,14 @@
 
                     <form>
                         <div class="oh-input-group w-100 d-flex justify-content-center">
+
                             <div class="oh-profile-section__edit-photo me-4 mb-3" data-toggle="oh-modal-toggle"
                                 data-target="#uploadPhotoModal">
-                                <img src="{{candidate.get_avatar}}" class="oh-profile-section__avatar" alt="{{candidate.name}}"/>
+                                {% if profile %}
+                                    <img src="{{profile.url}}" class="oh-profile-section__avatar" alt="{{candidate.name}}"/>
+                                {% else %}
+                                    <img src="{{candidate.get_avatar}}" class="oh-profile-section__avatar" alt="{{candidate.name}}"/>
+                                {% endif %}
                             </div>
                         </div>
                         <h2 class="oh-onboarding-card__greeting text-center">Welcome Aboard</h2>

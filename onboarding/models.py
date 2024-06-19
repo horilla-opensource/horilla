@@ -187,6 +187,7 @@ class OnboardingPortal(HorillaModel):
     token = models.CharField(max_length=200)
     used = models.BooleanField(default=False)
     count = models.IntegerField(default=0)
+    profile = models.ImageField(upload_to="employee/profile", null=True, blank=True)
     objects = HorillaCompanyManager("candidate_id__recruitment_id__company_id")
 
     def __str__(self):
