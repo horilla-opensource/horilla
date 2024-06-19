@@ -370,7 +370,7 @@ class EmployeeCreationForm(ModelForm):
     zip = forms.CharField(required=True, label=_("Zip"))
     qualification = forms.CharField(required=True, label=_("Qualification"))
     experience = forms.IntegerField(required=True, label=_("Experience"))
-    children = forms.CharField(required=True, label=_("Childrens"))
+    children = forms.IntegerField(required=True, label=_("Childrens"))
     emergency_contact = forms.CharField(
         required=True, label=_("Emergency Contact Number")
     )
@@ -398,6 +398,19 @@ class EmployeeCreationForm(ModelForm):
         widgets = {
             "dob": DateInput(attrs={"type": "date"}),
         }
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        if cleaned_data["experience"] and cleaned_data["experience"] < 0:
+            raise ValidationError(
+                {"experience": _("Experience should be a postive integier")}
+            )
+        if cleaned_data["children"] and cleaned_data["children"] < 0:
+            raise ValidationError(
+                {"children": _("No of children should be a postive integier")}
+            )
+
+        return super().clean()
 
 
 class BankDetailsCreationForm(ModelForm):
