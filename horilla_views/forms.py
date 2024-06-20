@@ -6,7 +6,7 @@ from django import forms
 from django.template.loader import render_to_string
 from django.utils.safestring import SafeText
 
-from base.thread_local_middleware import _thread_locals
+from horilla.horilla_middlewares import _thread_locals
 
 
 class ToggleColumnForm(forms.Form):

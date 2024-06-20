@@ -8,7 +8,7 @@ import datetime
 
 from django import forms
 
-from base import thread_local_middleware
+from horilla import horilla_middlewares
 
 ALL_INSTANCES = {}
 
@@ -56,7 +56,7 @@ class HorillaMultiSelectWidget(forms.Widget):
             ("id_" + name) if self.attrs.get("id") is None else self.attrs.get("id")
         )
         context[self.filter_instance_contex_name] = self.filter_class
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         ALL_INSTANCES[str(request.user.id)] = self
 
         return context

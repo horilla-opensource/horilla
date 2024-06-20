@@ -11,7 +11,7 @@ from django.db import models
 from django_filters.filterset import FILTER_FOR_DBFIELD_DEFAULTS
 
 from base.methods import reload_queryset
-from base.thread_local_middleware import _thread_locals
+from horilla.horilla_middlewares import _thread_locals
 from horilla_views.templatetags.generic_template_filters import getattribute
 
 FILTER_FOR_DBFIELD_DEFAULTS[models.ForeignKey][

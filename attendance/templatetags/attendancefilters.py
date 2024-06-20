@@ -17,7 +17,7 @@ from django.template.defaultfilters import register
 from attendance.models import AttendanceValidationCondition
 from attendance.views.views import strtime_seconds
 from base.models import EmployeeShiftSchedule
-from base.thread_local_middleware import _thread_locals
+from horilla.horilla_middlewares import _thread_locals
 
 register = template.Library()
 

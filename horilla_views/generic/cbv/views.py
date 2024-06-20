@@ -13,10 +13,10 @@ from django.shortcuts import render
 from django.urls import resolve, reverse
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
-from attendance.methods.group_by import group_by_queryset
 from base.methods import closest_numbers, get_key_instances
-from base.thread_local_middleware import _thread_locals
 from horilla.filters import FilterSet
+from horilla.group_by import group_by_queryset
+from horilla.horilla_middlewares import _thread_locals
 from horilla_views import models
 from horilla_views.cbv_methods import (
     get_short_uuid,

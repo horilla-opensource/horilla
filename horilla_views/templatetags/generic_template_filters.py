@@ -13,8 +13,8 @@ from django.conf import settings
 from django.contrib.auth.context_processors import PermWrapper
 from django.template.defaultfilters import register
 
-from base.thread_local_middleware import _thread_locals
 from horilla.config import import_method
+from horilla.horilla_middlewares import _thread_locals
 
 register = template.Library()
 

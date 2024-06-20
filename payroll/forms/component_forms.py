@@ -12,11 +12,11 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 import payroll.models.models
-from base import thread_local_middleware
 from base.forms import Form, ModelForm
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import BonusPoint, Employee
+from horilla import horilla_middlewares
 from horilla.decorators import logger
 from horilla_widgets.forms import HorillaForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
@@ -572,7 +572,7 @@ class ReimbursementForm(ModelForm):
         if not self.instance.pk:
             self.initial["allowance_on"] = str(datetime.date.today())
 
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         if request:
             employee = (
                 request.user.employee_get
@@ -656,7 +656,7 @@ class ReimbursementForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         if self.instance.pk:
             employee_id = self.instance.employee_id
             type = self.instance.type

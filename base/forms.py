@@ -28,7 +28,6 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _trans
 
-from base import thread_local_middleware
 from base.methods import reload_queryset
 from base.models import (
     Announcement,
@@ -59,10 +58,11 @@ from base.models import (
     WorkTypeRequest,
     WorkTypeRequestComment,
 )
-from base.thread_local_middleware import _thread_locals
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee, EmployeeTag
+from horilla import horilla_middlewares
+from horilla.horilla_middlewares import _thread_locals
 from horilla_audit.models import AuditTag
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
@@ -178,7 +178,7 @@ class ModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(widget, (forms.DateInput)):

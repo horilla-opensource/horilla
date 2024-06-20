@@ -9,8 +9,8 @@ import importlib
 from django.core.mail.backends.smtp import EmailBackend
 
 from base.models import DynamicEmailConfiguration, EmailLog
-from base.thread_local_middleware import _thread_locals
 from horilla import settings
+from horilla.horilla_middlewares import _thread_locals
 
 
 class DefaultHorillaMailBackend(EmailBackend):

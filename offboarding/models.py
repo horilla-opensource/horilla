@@ -7,11 +7,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from base import thread_local_middleware
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
-from base.thread_local_middleware import _thread_locals
 from employee.models import Employee
+from horilla import horilla_middlewares
+from horilla.horilla_middlewares import _thread_locals
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from notifications.signals import notify
@@ -323,7 +323,7 @@ class OffboardingNote(HorillaModel):
         ordering = ["-created_at"]
 
     def save(self, *args, **kwargs):
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         if request:
             updated_by = request.user.employee_get
             self.note_by = updated_by

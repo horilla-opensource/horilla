@@ -33,7 +33,6 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
 
-from base import thread_local_middleware
 from base.methods import reload_queryset
 from employee.models import (
     Actiontype,
@@ -47,6 +46,7 @@ from employee.models import (
     Policy,
     PolicyMultipleFile,
 )
+from horilla import horilla_middlewares
 from horilla.decorators import logger
 from horilla_audit.models import AccountBlockUnblock
 
@@ -58,7 +58,7 @@ class ModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         reload_queryset(self.fields)
         for _, field in self.fields.items():
             widget = field.widget

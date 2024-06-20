@@ -15,8 +15,8 @@ from datetime import date
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from base import thread_local_middleware
 from base.methods import reload_queryset
+from horilla import horilla_middlewares
 from payroll.models.models import FilingStatus
 from payroll.models.tax_models import TaxBracket
 
@@ -26,7 +26,7 @@ class ModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             input_widget = field.widget

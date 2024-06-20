@@ -18,7 +18,6 @@ from django.utils.translation import gettext_lazy as _
 
 from asset.models import Asset
 from attendance.models import Attendance, strtime_seconds, validate_time_format
-from base import thread_local_middleware
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import (
     Company,
@@ -29,6 +28,7 @@ from base.models import (
     WorkType,
 )
 from employee.models import BonusPoint, Employee, EmployeeWorkInformation
+from horilla import horilla_middlewares
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.models import LeaveRequest, LeaveType
@@ -1625,7 +1625,7 @@ class Reimbursement(HorillaModel):
         ordering = ["-id"]
 
     def save(self, *args, **kwargs) -> None:
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         amount_for_leave = (
             EncashmentGeneralSettings.objects.first().leave_amount
             if EncashmentGeneralSettings.objects.first()
@@ -1665,7 +1665,7 @@ class Reimbursement(HorillaModel):
                         bonus_points.save()
                     else:
                         request = getattr(
-                            thread_local_middleware._thread_locals, "request", None
+                            horilla_middlewares._thread_locals, "request", None
                         )
                         if request:
                             messages.info(
@@ -1691,7 +1691,7 @@ class Reimbursement(HorillaModel):
                             assigned_leave.save()
                         else:
                             request = getattr(
-                                thread_local_middleware._thread_locals, "request", None
+                                horilla_middlewares._thread_locals, "request", None
                             )
                             if request:
                                 messages.info(
@@ -1734,7 +1734,7 @@ class Reimbursement(HorillaModel):
                     self.allowance_id.delete()
 
     def delete(self, *args, **kwargs):
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         if self.status == "approved":
             message = messages.info(
                 request,

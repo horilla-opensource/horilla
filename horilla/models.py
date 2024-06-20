@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext as _
 
-from base.thread_local_middleware import _thread_locals
+from horilla.horilla_middlewares import _thread_locals
 
 
 class HorillaModel(models.Model):

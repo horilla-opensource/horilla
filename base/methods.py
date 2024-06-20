@@ -698,7 +698,7 @@ def filter_conditional_leave_request(request):
 
 
 def get_pagination():
-    from base.thread_local_middleware import _thread_locals
+    from horilla.horilla_middlewares import _thread_locals
 
     request = getattr(_thread_locals, "request", None)
     user = request.user

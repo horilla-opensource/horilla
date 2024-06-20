@@ -27,8 +27,8 @@ from attendance.views.views import (
 )
 from base.context_processors import timerunner_enabled
 from base.models import EmployeeShiftDay
-from base.thread_local_middleware import _thread_locals
 from horilla.decorators import hx_request_required, login_required
+from horilla.horilla_middlewares import _thread_locals
 
 
 def late_come_create(attendance):

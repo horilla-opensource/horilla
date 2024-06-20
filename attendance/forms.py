@@ -50,12 +50,12 @@ from attendance.models import (
     strtime_seconds,
     validate_time_format,
 )
-from base import thread_local_middleware
 from base.forms import MultipleFileField
 from base.methods import reload_queryset
 from base.models import Company, EmployeeShift
 from employee.filters import EmployeeFilter
 from employee.models import Employee
+from horilla import horilla_middlewares
 from horilla.decorators import logger
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
@@ -72,7 +72,7 @@ class ModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
 
         for field_name, field in self.fields.items():
             widget = field.widget
@@ -991,7 +991,7 @@ class BulkAttendanceRequestForm(ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         employee = request.user.employee_get
         super().__init__(*args, **kwargs)
         if employee and hasattr(employee, "employee_work_info"):

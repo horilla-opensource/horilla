@@ -15,7 +15,6 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from base import thread_local_middleware
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import (
     Company,
@@ -25,6 +24,7 @@ from base.models import (
     clear_messages,
 )
 from employee.models import Employee, EmployeeWorkInformation
+from horilla import horilla_middlewares
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
@@ -673,7 +673,7 @@ class LeaveRequest(HorillaModel):
             emp_dep = self.employee_id.employee_work_info.department_id
             emp_job = self.employee_id.employee_work_info.job_position_id
 
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         if not request.user.is_superuser:
             if self.start_date < date.today():
                 raise ValidationError(_("Requests cannot be made for past dates."))
@@ -770,7 +770,7 @@ class LeaveRequest(HorillaModel):
         return result
 
     def is_approved(self):
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         if request:
             employee = Employee.objects.filter(employee_user_id=request.user).first()
             condition_approval = LeaveRequestConditionApproval.objects.filter(
@@ -782,7 +782,7 @@ class LeaveRequest(HorillaModel):
                 return True
 
     def delete(self, *args, **kwargs):
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
 
         if self.status == "requested":
             """

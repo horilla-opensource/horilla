@@ -16,12 +16,12 @@ from django.forms.widgets import TextInput
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
-from base import thread_local_middleware
 from base.methods import filtersubordinatesemployeemodel, reload_queryset
 from base.models import Department
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee
+from horilla import horilla_middlewares
 from horilla_widgets.forms import HorillaForm, HorillaModelForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
@@ -66,7 +66,7 @@ class ModelForm(forms.ModelForm):
         based on the current request, particularly for 'employee_id' and 'company_id' fields.
         """
         super().__init__(*args, **kwargs)
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
@@ -115,7 +115,7 @@ class ModelForm(forms.ModelForm):
 class ConditionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
@@ -1287,7 +1287,7 @@ class CompensatoryLeaveForm(ModelForm):
 
         super(CompensatoryLeaveForm, self).__init__(*args, **kwargs)
 
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         instance_id = None
         if self.instance:
             instance_id = self.instance.id

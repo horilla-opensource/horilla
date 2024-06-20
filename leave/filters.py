@@ -416,7 +416,7 @@ class UserLeaveRequestFilter(FilterSet):
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
-        from base.thread_local_middleware import _thread_locals
+        from horilla.horilla_middlewares import _thread_locals
 
         request = getattr(_thread_locals, "request", None)
         leave_requests = request.user.employee_get.leaverequest_set.all()

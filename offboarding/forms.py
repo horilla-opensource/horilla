@@ -11,9 +11,9 @@ from django import forms
 from django.contrib import messages
 from django.template.loader import render_to_string
 
-from base import thread_local_middleware
 from base.forms import ModelForm
 from employee.forms import MultipleFileField
+from horilla import horilla_middlewares
 from notifications.signals import notify
 from offboarding.models import (
     EmployeeTask,
@@ -264,7 +264,7 @@ class ResignationLetterForm(ModelForm):
                 self.instance.employee_id.get_full_name() + " Resignation Letter"
             )
 
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
 
         if request and not request.user.has_perm("offboarding.add_offboardingemployee"):
             exclude = exclude + [
@@ -277,7 +277,7 @@ class ResignationLetterForm(ModelForm):
             del self.fields[field]
 
     def save(self, commit: bool = ...) -> Any:
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         instance = self.instance
         if (
             not request.user.has_perm("offboarding.add_offboardingemployee")
