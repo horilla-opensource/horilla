@@ -31,7 +31,6 @@ from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
-from attendance.methods.group_by import group_by_queryset as general_group_by
 from base.backends import ConfiguredEmailBackend
 from base.methods import (
     closest_numbers,
@@ -49,6 +48,7 @@ from horilla.decorators import (
     login_required,
     permission_required,
 )
+from horilla.group_by import group_by_queryset as general_group_by
 from notifications.signals import notify
 from onboarding.decorators import (
     all_manager_can_enter,
@@ -1050,6 +1050,7 @@ def employee_creation(request, token):
             work_info.employee_id = employee_personal_info
             work_info.job_position_id = job_position
             work_info.date_joining = candidate.joining_date
+            work_info.email = candidate.email
             work_info.save()
             onboarding_portal.count = 3
             onboarding_portal.save()

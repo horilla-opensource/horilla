@@ -11,7 +11,6 @@ from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
 from haystack.query import SearchQuerySet
 
-from attendance.methods.group_by import group_by_queryset
 from base.forms import TagsForm
 from base.methods import filtersubordinates, get_key_instances, get_pagination, sortby
 from base.models import Department, JobPosition, Tags
@@ -47,6 +46,7 @@ from horilla.decorators import (
     owner_can_enter,
     permission_required,
 )
+from horilla.group_by import group_by_queryset
 from notifications.signals import notify
 
 # Create your views here.

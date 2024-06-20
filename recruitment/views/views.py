@@ -36,7 +36,6 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
-from attendance.methods.group_by import group_by_queryset
 from base.backends import ConfiguredEmailBackend
 from base.context_processors import check_candidate_self_tracking
 from base.methods import export_data, generate_pdf, get_key_instances
@@ -49,6 +48,7 @@ from horilla.decorators import (
     login_required,
     permission_required,
 )
+from horilla.group_by import group_by_queryset
 from notifications.signals import notify
 from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.filters import (

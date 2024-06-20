@@ -18,7 +18,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from attendance.methods.group_by import group_by_queryset
 from base.methods import (
     closest_numbers,
     export_data,
@@ -35,6 +34,7 @@ from horilla.decorators import (
     owner_can_enter,
     permission_required,
 )
+from horilla.group_by import group_by_queryset
 from notifications.signals import notify
 from payroll.context_processors import get_active_employees
 from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter

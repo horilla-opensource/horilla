@@ -10,7 +10,7 @@ from urllib.parse import parse_qs
 import pandas as pd
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import ProtectedError, Q
+from django.db.models import ProtectedError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -36,7 +36,6 @@ from asset.forms import (
     AssetReportForm,
     AssetRequestForm,
     AssetReturnForm,
-    DocumentForm,
 )
 from asset.models import (
     Asset,
@@ -47,7 +46,6 @@ from asset.models import (
     AssetRequest,
     ReturnImages,
 )
-from attendance.methods.group_by import group_by_queryset
 from base.methods import (
     closest_numbers,
     filtersubordinates,
@@ -64,28 +62,31 @@ from horilla.decorators import (
     manager_can_enter,
     permission_required,
 )
+from horilla.group_by import group_by_queryset
 from notifications.signals import notify
 
 
 def asset_del(request, asset):
+    """
+    Handle the deletion of an asset and provide message to the user.
+    """
     try:
         asset.delete()
         messages.success(request, _("Asset deleted successfully"))
     except ProtectedError:
         messages.error(request, _("You cannot delete this asset."))
-    return
 
 
 @login_required
 @hx_request_required
 @permission_required("asset.add_asset")
-def asset_creation(request, id):
+def asset_creation(request, asset_category_id):
     """
     View function for creating a new asset object.
     Args:
         request (HttpRequest): A Django HttpRequest object that contains information
         about the current request.
-        id (int): An integer representing the ID of the asset category for which
+        asset_category_id (int): An integer representing the ID of the asset category for which
         the asset is being created.
 
     Returns:
@@ -100,14 +101,14 @@ def asset_creation(request, id):
     Raises:
         None
     """
-    initial_data = {"asset_category_id": id}
+    initial_data = {"asset_category_id": asset_category_id}
     form = AssetForm(initial=request.GET.dict() if request.GET else initial_data)
     if request.method == "POST":
         form = AssetForm(request.POST, initial=initial_data)
         if form.is_valid():
             form.save()
             messages.success(request, _("Asset created successfully"))
-            return redirect("asset-creation", id=id)
+            return redirect("asset-creation", asset_category_id=asset_category_id)
     context = {"asset_creation_form": form}
     return render(request, "asset/asset_creation.html", context)
 
@@ -275,30 +276,19 @@ def asset_delete(request, asset_id):
         }
         if status == "In use":
             messages.info(request, _("Asset is in use"))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
         elif asset_allocation:
-            # if this asset is used in any allocation
-            messages.error(request, _("Asset is used in allocation!."))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
-        asset_del(request, asset)
-
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
-    else:
-        # if the asset is deleted under the category
-        if status == "In use":
-            # if asset under the category
-            messages.info(request, _("Asset is in use"))
-
-        elif asset_allocation:
-            # if this asset is used in any allocation
             messages.error(request, _("Asset is used in allocation!."))
         else:
             asset_del(request, asset)
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
-        return redirect(f"/asset/asset-list/{asset_cat_id}")
+    if status == "In use":
+        messages.info(request, _("Asset is in use"))
+    elif asset_allocation:
+        messages.error(request, _("Asset is used in allocation!."))
+    else:
+        asset_del(request, asset)
+    return redirect(f"/asset/asset-list/{asset_cat_id}")
 
 
 @login_required
@@ -582,13 +572,10 @@ def asset_request_approve(request, req_id):
                 verb_de="Ihr Antragsantrag wurde genehmigt!",
                 verb_es="¡Su solicitud de activo ha sido aprobada!",
                 verb_fr="Votre demande d'actif a été approuvée !",
-                redirect=f"/asset/asset-request-allocation-view?asset_request_date={asset_request.asset_request_date}&asset_request_status={asset_request.asset_request_status}",
+                redirect=f"/asset/asset-request-allocation-view?asset_request_date=\
+                    {asset_request.asset_request_date}&asset_request_status=\
+                    {asset_request.asset_request_status}",
                 icon="bag-check",
-            )
-            response = render(
-                request,
-                "request_allocation/asset_approve.html",
-                {"asset_allocation_form": form, "id": req_id},
             )
             return HttpResponse("<script>window.location.reload()</script>")
 
@@ -624,7 +611,9 @@ def asset_request_reject(request, req_id):
         verb_de="Ihr Antragsantrag wurde abgelehnt!",
         verb_es="¡Se ha rechazado su solicitud de activo!",
         verb_fr="Votre demande d'actif a été rejetée !",
-        redirect=f"/asset/asset-request-allocation-view?asset_request_date={asset_request.asset_request_date}&asset_request_status={asset_request.asset_request_status}",
+        redirect=f"/asset/asset-request-allocation-view?asset_request_date=\
+            {asset_request.asset_request_date}&asset_request_status=\
+                {asset_request.asset_request_status}",
         icon="bag-check",
     )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -668,6 +657,9 @@ def asset_allocate_creation(request):
 
 
 def asset_allocate_return_request(request, asset_id):
+    """
+    Handle the initiation of a return request for an allocated asset.
+    """
     asset_assign = AssetAssignment.objects.get(id=asset_id)
     asset_assign.return_request = True
     asset_assign.save()
@@ -752,6 +744,14 @@ def asset_allocate_return(request, asset_id):
 
 
 def filter_pagination_asset_request_allocation(request):
+    """
+    Filter and paginate asset request and allocation data based on search criteria and sort options.
+
+    This function handles the retrieval, filtering, and pagination of asset request and allocation
+    data.It processes GET parameters to search, sort, and filter asset requests and allocations,
+    and returns a context dictionary with the filtered data and associated forms for rendering in
+    a template.
+    """
     asset_request_allocation_search = request.GET.get("search")
     request_field = request.GET.get("request_field")
     allocation_field = request.GET.get("allocation_field")
@@ -827,17 +827,8 @@ def filter_pagination_asset_request_allocation(request):
     assets_ids = paginator_qry(assets, request.GET.get("page"))
     assets_id = json.dumps([instance.id for instance in assets_ids.object_list])
     asset_paginator = Paginator(assets_filtered.qs, get_pagination())
-    # asset_request_paginator = Paginator(asset_request_filtered, get_pagination())
-    # asset_allocation_paginator = Paginator(asset_allocation_filtered, get_pagination())
     page_number = request.GET.get("page")
     assets = asset_paginator.get_page(page_number)
-    # asset_requests = asset_request_paginator.get_page(page_number)
-    # asset_allocations = asset_allocation_paginator.get_page(page_number)
-    # requests_ids = json.dumps([instance.id for instance in asset_requests.object_list])
-    # allocations_ids = json.dumps(
-    #     [instance.id for instance in asset_allocations.object_list]
-    # )
-
     data_dict = parse_qs(previous_data)
     get_key_instances(AssetRequest, data_dict)
     get_key_instances(AssetAssignment, data_dict)
@@ -907,7 +898,7 @@ def asset_request_alloaction_view_search_filter(request):
 
 
 @login_required
-def own_asset_individual_view(request, id):
+def own_asset_individual_view(request, asset_id):
     """
     This function is responsible for view the individual own asset
 
@@ -915,7 +906,7 @@ def own_asset_individual_view(request, id):
         request : HTTP request object
         id (int): Id of the asset assignment
     """
-    asset_assignment = AssetAssignment.objects.get(id=id)
+    asset_assignment = AssetAssignment.objects.get(id=asset_id)
     asset = asset_assignment.asset_id
     context = {
         "asset": asset,
@@ -924,7 +915,7 @@ def own_asset_individual_view(request, id):
     requests_ids_json = request.GET.get("assets_ids")
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
-        previous_id, next_id = closest_numbers(requests_ids, id)
+        previous_id, next_id = closest_numbers(requests_ids, asset_id)
         context["assets_ids"] = requests_ids_json
         context["previous"] = previous_id
         context["next"] = next_id
@@ -932,15 +923,30 @@ def own_asset_individual_view(request, id):
 
 
 @login_required
-def asset_request_individual_view(request, id):
-    asset_request = AssetRequest.objects.get(id=id)
+def asset_request_individual_view(request, asset_request_id):
+    """
+    Display the details of an individual asset request.
+
+    This view retrieves the asset request with the given ID and renders it in the
+    'individual_request.html' template. If a JSON-encoded list of request IDs is
+    provided in the GET parameters, the view also determines the previous and next
+    request IDs for easy navigation.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about the request.
+        id (int): The ID of the asset request to be viewed.
+
+    Returns:
+        HttpResponse: The rendered 'individual_request.html' template with the context data.
+    """
+    asset_request = AssetRequest.objects.get(id=asset_request_id)
     context = {
         "asset_request": asset_request,
     }
     requests_ids_json = request.GET.get("requests_ids")
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
-        previous_id, next_id = closest_numbers(requests_ids, id)
+        previous_id, next_id = closest_numbers(requests_ids, asset_request_id)
         context["requests_ids"] = requests_ids_json
         context["previous"] = previous_id
         context["next"] = next_id
@@ -948,13 +954,28 @@ def asset_request_individual_view(request, id):
 
 
 @login_required
-def asset_allocation_individual_view(request, id):
-    asset_allocation = AssetAssignment.objects.get(id=id)
+def asset_allocation_individual_view(request, asset_allocation_id):
+    """
+    Display the details of an individual asset allocation.
+
+    This view retrieves the asset allocation with the given ID and renders it in the
+    'individual_allocation.html' template. If a JSON-encoded list of allocation IDs is
+    provided in the GET parameters, the view also determines the previous and next
+    allocation IDs for easy navigation.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about the request.
+        id (int): The ID of the asset allocation to be viewed.
+
+    Returns:
+        HttpResponse: The rendered 'individual_allocation.html' template with the context data.
+    """
+    asset_allocation = AssetAssignment.objects.get(id=asset_allocation_id)
     context = {"asset_allocation": asset_allocation}
     allocation_ids_json = request.GET.get("allocations_ids")
     if allocation_ids_json:
         allocation_ids = json.loads(allocation_ids_json)
-        previous_id, next_id = closest_numbers(allocation_ids, id)
+        previous_id, next_id = closest_numbers(allocation_ids, asset_allocation_id)
         context["allocations_ids"] = allocation_ids_json
         context["previous"] = previous_id
         context["next"] = next_id
@@ -962,6 +983,9 @@ def asset_allocation_individual_view(request, id):
 
 
 def convert_nan(val):
+    """
+    Convert NaN values to None.
+    """
     if pd.isna(val):
         return None
     return val
@@ -970,7 +994,20 @@ def convert_nan(val):
 @login_required
 @permission_required(perm="asset.add_asset")
 def asset_import(request):
-    """asset import view"""
+    """
+    Handle the import of asset data from an uploaded Excel file.
+
+    This view processes a POST request containing an Excel file, reads the data,
+    creates Asset objects from the data, and saves them to the database. If the
+    import is successful, a success message is displayed. Otherwise, appropriate
+    error messages are shown.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about the request.
+
+    Returns:
+        HttpResponseRedirect: A redirect to the asset category view after processing the import.
+    """
 
     try:
         if request.method == "POST":
@@ -1087,7 +1124,7 @@ def asset_export_excel(request):
                 # Get the value of the field for the current asset
                 value = getattr(asset, field)
 
-                if type(value) == date:
+                if isinstance(value, date):
                     user = request.user
                     emp = user.employee_get
 
@@ -1279,9 +1316,8 @@ def asset_batch_number_delete(request, batch_id):
         if assigned_batch_number:
             messages.error(request, _("Batch number in-use"))
             return redirect(f"/asset/asset-batch-number-search?{previous_data}")
-        else:
-            asset_batch_number.delete()
-            messages.success(request, _("Batch number deleted"))
+        asset_batch_number.delete()
+        messages.success(request, _("Batch number deleted"))
     except AssetLot.DoesNotExist:
         messages.error(request, _("Batch number not found"))
     except ProtectedError:
@@ -1303,13 +1339,11 @@ def asset_batch_number_search(request):
     Returns:
     - message of the return
     """
-    asset_batch_number_search = request.GET.get("search")
-    if asset_batch_number_search is None:
-        asset_batch_number_search = ""
+    search_query = request.GET.get("search")
+    if search_query is None:
+        search_query = ""
 
-    asset_batches = AssetLot.objects.all().filter(
-        lot_number__icontains=asset_batch_number_search
-    )
+    asset_batches = AssetLot.objects.all().filter(lot_number__icontains=search_query)
     previous_data = request.GET.urlencode()
     asset_batch_numbers_search_paginator = Paginator(asset_batches, 20)
     page_number = request.GET.get("page")
@@ -1338,7 +1372,7 @@ def asset_count_update(request):
             category = AssetCategory.objects.get(id=category_id)
             asset_count = category.asset_set.count()
             return HttpResponse(asset_count)
-        return HttpResponse("error")
+    return HttpResponse("error")
 
 
 @login_required

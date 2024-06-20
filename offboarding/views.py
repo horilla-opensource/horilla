@@ -8,7 +8,6 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
-from attendance.methods.group_by import group_by_queryset as group_by
 from base.context_processors import intial_notice_period
 from base.methods import closest_numbers, sortby
 from base.views import paginator_qry
@@ -19,6 +18,7 @@ from horilla.decorators import (
     manager_can_enter,
     permission_required,
 )
+from horilla.group_by import group_by_queryset as group_by
 from notifications.signals import notify
 from offboarding.decorators import (
     any_manager_can_enter,

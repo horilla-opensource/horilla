@@ -34,8 +34,6 @@ from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
-from asset.models import AssetAssignment, AssetRequest
-from attendance.methods.group_by import group_by_queryset
 from attendance.models import Attendance, AttendanceOverTime
 from base.forms import ModelForm
 from base.methods import (
@@ -94,6 +92,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.filters import HorillaPaginator
+from horilla.group_by import group_by_queryset
 from horilla_audit.models import AccountBlockUnblock
 from horilla_documents.forms import (
     DocumentForm,
@@ -187,7 +186,7 @@ def employee_profile(request):
     instances = LeaveRequest.objects.filter(employee_id=employee)
     leave_request_ids = json.dumps([instance.id for instance in instances])
     employee = Employee.objects.filter(employee_user_id=user).first()
-    assets = AssetAssignment.objects.filter(assigned_to_employee_id=employee)
+    assets = employee.allocated_employee.all()
     feedback_own = Feedback.objects.filter(employee_id=employee, archive=False)
     interviews = InterviewSchedule.objects.filter(employee_id=employee).order_by(
         "-interview_date"
@@ -352,10 +351,9 @@ def asset_tab(request, emp_id):
     Returns: return asset-tab template
 
     """
-    assets_requests = AssetRequest.objects.filter(
-        requested_employee_id=emp_id, asset_request_status="Requested"
-    )
-    assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
+    employee = Employee.objects.get(id=emp_id)
+    assets_requests = employee.requested_employee.all()
+    assets = employee.allocated_employee.all()
     assets_ids = json.dumps([instance.id for instance in assets])
     context = {
         "assets": assets,
@@ -378,7 +376,8 @@ def profile_asset_tab(request, emp_id):
     Returns: return profile-asset-tab template
 
     """
-    assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
+    employee = Employee.objects.get(id=emp_id)
+    assets = employee.allocated_employee.all()
     assets_ids = json.dumps([instance.id for instance in assets])
     context = {
         "assets": assets,
@@ -399,10 +398,9 @@ def asset_request_tab(request, emp_id):
     Returns: return asset-request-tab template
 
     """
-    assets_requests = AssetRequest.objects.filter(requested_employee_id=emp_id)
-    context = {
-        "asset_requests": assets_requests,
-    }
+    employee = Employee.objects.get(id=emp_id)
+    assets_requests = employee.requested_employee.all()
+    context = {"asset_requests": assets_requests, "emp_id": emp_id}
     return render(request, "tabs/asset-request-tab.html", context=context)
 
 

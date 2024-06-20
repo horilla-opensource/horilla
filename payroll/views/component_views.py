@@ -20,7 +20,6 @@ from django.utils.translation import gettext_lazy as _
 
 import payroll.models.models
 from asset.models import Asset
-from attendance.methods.group_by import group_by_queryset
 from base.backends import ConfiguredEmailBackend
 from base.methods import closest_numbers, filter_own_records, get_key_instances, sortby
 from base.models import Company
@@ -31,6 +30,7 @@ from horilla.decorators import (
     owner_can_enter,
     permission_required,
 )
+from horilla.group_by import group_by_queryset
 from leave.models import AvailableLeave
 from notifications.signals import notify
 from payroll.filters import (
@@ -973,7 +973,10 @@ def send_slip(request):
         email_backend, "dynamic_username_with_display_name", None
     ) or not len(email_backend.dynamic_username_with_display_name):
         messages.error(request, "Email server is not configured")
-        return redirect(f"view-payslip/{payslips[0].id}/" if view else filter_payslip)
+        if view:
+            return HttpResponse("<script>window.location.reload()</script>")
+        else:
+            return redirect(filter_payslip)
 
     result_dict = defaultdict(
         lambda: {"employee_id": None, "instances": [], "count": 0}
@@ -986,7 +989,10 @@ def send_slip(request):
     mail_thread = MailSendThread(request, result_dict=result_dict, ids=payslip_ids)
     mail_thread.start()
     messages.info(request, "Mail processing")
-    return redirect(f"view-payslip/{payslips[0].id}/" if view else filter_payslip)
+    if view:
+        return HttpResponse("<script>window.location.reload()</script>")
+    else:
+        return redirect(filter_payslip)
 
 
 @login_required

@@ -28,7 +28,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from attendance.forms import AttendanceValidationConditionForm
-from attendance.methods.group_by import group_by_queryset
 from attendance.models import AttendanceValidationCondition, GraceTime
 from base.backends import ConfiguredEmailBackend
 from base.decorators import (
@@ -137,6 +136,7 @@ from horilla.decorators import (
     manager_can_enter,
     permission_required,
 )
+from horilla.group_by import group_by_queryset
 from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
 from notifications.base.models import AbstractNotification

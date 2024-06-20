@@ -20,7 +20,6 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 
-from attendance.methods.group_by import group_by_queryset
 from base.methods import closest_numbers, get_key_instances, get_pagination, sortby
 from base.views import paginator_qry
 from employee.models import Employee, EmployeeWorkInformation
@@ -31,6 +30,7 @@ from horilla.decorators import (
     meeting_manager_can_enter,
     permission_required,
 )
+from horilla.group_by import group_by_queryset
 from notifications.signals import notify
 from pms.filters import (
     ActualKeyResultFilter,

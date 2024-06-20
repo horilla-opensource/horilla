@@ -11,10 +11,10 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.shortcuts import render
 
-from attendance.methods.group_by import group_by_queryset
-from attendance.methods.group_by import group_by_queryset as general_group_by
 from base.methods import get_key_instances, get_pagination, sortby
 from horilla.decorators import hx_request_required, login_required, permission_required
+from horilla.group_by import group_by_queryset
+from horilla.group_by import group_by_queryset as general_group_by
 from recruitment.filters import (
     CandidateFilter,
     RecruitmentFilter,
