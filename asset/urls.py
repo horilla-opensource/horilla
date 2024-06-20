@@ -12,7 +12,11 @@ from base.views import object_duplicate
 from . import views
 
 urlpatterns = [
-    path("asset-creation/<int:id>/", views.asset_creation, name="asset-creation"),
+    path(
+        "asset-creation/<int:asset_category_id>/",
+        views.asset_creation,
+        name="asset-creation",
+    ),
     path("asset-list/<int:cat_id>", views.asset_list, name="asset-list"),
     path("asset-update/<int:asset_id>/", views.asset_update, name="asset-update"),
     path(
@@ -75,17 +79,17 @@ urlpatterns = [
         name="asset-request-allocation-view",
     ),
     path(
-        "asset-request-individual-view/<int:id>",
+        "asset-request-individual-view/<int:asset_request_id>",
         views.asset_request_individual_view,
         name="asset-request-individual-view",
     ),
     path(
-        "own-asset-individual-view/<int:id>",
+        "own-asset-individual-view/<int:asset_id>",
         views.own_asset_individual_view,
         name="own-asset-individual-view",
     ),
     path(
-        "asset-allocation-individual-view/<int:id>",
+        "asset-allocation-individual-view/<int:asset_allocation_id>",
         views.asset_allocation_individual_view,
         name="asset-allocation-individual-view",
     ),

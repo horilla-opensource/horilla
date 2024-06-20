@@ -1,3 +1,5 @@
-from django.test import TestCase
+"""
+This module contains test cases for the assets application.
+"""
 
-# Create your tests here.
+from django.test import TestCase

@@ -55,7 +55,7 @@
                       <li class="oh-dropdown__item">
                         <a href="#" class="oh-dropdown__link asset-create" data-toggle="oh-modal-toggle"
                         onclick="event.stopPropagation()"
-                        data-target="#objectCreateModal" hx-get="{% url 'asset-creation' id=asset_category.id %}?{{pg}}"
+                        data-target="#objectCreateModal" hx-get="{% url 'asset-creation' asset_category_id=asset_category.id %}?{{pg}}"
                         hx-target="#objectCreateModalTarget" data-category-id="{{asset_category.id}}">{% trans "Create" %}</a>
                       </li>
                     {% endif %}

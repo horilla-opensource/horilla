@@ -9,7 +9,6 @@ from django import forms
 from django_filters import FilterSet
 
 from base.methods import reload_queryset
-from horilla.filters import filter_by_name
 
 from .models import Asset, AssetAssignment, AssetCategory, AssetRequest
 
@@ -307,6 +306,9 @@ class AssetHistoryFilter(CustomFilterSet):
     )
 
     def exclude_none(self, queryset, name, value):
+        """
+        Exclude objects with a null return_status from the queryset if value is "True"
+        """
         if value == "True":
             queryset = queryset.filter(return_status__isnull=False)
         return queryset

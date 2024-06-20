@@ -33,7 +33,7 @@
         type="text"
         class="oh-input oh-input__icon"
         aria-label="Search Input"
-        id="attendance-search"
+        id="assetHistorySearch"
         name='search'
         placeholder="{% trans 'Search' %}"
         hx-get="{% url 'asset-history-search' %}"
@@ -105,7 +105,7 @@
     </div>
   </div>
   <script>
-    $('#attendance-search').keydown(function (e) {
+    $('#assetHistorySearch').keydown(function (e) {
       var val = $(this).val();
       $('.pg').attr('hx-vals', `{"search":${val}}`);
     });

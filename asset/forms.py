@@ -11,7 +11,6 @@ from datetime import date
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from asset.models import (
@@ -129,9 +128,9 @@ class AssetForm(ModelForm):
                 and self.cleaned_data.get("asset_status", None)
                 != prev_instance.asset_status
             ):
-                if asset_in_use := instance.assetassignment_set.filter(
+                if instance.assetassignment_set.filter(
                     return_status__isnull=True
-                ):
+                ).exists():
                     raise ValidationError(
                         {"asset_status": 'Asset in use you can"t change the status'}
                     )
@@ -146,6 +145,13 @@ class AssetForm(ModelForm):
 
 
 class DocumentForm(forms.ModelForm):
+    """
+    Form for uploading documents related to an asset.
+
+    Attributes:
+    - file: A FileField with a TextInput widget for file upload, allowing multiple files.
+    """
+
     file = forms.FileField(
         widget=forms.TextInput(
             attrs={
@@ -158,6 +164,15 @@ class DocumentForm(forms.ModelForm):
     )
 
     class Meta:
+        """
+        Metadata options for the DocumentForm.
+
+        Attributes:
+        - model: The model associated with this form (AssetDocuments).
+        - fields: Fields to include in the form ('file').
+        - exclude: Fields to exclude from the form ('is_active').
+        """
+
         model = AssetDocuments
         fields = [
             "file",
@@ -166,8 +181,28 @@ class DocumentForm(forms.ModelForm):
 
 
 class AssetReportForm(ModelForm):
+    """
+    Form for creating and updating asset reports.
+
+    Metadata:
+    - model: The model associated with this form (AssetReport).
+    - fields: Fields to include in the form ('title', 'asset_id').
+    - exclude: Fields to exclude from the form ('is_active').
+
+    Methods:
+    - __init__: Initializes the form, disabling the 'asset_id' field.
+    """
 
     class Meta:
+        """
+        Metadata options for the AssetReportForm.
+
+        Attributes:
+        - model: The model associated with this form (AssetReport).
+        - fields: Fields to include in the form ('title', 'asset_id').
+        - exclude: Fields to exclude from the form ('is_active').
+        """
+
         model = AssetReport
         fields = [
             "title",
@@ -176,6 +211,13 @@ class AssetReportForm(ModelForm):
         exclude = ["is_active"]
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the AssetReportForm, disabling the 'asset_id' field.
+
+        Args:
+        - *args: Variable length argument list.
+        - **kwargs: Arbitrary keyword arguments.
+        """
         super().__init__(*args, **kwargs)
         self.fields["asset_id"].widget.attrs["disabled"] = "disabled"
 
@@ -376,6 +418,18 @@ class AssetReturnForm(ModelForm):
         self.fields["return_images"].required = True
 
     def clean_return_date(self):
+        """
+        Validates the 'return_date' field.
+
+        Ensures that the return date is not in the future. If the return date is in the future,
+        a ValidationError is raised.
+
+        Returns:
+        - The cleaned return date.
+
+        Raises:
+        - forms.ValidationError: If the return date is in the future.
+        """
         return_date = self.cleaned_data.get("return_date")
 
         if return_date and return_date > date.today():

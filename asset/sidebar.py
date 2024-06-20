@@ -31,4 +31,8 @@ SUBMENUS = [
 
 
 def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
+    """
+    Determine if the user has the necessary permissions to access the
+    dashboard and asset category view.
+    """
     return request.user.has_perm("asset.view_assetcategory")
