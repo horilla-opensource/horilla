@@ -471,13 +471,11 @@ function initializeSummernote(candId,searchWords,) {
   function filterCountUpdate(formId) {
     var formData = $("#" + formId).serialize();
     var count = 0;
-    console.log(formData)
     formData.split("&").forEach(function (field) {
       var parts = field.split("=");
       var value = parts[1];
       if (parts[0] !== "view" && parts[0] !== "filter_applied"){
         if (value && value !== "unknown") {
-          console.log(parts[0],parts[1])
           count++;
         }
       }
