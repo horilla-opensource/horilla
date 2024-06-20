@@ -429,4 +429,9 @@ urlpatterns = [
         views.create_compensatory_leave_comment,
         name="create-compensatory-leave-comment",
     ),
+    path(
+        "check-interview-conflicts",
+        views.check_interview_conflicts,
+        name="check-interview-conflicts",
+    ),
 ]
