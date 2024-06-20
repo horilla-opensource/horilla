@@ -1,4 +1,4 @@
-{% load i18n %} {% load basefilters %} {{ form.non_field_errors }} 
+{% load i18n %} {% load basefilters %} {{ form.non_field_errors }}
 {% for field in form.visible_fields %}
 {% if field.name|startswith:"shift" and not field.field.required %}
 <div

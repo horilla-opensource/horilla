@@ -1,5 +1,5 @@
-{% load i18n %} {% load basefilters %} {{ form.non_field_errors }} 
-{% for field in form.visible_fields %} 
+{% load i18n %} {% load basefilters %} {{ form.non_field_errors }}
+{% for field in form.visible_fields %}
 {% if field.name|startswith:"work_type" and not field.field.required %}
     <div
       class="oh-input__group pt-3"
