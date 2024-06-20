@@ -52,16 +52,13 @@ class MailSendThread(Thread):
                         "application/pdf",
                     )
                 )
+            employee = record["instances"][0].employee_id
             email_backend = ConfiguredEmailBackend()
             email = EmailMessage(
                 f"Hello, {record['instances'][0].get_name()} Your Payslips is Ready!",
                 html_message,
                 email_backend.dynamic_username_with_display_name,
-                list(
-                    EmployeeWorkInformation.objects.filter(
-                        employee_id=record["instances"][0].employee_id
-                    ).values_list("email", flat=True)
-                ),
+                [employee.get_mail()],
                 # reply_to=["another@example.com"],
                 # headers={"Message-ID": "foo"},
             )

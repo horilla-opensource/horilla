@@ -10,13 +10,15 @@
   }
 
 </style>
-<div class="oh-payslip">
+<div class="oh-payslip" id="payslips-table">
   {% if perms.payroll.change_payslip %}
     <div class="oh-payslip__header">
       <div class="oh-payslip__header-left"  style="min-width: 170px; height: 35px; border: 1px solid hsl(213,22%,84%); display:flex;">
         <a href="{% url 'payslip-pdf' instance.id %}" type="button" title="{% trans 'Download' %}" class="oh-btn oh-btn--gray-bkg w-100" style="background-color: #dadada;"> <ion-icon name="download"></ion-icon></a>
         {% if perms.payroll.add_payslip %}
-          <a href="{% url "send-slip" %}?id={{instance.id}}&view=individual-payslip" type="button" onclick="return confirm('Do you want to sent the payslip by mail?')" title="{% trans 'Send via mail' %}" {% if payslip.sent_to_employee %}class="oh-btn sent-to-employee w-100"{% else %}class="oh-btn oh-btn--light-bkg w-100"{% endif %}> <ion-icon name="mail-outline"></ion-icon></a>
+          <a
+            hx-confirm="{% trans 'Do you want to sent the payslip by mail?' %}" hx-get="{% url "send-slip" %}?id={{instance.id}}&view=individual-payslip" hx-target="#payslips-table"
+            title="{% trans 'Send via mail' %}" {% if payslip.sent_to_employee %}class="oh-btn sent-to-employee w-100"{% else %}class="oh-btn oh-btn--light-bkg w-100"{% endif %}> <ion-icon name="mail-outline"></ion-icon></a>
         {% endif %}
       </div>
       <div class="oh-payslip__header-left">
