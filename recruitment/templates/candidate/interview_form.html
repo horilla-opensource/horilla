@@ -10,40 +10,6 @@
 <script>
     $("#skillform .col-md-6").toggleClass("col-md-6");
 
-    $(document).ready(function(){
-        var candidate_id = $('[name=candidate_id]').val();
-        var selectedmanagers = $('[name=employee_id]').val();
-
-        // Make AJAX request to fetch available Managers for the selected Candidate
-        $.ajax({
-            url: '{% url "get_managers" %}',
-            method: 'GET',
-            data: {
-            'cand_id': candidate_id
-            },
-            success: function(data) {
-            // Clear existing options in the Managers dropdown
-            $('[name=employee_id]').empty();
-
-            // Append new options based on the response
-            $.each(data.employees, function(key, value) {
-
-                $('[name=employee_id]').append($('<option>', {
-                value: key,
-                text: value
-                }));
-
-            });
-
-            // Set the selected Managers back to the dropdown
-            if (selectedmanagers) {
-                $('[name=employee_id]').val(selectedmanagers);
-            }
-            }
-        });
-
-    })
-
     $('[name=candidate_id]').change(function(){
         var candidate_id = $('[name=candidate_id]').val();
         var selectedmanagers = $('[name=employee_id]').val();
@@ -76,6 +42,5 @@
             }
         });
     });
-
 
 </script>

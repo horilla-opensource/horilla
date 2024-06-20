@@ -31,14 +31,15 @@ from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
-from base import thread_local_middleware
 from base.forms import Form
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import Employee
+from horilla import horilla_middlewares
 from horilla.decorators import logger
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from leave.models import LeaveRequest
 from recruitment import widgets
 from recruitment.models import (
     Candidate,
@@ -65,7 +66,7 @@ class ModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
@@ -1060,7 +1061,7 @@ class ScheduleInterviewForm(ModelForm):
         cleaned_data = super().clean()
         interview_date = cleaned_data.get("interview_date")
         interview_time = cleaned_data.get("interview_time")
-
+        managers = cleaned_data["employee_id"]
         if not instance.pk and interview_date and interview_date < date.today():
             self.add_error("interview_date", _("Interview date cannot be in the past."))
 
@@ -1074,6 +1075,20 @@ class ScheduleInterviewForm(ModelForm):
                 self.add_error(
                     "interview_time", _("Interview time cannot be in the past.")
                 )
+
+        leave_employees = LeaveRequest.objects.filter(
+            employee_id__in=managers, status="approved"
+        )
+        employees = [
+            leave.employee_id.get_full_name()
+            for leave in leave_employees
+            if interview_date in leave.requested_dates()
+        ]
+
+        if employees:
+            self.add_error(
+                "employee_id", _(f"{employees} have approved leave on this date")
+            )
 
         return cleaned_data
 
