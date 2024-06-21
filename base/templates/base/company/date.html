@@ -62,7 +62,10 @@
     </div>
 </div>
 {% endif %}
-
+<script>
+    $("#dateFormat").val("{{request.user.employee_get.employee_work_info.company_id.date_format}}").change();
+    $("#timeFormat").val("{{request.user.employee_get.employee_work_info.company_id.time_format}}").change();
+</script>
 <div style="font-size: 20px; color: hsl(8, 77%, 56%); margin-top: 20px">
     <b>{% trans "Current Time Format" %} &nbsp :</b> &nbsp
     <span id="timeDisplay" style="font-size: 18px; color: black;" class='mt-3'></span>
