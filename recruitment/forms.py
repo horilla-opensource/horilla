@@ -684,7 +684,7 @@ class QuestionForm(ModelForm):
         options = self.cleaned_data["options"]
         if not recruitment.exists():  # or jobs.exists()):
             raise ValidationError(
-                "Choose any recruitment or job positions to apply this question"
+                {"recruitment": _("Choose any recruitment to apply this question")}
             )
         self.recruitment = recruitment
         # self.job_positions = jobs

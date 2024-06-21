@@ -1,25 +1,28 @@
 <form
   hx-post="{% url 'recruitment-survey-question-template-create' %}"
-  hx-target="#addSurveyModalBody"
+  hx-target="#templateModalBody"
   method="post"
 >
   {% csrf_token %} {{form.as_p}}
 </form>
 
 <script>
-  $(document).ready(function () {
-    function toggleOpt(){
-        if ($("[name=type]:first").val() == "options" || $("[name=type]:first").val() == "multiple") {
-            $("#id_options, [for='id_options']").show();
-          } else {
-            $("#id_options, [for='id_options']").hide();
-          }
+  function toggleOpt() {
+    if ($("#templateModalBody form [name=type]").first().val() == "options" || $("#templateModalBody form [name=type]").first().val() == "multiple") {
+        $("#id_options, [for='id_options']").show();
+    } else {
+        $("#id_options, [for='id_options']").hide();
     }
-    $("[name=type]:first").change(function (e) {
-      toggleOpt()
-    });
-    toggleOpt()
+}
 
-  });
-  $("[name=template_id]").parent().removeClass("col-md-6").addClass("col-md-12")
+$("#templateModalBody form [name=type]").change(function (e) {
+    toggleOpt();
+});
+
+// Call toggleOpt on page load to set the initial state
+$(document).ready(function() {
+    toggleOpt();
+});
+
+  $("#templateModalBody form [name=template_id]").parent().removeClass("col-md-6").addClass("col-md-12")
 </script>
