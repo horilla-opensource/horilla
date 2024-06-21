@@ -2492,6 +2492,7 @@ def get_models_in_app(app_name):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("auth.view_permission")
 def employee_permission_assign(request):
     """

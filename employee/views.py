@@ -320,6 +320,7 @@ def employee_view_individual(request, obj_id, **kwargs):
 
 
 @login_required
+@hx_request_required
 def contract_tab(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
@@ -365,6 +366,7 @@ def asset_tab(request, emp_id):
 
 
 @login_required
+@hx_request_required
 def profile_asset_tab(request, emp_id):
     """
     This function is used to view asset tab of an employee in employee profile view.
@@ -387,6 +389,7 @@ def profile_asset_tab(request, emp_id):
 
 
 @login_required
+@hx_request_required
 def asset_request_tab(request, emp_id):
     """
     This function is used to view asset request tab of an employee in employee individual view.
@@ -405,6 +408,7 @@ def asset_request_tab(request, emp_id):
 
 
 @login_required
+@hx_request_required
 @owner_can_enter("pms.view_feedback", Employee)
 def performance_tab(request, emp_id):
     """
@@ -428,6 +432,7 @@ def performance_tab(request, emp_id):
 
 
 @login_required
+@hx_request_required
 def profile_attendance_tab(request):
     """
     This function is used to view attendance tab of an employee in profile view.
@@ -488,6 +493,8 @@ def attendance_tab(request, emp_id):
     return render(request, "tabs/attendance-tab.html", context=context)
 
 
+@login_required
+@hx_request_required
 def allowances_deductions_tab(request, emp_id):
     """
     Retrieve and render the allowances and deductions applicable to an employee.
@@ -585,6 +592,7 @@ def allowances_deductions_tab(request, emp_id):
 
 
 @login_required
+@hx_request_required
 @owner_can_enter("perms.employee.view_employee", Employee)
 def shift_tab(request, emp_id):
     """
@@ -1829,6 +1837,7 @@ def employee_update_bank_details(request, obj_id=None):
 
 
 @login_required
+@hx_request_required
 def employee_filter_view(request):
     """
     This method is used to filter employee.
@@ -2072,6 +2081,7 @@ def employee_bulk_archive(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("employee.delete_employee")
 def employee_archive(request, obj_id):
     """
@@ -3215,6 +3225,7 @@ def employee_select_filter(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="employee.view_employeenote")
 def note_tab(request, emp_id):
     """
@@ -3366,6 +3377,7 @@ def delete_employee_note_file(request, note_file_id):
 
 
 @login_required
+@hx_request_required
 @owner_can_enter("employee.view_bonuspoint", Employee)
 def bonus_points_tab(request, emp_id):
     """
@@ -3662,6 +3674,7 @@ def first_last_badge(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("employee.view_employee")
 def employee_get_mail_log(request):
     """
