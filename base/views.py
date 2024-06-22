@@ -149,6 +149,8 @@ from pms.models import KeyResult
 from recruitment.models import RejectReason
 
 
+
+
 def custom404(request):
     """
     Custom 404 method
@@ -2491,14 +2493,16 @@ def get_models_in_app(app_name):
         return []
 
 
+#Temporary fix view was not working 
 @login_required
-@hx_request_required
 @manager_can_enter("auth.view_permission")
 def employee_permission_assign(request):
     """
     This method is used to assign permissions to employee user
     """
-
+    
+    
+    
     context = {}
     template = "base/auth/permission.html"
     if request.GET.get("profile_tab"):
