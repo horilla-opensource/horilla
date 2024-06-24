@@ -1745,8 +1745,22 @@ var formattedDate = dateFormatter.getFormattedDate(currentDate);
 $(".timeformat_changer").each(function (index, element) {
   var currentTime = $(element).text().trim();
 
+  if (currentTime === 'midnight'){
+    if (timeFormatter.timeFormat === 'hh:mm A') {
+      formattedTime = '12:00 AM'
+    }else{
+      formattedTime = '00:00'
+    }
+  }
+  else if (currentTime === 'noon'){
+    if (timeFormatter.timeFormat === 'hh:mm A') {
+      formattedTime = '12:00 PM'
+    }else{
+      formattedTime = '12:00'
+    }
+  }
   // Checking currentTime value is a valid time.
-  if (/[\.:]/.test(currentTime)) {
+  else if (/[\.:]/.test(currentTime)) {
     var formattedTime = timeFormatter.getFormattedTime(currentTime);
   } else if (currentTime) {
     var formattedTime = currentTime;
