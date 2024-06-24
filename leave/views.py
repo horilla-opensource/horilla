@@ -835,6 +835,20 @@ def leave_request_bulk_approve(request):
 
 @login_required
 @manager_can_enter("leave.change_leaverequest")
+def leave_bulk_reject(request):
+    request_ids = request.POST.getlist("request_ids")
+
+    for request_id in request_ids:
+        leave_request = (
+            LeaveRequest.objects.get(id=int(request_id)) if request_id else None
+        )
+        leave_request_cancel(request, leave_request.id)
+
+    return HttpResponse("<script>window.location.reload();</script>")
+
+
+@login_required
+@manager_can_enter("leave.change_leaverequest")
 def leave_request_cancel(request, id, emp_id=None):
     """
     function used to Reject leave request.
@@ -859,52 +873,56 @@ def leave_request_cancel(request, id, emp_id=None):
             available_leave = AvailableLeave.objects.get(
                 leave_type_id=leave_type_id, employee_id=employee_id
             )
-            available_leave.available_days += leave_request.approved_available_days
-            available_leave.carryforward_days += (
-                leave_request.approved_carryforward_days
-            )
-            leave_request.approved_available_days = 0
-            leave_request.approved_carryforward_days = 0
-            leave_request.status = "rejected"
-            if leave_request.multiple_approvals() and not request.user.is_superuser:
-                conditional_requests = leave_request.multiple_approvals()
-                approver = [
-                    manager
-                    for manager in conditional_requests["managers"]
-                    if manager.employee_user_id == request.user
-                ]
-                condition_approval = LeaveRequestConditionApproval.objects.filter(
-                    manager_id=approver[0], leave_request_id=leave_request
-                ).first()
-                condition_approval.is_approved = False
-                condition_approval.is_rejected = True
-                condition_approval.save()
-
-            leave_request.reject_reason = form.cleaned_data["reason"]
-            leave_request.save()
-            available_leave.save()
-            comment = LeaverequestComment()
-            comment.request_id = leave_request
-            comment.employee_id = request.user.employee_get
-            comment.comment = leave_request.reject_reason
-            comment.save()
-
-            messages.success(request, _("Leave request rejected successfully.."))
-            with contextlib.suppress(Exception):
-                notify.send(
-                    request.user.employee_get,
-                    recipient=leave_request.employee_id.employee_user_id,
-                    verb="Your leave request has been rejected.",
-                    verb_ar="تم رفض طلب الإجازة الخاص بك",
-                    verb_de="Ihr Urlaubsantrag wurde abgelehnt",
-                    verb_es="Tu solicitud de permiso ha sido rechazada",
-                    verb_fr="Votre demande de congé a été rejetée",
-                    icon="people-circle",
-                    redirect=f"/leave/user-request-view?id={leave_request.id}",
+            if leave_request.status != "rejected":
+                available_leave.available_days += leave_request.approved_available_days
+                available_leave.carryforward_days += (
+                    leave_request.approved_carryforward_days
                 )
+                leave_request.approved_available_days = 0
+                leave_request.approved_carryforward_days = 0
+                leave_request.status = "rejected"
+                if leave_request.multiple_approvals() and not request.user.is_superuser:
+                    conditional_requests = leave_request.multiple_approvals()
+                    approver = [
+                        manager
+                        for manager in conditional_requests["managers"]
+                        if manager.employee_user_id == request.user
+                    ]
+                    condition_approval = LeaveRequestConditionApproval.objects.filter(
+                        manager_id=approver[0], leave_request_id=leave_request
+                    ).first()
+                    condition_approval.is_approved = False
+                    condition_approval.is_rejected = True
+                    condition_approval.save()
 
-            mail_thread = LeaveMailSendThread(request, leave_request, type="reject")
-            mail_thread.start()
+                leave_request.reject_reason = form.cleaned_data["reason"]
+                leave_request.save()
+                available_leave.save()
+                comment = LeaverequestComment()
+                comment.request_id = leave_request
+                comment.employee_id = request.user.employee_get
+                comment.comment = leave_request.reject_reason
+                comment.save()
+
+                messages.success(request, _("Leave request rejected successfully.."))
+                with contextlib.suppress(Exception):
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=leave_request.employee_id.employee_user_id,
+                        verb="Your leave request has been rejected.",
+                        verb_ar="تم رفض طلب الإجازة الخاص بك",
+                        verb_de="Ihr Urlaubsantrag wurde abgelehnt",
+                        verb_es="Tu solicitud de permiso ha sido rechazada",
+                        verb_fr="Votre demande de congé a été rejetée",
+                        icon="people-circle",
+                        redirect=f"/leave/user-request-view?id={leave_request.id}",
+                    )
+
+                mail_thread = LeaveMailSendThread(request, leave_request, type="reject")
+                mail_thread.start()
+            else:
+                messages.error(request, _("Leave request already rejected."))
+
             if emp_id is not None:
                 employee_id = emp_id
                 return redirect(f"/employee/employee-view/{employee_id}/")

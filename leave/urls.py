@@ -49,6 +49,11 @@ urlpatterns = [
         views.leave_request_bulk_approve,
         name="leave-requests-bulk-approve",
     ),
+    path(
+        "leave-requests-bulk-reject",
+        views.leave_bulk_reject,
+        name="leave-requests-bulk-reject",
+    ),
     path("request-cancel/<int:id>", views.leave_request_cancel, name="request-cancel"),
     path(
         "request-cancel/<int:id>/<int:emp_id>",

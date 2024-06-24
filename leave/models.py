@@ -709,6 +709,12 @@ class LeaveRequest(HorillaModel):
         total_leave_count = sum(
             requested_date in total_leaves for requested_date in requested_dates
         )
+        if (self.start_date in total_leaves or self.end_date in total_leaves) and (
+            self.start_date_breakdown == "second_half"
+            or self.end_date_breakdown == "first_half"
+        ):
+            self.requested_days += 0.5
+
         self.requested_days = self.requested_days - total_leave_count
 
     def exclude_leaves(self):

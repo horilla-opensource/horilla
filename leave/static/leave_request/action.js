@@ -30,6 +30,14 @@ var approveLeaveRequests = {
   fr: "Voulez-vous approuver les demandes de congé sélectionnées?",
 };
 
+var rejectLeaveRequests = {
+  ar: "هل تريد رفض طلبات الإجازة المختارة؟",
+  de: "Möchten Sie die ausgewählten Abwesenheitsanträge ablehnen?",
+  es: "¿Quieres rechazar las solicitudes de vacaciones seleccionadas?",
+  en: "Do you want to reject the selected leave requests?",
+  fr: "Vous souhaitez rejeter les demandes de congés sélectionnées ?",
+};
+
 var noRowMessages = {
   ar: "لم يتم تحديد أي صفوف.",
   de: "Es wurden keine Zeilen ausgewählt.",
@@ -317,6 +325,41 @@ $("#leaveRequestsBulkApprove").click(function (e) {
           var hxVals = JSON.stringify(ids);
           $("#bulkApproveSpan").attr("hx-vals", `{"ids":${hxVals}}`);
           $("#bulkApproveSpan").click();
+        }
+      });
+    }
+  });
+});
+
+
+$("#idBulkRejectReason").click(function (e) {
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = rejectLeaveRequests[languageCode];
+    var textMessage = noRowMessages[languageCode];
+    ids = JSON.parse($("#selectedLeaverequests").attr("data-ids"));
+    var rejectReason = $("#id_reject_reason").val();
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          var data = JSON.stringify({"request_ids":ids, "reason":rejectReason})
+          $("#bulkRejectSpan").attr("hx-vals", data);
+          $("#bulkRejectSpan").click();
         }
       });
     }

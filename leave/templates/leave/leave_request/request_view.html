@@ -187,6 +187,15 @@
                 >{% trans "Bulk Approve" %}</a
               >
             </li>
+            <a
+                href="#"
+                class="oh-dropdown__link"
+                id="leaveRequestsBulkReject"
+                data-toggle="oh-modal-toggle"
+                data-target="#bulkRejectModal"
+                >{% trans "Bulk Reject" %}</a
+              >
+            </li>
             <li class="oh-dropdown__item">
               <a
                 href="#"
@@ -241,6 +250,7 @@
   {% trans "Selected Requests" %}
 </div>
 <span id="bulkApproveSpan" hx-post="{% url 'leave-requests-bulk-approve' %}" hx-target="#leaveRequest"></span>
+<span id="bulkRejectSpan" hx-post="{% url 'leave-requests-bulk-reject' %}" hx-target="#leaveRequest"></span>
 
 <div class="oh-wrapper" id="leaveRequest">
   {% if leave_requests %}
@@ -310,6 +320,44 @@
       </button>
     </div>
     <div class="oh-modal__dialog-body" id="rejectForm"></div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="bulkRejectModal"
+  role="dialog"
+  aria-labelledby="bulkRejectModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+        {% trans "Bulk Rejection Reason" %}
+      </h2>
+      <button
+        class="oh-modal_close--custom"
+        onclick="$('#bulkRejectModal').removeClass('oh-modal--show');"
+        aria-label="Close"
+      >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="bulkRejectForm">
+      <form action="#" hx-encoding="multipart/form-data">
+        <div class="oh-general__tab-target oh-profile-section">
+          <div class="col-sm-12 col-md-12 col-lg-12">
+            <label class="oh-label">{% trans "Reason" %}</label>
+            <textarea name="reason" cols="40" rows="4" class="p-4 oh-input w-100" required="" id="id_reject_reason" spellcheck="false"></textarea>
+          </div>
+          <div class="d-flex flex-row-reverse">
+            <button type="submit" id="idBulkRejectReason" class="oh-btn oh-btn--secondary oh-btn--shadow mt-3">
+              {% trans "Save" %}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
