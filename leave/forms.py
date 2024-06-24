@@ -327,7 +327,10 @@ class LeaveRequestCreationForm(ModelForm):
         if leave_type_id.reset_based == "monthly":
             if f"{today.year}-{today.strftime('%m')}" not in unique_dates:
                 for item in unique_dates:
-                    total_leave_days += forcasted_leaves[item]
+                    try:
+                        total_leave_days += forcasted_leaves[item]
+                    except:
+                        pass
         if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
