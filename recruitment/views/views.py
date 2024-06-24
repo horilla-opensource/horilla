@@ -562,6 +562,36 @@ def change_candidate_stage(request):
     """
     This method is used to update candidates stage
     """
+    if request.method == "POST":
+        canIds = request.POST["canIds"]
+        stage_id = request.POST["stageId"]
+        if request.GET.get("bulk") == "True":
+            canIds = json.loads(canIds)
+            for cand_id in canIds:
+                try:
+                    candidate = Candidate.objects.get(id=cand_id)
+                    stage = Stage.objects.filter(
+                        recruitment_id=candidate.recruitment_id, id=stage_id
+                    ).first()
+                    if stage:
+                        candidate.stage_id = stage
+                        candidate.save()
+                        messages.success(request, "Candidate stage updated")
+                except Candidate.DoesNotExist:
+                    messages.error(request, _("Candidate not found."))
+        else:
+            try:
+                candidate = Candidate.objects.get(id=canIds)
+                stage = Stage.objects.filter(
+                    recruitment_id=candidate.recruitment_id, id=stage_id
+                ).first()
+                if stage:
+                    candidate.stage_id = stage
+                    candidate.save()
+                    messages.success(request, "Candidate stage updated")
+            except Candidate.DoesNotExist:
+                messages.error(request, _("Candidate not found."))
+        return HttpResponse()
     candidate_id = request.GET["candidate_id"]
     stage_id = request.GET["stage_id"]
     candidate = Candidate.objects.get(id=candidate_id)
@@ -572,7 +602,6 @@ def change_candidate_stage(request):
         candidate.stage_id = stage
         candidate.save()
         messages.success(request, "Candidate stage updated")
-
     return stage_component(request)
 
 
