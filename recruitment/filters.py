@@ -47,7 +47,7 @@ class CandidateFilter(FilterSet):
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     scheduled_from = django_filters.DateFilter(
-        field_name="joining_date",
+        field_name="candidate_interview__interview_date",
         lookup_expr="gte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
@@ -69,8 +69,12 @@ class CandidateFilter(FilterSet):
         field_name="schedule_date",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    interview_date = django_filters.DateFilter(
+        field_name="candidate_interview__interview_date",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
     scheduled_till = django_filters.DateFilter(
-        field_name="joining_date",
+        field_name="candidate_interview__interview_date",
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
@@ -111,6 +115,7 @@ class CandidateFilter(FilterSet):
             "recruitment_id",
             "stage_id",
             "schedule_date",
+            "candidate_interview__interview_date",
             "email",
             "mobile",
             "country",
@@ -197,9 +202,7 @@ class RecruitmentFilter(FilterSet):
         choices=[
             (True, "Yes"),
             (False, "No"),
-        ],
-        initial="Yes",
-        empty_label="Yes",
+        ]
     )
 
     class Meta:
@@ -401,7 +404,6 @@ class CandidateReGroup:
         ("stage_id", "Stage"),
         ("joining_date", "Date Joining"),
         ("probation_end", "Probation End"),
-        ("offer_letter_status", "Offer Letter Status"),
         ("offer_letter_status", "Offer Letter Status"),
         ("rejected_candidate__reject_reason_id", "Reject Reason"),
         ("skillzonecandidate_set__skill_zone_id", "Skill Zone"),

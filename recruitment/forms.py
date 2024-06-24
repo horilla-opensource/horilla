@@ -772,7 +772,7 @@ class AddQuestionForm(Form):
         return table_html
 
 
-exclude_fields = ["id", "profile", "portfolio", "resume", "sequence"]
+exclude_fields = ["id", "profile", "portfolio", "resume", "sequence", "schedule_date"]
 
 
 class CandidateExportForm(forms.Form):
@@ -793,7 +793,6 @@ class CandidateExportForm(forms.Form):
             "recruitment_id",
             "job_position_id",
             "stage_id",
-            "schedule_date",
             "email",
             "mobile",
             "hired",

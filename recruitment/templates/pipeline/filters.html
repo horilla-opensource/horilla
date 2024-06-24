@@ -84,16 +84,8 @@
       <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Recruitment Managers' %}</label>
-            {{ stage_filter_obj.form.recruitment_id__recruitment_managers }}
-          </div>
-          <div class="oh-input-group">
             <label class="oh-label">{% trans 'Recruitment' %}</label>
             {{ stage_filter_obj.form.recruitment_id }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Department' %}</label>
-            {{stage_filter_obj.form.recruitment_id__job_position_id__department_id }}
           </div>
           <div class="oh-input-group">
             <label class="oh-label">{% trans 'Stage Type' %}</label>
@@ -105,14 +97,6 @@
           <div class="oh-input-group">
             <label class="oh-label">{% trans 'Stage Managers' %}</label>
             {{ stage_filter_obj.form.stage_managers }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Company' %}</label>
-            {{ stage_filter_obj.form.recruitment_id__company_id }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Job Position' %}</label>
-            {{ stage_filter_obj.form.recruitment_id__job_position_id }}
           </div>
         </div>
       </div>

@@ -53,10 +53,6 @@ $(document).ready(function () {
 		if (chartType === "line") {
 			chartType = "bar";
 		} else if (chartType === "bar") {
-			chartType = "doughnut";
-		} else if (chartType === "doughnut") {
-			chartType = "pie";
-		} else if (chartType === "pie") {
 			chartType = "line";
 		}
 		myChart.config.type = chartType;
