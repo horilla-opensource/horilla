@@ -58,6 +58,8 @@
                     <select name="bulk_stage"
                     onchange="
                     if (this.value) {
+                        preStageId= {{stage.id}}
+                        stageId = this.value
                         candidateCheckBoxes = $(this).closest('.oh-sticky-table').find('.stage-candidate-row[type=checkbox]:checked')
                         if (!candidateCheckBoxes.length) {
                             Swal.fire({
@@ -65,10 +67,13 @@
                                 icon: 'warning'
                             });
                         }else{
-                            candidateCheckBoxes.parent().parent().parent().find('[name=stage_id]select').val(this.value).change()
+                            canIds=[]
+                            $.each(candidateCheckBoxes, function(index, checkbox) {
+                                canId=$(checkbox).val()
+                                canIds.push($(checkbox).val())
+                            });
+                            bulkStageUpdate(canIds,stageId,preStageId)
                         }
-                        $(this).val('').change();
-                        $('#stageReloadContainer{{stage.recruitment_id.id}}').click();
                     }
                     "
                      class="oh-select w-100" data-stage-id="{{stage.id}}">
@@ -93,7 +98,7 @@
                 <div class="oh-sticky-table__sd" style="z-index: 11 !important;" onclick="event.stopPropagation()">
                     <div class="centered-div">
                         <input type="checkbox" id="{{cand.id}}"
-                            class="oh-input candidate-checkbox oh-input__checkbox stage-candidate-row"
+                            class="oh-input candidate-checkbox oh-input__checkbox stage-candidate-row" value="{{cand.id}}"
                             onchange="highlightRow($(this));
                             if (!$(this).is(':checked')) {
                                 $(this).closest('.oh-sticky-table').find('.stage-candidates').prop('checked',false);
@@ -195,12 +200,14 @@
                 </div>
                 {% endif %}
                 <div onclick="event.stopPropagation()" class="oh-sticky-table__td oh-table-config__td">
-                    <form
-                        hx-target="#stageContainer{{rec.id}}"
-                        hx-get="{% url 'candidate-stage-change' %}?candidate_id={{cand.id}}&rec_id={{rec.id}}">
+
                         <select
                             name="stage_id"
-                            onchange="$(this).closest('form').find('[type=submit]').click()"
+                            onchange="
+                                preStageId= {{stage.id}}
+                                stageId = this.value
+                                canId={{cand.id}}
+                                updateCandStage(canId,stageId,preStageId)"
                             id="stageChange{{cand.id}}"
                             class="oh-select w-100"
                             data-candidate-id="{{cand.id}}" data-stage-id="{{stage.id}}">
@@ -211,7 +218,7 @@
                         <input onclick="setTimeout(() => {
                             $('#stageReloadContainer{{rec.id}}').click()
                                 }, 100);" type="submit" hidden>
-                    </form>
+
                 </div>
                 <div onclick="event.stopPropagation()" class="oh-sticky-table__td oh-table-config__td">
                     <div class="oh-btn-group">
