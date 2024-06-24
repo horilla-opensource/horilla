@@ -84,7 +84,7 @@ urlpatterns = [
     path("pipeline/", views.recruitment_pipeline, name="pipeline"),
     path("pipeline-search/", views.filter_pipeline, name="pipeline-search"),
     path(
-        "pipeline-stages-component",
+        "pipeline-stages-component/<str:view>/",
         views.stage_component,
         name="pipeline-stages-component",
     ),

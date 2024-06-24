@@ -9,7 +9,7 @@
     {% endfor %}
     <button id="stageReloadContainer{{rec.id}}"
       hidden
-        hx-get="{% url 'pipeline-stages-component' %}?rec_id={{rec.id}}"
+        hx-get="{% url 'pipeline-stages-component' 'list' %}?rec_id={{rec.id}}"
         hx-target="#stageContainer{{rec.id}}">
     </button>
     {% if request.user|stage_manages:rec or perms.recruitment.view_recruitment %}
@@ -24,7 +24,7 @@
           </div>
         {% endif %}
         {% comment %}ordered_stages method in Recruitment model{% endcomment %}
-        <div class="pt-3 stage-badges" id="stageContainer{{ rec.id }}" hx-trigger="load" hx-get="{% url 'pipeline-stages-component' %}?rec_id={{ rec.id }}">
+        <div class="pt-3 stage-badges" id="stageContainer{{ rec.id }}" hx-trigger="load" hx-get="{% url 'pipeline-stages-component' 'list' %}?rec_id={{ rec.id }}">
           <div class="animated-background"></div>
         </div>
       </div>

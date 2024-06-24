@@ -38,6 +38,7 @@ from django.views.decorators.http import require_http_methods
 
 from base.backends import ConfiguredEmailBackend
 from base.context_processors import check_candidate_self_tracking
+from base.countries import country_arr, s_a, states
 from base.methods import export_data, generate_pdf, get_key_instances
 from base.models import EmailLog, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
@@ -303,7 +304,7 @@ def recruitment_update(request, rec_id):
     if request.method == "POST":
         form = RecruitmentCreationForm(request.POST, instance=recruitment_obj)
         if form.is_valid():
-            recruitment_obj = form.save(commit=False)
+            recruitment_obj = form.save()
             for survey in form.cleaned_data["survey_templates"]:
                 for sur in survey.recruitmentsurvey_set.all():
                     sur.recruitment_ids.add(recruitment_obj)
@@ -465,7 +466,7 @@ def get_stage_badge_count(request):
 
 @login_required
 @manager_can_enter(perm="recruitment.view_recruitment")
-def stage_component(request):
+def stage_component(request, view: str = "list"):
     """
     This method will stage tab contents
     """
@@ -475,7 +476,7 @@ def stage_component(request):
         recruitment_id__id=recruitment_id
     )
     template = "pipeline/components/stages_tab_content.html"
-    if request.GET.get("view") == "card":
+    if view == "card":
         template = "pipeline/kanban_components/kanban_stage_components.html"
     return render(
         request,
@@ -2583,11 +2584,6 @@ def delete_reject_reason(request):
         reasons.delete()
         messages.success(request, f"{reason.title} is deleted.")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
-
-from pprint import pprint
-
-from base.countries import country_arr, s_a, states
 
 
 def extract_text_with_font_info(pdf):
