@@ -197,6 +197,18 @@ class Recruitment(HorillaModel):
         """
         return self.stage_set.order_by("sequence")
 
+    def is_vacancy_filled(self):
+        """
+        This method is used to check wether the vaccancy for the recruitment is completed or not
+        """
+        hired_stage = Stage.objects.filter(
+            recruitment_id=self, stage_type="hired"
+        ).first()
+        if hired_stage:
+            hired_candidate = hired_stage.candidate_set.all().exclude(canceled=True)
+            if len(hired_candidate) >= self.vacancy:
+                return True
+
 
 @receiver(post_save, sender=Recruitment)
 def create_initial_stage(sender, instance, created, **kwargs):

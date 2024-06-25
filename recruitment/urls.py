@@ -94,11 +94,11 @@ urlpatterns = [
         views.update_candidate_sequence,
         name="update-candidate-sequence",
     ),
-    path(
-        "update-candidate-stage",
-        views.update_candidate_stage,
-        name="update-candidate-stage",
-    ),
+    # path(
+    #     "update-candidate-stage",
+    #     views.update_candidate_stage,
+    #     name="update-candidate-stage",
+    # ),
     path(
         "candidate-stage-component",
         views.candidate_component,
@@ -544,5 +544,10 @@ urlpatterns = [
         "resume-completion",
         views.resume_completion,
         name="resume-completion",
+    ),
+    path(
+        "check-vaccancy",
+        views.check_vaccancy,
+        name="check-vaccancy",
     ),
 ]

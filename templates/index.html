@@ -632,7 +632,13 @@
             if (jqXHR.status === 200) {
               $(`#stageLoad`+preStageId).click();
               $(`#stageLoad`+stageId).click();
-
+            }
+            if (response.message != 'No message'){
+              Swal.fire({
+                title: response.message ,
+                icon: 'warning',
+                confirmButtonText: 'Ok',
+              })
             }
           },
         });
@@ -650,11 +656,17 @@
           if (jqXHR.status === 200) {
             $(`#stageLoad`+preStageId).click();
             $(`#stageLoad`+stageId).click();
-
+          }
+          if (response.message != 'No message'){
+            Swal.fire({
+              title: response.message ,
+              icon: 'warning',
+              confirmButtonText: 'Ok',
+            })
           }
         },
       });
-}
+  }
   </script>
 </body>
 

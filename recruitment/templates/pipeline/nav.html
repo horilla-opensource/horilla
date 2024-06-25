@@ -347,7 +347,7 @@ $(document).ready(function(){
               }
             $.ajax({
               type: "get",
-              url: "{% url 'update-candidate-stage' %}",
+              url: "{% url 'update-candidate-sequence' %}",
               data: {
                 "stage_id":stageId,
                 "candidate_id":candidateId,
@@ -362,6 +362,13 @@ $(document).ready(function(){
                   position:"top-end"
 
                 })
+                if (response.message != 'No message'){
+                  Swal.fire({
+                    title: response.message ,
+                    icon: 'warning',
+                    confirmButtonText: 'Ok',
+                  })
+                }
                 return
               }
             });

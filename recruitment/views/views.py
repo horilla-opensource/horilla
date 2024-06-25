@@ -498,24 +498,28 @@ def update_candidate_sequence(request):
     order_list = request.GET.getlist("order")
     stage_id = request.GET["stage_id"]
     stage = cache[request.user.id]["stages"].filter(id=stage_id).first()
+    message = "No message"
     for index, cand_id in enumerate(order_list):
         candidate = cache[request.user.id]["candidates"].filter(id=cand_id)
         candidate.update(sequence=index, stage_id=stage)
-    return HttpResponse("")
+    if stage.stage_type == "hired":
+        if stage.recruitment_id.is_vacancy_filled():
+            message = _("Vaccancy is filled")
+    return JsonResponse({"message": message})
 
 
-@login_required
-@manager_can_enter(perm="recruitment.change_candidate")
-def update_candidate_stage(request):
-    """
-    Update candidate stage
-    """
-    stage_id = request.GET["stage_id"]
-    candidate_id = request.GET["candidate_id"]
-    stage = Stage.objects.get(id=stage_id)
-    candidate = cache[request.user.id]["candidates"].filter(id=candidate_id)
-    candidate.update(stage_id=stage)
-    return update_candidate_sequence(request)
+# @login_required
+# @manager_can_enter(perm="recruitment.change_candidate")
+# def update_candidate_stage(request):
+#     """
+#     Update candidate stage
+#     """
+#     stage_id = request.GET["stage_id"]
+#     candidate_id = request.GET["candidate_id"]
+#     stage = Stage.objects.get(id=stage_id)
+#     candidate = cache[request.user.id]["candidates"].filter(id=candidate_id)
+#     candidate.update(stage_id=stage)
+#     return update_candidate_sequence(request)
 
 
 def limited_paginator_qry(queryset, page):
@@ -566,6 +570,7 @@ def change_candidate_stage(request):
     if request.method == "POST":
         canIds = request.POST["canIds"]
         stage_id = request.POST["stageId"]
+        message = "No message"
         if request.GET.get("bulk") == "True":
             canIds = json.loads(canIds)
             for cand_id in canIds:
@@ -577,6 +582,10 @@ def change_candidate_stage(request):
                     if stage:
                         candidate.stage_id = stage
                         candidate.save()
+                        if stage.stage_type == "hired":
+                            if stage.recruitment_id.is_vacancy_filled():
+                                message = _("Vaccancy is filled")
+                        # hired_stage = True if stage.stage_type == 'hired' else False
                         messages.success(request, "Candidate stage updated")
                 except Candidate.DoesNotExist:
                     messages.error(request, _("Candidate not found."))
@@ -589,10 +598,16 @@ def change_candidate_stage(request):
                 if stage:
                     candidate.stage_id = stage
                     candidate.save()
+                    if stage.stage_type == "hired":
+                        if stage.recruitment_id.is_vacancy_filled():
+                            message = _("Vaccancy is filled")
+                    # hired_stage = True if stage.stage_type == 'hired' else False
+                    candidate.stage_id = stage
+                    candidate.save()
                     messages.success(request, "Candidate stage updated")
             except Candidate.DoesNotExist:
                 messages.error(request, _("Candidate not found."))
-        return HttpResponse()
+        return JsonResponse({"message": message})
     candidate_id = request.GET["candidate_id"]
     stage_id = request.GET["stage_id"]
     candidate = Candidate.objects.get(id=candidate_id)
@@ -2718,3 +2733,15 @@ def resume_completion(request):
     contact_info = extract_info(resume_file)
 
     return JsonResponse(contact_info)
+
+
+def check_vaccancy(request):
+    """
+    check vaccancy of recruitment
+    """
+    stage_id = request.GET.get("stageId")
+    stage = Stage.objects.get(id=stage_id)
+    message = "No message"
+    if stage and stage.recruitment_id.is_vacancy_filled():
+        message = _("Vaccancy is filled")
+    return JsonResponse({"message": message})
