@@ -90,6 +90,11 @@ urlpatterns = [
     ),
     path("get-stage-count", views.get_stage_badge_count, name="get-stage-count"),
     path(
+        "update-candidate-stage-and-sequence",
+        views.update_candidate_stage_and_sequence,
+        name="update-candidate-stage-and-sequence",
+    ),
+    path(
         "update-candidate-sequence",
         views.update_candidate_sequence,
         name="update-candidate-sequence",

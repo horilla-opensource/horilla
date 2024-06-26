@@ -358,17 +358,25 @@ def recruitment_pipeline(request):
     This method is used to filter out candidate through pipeline structure
     """
     view = request.GET.get("view")
-    rec = Recruitment.objects.filter(is_active=True)
-    filter_obj = RecruitmentFilter(request.GET, queryset=rec)
+    filter_obj = RecruitmentFilter(
+        request.GET,
+    )
+    rec = filter_obj.qs.filter(is_active=True)
     # user_recruitments[request.user.id] = {
     #     "recruitments": rec,
     # }
-    if filter_obj.qs.exists() and view == "card":
-        template = "pipeline/pipeline_card.html"
-    elif rec.exists():
+    if filter_obj.qs.exists():
         template = "pipeline/pipeline.html"
     else:
         template = "pipeline/pipeline_empty.html"
+    context = {
+        "candidates": Candidate.objects.none(),
+        "stages": Stage.objects.none(),
+        "recruitments": Recruitment.objects.none(),
+        "filter_dict": {},
+        "filter_query": request.GET,
+    }
+    CACHE.set(request.session.session_key, context)
     stage_filter = StageFilter(request.GET)
     candidate_filter = CandidateFilter(request.GET)
     recruitments = paginator_qry_recruitment_limited(
@@ -390,7 +398,10 @@ def recruitment_pipeline(request):
     )
 
 
-cache = {}
+# Instantiate the thread-safe cache
+from recruitment.cache import ThreadSafeCache
+
+CACHE = ThreadSafeCache()
 
 
 @login_required
@@ -421,13 +432,26 @@ def filter_pipeline(request):
     filter_dict = parse_qs(request.GET.urlencode())
     filter_dict = get_key_instances(Recruitment, filter_dict)
 
-    cache[request.user.id] = {
-        "candidates": candidate_filter.qs.filter(is_active=True).order_by("sequence"),
-        "stages": stage_filter.qs.order_by("sequence"),
-        "recruitments": recruitments,
-        "filter_dict": filter_dict,
-        "filter_query": request.GET,
-    }
+    # CACHE[request.session.session_key] = {
+    #     "candidates": candidate_filter.qs.filter(is_active=True).order_by("sequence"),
+    #     "stages": stage_filter.qs.order_by("sequence"),
+    #     "recruitments": recruitments,
+    #     "filter_dict": filter_dict,
+    #     "filter_query": request.GET,
+    # }
+    CACHE.set(
+        request.session.session_key,
+        {
+            "candidates": candidate_filter.qs.filter(is_active=True).order_by(
+                "sequence"
+            ),
+            "stages": stage_filter.qs.order_by("sequence"),
+            "recruitments": recruitments,
+            "filter_dict": filter_dict,
+            "filter_query": request.GET,
+        },
+        timeout=300,
+    )
 
     previous_data = request.GET.urlencode()
     paginator = Paginator(recruitments, 4)
@@ -472,7 +496,10 @@ def stage_component(request, view: str = "list"):
     """
     recruitment_id = request.GET["rec_id"]
     recruitment = Recruitment.objects.get(id=recruitment_id)
-    ordered_stages = cache[request.user.id]["stages"].filter(
+    # ordered_stages = CACHE[request.session.session_key]["stages"].filter(
+    #     recruitment_id__id=recruitment_id
+    # )
+    ordered_stages = CACHE.get(request.session.session_key)["stages"].filter(
         recruitment_id__id=recruitment_id
     )
     template = "pipeline/components/stages_tab_content.html"
@@ -484,9 +511,31 @@ def stage_component(request, view: str = "list"):
         {
             "rec": recruitment,
             "ordered_stages": ordered_stages,
-            "filter_dict": cache[request.user.id]["filter_dict"],
+            "filter_dict": CACHE.get(request.session.session_key)["filter_dict"],
         },
     )
+
+
+@login_required
+@manager_can_enter(perm="recruitment.change_candidate")
+def update_candidate_stage_and_sequence(request):
+    """
+    Update candidate sequence method
+    """
+    order_list = request.GET.getlist("order")
+    stage_id = request.GET["stage_id"]
+    stage = CACHE.get(request.session.session_key)["stages"].filter(id=stage_id).first()
+    context = {}
+    for index, cand_id in enumerate(order_list):
+        candidate = CACHE.get(request.session.session_key)["candidates"].filter(
+            id=cand_id
+        )
+        candidate.update(sequence=index, stage_id=stage)
+    if stage.stage_type == "hired":
+        if stage.recruitment_id.is_vacancy_filled():
+            context["message"] = _("Vaccancy is filled")
+            context["vacancy"] = stage.recruitment_id.vacancy
+    return JsonResponse(context)
 
 
 @login_required
@@ -497,15 +546,15 @@ def update_candidate_sequence(request):
     """
     order_list = request.GET.getlist("order")
     stage_id = request.GET["stage_id"]
-    stage = cache[request.user.id]["stages"].filter(id=stage_id).first()
+    stage = CACHE.get(request.session.session_key)["stages"].filter(id=stage_id).first()
     message = "No message"
+    data = {}
     for index, cand_id in enumerate(order_list):
-        candidate = cache[request.user.id]["candidates"].filter(id=cand_id)
+        candidate = CACHE.get(request.session.session_key)["candidates"].filter(
+            id=cand_id
+        )
         candidate.update(sequence=index, stage_id=stage)
-    if stage.stage_type == "hired":
-        if stage.recruitment_id.is_vacancy_filled():
-            message = _("Vaccancy is filled")
-    return JsonResponse({"message": message})
+    return JsonResponse(data)
 
 
 # @login_required
@@ -517,7 +566,7 @@ def update_candidate_sequence(request):
 #     stage_id = request.GET["stage_id"]
 #     candidate_id = request.GET["candidate_id"]
 #     stage = Stage.objects.get(id=stage_id)
-#     candidate = cache[request.user.id]["candidates"].filter(id=candidate_id)
+#     candidate = CACHE[request.session.session_key]["candidates"].filter(id=candidate_id)
 #     candidate.update(stage_id=stage)
 #     return update_candidate_sequence(request)
 
@@ -539,11 +588,13 @@ def candidate_component(request):
     Candidate component
     """
     stage_id = request.GET.get("stage_id")
-    stage = cache[request.user.id]["stages"].filter(id=stage_id).first()
-    candidates = cache[request.user.id]["candidates"].filter(stage_id=stage)
+    stage = CACHE.get(request.session.session_key)["stages"].filter(id=stage_id).first()
+    candidates = CACHE.get(request.session.session_key)["candidates"].filter(
+        stage_id=stage
+    )
 
     template = "pipeline/components/candidate_stage_component.html"
-    if cache[request.user.id]["filter_query"].get("view") == "card":
+    if CACHE.get(request.session.session_key)["filter_query"].get("view") == "card":
         template = "pipeline/kanban_components/candidate_kanban_components.html"
 
     now = timezone.now()
@@ -570,7 +621,7 @@ def change_candidate_stage(request):
     if request.method == "POST":
         canIds = request.POST["canIds"]
         stage_id = request.POST["stageId"]
-        message = "No message"
+        context = {}
         if request.GET.get("bulk") == "True":
             canIds = json.loads(canIds)
             for cand_id in canIds:
@@ -584,8 +635,8 @@ def change_candidate_stage(request):
                         candidate.save()
                         if stage.stage_type == "hired":
                             if stage.recruitment_id.is_vacancy_filled():
-                                message = _("Vaccancy is filled")
-                        # hired_stage = True if stage.stage_type == 'hired' else False
+                                context["message"] = _("Vaccancy is filled")
+                                context["vacancy"] = stage.recruitment_id.vacancy
                         messages.success(request, "Candidate stage updated")
                 except Candidate.DoesNotExist:
                     messages.error(request, _("Candidate not found."))
@@ -600,14 +651,14 @@ def change_candidate_stage(request):
                     candidate.save()
                     if stage.stage_type == "hired":
                         if stage.recruitment_id.is_vacancy_filled():
-                            message = _("Vaccancy is filled")
-                    # hired_stage = True if stage.stage_type == 'hired' else False
+                            context["message"] = _("Vaccancy is filled")
+                            context["vacancy"] = stage.recruitment_id.vacancy
                     candidate.stage_id = stage
                     candidate.save()
                     messages.success(request, "Candidate stage updated")
             except Candidate.DoesNotExist:
                 messages.error(request, _("Candidate not found."))
-        return JsonResponse({"message": message})
+        return JsonResponse(context)
     candidate_id = request.GET["candidate_id"]
     stage_id = request.GET["stage_id"]
     candidate = Candidate.objects.get(id=candidate_id)
@@ -656,8 +707,6 @@ def recruitment_archive(request, rec_id):
         recruitment.save()
     except (Recruitment.DoesNotExist, OverflowError):
         messages.error(request, _("Recruitment Does not exists.."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 

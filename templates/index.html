@@ -633,12 +633,13 @@
               $(`#stageLoad`+preStageId).click();
               $(`#stageLoad`+stageId).click();
             }
-            if (response.message != 'No message'){
+            if (response.message) {
               Swal.fire({
-                title: response.message ,
-                icon: 'warning',
+                title: response.message,
+                text: `Total vacancy is ${response.vacancy}.`, // Using template literals
+                icon: 'info',
                 confirmButtonText: 'Ok',
-              })
+              });
             }
           },
         });
@@ -657,12 +658,13 @@
             $(`#stageLoad`+preStageId).click();
             $(`#stageLoad`+stageId).click();
           }
-          if (response.message != 'No message'){
+          if (response.message) {
             Swal.fire({
-              title: response.message ,
-              icon: 'warning',
+              title: response.message,
+              text: `Total vacancy is ${response.vacancy}.`, // Using template literals
+              icon: 'info',
               confirmButtonText: 'Ok',
-            })
+            });
           }
         },
       });

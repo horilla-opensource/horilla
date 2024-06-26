@@ -342,36 +342,39 @@ $(document).ready(function(){
           if (stageId != window.candidateCurrentStage) {
               array = $(this).find("input[type=text][name=order]:hidden")
               values = []
-              for (let index = 0; index < array.length; index++) {
-                values.push($(array[index]).val())
-              }
-            $.ajax({
-              type: "get",
-              url: "{% url 'update-candidate-sequence' %}",
-              data: {
-                "stage_id":stageId,
-                "candidate_id":candidateId,
-                "order":values,
-
-              },
-              success: function (response) {
-                row.find('[name="stage_id"]').val(stageId)
-                Toast.fire({
-                  icon: 'success',
-                  title: '{% trans "Candidate stage updated" %}',
-                  position:"top-end"
-
-                })
-                if (response.message != 'No message'){
-                  Swal.fire({
-                    title: response.message ,
-                    icon: 'warning',
-                    confirmButtonText: 'Ok',
-                  })
+              setTimeout(function () {
+                for (let index = 0; index < array.length; index++) {
+                  values.push($(array[index]).val())
                 }
-                return
-              }
-            });
+                $.ajax({
+                  type: "get",
+                  url: "{% url 'update-candidate-stage-and-sequence' %}",
+                  data: {
+                    "stage_id":stageId,
+                    "candidate_id":candidateId,
+                    "order":values,
+
+                  },
+                  success: function (response) {
+                    row.find('[name="stage_id"]').val(stageId)
+                    Toast.fire({
+                      icon: 'success',
+                      title: '{% trans "Candidate stage updated" %}',
+                      position:"top-end"
+                    })
+                    if (response.message) {
+                      Swal.fire({
+                        title: response.message,
+                        text: `Total vacancy is ${response.vacancy}.`, // Using template literals
+                        icon: 'info',
+                        confirmButtonText: 'Ok',
+                      });
+                    }
+                    return
+                  }
+                });
+              }, 100);
+
             Toast.fire({
               icon: 'error',
               title: '{% trans "Something went wrong" %}',
@@ -420,7 +423,6 @@ $(document).ready(function(){
                   $(`.stage-badges`).removeAttr("title")
                 }
               });
-
           }
       });
     }
@@ -432,9 +434,6 @@ $(document).on('htmx:beforeRequest', function(event) {
     // Check if the event is for the element you're interested in
     isDrag = $(event.target).attr("data-drag-htmx")
     if (isDrag == "true") {
-
-
-
       $.ajax({
         type: "get",
         url: "{% url 'update-candidate-sequence' %}",
