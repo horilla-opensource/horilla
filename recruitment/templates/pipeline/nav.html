@@ -370,18 +370,16 @@ $(document).ready(function(){
                         confirmButtonText: 'Ok',
                       });
                     }
-                    return
-                  }
+                  },
+                  error: function(xhr, status, error) {
+                    Toast.fire({
+                    icon: 'error',
+                    title: '{% trans "Something went wrong" %}',
+                    position:"top-end"
+                  })
+                }
                 });
               }, 100);
-
-            Toast.fire({
-              icon: 'error',
-              title: '{% trans "Something went wrong" %}',
-              position:"top-end"
-
-            })
-            return
           }
         }
       });
@@ -442,7 +440,6 @@ $(document).on('htmx:beforeRequest', function(event) {
           "order":values
         },
         success: function (response) {
-
         }
       });
     }
