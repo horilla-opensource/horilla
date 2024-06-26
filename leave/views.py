@@ -4688,8 +4688,7 @@ def delete_compensatory_leave(request, comp_id):
 
     except:
         messages.error(request, _("Sorry, something went wrong!"))
-    com_leave_requests = CompensatoryLeaveRequest.objects.all()
-    if com_leave_requests.exists():
+    if request.GET.get("list") == "True":
         return redirect(filter_compensatory_leave)
     else:
         return HttpResponse("<script>location.reload();</script>")
@@ -4730,7 +4729,7 @@ def approve_compensatory_leave(request, comp_id):
     except:
         messages.error(request, _("Sorry, something went wrong!"))
     if request.GET.get("individual"):
-        return redirect(view_compensatory_leave)
+        return HttpResponse("<script>location.reload();</script>")
     return redirect(filter_compensatory_leave)
 
 

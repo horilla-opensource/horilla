@@ -121,8 +121,9 @@
                 {% endif %}
                 {% if comp_leave_req.status !=  'approved' %}
                     <a class="oh-btn oh-btn--danger w-100" id="delete-link"
-                        href="{% url 'delete-compensatory-leave' comp_leave_req.id %}"
-                        onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');"
+                        hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+                        hx-post="{% url 'delete-compensatory-leave' comp_leave_req.id %}?list=False"
+                        hx-target="#comp-leave-tabs"
                         title="{% trans 'Delete' %}">
                         <ion-icon
                             name="trash-outline"
@@ -141,7 +142,9 @@
                 {% if perms.leave.change_compensatoryleaverequest or request.user|is_reportingmanager %}
                     {% if comp_leave_req.status == 'requested' %}
                         <a
-                            href="{% url 'approve-compensatory-leave' comp_leave_req.id %}?individual=True"
+                            hx-confirm="{% trans 'Are you sure you want to approve ?' %}"
+                            hx-post="{% url 'approve-compensatory-leave' comp_leave_req.id %}?individual=True"
+                            hx-target="#comp-leave-tabs"
                             class="oh-btn oh-btn--success w-100"
                             title="{% trans 'Approve' %}"                        >
                             <ion-icon class="me-1 " name="checkmark-outline"></ion-icon>
