@@ -20,6 +20,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
@@ -1170,7 +1171,7 @@ def validate_bulk_attendance(request):
             verb_de=f"Ihre Anwesenheit für das Datum {attendance.attendance_date} wurde bestätigt",
             verb_es=f"Se ha validado su asistencia para la fecha {attendance.attendance_date}",
             verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée",
-            redirect="/attendance/view-my-attendance",
+            redirect=reverse("view-my-attendance"),
             icon="checkmark",
         )
     return JsonResponse({"message": f"{attendance.employee_id} success"})
@@ -1199,7 +1200,7 @@ def validate_this_attendance(request, obj_id):
             verb_de=f"Deine Anwesenheit für das Datum {attendance.attendance_date} ist bestätigt.",
             verb_es=f"Se valida tu asistencia para la fecha {attendance.attendance_date}.",
             verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée.",
-            redirect="/attendance/view-my-attendance",
+            redirect=reverse("view-my-attendance"),
             icon="checkmark",
         )
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -1232,7 +1233,7 @@ def revalidate_this_attendance(request, obj_id):
                 verb_de=f"{attendance.employee_id} beantragte eine Neubewertung der Teilnahme am {attendance.attendance_date}",
                 verb_es=f"{attendance.employee_id} solicitó la validación nuevamente para la asistencia del {attendance.attendance_date}",
                 verb_fr=f"{attendance.employee_id} a demandé une revalidation pour la présence du {attendance.attendance_date}",
-                redirect="/attendance/view-my-attendance",
+                redirect=reverse("view-my-attendance"),
                 icon="refresh",
             )
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -1259,7 +1260,7 @@ def approve_overtime(request, obj_id):
             verb_de=f"Die Überstunden für den {attendance.attendance_date} wurden genehmigt.",
             verb_es=f"Se ha aprobado el tiempo extra de asistencia para el {attendance.attendance_date}.",
             verb_fr=f"Les heures supplémentaires pour la date {attendance.attendance_date} ont été approuvées.",
-            redirect="/attendance/attendance-overtime-view",
+            redirect=reverse("attendance-overtime-view"),
             icon="checkmark",
         )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -1286,7 +1287,7 @@ def approve_bulk_overtime(request):
             verb_de=f"Überstunden für die Anwesenheit am {attendance.attendance_date} genehmigt",
             verb_es=f"Horas extra aprobadas para la asistencia del {attendance.attendance_date}",
             verb_fr=f"Heures supplémentaires approuvées pour la présence du {attendance.attendance_date}",
-            redirect="/attendance/attendance-overtime-view",
+            redirect=reverse("attendance-overtime-view"),
             icon="checkmark",
         )
 

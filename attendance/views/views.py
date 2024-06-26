@@ -25,6 +25,7 @@ from django.core.paginator import Paginator
 from django.db.models import ProtectedError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
@@ -1227,7 +1228,7 @@ def validate_bulk_attendance(request):
                 verb_de=f"Ihre Anwesenheit für das Datum {attendance.attendance_date} wurde bestätigt",
                 verb_es=f"Se ha validado su asistencia para la fecha {attendance.attendance_date}",
                 verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée",
-                redirect=f"/attendance/view-my-attendance?id={attendance.id}",
+                redirect=reverse("view-my-attendance") + f"?id={attendance.id}",
                 icon="checkmark",
             )
         except (Attendance.DoesNotExist, OverflowError, ValueError):
@@ -1264,7 +1265,7 @@ def validate_this_attendance(request, obj_id):
             verb_de=f"Deine Anwesenheit für das Datum {attendance.attendance_date} ist bestätigt.",
             verb_es=f"Se valida tu asistencia para la fecha {attendance.attendance_date}.",
             verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée.",
-            redirect=f"/attendance/view-my-attendance?id={attendance.id}",
+            redirect=reverse("view-my-attendance") + f"?id={attendance.id}",
             icon="checkmark",
         )
     except (Attendance.DoesNotExist, ValueError):
@@ -1303,7 +1304,7 @@ def revalidate_this_attendance(request, obj_id):
                     para la asistencia del {attendance.attendance_date}",
                 verb_fr=f"{attendance.employee_id} a demandé une revalidation pour la \
                     présence du {attendance.attendance_date}",
-                redirect=f"/attendance/view-my-attendance?id={attendance.id}",
+                redirect=reverse("view-my-attendance") + f"?id={attendance.id}",
                 icon="refresh",
             )
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -1342,7 +1343,7 @@ def approve_overtime(request, obj_id):
                     {attendance.attendance_date}.",
                 verb_fr=f"Les heures supplémentaires pour la date\
                       {attendance.attendance_date} ont été approuvées.",
-                redirect=f"/attendance/attendance-overtime-view?id={attendance.id}",
+                redirect=reverse("attendance-overtime-view") + f"?id={attendance.id}",
                 icon="checkmark",
             )
     except (Attendance.DoesNotExist, OverflowError):
@@ -1377,7 +1378,7 @@ def approve_bulk_overtime(request):
                     {attendance.attendance_date}",
                 verb_fr=f"Heures supplémentaires approuvées pour la présence du \
                     {attendance.attendance_date}",
-                redirect=f"/attendance/attendance-overtime-view?id={attendance.id}",
+                redirect=reverse("attendance-overtime-view") + f"?id={attendance.id}",
                 icon="checkmark",
             )
         except (Attendance.DoesNotExist, OverflowError, ValueError):
@@ -1841,7 +1842,8 @@ def create_attendancerequest_comment(request, attendance_id):
                             verb_de=f"{attendance.employee_id}s Anfrage zur Anwesenheit hat einen Kommentar erhalten.",
                             verb_es=f"La solicitud de asistencia de {attendance.employee_id} ha recibido un comentario.",
                             verb_fr=f"La demande de présence de {attendance.employee_id} a reçu un commentaire.",
-                            redirect=f"/attendance/request-attendance-view?id={attendance.id}",
+                            redirect=reverse("request-attendance-view")
+                            + f"?id={attendance.id}",
                             icon="chatbox-ellipses",
                         )
                     elif (
@@ -1857,7 +1859,8 @@ def create_attendancerequest_comment(request, attendance_id):
                             verb_de="Ihr Antrag auf Anwesenheit hat einen Kommentar erhalten.",
                             verb_es="Tu solicitud de asistencia ha recibido un comentario.",
                             verb_fr="Votre demande de présence a reçu un commentaire.",
-                            redirect=f"/attendance/request-attendance-view?id={attendance.id}",
+                            redirect=reverse("request-attendance-view")
+                            + f"?id={attendance.id}",
                             icon="chatbox-ellipses",
                         )
                     else:
@@ -1873,7 +1876,8 @@ def create_attendancerequest_comment(request, attendance_id):
                             verb_de=f"{attendance.employee_id}s Anfrage zur Anwesenheit hat einen Kommentar erhalten.",
                             verb_es=f"La solicitud de asistencia de {attendance.employee_id} ha recibido un comentario.",
                             verb_fr=f"La demande de présence de {attendance.employee_id} a reçu un commentaire.",
-                            redirect=f"/attendance/request-attendance-view?id={attendance.id}",
+                            redirect=reverse("request-attendance-view")
+                            + f"?id={attendance.id}",
                             icon="chatbox-ellipses",
                         )
                 else:
@@ -1886,7 +1890,8 @@ def create_attendancerequest_comment(request, attendance_id):
                         verb_de="Ihr Antrag auf Anwesenheit hat einen Kommentar erhalten.",
                         verb_es="Tu solicitud de asistencia ha recibido un comentario.",
                         verb_fr="Votre demande de présence a reçu un commentaire.",
-                        redirect=f"/attendance/request-attendance-view?id={attendance.id}",
+                        redirect=reverse("request-attendance-view")
+                        + f"?id={attendance.id}",
                         icon="chatbox-ellipses",
                     )
             return render(
