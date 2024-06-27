@@ -2,6 +2,7 @@ import calendar
 from datetime import date, datetime, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from django.urls import reverse
 
 from notifications.signals import notify
 
@@ -51,7 +52,7 @@ def update_rotating_work_type_assign(rotating_work_type, new_date):
             verb_es="Su tipo de trabajo ha sido cambiado.",
             verb_fr="Votre type de travail a été modifié.",
             icon="infinite",
-            redirect="/employee/employee-profile",
+            redirect=reverse("employee-profile"),
         )
     return
 
@@ -166,7 +167,7 @@ def update_rotating_shift_assign(rotating_shift, new_date):
             verb_es="Tu turno ha sido cambiado.",
             verb_fr="Votre quart de travail a été modifié.",
             icon="infinite",
-            redirect="/employee/employee-profile",
+            redirect=reverse("employee-profile"),
         )
     return
 
@@ -276,7 +277,7 @@ def switch_shift():
                     verb_es="Notificación de cambios de turno",
                     verb_fr="Notification des changements de quart de travail",
                     icon="refresh",
-                    redirect="/employee/employee-profile",
+                    redirect=reverse("employee-profile"),
                 )
     return
 
@@ -318,7 +319,7 @@ def undo_shift():
                     verb_es="Notificación de cambios de turno, Fecha solicitada vencida.",
                     verb_fr="Notification de changement d'équipe, la date demandée a expiré.",
                     icon="refresh",
-                    redirect="/employee/employee-profile",
+                    redirect=reverse("employee-profile"),
                 )
     return
 
@@ -358,7 +359,7 @@ def switch_work_type():
                 verb_es="Notificación de cambios de tipo de trabajo",
                 verb_fr="Notification de changement de type de travail",
                 icon="swap-horizontal",
-                redirect="/employee/employee-profile",
+                redirect=reverse("employee-profile"),
             )
     return
 
@@ -400,7 +401,7 @@ def undo_work_type():
                 verb_es="Notificación de cambios de tipo de trabajo, fecha solicitada vencida.",
                 verb_fr="Notification de changement de type de travail, la date demandée a expiré.",
                 icon="swap-horizontal",
-                redirect="/employee/employee-profile",
+                redirect=reverse("employee-profile"),
             )
     return
 

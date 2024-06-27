@@ -22,7 +22,7 @@ from django.db.models import F, ProtectedError, Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -147,8 +147,6 @@ from payroll.models.models import EncashmentGeneralSettings
 from payroll.models.tax_models import PayrollSettings
 from pms.models import KeyResult
 from recruitment.models import RejectReason
-
-
 
 
 def custom404(request):
@@ -1523,7 +1521,7 @@ def rotating_work_type_assign_add(request):
                 verb_es="Se le agrega al tipo de trabajo rotativo",
                 verb_fr="Vous êtes ajouté au type de travail rotatif",
                 icon="infinite",
-                redirect="/employee/employee-profile/",
+                redirect=reverse("employee-profile"),
             )
 
             messages.success(request, _("Rotating work type assigned."))
@@ -2173,7 +2171,7 @@ def rotating_shift_assign_add(request):
                 verb_es="Estás agregado a turno rotativo",
                 verb_fr="Vous êtes ajouté au quart de travail rotatif",
                 icon="infinite",
-                redirect="/employee/employee-profile/",
+                redirect=reverse("employee-profile"),
             )
 
             messages.success(request, _("Rotating shift assigned."))
@@ -2493,16 +2491,13 @@ def get_models_in_app(app_name):
         return []
 
 
-#Temporary fix view was not working 
 @login_required
 @manager_can_enter("auth.view_permission")
 def employee_permission_assign(request):
     """
     This method is used to assign permissions to employee user
     """
-    
-    
-    
+
     context = {}
     template = "base/auth/permission.html"
     if request.GET.get("profile_tab"):
@@ -2857,7 +2852,7 @@ def work_type_request(request):
                     verb_fr=f"Vous avez une nouvelle demande de type de travail\
                             à valider pour {instance.employee_id}",
                     icon="information",
-                    redirect=f"/employee/work-type-request-view?id={instance.id}",
+                    redirect=reverse("work-type-request-view") + f"?id={instance.id}",
                 )
             except Exception as error:
                 pass
@@ -2905,7 +2900,7 @@ def work_type_request_cancel(request, id):
             verb_de="Ihre Arbeitstypanfrage wurde storniert",
             verb_es="Su solicitud de tipo de trabajo ha sido cancelada",
             verb_fr="Votre demande de type de travail a été annulée",
-            redirect=f"/employee/work-type-request-view?id={work_type_request.id}",
+            redirect=reverse("work-type-request-view") + f"?id={work_type_request.id}",
             icon="close",
         )
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -2945,7 +2940,8 @@ def work_type_request_bulk_cancel(request):
                 verb_de="Ihre Arbeitstypanfrage wurde storniert.",
                 verb_es="Su solicitud de tipo de trabajo ha sido cancelada.",
                 verb_fr="Votre demande de type de travail a été annulée.",
-                redirect=f"/employee/work-type-request-view?id={work_type_request.id}",
+                redirect=reverse("work-type-request-view")
+                + f"?id={work_type_request.id}",
                 icon="close",
             )
             result = True
@@ -2981,7 +2977,8 @@ def work_type_request_approve(request, id):
                 verb_de="Ihre Arbeitstypanfrage wurde genehmigt.",
                 verb_es="Su solicitud de tipo de trabajo ha sido aprobada.",
                 verb_fr="Votre demande de type de travail a été approuvée.",
-                redirect=f"/employee/work-type-request-view?id={work_type_request.id}",
+                redirect=reverse("work-type-request-view")
+                + f"?id={work_type_request.id}",
                 icon="checkmark",
             )
 
@@ -3032,7 +3029,8 @@ def work_type_request_bulk_approve(request):
                 verb_de="Ihre Arbeitstypanfrage wurde genehmigt.",
                 verb_es="Su solicitud de tipo de trabajo ha sido aprobada.",
                 verb_fr="Votre demande de type de travail a été approuvée.",
-                redirect=f"/employee/work-type-request-view?id={work_type_request.id}",
+                redirect=reverse("work-type-request-view")
+                + f"?id={work_type_request.id}",
                 icon="checkmark",
             )
             result = True
@@ -3246,7 +3244,7 @@ def shift_request(request):
                     verb_fr=f"Vous avez une nouvelle demande de quart de\
                         travail à approuver pour {instance.employee_id}",
                     icon="information",
-                    redirect=f"/employee/shift-request-view?id={instance.id}",
+                    redirect=reverse("shift-request-view") + f"?id={instance.id}",
                 )
             except Exception as e:
                 pass
@@ -3320,7 +3318,7 @@ def shift_request_allocation(request):
                     verb_es=f"Tienes una nueva solicitud de reasignación de turnos para aprobar para {instance.employee_id}.",
                     verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift à approuver pour {instance.employee_id}.",
                     icon="information",
-                    redirect=f"/employee/shift-request-view?id={instance.id}",
+                    redirect=reverse("shift-request-view") + f"?id={instance.id}",
                 )
             except Exception as e:
                 pass
@@ -3335,7 +3333,7 @@ def shift_request_allocation(request):
                     verb_es=f"Tienes una nueva solicitud de reasignación de turnos de {instance.employee_id}.",
                     verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift de {instance.employee_id}.",
                     icon="information",
-                    redirect=f"/employee/shift-request-view?id={instance.id}",
+                    redirect=reverse("shift-request-view") + f"?id={instance.id}",
                 )
             except Exception as e:
                 pass
@@ -3684,7 +3682,7 @@ def shift_allocation_request_update(request, shift_request_id):
                     verb_es=f"Tienes una nueva solicitud de reasignación de turnos para aprobar para {instance.employee_id}.",
                     verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift à approuver pour {instance.employee_id}.",
                     icon="information",
-                    redirect=f"/employee/shift-request-view?id={instance.id}",
+                    redirect=reverse("shift-request-view") + f"?id={instance.id}",
                 )
             except Exception as e:
                 pass
@@ -3699,7 +3697,7 @@ def shift_allocation_request_update(request, shift_request_id):
                     verb_es=f"Tienes una nueva solicitud de reasignación de turnos de {instance.employee_id}.",
                     verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift de {instance.employee_id}.",
                     icon="information",
-                    redirect=f"/employee/shift-request-view?id={instance.id}",
+                    redirect=reverse("shift-request-view") + f"?id={instance.id}",
                 )
             except Exception as e:
                 pass
@@ -3757,7 +3755,7 @@ def shift_request_cancel(request, id):
             verb_de="Ihr Schichtantrag wurde storniert.",
             verb_es="Se ha cancelado su solicitud de turno.",
             verb_fr="Votre demande de quart a été annulée.",
-            redirect=f"/employee/shift-request-view?id={shift_request.id}",
+            redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
             icon="close",
         )
         if shift_request.reallocate_to:
@@ -3769,7 +3767,7 @@ def shift_request_cancel(request, id):
                 verb_de="Ihr Schichtantrag wurde storniert.",
                 verb_es="Se ha cancelado su solicitud de turno.",
                 verb_fr="Votre demande de quart a été annulée.",
-                redirect=f"/employee/shift-request-view?id={shift_request.id}",
+                redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
                 icon="close",
             )
 
@@ -3808,7 +3806,7 @@ def shift_allocation_request_cancel(request, id):
         verb_de="Ihr Schichtantrag wurde storniert.",
         verb_es="Se ha cancelado su solicitud de turno.",
         verb_fr="Votre demande de quart a été annulée.",
-        redirect=f"/employee/shift-request-view?id={shift_request.id}",
+        redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
         icon="close",
     )
 
@@ -3856,7 +3854,7 @@ def shift_request_bulk_cancel(request):
                 verb_de="Ihr Schichtantrag wurde storniert.",
                 verb_es="Se ha cancelado su solicitud de turno.",
                 verb_fr="Votre demande de quart a été annulée.",
-                redirect=f"/employee/shift-request-view?id={shift_request.id}",
+                redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
                 icon="close",
             )
             if shift_request.reallocate_to:
@@ -3868,7 +3866,7 @@ def shift_request_bulk_cancel(request):
                     verb_de="Ihr Schichtantrag wurde storniert.",
                     verb_es="Se ha cancelado su solicitud de turno.",
                     verb_fr="Votre demande de quart a été annulée.",
-                    redirect=f"/employee/shift-request-view?id={shift_request.id}",
+                    redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
                     icon="close",
                 )
             result = True
@@ -3916,7 +3914,7 @@ def shift_request_approve(request, id):
                 verb_de="Ihr Schichtantrag wurde genehmigt.",
                 verb_es="Se ha aprobado su solicitud de turno.",
                 verb_fr="Votre demande de quart a été approuvée.",
-                redirect=f"/employee/shift-request-view?id={shift_request.id}",
+                redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
                 icon="checkmark",
             )
             if shift_request.reallocate_to:
@@ -3928,7 +3926,7 @@ def shift_request_approve(request, id):
                     verb_de="Ihr Schichtantrag wurde genehmigt.",
                     verb_es="Se ha aprobado su solicitud de turno.",
                     verb_fr="Votre demande de quart a été approuvée.",
-                    redirect=f"/employee/shift-request-view?id={shift_request.id}",
+                    redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
                     icon="checkmark",
                 )
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -3964,7 +3962,7 @@ def shift_allocation_request_approve(request, id):
             verb_de=f"{request.user.employee_get} steht für die Verschiebung der Schichtzuteilung zur Verfügung.",
             verb_es=f"{request.user.employee_get} está disponible para la reasignación de turnos.",
             verb_fr=f"{request.user.employee_get} est disponible pour la réaffectation de shift.",
-            redirect=f"/employee/shift-request-view?id={shift_request.id}",
+            redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
             icon="checkmark",
         )
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -4019,7 +4017,7 @@ def shift_request_bulk_approve(request):
                 verb_de="Ihr Schichtantrag wurde genehmigt.",
                 verb_es="Se ha aprobado su solicitud de turno.",
                 verb_fr="Votre demande de quart a été approuvée.",
-                redirect=f"/employee/shift-request-view?id={shift_request.id}",
+                redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
                 icon="checkmark",
             )
         result = True
@@ -5216,7 +5214,7 @@ def create_shiftrequest_comment(request, shift_id):
                             verb_de=f"{shift.employee_id}s Schichtantrag hat einen Kommentar erhalten.",
                             verb_es=f"La solicitud de turno de {shift.employee_id} ha recibido un comentario.",
                             verb_fr=f"La demande de changement de poste de {shift.employee_id} a reçu un commentaire.",
-                            redirect=f"/employee/shift-request-view?id={shift.id}",
+                            redirect=reverse("shift-request-view") + f"?id={shift.id}",
                             icon="chatbox-ellipses",
                         )
                     elif (
@@ -5232,7 +5230,7 @@ def create_shiftrequest_comment(request, shift_id):
                             verb_de="Ihr Schichtantrag hat einen Kommentar erhalten.",
                             verb_es="Tu solicitud de turno ha recibido un comentario.",
                             verb_fr="Votre demande de changement de poste a reçu un commentaire.",
-                            redirect=f"/employee/shift-request-view?id={shift.id}",
+                            redirect=reverse("shift-request-view") + f"?id={shift.id}",
                             icon="chatbox-ellipses",
                         )
                     else:
@@ -5248,7 +5246,7 @@ def create_shiftrequest_comment(request, shift_id):
                             verb_de=f"{shift.employee_id}s Schichtantrag hat einen Kommentar erhalten.",
                             verb_es=f"La solicitud de turno de {shift.employee_id} ha recibido un comentario.",
                             verb_fr=f"La demande de changement de poste de {shift.employee_id} a reçu un commentaire.",
-                            redirect=f"/employee/shift-request-view?id={shift.id}",
+                            redirect=reverse("shift-request-view") + f"?id={shift.id}",
                             icon="chatbox-ellipses",
                         )
                 else:
@@ -5261,7 +5259,7 @@ def create_shiftrequest_comment(request, shift_id):
                         verb_de="Ihr Schichtantrag hat einen Kommentar erhalten.",
                         verb_es="Tu solicitud de turno ha recibido un comentario.",
                         verb_fr="Votre demande de changement de poste a reçu un commentaire.",
-                        redirect=f"/employee/shift-request-view?id={shift.id}",
+                        redirect=reverse("shift-request-view") + f"?id={shift.id}",
                         icon="chatbox-ellipses",
                     )
             return render(
@@ -5398,7 +5396,7 @@ def delete_shiftrequest_comment(request, comment_id):
     """
     This method is used to delete shift request comments
     """
-    comment = ShiftRequestComment.find(comment_id)
+    comment = ShiftRequestComment.objects.filter(id=comment_id)
     if not request.user.has_perm("base.delete_shiftrequestcomment"):
         comment = comment.filter(employee_id__employee_user_id=request.user)
     shift_id = comment.first().request_id.id
@@ -5456,7 +5454,8 @@ def create_worktyperequest_comment(request, worktype_id):
                             verb_de=f"{work_type.employee_id}s Arbeitsart-Antrag hat einen Kommentar erhalten.",
                             verb_es=f"La solicitud de tipo de trabajo de {work_type.employee_id} ha recibido un comentario.",
                             verb_fr=f"La demande de type de travail de {work_type.employee_id} a reçu un commentaire.",
-                            redirect=f"/employee/work-type-request-view?id={work_type.id}",
+                            redirect=reverse("work-type-request-view")
+                            + f"?id={work_type.id}",
                             icon="chatbox-ellipses",
                         )
                     elif (
@@ -5472,7 +5471,8 @@ def create_worktyperequest_comment(request, worktype_id):
                             verb_de="Ihr Arbeitsart-Antrag hat einen Kommentar erhalten.",
                             verb_es="Tu solicitud de tipo de trabajo ha recibido un comentario.",
                             verb_fr="Votre demande de type de travail a reçu un commentaire.",
-                            redirect=f"/employee/work-type-request-view?id={work_type.id}",
+                            redirect=reverse("work-type-request-view")
+                            + f"?id={work_type.id}",
                             icon="chatbox-ellipses",
                         )
                     else:
@@ -5488,7 +5488,8 @@ def create_worktyperequest_comment(request, worktype_id):
                             verb_de=f"{work_type.employee_id}s Arbeitsart-Antrag hat einen Kommentar erhalten.",
                             verb_es=f"La solicitud de tipo de trabajo de {work_type.employee_id} ha recibido un comentario.",
                             verb_fr=f"La demande de type de travail de {work_type.employee_id} a reçu un commentaire.",
-                            redirect=f"/employee/work-type-request-view?id={work_type.id}",
+                            redirect=reverse("work-type-request-view")
+                            + f"?id={work_type.id}",
                             icon="chatbox-ellipses",
                         )
                 else:
@@ -5501,7 +5502,8 @@ def create_worktyperequest_comment(request, worktype_id):
                         verb_de="Ihr Arbeitsart-Antrag hat einen Kommentar erhalten.",
                         verb_es="Tu solicitud de tipo de trabajo ha recibido un comentario.",
                         verb_fr="Votre demande de type de travail a reçu un commentaire.",
-                        redirect=f"/employee/work-type-request-view?id={work_type.id}",
+                        redirect=reverse("work-type-request-view")
+                        + f"?id={work_type.id}",
                         icon="chatbox-ellipses",
                     )
             return render(
