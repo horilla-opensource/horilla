@@ -25,6 +25,7 @@ from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
 from employee.models import Employee
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from leave.methods import is_company_leave, is_holiday
 from leave.models import (
     WEEK_DAYS,
     WEEKS,
@@ -260,6 +261,7 @@ class Attendance(HorillaModel):
     request_type = models.CharField(
         max_length=18, null=True, choices=status, default="update_request"
     )
+    is_holiday = models.BooleanField(default=False)
     requested_data = models.JSONField(null=True, editable=False)
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
@@ -382,34 +384,14 @@ class Attendance(HorillaModel):
                 current_date += timedelta(days=1)
 
         # Checking attendance date is in holiday list, if found making the minimum hour to 00:00
-        for leave in leaves:
-            if str(leave) == str(self.attendance_date):
-                self.minimum_hour = "00:00"
-                break
+        if is_holiday(self.attendance_date):
+            self.minimum_hour = "00:00"
+            self.is_holiday = True
 
-        # Making a dictonary contains week day value and leave day pairs
-        company_leaves = {}
-        company_leave = CompanyLeave.objects.all()
-        for com_leave in company_leave:
-            a = dict(WEEK_DAYS).get(com_leave.based_on_week_day)
-            b = com_leave.based_on_week
-            company_leaves[b] = a
-
-        # Checking the attendance date is in which week
-        week_in_month = str(((self.attendance_date.day - 1) // 7 + 1) - 1)
-
-        # Checking the attendance date is in the company leave or not
-        for pairs in company_leaves.items():
-            # For all weeks based_on_week is None
-            if str(pairs[0]) == "None":
-                if str(pairs[1]) == str(self.attendance_day):
-                    self.minimum_hour = "00:00"
-                    break
-            # Checking with based_on_week and attendance_date week
-            if str(pairs[0]) == week_in_month:
-                if str(pairs[1]) == str(self.attendance_day):
-                    self.minimum_hour = "00:00"
-                    break
+        # Checking attendance date is in company leave list, if found making the minimum hour to 00:00
+        if is_company_leave(self.attendance_date):
+            self.minimum_hour = "00:00"
+            self.is_holiday = True
 
         condition = AttendanceValidationCondition.objects.first()
         if self.is_validate_request:

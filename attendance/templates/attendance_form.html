@@ -20,7 +20,7 @@
 
         {{ field|add_class:"form-control" }}
       </div>
-
+      {{field.errors}}
       {% else %}
       <div class="col-12 col-md-6" id="id_{{ field.name }}_parent_div">
         <label
