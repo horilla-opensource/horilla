@@ -14,6 +14,7 @@ from django.core.paginator import Paginator
 from django.db.models import ProtectedError, Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
@@ -404,7 +405,7 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                         verb_es=f"Nueva solicitud de permiso creada para {leave_request.employee_id}.",
                         verb_fr=f"Nouvelle demande de congé créée pour {leave_request.employee_id}.",
                         icon="people-circle",
-                        redirect=f"/leave/request-view?id={leave_request.id}",
+                        redirect=reverse("request-view") + f"?id={leave_request.id}",
                     )
                 form = LeaveRequestCreationForm()
                 if referer_parts[-2] == "employee-view":
@@ -641,7 +642,7 @@ def leave_request_update(request, id):
                         verb_es=f"Solicitud de permiso actualizada para {leave_request.employee_id}.",
                         verb_fr=f"Demande de congé mise à jour pour {leave_request.employee_id}.",
                         icon="people-circle",
-                        redirect=f"/leave/request-view?id={leave_request.id}",
+                        redirect=reverse("request-view") + f"?id={leave_request.id}",
                     )
                 response = render(
                     request,
@@ -772,7 +773,7 @@ def leave_request_approve(request, id, emp_id=None):
                     verb_es="Se ha aprobado su solicitud de permiso",
                     verb_fr="Votre demande de congé a été approuvée",
                     icon="people-circle",
-                    redirect=f"/leave/user-request-view?id={leave_request.id}",
+                    redirect=reverse("user-request-view") + f"?id={leave_request.id}",
                 )
 
             mail_thread = LeaveMailSendThread(request, leave_request, type="approve")
@@ -915,7 +916,8 @@ def leave_request_cancel(request, id, emp_id=None):
                         verb_es="Tu solicitud de permiso ha sido rechazada",
                         verb_fr="Votre demande de congé a été rejetée",
                         icon="people-circle",
-                        redirect=f"/leave/user-request-view?id={leave_request.id}",
+                        redirect=reverse("user-request-view")
+                        + f"?id={leave_request.id}",
                     )
 
                 mail_thread = LeaveMailSendThread(request, leave_request, type="reject")
@@ -1053,7 +1055,7 @@ def leave_assign_one(request, id):
                             verb_es="Se le ha asignado un nuevo tipo de permiso",
                             verb_fr="Un nouveau type de congé vous a été attribué",
                             icon="people-circle",
-                            redirect="/leave/user-request-view",
+                            redirect=reverse("user-request-view"),
                         )
                 else:
                     messages.info(
@@ -1253,7 +1255,7 @@ def leave_assign(request):
                                     verb_es="Se te ha asignado un nuevo tipo de permiso",
                                     verb_fr="Un nouveau type de congé vous a été attribué",
                                     icon="people-circle",
-                                    redirect="/leave/user-request-view",
+                                    redirect=reverse("user-request-view"),
                                 )
                         else:
                             messages.info(
@@ -1300,7 +1302,7 @@ def available_leave_update(request, id):
                     verb_es=f"Se ha actualizado su tipo de permiso {available_leave.leave_type_id}.",
                     verb_fr=f"Votre type de congé {available_leave.leave_type_id} a été mis à jour.",
                     icon="people-circle",
-                    redirect="/leave/user-request-view",
+                    redirect=reverse("user-request-view"),
                 )
     return render(
         request,
@@ -2247,7 +2249,8 @@ def user_leave_request(request, id):
                             verb_es="Tiene una nueva solicitud de permiso que debe validar.",
                             verb_fr="Vous avez une nouvelle demande de congé à valider.",
                             icon="people-circle",
-                            redirect=f"/leave/request-view?id={leave_request.id}",
+                            redirect=reverse("request-view")
+                            + f"?id={leave_request.id}",
                         )
                     if len(
                         LeaveRequest.objects.filter(employee_id=employee)
@@ -3192,7 +3195,8 @@ def leave_request_create(request):
                             verb_es=f"Nueva solicitud de permiso creada para {leave_request.employee_id}.",
                             verb_fr=f"Nouvelle demande de congé créée pour {leave_request.employee_id}.",
                             icon="people-circle",
-                            redirect=f"/leave/request-view?id={leave_request.id}",
+                            redirect=reverse("request-view")
+                            + f"?id={leave_request.id}",
                         )
 
                     mail_thread = LeaveMailSendThread(
@@ -3359,7 +3363,8 @@ def leave_allocation_request_create(request):
                     verb_es=f"Nueva solicitud de asignación de permisos creada para {leave_allocation_request.employee_id}.",
                     verb_fr=f"Nouvelle demande d'allocation de congé créée pour {leave_allocation_request.employee_id}.",
                     icon="people-cicle",
-                    redirect=f"/leave/leave-allocation-request-view?id={leave_allocation_request.id}",
+                    redirect=reverse("leave-allocation-request-view")
+                    + f"?id={leave_allocation_request.id}",
                 )
             response = render(
                 request,
@@ -3506,7 +3511,8 @@ def leave_allocation_request_update(request, req_id):
                         verb_es=f"Solicitud de asignación de licencia actualizada para {leave_allocation_request.employee_id}.",
                         verb_fr=f"Demande d'allocation de congé mise à jour pour {leave_allocation_request.employee_id}.",
                         icon="people-cicle",
-                        redirect=f"/leave/leave-allocation-request-view?id={leave_allocation_request.id}",
+                        redirect=reverse("leave-allocation-request-view")
+                        + f"?id={leave_allocation_request.id}",
                     )
                 response = render(
                     request,
@@ -3573,7 +3579,8 @@ def leave_allocation_request_approve(request, req_id):
                 verb_es="Se ha aprobado su solicitud de asignación de vacaciones",
                 verb_fr="Votre demande d'allocation de congé a été approuvée",
                 icon="people-circle",
-                redirect=f"/leave/leave-allocation-request-view?id={leave_allocation_request.id}",
+                redirect=reverse("leave-allocation-request-view")
+                + f"?id={leave_allocation_request.id}",
             )
     else:
         messages.error(request, _("The leave allocation request can't be approved"))
@@ -3632,7 +3639,8 @@ def leave_allocation_request_reject(request, req_id):
                         verb_es="Se ha rechazado su solicitud de asignación de vacaciones",
                         verb_fr="Votre demande d'allocation de congé a été rejetée",
                         icon="people-circle",
-                        redirect=f"/leave/leave-allocation-request-view?id={leave_allocation_request.id}",
+                        redirect=reverse("leave-allocation-request-view")
+                        + f"?id={leave_allocation_request.id}",
                     )
                 return HttpResponse("<script>location.reload();</script>")
         return render(
@@ -4040,7 +4048,7 @@ def create_leaverequest_comment(request, leave_id):
                             verb_de=f"{leave.employee_id}s Urlaubsantrag hat einen Kommentar erhalten.",
                             verb_es=f"La solicitud de permiso de {leave.employee_id} ha recibido un comentario.",
                             verb_fr=f"La demande de congé de {leave.employee_id} a reçu un commentaire.",
-                            redirect=f"/leave/request-view?id={leave.id}",
+                            redirect=reverse("request-view") + f"?id={leave.id}",
                             icon="chatbox-ellipses",
                         )
                     elif (
@@ -4056,7 +4064,7 @@ def create_leaverequest_comment(request, leave_id):
                             verb_de="Ihr Urlaubsantrag hat einen Kommentar erhalten.",
                             verb_es="Tu solicitud de permiso ha recibido un comentario.",
                             verb_fr="Votre demande de congé a reçu un commentaire.",
-                            redirect=f"/leave/user-request-view?id={leave.id}",
+                            redirect=reverse("user-request-view") + f"?id={leave.id}",
                             icon="chatbox-ellipses",
                         )
                     else:
@@ -4072,7 +4080,7 @@ def create_leaverequest_comment(request, leave_id):
                             verb_de=f"{leave.employee_id}s Urlaubsantrag hat einen Kommentar erhalten.",
                             verb_es=f"La solicitud de permiso de {leave.employee_id} ha recibido un comentario.",
                             verb_fr=f"La demande de congé de {leave.employee_id} a reçu un commentaire.",
-                            redirect=f"/leave/request-view?id={leave.id}",
+                            redirect=reverse("request-view") + f"?id={leave.id}",
                             icon="chatbox-ellipses",
                         )
                 else:
@@ -4085,7 +4093,7 @@ def create_leaverequest_comment(request, leave_id):
                         verb_de="Ihr Urlaubsantrag hat einen Kommentar erhalten.",
                         verb_es="Tu solicitud de permiso ha recibido un comentario.",
                         verb_fr="Votre demande de congé a reçu un commentaire.",
-                        redirect=f"/leave/user-request-view?id={leave.id}",
+                        redirect=reverse("user-request-view") + f"?id={leave.id}",
                         icon="chatbox-ellipses",
                     )
             return render(
@@ -4240,7 +4248,8 @@ def create_allocationrequest_comment(request, leave_id):
                             verb_de=f"{leave.employee_id}s Anfrage zur Urlaubszuweisung hat einen Kommentar erhalten.",
                             verb_es=f"La solicitud de asignación de permisos de {leave.employee_id} ha recibido un comentario.",
                             verb_fr=f"La demande d'allocation de congé de {leave.employee_id} a reçu un commentaire.",
-                            redirect=f"/leave/leave-allocation-request-view?id={leave.id}",
+                            redirect=reverse("leave-allocation-request-view")
+                            + f"?id={leave.id}",
                             icon="chatbox-ellipses",
                         )
                     elif (
@@ -4256,7 +4265,8 @@ def create_allocationrequest_comment(request, leave_id):
                             verb_de="Ihr Antrag auf Urlaubszuweisung hat einen Kommentar erhalten.",
                             verb_es="Tu solicitud de asignación de permisos ha recibido un comentario.",
                             verb_fr="Votre demande d'allocation de congé a reçu un commentaire.",
-                            redirect=f"/leave/leave-allocation-request-view?id={leave.id}",
+                            redirect=reverse("leave-allocation-request-view")
+                            + f"?id={leave.id}",
                             icon="chatbox-ellipses",
                         )
                     else:
@@ -4272,7 +4282,8 @@ def create_allocationrequest_comment(request, leave_id):
                             verb_de=f"{leave.employee_id}s Anfrage zur Urlaubszuweisung hat einen Kommentar erhalten.",
                             verb_es=f"La solicitud de asignación de permisos de {leave.employee_id} ha recibido un comentario.",
                             verb_fr=f"La demande d'allocation de congé de {leave.employee_id} a reçu un commentaire.",
-                            redirect=f"/leave/leave-allocation-request-view?id={leave.id}",
+                            redirect=reverse("leave-allocation-request-view")
+                            + f"?id={leave.id}",
                             icon="chatbox-ellipses",
                         )
                 else:
@@ -4285,7 +4296,8 @@ def create_allocationrequest_comment(request, leave_id):
                         verb_de="Ihr Antrag auf Urlaubszuweisung hat einen Kommentar erhalten.",
                         verb_es="Tu solicitud de asignación de permisos ha recibido un comentario.",
                         verb_fr="Votre demande d'allocation de congé a reçu un commentaire.",
-                        redirect=f"/leave/leave-allocation-request-view?id={leave.id}",
+                        redirect=reverse("leave-allocation-request-view")
+                        + f"?id={leave.id}",
                         icon="chatbox-ellipses",
                     )
             return render(
@@ -4714,12 +4726,13 @@ def approve_compensatory_leave(request, comp_id):
                 notify.send(
                     request.user.employee_get,
                     recipient=comp_leave_req.employee_id.employee_user_id,
-                    verb="Your compensatory leave request has been rejected",
+                    verb="Your compensatory leave request has been approved",
                     verb_ar="تمت الموافقة على طلب إجازة الاعتذار الخاص بك",
                     verb_de="Ihr Antrag auf Freizeitausgleich wurde genehmigt",
                     verb_es="Su solicitud de permiso compensatorio ha sido aprobada",
                     verb_fr="Votre demande de congé compensatoire a été approuvée",
-                    redirect=f"/leave/view-compensatory-leave?id={comp_leave_req.id}",
+                    redirect=reverse("view-compensatory-leave")
+                    + f"?id={comp_leave_req.id}",
                 )
         else:
             messages.info(
@@ -4769,7 +4782,8 @@ def reject_compensatory_leave(request, comp_id):
                         verb_de="Ihr Antrag auf Freizeitausgleich wurde abgelehnt",
                         verb_es="Se ha rechazado su solicitud de permiso compensatorio",
                         verb_fr="Votre demande de congé compensatoire a été rejetée",
-                        redirect=f"/leave/view-compensatory-leave?id={comp_leave_req.id}",
+                        redirect=reverse("view-compensatory-leave")
+                        + f"?id={comp_leave_req.id}",
                     )
                 return HttpResponse("<script>location.reload();</script>")
         return render(
@@ -4899,7 +4913,8 @@ def create_compensatory_leave_comment(request, comp_leave_id):
                             verb_de=f"Der Antrag auf Freizeitausgleich von {comp_leave.employee_id} hat einen Kommentar erhalten.",
                             verb_es=f"La solicitud de permiso compensatorio de {comp_leave.employee_id} ha recibido un comentario.",
                             verb_fr=f"La demande de congé compensatoire de {comp_leave.employee_id} a reçu un commentaire.",
-                            redirect=f"/leave/view-compensatory-leave?id={comp_leave.id}",
+                            redirect=reverse("view-compensatory-leave")
+                            + f"?id={comp_leave.id}",
                             icon="chatbox-ellipses",
                         )
                     elif (
@@ -4915,7 +4930,8 @@ def create_compensatory_leave_comment(request, comp_leave_id):
                             verb_de="Ihr Antrag auf Freizeitausgleich hat einen Kommentar erhalten.",
                             verb_es="Su solicitud de permiso compensatorio ha recibido un comentario.",
                             verb_fr="Votre demande de congé compensatoire a reçu un commentaire.",
-                            redirect=f"/leave/view-compensatory-leave?id={comp_leave.id}",
+                            redirect=reverse("view-compensatory-leave")
+                            + f"?id={comp_leave.id}",
                             icon="chatbox-ellipses",
                         )
                     else:
@@ -4931,7 +4947,8 @@ def create_compensatory_leave_comment(request, comp_leave_id):
                             verb_de=f"Der Antrag auf Freizeitausgleich von {comp_leave.employee_id} hat einen Kommentar erhalten.",
                             verb_es=f"El pedido de permiso compensatorio de {comp_leave.employee_id} ha recibido un comentario.",
                             verb_fr=f"La demande de congé compensatoire de {comp_leave.employee_id} a reçu un commentaire.",
-                            redirect=f"/leave/view-compensatory-leave?id={comp_leave.id}",
+                            redirect=reverse("view-compensatory-leave")
+                            + f"?id={comp_leave.id}",
                             icon="chatbox-ellipses",
                         )
                 else:
@@ -4944,7 +4961,8 @@ def create_compensatory_leave_comment(request, comp_leave_id):
                         verb_de="Ihr Antrag auf Freizeitausgleich hat einen Kommentar erhalten.",
                         verb_es="Su solicitud de permiso compensatorio ha recibido un comentario.",
                         verb_fr="Votre demande de congé compensatoire a reçu un commentaire.",
-                        redirect=f"/leave/view-compensatory-leave?id={comp_leave.id}",
+                        redirect=reverse("view-compensatory-leave")
+                        + f"?id={comp_leave.id}",
                         icon="chatbox-ellipses",
                     )
             return render(

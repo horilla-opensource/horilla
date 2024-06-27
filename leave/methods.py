@@ -110,14 +110,11 @@ def get_leave_day_attendance(employee, comp_id=None):
     """
     This function returns a queryset of attendance on leave dates
     """
-    from attendance.filters import AttendanceFilters
     from attendance.models import Attendance
-    from leave.models import CompensatoryLeaveRequest, LeaveRequest
+    from leave.models import CompensatoryLeaveRequest
 
-    holiday_dates = LeaveRequest.holiday_dates(None)
-    company_leave_dates = LeaveRequest.company_leave_dates(None)
-    leave_day_attendance = Attendance.objects.none()
-    converted_dates = []
+    attendances_to_exclude = Attendance.objects.none()  # Empty queryset to start with
+    # Check for compensatory leave requests that are not rejected and not the current one
     if (
         CompensatoryLeaveRequest.objects.filter(employee_id=employee)
         .exclude(Q(id=comp_id) | Q(status="rejected"))
@@ -126,19 +123,13 @@ def get_leave_day_attendance(employee, comp_id=None):
         comp_leave_reqs = CompensatoryLeaveRequest.objects.filter(
             employee_id=employee
         ).exclude(Q(id=comp_id) | Q(status="rejected"))
-        attendances = Attendance.objects.none()  # Empty queryset to start with
         for req in comp_leave_reqs:
-            attendances |= req.attendance_id.all()
-        converted_dates = [attendance.attendance_date for attendance in attendances]
-    leave_dates = set(company_leave_dates + holiday_dates) - set(converted_dates)
-    for leave_day in leave_dates:
-        attendance_qs = AttendanceFilters(
-            {"employee": employee.id, "attendance_date": leave_day}
-        ).qs
-        if attendance_qs.exists():
-            leave_day_attendance |= attendance_qs
-
-    return leave_day_attendance
+            attendances_to_exclude |= req.attendance_id.all()
+    # Filter holiday attendance excluding the attendances in attendances_to_exclude
+    holiday_attendance = Attendance.objects.filter(
+        is_holiday=True, employee_id=employee, attendance_validated=True
+    ).exclude(id__in=attendances_to_exclude.values_list("id", flat=True))
+    return holiday_attendance
 
 
 def attendance_days(employee, attendances):
@@ -164,3 +155,72 @@ def attendance_days(employee, attendances):
             elif work_record_type == "FDP":
                 attendance_days += 1
     return attendance_days
+
+
+def is_holiday(date):
+    """
+    Check if the given date is a holiday.
+    Args:
+        date (datetime.date): The date to check.
+    Returns:
+        Holiday or bool: The Holiday object if the date is a holiday, otherwise False.
+    """
+    from leave.models import Holiday
+
+    holidays = Holiday.objects.all()
+    for holiday in holidays:
+        start_date = holiday.start_date
+        end_date = holiday.end_date
+        # Check if the date is within the range of the holiday dates
+        if start_date <= date <= end_date:
+            return holiday
+        # Check for recurring holidays
+        if holiday.recurring:
+            try:
+                # Create a new date object for comparison without the year
+                start_date_without_year = datetime(
+                    year=date.year, month=start_date.month, day=start_date.day
+                ).date()
+                end_date_without_year = datetime(
+                    year=date.year, month=end_date.month, day=end_date.day
+                ).date()
+                if start_date_without_year <= date <= end_date_without_year:
+                    return holiday
+            except:
+                return False
+    return False
+
+
+def is_company_leave(input_date):
+    """
+    Check if the given date is a company leave.
+    Args:
+        input_date (datetime.date): The date to check.
+    Returns:
+        CompanyLeave or bool: The CompanyLeave object if the date is a company leave, otherwise False.
+    """
+    from leave.models import CompanyLeave
+
+    # Calculate the week number within the month (1-5)
+    first_day_of_month = input_date.replace(day=1)
+    first_week_day = first_day_of_month.weekday()  # Monday is 0 and Sunday is 6
+    adjusted_day = input_date.day + first_week_day
+    date_week_no = (adjusted_day - 1) // 7
+    # Calculate the weekday (1 for Monday to 7 for Sunday)
+    date_week_day = input_date.isoweekday() - 1
+    company_leaves = CompanyLeave.objects.all()
+    for company_leave in company_leaves:
+        week_no = (
+            company_leave.based_on_week
+            if not company_leave.based_on_week
+            else int(company_leave.based_on_week)
+        )  # from 0 for the first week to 4 for the fifth week
+        week_day = int(
+            company_leave.based_on_week_day
+        )  # from 0 to 6 for Monday to Sunday
+        if not week_no:
+            if date_week_day == week_day:
+                return company_leave
+        if date_week_no == week_no and date_week_day == week_day:
+            return company_leave
+    return False
