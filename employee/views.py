@@ -29,6 +29,7 @@ from django.db.models import F, ProtectedError
 from django.forms import DateInput, Select
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
@@ -731,7 +732,7 @@ def document_request_create(request):
                 verb_de=f"{request.user.employee_get} hat ein Dokument angefordert.",
                 verb_es=f"{request.user.employee_get} solicitó un documento.",
                 verb_fr=f"{request.user.employee_get} a demandé un document.",
-                redirect="/employee/employee-profile",
+                redirect=reverse("employee-profile"),
                 icon="chatbox-ellipses",
             )
             return HttpResponse("<script>window.location.reload();</script>")
@@ -920,7 +921,10 @@ def file_upload(request, id):
                     verb_de=f"{request.user.employee_get} hat ein Dokument hochgeladen",
                     verb_es=f"{request.user.employee_get} subió un documento",
                     verb_fr=f"{request.user.employee_get} a téléchargé un document",
-                    redirect=f"/employee/employee-view/{request.user.employee_get.id}/",
+                    redirect=reverse(
+                        "employee-view-individual",
+                        kwargs={"obj_id": request.user.employee_get.id},
+                    ),
                     icon="chatbox-ellipses",
                 )
             except:
@@ -1569,7 +1573,7 @@ def employee_view_update(request, obj_id, **kwargs):
                         verb_de="Ihre Arbeitsdetails wurden aktualisiert.",
                         verb_es="Se han actualizado los detalles de su trabajo.",
                         verb_fr="Vos informations professionnelles ont été mises à jour.",
-                        redirect="/employee/employee-profile",
+                        redirect=reverse("employee-profile"),
                         icon="briefcase",
                     )
                     messages.success(request, _("Employee work information updated."))
