@@ -51,6 +51,7 @@ from horilla.decorators import (
 )
 from horilla.group_by import group_by_queryset
 from notifications.signals import notify
+from recruitment.cache import ThreadSafeCache
 from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.filters import (
     CandidateFilter,
@@ -93,6 +94,8 @@ from recruitment.models import (
     StageNote,
 )
 from recruitment.views.paginator_qry import paginator_qry
+
+CACHE = ThreadSafeCache()
 
 
 def is_stagemanager(request, stage_id=False):
@@ -357,26 +360,13 @@ def recruitment_pipeline(request):
     """
     This method is used to filter out candidate through pipeline structure
     """
-    view = request.GET.get("view")
     filter_obj = RecruitmentFilter(
         request.GET,
     )
-    rec = filter_obj.qs.filter(is_active=True)
-    # user_recruitments[request.user.id] = {
-    #     "recruitments": rec,
-    # }
     if filter_obj.qs.exists():
         template = "pipeline/pipeline.html"
     else:
         template = "pipeline/pipeline_empty.html"
-    context = {
-        "candidates": Candidate.objects.none(),
-        "stages": Stage.objects.none(),
-        "recruitments": Recruitment.objects.none(),
-        "filter_dict": {},
-        "filter_query": request.GET,
-    }
-    CACHE.set(request.session.session_key, context)
     stage_filter = StageFilter(request.GET)
     candidate_filter = CandidateFilter(request.GET)
     recruitments = paginator_qry_recruitment_limited(
@@ -396,12 +386,6 @@ def recruitment_pipeline(request):
             "now": now,
         },
     )
-
-
-# Instantiate the thread-safe cache
-from recruitment.cache import ThreadSafeCache
-
-CACHE = ThreadSafeCache()
 
 
 @login_required
@@ -432,13 +416,6 @@ def filter_pipeline(request):
     filter_dict = parse_qs(request.GET.urlencode())
     filter_dict = get_key_instances(Recruitment, filter_dict)
 
-    # CACHE[request.session.session_key] = {
-    #     "candidates": candidate_filter.qs.filter(is_active=True).order_by("sequence"),
-    #     "stages": stage_filter.qs.order_by("sequence"),
-    #     "recruitments": recruitments,
-    #     "filter_dict": filter_dict,
-    #     "filter_query": request.GET,
-    # }
     CACHE.set(
         request.session.session_key,
         {
@@ -496,9 +473,6 @@ def stage_component(request, view: str = "list"):
     """
     recruitment_id = request.GET["rec_id"]
     recruitment = Recruitment.objects.get(id=recruitment_id)
-    # ordered_stages = CACHE[request.session.session_key]["stages"].filter(
-    #     recruitment_id__id=recruitment_id
-    # )
     ordered_stages = CACHE.get(request.session.session_key)["stages"].filter(
         recruitment_id__id=recruitment_id
     )
@@ -547,7 +521,6 @@ def update_candidate_sequence(request):
     order_list = request.GET.getlist("order")
     stage_id = request.GET["stage_id"]
     stage = CACHE.get(request.session.session_key)["stages"].filter(id=stage_id).first()
-    message = "No message"
     data = {}
     for index, cand_id in enumerate(order_list):
         candidate = CACHE.get(request.session.session_key)["candidates"].filter(
@@ -555,20 +528,6 @@ def update_candidate_sequence(request):
         )
         candidate.update(sequence=index, stage_id=stage)
     return JsonResponse(data)
-
-
-# @login_required
-# @manager_can_enter(perm="recruitment.change_candidate")
-# def update_candidate_stage(request):
-#     """
-#     Update candidate stage
-#     """
-#     stage_id = request.GET["stage_id"]
-#     candidate_id = request.GET["candidate_id"]
-#     stage = Stage.objects.get(id=stage_id)
-#     candidate = CACHE[request.session.session_key]["candidates"].filter(id=candidate_id)
-#     candidate.update(stage_id=stage)
-#     return update_candidate_sequence(request)
 
 
 def limited_paginator_qry(queryset, page):
