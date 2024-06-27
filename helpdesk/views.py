@@ -8,6 +8,7 @@ from django.core.paginator import Paginator
 from django.db.models import ProtectedError, Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from haystack.query import SearchQuerySet
 
@@ -470,7 +471,7 @@ def ticket_create(request):
                 verb_es="Se te ha asignado un nuevo ticket",
                 verb_fr="Un nouveau ticket vous a été attribué",
                 icon="infinite",
-                redirect=f"/helpdesk/ticket-detail/{ticket.id}",
+                redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
             )
             return HttpResponse("<script>window.location.reload()</script>")
     context = {
@@ -593,7 +594,7 @@ def change_ticket_status(request, ticket_id):
                 verb_es="El estado del ticket ha sido cambiado.",
                 verb_fr="Le statut du ticket a été modifié.",
                 icon="infinite",
-                redirect=f"/helpdesk/ticket-detail/{ticket.id}",
+                redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
             )
             mail_thread = TicketSendThread(
                 request,
@@ -652,7 +653,7 @@ def ticket_delete(request, ticket_id):
             verb_es="El billete ha sido eliminado.",
             verb_fr="Le ticket a été supprimé.",
             icon="infinite",
-            redirect=f"/helpdesk/ticket-view/",
+            redirect=reverse("ticket-view"),
         )
         ticket.delete()
         messages.success(
@@ -1170,7 +1171,7 @@ def tickets_bulk_delete(request):
                 verb_es="El billete ha sido eliminado.",
                 verb_fr="Le ticket a été supprimé.",
                 icon="infinite",
-                redirect=f"/helpdesk/ticket-view/",
+                redirect=reverse("ticket-view"),
             )
             ticket.delete()
             messages.success(
