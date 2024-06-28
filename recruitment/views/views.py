@@ -32,6 +32,7 @@ from django.core.paginator import Paginator
 from django.db.models import ProtectedError, Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
@@ -240,7 +241,7 @@ def recruitment(request):
                     verb_es="Has sido elegido/a como uno de los gerentes de contratación",
                     verb_fr="Vous êtes choisi(e) comme l'un des responsables du recrutement",
                     icon="people-circle",
-                    redirect="/recruitment/pipeline",
+                    redirect=reverse("pipeline"),
                 )
             return HttpResponse("<script>location.reload();</script>")
     return render(request, "recruitment/recruitment_form.html", {"form": form})
@@ -333,7 +334,7 @@ def recruitment_update(request, rec_id):
                     verb_fr=f"{recruitment_obj} a été mis(e) à jour. Vous êtes choisi(e) comme\
                             l'un des responsables",
                     icon="people-circle",
-                    redirect="/recruitment/pipeline",
+                    redirect=reverse("pipeline"),
                 )
 
             return HttpResponse(
@@ -700,7 +701,7 @@ def stage_update_pipeline(request, stage_id):
                     verb_fr=f"L'étape {stage_obj.stage} dans le recrutement {stage_obj.recruitment_id}\
                           a été mise à jour.Vous avez été choisi(e) comme l'un des responsables",
                     icon="people-circle",
-                    redirect="/recruitment/pipeline",
+                    redirect=reverse("pipeline"),
                 )
 
             return HttpResponse("<script>window.location.reload()</script>")
@@ -739,7 +740,7 @@ def recruitment_update_pipeline(request, rec_id):
                     verb_fr=f"{recruitment_obj} a été mis(e) à jour. Vous avez été\
                             choisi(e) comme l'un des responsables",
                     icon="people-circle",
-                    redirect="/recruitment/pipeline",
+                    redirect=reverse("pipeline"),
                 )
 
             response = render(
@@ -831,7 +832,7 @@ def candidate_stage_update(request, cand_id):
                 verb_es=f"Nuevo candidato llegó a la etapa {stage_obj.stage}",
                 verb_fr=f"Nouveau candidat arrivé à l'étape {stage_obj.stage}",
                 icon="person-add",
-                redirect="/recruitment/pipeline",
+                redirect=reverse("pipeline"),
             )
 
         return JsonResponse(
@@ -1107,7 +1108,7 @@ def stage(request):
                     verb_fr=f"L'étape {stage_obj} a été mise à jour dans le recrutement\
                           {stage_obj.recruitment_id}. Vous avez été choisi(e) comme l'un des responsables",
                     icon="people-circle",
-                    redirect="/recruitment/pipeline",
+                    redirect=reverse("pipeline"),
                 )
 
             return HttpResponse("<script>location.reload();</script>")
@@ -1723,7 +1724,7 @@ def interview_schedule(request, cand_id):
                 verb_es=f"Estás programado como entrevistador para una entrevista con {cand_id.name} el {interview_date} a las {interview_time}.",
                 verb_fr=f"Vous êtes programmé en tant qu'intervieweur pour un entretien avec {cand_id.name} le {interview_date} à {interview_time}.",
                 icon="people-circle",
-                redirect=f"/recruitment/interview-view/",
+                redirect=reverse("interview-view"),
             )
 
             messages.success(request, "Interview Scheduled successfully.")
@@ -1762,7 +1763,7 @@ def create_interview_schedule(request):
                 verb_es=f"Estás programado como entrevistador para una entrevista con {cand_id.name} el {interview_date} a las {interview_time}.",
                 verb_fr=f"Vous êtes programmé en tant qu'intervieweur pour un entretien avec {cand_id.name} le {interview_date} à {interview_time}.",
                 icon="people-circle",
-                redirect=f"/recruitment/interview-view/",
+                redirect=reverse("interview-view"),
             )
 
             messages.success(request, "Interview Scheduled successfully.")
@@ -1827,7 +1828,7 @@ def interview_edit(request, interview_id):
                 verb_es=f"Estás programado como entrevistador para una entrevista con {cand_id.name} el {interview_date} a las {interview_time}.",
                 verb_fr=f"Vous êtes programmé en tant qu'intervieweur pour un entretien avec {cand_id.name} le {interview_date} à {interview_time}.",
                 icon="people-circle",
-                redirect=f"/recruitment/interview-view/",
+                redirect=reverse("interview-view"),
             )
             messages.success(request, "Interview updated successfully.")
             return HttpResponse("<script>window.location.reload()</script>")

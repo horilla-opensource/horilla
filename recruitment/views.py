@@ -21,6 +21,7 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
@@ -138,7 +139,7 @@ def recruitment(request):
                     verb_es="Has sido elegido/a como uno de los gerentes de contratación",
                     verb_fr="Vous êtes choisi(e) comme l'un des responsables du recrutement",
                     icon="people-circle",
-                    redirect="/recruitment/pipeline",
+                    redirect=reverse("pipeline"),
                 )
             response = render(
                 request, "recruitment/recruitment_form.html", {"form": form}
@@ -266,7 +267,7 @@ def recruitment_update(request, rec_id):
                             a como uno de los gerentes",
                     verb_fr=f"{recruitment_obj} a été mis(e) à jour. Vous êtes choisi(e) comme l'un des responsables",
                     icon="people-circle",
-                    redirect="/recruitment/pipeline",
+                    redirect=reverse("pipeline"),
                 )
 
             return HttpResponse(
@@ -350,7 +351,7 @@ def recruitment_pipeline(request):
                         verb_es=f"Has sido elegido/a como gerente de contratación para la contratación {recruitment_obj}",
                         verb_fr=f"Vous êtes choisi(e) comme responsable du recrutement pour le recrutement {recruitment_obj}",
                         icon="people-circle",
-                        redirect="/recruitment/pipeline",
+                        redirect=reverse("pipeline"),
                     )
 
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -376,7 +377,7 @@ def recruitment_pipeline(request):
                             verb_es=f"Nuevo candidato llegó a la etapa {candidate_obj.stage_id.stage}",
                             verb_fr=f"Nouveau candidat arrivé à l'étape {candidate_obj.stage_id.stage}",
                             icon="person-add",
-                            redirect="/recruitment/pipeline",
+                            redirect=reverse("pipeline"),
                         )
 
                     messages.success(request, _("Candidate added."))
@@ -404,7 +405,7 @@ def recruitment_pipeline(request):
                             verb_es=f"Has sido elegido/a como gerente de etapa en la etapa {stage_obj.stage} en la contratación {stage_obj.recruitment_id}",
                             verb_fr=f"Vous avez été choisi(e) comme responsable de l'étape {stage_obj.stage} dans le recrutement {stage_obj.recruitment_id}",
                             icon="people-circle",
-                            redirect="/recruitment/pipeline",
+                            redirect=reverse("pipeline"),
                         )
 
                     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -481,7 +482,7 @@ def stage_update_pipeline(request, stage_id):
                     verb_fr=f"L'étape {stage_obj.stage} dans le recrutement {stage_obj.recruitment_id} a été mise à jour.\
                             Vous avez été choisi(e) comme l'un des responsables",
                     icon="people-circle",
-                    redirect="/recruitment/pipeline",
+                    redirect=reverse("pipeline"),
                 )
 
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -518,7 +519,7 @@ def recruitment_update_pipeline(request, rec_id):
                     verb_fr=f"{recruitment_obj} a été mis(e) à jour. Vous avez été\
                             choisi(e) comme l'un des responsables",
                     icon="people-circle",
-                    redirect="/recruitment/pipeline",
+                    redirect=reverse("pipeline"),
                 )
 
             response = render(
@@ -602,7 +603,7 @@ def candidate_stage_update(request, cand_id):
                 verb_es=f"Nuevo candidato llegó a la etapa {stage_obj.stage}",
                 verb_fr=f"Nouveau candidat arrivé à l'étape {stage_obj.stage}",
                 icon="person-add",
-                redirect="/recruitment/pipeline",
+                redirect=reverse("pipeline"),
             )
 
         return JsonResponse(
@@ -779,7 +780,7 @@ def stage(request):
                     verb_es=f"La etapa {stage_obj} ha sido actualizada en la contratación {stage_obj.recruitment_id}. Has sido elegido/a como uno de los gerentes",
                     verb_fr=f"L'étape {stage_obj} a été mise à jour dans le recrutement {stage_obj.recruitment_id}. Vous avez été choisi(e) comme l'un des responsables",
                     icon="people-circle",
-                    redirect="/recruitment/pipeline",
+                    redirect=reverse("pipeline"),
                 )
 
             response = render(request, "stage/stage_form.html", {"form": form})
