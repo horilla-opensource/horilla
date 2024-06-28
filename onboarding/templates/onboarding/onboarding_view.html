@@ -50,25 +50,27 @@
         {% include "onboarding/tabs.html" %}
         <div class="oh-tabs__contents">
             {% for recruitment in recruitments %}
-            {% if request.user|task_manages:recruitment or perms.onboarding.view_candidatestage %}
-            <div class="oh-tabs__content" id="tab_{{recruitment.id}}">
-                <div class="oh-card">
-                    {% if request.user|task_manages:recruitment or perms.onboarding.add_onboardingstage %}
-                    <div class="d-flex mb-3" style="flex-direction: row-reverse;">
-                        <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
-                            data-toggle="oh-modal-toggle" data-target="#editModal1"
-                            hx-get="{% url 'stage-creation' recruitment.id %}" hx-target="#stageForm">
-                            <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
-                                aria-label="add outline"></ion-icon>{% trans "Stage" %}
-                        </button>
-                    </div>
+                {% for stage in recruitment.stages %}
+                    {% if request.user|task_manages:recruitment or request.user|stage_manages:stage or perms.onboarding.view_candidatestage %}
+                        <div class="oh-tabs__content" id="tab_{{recruitment.id}}">
+                            <div class="oh-card">
+                                {% if request.user|task_manages:recruitment or perms.onboarding.add_onboardingstage %}
+                                <div class="d-flex mb-3" style="flex-direction: row-reverse;">
+                                    <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
+                                        data-toggle="oh-modal-toggle" data-target="#editModal1"
+                                        hx-get="{% url 'stage-creation' recruitment.id %}" hx-target="#stageForm">
+                                        <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
+                                            aria-label="add outline"></ion-icon>{% trans "Stage" %}
+                                    </button>
+                                </div>
+                                {% endif %}
+                                <div id="onboardingTable{{recruitment.id}}" class="demo dd">
+                                    {% include 'onboarding/onboarding_table.html' %}
+                                </div>
+                            </div>
+                        </div>
                     {% endif %}
-                    <div id="onboardingTable{{recruitment.id}}" class="demo dd">
-                        {% include 'onboarding/onboarding_table.html' %}
-                    </div>
-                </div>
-            </div>
-            {% endif %}
+                {% endfor %}
             {% endfor %}
         </div>
     </div>
