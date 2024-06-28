@@ -7,6 +7,7 @@ This module is used to register scheduled tasks
 from datetime import date, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from django.urls import reverse
 
 from notifications.signals import notify
 
@@ -38,7 +39,7 @@ def notify_expiring_assets():
                         ab.",
                     verb_es=f"El activo {asset.asset_name} caduca en {asset.notify_before} días.",
                     verb_fr=f"L'actif {asset.asset_name} expire dans {asset.notify_before} jours.",
-                    redirect=f"/asset/asset-category-view/",
+                    redirect=reverse("asset-category-view"),
                     label="System",
                     icon="information",
                 )
@@ -74,7 +75,7 @@ def notify_expiring_documents():
                         días",
                     verb_fr=f"Le document '{document.title}' expire dans {document.notify_before}\
                         jours",
-                    redirect=f"/asset/asset-category-view/",
+                    redirect=reverse("asset-category-view"),
                     label="System",
                     icon="information",
                 )
