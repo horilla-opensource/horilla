@@ -70,7 +70,39 @@
 
 <div class="oh-wrapper" id="section">
   <div class="oh-card mt-4 mb-5">
-    <div class="d-flex flex-row-reverse">
+    <div class="d-flex flex-row-reverse align-items-center">
+
+      {% if next != None %}
+      <a
+        href="{% url 'candidate-view-individual' next %}" title='{% trans "Next Candidate" %}' style="color:hsl(8, 77%, 56%);" class="ms-1 me-3 fw-bold"
+        >
+        <ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
+      </a>
+    {% else %}
+      <a
+        href="#" style="color:hsl(8 50% 83% / 1);" class="ms-1 me-3 fw-bold oh-btn--disabled"
+        >
+        <ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
+      </a>
+    {% endif %}
+
+    {% if previous != None %}
+      <a
+        href="{% url 'candidate-view-individual' previous %}" title='{% trans "Previous Candidate" %}' style="color:hsl(8, 77%, 56%);" class="ms-1 me-2 fw-bold"
+        >
+        <ion-icon name="arrow-back-circle-outline" style="font-size:35px;"></ion-icon>
+      </a>
+    {% else %}
+      <a
+        href="#" style="color:hsl(8 50% 83% / 1);" class="ms-1 me-2 fw-bold oh-btn--disabled"
+        >
+        <ion-icon name="arrow-back-circle-outline" style="font-size:35px;"></ion-icon>
+      </a>
+    {% endif %}
+
+    <a href="{% url 'rec-candidate-update' candidate.id %}" class="mt-1 mb-1 m-3">
+      <img src="/static/images/ui/edit_btn.png" style="width: 25px; height: auto;" title="{% trans 'Edit' %}">
+    </a>
       {% if perms.recruitment.change_candidate %}
         <div class='d-flex float-end ms-4'>
           {% if not candidate.email in emp_list and not candidate.start_onboard %}
@@ -83,38 +115,6 @@
           {% endif %}
         </div>
       {% endif %}
-
-      <a href="{% url 'rec-candidate-update' candidate.id %}" class="mt-1">
-        <img src="/static/images/ui/edit_btn.png" style="width: 25px; height: auto;" title="{% trans 'Edit' %}">      </a>
-
-        {% if next != None %}
-				<a
-					href="{% url 'candidate-view-individual' next %}" title='{% trans "Next Candidate" %}' style="color:hsl(8, 77%, 56%);" class="ms-1 me-3 fw-bold"
-					>
-					<ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
-				</a>
-			{% else %}
-				<a
-					href="#" style="color:hsl(8 50% 83% / 1);" class="ms-1 me-3 fw-bold oh-btn--disabled"
-					>
-					<ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
-				</a>
-			{% endif %}
-
-			{% if previous != None %}
-				<a
-					href="{% url 'candidate-view-individual' previous %}" title='{% trans "Previous Candidate" %}' style="color:hsl(8, 77%, 56%);" class="ms-1 me-2 fw-bold"
-					>
-					<ion-icon name="arrow-back-circle-outline" style="font-size:35px;"></ion-icon>
-				</a>
-			{% else %}
-				<a
-					href="#" style="color:hsl(8 50% 83% / 1);" class="ms-1 me-2 fw-bold oh-btn--disabled"
-					>
-					<ion-icon name="arrow-back-circle-outline" style="font-size:35px;"></ion-icon>
-				</a>
-			{% endif %}
-
 
     </div>
     <div class="row">
