@@ -16,6 +16,7 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import payroll.models.models
@@ -609,7 +610,9 @@ def generate_payslip(request):
                     verb_de="Gehaltsabrechnung wurde für Sie erstellt.",
                     verb_es="Se ha generado la nómina para usted.",
                     verb_fr="La fiche de paie a été générée pour vous.",
-                    redirect=f"/payroll/view-payslip/{instance.id}",
+                    redirect=reverse(
+                        "view-created-payslip", kwargs={"payslip_id": instance.id}
+                    ),
                     icon="close",
                 )
             messages.success(request, f"{employees.count()} payslip saved as draft")
@@ -687,7 +690,9 @@ def create_payslip(request, new_post_data=None):
                     verb_de="Gehaltsabrechnung wurde für Sie erstellt.",
                     verb_es="Se ha generado la nómina para usted.",
                     verb_fr="La fiche de paie a été générée pour vous.",
-                    redirect=f"/payroll/view-payslip/{payslip.pk}",
+                    redirect=reverse(
+                        "view-created-payslip", kwargs={"payslip_id": payslip.pk}
+                    ),
                     icon="close",
                 )
                 return render(
@@ -959,7 +964,6 @@ def hx_create_allowance(request):
 
 
 @login_required
-@hx_request_required
 @permission_required("payroll.add_payslip")
 def send_slip(request):
     """
@@ -1450,7 +1454,7 @@ def approve_reimbursements(request):
                 verb_de="Ihr Erstattungsantrag wurde abgelehnt.",
                 verb_es="Su solicitud de reembolso ha sido rechazada.",
                 verb_fr="Votre demande de remboursement a été rejetée.",
-                redirect=f"/payroll/view-reimbursement?id={reimbursement.id}",
+                redirect=reverse("view-reimbursement") + f"?id={reimbursement.id}",
                 icon="checkmark",
             )
         else:
@@ -1462,7 +1466,7 @@ def approve_reimbursements(request):
                 verb_de="Ihr Rückerstattungsantrag wurde genehmigt.",
                 verb_es="Se ha aprobado tu solicitud de reembolso.",
                 verb_fr="Votre demande de remboursement a été approuvée.",
-                redirect=f"/payroll/view-reimbursement?id={reimbursement.id}",
+                redirect=reverse("view-reimbursement") + f"?id={reimbursement.id}",
                 icon="checkmark",
             )
     return redirect(view_reimbursement)

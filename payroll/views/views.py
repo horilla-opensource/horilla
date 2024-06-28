@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.db.models import ProtectedError, Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -1608,7 +1609,7 @@ def create_payrollrequest_comment(request, payroll_id):
                         verb_de=f"{payroll.employee_id}s Rückerstattungsantrag hat einen Kommentar erhalten.",
                         verb_es=f"La solicitud de reembolso de gastos de {payroll.employee_id} ha recibido un comentario.",
                         verb_fr=f"La demande de remboursement de frais de {payroll.employee_id} a reçu un commentaire.",
-                        redirect="/payroll/view-reimbursement",
+                        redirect=reverse("view-reimbursement"),
                         icon="chatbox-ellipses",
                     )
                 elif (
@@ -1624,7 +1625,7 @@ def create_payrollrequest_comment(request, payroll_id):
                         verb_de="Ihr Rückerstattungsantrag hat einen Kommentar erhalten.",
                         verb_es="Tu solicitud de reembolso ha recibido un comentario.",
                         verb_fr="Votre demande de remboursement a reçu un commentaire.",
-                        redirect="/payroll/view-reimbursement",
+                        redirect=reverse("view-reimbursement"),
                         icon="chatbox-ellipses",
                     )
                 else:
@@ -1640,7 +1641,7 @@ def create_payrollrequest_comment(request, payroll_id):
                         verb_de=f"{payroll.employee_id}s Rückerstattungsantrag hat einen Kommentar erhalten.",
                         verb_es=f"La solicitud de reembolso de gastos de {payroll.employee_id} ha recibido un comentario.",
                         verb_fr=f"La demande de remboursement de frais de {payroll.employee_id} a reçu un commentaire.",
-                        redirect="/payroll/view-reimbursement",
+                        redirect=reverse("view-reimbursement"),
                         icon="chatbox-ellipses",
                     )
             else:
@@ -1653,7 +1654,7 @@ def create_payrollrequest_comment(request, payroll_id):
                     verb_de="Ihr Rückerstattungsantrag hat einen Kommentar erhalten.",
                     verb_es="Tu solicitud de reembolso ha recibido un comentario.",
                     verb_fr="Votre demande de remboursement a reçu un commentaire.",
-                    redirect="/payroll/view-reimbursement",
+                    redirect=reverse("view-reimbursement"),
                     icon="chatbox-ellipses",
                 )
 
