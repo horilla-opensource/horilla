@@ -3794,11 +3794,17 @@ def leave_request_bulk_delete(request):
         try:
             leave_request = LeaveRequest.objects.get(id=leave_request_id)
             employee = leave_request.employee_id
-            leave_request.delete()
-            messages.success(
-                request,
-                _("{}'s leave request deleted.".format(employee)),
-            )
+            if leave_request.status == "requested":
+                leave_request.delete()
+                messages.success(
+                    request,
+                    _("{}'s leave request deleted.".format(employee)),
+                )
+            else:
+                messages.error(
+                    request,
+                    _("{}'s leave request cannot be deleted.".format(employee)),
+                )
         except Exception as e:
             messages.error(request, _("Leave request not found."))
     return JsonResponse({"message": "Success"})
