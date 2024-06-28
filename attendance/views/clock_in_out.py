@@ -295,15 +295,19 @@ def clock_out_attendance_and_activity(employee, date_today, now, out_datetime=No
     """
 
     attendance_activities = AttendanceActivity.objects.filter(
-        employee_id=employee, clock_out__isnull=True
+        employee_id=employee,
     ).order_by("attendance_date", "id")
-    if attendance_activities.exists():
-        attendance_activity = attendance_activities.last()
+
+    if attendance_activities.filter(clock_out__isnull=True).exists():
+        attendance_activity = attendance_activities.filter(
+            clock_out__isnull=True
+        ).last()
         attendance_activity.clock_out = out_datetime
         attendance_activity.clock_out_date = date_today
         attendance_activity.out_datetime = out_datetime
         attendance_activity.save()
-    attendance_activities = attendance_activities.filter(~Q(clock_out=None)).filter(
+
+    attendance_activities = attendance_activities.filter(
         attendance_date=attendance_activity.attendance_date
     )
     # Here calculate the total durations between the attendance activities
