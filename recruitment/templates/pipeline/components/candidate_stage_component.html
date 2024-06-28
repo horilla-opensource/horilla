@@ -14,6 +14,13 @@
 {% endif %}
 <!-- end of messages -->
 
+<button
+    data-stage-toggle-id="{{stage.id}}"
+    id="stageLoad{{stage.id}}"
+    hx-get="{% url 'candidate-stage-component' %}?stage_id={{stage.id}}"
+    hx-target="#pipelineStageContainer{{stage.id}}"
+    hidden
+></button>
 <div class="oh-sticky-table oh-table--configurable candidate-table" id="candidateTable{{stage.id}}"
     data-stage-id="{{stage.id}}">
     <div class="oh-sticky-table__table oh-table__movable">
