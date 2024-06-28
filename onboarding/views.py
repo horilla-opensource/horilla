@@ -27,6 +27,7 @@ from django.db.models import ProtectedError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
@@ -133,7 +134,7 @@ def stage_save(form, recruitment, request, rec_id):
         verb_es="Ha sido seleccionado/a como responsable de etapa de incorporación.",
         verb_fr="Vous avez été choisi(e) en tant que responsable de l'étape d'intégration.",
         icon="people-circle",
-        redirect="/onboarding/onboarding-view",
+        redirect=reverse("onboarding-view"),
     )
     response = render(
         request, "onboarding/stage_form.html", {"form": form, "id": rec_id}
@@ -176,7 +177,7 @@ def stage_update(request, stage_id, recruitment_id):
                 verb_es="Ha sido seleccionado/a como responsable de etapa de incorporación.",
                 verb_fr="Vous avez été choisi(e) en tant que responsable de l'étape d'intégration.",
                 icon="people-circle",
-                redirect="/onboarding/onboarding-view",
+                redirect=reverse("onboarding-view"),
             )
             response = render(
                 request,
@@ -268,7 +269,7 @@ def task_creation(request):
                 verb_es="Ha sido seleccionado/a como responsable de tareas de incorporación.",
                 verb_fr="Vous avez été choisi(e) en tant que responsable des tâches d'intégration.",
                 icon="people-circle",
-                redirect="/onboarding/onboarding-view",
+                redirect=reverse("onboarding-view"),
             )
             response = render(
                 request,
@@ -324,7 +325,7 @@ def task_update(
                 verb_es="Ha sido seleccionado/a como responsable de tareas de incorporación.",
                 verb_fr="Vous avez été choisi(e) en tant que responsable des tâches d'intégration.",
                 icon="people-circle",
-                redirect="/onboarding/onboarding-view",
+                redirect=reverse("onboarding-view"),
             )
             response = render(
                 request,
@@ -847,11 +848,29 @@ def onboarding_view(request):
 @login_required
 @all_manager_can_enter("onboarding.view_candidatestage")
 def kanban_view(request):
+    # filter_obj = RecruitmentFilter(request.GET)
+    # # is active filteration not providing on pipeline
+    # recruitments = filter_obj.qs.filter(is_active=True)
     filter_obj = RecruitmentFilter(request.GET)
     # is active filteration not providing on pipeline
-    recruitments = filter_obj.qs.filter(is_active=True)
+    recruitments = filter_obj.qs
+    if not request.user.has_perm("onboarding.view_candidatestage"):
+        recruitments = recruitments.filter(
+            is_active=True, recruitment_managers__in=[request.user.employee_get]
+        ) | recruitments.filter(
+            onboarding_stage__employee_id__in=[request.user.employee_get]
+        )
+    employee_tasks = request.user.employee_get.onboarding_task.all()
+    for task in employee_tasks:
+        if task.stage_id and task.stage_id.recruitment_id not in recruitments:
+            recruitments = recruitments | filter_obj.qs.filter(
+                id=task.stage_id.recruitment_id.id
+            )
+    recruitments = recruitments.filter(is_active=True).distinct()
 
     status = request.GET.get("closed")
+    if not status:
+        recruitments = recruitments.filter(closed=False)
 
     onboarding_stages = OnboardingStage.objects.all()
     choices = CandidateTask.choice
@@ -1015,6 +1034,9 @@ def employee_creation(request, token):
     }
     session_key = request.session.session_key
     user = portal_user[session_key]
+    if Employee.objects.filter(email=user).exists():
+        messages.success(request, _("Employee with email id already exists."))
+        return redirect("login")
     if Employee.objects.filter(employee_user_id=user).first() is not None:
         employee = Employee.objects.filter(employee_user_id=user).first()
         if employee.employee_bank_details:
@@ -1180,7 +1202,7 @@ def candidate_task_update(request, taskId):
         verb_es=f"La tarea {candidate_task.onboarding_task_id} del candidato {candidate_task.candidate_id} se ha actualizado a {candidate_task.status}.",
         verb_fr=f"La tâche {candidate_task.onboarding_task_id} du candidat {candidate_task.candidate_id} a été mise à jour à {candidate_task.status}.",
         icon="people-circle",
-        redirect="/onboarding/onboarding-view",
+        redirect=reverse("onboarding-view"),
     )
     return JsonResponse(
         {"message": _("Candidate onboarding task updated"), "type": "success"}
@@ -1301,7 +1323,7 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
             verb_es=f"La etapa del candidato {candidate_stage.candidate_id} se ha actualizado a {candidate_stage.onboarding_stage_id}.",
             verb_fr=f"L'étape du candidat {candidate_stage.candidate_id} a été mise à jour à {candidate_stage.onboarding_stage_id}.",
             icon="people-circle",
-            redirect="/onboarding/onboarding-view",
+            redirect=reverse("onboarding-view"),
         )
     groups = onboarding_query_grouper(request, recruitments)
     for item in groups:
