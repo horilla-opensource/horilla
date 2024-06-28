@@ -472,6 +472,16 @@ class JobRoleForm(ModelForm):
     JobRole model's form
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk:
+            self.fields["job_position_id"] = forms.ModelMultipleChoiceField(
+                queryset=self.fields["job_position_id"].queryset
+            )
+            attrs = self.fields["job_position_id"].widget.attrs
+            attrs["class"] = "oh-select oh-select2 w-100"
+            attrs["style"] = "height:45px;"
+
     class Meta:
         """
         Meta class for additional options
@@ -480,6 +490,25 @@ class JobRoleForm(ModelForm):
         model = JobRole
         fields = "__all__"
         exclude = ["is_active"]
+
+    def save(self, commit, *args, **kwargs) -> Any:
+        if not self.instance.pk:
+            request = getattr(_thread_locals, "request")
+            job_positions = JobPosition.objects.filter(
+                id__in=self.data.getlist("job_position_id")
+            )
+            roles = []
+            for position in job_positions:
+                role = JobRole()
+                role.job_position_id = position
+                role.job_role = self.data["job_role"]
+                try:
+                    role.save()
+                except:
+                    messages.info(request, f"Role already exists under {position}")
+                roles.append(role.pk)
+            return JobRole.objects.filter(id__in=roles)
+        super().save(commit, *args, **kwargs)
 
 
 class WorkTypeForm(ModelForm):

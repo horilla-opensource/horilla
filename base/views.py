@@ -1252,10 +1252,15 @@ def job_role_create(request):
     form = JobRoleForm()
     if request.method == "POST":
         form = JobRoleForm(request.POST)
-        if form.is_valid():
+        if form.instance.pk and form.is_valid():
             form.save()
-            form = JobRoleForm()
-
+            messages.success(request, _("Job role has been created successfully!"))
+        elif (
+            not form.instance.pk
+            and form.data.getlist("job_position_id")
+            and form.data.get("job_role")
+        ):
+            form.save()
             messages.success(request, _("Job role has been created successfully!"))
             return HttpResponse("<script>window.location.reload()</script>")
 

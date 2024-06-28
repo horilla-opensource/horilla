@@ -535,6 +535,9 @@ class EmployeeShift(HorillaModel):
         return self
 
 
+from django.db.models import Case, When
+
+
 class EmployeeShiftSchedule(HorillaModel):
     """
     EmployeeShiftSchedule model
@@ -564,6 +567,18 @@ class EmployeeShiftSchedule(HorillaModel):
         verbose_name = _("Employee Shift Schedule")
         verbose_name_plural = _("Employee Shift Schedules")
         unique_together = [["shift_id", "day"]]
+        ordering = [
+            Case(
+                When(day__day="monday", then=0),
+                When(day__day="tuesday", then=1),
+                When(day__day="wednesday", then=2),
+                When(day__day="thursday", then=3),
+                When(day__day="friday", then=4),
+                When(day__day="saturday", then=5),
+                When(day__day="sunday", then=6),
+                default=7,
+            )
+        ]
 
     def __str__(self) -> str:
         return f"{self.shift_id.employee_shift} {self.day}"
