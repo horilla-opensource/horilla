@@ -3118,7 +3118,6 @@ def view_meetings(request):
 
 @login_required
 @hx_request_required
-@permission_required("pms.add_meetings")
 def create_meetings(request):
     """
     This view is used to create the meeting ,
