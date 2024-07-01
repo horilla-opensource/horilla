@@ -27,6 +27,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core import serializers
+from django.core.cache import cache as CACHE
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import ProtectedError, Q
@@ -52,7 +53,6 @@ from horilla.decorators import (
 )
 from horilla.group_by import group_by_queryset
 from notifications.signals import notify
-from recruitment.cache import ThreadSafeCache
 from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.filters import (
     CandidateFilter,
@@ -95,8 +95,6 @@ from recruitment.models import (
     StageNote,
 )
 from recruitment.views.paginator_qry import paginator_qry
-
-CACHE = ThreadSafeCache()
 
 
 def is_stagemanager(request, stage_id=False):
@@ -418,7 +416,7 @@ def filter_pipeline(request):
     filter_dict = get_key_instances(Recruitment, filter_dict)
 
     CACHE.set(
-        request.session.session_key,
+        request.session.session_key + "pipeline",
         {
             "candidates": candidate_filter.qs.filter(is_active=True).order_by(
                 "sequence"
@@ -428,7 +426,6 @@ def filter_pipeline(request):
             "filter_dict": filter_dict,
             "filter_query": request.GET,
         },
-        timeout=300,
     )
 
     previous_data = request.GET.urlencode()
@@ -474,9 +471,9 @@ def stage_component(request, view: str = "list"):
     """
     recruitment_id = request.GET["rec_id"]
     recruitment = Recruitment.objects.get(id=recruitment_id)
-    ordered_stages = CACHE.get(request.session.session_key)["stages"].filter(
-        recruitment_id__id=recruitment_id
-    )
+    ordered_stages = CACHE.get(request.session.session_key + "pipeline")[
+        "stages"
+    ].filter(recruitment_id__id=recruitment_id)
     template = "pipeline/components/stages_tab_content.html"
     if view == "card":
         template = "pipeline/kanban_components/kanban_stage_components.html"
@@ -486,7 +483,9 @@ def stage_component(request, view: str = "list"):
         {
             "rec": recruitment,
             "ordered_stages": ordered_stages,
-            "filter_dict": CACHE.get(request.session.session_key)["filter_dict"],
+            "filter_dict": CACHE.get(request.session.session_key + "pipeline")[
+                "filter_dict"
+            ],
         },
     )
 
@@ -499,12 +498,16 @@ def update_candidate_stage_and_sequence(request):
     """
     order_list = request.GET.getlist("order")
     stage_id = request.GET["stage_id"]
-    stage = CACHE.get(request.session.session_key)["stages"].filter(id=stage_id).first()
+    stage = (
+        CACHE.get(request.session.session_key + "pipeline")["stages"]
+        .filter(id=stage_id)
+        .first()
+    )
     context = {}
     for index, cand_id in enumerate(order_list):
-        candidate = CACHE.get(request.session.session_key)["candidates"].filter(
-            id=cand_id
-        )
+        candidate = CACHE.get(request.session.session_key + "pipeline")[
+            "candidates"
+        ].filter(id=cand_id)
         candidate.update(sequence=index, stage_id=stage)
     if stage.stage_type == "hired":
         if stage.recruitment_id.is_vacancy_filled():
@@ -521,12 +524,16 @@ def update_candidate_sequence(request):
     """
     order_list = request.GET.getlist("order")
     stage_id = request.GET["stage_id"]
-    stage = CACHE.get(request.session.session_key)["stages"].filter(id=stage_id).first()
+    stage = (
+        CACHE.get(request.session.session_key + "pipeline")["stages"]
+        .filter(id=stage_id)
+        .first()
+    )
     data = {}
     for index, cand_id in enumerate(order_list):
-        candidate = CACHE.get(request.session.session_key)["candidates"].filter(
-            id=cand_id
-        )
+        candidate = CACHE.get(request.session.session_key + "pipeline")[
+            "candidates"
+        ].filter(id=cand_id)
         candidate.update(sequence=index, stage_id=stage)
     return JsonResponse(data)
 
@@ -548,13 +555,20 @@ def candidate_component(request):
     Candidate component
     """
     stage_id = request.GET.get("stage_id")
-    stage = CACHE.get(request.session.session_key)["stages"].filter(id=stage_id).first()
-    candidates = CACHE.get(request.session.session_key)["candidates"].filter(
-        stage_id=stage
+    stage = (
+        CACHE.get(request.session.session_key + "pipeline")["stages"]
+        .filter(id=stage_id)
+        .first()
     )
+    candidates = CACHE.get(request.session.session_key + "pipeline")[
+        "candidates"
+    ].filter(stage_id=stage)
 
     template = "pipeline/components/candidate_stage_component.html"
-    if CACHE.get(request.session.session_key)["filter_query"].get("view") == "card":
+    if (
+        CACHE.get(request.session.session_key + "pipeline")["filter_query"].get("view")
+        == "card"
+    ):
         template = "pipeline/kanban_components/candidate_kanban_components.html"
 
     now = timezone.now()
