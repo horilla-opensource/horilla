@@ -118,6 +118,11 @@ sidebar_urls = [
     "interview-view",
     "view-compensatory-leave",
     "compensatory-leave-settings-view",
+    "project-dashboard-view",
+    "project-view",
+    "view-time-sheet",
+    "templates",
+    "sidebar.html",
 ]
 remove_urls = [
     "feedback-detailed-view",
@@ -198,6 +203,7 @@ def breadcrumbs(request):
                 last_path in sidebar_urls
                 or parts[-2] == "employee-view"
                 or parts[-2] == "candidate-view"
+                or parts[-2] == "view-payslip"
             ):
                 breadcrumbs = user_breadcrumbs[user_id]
                 first_path = breadcrumbs[0]

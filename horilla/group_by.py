@@ -1,5 +1,6 @@
 from django.core.paginator import Paginator
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
+
 from horilla.horilla_middlewares import _thread_locals
 
 

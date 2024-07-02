@@ -1,0 +1,28 @@
+{% load i18n %} {% load i18n %}
+<div class="oh-onboarding-card__header">
+  <span class="oh-onboarding-card__company-name">Horilla HRMS</span>
+  <ul class="oh-onboarding-card__steps">
+    <li class="oh-onboarding-card__step">
+      <div class="oh-onboarding-card__count">1</div>
+      <span class="oh-onboarding-card__text">Sign Up</span>
+    </li>
+    <li class="oh-onboarding-card__step">
+      <div class="oh-onboarding-card__count">2</div>
+      <span class="oh-onboarding-card__text">Company</span>
+    </li>
+    <li class="oh-onboarding-card__step oh-onboarding-card__step--active">
+      <div class="oh-onboarding-card__count">3</div>
+      <span class="oh-onboarding-card__text">Department</span>
+    </li>
+    <li class="oh-onboarding-card__step oh-onboarding-card__step">
+      <div class="oh-onboarding-card__count">4</div>
+      <span class="oh-onboarding-card__text">Job Position</span>
+    </li>
+  </ul>
+</div>
+<h1
+  class="oh-onboarding-card__title oh-onboarding-card__title--h2 text-center my-3"
+>
+  {% trans "Department" %}
+</h1>
+{% include "initialize_database/horilla_department_form.html" %}

@@ -1,0 +1,254 @@
+{% load static %} {% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - {{white_label_company_name}} Dashboard</title>
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}"
+    />
+    <link rel="stylesheet" href="{% static '/build/css/style.min.css' %}" />
+    <link rel="manifest" href="{% static 'build/manifest.json' %}" />
+  </head>
+  <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <style>
+      .animated-background {
+        animation-duration: 2s;
+        animation-fill-mode: forwards;
+        animation-iteration-count: infinite;
+        animation-name: placeHolderShimmer;
+        animation-timing-function: linear;
+        background-color: #f6f7f8;
+        background: linear-gradient(
+          to right,
+          #eeeeee9c -58%,
+          #e4e4e496 18%,
+          #eeeeee61 33%
+        );
+        background-size: 800px 64px;
+        height: 623px;
+        position: relative;
+      }
+      .select2-selection.select2-selection--multiple {
+        height: 46px !important;
+      }
+    
+    </style>
+    <div id="main">
+      <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{ message.tags }}">
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      <main class="oh-auth">
+        <div
+          class="oh-onboarding-card"
+          style="max-height: 790px;max-width: 975px;"
+          id="ohAuthCard"
+          >
+          <div class="oh-onboarding-card__header">
+            <span class="oh-onboarding-card__company-name">Horilla HRMS</span>
+            <ul class="oh-onboarding-card__steps">
+              <li
+                class="oh-onboarding-card__step oh-onboarding-card__step--active"
+              >
+                <div class="oh-onboarding-card__count">1</div>
+                <span class="oh-onboarding-card__text">Sign Up</span>
+              </li>
+              <li class="oh-onboarding-card__step">
+                <div class="oh-onboarding-card__count">2</div>
+                <span class="oh-onboarding-card__text">Company</span>
+              </li>
+              <li class="oh-onboarding-card__step">
+                <div class="oh-onboarding-card__count">3</div>
+                <span class="oh-onboarding-card__text">Department</span>
+              </li>
+              <li class="oh-onboarding-card__step oh-onboarding-card__step">
+                <div class="oh-onboarding-card__count">4</div>
+                <span class="oh-onboarding-card__text">Job Position</span>
+              </li>
+            </ul>
+          </div>
+          <h1
+            class="oh-onboarding-card__title oh-onboarding-card__title--h2 text-center my-3"
+          >
+            {% trans "Sign Up" %}
+          </h1>
+          <p class="text-muted text-center">
+            {% trans "Please sign up to access the Horilla HRMS." %}
+          </p>
+          <form
+            hx-post="{% url 'initialize-database-user' %}"
+            hx-target="#ohAuthCard"
+            class="oh-form-group"
+          >
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label" for="firstname"
+                    >{% trans "First Name" %}</label
+                  >
+                  <input
+                    type="text"
+                    id="firstname"
+                    name="firstname"
+                    class="oh-input w-100"
+                    placeholder="e.g. Adam"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label" for="lastname"
+                    >{% trans "Last Name" %}</label
+                  >
+                  <input
+                    type="text"
+                    id="lastname"
+                    name="lastname"
+                    class="oh-input w-100"
+                    placeholder="e.g. Luis"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label" for="username"
+                    >{% trans "Username" %}</label
+                  >
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    class="oh-input w-100"
+                    placeholder="e.g. jane.doe@acme.com"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label" for="password"
+                    >{% trans "Password" %}</label
+                  >
+                  <div class="oh-password-input-container">
+                    <input
+                      type="password"
+                      id="password"
+                      name="password"
+                      class="oh-input oh-input--password w-100"
+                      placeholder="Use alphanumeric characters"
+                      required
+                    />
+                    <button
+                      type="button"
+                      class="oh-btn oh-btn--transparent oh-password-input--toggle"
+                    >
+                      <ion-icon
+                        class="oh-passowrd-input__show-icon"
+                        title="Show Password"
+                        name="eye-outline"
+                      ></ion-icon>
+                      <ion-icon
+                        class="oh-passowrd-input__hide-icon d-none"
+                        title="Hide Password"
+                        name="eye-off-outline"
+                      ></ion-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label" for="email"
+                    >{% trans "Email" %}</label
+                  >
+                  <input
+                    type="text"
+                    id="email"
+                    name="email"
+                    class="oh-input w-100"
+                    placeholder="e.g. jane.doe@acme.com"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label" for="phone"
+                    >{% trans "Phone" %}</label
+                  >
+                  <input
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    class="oh-input w-100"
+                    placeholder="e.g. 9865324512"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+              role="button"
+              >
+              <ion-icon class="me-2" name="lock-closed-outline"></ion-icon>
+              {% trans "Secure Sign-up" %}
+            </button>
+          </form>
+        </div>
+        <img src={% if white_label_company.icon %} "{{white_label_company.icon.url}}" {% else %} "{% static 'images/ui/auth-logo.png' %}" {% endif %} alt="Horilla" />
+      </main>
+    </div>
+    <script src="{% static '/build/js/web.frontend.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'htmx/htmx.min.js' %}"></script>
+    <script src="{% static '/index/index.js' %}"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
+    <script src="{% static 'build/js/hxSelect2.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+      $(document).on("htmx:beforeRequest", function (event, data) {
+        var response = event.detail.xhr.response;
+        var target = $(event.detail.elt.getAttribute("hx-target"));
+        if (!target.closest("form").length) {
+          target.html(`<div class="animated-background"></div>`);
+        }
+      });
+    </script>
+  </body>
+</html>

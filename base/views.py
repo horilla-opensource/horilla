@@ -16,6 +16,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import F, ProtectedError, Q
@@ -181,11 +182,203 @@ def paginator_qry(queryset, page_number):
     return queryset
 
 
+def initialize_database_condition():
+    initialize_database = not User.objects.exists()
+    if not initialize_database:
+        initialize_database = True
+        superusers = User.objects.filter(is_superuser=True)
+        for user in superusers:
+            if hasattr(user, "employee_get"):
+                initialize_database = False
+                break
+    return initialize_database
+
+
+def initialize_database(request):
+    if initialize_database_condition():
+        return render(
+            request,
+            "initialize_database/horilla_user.html",
+        )
+    else:
+        return redirect("/")
+
+
+@hx_request_required
+def initialize_database_user(request):
+    if request.method == "POST":
+        form_data = request.__dict__.get("_post")
+        first_name = form_data.get("firstname")
+        last_name = form_data.get("lastname")
+        username = form_data.get("username")
+        password = form_data.get("password")
+        email = form_data.get("email")
+        phone = form_data.get("phone")
+        user = User.objects.filter(username=username).first()
+        if user and not hasattr(user, "employee_get"):
+            user.delete()
+        user = User.objects.create_superuser(
+            username=username, email=email, password=password
+        )
+        employee = Employee()
+        employee.employee_user_id = user
+        employee.employee_first_name = first_name
+        employee.employee_last_name = last_name
+        employee.email = email
+        employee.phone = phone
+        employee.save()
+        user = authenticate(request, username=username, password=password)
+        login(request, user)
+        return render(
+            request,
+            "initialize_database/horilla_company.html",
+            {"form": CompanyForm(initial={"hq": True})},
+        )
+    return render(request, "initialize_database/horilla_user.html")
+
+
+@hx_request_required
+def initialize_database_company(request):
+    form = CompanyForm()
+    if request.method == "POST":
+        form = CompanyForm(request.POST, request.FILES)
+        if form.is_valid():
+            company = form.save()
+            return render(
+                request,
+                "initialize_database/horilla_department.html",
+                {"form": DepartmentForm(initial={"company_id": company})},
+            )
+    return render(request, "initialize_database/horilla_company.html", {"form": form})
+
+
+@hx_request_required
+def initialize_database_department(request):
+    departments = Department.objects.all()
+    form = DepartmentForm(initial={"company_id": Company.objects.first()})
+    if request.method == "POST":
+        form = DepartmentForm(request.POST)
+        if form.is_valid():
+            company = form.cleaned_data.get("company_id")
+            form.save()
+            form = DepartmentForm(initial={"company_id": company})
+    return render(
+        request,
+        "initialize_database/horilla_department_form.html",
+        {"form": form, "departments": departments},
+    )
+
+
+@hx_request_required
+def initialize_department_edit(request, obj_id):
+    department = Department.find(obj_id)
+    form = DepartmentForm(instance=department)
+    if request.method == "POST":
+        form = DepartmentForm(request.POST, instance=department)
+        if form.is_valid():
+            company = form.cleaned_data.get("company_id")
+            form.save()
+            return render(
+                request,
+                "initialize_database/horilla_department_form.html",
+                {
+                    "form": DepartmentForm(initial={"company_id": company}),
+                    "departments": Department.objects.all(),
+                },
+            )
+    return render(
+        request,
+        "initialize_database/horilla_department_form.html",
+        {
+            "form": form,
+            "department": department,
+            "departments": Department.objects.all(),
+        },
+    )
+
+
+@hx_request_required
+def initialize_department_delete(request, obj_id):
+    department = Department.find(obj_id)
+    department.delete() if department else None
+    return redirect(initialize_database_department)
+
+
+@hx_request_required
+def initialize_database_job_position(request):
+    company = Company.objects.first()
+    form = JobPositionForm(initial={"company_id": company})
+    if request.method == "POST":
+        form = JobPositionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = JobPositionForm(initial={"company_id": Company.objects.first()})
+        return render(
+            request,
+            "initialize_database/horilla_job_position_form.html",
+            {
+                "form": form,
+                "job_positions": JobPosition.objects.all(),
+                "company": company,
+            },
+        )
+    return render(
+        request,
+        "initialize_database/horilla_job_position.html",
+        {"form": form, "job_positions": JobPosition.objects.all(), "company": company},
+    )
+
+
+@hx_request_required
+def initialize_job_position_edit(request, obj_id):
+    company = Company.objects.first()
+    job_position = JobPosition.find(obj_id)
+    form = JobPositionForm(instance=job_position)
+    if request.method == "POST":
+        form = JobPositionForm(request.POST, instance=job_position)
+        if form.is_valid():
+            form.save()
+            return render(
+                request,
+                "initialize_database/horilla_job_position_form.html",
+                {
+                    "form": JobPositionForm(initial={"company_id": company}),
+                    "job_positions": JobPosition.objects.all(),
+                    "company": company,
+                },
+            )
+    return render(
+        request,
+        "initialize_database/horilla_job_position_form.html",
+        {
+            "form": form,
+            "job_position": job_position,
+            "job_positions": JobPosition.objects.all(),
+            "company": company,
+        },
+    )
+
+
+@hx_request_required
+def initialize_job_position_delete(request, obj_id):
+    company = Company.objects.first()
+    job_position = JobPosition.find(obj_id)
+    job_position.delete() if job_position else None
+    return render(
+        request,
+        "initialize_database/horilla_job_position_form.html",
+        {
+            "form": JobPositionForm(initial={"company_id": Company.objects.first()}),
+            "job_positions": JobPosition.objects.all(),
+            "company": company,
+        },
+    )
+
+
 def login_user(request):
     """
     This method is used render login template and authenticate user
     """
-
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
@@ -223,7 +416,9 @@ def login_user(request):
                 url += f"?{params}"
             return redirect(url)
         return redirect("/")
-    return render(request, "login.html")
+    return render(
+        request, "login.html", {"initialize_database": initialize_database_condition()}
+    )
 
 
 def include_employee_instance(request, form):

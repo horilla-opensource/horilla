@@ -91,10 +91,15 @@
             >
           </form>
         </div>
-        <img
-          src={% if white_label_company.icon %}"{{white_label_company.icon.url}}" {% else %} "{% static 'images/ui/auth-logo.png' %}" {% endif %}
-          alt="Horilla"
-        />
+        <div>
+          <img
+            src={% if white_label_company.icon %}"{{white_label_company.icon.url}}" {% else %} "{% static 'images/ui/auth-logo.png' %}" {% endif %}
+            alt="Horilla"
+          />
+          {% if initialize_database %}
+            <a href="{% url 'initialize-database' %}" class="oh-link justify-content-center mt-2" style="font-size: large;color: crimson;">{% trans "Initialize Database" %}<ion-icon name="arrow-forward-circle-outline"></ion-icon></a>
+          {% endif %}
+        </div>
       </main>
     </div>
     <script src="{% static '/build/js/web.frontend.min.js' %}"></script>

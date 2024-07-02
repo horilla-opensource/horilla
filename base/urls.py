@@ -34,6 +34,47 @@ from horilla_audit.models import AuditTag
 
 urlpatterns = [
     path("", views.home, name="home-page"),
+    path("initialize-database", views.initialize_database, name="initialize-database"),
+    path(
+        "initialize-database-user",
+        views.initialize_database_user,
+        name="initialize-database-user",
+    ),
+    path(
+        "initialize-database-company",
+        views.initialize_database_company,
+        name="initialize-database-company",
+    ),
+    path(
+        "initialize-database-department",
+        views.initialize_database_department,
+        name="initialize-database-department",
+    ),
+    path(
+        "initialize-department-edit/<int:obj_id>",
+        views.initialize_department_edit,
+        name="initialize-department-edit",
+    ),
+    path(
+        "initialize-department-delete/<int:obj_id>",
+        views.initialize_department_delete,
+        name="initialize-department-delete",
+    ),
+    path(
+        "initialize-database-job-position",
+        views.initialize_database_job_position,
+        name="initialize-database-job-position",
+    ),
+    path(
+        "initialize-job-position-edit/<int:obj_id>",
+        views.initialize_job_position_edit,
+        name="initialize-job-position-edit",
+    ),
+    path(
+        "initialize-job-position-delete/<int:obj_id>",
+        views.initialize_job_position_delete,
+        name="initialize-job-position-delete",
+    ),
     path("login/", views.login_user, name="login"),
     path(
         "forgot-password",

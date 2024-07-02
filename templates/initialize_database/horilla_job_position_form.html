@@ -1,0 +1,95 @@
+{% load i18n %}
+<div id="initializeJobPositions">
+  {% if job_positions %}
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <div class="mb-2 mt-2">
+      <div class="oh-filter-tag-container">
+        {% for instance in job_positions %}
+        <span class="oh-filter-tag">
+          <span
+            hx-get="{% url 'initialize-job-position-edit' instance.id %}"
+            hx-target="#initializeJobPositions"
+            hx-swap="outerHTML"
+            >{{instance}}</span
+          >
+          <form
+            hx-confirm="{% trans 'Are you sure you want to delete this job position?' %}"
+            hx-get="{% url 'initialize-job-position-delete' instance.id %}"
+            hx-target="#initializeJobPositions"
+            hx-swap="outerHTML"
+            >
+            <button class="oh-filter-tag__close" style="color: red;" title={% trans "Delete" %}>
+                <ion-icon name="trash-outline"></ion-icon>
+            </button>
+          </form>
+        </span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  <form
+    class="oh-profile-section"
+    {% if job_position %}
+        hx-post="{% url 'initialize-job-position-edit' job_position.id %}"
+    {% else %}
+        hx-post="{% url 'initialize-database-job-position' %}"
+    {% endif %}
+    hx-target="#initializeJobPositions"
+    hx-swap="outerHTML"
+  >
+    {% csrf_token %} {{form.non_field_errors}}
+    <div class="row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-10">
+        <div class="row">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+            <div class="oh-input-group mb-2">
+              <label for="{{form.job_position.id_for_label}}" class="mb-1"
+                >{% trans "Job Position" %}</label
+              >
+              {{form.job_position}} {{form.job_position.errors}}
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+            <div class="oh-input-group mb-2">
+              <label for="{{form.department_id.id_for_label}}" class="mb-1"
+                >{% trans "Department" %}</label
+              >
+              {{form.department_id}} {{form.department_id.errors}}
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+            <div class="oh-input-group mb-2">
+              <label for="{{form.company_id.id_for_label}}" class="mb-1"
+                >{% trans "Company" %}</label
+              >
+              {{form.company_id}} {{form.company_id.errors}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-2">
+        <button
+          type="submit"
+          title="{% trans 'Save' %}"
+          class="oh-btn oh-btn--secondary mr-1 mt-4 w-100"
+          style="height: 43px"
+        >
+          <ion-icon name="save"></ion-icon>
+        </button>
+      </div>
+      {% if job_positions %}
+      <div class="oh-modal__dialog-footer p-0 mt-3">
+        <a
+          hx-get="{% url "update-selected-company" %}?company_id={{company.id}}"
+          class="oh-btn oh-btn--secondary-outline m-2"
+          role="button"
+          >
+          {% trans "Go To Home" %}
+          <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon>
+      </a>
+      </div>
+      {% endif %}
+    </div>
+  </form>
+</div>

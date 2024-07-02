@@ -1,0 +1,128 @@
+{% load i18n %}
+<div class="oh-onboarding-card__header">
+  <span class="oh-onboarding-card__company-name">Horilla HRMS</span>
+  <ul class="oh-onboarding-card__steps">
+    <li class="oh-onboarding-card__step">
+      <div class="oh-onboarding-card__count">1</div>
+      <span class="oh-onboarding-card__text">Sign Up</span>
+    </li>
+    <li class="oh-onboarding-card__step oh-onboarding-card__step--active">
+      <div class="oh-onboarding-card__count">2</div>
+      <span class="oh-onboarding-card__text">Company</span>
+    </li>
+    <li class="oh-onboarding-card__step">
+      <div class="oh-onboarding-card__count">3</div>
+      <span class="oh-onboarding-card__text">Department</span>
+    </li>
+    <li class="oh-onboarding-card__step oh-onboarding-card__step">
+      <div class="oh-onboarding-card__count">4</div>
+      <span class="oh-onboarding-card__text">Job Position</span>
+    </li>
+  </ul>
+</div>
+<h1
+  class="oh-onboarding-card__title oh-onboarding-card__title--h2 text-center my-3"
+>
+  {% trans "Company" %}
+</h1>
+<form
+  hx-post="{% url 'initialize-database-company' %}"
+  hx-target="#ohAuthCard"
+  hx-encoding="multipart/form-data"
+  class="oh-profile-section"
+>
+  {% csrf_token %}
+  <div class="oh-inner-sidebar-content__body">
+    <div class="oh-input-group mb-2">
+      <label for="id_{{form.company.name}}" class="mb-1"
+        >{% trans "Company" %}</label
+      >
+      {{form.company}} {{form.company.errors}}
+    </div>
+    <div class="oh-input-group mb-2">
+      <label for="id_{{form.address.name}}" class="mb-1"
+        >{% trans "Address" %}</label
+      >
+      {{form.address}} {{form.address.errors}}
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="oh-input-group mb-2">
+          <label for="" class="mb-1">{% trans "Country" %}</label>
+          <select name="country" id="id_country" class="oh-select oh-select-2">
+            <option value="{{form.instance.country}}" selected>
+              {{form.instance.country}}
+            </option>
+          </select>
+          {{form.country.errors}}
+        </div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="oh-input-group mb-2">
+          <label for="" class="mb-1">{% trans "State" %}</label>
+          <select name="state" id="id_state" class="oh-select oh-select-2">
+            <option value="{{form.instance.state}}" selected>
+              {{form.instance.state}}
+            </option>
+          </select>
+          {{form.state.errors}}
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="oh-input-group mb-2">
+          <label for="id_{{form.city.name}}" class="mb-1"
+            >{% trans "City" %}</label
+          >
+          {{form.city}} {{form.city.errors}}
+        </div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="oh-input-group mb-2">
+          <label for="id_{{form.zip.name}}" class="mb-1"
+            >{% trans "Zip" %}</label
+          >
+          {{form.zip}} {{form.zip.errors}}
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="oh-input-group mb-2">
+          <label for="id_{{form.icon.name}}" class="mb-1"
+            >{% trans "Icon" %}</label
+          >
+          {{form.icon}} {{form.icon.errors}}
+        </div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="oh-input-group mb-2">
+          <div class="oh-switch" style="display: grid">
+            <label
+              for="id_{{form.hq.name}}"
+              class="mb-1 mr-3"
+              style="padding-right: 15px"
+              >{% trans "Hq" %}</label
+            >
+            <p class="m-2">{{form.hq}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-modal__dialog-footer p-0 mt-3">
+    <button
+      type="submit"
+      class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+      role="button"
+    >
+      {% trans "Next Step" %}
+      <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon>
+    </button>
+  </div>
+</form>
+
+<script>
+  {% include 'country.js' %}
+</script>
