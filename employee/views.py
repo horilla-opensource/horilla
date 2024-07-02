@@ -94,7 +94,7 @@ from horilla.decorators import (
 )
 from horilla.filters import HorillaPaginator
 from horilla.group_by import group_by_queryset
-from horilla_audit.models import AccountBlockUnblock
+from horilla_audit.models import AccountBlockUnblock, HistoryTrackingFields
 from horilla_documents.forms import (
     DocumentForm,
     DocumentRejectForm,
@@ -1530,6 +1530,11 @@ def employee_view_update(request, obj_id, **kwargs):
     This method is used to render update form for employee.
     """
     user = Employee.objects.filter(employee_user_id=request.user).first()
+    work_info = HistoryTrackingFields.objects.get()
+    work_info_history = False
+    if work_info.work_info_track == True:
+        work_info_history = True
+
     employee = Employee.objects.filter(id=obj_id).first()
     if (
         user
@@ -1597,7 +1602,12 @@ def employee_view_update(request, obj_id, **kwargs):
         return render(
             request,
             "employee/update_form/form_view.html",
-            {"form": form, "work_form": work_form, "bank_form": bank_form},
+            {
+                "form": form,
+                "work_form": work_form,
+                "bank_form": bank_form,
+                "work_info_history": work_info_history,
+            },
         )
     return HttpResponseRedirect(
         request.META.get("HTTP_REFERER", "/employee/employee-view")
@@ -2042,6 +2052,11 @@ def employee_bulk_delete(request):
     for employee_id in ids:
         try:
             employee = Employee.objects.get(id=employee_id)
+            if Contract.objects.filter(employee_id=employee_id).exists():
+                contracts = Contract.objects.filter(employee_id=employee_id)
+                for contract in contracts:
+                    if contract.contract_status != "active":
+                        contract.delete()
             user = employee.employee_user_id
             user.delete()
             messages.success(
@@ -2071,6 +2086,19 @@ def employee_bulk_archive(request):
         is_active = True
     for employee_id in ids:
         employee = Employee.objects.get(id=employee_id)
+
+        emp = Employee.objects.get(id=employee_id)
+        if emp.employee_user_id.is_superuser and emp.is_active:
+            count = 0
+            employees = Employee.objects.filter(is_active=True)
+            for super_emp in employees:
+                if super_emp.employee_user_id.is_superuser:
+                    count = count + 1
+            print(count)
+            if count == 1:
+                messages.error(request, _("You can't archive the last superuser."))
+                return HttpResponse("<script>$('#filterEmployee').click();</script>")
+
         employee.is_active = is_active
         employee.employee_user_id.is_active = is_active
         if employee.get_archive_condition() is False:
@@ -2099,6 +2127,19 @@ def employee_archive(request, obj_id):
     save = True
     message = "Employee un-archived"
     if not employee.is_active:
+
+        emp = Employee.objects.get(id=obj_id)
+        if emp.employee_user_id.is_superuser:
+            count = 0
+            employees = Employee.objects.filter(is_active=True)
+            for super_emp in employees:
+                if super_emp.employee_user_id.is_superuser:
+                    count = count + 1
+            print(count)
+            if count == 1:
+                messages.error(request, _("You can't archive the last superuser."))
+                return HttpResponse("<script>$('#filterEmployee').click();</script>")
+
         result = employee.get_archive_condition()
         if result:
             save = False

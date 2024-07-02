@@ -251,7 +251,7 @@
                   <ion-icon name="archive"></ion-icon>
                 </button>
               {% else %}
-                <form hx-confirm="return confirm('{% trans "Do you want to un-archive this employee?" %}')"
+                <form hx-confirm="{% trans "Do you want to un-archive this employee?" %}"
                       hx-post="{% url 'employee-archive' emp.id %}"
                       hx-target="#relatedModel"
                       style = "width:100%"
