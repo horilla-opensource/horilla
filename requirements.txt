@@ -33,7 +33,7 @@ pillow
 pycparser
 pyHanko
 pyhanko-certvalidator
-PyMuPDF
+PyMuPDF== 1.24.5
 pypdf
 pypng
 python-bidi
