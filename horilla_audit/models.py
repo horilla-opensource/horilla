@@ -121,6 +121,7 @@ def post_create_horilla_audit_log(sender, instance, *_args, **kwargs):
 
 class HistoryTrackingFields(HorillaModel):
     tracking_fields = models.JSONField(null=True, blank=True, editable=False)
+    work_info_track = models.BooleanField(default=True)
 
 
 class AccountBlockUnblock(HorillaModel):
