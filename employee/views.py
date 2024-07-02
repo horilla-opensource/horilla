@@ -1530,9 +1530,9 @@ def employee_view_update(request, obj_id, **kwargs):
     This method is used to render update form for employee.
     """
     user = Employee.objects.filter(employee_user_id=request.user).first()
-    work_info = HistoryTrackingFields.objects.get()
+    work_info = HistoryTrackingFields.objects.first()
     work_info_history = False
-    if work_info.work_info_track == True:
+    if work_info and work_info.work_info_track == True:
         work_info_history = True
 
     employee = Employee.objects.filter(id=obj_id).first()
