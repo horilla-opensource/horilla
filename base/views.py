@@ -4464,6 +4464,7 @@ def general_settings(request):
             "pagination_form": pagination_form,
             "encashment_form": encashment_form,
             "history_fields_form": history_fields_form,
+            "history_tracking_instance": history_tracking_instance,
             "enabled_block_unblock": enabled_block_unblock,
         },
     )
@@ -4606,12 +4607,18 @@ def get_time_format(request):
 def history_field_settings(request):
     if request.method == "POST":
         fields = request.POST.getlist("tracking_fields")
+        check = request.POST.get("work_info_track")
         history_object, created = HistoryTrackingFields.objects.get_or_create(
             pk=1, defaults={"tracking_fields": {"tracking_fields": fields}}
         )
 
         if not created:
             history_object.tracking_fields = {"tracking_fields": fields}
+            if check == "on":
+                history_object.work_info_track = True
+            else:
+                history_object.work_info_track = False
+            messages.success(request, _("Settings updated."))
             history_object.save()
 
     return redirect(general_settings)
@@ -4627,6 +4634,7 @@ def enable_account_block_unblock(request):
         if AccountBlockUnblock.objects.exists():
             instance = AccountBlockUnblock.objects.first()
             instance.is_enabled = enabled
+            messages.success(request, _("Settings updated."))
             instance.save()
         else:
             AccountBlockUnblock.objects.create(is_enabled=enabled)

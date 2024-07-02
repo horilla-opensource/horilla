@@ -39,7 +39,7 @@
     <label class="oh-label" for="defatul_expire"
       >{% trans "Tracking Fields" %}</label
     >
-    <span class="oh-info mr-2" title="{% trans '' %}"></span>
+    <span class="oh-info mr-2" title="{% trans 'Employee history will be stored during updation of the fields that selected here.' %}"></span>
   </div>
   <div style="display: flex">
     <div style="min-width: 273px">
@@ -56,5 +56,15 @@
     {% endif %}
   </div>
 
+  <div class="oh-label__info mt-3" for="work_info_track">
+    <label class="oh-label" for="work_info_track">{% trans "Work Information Tracking" %}</label>
+    <span class="oh-info mr-2" title="{% trans "By enabling this feature, you can save the history of employee work information during updates." %}">
+    </span>
+  </div>
+  <div class="oh-switch p-3">
+    <input type="checkbox"class="oh-switch__checkbox" name="work_info_track" onchange="$(this).closest('form').find('input[type=submit]').click()" {% if history_tracking_instance.work_info_track %} checked {% endif %} />
+  </div>
+  <input type="submit" hidden />
   <div class="oh-inner-sidebar-content__footer"></div>
+
 </form>
