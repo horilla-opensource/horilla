@@ -816,6 +816,10 @@ class RotatingWorkTypeAssignUpdateForm(forms.ModelForm):
     RotatingWorkTypeAssign model's form
     """
 
+    based_on = forms.ChoiceField(
+        choices=BASED_ON, initial="daily", label=_trans("Based on")
+    )
+
     class Meta:
         """
         Meta class for additional options
@@ -1342,6 +1346,10 @@ class RotatingShiftAssignUpdateForm(ModelForm):
     """
     RotatingShiftAssign model's form
     """
+
+    based_on = forms.ChoiceField(
+        choices=BASED_ON, initial="daily", label=_trans("Based on")
+    )
 
     class Meta:
         """
