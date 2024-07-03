@@ -200,10 +200,18 @@ def initialize_database_condition():
 
 def initialize_database(request):
     if initialize_database_condition():
-        return render(
-            request,
-            "initialize_database/horilla_user.html",
-        )
+        if request.method == "POST":
+            password = request._post.get("password")
+            from horilla.horilla_settings import DB_INIT_PASSWORD as db_password
+
+            if db_password == password:
+                return redirect(initialize_database_user)
+            else:
+                messages.warning(
+                    request,
+                    _("The password you entered is incorrect. Please try again."),
+                )
+                return HttpResponse("<script>window.location.reload()</script>")
     else:
         return redirect("/")
 
@@ -238,7 +246,7 @@ def initialize_database_user(request):
             "initialize_database/horilla_company.html",
             {"form": CompanyForm(initial={"hq": True})},
         )
-    return render(request, "initialize_database/horilla_user.html")
+    return render(request, "initialize_database/horilla_user_signup.html")
 
 
 @hx_request_required
@@ -5184,6 +5192,7 @@ def audit_tag_update(request, tag_id):
 
 
 @login_required
+@permission_required("base.view_multipleapprovalcondition")
 def multiple_approval_condition(request):
     form = MultipleApproveConditionForm()
     conditions = MultipleApprovalCondition.objects.all().order_by("department")[::-1]
