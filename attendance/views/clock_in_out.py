@@ -186,10 +186,13 @@ def clock_in(request):
     """
     allowed_attendance_ips = AttendanceAllowedIP.objects.first()
     if allowed_attendance_ips and allowed_attendance_ips.is_enabled:
-        if not (
-            request.META.get("REMOTE_ADDR")
-            in allowed_attendance_ips.additional_data["allowed_ips"]
-        ):
+
+        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+        ip = request.META.get("REMOTE_ADDR")
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(",")[0]
+
+        if not (ip in allowed_attendance_ips.additional_data["allowed_ips"]):
             return HttpResponse(_("You cannot mark attendance from this network"))
 
     employee, work_info = employee_exists(request)

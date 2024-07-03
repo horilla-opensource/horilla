@@ -10,7 +10,7 @@
 <div class="oh-modal__dialog-body">
     <form class="oh-profile-section" hx-post="{% url 'create-allowed-ip' %}" hx-target="#objectDetailsModalW25Target">
         {% for field in form.visible_fields %}
-            {{ form.non_field_errors }} 
+            {{ form.non_field_errors }}
             <div
                 class="oh-input__group"
                 id="moreIPContainer_{{ forloop.counter0 }}"
@@ -23,7 +23,7 @@
                     {% trans field.label %}
                 </label>
                 {{ field }}
-            </div> 
+            </div>
         {% endfor %}
         <div id="moreIPContainer_{{form.ip_counts}}" class="pt-2" style="text-align: end">
             <a
