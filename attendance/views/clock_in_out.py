@@ -26,7 +26,7 @@ from attendance.views.views import (
     strtime_seconds,
 )
 from base.context_processors import timerunner_enabled
-from base.models import EmployeeShiftDay
+from base.models import AttendanceAllowedIP, EmployeeShiftDay
 from horilla.decorators import hx_request_required, login_required
 from horilla.horilla_middlewares import _thread_locals
 
@@ -184,6 +184,14 @@ def clock_in(request):
     """
     This method is used to mark the attendance once per a day and multiple attendance activities.
     """
+    allowed_attendance_ips = AttendanceAllowedIP.objects.first()
+    if allowed_attendance_ips and allowed_attendance_ips.is_enabled:
+        if not (
+            request.META.get("REMOTE_ADDR")
+            in allowed_attendance_ips.additional_data["allowed_ips"]
+        ):
+            return HttpResponse(_("You cannot mark attendance from this network"))
+
     employee, work_info = employee_exists(request)
     datetime_now = datetime.now()
     if request.__dict__.get("datetime"):

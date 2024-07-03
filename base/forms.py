@@ -20,6 +20,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
+from django.core.validators import validate_ipv46_address
 from django.forms import DateInput, HiddenInput, TextInput
 from django.template import loader
 from django.template.loader import render_to_string
@@ -34,6 +35,7 @@ from base.models import (
     AnnouncementComment,
     AnnouncementExpire,
     Attachment,
+    AttendanceAllowedIP,
     BaserequestFile,
     Company,
     Department,
@@ -2174,3 +2176,69 @@ class PassWordResetForm(forms.Form):
                 email,
                 html_email_template_name=html_email_template_name,
             )
+
+
+class AttendanceAllowedIPForm(ModelForm):
+    ip_address = forms.CharField(max_length=30, label="IP Address")
+
+    class Meta:
+        model = AttendanceAllowedIP
+        fields = ["ip_address"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        ip_counts = 1
+
+        def create_ip_field(ip_key, initial=None):
+            self.fields[ip_key] = forms.ModelChoiceField(
+                widget=forms.TextInput(
+                    attrs={
+                        "class": "oh-input w-100 mb-3",
+                        "name": ip_key,
+                        "id": f"id_{ip_key}",
+                    }
+                ),
+                required=False,
+                initial=initial,
+            )
+
+        additional_data = self.initial.get("additional_data")
+        additional_ips = (
+            additional_data.get("additional_ips") if additional_data else None
+        )
+        if additional_ips:
+            ip_counts = 1
+            for ip_id in additional_ips:
+                if ip_id:
+                    create_ip_field(f"ip{ip_counts}", initial=ip_id)
+                    ip_counts += 1
+
+        self.ip_counts = ip_counts
+
+    def as_p(self, *args, **kwargs):
+        context = {"form": self}
+        return render_to_string("attendance/ip_restriction/restrict_form.html", context)
+
+
+class AttendanceAllowedIPUpdateForm(ModelForm):
+    ip_address = forms.CharField(max_length=30, label="IP Address")
+
+    class Meta:
+        model = AttendanceAllowedIP
+        fields = ["ip_address"]
+
+    def validate_ip_address(self, value):
+        try:
+            validate_ipv46_address(value)
+        except ValidationError:
+            raise ValidationError("Enter a valid IPv4 or IPv6 address.")
+        return value
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        for field_name, value in self.data.items():
+            cleaned_data[field_name] = self.validate_ip_address(value)
+
+        return cleaned_data

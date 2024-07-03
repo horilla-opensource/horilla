@@ -16,9 +16,10 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
+from django.core.validators import validate_ipv46_address
 from django.db.models import F, ProtectedError, Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -49,6 +50,8 @@ from base.forms import (
     AnnouncementExpireForm,
     AssignPermission,
     AssignUserGroup,
+    AttendanceAllowedIPForm,
+    AttendanceAllowedIPUpdateForm,
     AuditTagForm,
     ChangePasswordForm,
     CompanyForm,
@@ -99,6 +102,7 @@ from base.models import (
     Announcement,
     AnnouncementExpire,
     AnnouncementView,
+    AttendanceAllowedIP,
     BaserequestFile,
     BiometricAttendance,
     Company,
@@ -1119,26 +1123,39 @@ def add_remove_dynamic_fields(request, **kwargs):
         model = kwargs["model"]
         form_class = kwargs["form_class"]
         template = kwargs["template"]
-        empty_label = kwargs["empty_label"]
+        empty_label = kwargs.get("empty_label")
         field_name_pre = kwargs["field_name_pre"]
+        field_type = kwargs.get("field_type")
         hx_target = request.META.get("HTTP_HX_TARGET")
         if hx_target:
             field_counts = int(hx_target.split("_")[-1]) + 1
             next_hx_target = f"{hx_target.rsplit('_', 1)[0]}_{field_counts}"
             form = form_class()
             field_name = f"{field_name_pre}{field_counts}"
-            form.fields[field_name] = forms.ModelChoiceField(
-                queryset=model.objects.all(),
-                widget=forms.Select(
-                    attrs={
-                        "class": "oh-select oh-select-2 mb-3",
-                        "name": field_name,
-                        "id": f"id_{field_name}",
-                    }
-                ),
-                required=False,
-                empty_label=empty_label,
-            )
+            if field_type and field_type == "character":
+                form.fields[field_name] = forms.CharField(
+                    widget=forms.TextInput(
+                        attrs={
+                            "class": "oh-input w-100",
+                            "name": field_name,
+                            "id": f"id_{field_name}",
+                        }
+                    ),
+                    required=False,
+                )
+            else:
+                form.fields[field_name] = forms.ModelChoiceField(
+                    queryset=model.objects.all(),
+                    widget=forms.Select(
+                        attrs={
+                            "class": "oh-select oh-select-2 mb-3",
+                            "name": field_name,
+                            "id": f"id_{field_name}",
+                        }
+                    ),
+                    required=False,
+                    empty_label=empty_label,
+                )
             context = {
                 "field_counts": field_counts,
                 "field_html": form[field_name].as_widget(),
@@ -6038,3 +6055,124 @@ def activate_biometric_attendance(request):
             )
         instance.save()
     return JsonResponse({"message": "Success"})
+
+
+@login_required
+@permission_required("attendance.add_attendance")
+def allowed_ips(request):
+    allowed_ips = AttendanceAllowedIP.objects.first()
+    return render(
+        request,
+        "attendance/ip_restriction/ip_restriction.html",
+        {"allowed_ips": allowed_ips},
+    )
+
+
+@login_required
+@permission_required("attendance.add_attendance")
+def enable_ip_restriction(request):
+    form = AttendanceAllowedIPForm()
+    if request.method == "POST":
+        ip_restiction = AttendanceAllowedIP.objects.first()
+
+        if not ip_restiction:
+            ip_restiction = AttendanceAllowedIP.objects.create(is_enabled=True)
+            return HttpResponse("<script>window.location.reload()</script>")
+
+        if not ip_restiction.is_enabled:
+            ip_restiction.is_enabled = True
+        elif ip_restiction.is_enabled:
+            ip_restiction.is_enabled = False
+
+        ip_restiction.save()
+        return HttpResponse("<script>window.location.reload()</script>")
+
+
+def validate_ip_address(self, value):
+    try:
+        validate_ipv46_address(value)
+    except ValidationError:
+        raise ValidationError("Enter a valid IPv4 or IPv6 address.")
+    return value
+
+
+@login_required
+@permission_required("attendance.add_attendance")
+def create_allowed_ips(request):
+    form = AttendanceAllowedIPForm()
+    if request.method == "POST":
+        form = AttendanceAllowedIPForm(request.POST)
+        if form.is_valid():
+            values = [request.POST[key] for key in request.POST.keys()]
+            allowed_ips = AttendanceAllowedIP.objects.first()
+            for value in values:
+                try:
+                    validate_ipv46_address(value)
+                    if value not in allowed_ips.additional_data["allowed_ips"]:
+                        allowed_ips.additional_data["allowed_ips"].append(value)
+                        messages.success(request, f"IP address saved successfully")
+                    else:
+                        messages.error(request, "IP address already exists")
+
+                except ValidationError:
+                    messages.error(
+                        request, f"Enter a valid IPv4 or IPv6 address: {value}"
+                    )
+
+            allowed_ips.save()
+
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request, "attendance/ip_restriction/restrict_form.html", {"form": form}
+    )
+
+
+@login_required
+@permission_required("attendance.delete_attendance")
+def delete_allowed_ips(request):
+    try:
+        ids = request.GET.getlist("id")
+        allowed_ips = AttendanceAllowedIP.objects.first()
+        ips = allowed_ips.additional_data["allowed_ips"]
+        for id in ids:
+            ips.pop(eval(id))
+
+        allowed_ips.additional_data["allowed_ips"] = ips
+        allowed_ips.save()
+
+        messages.success(request, "IP address removed successfully")
+    except:
+        messages.error(request, "Invalid id")
+    return redirect("allowed-ips")
+
+
+@login_required
+@permission_required("attendance.change_attendance")
+def edit_allowed_ips(request):
+    try:
+
+        allowed_ips = AttendanceAllowedIP.objects.first()
+        ips = allowed_ips.additional_data["allowed_ips"]
+        id = request.GET.get("id")
+
+        form = AttendanceAllowedIPUpdateForm(initial={"ip_address": ips[eval(id)]})
+        if request.method == "POST":
+            form = AttendanceAllowedIPUpdateForm(request.POST)
+            if form.is_valid():
+                new_ip = form.cleaned_data["ip_address"]
+                ips[eval(id)] = new_ip
+                if not new_ip in allowed_ips.additional_data["allowed_ips"]:
+                    allowed_ips.additional_data["allowed_ips"] = ips
+                    allowed_ips.save()
+                    messages.success(request, "IP address updated successfully")
+                else:
+                    messages.error(request, "IP address already exists")
+
+                return HttpResponse("<script>window.location.reload()</script>")
+    except:
+        messages.error(request, "Invalid id")
+    return render(
+        request,
+        "attendance/ip_restriction/restrict_update_form.html",
+        {"form": form, "id": id},
+    )

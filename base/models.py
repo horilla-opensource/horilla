@@ -4,6 +4,8 @@ models.py
 This module is used to register django models
 """
 
+from typing import Iterable
+
 import django
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -1497,3 +1499,24 @@ class BiometricAttendance(models.Model):
 
     def __str__(self):
         return f"{self.is_installed}"
+
+
+def default_additional_data():
+    return {"allowed_ips": []}
+
+
+class AttendanceAllowedIP(models.Model):
+    """
+    Represents client IP addresses that are allowed to mark attendance.
+    Usage:
+        - This model is used to store IP addresses that are permitted to access the attendance system.
+        - It ensures that only authorized IP addresses can mark attendance.
+    """
+
+    is_enabled = models.BooleanField(default=False)
+    additional_data = models.JSONField(
+        null=True, blank=True, default=default_additional_data
+    )
+
+    def __str__(self):
+        return f"AttendanceAllowedIP - {self.is_enabled}"

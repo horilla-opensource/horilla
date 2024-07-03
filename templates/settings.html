@@ -350,6 +350,17 @@
 													</div>
 												{% endif %}
 											{% endif %}
+
+											{% if perms.attendance.add_attendance %}
+												<div class="oh-input-group">
+													<a
+														id="ip_resriction"
+														href="{% url "allowed-ips" %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "IP Restriction" %}
+													</a>
+												</div>
+											{% endif %}
 										</div>
 									</div>
 								</div>

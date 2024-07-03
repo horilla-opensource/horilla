@@ -1,0 +1,72 @@
+{% extends 'settings.html' %} {% load i18n %} {% block settings %}
+
+<div class="oh-inner-sidebar-content mb-4">
+    <div
+        class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
+    >
+        <h2 class="oh-inner-sidebar-content__title">
+            {% trans "IP Restriction" %}
+        </h2>
+    </div>
+    <div class="oh-label__info" for="application_tracking">
+        <label class="oh-label fw-bold" for="application_tracking">{% trans "IP Login Restriction" %}</label>
+        <span class="oh-info mr-2" title="Enable this feature to restrict attendance marking to specific IP addresses only.">
+        </span>
+        <div class="oh-switch">
+            <input
+                type="checkbox"
+                name="is_enabled"
+                data-widget="style-widget"
+                class="style-widget oh-switch__checkbox ms-3"
+                {% if allowed_ips.is_enabled %}checked {% endif %}
+                id="is_enabled"
+                hx-post = "{% url 'enable-ip-restriction' %}"
+                hx-target = "#objectDetailsModalW25Target"
+                hx-trigger = "change"
+
+            />
+        </div>
+    </div>
+    {% if allowed_ips.is_enabled %}
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" hx-get="{% url 'create-allowed-ip' %}" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25" hx-target="#objectDetailsModalW25Target">
+            {% trans "Add IP" %}
+            </button>
+        </div>
+        {% if allowed_ips.additional_data.allowed_ips %}
+            <div class="oh-sticky-table">
+                <div class="oh-sticky-table__table oh-table--sortable">
+                    <div class="oh-sticky-table__thead">
+                        <div class="oh-sticky-table__tr">
+                            <div class="oh-sticky-table__th" style="width:30px">{% trans "Sl.No" %}</div>
+                            <div class="oh-sticky-table__th" align="center">{% trans "IPs" %}</div>
+                            <div class="oh-sticky-table__th" align="center">{% trans "Actions" %}</div>
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__tbody ui-sortable" style="">
+                        {% for ip in allowed_ips.additional_data.allowed_ips %}
+                            <div class="oh-sticky-table__tr ui-sortable-handle" draggable="true" style="">
+                                <div class="oh-sticky-table__td">{{forloop.counter}}</div>
+                                <div class="oh-sticky-table__td" align="center">{{ip}}</div>
+                                <div class="oh-sticky-table__td">
+                                    <div class="oh-btn-group">
+                                        <a hx-get="{% url 'edit-allowed-ip' %}?id={{forloop.counter0}}" hx-target="#objectDetailsModalW25Target" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25" type="button" class="oh-btn oh-btn--light-bkg w-50" title="Edit">
+                                            <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon></a>
+                                        <form action="{% url 'delete-allowed-ip' %}?id={{forloop.counter0}}" class="w-50" onsubmit="return confirm('Are you sure you want to delete this IP ?');" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="Remove">
+                                                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+
+{% endblock %}

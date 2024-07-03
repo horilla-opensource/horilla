@@ -3,7 +3,12 @@
   <h2 class="oh-modal__dialog-title" id="objectCreateModalLabel">
     {% trans "Rotating Work Type Assign" %}
   </h2>
-  <button class="oh-modal__close" aria-label="Close">
+  <button
+      type="button"
+      class="oh-modal__close--custom"
+      aria-label="Close"
+      onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+    >
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
