@@ -68,6 +68,9 @@
                     {% trans "Total Leave Days" %}
                   </div>
                   <div class="oh-sticky-table__th">
+                    {% trans "All Time Leave Taken" %}
+                  </div>
+                  <div class="oh-sticky-table__th">
                     {% trans "Assigned Date" %}
                   </div>
                   {% if perms.leave.change_availableleave or perms.leave.delete_availableleave or request.user|is_reportingmanager %}
@@ -121,6 +124,9 @@
                   </div>
                   <div class="oh-sticky-table__td">
                     {{available_leave.total_leave_days}}
+                  </div>
+                  <div class="oh-sticky-table__td">
+                    {{available_leave.leave_taken}}
                   </div>
                   <div class="oh-sticky-table__td dateformat_changer">
                     {{available_leave.assigned_date}}

@@ -39,7 +39,8 @@
                 <div data-cell-index="3" data-cell-title="{% trans "Available Days" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-available_days' %}arrow-up {% elif request.sort_option.order == 'available_days' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=available_days"  >{% trans "Available Days" %}</div>
                 <div data-cell-index="4" data-cell-title="{% trans "Carryforward Days" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-carryforward_days' %}arrow-up {% elif request.sort_option.order == 'carryforward_days' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=carryforward_days"  >{% trans "Carryforward Days" %}</div>
                 <div data-cell-index="5" data-cell-title="{% trans "Leave Days" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-total_leave_days' %}arrow-up {% elif request.sort_option.order == 'total_leave_days' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=total_leave_days"  >{% trans "Total Leave Days" %}</div>
-                <div data-cell-index="6" data-cell-title="{% trans "Assigned Date" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_date' %}arrow-up {% elif request.sort_option.order == 'assigned_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=assigned_date"  >{% trans "Assigned Date" %}</div>
+                <div data-cell-index="6" data-cell-title="{% trans "All Time Leave Taken" %}" class="oh-sticky-table__th" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=total_leave_days"  >{% trans "All Time Leave Taken" %}</div>
+                <div data-cell-index="7" data-cell-title="{% trans "Assigned Date" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_date' %}arrow-up {% elif request.sort_option.order == 'assigned_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=assigned_date"  >{% trans "Assigned Date" %}</div>
                 {% if perms.leave.change_availableleave or perms.leave.delete_availableleave or request.user|is_reportingmanager %}
                     <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                 {% endif %}
@@ -70,7 +71,8 @@
             <div data-cell-index="3" class="oh-sticky-table__td">{{available_leave.available_days}}</div>
             <div data-cell-index="4" class="oh-sticky-table__td">{{available_leave.carryforward_days}}</div>
             <div data-cell-index="5" class="oh-sticky-table__td">{{available_leave.total_leave_days}}</div>
-            <div data-cell-index="6" class="oh-sticky-table__td dateformat_changer">{{available_leave.assigned_date}}</div>
+            <div data-cell-index="6" class="oh-sticky-table__td">{{available_leave.leave_taken}}</div>
+            <div data-cell-index="7" class="oh-sticky-table__td dateformat_changer">{{available_leave.assigned_date}}</div>
             {% if perms.leave.change_availableleave or perms.leave.delete_availableleave or request.user|is_reportingmanager %}
             <div class="oh-sticky-table__td">
                 <div class="oh-btn-group" onclick="event.stopPropagation();">
