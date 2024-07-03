@@ -897,13 +897,10 @@ def add_note(request, cand_id=None):
             note.save()
             note.stage_files.set(attachment_ids)
             messages.success(request, _("Note added successfully.."))
-
-            return HttpResponse("<script>window.location.reload()</script>")
-
     candidate_obj = Candidate.objects.get(id=cand_id)
     return render(
         request,
-        "candidate/individual.html",
+        "candidate/individual_view_note.html",
         {
             "candidate": candidate_obj,
             "note_form": form,
@@ -1030,10 +1027,9 @@ def add_more_individual_files(request, id):
         for file in files:
             instance = StageFiles.objects.create(files=file)
             files_ids.append(instance.id)
-
             note.stage_files.add(instance.id)
-    # return redirect("candidate-view-individual", cand_id = note.candidate_id.id)
-    return HttpResponse("<script>window.location.reload()</script>")
+        messages.success(request, _("Files uploaded successfully"))
+    return redirect(f"/recruitment/add-note/{note.candidate_id.id}/")
 
 
 @login_required
@@ -1050,6 +1046,7 @@ def delete_stage_note_file(request, id):
 
 
 @login_required
+@hx_request_required
 def delete_individual_note_file(request, id):
     """
     This method is used to delete the stage note file
@@ -1059,7 +1056,8 @@ def delete_individual_note_file(request, id):
     file = StageFiles.objects.get(id=id)
     cand_id = file.stagenote_set.all().first().candidate_id.id
     file.delete()
-    return HttpResponse("<script>window.location.reload()</script>")
+    messages.success(request, _("File deleted successfully"))
+    return redirect(f"/recruitment/add-note/{cand_id}/")
 
 
 @login_required

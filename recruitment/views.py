@@ -441,18 +441,6 @@ def recruitment_pipeline_card(request):
 
 
 @login_required
-@permission_required(perm="recruitment.view_candidate")
-def pipeline_candidate_search(request):
-    """
-    This method is used to search  candidate
-    """
-    template = "pipeline/pipeline_components/kanban_tabs.html"
-    if request.GET.get("view") == "card":
-        template = "pipeline/pipeline_components/kanban_tabs.html"
-    return render(request, template)
-
-
-@login_required
 @recruitment_manager_can_enter(perm="recruitment.change_stage")
 def stage_update_pipeline(request, stage_id):
     """
