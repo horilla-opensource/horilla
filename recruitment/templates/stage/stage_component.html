@@ -1,4 +1,15 @@
 {% load i18n %} {% load basefilters %}{% load static %}
+{% if messages %}
+  <div class="oh-wrapper">
+      {% for message in messages %}
+      <div class="oh-alert-container">
+          <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{ message }}
+          </div>
+      </div>
+      {% endfor %}
+  </div>
+{% endif %}
 <style>
   .count-span {
     width: 100%;
@@ -18,266 +29,242 @@
       span = $(this).parent().find(".count-span").toggle();
     });
   });
-
 </script>
 
-{% include 'filter_tags.html' %}
-{% if data %}
-  <div class="row">
-    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-      <div class="oh-card p-4">
-        <div class="oh-card__body">
-          {% comment %} <!-- start of column toggle button-->
-          <div class="oh-table_sticky--wrapper">
-            <div class="oh-sticky-dropdown--header">
-                <div class="oh-dropdown" x-data="{open: false}">
-                    <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-                        role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
-                    <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-                        <ul class="oh-dropdown__items" id="StageCells">
-                        </ul>
-                    </div>
+{% include 'filter_tags.html' %} {% if data %}
+<div class="row">
+  <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="oh-card p-4">
+      <div class="oh-card__body">
+        <div class="oh-sticky-table oh-sticky-table--no-highlight">
+          <!-- start of sticky table -->
+          <div class="oh-sticky-table__table">
+            <div class="oh-sticky-table__thead">
+              <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Title" %}</div>
+                <div
+                  data-cell-index="1"
+                  data-cell-title='{% trans "Managers" %}'
+                  class="oh-sticky-table__th"
+                >
+                  {% trans "Managers" %}
                 </div>
-            </div>
-          </div>
-          <!-- end of column toggle button-->
-          <div id="stage-table" data-table-name="stage_table"> {% endcomment %}
-
-
-            <div class="oh-sticky-table oh-sticky-table--no-highlight">
-              <!-- start of sticky table -->
-              <div class="oh-sticky-table__table">
-                <div class="oh-sticky-table__thead">
-                  <div class="oh-sticky-table__tr">
-                    <div
-                      class="oh-sticky-table__th "
-                    >
-                      {% trans "Title" %}
-                    </div>
-                    <div
-                      data-cell-index="1" data-cell-title='{% trans "Managers" %}'
-                      class="oh-sticky-table__th "
-                    >
-                      {% trans "Managers" %}
-                    </div>
-                    <div
-                      data-cell-index="2" data-cell-title='{% trans "Type" %}'
-                      class="oh-sticky-table__th"
-                    >
-                      {% trans "Type" %}
-                    </div>
-                    {% comment %} <div
-                      data-cell-index="3" data-cell-title='{% trans "Recruitment" %}'
-                      class="oh-sticky-table__th {% if request.sort_option.order == '-recruitment_id__start_date' %}arrow-up {% elif request.sort_option.order == 'recruitment_id__start_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
-                      hx-get="{% url 'stage-search' %}?{{pd}}&orderby=recruitment_id__start_date"
-                      hx-target="#stage-container"
-                    >
-                      {% trans "Recruitment" %}
-                    </div> {% endcomment %}
-                    <div class="oh-sticky-table__th oh-sticky-table__right" s>{% trans "Actions" %}</div>
-                  </div>
+                <div
+                  data-cell-index="2"
+                  data-cell-title='{% trans "Type" %}'
+                  class="oh-sticky-table__th"
+                >
+                  {% trans "Type" %}
                 </div>
-                <div class="oh-sticky-table__tbody">
-                  {% for stage in data %}
-                  <div
-                    class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
-                  >
-                    <div
-                      class="oh-sticky-table__sd oh-permission-table--toggle {% if stage.stage_type == 'cancelled' %} row-status--red
-                      {% elif stage.stage_type == 'hired'  %} row-status--yellow
-                      {% elif stage.stage_type == 'interview'  %} row-status--orange
-                      {% elif stage.stage_type == 'test'  %} row-status--blue
-                      {% elif stage.stage_type == 'initial'  %} row-status--cyan
-                      {% endif %}"
-                      data-toggle-count
-                    >
-                      <div class="d-flex align-items-center">
-                        <button class="oh-permission-table__collapse me-2">
-                          <span title="{% trans "Reveal" %}">
-                            <ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline" ></ion-icon>
-                          </span>
-                          <span title="{% trans "Collapse" %}">
-                            <ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon>
-                          </span>
-                        </button>
-                        <span class="oh-permission-table__user">{{stage}}</span>
-                      </div>
-                    </div>
-                    <div  data-cell-index="1" class="oh-sticky-table__td">
-                      {% for manager in stage.stage_managers.all %}
-                      <span
-                        class="oh-user-panel oh-collapse-panel"
-                        data-type="user"
-                      >
-                        <div class="oh-profile oh-profile--md">
-                          <div class="oh-profile__avatar mr-1">
-                            <img
-                              src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
-                              class="oh-profile__image"
-                              alt="Baby C."
-                            />
-                          </div>
-                          <span class="oh-profile__name oh-text--dark" title="{{manager}}">
-                            {{manager.employee_first_name|truncatechars:6}}.
-                          </span>
-                        </div>
-                        <button hx-post="{% url 'rec-remove-stage-manager' manager.id stage.id %}?{{pd}}&page={{data.number}}"
-                                hx-target='#stage-container' class="oh-user-panel__remove"
-                                hx-confirm='{% trans "Are sure want to remove this manager?" %}'
-                                title='{% trans "Remove" %}'>
-                          <ion-icon name="close-outline"></ion-icon>
-                        </button>
-                      </span>
-                      {% endfor %}
-                      <span class="count-span">
-                        {{stage.stage_managers.all|length}} {% trans "Managers"%}
-                      </span>
-                    </div>
-                    <div data-cell-index="2" class="oh-sticky-table__td">
-                      {{stage.get_stage_type_display}}
-                    </div>
-                    {% comment %} <div data-cell-index="3" class="oh-sticky-table__td">
-                      {{stage.recruitment_id}}
-                    </div> {% endcomment %}
-                    <div class="oh-sticky-table__td oh-sticky-table__right">
-                      <div class="oh-btn-group">
-                        {% if perms.recruitment.change_stage %}
-                          <a
-                            hx-get="{% url 'rec-stage-update' stage.id %}"
-                            hx-target="#objectUpdateModalTarget"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#objectUpdateModal"
-                            class="oh-btn oh-btn--light-bkg w-50"
-                            title="{% trans 'Edit' %}"
-                          >
-                            <ion-icon name="create-outline"></ion-icon>
-                          </a>
-                        {% endif %}
-                        {% if perms.recruitment.change_stage %}
-                          <a
-                            hx-get="{% url 'rec-stage-duplicate' stage.id %}"
-                            hx-target="#objectCreateModalTarget"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#objectCreateModal"
-                            class="oh-btn oh-btn--light-bkg w-50"
-                            title="{% trans 'Duplicate' %}"
-                          >
-                            <ion-icon name="copy-outline"></ion-icon>
-                          </a>
-                        {% endif %}
-                        {% if perms.recruitment.delete_stage %}
-                        <form action="{% url 'rec-stage-delete' stage.id %}"
-                          onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');" method='post' class="w-50"
-                          >
-                          {% csrf_token %}
-                          <button
-                            type="submit"
-                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                            title="Remove"
-                          >
-                            <ion-icon name="trash-outline"></ion-icon>
-                          </button>
-                        </form>
-                        {% endif %}
-                      </div>
-                    </div>
-                  </div>
-                  {% endfor %}
+                <div class="oh-sticky-table__th oh-sticky-table__right" s>
+                  {% trans "Actions" %}
                 </div>
               </div>
-              <!-- end of sticky table -->
             </div>
+            <div class="oh-sticky-table__tbody">
+              {% for stage in data %}
+              <div
+                class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
+              >
+                <div
+                  class="oh-sticky-table__sd oh-permission-table--toggle {% if stage.stage_type == 'cancelled' %} row-status--red {% elif stage.stage_type == 'hired' %} row-status--yellow {% elif stage.stage_type == 'interview' %} row-status--orange {% elif stage.stage_type == 'test' %} row-status--blue {% elif stage.stage_type == 'initial' %} row-status--cyan {% endif %}"
+                  data-toggle-count
+                >
+                  <div class="d-flex align-items-center">
+                    <button class="oh-permission-table__collapse me-2">
+                      <span title="{% trans "Reveal" %}">
+                        <ion-icon
+                          class="oh-permission-table__collapse-down"
+                          name="chevron-down-outline"
+                        ></ion-icon>
+                      </span>
+                      <span title="{% trans "Collapse" %}">
+                        <ion-icon
+                          class="oh-permission-table__collapse-up"
+                          name="chevron-up-outline"
+                        ></ion-icon>
+                      </span>
+                    </button>
+                    <span class="oh-permission-table__user">{{stage}}</span>
+                  </div>
+                </div>
+                <div data-cell-index="1" class="oh-sticky-table__td">
+                  {% for manager in stage.stage_managers.all %}
+                  <span
+                    class="oh-user-panel oh-collapse-panel"
+                    data-type="user"
+                  >
+                    <div class="oh-profile oh-profile--md">
+                      <div class="oh-profile__avatar mr-1">
+                        <img
+                          src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
+                          class="oh-profile__image"
+                          alt="Baby C."
+                        />
+                      </div>
+                      <span
+                        class="oh-profile__name oh-text--dark"
+                        title="{{manager}}"
+                      >
+                        {{manager.employee_first_name|truncatechars:6}}.
+                      </span>
+                    </div>
+                    <button
+                      hx-post="{% url 'rec-remove-stage-manager' manager.id stage.id %}?{{pd}}&page={{data.number}}"
+                      hx-target="#stage-container"
+                      class="oh-user-panel__remove"
+                      hx-confirm='{% trans "Are sure want to remove this manager?" %}'
+                      title='{% trans "Remove" %}'
+                    >
+                      <ion-icon name="close-outline"></ion-icon>
+                    </button>
+                  </span>
+                  {% endfor %}
+                  <span class="count-span">
+                    {{stage.stage_managers.all|length}} {% trans "Managers"%}
+                  </span>
+                </div>
+                <div data-cell-index="2" class="oh-sticky-table__td">
+                  {{stage.get_stage_type_display}}
+                </div>
+                <div class="oh-sticky-table__td oh-sticky-table__right">
+                  <div class="oh-btn-group">
+                    {% if perms.recruitment.change_stage %}
+                    <a
+                      hx-get="{% url 'rec-stage-update' stage.id %}"
+                      hx-target="#objectUpdateModalTarget"
+                      data-toggle="oh-modal-toggle"
+                      data-target="#objectUpdateModal"
+                      class="oh-btn oh-btn--light-bkg w-50"
+                      title="{% trans 'Edit' %}"
+                    >
+                      <ion-icon name="create-outline"></ion-icon>
+                    </a>
+                    {% endif %} {% if perms.recruitment.change_stage %}
+                    <a
+                      hx-get="{% url 'rec-stage-duplicate' stage.id %}"
+                      hx-target="#objectCreateModalTarget"
+                      data-toggle="oh-modal-toggle"
+                      data-target="#objectCreateModal"
+                      class="oh-btn oh-btn--light-bkg w-50"
+                      title="{% trans 'Duplicate' %}"
+                    >
+                      <ion-icon name="copy-outline"></ion-icon>
+                    </a>
+                    {% endif %} {% if perms.recruitment.delete_stage %}
+                    <form
+                      hx-confirm="{% trans 'Are you sure you want to delete this stage?' %}"
+                      hx-post="{% url 'rec-stage-delete' stage.id %}"
+                      hx-target="#{{hx_target}}"
+                      class="w-50"
+                    >
+                      {% csrf_token %}
+                      <button
+                        type="submit"
+                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                      >
+                        <ion-icon name="trash-outline"></ion-icon>
+                      </button>
+                    </form>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          <!-- end of sticky table -->
         </div>
       </div>
     </div>
   </div>
-  <!-- start of pagination -->
-  <div class="oh-pagination">
-    <span
-      class="oh-pagination__page"
-      data-toggle="modal"
-      data-target="#addEmployeeModal"
-    >
-      {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
-    </span>
-    <nav class="oh-pagination__nav">
-      <div class="oh-pagination__input-container me-3">
-        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+</div>
+<!-- start of pagination -->
+<div class="oh-pagination">
+  <span
+    class="oh-pagination__page"
+    data-toggle="modal"
+    data-target="#addEmployeeModal"
+  >
+    {% trans "Page" %} {{ data.number }}
+    {% trans "of" %} {{ data.paginator.num_pages }}.
+  </span>
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
 
-        <input
-          type="number"
-          name="page"
-          class="oh-pagination__input"
-          value="{{data.number}}"
-          hx-get="{% url 'stage-search' %}?{{pd}}"
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{data.number}}"
+        hx-get="{% url 'stage-search' %}?{{pd}}"
+        hx-target="#stage-container"
+        min="1"
+      />
+      <span class="oh-pagination__label"
+        >{% trans "of" %} {{data.paginator.num_pages}}</span
+      >
+    </div>
+
+    <ul class="oh-pagination__items">
+      {% if data.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
           hx-target="#stage-container"
-          min="1"
-        />
-        <span class="oh-pagination__label"
-          >{% trans "of" %} {{data.paginator.num_pages}}</span
+          hx-get="{% url 'stage-search' %}?{{pd}}&page=1"
+          class="oh-pagination__link"
+          >{% trans "First" %}</a
         >
-      </div>
-
-      <ul class="oh-pagination__items">
-        {% if data.has_previous %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-target="#stage-container"
-            hx-get="{% url 'stage-search' %}?{{pd}}&page=1"
-            class="oh-pagination__link"
-            >{% trans "First" %}</a
-          >
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-target="#stage-container"
-            hx-get="{% url 'stage-search' %}?{{pd}}&page={{ data.previous_page_number }}"
-            class="oh-pagination__link"
-            >{% trans "Previous" %}</a
-          >
-        </li>
-        {% endif %} {% if data.has_next %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-target="#stage-container"
-            hx-get="{% url 'stage-search' %}?{{pd}}&page={{ data.next_page_number }}"
-            class="oh-pagination__link"
-            >{% trans "Next" %}</a
-          >
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-target="#stage-container"
-            hx-get="{% url 'stage-search' %}?{{pd}}&page={{ data.paginator.num_pages }}"
-            class="oh-pagination__link"
-            >{% trans "Last" %}</a
-          >
-        </li>
-        {% endif %}
-      </ul>
-    </nav>
-  </div>
-  <!-- end of pagination -->
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#stage-container"
+          hx-get="{% url 'stage-search' %}?{{pd}}&page={{ data.previous_page_number }}"
+          class="oh-pagination__link"
+          >{% trans "Previous" %}</a
+        >
+      </li>
+      {% endif %} {% if data.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#stage-container"
+          hx-get="{% url 'stage-search' %}?{{pd}}&page={{ data.next_page_number }}"
+          class="oh-pagination__link"
+          >{% trans "Next" %}</a
+        >
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#stage-container"
+          hx-get="{% url 'stage-search' %}?{{pd}}&page={{ data.paginator.num_pages }}"
+          class="oh-pagination__link"
+          >{% trans "Last" %}</a
+        >
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+<!-- end of pagination -->
 {% else %}
-  <!-- start of empty page -->
-  <div class="oh-404">
-    <img
-      style="width: 150px; height: 150px"
-      src="{% static 'images/ui/no-results.png' %}"
-      class="oh-404__image mb-4"
-    />
-    <h5 class="oh-404__subtitle">
-      {% trans "No search result found!" %}
-    </h5>
-  </div>
-  <!-- end of empty page -->
+<!-- start of empty page -->
+<div class="oh-404">
+  <img
+    style="width: 150px; height: 150px"
+    src="{% static 'images/ui/no-results.png' %}"
+    class="oh-404__image mb-4"
+  />
+  <h5 class="oh-404__subtitle">{% trans "No search result found!" %}</h5>
+</div>
+<!-- end of empty page -->
 {% endif %}
 <script>
-    // toggle colums //
-    toggleColumns("stage-table","StageCells")
-    localStorageStageCells = localStorage.getItem("stage_table")
-    if (!localStorageStageCells) {
-        $("#StageCells").find("[type=checkbox]").prop("checked",true)
-    }
-    $("[type=checkbox]").change()
+  // toggle colums //
+  toggleColumns("stage-table", "StageCells");
+  localStorageStageCells = localStorage.getItem("stage_table");
+  if (!localStorageStageCells) {
+    $("#StageCells").find("[type=checkbox]").prop("checked", true);
+  }
+  $("[type=checkbox]").change();
 </script>

@@ -55,6 +55,11 @@ SUBMENUS = [
         "redirect": reverse("holiday-view"),
         "accessibility": "leave.sidebar.company_leave_accessibility",
     },
+    {
+        "menu": trans("Restrict Leaves"),
+        "redirect": reverse("restrict-view"),
+        "accessibility": "leave.sidebar.company_leave_accessibility",
+    },
 ]
 
 

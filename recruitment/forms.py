@@ -21,6 +21,7 @@ class YourForm(forms.Form):
         pass
 """
 
+import logging
 import uuid
 from ast import Dict
 from datetime import date, datetime
@@ -36,7 +37,6 @@ from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla import horilla_middlewares
-from horilla.decorators import logger
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from leave.models import LeaveRequest
@@ -57,6 +57,8 @@ from recruitment.models import (
     StageNote,
     SurveyTemplate,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ModelForm(forms.ModelForm):

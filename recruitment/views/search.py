@@ -147,18 +147,6 @@ def candidate_search(request):
 
 
 @login_required
-@permission_required(perm="recruitment.view_candidate")
-def pipeline_candidate_search(request):
-    """
-    This method is used to search  candidate
-    """
-    template = "pipeline/pipeline_components/kanban_tabs.html"
-    if request.GET.get("view") == "card":
-        template = "pipeline/pipeline_components/kanban_tabs.html"
-    return render(request, template)
-
-
-@login_required
 @hx_request_required
 @permission_required(perm="recruitment.view_candidate")
 def candidate_filter_view(request):

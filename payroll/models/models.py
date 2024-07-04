@@ -689,6 +689,7 @@ class Allowance(HorillaModel):
         ("shift_id", _("Shift")),
         ("overtime", _("Overtime")),
         ("work_type_id", _("Work Type")),
+        ("children", _("Children")),
     ]
 
     if_condition_choice = [
@@ -791,6 +792,14 @@ class Allowance(HorillaModel):
         default=0.00,
         validators=[min_zero],
         help_text=_("The attendance fixed amount for one validated attendance"),
+    )
+    # If based on children
+    per_children_fixed_amount = models.FloatField(
+        null=True,
+        blank=True,
+        default=0.00,
+        validators=[min_zero],
+        help_text=_("The fixed amount per children"),
     )
     # If based on shift
     shift_id = models.ForeignKey(
@@ -966,7 +975,8 @@ class Allowance(HorillaModel):
             raise ValidationError(
                 _("If based on is work type, then work type must be filled.")
             )
-
+        if self.based_on == "children" and not self.per_children_fixed_amount:
+            raise ValidationError(_("The amount per children must be filled."))
         if self.is_fixed and self.amount < 0:
             raise ValidationError({"amount": _("Amount should be greater than zero.")})
 

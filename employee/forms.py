@@ -21,6 +21,7 @@ class YourForm(forms.Form):
         pass
 """
 
+import logging
 import re
 from datetime import date
 from typing import Any
@@ -47,8 +48,9 @@ from employee.models import (
     PolicyMultipleFile,
 )
 from horilla import horilla_middlewares
-from horilla.decorators import logger
 from horilla_audit.models import AccountBlockUnblock
+
+logger = logging.getLogger(__name__)
 
 
 class ModelForm(forms.ModelForm):

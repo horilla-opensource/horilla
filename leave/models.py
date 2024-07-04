@@ -266,6 +266,9 @@ class CompanyLeave(HorillaModel):
         return f"{dict(WEEK_DAYS).get(self.based_on_week_day)} | {dict(WEEKS).get(self.based_on_week)}"
 
 
+from django.db.models import Sum
+
+
 class AvailableLeave(HorillaModel):
     employee_id = models.ForeignKey(
         Employee,
@@ -399,6 +402,15 @@ class AvailableLeave(HorillaModel):
                     )
 
         return reset_date
+
+    def leave_taken(self):
+        leave_taken = LeaveRequest.objects.filter(
+            leave_type_id=self.leave_type_id,
+            employee_id=self.employee_id,
+            status="approved",
+        ).aggregate(total_sum=Sum("requested_days"))
+
+        return int(leave_taken["total_sum"]) if leave_taken["total_sum"] else 0
 
     # Setting the expiration date for carryforward leaves
     def set_expired_date(self, available_leave, assigned_date):
@@ -677,7 +689,7 @@ class LeaveRequest(HorillaModel):
         if not request.user.is_superuser:
             if self.start_date < date.today():
                 raise ValidationError(_("Requests cannot be made for past dates."))
-        if request.user.has_perm("leave.add_restrictleave") == False:
+        if not request.user.is_superuser:
             for restrict in restricted_leave:
                 restri = restrict.id
                 requ_days = self.requested_dates()

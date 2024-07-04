@@ -1,0 +1,45 @@
+{% load i18n %} {% load basefilters %}
+<div class="oh-modal__dialog-header pb-0">
+    <h2 class="oh-modal__dialog-title" id="restrictIpLabel">
+      {% trans "Add Allowed IPs" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <form class="oh-profile-section" hx-post="{% url 'create-allowed-ip' %}" hx-target="#objectDetailsModalW25Target">
+        {% for field in form.visible_fields %}
+            {{ form.non_field_errors }}
+            <div
+                class="oh-input__group"
+                id="moreIPContainer_{{ forloop.counter0 }}"
+            >
+                <label
+                    class="oh-label {% if field.field.required %}required-star{% endif %}"
+                    for="id_{{ field.name }}"
+                    title="{{ field.help_text|safe }}"
+                >
+                    {% trans field.label %}
+                </label>
+                {{ field }}
+            </div>
+        {% endfor %}
+        <div id="moreIPContainer_{{form.ip_counts}}" class="pt-2" style="text-align: end">
+            <a
+                hx-target="#moreIPContainer_{{form.ip_counts}}"
+                hx-swap="outerHTML"
+                hx-post="{% url 'add-remove-ip-fields' %}"
+                role="button"
+                style="color: green"
+            >
+                {% trans "Add more IP address.." %}
+            </a>
+        </div>
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" >
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+</div>

@@ -2,7 +2,7 @@
 horilla_company_manager.py
 """
 
-import threading
+import logging
 from typing import Coroutine, Sequence
 
 from django.db import models
@@ -11,6 +11,7 @@ from django.db.models.query import QuerySet
 from horilla.horilla_middlewares import _thread_locals
 from horilla.signals import post_bulk_update, pre_bulk_update
 
+logger = logging.getLogger(__name__)
 django_filter_update = QuerySet.update
 
 
@@ -46,7 +47,6 @@ class HorillaCompanyManager(models.Manager):
         """
         get_queryset method
         """
-        from horilla.decorators import logger
 
         queryset = super().get_queryset()
         request = getattr(_thread_locals, "request", None)

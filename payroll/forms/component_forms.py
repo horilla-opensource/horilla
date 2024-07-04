@@ -4,6 +4,7 @@ of form fields and widgets for the corresponding models in the payroll managemen
 """
 
 import datetime
+import logging
 import uuid
 from typing import Any
 
@@ -17,7 +18,6 @@ from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import BonusPoint, Employee
 from horilla import horilla_middlewares
-from horilla.decorators import logger
 from horilla_widgets.forms import HorillaForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
@@ -35,6 +35,8 @@ from payroll.models.models import (
     ReimbursementMultipleAttachment,
 )
 from payroll.widgets import component_widgets as widget
+
+logger = logging.getLogger(__name__)
 
 
 class AllowanceForm(forms.ModelForm):

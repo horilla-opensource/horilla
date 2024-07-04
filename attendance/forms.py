@@ -23,6 +23,7 @@ class YourForm(forms.Form):
 
 import datetime
 import json
+import logging
 import uuid
 from calendar import month_name
 from collections import OrderedDict
@@ -56,12 +57,13 @@ from base.models import Company, EmployeeShift
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla import horilla_middlewares
-from horilla.decorators import logger
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from leave.filters import LeaveRequestFilter
 from leave.models import LeaveType
 from payroll.methods.methods import get_working_days
+
+logger = logging.getLogger(__name__)
 
 
 class ModelForm(forms.ModelForm):

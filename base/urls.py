@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base import announcement, request_and_approve, views
 from base.forms import (
+    AttendanceAllowedIPForm,
     RotatingShiftAssignForm,
     RotatingShiftForm,
     RotatingWorkTypeAssignForm,
@@ -13,6 +14,7 @@ from base.forms import (
     WorkTypeRequestForm,
 )
 from base.models import (
+    AttendanceAllowedIP,
     Company,
     Department,
     EmployeeShift,
@@ -1009,5 +1011,42 @@ urlpatterns = [
         "emp-workinfo-complete",
         views.employee_workinfo_complete,
         name="emp-workinfo-complete",
+    ),
+    path(
+        "settings/allowed-ips/",
+        views.allowed_ips,
+        name="allowed-ips",
+    ),
+    path(
+        "settings/enable-ip-restriction/",
+        views.enable_ip_restriction,
+        name="enable-ip-restriction",
+    ),
+    path(
+        "settings/add-remove-ip-fields/",
+        views.add_remove_dynamic_fields,
+        name="add-remove-ip-fields",
+        kwargs={
+            "model": AttendanceAllowedIP,
+            "form_class": AttendanceAllowedIPForm,
+            "template": "attendance/ip_restriction/add_more_ip_fields.html",
+            "field_type": "character",
+            "field_name_pre": "ip_address",
+        },
+    ),
+    path(
+        "settings/create-allowed-ip/",
+        views.create_allowed_ips,
+        name="create-allowed-ip",
+    ),
+    path(
+        "settings/delete-allowed-ip/",
+        views.delete_allowed_ips,
+        name="delete-allowed-ip",
+    ),
+    path(
+        "settings/edit-allowed-ip/",
+        views.edit_allowed_ips,
+        name="edit-allowed-ip",
     ),
 ]

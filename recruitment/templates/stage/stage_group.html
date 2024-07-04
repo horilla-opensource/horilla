@@ -1,6 +1,6 @@
- {% load i18n %}{% load static %}
+{% load i18n %}{% load static %}
 
- <!-- start of messages -->
+<!-- start of messages -->
 {% if messages %}
 <div class="oh-wrapper">
   {% for message in messages %}
@@ -19,46 +19,65 @@
 {% endif %}
 <!-- end of messages -->
 
- <!-- start of quick filters -->
-  <div class="d-flex flex-row-reverse">
-    <span class="m-1"
-      onclick="$('[name=stage_type]').val('hired'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
-      style="cursor: pointer;margin-left: 10px;" >
-      <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
-      {% trans "Hired" %}
-    </span>
-    <span class="m-1"
-      onclick="$('[name=stage_type]').val('cancelled'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
-      style="cursor: pointer;margin-left: 10px;" >
-      <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
-      {% trans "cancelled" %}
-    </span>
-    <span class="m-1"
-      onclick="$('[name=stage_type]').val('interview'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
-      style="cursor: pointer;margin-left: 10px;" >
-      <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
-      {% trans "interview" %}
-    </span>
-    <span class="m-1"
-      onclick="$('[name=stage_type]').val('test'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
-      style="cursor: pointer;margin-left: 10px;" >
-      <span class="oh-dot oh-dot--small me-1" style="background-color:blue"></span>
-      {% trans "Test" %}
-    </span>
-    <span class="m-1"
-      onclick="$('[name=stage_type]').val('initial'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
-      style="cursor: pointer;margin-left: 10px;" >
-      <span class="oh-dot oh-dot--small me-1" style="background-color:cyan"></span>
-      {% trans "Initial" %}
-    </span>
-  </div>
-  <!-- end of quick filters -->
-
-  {% comment %}
-  <div id="stage-container">
-    {% include 'stage/stage_component.html' %}
-  </div> {% endcomment %}
-
+<!-- start of quick filters -->
+<div class="d-flex flex-row-reverse">
+  <span
+    class="m-1"
+    onclick="$('[name=stage_type]').val('hired'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
+    style="cursor: pointer; margin-left: 10px"
+  >
+    <span
+      class="oh-dot oh-dot--small me-1"
+      style="background-color: yellowgreen"
+    ></span>
+    {% trans "Hired" %}
+  </span>
+  <span
+    class="m-1"
+    onclick="$('[name=stage_type]').val('cancelled'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
+    style="cursor: pointer; margin-left: 10px"
+  >
+    <span
+      class="oh-dot oh-dot--small me-1"
+      style="background-color: red"
+    ></span>
+    {% trans "cancelled" %}
+  </span>
+  <span
+    class="m-1"
+    onclick="$('[name=stage_type]').val('interview'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
+    style="cursor: pointer; margin-left: 10px"
+  >
+    <span
+      class="oh-dot oh-dot--small me-1"
+      style="background-color: orange"
+    ></span>
+    {% trans "interview" %}
+  </span>
+  <span
+    class="m-1"
+    onclick="$('[name=stage_type]').val('test'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
+    style="cursor: pointer; margin-left: 10px"
+  >
+    <span
+      class="oh-dot oh-dot--small me-1"
+      style="background-color: blue"
+    ></span>
+    {% trans "Test" %}
+  </span>
+  <span
+    class="m-1"
+    onclick="$('[name=stage_type]').val('initial'); $('[name=stage_type]').first().change(); $('.filterButton').click()"
+    style="cursor: pointer; margin-left: 10px"
+  >
+    <span
+      class="oh-dot oh-dot--small me-1"
+      style="background-color: cyan"
+    ></span>
+    {% trans "Initial" %}
+  </span>
+</div>
+<!-- end of quick filters -->
 
 {% include 'filter_tags.html' %}
 <div class="oh-card" id="">
@@ -68,94 +87,29 @@
       {% for rec in recruitments %}
       <div
         class="oh-accordion-meta__header oh-accordion-meta__header--custom"
-        {% if perms.payroll.view_taxbracket %}
         data-target="#stageBody{{rec.grouper.id}}"
         hx-get="{% url 'stage-data' rec.grouper.id %}?{{request.GET.urlencode}}"
         hx-target="#stageData{{rec.grouper.id}}"
-        {% endif %}
-      >
+        >
         <div class="d-flex">
           <div class="oh-tabs__input-badge-container">
-            <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1">
+            <span
+              class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+            >
               {{rec.list|length}}
             </span>
-            <span class="oh-accordion-meta__title" style="padding: 0.8rem 1.25rem;">{{rec.grouper}}</span>
+            <span
+              class="oh-accordion-meta__title"
+              style="padding: 0.8rem 1.25rem"
+              >{{rec.grouper}}</span
+            >
           </div>
         </div>
-
-        {% comment %} {% if perms.payroll.change_filingstatus or perms.payroll.delete_filingstatus or perms.payroll.add_taxbracket %}
-          <div class="oh-accordion-meta__actions" id="">
-            <div class="oh-dropdown" x-data="{open: false}">
-              <button
-                class="oh-btn oh-stop-prop oh-accordion-meta__btn"
-                @click="open = !open"
-                @click.outside="open = false"
-                onclick=event.stopPropagation()
-              >
-                {% trans "Actions" %}
-                <ion-icon
-                  class="ms-2 oh-accordion-meta__btn-icon"
-                  name="caret-down-outline"
-                ></ion-icon>
-              </button>
-              <div
-                class="oh-dropdown__menu oh-dropdown__menu--right"
-                x-show="open"
-                style="display: none"
-              >
-                <ul class="oh-dropdown__items">
-                  {% if perms.payroll.add_taxbracket %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      class="oh-dropdown__link oh-dropdown__link"
-                      data-toggle="oh-modal-toggle"
-                      data-target="#TaxBracketModal"
-                      hx-get="{% url 'tax-bracket-create' filing_status_id=filing_status.id %}"
-                      onclick="event.stopPropagation()"
-                      hx-target="#TaxBracketFormTarget"
-                      >{% trans "Create" %}
-                    </a>
-                  </li>
-                  {% endif %}
-                  {% if perms.payroll.change_filingstatus %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      class="oh-dropdown__link oh-dropdown__link"
-                      data-toggle="oh-modal-toggle"
-                      data-target="#FilingStatusModal"
-                      hx-get="{% url 'filing-status-update' filing_status_id=filing_status.id %}"
-                      onclick="event.stopPropagation()"
-                      hx-target="#FilingStatusFormTarget"
-                    >
-                      {% trans "Update" %}</a
-                    >
-                  </li>
-                  {% endif %}
-                  {% if perms.payroll.delete_filingstatus %}
-                  <li class="oh-dropdown__item">
-                    <form
-                      action="{% url 'filing-status-delete' filing_status_id=filing_status.id %}"
-                      onsubmit="return confirm('{% trans "Are you sure to delete this status ?" %}')"
-                      method="post"
-                      style="display: contents">
-                      {% csrf_token %}
-                      <button class="oh-dropdown__link oh-dropdown__link--danger">
-                        {% trans 'Delete' %}
-                      </button>
-                    </form>
-                  </li>
-                  {% endif %}
-                </ul>
-              </div>
-            </div>
-          </div>
-        {% endif %} {% endcomment %}
       </div>
       <div
         class="oh-accordion-meta__body d-none"
         id="stageBody{{rec.grouper.id}}"
-      >
-        <!-- htmx tax bracket loading here -->
+        >
         <div
           class="oh-sticky-table oh-sticky-table--no-overflow mb-5"
           id="stageData{{rec.grouper.id}}"
@@ -166,13 +120,13 @@
   </div>
   <!-- start of pagination -->
   <div class="oh-pagination">
-
     <span
       class="oh-pagination__page"
       data-toggle="modal"
       data-target="#addEmployeeModal"
     >
-      {% trans "Page" %} {{ recruitments.number }} {% trans "of" %} {{ recruitments.paginator.num_pages }}.
+      {% trans "Page" %} {{ recruitments.number }}
+      {% trans "of" %} {{ recruitments.paginator.num_pages }}.
     </span>
     <nav class="oh-pagination__nav">
       <div class="oh-pagination__input-container me-3">
@@ -232,18 +186,24 @@
     </nav>
   </div>
   <!-- end of pagination -->
-{% else %}
+  {% else %}
   <!-- start of empty page -->
-  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;" >
+  <div
+    style="
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    "
+  >
     <img
       style="width: 150px; height: 150px"
       src="{% static 'images/ui/no-results.png' %}"
       class="oh-404__image mb-4"
     />
-    <h5 class="oh-404__subtitle">
-      {% trans "No search result found!" %}
-    </h5>
+    <h5 class="oh-404__subtitle">{% trans "No search result found!" %}</h5>
   </div>
   <!-- end of empty page -->
-{% endif %}
+  {% endif %}
 </div>

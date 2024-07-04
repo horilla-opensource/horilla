@@ -121,11 +121,6 @@ urlpatterns = [
         name="recruitment-archive",
     ),
     path(
-        "pipeline-search-candidate",
-        recruitment.views.search.pipeline_candidate_search,
-        name="pipeline-search-candidate",
-    ),
-    path(
         "candidate-schedule-date-update",
         views.candidate_schedule_date_update,
         name="candidate-schedule-date-update",

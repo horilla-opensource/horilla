@@ -360,6 +360,9 @@ def calculate_allowance(**kwargs):
             no_tax_allowances_amt.append(amount)
 
         else:
+            print("===========================")
+            print(allowance.based_on)
+            print()
             calculation_function = calculation_mapping.get(allowance.based_on)
             amount = calculation_function(
                 **{
@@ -972,6 +975,29 @@ def calculate_based_on_work_type(*_args, **kwargs):
     return amount
 
 
+def calculate_based_on_children(*_args, **kwargs):
+    """
+    Calculates the amount of an allowance or deduction based on the attendance of an employee.
+
+    Args:
+        employee (Employee): The employee for whom the attendance is being calculated.
+        start_date (date): The start date of the attendance period.
+        end_date (date): The end date of the attendance period.
+        component (Allowance or Deduction): The allowance or deduction object.
+        day_dict (dict): Dictionary containing working day details.
+
+    Returns:
+        float: The calculated amount of the component based on the attendance.
+    """
+    employee = kwargs["employee"]
+    component = kwargs["component"]
+    day_dict = kwargs["day_dict"]
+    count = employee.children
+    amount = count * component.per_children_fixed_amount
+    amount = compute_limit(component, amount, day_dict)
+    return amount
+
+
 calculation_mapping = {
     "basic_pay": calculate_based_on_basic_pay,
     "gross_pay": calculate_based_on_gross_pay,
@@ -981,4 +1007,5 @@ calculation_mapping = {
     "shift_id": calculate_based_on_shift,
     "overtime": calculate_based_on_overtime,
     "work_type_id": calculate_based_on_work_type,
+    "children": calculate_based_on_children,
 }
