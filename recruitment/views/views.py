@@ -1171,6 +1171,7 @@ def stage_data(request, rec_id):
             "data": paginator_qry(stages, request.GET.get("page")),
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
+            "hx_target": request.META.get("HTTP_HX_TARGET"),
         },
     )
 

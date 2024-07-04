@@ -154,6 +154,7 @@ def stage_delete(request, stage_id):
     try:
         try:
             stage_obj = Stage.objects.get(id=stage_id)
+            recruitment_id = stage_obj.recruitment_id.id
         except Stage.DoesNotExist:
             messages.error(request, _("Stage not found."))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -189,6 +190,10 @@ def stage_delete(request, stage_id):
             )
     except (Stage.DoesNotExist, OverflowError):
         messages.error(request, _("Stage Does not exists.."))
+    hx_request = request.META.get("HTTP_HX_REQUEST")
+    hx_current_url = request.META.get("HTTP_HX_CURRENT_URL")
+    if hx_request and hx_request == "true" and "stage-view" in hx_current_url:
+        return redirect(f"/recruitment/stage-data/{recruitment_id}/")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
