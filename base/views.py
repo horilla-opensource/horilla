@@ -212,6 +212,7 @@ def initialize_database(request):
                     _("The password you entered is incorrect. Please try again."),
                 )
                 return HttpResponse("<script>window.location.reload()</script>")
+        return render(request, "initialize_database/horilla_user.html")
     else:
         return redirect("/")
 
