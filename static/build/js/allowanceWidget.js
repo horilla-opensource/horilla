@@ -57,7 +57,24 @@ function conditionalVisibility() {
       "#id_per_attendance_fixed_amount, [for='id_per_attendance_fixed_amount']"
     ).parent().hide();
   }
-
+  if (
+    $("#id_based_on").val() == "children" &&
+    !$("#id_is_fixed").is(":checked")
+  ) {
+    $(
+      "#id_per_children_fixed_amount, [for='id_per_children_fixed_amount']"
+    ).show();
+    $(
+      "#id_per_children_fixed_amount, [for='id_per_children_fixed_amount']"
+    ).parent().show();
+  } else {
+    $(
+      "#id_per_children_fixed_amount, [for='id_per_children_fixed_amount']"
+    ).hide();
+    $(
+      "#id_per_children_fixed_amount, [for='id_per_children_fixed_amount']"
+    ).parent().hide();
+  }
   if (
     $("#id_based_on").val() == "shift_id" &&
     !$("#id_is_fixed").is(":checked")
