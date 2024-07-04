@@ -714,8 +714,6 @@ class MeetingsAnswer(models.Model):
 def manipulate_existing_data():
     from dateutil.relativedelta import relativedelta
 
-    from horilla.decorators import logger
-
     try:
         for emp_objective in EmployeeObjective.objects.exclude(objective=None):
             objective, _ = Objective.objects.get_or_create(

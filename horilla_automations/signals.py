@@ -4,6 +4,7 @@ horilla_automation/signals.py
 """
 
 import copy
+import logging
 import threading
 import types
 
@@ -16,6 +17,8 @@ from django.dispatch import receiver
 
 from horilla.horilla_middlewares import _thread_locals
 from horilla.signals import post_bulk_update, pre_bulk_update
+
+logger = logging.getLogger(__name__)
 
 
 @classmethod
@@ -328,7 +331,6 @@ def send_mail(request, automation, instance):
     """
     from base.backends import ConfiguredEmailBackend
     from base.methods import generate_pdf
-    from horilla.decorators import logger
     from horilla_automations.methods.methods import (
         get_model_class,
         get_related_field_model,

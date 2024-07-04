@@ -6,7 +6,6 @@ Horilla app configurations
 
 import importlib
 import logging
-import os
 
 from django.conf import settings
 from django.contrib.auth.context_processors import PermWrapper
