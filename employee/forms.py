@@ -157,7 +157,10 @@ class EmployeeForm(ModelForm):
 
         model = Employee
         fields = "__all__"
-        exclude = ("employee_user_id",)
+        exclude = (
+            "employee_user_id",
+            "additional_info",
+        )
         widgets = {
             "dob": TextInput(attrs={"type": "date", "id": "dob"}),
         }
@@ -178,6 +181,10 @@ class EmployeeForm(ModelForm):
             kwargs["initial"] = initial
         else:
             self.initial = {"badge_id": self.get_next_badge_id()}
+
+    def as_p(self, *args, **kwargs):
+        context = {"form": self}
+        return render_to_string("employee/create_form/personal_info_as_p.html", context)
 
     def get_next_badge_id(self):
         """

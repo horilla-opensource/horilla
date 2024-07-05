@@ -10,7 +10,7 @@
 </div>
 <div class="oh-wrapper" data-select2-id="select2-data-40-yu7x">
 
-    <div class="oh-general__tab-target oh-profile-section mb-4" id="personal" data-select2-id="select2-data-personal">
+  <div class="oh-general__tab-target oh-profile-section mb-4" id="personal" data-select2-id="select2-data-personal">
     <div class="oh-profile-section__card" data-select2-id="select2-data-48-0df8">
         <form data-select2-id="select2-data-47-5jxy" method='post' action='{% url "employee-create-personal-info" %}' enctype="multipart/form-data">
             {% csrf_token %}
@@ -34,195 +34,74 @@
             </div>
             {{form.employee_profile.errors}}
             <div
-        class="oh-modal"
-        id="uploadPhotoModal"
-        role="dialog"
-        aria-labelledby="uploadPhotoModal"
-        aria-hidden="true"
-  >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel"
-        >{% trans "Upload Photo" %}</span
-      >
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div class="oh-modal__dialog-body">
-      <div class="oh-profile-section__image-container">
-          {% csrf_token %}
-          <div class="oh-profile-section__modal-avatar">
-            <img
-            src="https://ui-avatars.com/api/?name=N+P&background=random"
-            class="oh-profile-section__modal-image preview"
-            alt="Username"
-            />
-          </div>
-          {{form.employee_profile}}
+                  class="oh-modal"
+                  id="uploadPhotoModal"
+                  role="dialog"
+                  aria-labelledby="uploadPhotoModal"
+                  aria-hidden="true"
+            >
+            <div class="oh-modal__dialog">
+              <div class="oh-modal__dialog-header">
+                <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel"
+                  >{% trans "Upload Photo" %}</span
+                >
+                <button class="oh-modal__close" aria-label="Close">
+                  <ion-icon name="close-outline"></ion-icon>
+                </button>
+              </div>
+              <div class="oh-modal__dialog-body">
+                <div class="oh-profile-section__image-container">
+                    {% csrf_token %}
+                    <div class="oh-profile-section__modal-avatar">
+                      <img
+                      src="https://ui-avatars.com/api/?name=N+P&background=random"
+                      class="oh-profile-section__modal-image preview"
+                      alt="Username"
+                      />
+                    </div>
+                    {{form.employee_profile}}
 
-        </div>
-      </div>
-    </div>
-  </div>
-        <div class="row">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label" for="firstname">{% trans "Badge Id" %}
-                <div hx-get="{% url 'get-first-last-badge-id' %}" hx-target="#badgeModalBody" data-target="#badgeModal" data-toggle="oh-modal-toggle" class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer">
-                  {% trans "Show" %}
+                  </div>
                 </div>
-              </label>
-              {{form.badge_id}}
-              {{form.badge_id.errors}}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label" for="firstname">{% trans "First Name" %}</label>
-              {{form.employee_first_name}}
-              {{form.employee_first_name.errors}}
-            </div>
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label" for="lastname">{% trans "Last Name" %}</label>
-              {{form.employee_last_name}}
-              {{form.employee_last_name.errors}}
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label" for="email">{% trans "Email" %}</label>
-              {{form.email}}
-              {{form.email.errors}}
-            </div>
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label" for="phone">{% trans "Phone" %}</label>
-              {{form.phone}}
-              {{form.phone.errors}}
-            </div>
-        </div>
-        <div class="row" data-select2-id="select2-data-46-nz80">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6" style="position: relative;">
-              <label class="oh-label" for="dob">{% trans "Date of Birth" %}</label>
-              {{form.dob}}
-              {{form.dob.errors}}
+              </div>
             </div>
 
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6" data-select2-id="select2-data-45-37n6">
-              <label class="oh-label" for="gender">{% trans "Gender" %}</label>
-              {{form.gender}}
-              {{form.gender.errors}}
+            <div class="row">
+                  <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <label class="oh-label" for="firstname">{% trans "Badge Id" %}
+                      <div hx-get="{% url 'get-first-last-badge-id' %}" hx-target="#badgeModalBody" data-target="#badgeModal" data-toggle="oh-modal-toggle" class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer">
+                        {% trans "Show" %}
+                      </div>
+                    </label>
+                    {{form.badge_id}}
+                    {{form.badge_id.errors}}
+                  </div>
+              </div>
+              {{form.as_p}}
+              <hr class="mt-5 mb-3 d-flex flex-row-reverse">
+              <div class="col-lg-12 d-flex flex-row-reverse">
+                <button type="submit" class="oh-btn oh-btn--secondary">
+                    {% trans "Save Changes" %}
+                </button>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-              <label class="oh-label" for="address">{% trans "Address" %}</label>
-              {{form.address}}
-              {{form.address.errors}}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-            <label class="oh-label" for="country">{% trans "Country" %}</label>
-            <select name="country" class="w-100 oh-select-2" id="id_country">
-              <option value="{{form.instance.country}}" selected>{{form.instance.country}}</option>
-            </select>
-            {{form.country.errors}}
-            <span class="dropdown-wrapper" aria-hidden="true"></span>
-            </span>
-            </div>
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-            <label class="oh-label d-block" for="state">{% trans "State" %}</label>
-            <select name="state" class="w-100 oh-select-2" id="id_state">
-              <option value="{{form.instance.state}}" selected>{{form.instance.state}}</option>
-
-            </select>
-            {{form.state.errors}}
-            </div>
-        </div>
-        <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label d-block" for="state">{% trans "City" %}</label>
-              {{form.city}}
-              {{form.city.errors}}
-          </div>
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label d-block" for="state">{% trans "Zip Code" %}</label>
-              {{form.zip}}
-              {{form.zip.errors}}
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label d-block" for="state">{% trans "Emergency Contact" %}</label>
-              {{form.emergency_contact}}
-              {{form.emergency_contact.errors}}
-          </div>
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label d-block" for="emergencyContactName">{% trans "Contact Name" %}</label>
-              {{form.emergency_contact_name}}
-              {{form.emergency_contact_name.errors}}
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label d-block" for="emergencyContactRelation">{% trans "Emergency Contact Relation" %}</label>
-              {{form.emergency_contact_relation}}
-              {{form.emergency_contact_relation.errors}}
-          </div>
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-            <label class="oh-label d-block" for="experience">{% trans "Experience" %}</label>
-            {{form.experience}}
-            {{form.experience.errors}}
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-
-              <label class="oh-label d-block" for="marital_status">{% trans "Maritial Status" %}</label>
-              {{form.marital_status}}
-              {{form.marital_status.errors}}
-          </div>
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-            <label class="oh-label d-block" for="children">{% trans "Children" %}</label>
-            {{form.children}}
-            {{form.children.errors}}
-          </div>
-      </div>
-
-
-      <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-2">
-            <label class="oh-label me-2" for="isActive">{% trans "Is Active" %}?</label>
-            <div class="oh-switch">
-                {{form.is_active}}
-                {{form.is_active.errors}}
-            </div>
-          </div>
-      </div>
-        <hr class="mt-5 mb-3 d-flex flex-row-reverse">
-        <div class="col-lg-4 ">
-          <button type="submit" class="oh-btn oh-btn--secondary">
-              {% trans "Save Changes" %}
-          </button>
-      </div>
         </form>
     </div>
-    </div>
-    <script>
-      $(document).ready(function () {
-  $('#id_employee_profile').change(function (e) {
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    $('#id_employee_profile').change(function (e) {
 
-    const file = this.files[0];
-    const reader = new FileReader();
+      const file = this.files[0];
+      const reader = new FileReader();
 
-    reader.addEventListener("load", function() {
-      const imageUrl = reader.result;
-      $(".preview").attr("src", imageUrl);
+      reader.addEventListener("load", function() {
+        const imageUrl = reader.result;
+        $(".preview").attr("src", imageUrl);
+      });
+
+      reader.readAsDataURL(file);
     });
-
-    reader.readAsDataURL(file);
   });
-});
 
-    </script>
+</script>
