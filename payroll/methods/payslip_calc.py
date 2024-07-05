@@ -360,9 +360,6 @@ def calculate_allowance(**kwargs):
             no_tax_allowances_amt.append(amount)
 
         else:
-            print("===========================")
-            print(allowance.based_on)
-            print()
             calculation_function = calculation_mapping.get(allowance.based_on)
             amount = calculation_function(
                 **{

@@ -1027,7 +1027,6 @@ def payslip_export(request):
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
 
-            # Print the formatted date for each format
             for format_name, format_string in date_formats.items():
                 if format_name == date_format:
                     formatted_start_date = start_date.strftime(format_string)

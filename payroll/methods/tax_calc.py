@@ -64,7 +64,15 @@ def calculate_taxable_amount(**kwargs):
         federal_tax = 0
         remaining_income = yearly_income
         if tax_brackets.exists():
-            if tax_brackets.first().min_income <= yearly_income:
+            if (
+                tax_brackets.first().min_income
+                <= yearly_income
+                <= tax_brackets.first().max_income
+            ):
+                tax_rate = tax_brackets.first().tax_rate
+                tax_amount = yearly_income * tax_rate / 100
+                federal_tax += tax_amount
+            elif tax_brackets.first().min_income <= yearly_income:
                 for tax_bracket in tax_brackets:
                     min_income = tax_bracket.min_income
                     max_income = tax_bracket.max_income
