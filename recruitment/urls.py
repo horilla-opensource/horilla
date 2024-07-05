@@ -10,7 +10,7 @@ import recruitment.views.actions
 import recruitment.views.dashboard
 import recruitment.views.search
 import recruitment.views.surveys
-from base.views import object_duplicate
+from base.views import add_remove_dynamic_fields, object_duplicate
 from recruitment.forms import (
     OfferLetterForm,
     QuestionForm,
@@ -354,6 +354,18 @@ urlpatterns = [
         "recruitment-survey-question-template-create",
         recruitment.views.surveys.create_question_template,
         name="recruitment-survey-question-template-create",
+    ),
+    path(
+        "add-remove-options-field",
+        add_remove_dynamic_fields,
+        name="add-remove-options-field",
+        kwargs={
+            "model": RecruitmentSurvey,
+            "form_class": QuestionForm,
+            "template": "survey/add_more_options.html",
+            "field_type": "character",
+            "field_name_pre": "options",
+        },
     ),
     path(
         "recruitment-survey-question-template-edit/<int:survey_id>/",

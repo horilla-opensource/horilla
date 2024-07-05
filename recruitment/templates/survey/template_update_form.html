@@ -9,9 +9,11 @@
 <script>
   function toggleOpt() {
     if ($("#updateSurveyModalBody form [name=type]").first().val() == "options" || $("#updateSurveyModalBody form [name=type]").first().val() == "multiple") {
-        $("#id_options, [for='id_options']").show();
+        $("div[id^='optionDiv']").show();
+        $("#addMoreOptions").show();
     } else {
-        $("#id_options, [for='id_options']").hide();
+        $("div[id^='optionDiv']").hide();
+        $("#addMoreOptions").hide();
     }
 }
 

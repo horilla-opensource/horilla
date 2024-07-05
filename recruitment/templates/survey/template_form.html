@@ -9,11 +9,14 @@
 <script>
   function toggleOpt() {
     if ($("#templateModalBody form [name=type]").first().val() == "options" || $("#templateModalBody form [name=type]").first().val() == "multiple") {
-        $("#id_options, [for='id_options']").show();
+        $("div[id^='optionDiv']").show();
+        $("#addMoreOptions").show();
     } else {
-        $("#id_options, [for='id_options']").hide();
+        $("div[id^='optionDiv']").hide();
+        $("#addMoreOptions").hide();
     }
 }
+
 
 $("#templateModalBody form [name=type]").change(function (e) {
     toggleOpt();

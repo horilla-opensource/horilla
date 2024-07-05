@@ -571,7 +571,11 @@ class RejectReason(HorillaModel):
     )
     description = models.TextField(null=True, blank=True, max_length=255)
     company_id = models.ForeignKey(
-        Company, on_delete=models.CASCADE, null=True, blank=True
+        Company,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Company"),
     )
     objects = HorillaCompanyManager()
 
@@ -654,11 +658,12 @@ class RecruitmentSurvey(HorillaModel):
     template_id = models.ManyToManyField(
         SurveyTemplate, verbose_name="Template", blank=True
     )
-    question = models.TextField(null=False)
+    is_mandatory = models.BooleanField(default=False)
     recruitment_ids = models.ManyToManyField(
         Recruitment,
         verbose_name=_("Recruitment"),
     )
+    question = models.TextField(null=False)
     job_position_ids = models.ManyToManyField(
         JobPosition, verbose_name=_("Job Positions"), editable=False
     )
@@ -670,7 +675,6 @@ class RecruitmentSurvey(HorillaModel):
     options = models.TextField(
         null=True, default="", help_text=_("Separate choices by ',  '"), max_length=255
     )
-    is_mandatory = models.BooleanField(default=False)
     objects = HorillaCompanyManager(related_company_field="recruitment_ids__company_id")
 
     def __str__(self) -> str:

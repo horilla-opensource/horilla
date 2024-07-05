@@ -1,5 +1,6 @@
 {% load i18n %}{% load widget_tweaks %} {% load attendancefilters %}
-
+{% load basefilters %}
+{{form.option_count}}
 <div class="oh-general__tab-target oh-profile-section" id="personal">
   {% if form.verbose_name %}
     <div class="oh-payslip__header">
@@ -12,38 +13,79 @@
     <div class="row">
       <div class="col-12">{{form.non_field_errors}}</div>
       {% for field in form.visible_fields %}
-      {% if field.field.widget|is_text_area %}
-      <label
-      class="oh-label {% if field.field.required %} required-star{% endif %}"
-      for="id_{{ field.name }}"
-      title="{{ field.help_text|safe }}"
-      >{{ field.label }}</label
-      >
-      {{field.errors}}
-      <div style="width: 100%; padding: 12px;">
-
-        {{ field|add_class:"form-control" }}
-      </div>
-
-      {% else %}
-      <div class="col-12 col-md-6">
-        <label
+        {% if field.field.widget|is_text_area %}
+          <label
           class="oh-label {% if field.field.required %} required-star{% endif %}"
           for="id_{{ field.name }}"
           title="{{ field.help_text|safe }}"
           >{{ field.label }}</label
           >
-          {% if field.field.widget.input_type == "checkbox" %}
-          <div class="oh-switch" style="width: 30px">
-            {{ field|add_class:"oh-switch__checkbox" }}
-
-          </div>
-          {% else %}
-          {{ field|add_class:"form-control" }}
-          {% endif %}
           {{field.errors}}
-      </div>
-      {% endif %}
+          <div style="width: 100%; padding: 12px;">
+
+            {{ field|add_class:"form-control" }}
+          </div>
+
+        {% else %}
+          {% if field.name|startswith:"option" %}
+            <div id="optionDiv">
+              {% if field.name == "options" %}
+                <label
+                  class="oh-label {% if field.field.required %} required-star{% endif %}"
+                  for="id_{{ field.name }}"
+                  title="{{ field.help_text|safe }}"
+                  >{{ field.label }}</label
+                >
+              {% endif %}
+              {{field.errors}}
+              <div style="width: 100%;display:flex;" class="pt-2">
+                {{ field|add_class:"form-control" }}
+                {% if not field.name == "options" %}
+                  <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg"
+                    hx-get="{% url 'add-remove-options-field' %}"
+                    hx-target="#optionDiv{{forloop.counter}}"
+                    hx-swap="outerHTML"
+                    id="delete-link"
+                    >
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+            {% if forloop.last %}
+                <div id="moreOptionContainer_{{form.option_count}}" style="text-align: end">
+                  <a
+                    hx-target="#moreOptionContainer_{{form.option_count}}"
+                    hx-swap="outerHTML"
+                    hx-post="{% url 'add-remove-options-field' %}"
+                    role="button"
+                    style="color: green"
+                    id="addMoreOptions"
+                  >
+                    {% trans "Add more options.." %}
+                  </a>
+                </div>
+            {% endif %}
+          {% else %}
+            <div class="col-12 col-md-6">
+              <label
+                class="oh-label {% if field.field.required %} required-star{% endif %}"
+                for="id_{{ field.name }}"
+                title="{{ field.help_text|safe }}"
+                >{{ field.label }}</label
+                >
+                {% if field.field.widget.input_type == "checkbox" %}
+                <div class="oh-switch" style="width: 30px">
+                  {{ field|add_class:"oh-switch__checkbox" }}
+
+                </div>
+                {% else %}
+                {{ field|add_class:"form-control" }}
+                {% endif %}
+                {{field.errors}}
+            </div>
+          {% endif %}
+        {% endif %}
       {% endfor %}
 
     </div>
