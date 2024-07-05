@@ -1202,7 +1202,7 @@ def mail_server_test_email(request):
     if request.method == "POST":
         form = DynamicMailTestForm(request.POST)
         if form.is_valid():
-            email_to = form["to_email"]
+            email_to = form.cleaned_data["to_email"]
             subject = _("Test mail from Horilla")
             body = _("Email tested successfully")
             email_backend = ConfiguredEmailBackend()
