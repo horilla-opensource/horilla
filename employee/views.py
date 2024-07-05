@@ -876,7 +876,10 @@ def document_delete(request, id):
         if document:
             document.delete()
             messages.success(
-                request, _("Document {} deleted successfully").format(document)
+                request,
+                _(
+                    f"Document request {document.first()} for {document.first().employee_id} deleted successfully"
+                ),
             )
         else:
             messages.error(request, _("Document not found"))
@@ -890,7 +893,7 @@ def document_delete(request, id):
         clear_messages(request)
         return HttpResponse()
     else:
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HttpResponse("<script>window.location.reload();</script>")
 
 
 @login_required
