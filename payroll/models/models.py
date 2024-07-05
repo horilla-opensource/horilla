@@ -1443,7 +1443,7 @@ class LoanAccount(HorillaModel):
     installment_start_date = models.DateField(
         help_text="From the start date deduction will apply"
     )
-    apply_on = models.CharField(default="end_of_month", max_length=10, editable=False)
+    apply_on = models.CharField(default="end_of_month", max_length=20, editable=False)
     settled = models.BooleanField(default=False)
     asset_id = models.ForeignKey(
         Asset, on_delete=models.PROTECT, null=True, editable=False
