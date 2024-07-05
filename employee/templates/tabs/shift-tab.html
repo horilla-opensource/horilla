@@ -162,6 +162,7 @@
         	          {% trans "Requested Till" %}
         	        </div>
         	        <div class="oh-sticky-table__th">{% trans "Description" %}</div>
+        	        <div class="oh-sticky-table__th">{% trans "Status" %}</div>
         	        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
         	        {% if not request.GET.profile %}
 						{% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
@@ -212,6 +213,9 @@
         	    	    <div class="oh-sticky-table__td">
         	    	      {{work_type_request.description}}
         	    	    </div>
+                        <div class="oh-sticky-table__td">
+                            {{work_type_request.request_status}}
+                        </div>
         	    	    <div class="oh-sticky-table__td">
         	    	      	<div class="oh-btn-group" onclick="event.stopPropagation();">
         	    	      	  	{% if work_type_request.approved == False and not work_type_request.canceled %}
@@ -252,31 +256,39 @@
         	    	    		  class="oh-sticky-table__td"
         	    	    		  onclick="event.stopPropagation();"
         	    	    		>
-        	    	    		  {% if work_type_request.approved == False and work_type_request.canceled == False %}
-								  	<a href="/work-type-request-approve/{{work_type_request.id}}/"
-        	    	    		  	   onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
-										 class='oh-btn oh-btn--info'>
-										 {% trans "Approve"%}
-									</a>
-								  {% else %}
-        	    	    		  	<button class="oh-btn oh-btn--info w-100" disabled>
-        	    	    		  	  {% trans "Approve" %}
-        	    	    		  	</button>
-        	    	    		  {% endif %}
+        	    	    		    {% if work_type_request.approved == False and work_type_request.canceled == False %}
+								        <a title="{% trans 'Approve' %}"
+								        	hx-confirm="{% trans 'Do you want to approve this request?' %}"
+								        	hx-post="/work-type-request-approve/{{work_type_request.id}}/?{{pd}}"
+								        	hx-target="#shift_target"
+								        	class="oh-btn oh-btn--success w-100">
+								            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+								        </a>
+								    {% else %}
+        	    	    		    	<button class="oh-btn oh-btn--success w-100" disabled>
+                                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+        	    	    		    	</button>
+        	    	    		    {% endif %}
         	    	    		</div>
         	    	    		<div
         	    	    		  class="oh-sticky-table__td"
         	    	    		  onclick="event.stopPropagation();"
         	    	    			>
         	    	    			{% if work_type_request.canceled == False %}
-										<a href="/work-type-request-cancel/{{work_type_request.id}}/"
-        	    	    				   onclick="return confirm('{% trans "Do you want to cancel this request?" %}')"
-										   class='oh-btn oh-btn--primary'>
-											{% trans "Cancel" %}
-										</a>
+                                        <a hx-confirm="{% trans 'Do you want to reject this request?' %}"
+                                            hx-post="/work-type-request-cancel/{{work_type_request.id}}/?{{pd}}"
+                                            hx-target="#shift_target"
+                                            title="{% trans 'Reject' %}"
+                                            class="oh-btn oh-btn--danger w-100"
+                                            >
+                                            <ion-icon
+                                              class="me-1"
+                                              name="close-circle-outline"
+                                            ></ion-icon>
+                                        </a>
 									{% else %}
-        	    	    				<button disabled class="oh-btn oh-btn--primary w-100">
-        	    	    				  {% trans "Canceled" %}
+        	    	    				<button disabled class="oh-btn oh-btn--danger w-100">
+                                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
         	    	    				</button>
         	    	    			{% endif %}
         	    	    		</div>
