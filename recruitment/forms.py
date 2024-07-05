@@ -344,16 +344,27 @@ class CandidateCreationForm(ModelForm):
         """
 
         model = Candidate
-        fields = "__all__"
-        exclude = [
-            "confirmation",
-            "scheduled_for",
-            "schedule_date",
-            "joining_date",
-            "sequence",
-            "stage_id",
-            "offerletter_status",
+        fields = [
+            "profile",
+            "name",
+            "portfolio",
+            "email",
+            "mobile",
+            "recruitment_id",
+            "job_position_id",
+            "dob",
+            "gender",
+            "address",
+            "source",
+            "country",
+            "state",
+            "zip",
+            "resume",
+            "referral",
+            "canceled",
+            "is_active",
         ]
+
         widgets = {
             "scheduled_date": forms.DateInput(attrs={"type": "date"}),
             "dob": forms.DateInput(attrs={"type": "date"}),
@@ -383,6 +394,16 @@ class CandidateCreationForm(ModelForm):
             job_position = JobPosition.objects.get(id=job_id)
             self.instance.job_position_id = job_position
         return super().save(commit)
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string(
+            "candidate/candidate_create_form_as_p.html", context
+        )
+        return table_html
 
     def clean(self):
         if self.instance.name is not None:
@@ -644,9 +665,7 @@ class QuestionForm(ModelForm):
         required=False,
         label=_("Recruitment"),
     )
-    # job_positions = forms.ModelMultipleChoiceField(
-    #     queryset=JobPosition.objects.all(), required=False, label=_("Job Positions")
-    # )
+    options = forms.CharField(widget=forms.TextInput, label=_("Options"), required=True)
 
     class Meta:
         """
@@ -655,11 +674,7 @@ class QuestionForm(ModelForm):
 
         model = RecruitmentSurvey
         fields = "__all__"
-        exclude = [
-            "recruitment_ids",
-            "job_position_ids",
-            "is_active",
-        ]
+        exclude = ["recruitment_ids", "job_position_ids", "is_active", "options"]
         labels = {
             "question": _("Question"),
             "sequence": _("Sequence"),
@@ -679,33 +694,78 @@ class QuestionForm(ModelForm):
         return table_html
 
     def clean(self):
-        super().clean()
+        cleaned_data = super().clean()
         recruitment = self.cleaned_data["recruitment"]
-        # jobs = self.cleaned_data["job_positions"]
-        qtype = self.cleaned_data["type"]
+        question_type = self.cleaned_data["type"]
         options = self.cleaned_data["options"]
         if not recruitment.exists():  # or jobs.exists()):
             raise ValidationError(
                 {"recruitment": _("Choose any recruitment to apply this question")}
             )
         self.recruitment = recruitment
-        # self.job_positions = jobs
-
-        if qtype in ["options", "multiple"] and (options is None or options == ""):
+        if question_type in ["options", "multiple"] and (
+            options is None or options == ""
+        ):
             raise ValidationError({"options": "Options field is required"})
+        return cleaned_data
 
-        return
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if instance.type in ["options", "multiple"]:
+            additional_options = []
+            for key, value in self.cleaned_data.items():
+                if key.startswith("options") and value:
+                    additional_options.append(value)
+
+            instance.options = ",".join(additional_options)
+            if commit:
+                instance.save()
+                self.save_m2m()
+        else:
+            instance.options = ""
+        return instance
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         instance = kwargs.get("instance", None)
+        self.option_count = 1
+
+        def create_options_field(option_key, initial=None):
+            self.fields[option_key] = forms.CharField(
+                widget=forms.TextInput(
+                    attrs={
+                        "name": option_key,
+                        "id": f"id_{option_key}",
+                        "class": "oh-input w-100",
+                    }
+                ),
+                label=_("Options"),
+                required=True,
+                initial=initial,
+            )
+
+        if instance:
+            split_options = instance.options.split(",")
+            for i, option in enumerate(split_options):
+                if i == 0:
+                    create_options_field("options", option)
+                else:
+                    self.option_count += 1
+                    create_options_field(f"options{i}", option)
+
         if instance:
             self.fields["recruitment"].initial = instance.recruitment_ids.all()
-            # self.fields["job_positions"].initial = instance.job_position_ids.all()
         self.fields["type"].widget.attrs.update(
             {"class": " w-100", "style": "border:solid 1px #6c757d52;height:50px;"}
         )
-        self.fields["options"].required = False
+        for key, value in self.data.items():
+            if key.startswith("options"):
+                self.option_count += 1
+                create_options_field(key, initial=value)
+        fields_order = list(self.fields.keys())
+        fields_order.remove("recruitment")
+        fields_order.insert(2, "recruitment")
+        self.fields = {field: self.fields[field] for field in fields_order}
 
 
 class SurveyForm(forms.Form):
