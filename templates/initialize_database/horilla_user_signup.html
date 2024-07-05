@@ -86,7 +86,7 @@
         <div class="oh-password-input-container">
           <input
             type="password"
-            id="password"
+            id="adminPassword"
             name="password"
             class="oh-input oh-input--password w-100"
             placeholder="Use alphanumeric characters"
@@ -95,7 +95,7 @@
           <button
             type="button"
             class="oh-btn oh-btn--transparent oh-password-input--toggle"
-          >
+            >
             <ion-icon
               class="oh-passowrd-input__show-icon"
               title="Show Password"
@@ -148,3 +148,21 @@
     {% trans "Secure Sign-up" %}
   </button>
 </form>
+<script>
+  $(document).ready(function (e) {
+    $(".oh-password-input--toggle").click(function () {
+      var passwordInput = $("#adminPassword")
+      var showIcon = $(this).find(".oh-passowrd-input__show-icon");
+      var hideIcon = $(this).find(".oh-passowrd-input__hide-icon");
+      if (passwordInput.attr("type") === "password") {
+        passwordInput.attr("type", "text");
+        showIcon.addClass("d-none");
+        hideIcon.removeClass("d-none");
+      } else {
+        passwordInput.attr("type", "password");
+        showIcon.removeClass("d-none");
+        hideIcon.addClass("d-none");
+      }
+    });
+  });
+</script>
