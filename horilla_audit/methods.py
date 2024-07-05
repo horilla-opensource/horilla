@@ -141,7 +141,7 @@ def get_diff(instance):
         from .models import HistoryTrackingFields
 
         history_tracking_instance = HistoryTrackingFields.objects.first()
-        if history_tracking_instance:
+        if history_tracking_instance and history_tracking_instance.tracking_fields:
             track_fields = history_tracking_instance.tracking_fields["tracking_fields"]
             if track_fields:
                 delta_changes = filter_history(delta_changes, track_fields)
