@@ -170,7 +170,7 @@ def leave_type_individual_view(request, id):
     Returns:
     GET : return one leave type view template
     """
-    leave_type = LeaveType.objects.get(id=id)
+    leave_type = LeaveType.find(id)
     requests_ids_json = request.GET.get("instances_ids")
     compensatory = request.GET.get("compensatory")
     context = {"leave_type": leave_type, "compensatory": compensatory}
@@ -256,7 +256,7 @@ def leave_type_update(request, id, **kwargs):
 
 @login_required
 @permission_required("leave.delete_leavetype")
-def leave_type_delete(request, id):
+def leave_type_delete(request, obj_id):
     """
     function used to delete leave type.
 
@@ -268,7 +268,7 @@ def leave_type_delete(request, id):
     GET : return leave type view template
     """
     try:
-        LeaveType.objects.get(id=id).delete()
+        LeaveType.objects.get(id=obj_id).delete()
         messages.success(request, _("Leave type deleted successfully.."))
     except (LeaveType.DoesNotExist, OverflowError, ValueError):
         messages.error(request, _("Leave type not found."))
@@ -285,6 +285,19 @@ def leave_type_delete(request, id):
                 )
             ),
         )
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        if request.META.get("HTTP_HX_TARGET") == "objectDetailsModalTarget":
+            instances_ids = request.GET.get("instances_ids")
+            instances_list = json.loads(instances_ids)
+            if obj_id in instances_list:
+                instances_list.remove(obj_id)
+            previous_instance, next_instance = closest_numbers(
+                json.loads(instances_ids), obj_id
+            )
+            return redirect(
+                f"/leave/leave-type-individual-view/{next_instance}?instances_ids={instances_list}"
+            )
+        return redirect(f"/leave/type-filter?{request.GET.urlencode()}")
     return redirect(leave_type_view)
 
 
