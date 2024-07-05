@@ -888,6 +888,13 @@ class WorkTypeRequest(HorillaModel):
             if not self.requested_till:
                 raise ValidationError(_("Requested till field is required."))
 
+    def request_status(self):
+        return (
+            _("Rejected")
+            if self.canceled
+            else (_("Approved") if self.approved else _("Requested"))
+        )
+
     def __str__(self) -> str:
         return f"{self.employee_id.employee_first_name} \
             {self.employee_id.employee_last_name} - {self.requested_date}"

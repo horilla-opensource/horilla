@@ -109,16 +109,16 @@ href ="{% url 'employee-view-individual' work_type_request.employee_id.id %}">
             <a
                 href="/work-type-request-approve/{{work_type_request.id}}/"
                 onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
-                class="oh-btn oh-btn--info w-50"
-                title='{% trans "Approve" %}'
+                class="oh-btn oh-btn--success w-50"
+                title="{% trans 'Approve' %}"
                 >{% trans "Approve" %}</a>
 
             <a
                 href="/work-type-request-cancel/{{work_type_request.id}}/"
                 onclick="return confirm('{% trans "Do you want to cancel this request?" %}')"
                 class="oh-btn oh-btn--danger w-50"
-                title='{% trans "Cancel" %}'
-                >{% trans "Cancel" %}</a>
+                title="{% trans 'Reject' %}"
+                >{% trans "Reject" %}</a>
         {% else %}
             {% if work_type_request.approved == False and not work_type_request.canceled  %}
                 <a hx-get="{% url 'work-type-request-update' work_type_request.id %}" hx-target='#workTypeRequestUpdateModalBody' data-toggle="oh-modal-toggle" data-target='#workTypeRequestUpdateModal' class="oh-btn oh-btn--info w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
