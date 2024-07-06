@@ -1929,6 +1929,12 @@ class DynamicMailConfForm(ModelForm):
         return table_html
 
 
+class DynamicMailTestForm(forms.Form):
+    """
+    DynamicEmailTest
+    """
+    to_email = forms.EmailField(label="To email", required=True)
+
 class MultipleApproveConditionForm(ModelForm):
     CONDITION_CHOICE = [
         ("equal", _("Equal (==)")),

@@ -37,7 +37,7 @@ class DefaultHorillaMailBackend(EmailBackend):
         ssl_certfile = (
             getattr(self.configuration, "ssl_certfile", None)
             if self.configuration
-            else ssl_keyfile or getattr(settings, "ssl_certfile", None)
+            else ssl_certfile or getattr(settings, "ssl_certfile", None)
         )
         self.mail_sent_from = self.dynamic_username
         super().__init__(

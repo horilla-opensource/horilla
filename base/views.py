@@ -58,6 +58,7 @@ from base.forms import (
     DepartmentForm,
     DriverForm,
     DynamicMailConfForm,
+    DynamicMailTestForm,
     DynamicPaginationForm,
     EmployeeShiftForm,
     EmployeeShiftScheduleForm,
@@ -1196,6 +1197,46 @@ def mail_server_conf(request):
             "mail_servers": mail_servers,
             "primary_mail_not_exist": primary_mail_not_exist,
         },
+    )
+
+
+@login_required
+@permission_required("base.view_dynamicemailconfiguration")
+def mail_server_test_email(request):
+    instance_id = request.GET.get("instance_id")
+    form = DynamicMailTestForm()
+    if request.method == "POST":
+        form = DynamicMailTestForm(request.POST)
+        if form.is_valid():
+            email_to = form.cleaned_data["to_email"]
+            subject = _("Test mail from Horilla")
+            body = _("Email tested successfully")
+            email_backend = ConfiguredEmailBackend()
+            emailconfig = DynamicEmailConfiguration.objects.filter(
+                id=instance_id
+            ).first()
+            email_backend.configuration = emailconfig
+            try:
+                send_mail(
+                    subject,
+                    body,
+                    email_backend.dynamic_username_with_display_name,
+                    [email_to],
+                    fail_silently=False,
+                    connection=email_backend
+                )
+            except Exception as e:
+                messages.error(
+                    request,
+                    " ".join([_("Something went wrong :"), str(e)])
+                )
+                return HttpResponse("<script>window.location.reload()</script>")
+            messages.success(request, _("Mail sent successfully"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/mail_server/form_email_test.html",
+        {"form": form, "instance_id": instance_id}
     )
 
 
