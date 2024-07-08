@@ -574,56 +574,10 @@ def home(request):
     first_day_of_week = today - timedelta(days=today_weekday)
     last_day_of_week = first_day_of_week + timedelta(days=6)
 
-    # employees_with_pending = []
     employee_charts = DashboardEmployeeCharts.objects.get_or_create(
         employee=request.user.employee_get
     )[0]
 
-    # List of field names to focus on
-    # fields_to_focus = [
-    #     "job_position_id",
-    #     "department_id",
-    #     "work_type_id",
-    #     "employee_type_id",
-    #     "job_role_id",
-    #     "reporting_manager_id",
-    #     "company_id",
-    #     "location",
-    #     "email",
-    #     "mobile",
-    #     "shift_id",
-    #     "date_joining",
-    #     "contract_end_date",
-    #     "basic_salary",
-    #     "salary_hour",
-    # ]
-
-    # for employee in EmployeeWorkInformation.objects.filter(employee_id__is_active=True):
-    #     completed_field_count = sum(
-    #         1
-    #         for field_name in fields_to_focus
-    #         if getattr(employee, field_name) is not None
-    #     )
-    #     if completed_field_count < 14:
-    #         # Create a dictionary with employee information and pending field count
-    #         percent = f"{((completed_field_count / 14) * 100):.1f}"
-    #         employee_info = {
-    #             "employee": employee,
-    #             "completed_field_count": percent,
-    #         }
-    #         employees_with_pending.append(employee_info)
-    #     else:
-    #         pass
-
-    # emps = Employee.objects.filter(employee_work_info__isnull=True)
-    # for emp in emps:
-    #     employees_with_pending.insert(
-    #         0,
-    #         {
-    #             "employee": Workinfo(employee=emp),
-    #             "completed_field_count": "0",
-    #         },
-    #     )
     announcements = Announcement.objects.all()
     general_expire = AnnouncementExpire.objects.all().first()
     general_expire_date = 30 if not general_expire else general_expire.days
@@ -655,7 +609,6 @@ def home(request):
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
-        # "employees_with_pending": employees_with_pending,
         "announcement": announcement_list,
         "general_expire_date": general_expire_date,
         "charts": employee_charts.charts,
@@ -1200,6 +1153,13 @@ def mail_server_conf(request):
     )
 
 
+from email.mime.image import MIMEImage
+
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
+
+
 @login_required
 @permission_required("base.view_dynamicemailconfiguration")
 def mail_server_test_email(request):
@@ -1210,33 +1170,73 @@ def mail_server_test_email(request):
         if form.is_valid():
             email_to = form.cleaned_data["to_email"]
             subject = _("Test mail from Horilla")
-            body = _("Email tested successfully")
+
+            # HTML content
+            html_content = """
+            <html>
+                <body style="font-family: Arial, sans-serif; margin: 0; padding: 0;">
+                    <table align="center" width="600" cellpadding="0" cellspacing="0" border="0" style="border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden;">
+                        <tr>
+                            <td align="center" bgcolor="#4CAF50" style="padding: 20px 0;">
+                                <h1 style="color: #ffffff; margin: 0;">Horilla</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 20px;">
+                                <h3 style="color: #4CAF50;">Email tested successfully</h3>
+                                <b><p style="font-size: 14px;">Hi,<br>
+                                    This email is being sent as part of mail sever testing from Horilla.</p></b>
+                                <img src="cid:unique_image_id" alt="Test Image" style="width: 200px; height: auto; margin: 20px 0;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td bgcolor="#f0f0f0" style="padding: 10px; text-align: center;">
+                                <p style="font-size: 12px; color: black;">&copy; 2024 Horilla, Inc.</p>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+            </html>
+            """
+
+            # Plain text content (fallback for email clients that do not support HTML)
+            text_content = strip_tags(html_content)
+
             email_backend = ConfiguredEmailBackend()
             emailconfig = DynamicEmailConfiguration.objects.filter(
                 id=instance_id
             ).first()
             email_backend.configuration = emailconfig
+
             try:
-                send_mail(
+                msg = EmailMultiAlternatives(
                     subject,
-                    body,
+                    text_content,
                     email_backend.dynamic_username_with_display_name,
                     [email_to],
-                    fail_silently=False,
-                    connection=email_backend
+                    connection=email_backend,
                 )
+                msg.attach_alternative(html_content, "text/html")
+
+                # Attach the image
+                image_path = settings.STATIC_ROOT + "/images/ui/horilla-logo.png"
+                with open(image_path, "rb") as img:
+                    msg_img = MIMEImage(img.read())
+                    msg_img.add_header("Content-ID", "<unique_image_id>")
+                    msg.attach(msg_img)
+
+                msg.send()
+
             except Exception as e:
-                messages.error(
-                    request,
-                    " ".join([_("Something went wrong :"), str(e)])
-                )
+                messages.error(request, " ".join([_("Something went wrong :"), str(e)]))
                 return HttpResponse("<script>window.location.reload()</script>")
+
             messages.success(request, _("Mail sent successfully"))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "base/mail_server/form_email_test.html",
-        {"form": form, "instance_id": instance_id}
+        {"form": form, "instance_id": instance_id},
     )
 
 
@@ -1521,14 +1521,14 @@ def job_role_create(request):
     if request.method == "POST":
         form = JobRoleForm(request.POST)
         if form.instance.pk and form.is_valid():
-            form.save()
+            form.save(commit=True)
             messages.success(request, _("Job role has been created successfully!"))
         elif (
             not form.instance.pk
             and form.data.getlist("job_position_id")
             and form.data.get("job_role")
         ):
-            form.save()
+            form.save(commit=True)
             messages.success(request, _("Job role has been created successfully!"))
             return HttpResponse("<script>window.location.reload()</script>")
 
@@ -1577,7 +1577,7 @@ def job_role_update(request, id, **kwargs):
     if request.method == "POST":
         form = JobRoleForm(request.POST, instance=job_role)
         if form.is_valid():
-            form.save()
+            form.save(commit=True)
             messages.success(request, _("Job role updated."))
             return HttpResponse("<script>window.location.reload()</script>")
 
