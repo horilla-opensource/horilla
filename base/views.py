@@ -1220,7 +1220,7 @@ def mail_server_test_email(request):
                 msg.attach_alternative(html_content, "text/html")
 
                 # Attach the image
-                image_path = settings.STATIC_ROOT + "/images/ui/horilla-logo.png"
+                image_path = path.join(settings.STATIC_ROOT, "images/ui/horilla-logo.png")
                 with open(image_path, "rb") as img:
                     msg_img = MIMEImage(img.read())
                     msg_img.add_header("Content-ID", "<unique_image_id>")
