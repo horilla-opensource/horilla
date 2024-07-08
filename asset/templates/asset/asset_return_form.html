@@ -1,12 +1,7 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-  <button
-    type="button"
-    class="oh-modal__close"
-    data-dismiss="oh-modal"
-    aria-label="Close"
-  >
-    <ion-icon name="close-outline"></ion-icon>
+  <button type="button" class="oh-modal_close--custom" onclick="$('#objectCreateModal').removeClass('oh-modal--show');">
+    <ion-icon name="close-outline" role="img" aria-label="close outline" class="md hydrated"></ion-icon>
   </button>
   <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
     <h5>{% trans "Asset Return Form" %}</h5>
