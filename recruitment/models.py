@@ -80,6 +80,18 @@ class SurveyTemplate(HorillaModel):
         return self.title
 
 
+class Skill(HorillaModel):
+    title = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        title = self.title
+        self.title = title.capitalize()
+        super().save(*args, **kwargs)
+
+
 class Recruitment(HorillaModel):
     """
     Recruitment model
@@ -136,6 +148,7 @@ class Recruitment(HorillaModel):
     )
     start_date = models.DateField(default=django.utils.timezone.now)
     end_date = models.DateField(blank=True, null=True)
+    skills = models.ManyToManyField(Skill, blank=True)
     objects = HorillaCompanyManager()
     default = models.manager.Manager()
 
@@ -175,14 +188,20 @@ class Recruitment(HorillaModel):
     def clean(self):
         if self.title is None:
             raise ValidationError({"title": _("This field is required")})
+        if self.is_published:
+            if self.vacancy <= 0:
+                raise ValidationError(
+                    _(
+                        "Vacancy must be greater than zero if the recruitment is publishing."
+                    )
+                )
+
         if self.end_date is not None and (
             self.start_date is not None and self.start_date > self.end_date
         ):
             raise ValidationError(
                 {"end_date": _("End date cannot be less than start date.")}
             )
-        # if not self.is_event_based and self.job_position_id is None:
-        #     raise ValidationError({"job_position_id": _("This field is required")})
         return super().clean()
 
     def save(self, *args, **kwargs):
@@ -888,3 +907,19 @@ class InterviewSchedule(HorillaModel):
 
     def __str__(self) -> str:
         return f"{self.candidate_id} -Interview."
+
+
+class Resume(models.Model):
+    file = models.FileField(
+        upload_to="recruitment/resume",
+        validators=[
+            validate_pdf,
+        ],
+    )
+    recruitment_id = models.ForeignKey(
+        Recruitment, on_delete=models.CASCADE, related_name="resume"
+    )
+    is_candidate = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.recruitment_id} - Resume {self.pk}"

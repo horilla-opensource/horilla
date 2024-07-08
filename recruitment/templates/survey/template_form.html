@@ -1,7 +1,6 @@
 <form
   hx-post="{% url 'recruitment-survey-question-template-create' %}"
   hx-target="#templateModalBody"
-  method="post"
 >
   {% csrf_token %} {{form.as_p}}
 </form>

@@ -1,170 +1,197 @@
 {% load static %} {% load i18n %}
-<div class="oh-dropdown__filter-body" id="export_attendance_form">
-  <div class="oh-accordion">
-    <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
-    <div class="oh-accordion-body">
-      <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-6">
-          <div class="oh-input-group">
-            <label class="oh-label">
-              <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
-            </label>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        {% for field in export_fields.selected_fields %}
-        <div class="col-sm-12 col-md-12 col-lg-6">
-          <div class="oh-input-group">
-            <label class="oh-label"> {{ field }} </label>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-  <div class="oh-dropdown__filter-body">
-    <div class="oh-accordion">
-      <div class="oh-accordion-header">{% trans "Candidates" %}</div>
-      <div class="oh-accordion-body">
-        <div class="row">
-          <div class="col-sm-12 col-md-12 col-lg-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Phone" %}</label>
-              {{export_obj.form.mobile}}
-            </div>
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Interview Date" %}</label>
-              {{export_obj.form.interview_date}}
-            </div>
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Country" %}</label>
-              {{export_obj.form.country}}
-            </div>
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Is Hired" %}?</label>
-              {{export_obj.form.hired}}
-            </div>
-            <div class="col-sm-12 col-md-12 mb-2">
+<div class="oh-modal__dialog-header">
+  <h2 class="oh-modal__dialog-title" id="candidateExportLavel">
+    {% trans "Export Candidates" %}
+  </h2>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
+    action="{%url 'candidate-info-export' %}"
+    method="get"
+    class="oh-profile-section"
+    onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+    id="candidateExportForm"
+  >
+    {% csrf_token %}
+    <div class="oh-dropdown__filter-body" id="export_attendance_form">
+      <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
+        <div class="oh-accordion-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6">
               <div class="oh-input-group">
-                <label class="oh-label">{% trans "Reject Reason" %}</label>
-                {{export_obj.form.rejected_candidate__reject_reason_id}}
+                <label class="oh-label">
+                  <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
+                </label>
               </div>
             </div>
           </div>
-          <div class="col-sm-12 col-md-12 col-lg-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Email" %}</label>
-              {{export_obj.form.email}}
-            </div>
-
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Gender" %}</label>
-              {{export_obj.form.gender}}
-            </div>
-
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "State" %}</label>
-              {{export_obj.form.state}}
-            </div>
-
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Is Canceled" %}?</label>
-              {{export_obj.form.canceled}}
-            </div>
-            <div class="col-sm-12 col-md-12 mb-2">
+          <div class="row">
+            {% for field in export_column.selected_fields %}
+            <div class="col-sm-12 col-md-12 col-lg-6">
               <div class="oh-input-group">
-                <label class="oh-label">{% trans "Offer Status" %}</label>
-                {{export_obj.form.offer_letter_status}}
+                <label class="oh-label"> {{ field }} </label>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="oh-dropdown__filter-body">
+        <div class="oh-accordion">
+          <div class="oh-accordion-header">{% trans "Candidates" %}</div>
+          <div class="oh-accordion-body">
+            <div class="row">
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Phone" %}</label>
+                  {{export_filter.form.mobile}}
+                </div>
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Interview Date" %}</label>
+                  {{export_filter.form.interview_date}}
+                </div>
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Country" %}</label>
+                  {{export_filter.form.country}}
+                </div>
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Is Hired" %}?</label>
+                  {{export_filter.form.hired}}
+                </div>
+                <div class="col-sm-12 col-md-12 mb-2">
+                  <div class="oh-input-group">
+                    <label class="oh-label">{% trans "Reject Reason" %}</label>
+                    {{export_filter.form.rejected_candidate__reject_reason_id}}
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Email" %}</label>
+                  {{export_filter.form.email}}
+                </div>
+
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Gender" %}</label>
+                  {{export_filter.form.gender}}
+                </div>
+
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "State" %}</label>
+                  {{export_filter.form.state}}
+                </div>
+
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Is Canceled" %}?</label>
+                  {{export_filter.form.canceled}}
+                </div>
+                <div class="col-sm-12 col-md-12 mb-2">
+                  <div class="oh-input-group">
+                    <label class="oh-label">{% trans "Offer Status" %}</label>
+                    {{export_filter.form.offer_letter_status}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="oh-accordion">
+          <div class="oh-accordion-header">{% trans "Recruitment" %}</div>
+          <div class="oh-accordion-body">
+            <div class="row">
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Recruitment" %}</label>
+                  {{export_filter.form.recruitment_id}}
+                </div>
+
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Job Position" %}</label>
+                  {{export_filter.form.job_position_id}}
+                </div>
+
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Start Date" %}</label>
+                  {{export_filter.form.start_date}}
+                </div>
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Is Closed" %}?</label>
+                  {{export_filter.form.recruitment_id__closed}}
+                </div>
+
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Stage Type" %}</label>
+                  {{export_filter.form.stage_id__stage_type}}
+                </div>
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Stage Managers" %}</label>
+                  {{export_filter.form.stage_id__stage_managers}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Stage" %}</label>
+                  {{export_filter.form.stage_id}}
+                </div>
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Department" %}</label>
+                  {{export_filter.form.job_position_id__department_id}}
+                </div>
+
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Company" %}</label>
+                  {{export_filter.form.recruitment_id__company_id}}
+                </div>
+
+                <div class="oh-input-group">
+                  <label class="oh-label"
+                    >{% trans "Recruitment Managers" %}</label
+                  >
+                  {{export_filter.form.recruitment_id__recruitment_managers}}
+                </div>
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "End Date" %}</label>
+                  {{export_filter.form.end_date}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="oh-accordion">
+          <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+          <div class="oh-accordion-body">
+            <div class="row">
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Interview From" %}</label>
+                  {{export_filter.form.scheduled_from}}
+                </div>
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Is Active" %}?</label>
+                  {{export_filter.form.is_active}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Interview Till" %}</label>
+                  {{export_filter.form.scheduled_till}}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="oh-accordion">
-      <div class="oh-accordion-header">{% trans "Recruitment" %}</div>
-      <div class="oh-accordion-body">
-        <div class="row">
-          <div class="col-sm-12 col-md-12 col-lg-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Recruitment" %}</label>
-              {{export_obj.form.recruitment_id}}
-            </div>
 
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Job Position" %}</label>
-              {{export_obj.form.job_position_id}}
-            </div>
-
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Start Date" %}</label>
-              {{export_obj.form.start_date}}
-            </div>
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Is Closed" %}?</label>
-              {{export_obj.form.recruitment_id__closed}}
-            </div>
-
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Stage Type" %}</label>
-              {{export_obj.form.stage_id__stage_type}}
-            </div>
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Stage Managers" %}</label>
-              {{export_obj.form.stage_id__stage_managers}}
-            </div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Stage" %}</label>
-              {{export_obj.form.stage_id}}
-            </div>
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Department" %}</label>
-              {{export_obj.form.job_position_id__department_id}}
-            </div>
-
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Company" %}</label>
-              {{export_obj.form.recruitment_id__company_id}}
-            </div>
-
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Recruitment Managers" %}</label>
-              {{export_obj.form.recruitment_id__recruitment_managers}}
-            </div>
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "End Date" %}</label>
-              {{export_obj.form.end_date}}
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="oh-modal__dialog-footer p-0 mt-3">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Export" %}
+      </button>
     </div>
-
-    <div class="oh-accordion">
-      <div class="oh-accordion-header">{% trans "Advanced" %}</div>
-      <div class="oh-accordion-body">
-        <div class="row">
-          <div class="col-sm-12 col-md-12 col-lg-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Interview From" %}</label>
-              {{export_obj.form.scheduled_from}}
-            </div>
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Is Active" %}?</label>
-              {{export_obj.form.is_active}}
-            </div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Interview Till" %}</label>
-              {{export_obj.form.scheduled_till}}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  </form>
 </div>

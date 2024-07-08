@@ -1,83 +1,161 @@
-{% load i18n %} {% if messages %}
+{% load i18n %}
+<script>
+      function skillChange(selectElement) {
+          var selectedSkill = selectElement.val();
+          var parentForm = selectElement.parents().closest("form");
+          if (selectedSkill && selectedSkill.includes("create")) {
+              let dynamicskills = $("#dynamicSkills");
+              var view = parentForm.serialize();
+              dynamicskills.attr("hx-vals", `{"data":"${view}"}`);
+              dynamicskills.click();
+          }
+      }
+      $(document).ready(function(){
+          $("[name= 'skills']").on("change", function(){
+              skillChange($(this))
+          })
+      });
+      {% if dynamic %}
+      setTimeout(function () {
+        $('#dynamicCreateModal').removeClass('oh-modal--show');
+      }, 500);
+    {% endif %}
+</script>
+
+<script>
+    $(document).ready(function() {
+        function formatOption(option) {
+            if (!option.id) {
+                return option.text;
+            }
+            var $option = $('<span></span>').text(option.text);
+            if (option.id === 'create') {
+                $option.addClass('text-info');
+            }
+            return $option;
+        }
+        $('[name = "skills"]').select2({
+            templateResult: formatOption,
+            templateSelection: formatOption
+        });
+    });
+</script>
+{% if messages %}
 <div class="oh-alert-container">
-  {% for message in messages %}
-  <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
-  {% endfor %}
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+        {{ message }}
+    </div>
+    {% endfor %}
 </div>
 {% endif %}
-<form
-  hx-post="{% url 'recruitment-update' form.instance.id %}"
-  class="oh-general__tab-target oh-profile-section"
->
-  {% csrf_token %}
-  <div>
-    {% csrf_token %}
-    <div class="row" id="recruitmentUpdateContainer">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-        <label class="oh-label" for=""
-          >{% trans "Title" %} <span class="text-danger">*</span></label
-        >
-        {{form.title}} {{form.title.errors}}
-      </div>
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-        <label class="oh-label" for=""
-          >{% trans "Description" %} <span class="text-danger">*</span></label
-        >
-        {{form.description}} {{form.description.errors}}
-      </div>
-      <div
-        class="col-12 col-sm-12 col-md-12 col-lg-6"
-        id="openPositionUpdateContainer"
-      >
-        <label class="oh-label" for=""
-          >{% trans "Job Position" %} <span class="text-danger">*</span></label
-        >
-        {{form.open_positions}} {{form.open_positions.errors}}
-      </div>
-      <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-        <label class="oh-label" for=""
-          >{% trans "Managers" %} <span class="text-danger">*</span></label
-        >
-        {{form.recruitment_managers}} {{form.recruitment_managers.errors}}
-      </div>
-      <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-        <label class="oh-label" for="">{% trans "Start Date" %}</label>
-        {{form.start_date}} {{form.start_date.errors}}
-      </div>
-      <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-        <label class="oh-label" for="">{% trans "End Date" %}</label>
-        {{form.end_date}} {{form.end_date.errors}}
-      </div>
-      <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-        <label class="oh-label" for="">{% trans "Vacancy" %}</label>
-        {{form.vacancy}} {{form.vacancy.errors}}
-      </div>
-      <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-        <label class="oh-label" for="">{% trans "Company" %}</label>
-        {{form.company_id}} {{form.company_id.errors}}
-      </div>
-      <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-        <label class="oh-label" for="id_is_published"
-          >{% trans "Survey Templates" %}</label
-        >
-        {{form.survey_templates}}
-      </div>
-      <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-        <label
-          class="oh-label"
-          for="id_is_published"
-          title="{{form.is_published.help_text|safe}}"
-          >{% trans "Is Published?" %}</label
-        >
-        <div class="w-100 d-flex" style="align-items: center">
-          <div class="oh-switch">{{form.is_published}}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="d-flex flex-row-reverse">
-    <button type="submit" class="mt-4 pl-5 pr-5 oh-btn oh-btn--secondary">
-      {% trans "Save" %}
+<div class="oh-modal__dialog-header">
+    <h5 class="oh-modal__dialog-title" id="addRecruitmentModalLabel"
+        >{% trans "Edit Recruitment" %}</span
+    >
+    <button class="oh-modal__close" aria-label="Close" >
+        <ion-icon name="close-outline"></ion-icon>
     </button>
-  </div>
-</form>
+</div>
+<div class="oh-modal__dialog-body" id="addRecruitmentModalBody">
+    <form
+        hx-post="{% url 'recruitment-update' form.instance.id %}"
+        hx-target="#updateFormContainer"
+        class="oh-general__tab-target oh-profile-section"
+    >
+        {% csrf_token %}
+        <div>
+            {% csrf_token %}
+            <div class="row" id="recruitmentUpdateContainer">
+                {% for error in form.non_field_errors %}
+                    <ul class="errorlist">
+                        <li>{{error}}</li>
+                    </ul>
+                {% endfor %}
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                    <label class="oh-label" for=""
+                        >{% trans "Title" %}
+                        <span class="text-danger">*</span></label
+                    >
+                    {{form.title}} {{form.title.errors}}
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                    <label class="oh-label" for=""
+                        >{% trans "Description" %}
+                        <span class="text-danger">*</span></label
+                    >
+                    {{form.description}} {{form.description.errors}}
+                </div>
+                <div
+                    class="col-12 col-sm-12 col-md-12 col-lg-6"
+                    id="openPositionUpdateContainer"
+                >
+                    <label class="oh-label" for=""
+                        >{% trans "Job Position" %}
+                        <span class="text-danger">*</span></label
+                    >
+                    {{form.open_positions}} {{form.open_positions.errors}}
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <label class="oh-label" for=""
+                        >{% trans "Managers" %}
+                        <span class="text-danger">*</span></label
+                    >
+                    {{form.recruitment_managers}}
+                    {{form.recruitment_managers.errors}}
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <label class="oh-label" for=""
+                        >{% trans "Start Date" %}</label
+                    >
+                    {{form.start_date}} {{form.start_date.errors}}
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <label class="oh-label" for=""
+                        >{% trans "End Date" %}</label
+                    >
+                    {{form.end_date}} {{form.end_date.errors}}
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <label class="oh-label" for="">{% trans "Vacancy" %}</label>
+                    {{form.vacancy}} {{form.vacancy.errors}}
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <label class="oh-label" for="">{% trans "Company" %}</label>
+                    {{form.company_id}} {{form.company_id.errors}}
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <label class="oh-label" for="id_is_published"
+                        >{% trans "Survey Templates" %}</label
+                    >
+                    {{form.survey_templates}}
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <label class="oh-label" for="{{form.skills.id_for_lable}}"
+                        >{% trans "Skills" %}</label
+                    >
+                    {{form.skills}}
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <label
+                        class="oh-label"
+                        for="id_is_published"
+                        title="{{form.is_published.help_text|safe}}"
+                        >{% trans "Is Published?" %}</label
+                    >
+                    <div class="w-100 d-flex" style="align-items: center">
+                        <div class="oh-switch">{{form.is_published}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-row-reverse">
+            <button
+                type="submit"
+                class="mt-4 pl-5 pr-5 oh-btn oh-btn--secondary"
+            >
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+</div>

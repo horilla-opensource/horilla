@@ -50,6 +50,8 @@ from recruitment.models import (
     RecruitmentSurvey,
     RejectedCandidate,
     RejectReason,
+    Resume,
+    Skill,
     SkillZone,
     SkillZoneCandidate,
     Stage,
@@ -257,6 +259,7 @@ class RecruitmentCreationForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         reload_queryset(self.fields)
         if not self.instance.pk:
             self.fields["recruitment_managers"] = HorillaMultiSelectField(
@@ -271,11 +274,31 @@ class RecruitmentCreationForm(ModelForm):
                 label="Employee",
             )
 
+        skill_choices = [("", _("---Choose Skills---"))] + list(
+            self.fields["skills"].queryset.values_list("id", "title")
+        )
+        self.fields["skills"].choices = skill_choices
+        self.fields["skills"].choices += [("create", _("Create new skill "))]
+
+    # def create_option(self, *args,**kwargs):
+    #     option = super().create_option(*args,**kwargs)
+
+    #     if option.get('value') == "create":
+    #         option['attrs']['class'] = 'text-danger'
+
+    #     return option
+
     def clean(self):
         if isinstance(self.fields["recruitment_managers"], HorillaMultiSelectField):
             ids = self.data.getlist("recruitment_managers")
             if ids:
                 self.errors.pop("recruitment_managers", None)
+        open_positions = self.cleaned_data.get("open_positions")
+        is_published = self.cleaned_data.get("is_published")
+        if is_published and not open_positions:
+            raise forms.ValidationError(
+                _("Job position is required if the recruitment is publishing.")
+            )
         super().clean()
 
 
@@ -423,6 +446,9 @@ class CandidateCreationForm(ModelForm):
         return super().clean()
 
 
+from horilla.horilla_middlewares import _thread_locals
+
+
 class ApplicationForm(RegistrationForm):
     """
     Form for create Candidate
@@ -468,8 +494,23 @@ class ApplicationForm(RegistrationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        request = getattr(_thread_locals, "request", None)
+
         self.fields["recruitment_id"].widget.attrs = {"data-widget": "ajax-widget"}
         self.fields["job_position_id"].widget.attrs = {"data-widget": "ajax-widget"}
+        if request and request.user.has_perm("recruitment.add_candidate"):
+            self.fields["profile"].required = False
+
+    def clean(self, *args, **kwargs):
+        name = self.cleaned_data["name"]
+        request = getattr(_thread_locals, "request", None)
+
+        if request and request.user.has_perm("recruitment.add_candidate"):
+            profile_pic_url = f"https://ui-avatars.com/api/?name={name}"
+            self.cleaned_data["profile"] = profile_pic_url
+
+        super().clean()
+        return self.cleaned_data
 
 
 class RecruitmentDropDownForm(DropDownForm):
@@ -665,7 +706,9 @@ class QuestionForm(ModelForm):
         required=False,
         label=_("Recruitment"),
     )
-    options = forms.CharField(widget=forms.TextInput, label=_("Options"), required=True)
+    options = forms.CharField(
+        widget=forms.TextInput, label=_("Options"), required=False
+    )
 
     class Meta:
         """
@@ -697,7 +740,7 @@ class QuestionForm(ModelForm):
         cleaned_data = super().clean()
         recruitment = self.cleaned_data["recruitment"]
         question_type = self.cleaned_data["type"]
-        options = self.cleaned_data["options"]
+        options = self.cleaned_data.get("options")
         if not recruitment.exists():  # or jobs.exists()):
             raise ValidationError(
                 {"recruitment": _("Choose any recruitment to apply this question")}
@@ -740,7 +783,7 @@ class QuestionForm(ModelForm):
                     }
                 ),
                 label=_("Options"),
-                required=True,
+                required=False,
                 initial=initial,
             )
 
@@ -834,7 +877,20 @@ class AddQuestionForm(Form):
         return table_html
 
 
-exclude_fields = ["id", "profile", "portfolio", "resume", "sequence", "schedule_date"]
+exclude_fields = [
+    "id",
+    "profile",
+    "portfolio",
+    "resume",
+    "sequence",
+    "schedule_date",
+    "created_at",
+    "created_by",
+    "modified_by",
+    "is_active",
+    "last_updated",
+    "horilla_history",
+]
 
 
 class CandidateExportForm(forms.Form):
@@ -1160,3 +1216,24 @@ class ScheduleInterviewForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
+
+
+class SkillsForm(ModelForm):
+    class Meta:
+        model = Skill
+        fields = ["title"]
+
+
+class ResumeForm(ModelForm):
+    class Meta:
+        model = Resume
+        fields = ["file", "recruitment_id"]
+        widgets = {"recruitment_id": forms.HiddenInput()}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["file"].widget.attrs.update(
+            {
+                "onchange": "submitForm($(this))",
+            }
+        )

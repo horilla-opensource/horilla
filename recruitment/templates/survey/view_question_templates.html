@@ -136,17 +136,6 @@
         </div>
       </div>
     </div>
-    {% comment %} {% if perms.recruitment.add_recruitmentsurvey %}
-    <button
-      class="oh-btn oh-btn--secondary ml-2"
-      data-toggle="oh-modal-toggle"
-      data-target="#addSurvey"
-      hx-get="{% url 'recruitment-survey-question-template-create' %}"
-      hx-target="#addSurveyModalBody"
-      >
-      <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
-    </button>
-    {% endif %} {% endcomment %}
   </div>
 </section>
 <div class="oh-tabs oh-wrapper">
@@ -196,30 +185,6 @@
         </button>
       {% endif %}
     </li>
-    {% comment %} <li
-      class="oh-tabs__tab"
-      data-target="#template"
-    >
-      {% trans "Templates" %}
-      {% if perms.recruitment.add_recruitmentsurvey %}
-      <button onclick="event.stopPropagation()" style="display: inline-block;padding: 0px;
-          border-radius: 6px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 50px;
-          height: 28px;"
-          class="oh-btn oh-btn--secondary-outline float-end ms-3"
-          hx-get="{% url 'survey-template-create' %}"
-          hx-target="#templateModalBody"
-          data-toggle="oh-modal-toggle"
-          data-target="#templateModal"
-          title="{% trans "Create template group" %}"
-           >
-          <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
-      </button>
-      {% endif %}
-    </li> {% endcomment %}
   </ul>
   <div class="oh-tabs__contents" id="view-container">
     {% include "survey/survey_card.html" %}
@@ -259,5 +224,16 @@
     <div class="oh-modal__dialog-body" id="templateModalBody"></div>
   </div>
 </div>
-
+<script>
+	$(document).ready(function() {
+		var activeTab = localStorage.getItem("activeSurveyTab")
+		$(".oh-tabs__tab--active").removeClass("oh-tabs__tab--active");
+		$(`[data-target='${activeTab}']`).addClass("oh-tabs__tab--active");
+		$(`[data-target='${activeTab}']`).click();
+		$(".oh-tabs__tab").on("click", function (e) {
+      var dataTarget = $(this).data('target');
+		  localStorage.setItem("activeSurveyTab",dataTarget)
+    });
+});
+</script>
 {% endblock content %}
