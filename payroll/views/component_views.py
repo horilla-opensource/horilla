@@ -974,8 +974,8 @@ def send_slip(request):
     payslip_ids = request.GET.getlist("id")
     payslips = Payslip.objects.filter(id__in=payslip_ids)
     if not getattr(
-        email_backend, "dynamic_username_with_display_name", None
-    ) or not len(email_backend.dynamic_username_with_display_name):
+        email_backend, "dynamic_from_email_with_display_name", None
+    ) or not len(email_backend.dynamic_from_email_with_display_name):
         messages.error(request, "Email server is not configured")
         if view:
             return HttpResponse("<script>window.location.reload()</script>")

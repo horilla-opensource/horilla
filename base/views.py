@@ -8,6 +8,7 @@ import json
 import uuid
 from datetime import datetime, timedelta
 from urllib.parse import parse_qs, unquote, urlencode
+from os import path
 
 from django import forms
 from django.apps import apps
@@ -486,7 +487,7 @@ class HorillaPasswordResetView(PasswordResetView):
             opts = {
                 "use_https": self.request.is_secure(),
                 "token_generator": self.token_generator,
-                "from_email": email_backend.dynamic_username_with_display_name,
+                "from_email": email_backend.dynamic_from_email_with_display_name,
                 "email_template_name": self.email_template_name,
                 "subject_template_name": self.subject_template_name,
                 "request": self.request,
@@ -1212,7 +1213,7 @@ def mail_server_test_email(request):
                 msg = EmailMultiAlternatives(
                     subject,
                     text_content,
-                    email_backend.dynamic_username_with_display_name,
+                    email_backend.dynamic_from_email_with_display_name,
                     [email_to],
                     connection=email_backend,
                 )

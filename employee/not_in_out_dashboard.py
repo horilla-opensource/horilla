@@ -127,7 +127,7 @@ def send_mail_to_employee(request):
         (file.name, file.read(), file.content_type) for file in other_attachments
     ]
     email_backend = ConfiguredEmailBackend()
-    host = email_backend.dynamic_username
+    host = email_backend.dynamic_from_email_with_display_name
 
     if employee_id:
         employee_obj = Employee.objects.filter(id=employee_id)
