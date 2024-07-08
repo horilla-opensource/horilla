@@ -42,7 +42,7 @@ x-data="{searchShow: false}"
     </div>
 
     {% if perms.recruitment.add_recruitment %}
-		<button class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#addRecruitmentModal" hx-target="#addRecruitmentModalBody" hx-get="{% url "recruitment-create" %}">
+		<button class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" hx-target="#objectCreateModalTarget" hx-get="{% url "recruitment-create" %}">
       <ion-icon class="me-1" name="add-outline"></ion-icon>
       {% trans 'Recruitment' %}
     </button>

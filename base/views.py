@@ -152,7 +152,7 @@ from payroll.forms.component_forms import PayrollSettingsForm
 from payroll.models.models import EncashmentGeneralSettings
 from payroll.models.tax_models import PayrollSettings
 from pms.models import KeyResult
-from recruitment.models import RejectReason
+from recruitment.models import RejectReason, Skill
 
 
 def custom404(request):
@@ -6249,3 +6249,9 @@ def edit_allowed_ips(request):
         "attendance/ip_restriction/restrict_update_form.html",
         {"form": form, "id": id},
     )
+
+
+@login_required
+def skills_view(request):
+    skills = Skill.objects.all()
+    return render(request, "settings/skills/skills_view.html", {"skills": skills})

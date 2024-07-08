@@ -55,7 +55,6 @@
                           type="file"
                           id="photo"
                           name="profile"
-                          required
                           class="oh-input oh-input--file oh-input--file-sm mt-4 oh-upload-input"
                           data-target=".oh-upload-photo"
                         />
@@ -90,9 +89,10 @@
                     />
                   </div>
                 </div>
-                <ul id="error-list" class="errorlist" style="display: none">
+                {{form.profile.errors}}
+                {% comment %} <ul id="error-list" class="errorlist" style="display: none">
                   <li>{% trans "Please select profile image" %}.</li>
-                </ul>
+                </ul> {% endcomment %}
                 <div class="col-sm-12 col-md-12 col-lg-12">
                   <div class="oh-input-group">
                     <label class="oh-label required-star" for="name"
@@ -204,11 +204,16 @@
                     <label class="oh-label required-star" for="resume"
                       >{% trans "Resume" %}</label
                     >
+                    {% if resume.file %}
+                        <p>Currenty: <a href="{{ resume.file.url }}" target="_blank">{{ resume.file.name }}</a></p>
+                        <p>Change: </p>
+                        <input type="hidden" id="matching_resume" data-value = "{{ resume.file.url }}" data-id="{{resume.id}}" name="initial_resume" value="{{ resume.file.url }}">
+                        {% endif %}
                     <input
                       type="file"
-                      id="resume"
+                      id="id_resume"
                       name="resume"
-                      required
+                      accept=".pdf"
                       class="oh-input w-100 px-0"
                     />
                     {{form.resume.errors}}
@@ -322,6 +327,12 @@
           </div>
         </div>
       </div>
+      {% if resume %}
+      <div class="col-12 col-md-6 col-lg-6 sticky">
+        <iframe style="width: 100%;height:90vh" height="100" src="{{ protocol }}://{{ host }}{{ resume.file.url }}" frameborder="0"></iframe>
+
+      </div>
+      {% else %}
       <div class="col-12 col-md-6 col-lg-6">
         <div class="oh-onboarding-preview oh-onboarding-card--top-bar w-100">
           {{recruitment.description|safe}}
@@ -332,12 +343,17 @@
           ></div>
         </div>
       </div>
+      {% endif %}
     </div>
   </div>
 </div>
 <script>
   {% include 'country.js' %}
   {% include 'select2.js' %}
+  var resume = "{{resume.file.url}}"
+  {% if resume %}
+    $("#resume").val(resume)
+  {% endif %}
   var description = `{{form.instance.recruitment_id.description|safe}}`
   var formattedDescription = description.replace(/\n/g, "<br>");
   $("#recruitmentInfoBody").html(formattedDescription);
@@ -351,13 +367,14 @@
   function validateForm(event) {
     var fileInput = document.getElementById("photo");
     var errorList = document.getElementById("error-list");
-
-    if (!fileInput.value) {
-      errorList.scrollIntoView({ behavior: "smooth", block: "center" });
-      errorList.style.display = "block"; // Show error message
-    } else {
-      errorList.style.display = "none"; // Hide error message
-    }
+    {% if not perms.recruitment.add_candidate %}
+      if (!fileInput.value) {
+        errorList.scrollIntoView({ behavior: "smooth", block: "center" });
+        errorList.style.display = "block"; // Show error message
+      } else {
+        errorList.style.display = "none"; // Hide error message
+      }
+    {% endif %}
   }
   $(document).ready(function(){
     function getCookie(name) {
@@ -385,6 +402,46 @@
         $("[name=country]").select2()
       }
     }
+
+
+    $("#matching_resume").on("click", function(){
+      var file = $(this).data("value");
+      var resume_id = $(this).data("id");
+
+      $.ajax({
+        url: "{% url 'matching-resume-completion' %}",
+        type: 'GET',
+        data: {
+          "resume_id": resume_id,
+          "file":file
+        },
+        success: function(response) {
+          var full_name = response.full_name;
+          var address = response.address;
+          var country = response.country;
+          var state = response.state;
+          var phone = response.phone_number;
+          var dob = response.dob;
+          var email = response.email_id;
+          var zip = response.zip;
+
+          setIfEmpty("[name='name']", full_name);
+          setIfEmpty("[name='email']", email);
+          setIfEmpty("[name='mobile']", phone);
+          setIfEmpty("[name='address']", address);
+          setIfEmpty("[name='country']", country);
+          setIfEmpty("[name='state']", state);
+          setIfEmpty("[name='zip']", zip);
+          $("[name='dob']").val(dob);
+
+        },
+        error: function(xhr, status, error) {
+            console.error('File upload failed: ', status, error);
+        }
+      });
+    })
+
+    $("#matching_resume").click()
 
     $("[name='resume']").on("change", function(){
       var formData = new FormData();

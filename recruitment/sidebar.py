@@ -87,7 +87,10 @@ def candidates_accessibility(
 def survey_accessibility(
     request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
-    return request.user.has_perm("recruitment.view_recruitmentsurvey")
+    _submenu["redirect"] = _submenu["redirect"] + "?closed=false"
+    return is_stagemanager(request.user) or request.user.has_perm(
+        "recruitment.view_recruitment"
+    )
 
 
 def recruitment_accessibility(

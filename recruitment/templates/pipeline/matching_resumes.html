@@ -1,0 +1,42 @@
+{% load i18n %}
+<div class="oh-sticky-table" style="max-height:40vh">
+	<div class="oh-sticky-table__table oh-table--sortable">
+		<div class="oh-sticky-table__thead">
+			<div class="oh-sticky-table__tr">
+				<div class="oh-sticky-table__th" align="center">{% trans "Resume" %}</div>
+				<div class="oh-sticky-table__th" align="center">{% trans "Score" %}</div>
+				{% if perms.recruitment.change_recruitment or perms.recruitment.delete_recruitment or perms.recruitment.add_recruitment %}
+					<div class="oh-sticky-table__th" align="center">{% trans "Actions" %}</div>
+				{% endif %}
+			</div>
+		</div>
+		<div class="oh-sticky-table__tbody">
+			{% for resume in matched_resumes %}
+			<div class="oh-sticky-table__tr" draggable="true">
+				<div class="oh-sticky-table__td" align="center">
+                    <a href="{{ resume.resume.file.url }}" rel="noopener noreferrer" target="_blank"> {{resume.resume}} </a>
+                </div>
+				<div class="oh-sticky-table__td" align="center">{{resume.matching_skills_count}}</div>
+				{% if perms.base.change_department or perms.base.delete_department %}
+					<div class="oh-sticky-table__td">
+                        {% if resume.resume.is_candidate %}
+                        <a class="oh-btn oh-btn--success" 
+                            href="#"
+                        >
+                            {% trans "Candidated Added" %}
+                        </a>
+                        {% else %}
+                            <a class="oh-btn oh-btn--info" 
+                                target="_blank"
+                                href="{% url 'application-form' %}?recruitmentId={{rec_id}}&resumeId={{resume.resume.pk}}"
+                            >
+                                {% trans "Create Candidate" %}
+                            </a>
+                        {% endif %}
+					</div>
+				{% endif %}
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>

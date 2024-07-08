@@ -1,0 +1,50 @@
+{% load i18n %}
+<div class="oh-sticky-table">
+	<div class="oh-sticky-table__table oh-table--sortable">
+		<div class="oh-sticky-table__thead">
+			<div class="oh-sticky-table__tr">
+				<div class="oh-sticky-table__th" style="width:20px">{% trans "Sl.No" %}</div>
+				<div class="oh-sticky-table__th" align="center">{% trans "Skill" %}</div>
+				{% if perms.recruitment.change_recruitment or perms.recruitment.delete_recruitment or perms.recruitment.add_recruitment %}
+					<div class="oh-sticky-table__th" align="center">{% trans "Actions" %}</div>
+				{% endif %}
+			</div>
+		</div>
+		<div class="oh-sticky-table__tbody">
+			{% for skill in skills %}
+			<div class="oh-sticky-table__tr" draggable="true">
+				<div class="oh-sticky-table__td">{{forloop.counter}}</div>
+				<div class="oh-sticky-table__td" align="center">{{skill.title}}</div>
+				{% if perms.base.change_department or perms.base.delete_department %}
+					<div class="oh-sticky-table__td">
+						<div class="oh-btn-group">
+							{% if perms.base.change_department %}
+							<a
+                                data-toggle="oh-modal-toggle"
+                                data-target="#objectDetailsModalW25"
+                                hx-get="{% url 'create-skills' %}?instance_id={{skill.id}}"
+                                hx-target="#objectDetailsModalW25Target"
+								type="button"
+								class="oh-btn oh-btn--light-bkg w-50"
+								title="{% trans 'Edit' %}"
+							>
+								<ion-icon name="create-outline"></ion-icon
+							></a>
+							{% endif %}
+							{% if perms.base.delete_deaprtment %}
+                            <a onclick="return confirm('{% trans "Are you sure want to delete this skill?" %}')"
+                                href="{% url 'delete-skills' %}?ids={{skill.id}}"
+                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50"
+                                title="{% trans 'Remove' %}"
+                            >
+                                <ion-icon name="trash-outline"></ion-icon>
+                            </a>
+							{% endif %}
+						</div>
+					</div>
+				{% endif %}
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>

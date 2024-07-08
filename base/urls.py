@@ -1054,4 +1054,9 @@ urlpatterns = [
         views.edit_allowed_ips,
         name="edit-allowed-ip",
     ),
+    path(
+        "settings/skills-view/",
+        views.skills_view,
+        name="skills-view",
+    ),
 ]

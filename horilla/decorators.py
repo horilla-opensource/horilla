@@ -12,6 +12,7 @@ from base.models import BiometricAttendance, MultipleApprovalManagers
 from employee.models import Employee, EmployeeWorkInformation
 from horilla import settings
 from horilla.settings import BASE_DIR, TEMPLATES
+from recruitment.models import Recruitment
 
 logger = logging.getLogger(__name__)
 
@@ -157,6 +158,39 @@ def manager_can_enter(function, perm):
         is_manager = EmployeeWorkInformation.objects.filter(
             reporting_manager_id=employee
         ).exists()
+        if user.has_perm(perm) or is_manager:
+            return function(request, *args, **kwargs)
+        else:
+            messages.info(request, "You dont have permission.")
+            previous_url = request.META.get("HTTP_REFERER", "/")
+            script = f'<script>window.location.href = "{previous_url}"</script>'
+            key = "HTTP_HX_REQUEST"
+            if key in request.META.keys():
+                return render(request, "decorator_404.html")
+            return HttpResponse(script)
+
+    return _function
+
+
+@decorator_with_arguments
+def is_recruitment_manager(function, perm):
+    """
+    This method is used to check permission to employee for enter to the function if the employee
+    do not have permission also checks, has manager of any recruitment.
+    """
+
+    def _function(request, *args, **kwargs):
+
+        user = request.user
+        perm = "recruitment.view_recruitmentsurvey"
+        employee = user.employee_get
+        is_manager = False
+        recs = Recruitment.objects.all()
+        for i in recs:
+            for manager in i.recruitment_managers.all():
+                if request.user.employee_get == manager:
+                    is_manager = True
+
         if user.has_perm(perm) or is_manager:
             return function(request, *args, **kwargs)
         else:

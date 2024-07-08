@@ -562,4 +562,39 @@ urlpatterns = [
         views.check_vaccancy,
         name="check-vaccancy",
     ),
+    path(
+        "create-skills/",
+        views.create_skills,
+        name="create-skills",
+    ),
+    path(
+        "delete-skills/",
+        views.delete_skills,
+        name="delete-skills",
+    ),
+    path(
+        "add-bulk-resume/",
+        views.add_bulk_resumes,
+        name="add-bulk-resume",
+    ),
+    path(
+        "view-bulk-resume/",
+        views.view_bulk_resumes,
+        name="view-bulk-resume",
+    ),
+    path(
+        "delete-resume-file/",
+        views.delete_resume_file,
+        name="delete-resume-file",
+    ),
+    path(
+        "matching-resumes/<int:rec_id>",
+        views.matching_resumes,
+        name="matching-resumes",
+    ),
+    path(
+        "matching-resume-completion",
+        views.matching_resume_completion,
+        name="matching-resume-completion",
+    ),
 ]

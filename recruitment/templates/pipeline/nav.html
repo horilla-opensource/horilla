@@ -1,447 +1,544 @@
-{% load i18n %}
-{% load static %}
+{% load i18n %} {% load static %}
 <style>
-  .note-modal-backdrop{
-    z-index: 998 !important;
-  }
+    .note-modal-backdrop {
+        z-index: 998 !important;
+    }
 
-  .tooltip {
-      position: relative;
-      display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
-  }
+    .tooltip {
+        position: relative;
+        display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
+    }
 
-  .tooltip .tooltiptext {
-      visibility: hidden;
-      width: auto; /* Allow the tooltip width to adjust based on content */
-      max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
-      background-color: green;
-      color: white;
-      text-align: center;
-      border-radius: 6px;
-      padding: 5px;
-      position: absolute;
-      z-index: 1;
-      bottom: 5%;
-      left: 50%;
-      transform: translateX(5%);
-      opacity: 0;
-      transition: opacity 0.3s;
-      white-space: nowrap; /* Prevents the text from wrapping */
-      overflow: hidden; /* Hides any overflowed content */
-      font-size:15px;
-  }
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: auto; /* Allow the tooltip width to adjust based on content */
+        max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
+        background-color: green;
+        color: white;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 5%;
+        left: 50%;
+        transform: translateX(5%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        white-space: nowrap; /* Prevents the text from wrapping */
+        overflow: hidden; /* Hides any overflowed content */
+        font-size: 15px;
+    }
 
-  .tooltip:hover .tooltiptext {
-      visibility: visible;
-      opacity: 1;
-  }
-
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
 </style>
 
-  {% if recruitment_form.errors %}
-  <!-- form errors  -->
-  <div class="oh-wrapper">
-    <div class="oh-alert-container">
-      {% for field in recruitment_form %}
-      {% if field.errors %}
-      <div class="oh-alert oh-alert--animated oh-alert--danger">
-        {{ field.label }}: {{ field.errors|join:", " }}
-      </div>
-      {% endif %}
-      {% endfor %}
-      {% for error in recruitment_form.non_field_errors %}
-      <div class="oh-alert oh-alert--animated oh-alert--danger">
-        {{ error }}
-      </div>
-      {% endfor %}
+{% if recruitment_form.errors %}
+    <!-- form errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for field in recruitment_form %}
+            {% if field.errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    {{ field.label }}: {{ field.errors|join:", " }}
+                </div>
+                {% endif %}
+            {% endfor %}
+            {% for error in recruitment_form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </div>
     </div>
-  </div>
-  {% endif %}
-
-  {% if stage_form.errors %}
-  <!-- form errors  -->
-  <div class="oh-wrapper">
-    <div class="oh-alert-container">
-      {% for field in stage_form %}
-      {% if field.errors %}
-      <div class="oh-alert oh-alert--animated oh-alert--danger">
-        {{ field.label }}: {{ field.errors|join:", " }}
-      </div>
-      {% endif %}
-      {% endfor %}
-      {% for error in stage_form.non_field_errors %}
-      <div class="oh-alert oh-alert--animated oh-alert--danger">
-        {{ error }}
-      </div>
-      {% endfor %}
+{% endif %}
+{% if stage_form.errors %}
+    <!-- form errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for field in stage_form %}
+                {% if field.errors %}
+                    <div class="oh-alert oh-alert--animated oh-alert--danger">
+                        {{ field.label }}: {{ field.errors|join:", " }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% for error in stage_form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </div>
     </div>
-  </div>
-  {% endif %}
-
-  {% if candidate_form.errors %}
-  <!-- form errors  -->
-  <div class="oh-wrapper">
-    <div class="oh-alert-container">
-      {% for field in candidate_form %}
-      {% if field.errors %}
-      <div class="oh-alert oh-alert--animated oh-alert--danger">
-        {{ field.label }}: {{ field.errors|join:", " }}
-      </div>
-      {% endif %}
-      {% endfor %}
-      {% for error in candidate_form.non_field_errors %}
-      <div class="oh-alert oh-alert--animated oh-alert--danger">
-        {{ error }}
-      </div>
-      {% endfor %}
+{% endif %}
+{% if candidate_form.errors %}
+    <!-- form errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for field in candidate_form %}
+                {% if field.errors %}
+                    <div class="oh-alert oh-alert--animated oh-alert--danger">
+                        {{ field.label }}: {{ field.errors|join:", " }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% for error in candidate_form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </div>
     </div>
-  </div>
-  {% endif %}
-<section
-class="oh-wrapper oh-main__topbar"
-x-data="{searchShow: false}"
->
-<div class="oh-main__titlebar oh-main__titlebar--left">
-  <div class="oh-main__titlebar-title fw-bold mb-0 text-dark"  style="cursor:pointer;">{% trans "Recruitments" %}</div>
-</div>
-<form hx-get="{% url 'pipeline-search' %}" onsubmit="event.preventDefault()" hx-target="#pipelineSearchContainer" id="filterForm">
-<div class="oh-main__titlebar oh-main__titlebar--right">
-
-
-  <div
-    class="oh-input-group oh-input__search-group"
-    :class="searchShow ? 'oh-input__search-group--show' : ''"
-  >
-	<ion-icon
-	name="search-outline"
-	class="oh-input-group__icon oh-input-group__icon--left"
-		></ion-icon>
-		<input
-		type="text"
-    id="pipelineSearchInput"
-		placeholder="{% trans 'Search' %}"
-		name='candidate_name'
-    value="{{request.GET.candidate_name}}"
-    onkeyup="$(this).closest('form').find('.filterButton').click()"
-		class="oh-input oh-input__icon"
-		aria-label="Search Input"
-		/>
-  	</div>
-
-
-	<ul id="viewTypes" class="oh-view-types ml-2" style="margin-bottom: 0;">
-    <input type="hidden" name="view" value="list">
-		<li class="oh-view-type candidate-view-type" >
-		<div onclick="$(this).closest('ul').find('[name=view]').val('list');$(this).closest('form').find('.filterButton').click();$('.oh-btn--view-active').removeClass('oh-btn--view-active');$(this).addClass('oh-btn--view-active');" class="oh-btn oh-btn--view oh-btn--view-active"
-			title={% trans 'List' %}><ion-icon name="list-outline"></ion-icon
-		></a>
-		</li>
-		<li class="oh-view-type candidate-view-type" \>
-		<div  onclick="$(this).closest('ul').find('[name=view]').val('card');$(this).closest('form').find('.filterButton').click();$('.oh-btn--view-active').removeClass('oh-btn--view-active');$(this).addClass('oh-btn--view-active');" class="oh-btn oh-btn--view "
-    title={% trans 'Card' %}><ion-icon name="grid-outline"></ion-icon
-		></a>
-		</li>
-	</ul>
-
-    <div class="oh-main__titlebar-button-container">
-
-        <div id="pipelineFilterDrop" class="oh-dropdown" x-data="{open: false}">
-          <button type="button" class="oh-btn ml-2" @click="open = !open">
-            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-          </button>
-            <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none;" @click.>
-              {% include "pipeline/filters.html" %}
-            </div>
+{% endif %}
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <div
+            class="oh-main__titlebar-title fw-bold mb-0 text-dark"
+            style="cursor: pointer"
+        >
+            {% trans "Recruitments" %}
+        </div>
     </div>
-	<div class="oh-main__titlebar-button-container">
-
-		{% if perms.recruitment.add_recruitment %}
-		<button id="createNewRecruitment" class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#addRecruitmentModal" hx-target="#addRecruitmentModalBody" hx-get="{% url "recruitment-create" %}">
-      <ion-icon class="me-1" name="add-outline"></ion-icon>
-      {% trans 'Recruitment' %}
-    </button>
-		{% endif %}
-
-
-	</div>
-</div>
-</form>
-</section>
-
-<div
-  class="oh-modal"
-  id="addRecruitmentModal"
-  role="dialog"
-  aria-labelledby="addRecruitmentModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h5 class="oh-modal__dialog-title" id="addRecruitmentModalLabel"
-        >{% trans "Add Recruitment" %}</span
-      >
-      <button class="oh-modal__close" aria-label="Close" >
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-
-    <div class="oh-modal__dialog-body" id="addRecruitmentModalBody">
-
-    </div>
-  </div>
-</div>
-
-<div
-  class="oh-modal"
-  id="updateStageModal"
-  role="dialog"
-  aria-labelledby="updateStageModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog" id="updateStageModalBody">
-  </div>
-</div>
-
-<div
-class="oh-modal"
-id="recruitmentUpdateModal"
-role="dialog"
-aria-labelledby="recruitmentUpdateModal"
-aria-hidden="true"
->
-<div class="oh-modal__dialog">
-  <div class="oh-modal__dialog-header">
-    <h5 class="oh-modal__dialog-title" id="recruitmentUpdateModalLabel"
-      >{% trans "Edit Recruitment" %}</span
+    <form
+        hx-get="{% url 'pipeline-search' %}"
+        onsubmit="event.preventDefault()"
+        hx-target="#pipelineSearchContainer"
+        id="filterForm"
     >
-    <button class="oh-modal__close" aria-label="Close" >
-      <ion-icon name="close-outline"></ion-icon>
-    </button>
-  </div>
-  <div class="oh-modal__dialog-body" id='recruitmentUpdate'>
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            <div
+                class="oh-input-group oh-input__search-group"
+                :class="searchShow ? 'oh-input__search-group--show' : ''"
+            >
+                <ion-icon
+                    name="search-outline"
+                    class="oh-input-group__icon oh-input-group__icon--left"
+                ></ion-icon>
+                <input
+                    type="text"
+                    id="pipelineSearchInput"
+                    placeholder="{% trans 'Search' %}"
+                    name="candidate_name"
+                    value="{{request.GET.candidate_name}}"
+                    onkeyup="$(this).closest('form').find('.filterButton').click()"
+                    class="oh-input oh-input__icon"
+                    aria-label="Search Input"
+                />
+            </div>
 
-  </div>
+            <ul
+                id="viewTypes"
+                class="oh-view-types ml-2"
+                style="margin-bottom: 0"
+            >
+                <input type="hidden" name="view" value="list" />
+                <li class="oh-view-type candidate-view-type">
+                    <div
+                        onclick="$(this).closest('ul').find('[name=view]').val('list');$(this).closest('form').find('.filterButton').click();$('.oh-btn--view-active').removeClass('oh-btn--view-active');$(this).addClass('oh-btn--view-active');"
+                        class="oh-btn oh-btn--view oh-btn--view-active"
+                        title="{% trans 'List' %}"
+                    >
+                        <ion-icon name="list-outline"></ion-icon>
+                    </div>
+                </li>
+                <li class="oh-view-type candidate-view-type">
+                    <div
+                        onclick="$(this).closest('ul').find('[name=view]').val('card');$(this).closest('form').find('.filterButton').click();$('.oh-btn--view-active').removeClass('oh-btn--view-active');$(this).addClass('oh-btn--view-active');"
+                        class="oh-btn oh-btn--view"
+                        title="{% trans 'Card' %}"
+                    >
+                        <ion-icon name="grid-outline"></ion-icon>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="oh-main__titlebar-button-container">
+                <div
+                    id="pipelineFilterDrop"
+                    class="oh-dropdown"
+                    x-data="{open: false}"
+                >
+                    <button
+                        type="button"
+                        class="oh-btn ml-2"
+                        @click="open = !open"
+                    >
+                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                        <div id="filterCount"></div>
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                        x-show="open"
+                        @click.outside="open = false"
+                        style="display: none"
+                        @click.
+                    >
+                        {% include "pipeline/filters.html" %}
+                    </div>
+                </div>
+            </div>
+            <div class="oh-main__titlebar-button-container">
+                {% if perms.recruitment.add_recruitment %}
+                    <button
+                        id="createNewRecruitment"
+                        class="oh-btn oh-btn--secondary"
+                        hx-get="{% url "recruitment-create" %}"
+                        hx-target="#objectCreateModalTarget"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal"
+                    >
+                        <ion-icon class="me-1" name="add-outline"></ion-icon>
+                        {% trans 'Recruitment' %}
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+</section>
+<div
+    class="oh-modal"
+    id="dynamicCreateModal"
+    role="dialog"
+    aria-hidden="true"
+    style="z-index: 1022"
+>
+    <div
+        class="oh-modal__dialog"
+        style="max-width: 550px"
+        id="dynamicCreateModalBody"
+    ></div>
 </div>
+<span
+    name=""
+    id="dynamicSkills"
+    data-toggle="oh-modal-toggle"
+    data-target="#dynamicCreateModal"
+    hx-get="{% url 'create-skills' %}?dynamic=True"
+    hx-target="#dynamicCreateModalBody"
+>
+</span>
+
+<div
+    class="oh-modal"
+    id="addRecruitmentModal"
+    role="dialog"
+    aria-labelledby="addRecruitmentModal"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h5 class="oh-modal__dialog-title" id="addRecruitmentModalLabel">
+                {% trans "Add Recruitment" %}
+            </h5>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+
+        <div class="oh-modal__dialog-body" id="addRecruitmentModalBody"></div>
+    </div>
 </div>
 
+<div
+    class="oh-modal"
+    id="updateStageModal"
+    role="dialog"
+    aria-labelledby="updateStageModal"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog" id="updateStageModalBody"></div>
+</div>
+
+<div
+    class="oh-modal"
+    id="recruitmentUpdateModal"
+    role="dialog"
+    aria-labelledby="recruitmentUpdateModal"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h5 class="oh-modal__dialog-title" id="recruitmentUpdateModalLabel">
+                {% trans "Edit Recruitment" %}
+            </h5>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="recruitmentUpdate"></div>
+    </div>
+</div>
+<div
+    class="oh-modal"
+    id="bulkResumeUpload"
+    role="dialog"
+    aria-labelledby="bulkResumeUpload"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="bulkResumeUploadLabel">
+                {% trans "Upload Resumes" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+            <div
+                class="oh-modal__dialog-body mb-4 p-0 pt-2"
+                id="bulkResumeUploadBody"
+            >
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-$(document).ready(function(){
-	{% include 'select2.js' %}
-	$('#candidate-search').keyup(function (e) {
-		$('.candidate-view-type').attr('hx-vals',`{"search":"${$(this).val()}"}`)
-	  });
-	  $('.candidate-view-type').click(function (e) {
-		let view = $(this).attr('data-view');
-		$('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);
-	  });
-	  $("#job_pos_id").select2();
-	  $("#portal_stage").select2();
-  $("#is_closed").on("change", function() {
-      if ($(this).is(":checked")) {
-          window.location.href = "{% url 'pipeline' %}?view={{view}}&closed=closed";
-      } else {
-          window.location.href = "{% url 'pipeline' %}?view={{view}}";
-      }
-  });
-})
-
+    $(document).ready(function(){
+    	{% include 'select2.js' %}
+    	$('#candidate-search').keyup(function (e) {
+    		$('.candidate-view-type').attr('hx-vals',`{"search":"${$(this).val()}"}`)
+    	  });
+    	  $('.candidate-view-type').click(function (e) {
+    		let view = $(this).attr('data-view');
+    		$('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);
+    	  });
+    	  $("#job_pos_id").select2();
+    	  $("#portal_stage").select2();
+      $("#is_closed").on("change", function() {
+          if ($(this).is(":checked")) {
+              window.location.href = "{% url 'pipeline' %}?view={{view}}&closed=closed";
+          } else {
+              window.location.href = "{% url 'pipeline' %}?view={{view}}";
+          }
+      });
+    })
 </script>
 {% include "filter_tags.html" %}
 <div class="d-flex flex-row-reverse oh-wrapper" id="quickFilters">
-  <span  onclick="$('[name=closed]').val('true'); $('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;margin-right: 10px;">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:orangered"></span>
-    {% trans "Closed" %}
-  </span>
-  <span  onclick="$('[name=closed]').val('false');$('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;margin-right: 10px;">
-    <span class="oh-dot oh-dot--small me-1" style="background-color: yellowgreen"></span>
-    {% trans "Open" %}
-  </span>
+    <span
+        onclick="$('[name=closed]').val('true'); $('[name=closed]').first().change(); $('.filterButton').click()"
+        style="cursor: pointer; margin-left: 10px; margin-right: 10px"
+    >
+        <span
+            class="oh-dot oh-dot--small me-1"
+            style="background-color: orangered"
+        ></span>
+        {% trans "Closed" %}
+    </span>
+    <span
+        onclick="$('[name=closed]').val('false');$('[name=closed]').first().change(); $('.filterButton').click()"
+        style="cursor: pointer; margin-left: 10px; margin-right: 10px"
+    >
+        <span
+            class="oh-dot oh-dot--small me-1"
+            style="background-color: yellowgreen"
+        ></span>
+        {% trans "Open" %}
+    </span>
 </div>
 <script src="{% static 'build/js/pipelineDriver.js' %}"></script>
 <script>
-  initialAvtiveTab = $(".oh-tabs__content--active").length
-  if (!initialAvtiveTab) {
-    $(".oh-tabs__tab:first").click()
-  }
+    initialAvtiveTab = $(".oh-tabs__content--active").length;
+    if (!initialAvtiveTab) {
+        $(".oh-tabs__tab:first").click();
+    }
 </script>
 {% if not request.user.driverviewed_set.first or "pipeline" not in request.user.driverviewed_set.first.user_viewed %}
 <script>
-  runDriver()
+    runDriver();
 </script>
 {% endif %}
 
 <script>
-  function switchTab(e) {
-    let parentContainerEl = e.target.closest(".oh-tabs");
-    let tabElement = e.target.closest(".oh-tabs__tab");
+    function switchTab(e) {
+        let parentContainerEl = e.target.closest(".oh-tabs");
+        let tabElement = e.target.closest(".oh-tabs__tab");
 
+        let targetSelector = e.target.dataset.target;
+        let targetEl = parentContainerEl
+            ? parentContainerEl.querySelector(targetSelector)
+            : null;
 
-    let targetSelector = e.target.dataset.target;
-    let targetEl = parentContainerEl
-        ? parentContainerEl.querySelector(targetSelector)
-        : null;
+        // Highlight active tabs
+        if (
+            tabElement &&
+            !tabElement.classList.contains("oh-tabs__tab--active")
+        ) {
+            parentContainerEl
+                .querySelectorAll(".oh-tabs__tab--active")
+                .forEach(function (item) {
+                    item.classList.remove("oh-tabs__tab--active");
+                });
 
-    // Highlight active tabs
-    if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
-        parentContainerEl
-            .querySelectorAll(".oh-tabs__tab--active")
-            .forEach(function (item) {
-                item.classList.remove("oh-tabs__tab--active");
-            });
+            if (!tabElement.classList.contains("oh-tabs__new-tab")) {
+                tabElement.classList.add("oh-tabs__tab--active");
+            }
+        }
 
-        if (!tabElement.classList.contains("oh-tabs__new-tab")) {
-            tabElement.classList.add("oh-tabs__tab--active");
+        // Switch tabs
+        if (
+            targetEl &&
+            !targetEl.classList.contains("oh-tabs__content--active")
+        ) {
+            parentContainerEl
+                .querySelectorAll(".oh-tabs__content--active")
+                .forEach(function (item) {
+                    item.classList.remove("oh-tabs__content--active");
+                });
+            targetEl.classList.add("oh-tabs__content--active");
         }
     }
-
-    // Switch tabs
-    if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
-        parentContainerEl
-            .querySelectorAll(".oh-tabs__content--active")
-            .forEach(function (item) {
-                item.classList.remove("oh-tabs__content--active");
-            });
-        targetEl.classList.add("oh-tabs__content--active");
-    }
-}
-
 </script>
 
-
 <script>
-  $(document).ready(function () {
-    Toast = Swal.mixin({
-      toast: true,
-      icon: 'success',
-      title: 'General Title',
-      animation: true,
-      position: 'top-right',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
-      }
-    });
-    htmx.onLoad(function(content) {
+    $(document).ready(function () {
+        Toast = Swal.mixin({
+            toast: true,
+            icon: "success",
+            title: "General Title",
+            animation: true,
+            position: "top-right",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener("mouseenter", Swal.stopTimer);
+                toast.addEventListener("mouseleave", Swal.resumeTimer);
+            },
+        });
+        htmx.onLoad(function (content) {
+            var sortables = content.querySelectorAll(".hx-sortable");
 
-    var sortables = content.querySelectorAll(".hx-sortable");
-
-
-    for (var i = 0; i < sortables.length; i++) {
-      var sortable = sortables[i];
-      window.candidateCurrentStage = undefined
-      $(sortable).droppable({
-        drop: function( event, ui ) {
-          stageId = $(this).closest(".candidate-table").attr("data-stage-id")
-          row = $(ui.draggable)
-          candidateId = row.attr("data-candidate-id")
-          currentStage = row.find('[name="stage_id"]').val()
-          if (stageId != window.candidateCurrentStage) {
-              array = $(this).find("input[type=text][name=order]:hidden")
-              values = []
-              setTimeout(function () {
-                for (let index = 0; index < array.length; index++) {
-                  values.push($(array[index]).val())
-                }
-                $.ajax({
-                  type: "get",
-                  url: "{% url 'update-candidate-stage-and-sequence' %}",
-                  data: {
-                    "stage_id":stageId,
-                    "candidate_id":candidateId,
-                    "order":values,
-
-                  },
-                  success: function (response) {
-                    row.find('[name="stage_id"]').val(stageId)
-                    Toast.fire({
-                      icon: 'success',
-                      title: '{% trans "Candidate stage updated" %}',
-                      position:"top-end"
-                    })
-                    if (response.message) {
-                      Swal.fire({
-                        title: response.message,
-                        text: `Total vacancy is ${response.vacancy}.`, // Using template literals
-                        icon: 'info',
-                        confirmButtonText: 'Ok',
-                      });
-                    }
-                  },
-                  error: function(xhr, status, error) {
-                    Toast.fire({
-                    icon: 'error',
-                    title: '{% trans "Something went wrong" %}',
-                    position:"top-end"
-                  })
-                }
+            for (var i = 0; i < sortables.length; i++) {
+                var sortable = sortables[i];
+                window.candidateCurrentStage = undefined;
+                $(sortable).droppable({
+                    drop: function (event, ui) {
+                        stageId = $(this)
+                            .closest(".candidate-table")
+                            .attr("data-stage-id");
+                        row = $(ui.draggable);
+                        candidateId = row.attr("data-candidate-id");
+                        currentStage = row.find('[name="stage_id"]').val();
+                        if (stageId != window.candidateCurrentStage) {
+                            array = $(this).find(
+                                "input[type=text][name=order]:hidden"
+                            );
+                            values = [];
+                            setTimeout(function () {
+                                for (
+                                    let index = 0;
+                                    index < array.length;
+                                    index++
+                                ) {
+                                    values.push($(array[index]).val());
+                                }
+                                $.ajax({
+                                    type: "get",
+                                    url: "{% url 'update-candidate-stage-and-sequence' %}",
+                                    data: {
+                                        stage_id: stageId,
+                                        candidate_id: candidateId,
+                                        order: values,
+                                    },
+                                    success: function (response) {
+                                        row.find('[name="stage_id"]').val(
+                                            stageId
+                                        );
+                                        Toast.fire({
+                                            icon: "success",
+                                            title: '{% trans "Candidate stage updated" %}',
+                                            position: "top-end",
+                                        });
+                                        if (response.message) {
+                                            Swal.fire({
+                                                title: response.message,
+                                                text: `Total vacancy is ${response.vacancy}.`, // Using template literals
+                                                icon: "info",
+                                                confirmButtonText: "Ok",
+                                            });
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        Toast.fire({
+                                            icon: "error",
+                                            title: '{% trans "Something went wrong" %}',
+                                            position: "top-end",
+                                        });
+                                    },
+                                });
+                            }, 100);
+                        }
+                    },
                 });
-              }, 100);
-          }
-        }
-      });
-      $(sortable).sortable({
-        connectWith: ".hx-sortable",
-        animation: 150,
-        ghostClass: 'blue-background-class',
-        items: "> :not(.htmx-indicator)",
-        start: function( event, ui ) {
-          row = $(ui.item)
-          candidateCurrentStage = row.closest(".candidate-table").attr("data-stage-id")
-        },
-        update: function(event, ui) {
-              array = $(this).find("input[type=text][name=order]:hidden")
-              stageSelect = $(ui.item).find("[name=stage_id]")
-              stageId = $(this).attr("data-stage-id")
-              parent = $(this).parent()
-              if (stageId != stageSelect.val()) {
-                stageSelect.val(stageId)
-                stageTitle = $(`[name=stage_id] option[value=${stageId}]:first`).html()
-                stageSelect.next().find(".select2-selection__rendered").html(stageTitle)
-              }
-              values = []
-              for (let index = 0; index < array.length; index++) {
+                $(sortable).sortable({
+                    connectWith: ".hx-sortable",
+                    animation: 150,
+                    ghostClass: "blue-background-class",
+                    items: "> :not(.htmx-indicator)",
+                    start: function (event, ui) {
+                        row = $(ui.item);
+                        candidateCurrentStage = row
+                            .closest(".candidate-table")
+                            .attr("data-stage-id");
+                    },
+                    update: function (event, ui) {
+                        array = $(this).find(
+                            "input[type=text][name=order]:hidden"
+                        );
+                        stageSelect = $(ui.item).find("[name=stage_id]");
+                        stageId = $(this).attr("data-stage-id");
+                        parent = $(this).parent();
+                        if (stageId != stageSelect.val()) {
+                            stageSelect.val(stageId);
+                            stageTitle = $(
+                                `[name=stage_id] option[value=${stageId}]:first`
+                            ).html();
+                            stageSelect
+                                .next()
+                                .find(".select2-selection__rendered")
+                                .html(stageTitle);
+                        }
+                        values = [];
+                        for (let index = 0; index < array.length; index++) {
+                            values.push($(array[index]).val());
+                        }
+                        $.ajax({
+                            type: "get",
+                            url: "{% url 'update-candidate-sequence' %}",
+                            traditional: true,
+                            data: {
+                                order: values,
+                                stage_id: stageId,
+                            },
+                            success: function (response) {
+                                $(`.reload-badge`).click();
+                                $(`.stage-badges`).removeAttr("title");
+                            },
+                        });
+                    },
+                });
+            }
+        });
+    });
+    $(document).on("htmx:beforeRequest", function (event) {
+        var target = event.target;
 
-                values.push($(array[index]).val())
-
-              }
-              $.ajax({
+        // Check if the event is for the element you're interested in
+        isDrag = $(event.target).attr("data-drag-htmx");
+        if (isDrag == "true") {
+            $.ajax({
                 type: "get",
                 url: "{% url 'update-candidate-sequence' %}",
-                traditional:true,
+                traditional: true,
                 data: {
-                  "order":values,
-                  "stage_id":stageId,
+                    order: values,
                 },
-                success: function (response) {
-                  $(`.reload-badge`).click()
-                  $(`.stage-badges`).removeAttr("title")
-                }
-              });
-          }
-      });
-    }
-  })
-});
-$(document).on('htmx:beforeRequest', function(event) {
-    var target = event.target;
-
-    // Check if the event is for the element you're interested in
-    isDrag = $(event.target).attr("data-drag-htmx")
-    if (isDrag == "true") {
-      $.ajax({
-        type: "get",
-        url: "{% url 'update-candidate-sequence' %}",
-        traditional:true,
-        data: {
-          "order":values
-        },
-        success: function (response) {
+                success: function (response) {},
+            });
         }
-      });
-    }
-});
+    });
 </script>

@@ -1,0 +1,27 @@
+{% load i18n %}
+<div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+        <span class="oh-modal__dialog-title" id="objectCreateModalLabel"
+            >{% trans "Skills" %}</span
+        >
+        <button class="oh-modal__close--custom" aria-label="Close" onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')">
+            <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+          </button>
+    </div>
+
+    <div class="oh-modal__dialog-body" id="skillsModalBody">
+        <div class="oh-profile-section">
+            <form
+                hx-post="{% url 'create-skills' %}?instance_id={{form.instance.pk}}&dynamic={{dynamic}}&{{hx_vals}}" hx-target="#objectCreateModalTarget"
+            >
+                {% csrf_token %}
+                {{form.as_p}}
+                <div class="oh-modal__dialog-footer p-0 mt-3">
+                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" >
+                        {% trans "Save" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

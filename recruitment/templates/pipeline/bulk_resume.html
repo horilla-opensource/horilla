@@ -1,0 +1,67 @@
+{% load i18n static %}
+<div class="oh-activity-sidebar__qa-item">
+    <span class="oh-activity-sidebar__q">
+        <label class="oh-label" for="bulkResumeUploadFile"
+            >{% trans "Resumes" %}</label
+        >
+    </span>
+
+    <div class="mt-2 mb-2">
+        <div class="d-flex flex-wrap">
+            {% for file in resumes|slice:":25" %}
+            <a href="{{ file.file.url }}" rel="noopener noreferrer" target="_blank"
+                ><span
+                    class="oh-file-icon oh-file-icon--pdf"
+                    onmouseover="enlargeImage('{{ file.file.url }}',$(this))"
+                    style="width: 40px; height: 40px"
+                    ><img
+                        src="{% static 'images/ui/minus-icon.png' %}"
+                        style="display: block; width: 50%; height: 50%"
+                        hx-get="{% url 'delete-resume-file' %}?ids={{ file.id }}&rec_id={{rec_id}}"
+                        hx-target="#bulkResumeUploadBody"
+                        onclick="event.stopPropagation();event.preventDefault()"
+                    /> </span
+            ></a>
+            {% endfor %}
+            {% if resumes|length > 25 %} <h5 class="mt-3"> ..... </h5>{% endif %}
+        </div>
+        <form
+            hx-post="{% url 'add-bulk-resume' %}?rec_id={{rec_id}}"
+            class="add-files-form mt-3"
+            hx-encoding="multipart/form-data"
+            data-target="#activitySidebar"
+            hx-swap="innerHTML"
+            hx-target="#bulkResumeUploadBody"
+        >
+            {% csrf_token %}
+            <label for="addFile"
+                ><ion-icon
+                    name="add-outline"
+                    style="font-size: 24px"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="add outline"
+                ></ion-icon
+            ></label>
+            <input
+                type="file"
+                name="files"
+                class="d-none"
+                multiple="true"
+                id="addFile"
+                onchange="submitForm(this)"
+            /> 
+            <input type="submit" class="d-none add_more_submit" value="save" />
+        </form>
+    </div>
+    <div style="width: 50%">
+        <div id="enlargeImageContainer" class="enlargeImageContainer"></div>
+    </div>
+
+</div>
+
+<h5 class="oh-modal__dialog-title">{% trans "matching Resumes" %}</h5>
+
+<div class="" id="matchingResume" hx-get="{% url 'matching-resumes' rec_id %}" hx-target="#matchingResume" hx-trigger="load">
+
+</div>
