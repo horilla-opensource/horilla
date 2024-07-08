@@ -151,7 +151,11 @@ urlpatterns = [
         views.mail_server_create_or_update,
         name="mail-server-create-update",
     ),
-    path("settings/mail-server-test-email/", views.mail_server_test_email, name="mail-server-test-email"),
+    path(
+        "settings/mail-server-test-email/",
+        views.mail_server_test_email,
+        name="mail-server-test-email",
+    ),
     path("mail-server-delete", views.mail_server_delete, name="mail-server-delete"),
     path(
         "replace-primary-mail", views.replace_primary_mail, name="replace-primary-mail"

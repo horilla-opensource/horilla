@@ -1,5 +1,5 @@
-{% load i18n %} {% load widget_tweaks %} 
-<h2 class="oh-inner-sidebar-content__title">{% trans "Send test email" %}</h2>
+{% load i18n %} {% load widget_tweaks %}
+<h2 class="oh-inner-sidebar-content__title">{% trans "Send Test Email" %}</h2>
 <form hx-post="{% url "mail-server-test-email" %}?instance_id={{instance_id}}">
     {% csrf_token %}
     {% for field in form %}
@@ -19,14 +19,14 @@
                 title="{{ field.help_text|safe }}">
                 {% trans field.label %}
                 </label>
-                {{ field|add_class:"form-control" }}
+                {{ field|add_class:"oh-input w-100 form-control" }}
 
                 {{field.errors}}
             </div>
             {% endfor %}
-      
+
           </div>
-      
+
           <div class="oh-modal__dialog-footer p-0 mt-3">
             <button
               type="submit"
@@ -37,7 +37,7 @@
           </div>
         </div>
       </div>
-      
+
 </form>
 <p>
     {{send_test_mail_result}}
