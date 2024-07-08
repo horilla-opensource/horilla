@@ -84,12 +84,14 @@
         <div class="oh-sticky-table__thead">
           <div class="oh-sticky-table__tr">
             <div class="oh-sticky-table__th" style="width:10px;">
-              <input
-                type="checkbox"
-                class="self-feedbacks oh-input oh-input__checkbox"
-                id = "selfFeedback"
-                title='{% trans "Select All" %}'
-              />
+              <div class="centered-div">
+                <input
+                  type="checkbox"
+                  class="self-feedbacks oh-input oh-input__checkbox"
+                  id = "selfFeedback"
+                  title='{% trans "Select All" %}'
+                />
+              </div>
             </div>
             <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
             <div class="oh-sticky-table__th">{% trans "Title" %}</div>
@@ -105,16 +107,14 @@
             <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue
               {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray
               {% elif feedback.status == 'Behind' %}row-status--orange {% elif feedback.status == 'At Risk' %}row-status--red{% endif %}">
-              <div class="d-flex">
-                <div>
+                <div class="centered-div">
                   <input
                     type="checkbox"
                     id="{{feedback.id}}"
                     value="{{feedback.id}}"
-                    class="oh-input feedback-checkbox oh-input__checkbox self-feedback-row ms-2"
+                    class="oh-input feedback-checkbox oh-input__checkbox self-feedback-row"
                   />
                 </div>
-              </div>
             </div>
             <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
               <div class="oh-profile oh-profile--md">
@@ -221,12 +221,14 @@
         <div class="oh-sticky-table__thead">
           <div class="oh-sticky-table__tr">
             <div class="oh-sticky-table__th" style="width:10px;">
-              <input
-                type="checkbox"
-                class="requested-feedbacks oh-input oh-input__checkbox"
-                id = "requestedFeedback"
-                title='{% trans "Select All" %}'
-              />
+              <div class="centered-div">
+                <input
+                  type="checkbox"
+                  class="requested-feedbacks oh-input oh-input__checkbox"
+                  id = "requestedFeedback"
+                  title='{% trans "Select All" %}'
+                />
+              </div>
             </div>
             <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
             <div class="oh-sticky-table__th">{% trans "Title" %}</div>
@@ -243,15 +245,13 @@
             <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue
               {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray
               {% elif feedback.status == 'Behind' %}row-status--orange {% elif feedback.status == 'At Risk' %}row-status--red{% endif %}">
-              <div class="d-flex">
-                <div>
-                  <input
-                    type="checkbox"
-                    id="{{feedback.id}}"
-                    value="{{feedback.id}}"
-                    class="oh-input feedback-checkbox oh-input__checkbox requested-feedback-row ms-2"
-                  />
-                </div>
+              <div class="centered-div">
+                <input
+                  type="checkbox"
+                  id="{{feedback.id}}"
+                  value="{{feedback.id}}"
+                  class="oh-input feedback-checkbox oh-input__checkbox requested-feedback-row"
+                />
               </div>
             </div>
             <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
@@ -362,12 +362,14 @@
         <div class="oh-sticky-table__thead">
           <div class="oh-sticky-table__tr">
             <div class="oh-sticky-table__th" style="width:10px;">
-              <input
-                type="checkbox"
-                class="all-feedbacks oh-input oh-input__checkbox"
-                id = "allFeedback"
-                title='{% trans "Select All" %}'
-              />
+              <div class="centered-div">
+                <input
+                  type="checkbox"
+                  class="all-feedbacks oh-input oh-input__checkbox"
+                  id = "allFeedback"
+                  title='{% trans "Select All" %}'
+                />
+              </div>
             </div>
             <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
             <div class="oh-sticky-table__th">{% trans "Title" %}</div>
@@ -385,15 +387,13 @@
             <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue
                 {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray
                 {% elif feedback.status == 'Behind' %}row-status--orange {% elif feedback.status == 'At Risk' %}row-status--red{% endif %}">
-              <div class="d-flex">
-                <div>
-                  <input
-                    type="checkbox"
-                    id="{{feedback.id}}"
-                    value="{{feedback.id}}"
-                    class="oh-input feedback-checkbox oh-input__checkbox all-feedback-row ms-2"
-                  />
-                </div>
+              <div class="centered-div">
+                <input
+                  type="checkbox"
+                  id="{{feedback.id}}"
+                  value="{{feedback.id}}"
+                  class="oh-input feedback-checkbox oh-input__checkbox all-feedback-row"
+                />
               </div>
             </div>
             <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
@@ -502,8 +502,8 @@
               <div class="centered-div">
                 <input
                   type="checkbox"
-                  class="requested-feedbacks oh-input oh-input__checkbox"
-                  id = "requestedFeedback"
+                  class="anonymous-feedbacks oh-input oh-input__checkbox"
+                  id = "anonymousFeedback"
                   title='{% trans "Select All" %}'
                 />
               </div>
@@ -529,7 +529,7 @@
                       value="{{feedback.id}}"
                       data-anounymous = "true"
                       onclick = "event.stopPropagation()"
-                      class="oh-input feedback-checkbox oh-input__checkbox requested-feedback-row ms-2"
+                      class="oh-input feedback-checkbox oh-input__checkbox anonymous-feedback-row"
                     />
                   </div>
               </div>
@@ -588,7 +588,7 @@
                       value="{{feedback.id}}"
                       data-anounymous = "true"
                       onclick = "event.stopPropagation()"
-                      class="oh-input feedback-checkbox oh-input__checkbox requested-feedback-row ms-2"
+                      class="oh-input feedback-checkbox oh-input__checkbox anonymous-feedback-row"
                     />
                   </div>
               </div>
@@ -691,6 +691,21 @@
         $(".requested-feedback-row").prop("checked", true);
       } else {
         $(".requested-feedback-row").prop("checked", false);
+      }
+    });
+
+    $("#anonymousFeedback").click(function (e) {
+
+      console.log('===============================')
+      console.log('===============================')
+      console.log('===============================')
+      console.log('===============================')
+
+      var is_checked = $(this).is(":checked");
+      if (is_checked) {
+        $(".anonymous-feedback-row").prop("checked", true);
+      } else {
+        $(".anonymous-feedback-row").prop("checked", false);
       }
     });
 
