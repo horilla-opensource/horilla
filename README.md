@@ -155,6 +155,10 @@ Enter the details asked for creating the admin user for the project.
    python manage.py compilemessages
    ```
 
+6. Collect all the static files in the 'settings.STATIC_ROOT' directory (your_project/staticfiles/ by default). In production, you should serve this directory directly by your webserver.
+   ```bash
+   python manage.py collectstatic
+
 7. Running the project
 To run the project locally, execute the following command:
 
