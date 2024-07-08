@@ -1272,6 +1272,7 @@ def asset_fine(request):
             instance.asset_id = asset
             instance.save()
             messages.success(request, "Asset fine added")
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "payroll/asset_fine/form.html",
