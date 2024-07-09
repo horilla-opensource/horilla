@@ -745,10 +745,10 @@ class RotatingShiftAssign(HorillaModel):
         ordering = ["-next_change_date", "-employee_id__employee_first_name"]
 
     def clean(self):
-        if self.is_active and self.employee_id is not None:
+        if self.is_active and self.employee_id_id is not None:
             # Check if any other active record with the same parent already exists
             siblings = RotatingShiftAssign.objects.filter(
-                is_active=True, employee_id=self.employee_id
+                is_active=True, employee_id__id=self.employee_id_id
             )
             if siblings.exists() and siblings.first().id != self.id:
                 raise ValidationError(_("Only one active record allowed per employee"))
