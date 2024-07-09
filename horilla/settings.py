@@ -202,8 +202,6 @@ DJANGO_NOTIFICATIONS_CONFIG = {
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
-LANGUAGE_CODE = "en-us"
-
 LANGUAGES = (
     ("en", "English (US)"),
     ("de", "Deutsche"),
