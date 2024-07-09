@@ -650,6 +650,17 @@ class FeedbackForm(ModelForm):
         if instance:
             kwargs["initial"] = set_date_field_initial(instance)
         super().__init__(*args, **kwargs)
+        if self.instance.pk is None:
+            self.fields["subordinate_id"] = HorillaMultiSelectField(
+                queryset=Employee.objects.all(),
+                widget=HorillaMultiSelectWidget(
+                    filter_route_name="employee-widget-filter",
+                    filter_class=EmployeeFilter,
+                    filter_instance_contex_name="f",
+                    filter_template_path="employee_filters.html",
+                ),
+                label="Subordinates",
+            )
         reload_queryset(self.fields)
         self.fields["period"].choices = list(self.fields["period"].choices)
         self.fields["period"].choices.append(("create_new_period", "Create new period"))
@@ -677,6 +688,10 @@ class FeedbackForm(ModelForm):
         Cleans and validates the feedback form data.
         Ensures that the start date is before the end date and validates the start date.
         """
+        super().clean()
+        emps = self.data.getlist("subordinate_id")
+        if emps:
+            self.errors.pop("subordinate_id", None)
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")

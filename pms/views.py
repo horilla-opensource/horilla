@@ -1444,6 +1444,7 @@ def feedback_creation(request):
     if request.method == "POST":
         form = FeedbackForm(request.POST)
         if form.is_valid():
+            employees = form.data.getlist("subordinate_id")
             if key_result_ids := request.POST.getlist("employee_key_results_id"):
                 for key_result_id in key_result_ids:
                     key_result = EmployeeKeyResult.objects.filter(
@@ -1452,6 +1453,8 @@ def feedback_creation(request):
                     feedback_form = form.save()
                     feedback_form.employee_key_results_id.add(key_result)
             instance = form.save()
+            instance.subordinate_id.set(employees)
+
             messages.success(request, _("Feedback created successfully."))
             send_feedback_notifications(request, form=instance)
             return redirect(feedback_list_view)
