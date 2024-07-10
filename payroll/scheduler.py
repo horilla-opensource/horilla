@@ -135,8 +135,7 @@ def auto_payslip_generate():
                 generate_payslip(date=date.today(), companies=companies, all=False)
 
 
-auto_payslip_generate()
 scheduler = BackgroundScheduler()
 scheduler.add_job(expire_contract, "interval", hours=4)
-scheduler.add_job(auto_payslip_generate, "interval", days=1)
+scheduler.add_job(auto_payslip_generate, "interval", hours=8)
 scheduler.start()
