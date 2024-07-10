@@ -50,7 +50,7 @@
                   >
                 </li>
               {% endif %}
-              {% if perms.recruitment.change_recruitment or request.user|recruitment_manages:rec %}
+              {% if perms.recruitment.add_candidate or request.user|recruitment_manages:rec %}
                 <li class="oh-dropdown__item">
                   <a hx-get = "{% url 'view-bulk-resume'%}?rec_id={{rec.id}}"
                     hx-target = "#bulkResumeUploadBody"

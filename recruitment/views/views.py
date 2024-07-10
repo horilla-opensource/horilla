@@ -1324,7 +1324,7 @@ def candidate_view(request):
     view_type = request.GET.get("view")
     previous_data = request.GET.urlencode()
     candidates = Candidate.objects.filter(is_active=True)
-    candidate_all = Candidate.objects.all()
+    recruitments = Recruitment.objects.filter(closed=False, is_active=True)
 
     mails = list(Candidate.objects.values_list("email", flat=True))
     # Query the User model to check if any email is present
@@ -1354,6 +1354,7 @@ def candidate_view(request):
             "filter_dict": data_dict,
             "gp_fields": CandidateReGroup.fields,
             "emp_list": existing_emails,
+            "recruitments": recruitments,
         },
     )
 
@@ -2653,6 +2654,11 @@ def delete_reject_reason(request):
 
 
 def extract_text_with_font_info(pdf):
+    """
+    This method is used to extract text from the pdf and create a list of dictionaries containing details about the extracted text.
+    Args:
+        pdf (): pdf file to extract text from
+    """
     pdf_bytes = pdf.read()
     pdf_doc = io.BytesIO(pdf_bytes)
     doc = fitz.open("pdf", pdf_doc)
@@ -2682,6 +2688,15 @@ def extract_text_with_font_info(pdf):
 
 
 def rank_text(text_info):
+    """
+    This method is used to rank the text
+
+    Args:
+        text_info: List of dictionary containing the details
+
+    Returns:
+        Returns a sorted list
+    """
     ranked_text = sorted(
         text_info, key=lambda x: (x["font_size"], x["capitalization"]), reverse=True
     )
@@ -2689,6 +2704,15 @@ def rank_text(text_info):
 
 
 def dob_matching(dob):
+    """
+    This method is used to change the date format to YYYY-MM-DD
+
+    Args:
+        dob: Date
+
+    Returns:
+        Return date in YYYY-MM-DD
+    """
     date_formats = [
         "%Y-%m-%d",
         "%Y/%m/%d",
@@ -2709,6 +2733,12 @@ def dob_matching(dob):
 
 
 def extract_info(pdf):
+    """
+    This method creates the contact information dictionary from the provided pdf file
+    Args:
+        pdf_file: pdf file
+    """
+
     text_info = extract_text_with_font_info(pdf)
     ranked_text = rank_text(text_info)
 
@@ -2780,6 +2810,9 @@ def extract_info(pdf):
 
 
 def resume_completion(request):
+    """
+    This function is returns the data for completing the candidate creation form
+    """
     resume_file = request.FILES["resume"]
     contact_info = extract_info(resume_file)
 
@@ -2800,6 +2833,9 @@ def check_vaccancy(request):
 
 @login_required
 def create_skills(request):
+    """
+    This method is used to create the skills
+    """
     instance_id = eval(str(request.GET.get("instance_id")))
     dynamic = request.GET.get("dynamic")
     hx_vals = request.GET.get("data")
@@ -2847,7 +2883,7 @@ def create_skills(request):
 @permission_required("recruitment.delete_rejectreason")
 def delete_skills(request):
     """
-    This method is used to delete the reject reasons
+    This method is used to delete the skills
     """
     ids = request.GET.getlist("ids")
     skills = Skill.objects.filter(id__in=ids)
@@ -2857,7 +2893,13 @@ def delete_skills(request):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
+@login_required
+@hx_request_required
+@manager_can_enter("recruitment.add_candidate")
 def view_bulk_resumes(request):
+    """
+    This function returns the bulk_resume.html page to the modal
+    """
     rec_id = eval(str(request.GET.get("rec_id")))
     resumes = Resume.objects.filter(recruitment_id=rec_id)
 
@@ -2866,7 +2908,13 @@ def view_bulk_resumes(request):
     )
 
 
+@login_required
+@hx_request_required
+@manager_can_enter("recruitment.add_candidate")
 def add_bulk_resumes(request):
+    """
+    This function is used to create bulk resume
+    """
     rec_id = eval(str(request.GET.get("rec_id")))
     recruitment = Recruitment.objects.get(id=rec_id)
     if request.method == "POST":
@@ -2884,9 +2932,11 @@ def add_bulk_resumes(request):
 
 
 @login_required
+@hx_request_required
+@manager_can_enter("recruitment.add_candidate")
 def delete_resume_file(request):
     """
-    Used to delete attachment
+    Used to delete resume
     """
     ids = request.GET.getlist("ids")
     rec_id = request.GET.get("rec_id")
@@ -2899,7 +2949,12 @@ def delete_resume_file(request):
 
 
 def extract_words_from_pdf(pdf_file):
-    # Open the PDF file
+    """
+    This method is used to extract the words from the pdf file into a list.
+    Args:
+        pdf_file: pdf file
+
+    """
     pdf_document = fitz.open(pdf_file.path)
 
     words = []
@@ -2908,7 +2963,6 @@ def extract_words_from_pdf(pdf_file):
         page = pdf_document.load_page(page_num)
         page_text = page.get_text()
 
-        # Use regular expression to extract words
         page_words = re.findall(r"\b\w+\b", page_text.lower())
 
         words.extend(page_words)
@@ -2919,7 +2973,16 @@ def extract_words_from_pdf(pdf_file):
 
 
 @login_required
+@hx_request_required
+@manager_can_enter("recruitment.add_candidate")
 def matching_resumes(request, rec_id):
+    """
+    This function returns the matching resume table after sorting the resumes according to their scores
+
+    Args:
+        rec_id: Recruitment ID
+
+    """
     recruitment = Recruitment.objects.filter(id=rec_id).first()
     skills = recruitment.skills.values_list("title", flat=True)
     resumes = recruitment.resume.all()
@@ -2931,9 +2994,11 @@ def matching_resumes(request, rec_id):
         words = extract_words_from_pdf(resume.file)
         matching_skills_count = sum(skill.lower() in words for skill in skills)
 
-        resume_ranks.append(
-            {"resume": resume, "matching_skills_count": matching_skills_count}
-        )
+        item = {"resume": resume, "matching_skills_count": matching_skills_count}
+        if not len(words):
+            item["image_pdf"] = True
+
+        resume_ranks.append(item)
 
     candidate_resumes = [
         rank for rank in resume_ranks if rank["resume"].id in is_candidate_ids
@@ -2961,7 +3026,12 @@ def matching_resumes(request, rec_id):
     )
 
 
+@login_required
+@manager_can_enter("recruitment.add_candidate")
 def matching_resume_completion(request):
+    """
+    This function is returns the data for completing the candidate creation form
+    """
     resume_id = request.GET.get("resume_id")
     resume_obj = get_object_or_404(Resume, id=resume_id)
     resume_file = resume_obj.file

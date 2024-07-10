@@ -23,6 +23,13 @@
   .oh-rate:not(:checked)>label:hover, .oh-rate:not(:checked)>label:hover~label{
     color: #ccc
   }
+  #enlargeImageContainer {
+    position: absolute;
+    left: -300px;
+    top: 100px;
+    height: 200px;
+    width: 200px;
+  }
 </style>
 {% include 'candidate/candidate_nav.html' %}
 <div class="oh-wrapper">
@@ -53,7 +60,41 @@
   </div>
 </div>
 
+<script>
+  function submitForm(elem) {
+    $(elem).siblings(".add_more_submit").click();
+  }
 
+	function enlargeImage(src) {
+		var enlargeImageContainer = $('#enlargeImageContainer');
+		enlargeImageContainer.empty();
+    style = "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white"
+		var enlargedImage = $('<iframe>').attr({'src': src,'style': style,});
+    var name =$('<span>').text(src.split('/').pop().replace(/_/g, " "))
+		enlargeImageContainer.append(enlargedImage);
+		enlargeImageContainer.append(name);
+		setTimeout(function() {
+		  enlargeImageContainer.show();
+
+      const iframe = document.querySelector("iframe").contentWindow;
+      var iframe_document = iframe.document
+      iframe_image = iframe_document.getElementsByTagName('img')[0]
+      $(iframe_image).attr("style","width:100%; height:100%;")
+
+		}, 100);
+	}
+
+  function hideEnlargeImage() {
+		var enlargeImageContainer = $('#enlargeImageContainer');
+		enlargeImageContainer.empty();
+  }
+
+  $(document).on('click', function(event){
+    if (!$(event.target).closest('#enlargeImageContainer').length) {
+        hideEnlargeImage();
+    }
+  });
+</script>
 
 <script src="{% static '/candidate/bulk.js' %}"></script>
 

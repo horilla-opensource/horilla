@@ -14,19 +14,19 @@
 			{% for resume in matched_resumes %}
 			<div class="oh-sticky-table__tr" draggable="true">
 				<div class="oh-sticky-table__td" align="center">
-                    <a href="{{ resume.resume.file.url }}" rel="noopener noreferrer" target="_blank"> {{resume.resume}} </a>
+                    <a href="{{ resume.resume.file.url }}" onmouseover="enlargeImage('{{ resume.resume.file.url }}',$(this))" rel="noopener noreferrer" target="_blank"> {{resume.resume}} </a>
                 </div>
-				<div class="oh-sticky-table__td" align="center">{{resume.matching_skills_count}}</div>
+				<div class="oh-sticky-table__td" align="center">{% if resume.image_pdf %}<p class="text-danger">{% trans "Need verification" %}</p>{% else %}{{resume.matching_skills_count}}{% endif %}</div>
 				{% if perms.base.change_department or perms.base.delete_department %}
 					<div class="oh-sticky-table__td">
                         {% if resume.resume.is_candidate %}
-                        <a class="oh-btn oh-btn--success" 
+                        <a class="oh-btn oh-btn--success"
                             href="#"
                         >
                             {% trans "Candidated Added" %}
                         </a>
                         {% else %}
-                            <a class="oh-btn oh-btn--info" 
+                            <a class="oh-btn oh-btn--info"
                                 target="_blank"
                                 href="{% url 'application-form' %}?recruitmentId={{rec_id}}&resumeId={{resume.resume.pk}}"
                             >

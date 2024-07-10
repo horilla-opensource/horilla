@@ -145,7 +145,7 @@ x-data="{searchShow: false}"
         >
             <ul class="oh-dropdown__items">
               <li class="oh-dropdown__item">
-                {% if perms.delete_candidates %}
+                {% if perms.recruitment.delete_candidates %}
                 <a
                   href="#"
                   class="oh-dropdown__link"
@@ -158,7 +158,7 @@ x-data="{searchShow: false}"
                 >
                 {% endif %}
               </li>
-              {% if perms.change_candidates or request.user|is_stagemanager %}
+              {% if perms.recruitment.change_candidates or request.user|is_stagemanager %}
               <li class="oh-dropdown__item">
                 <a href="#" class="oh-dropdown__link "
                   hx-get='{% url "send-mail" %}?stage_id={{stage.id}}' hx-target="#objectDetailsModalTarget"
@@ -168,7 +168,37 @@ x-data="{searchShow: false}"
                 >
               </li>
               {% endif %}
-              {% if perms.delete_candidates %}
+              {% if perms.recruitment.add_candidate or request.user|recruitment_manages:rec %}
+                <li class="oh-dropdown__item">
+                  <a
+                    role="button"
+                    class="oh-dropdown__link"
+                  >{% trans "Resume Shortlisting" %}</a
+                  >
+                  <form hx-get = "{% url 'view-bulk-resume' %}"
+                  hx-target = "#bulkResumeUploadBody">
+
+                  <input type="submit"
+                    id="resume_button"
+                    hidden
+                    data-toggle="oh-modal-toggle"
+                    data-target="#bulkResumeUpload" />
+
+                  <select name="rec_id"
+                    class="oh-select w-75 mt-2"
+                    onclick="event.stopPropagation()"
+                    onchange="$('#resume_button').click()"
+                  >
+                    <option value="">------</option>
+                    {% for rec in recruitments %}
+                    <option value="{{rec.id}}">{{rec}}</option>
+                    {% endfor %}
+                  </select>
+                </form>
+
+                </li>
+              {% endif %}
+              {% if perms.recruitment.delete_candidates %}
               <li class="oh-dropdown__item">
                 <a href="#" class="oh-dropdown__link " id="archiveCandidates"
 
@@ -177,7 +207,7 @@ x-data="{searchShow: false}"
               </li>
               {% endif %}
 
-              {% if perms.delete_candidates %}
+              {% if perms.recruitment.delete_candidates %}
               <li class="oh-dropdown__item">
                 <a href="#" class="oh-dropdown__link "
 
@@ -187,7 +217,7 @@ x-data="{searchShow: false}"
               </li>
               {% endif %}
 
-              {% if perms.delete_candidates %}
+              {% if perms.recruitment.delete_candidates %}
               <li class="oh-dropdown__item">
                 <a
                   href="#"
@@ -216,6 +246,32 @@ x-data="{searchShow: false}"
     </div>
   </div>
 </form>
+
+
+<div
+    class="oh-modal"
+    id="bulkResumeUpload"
+    role="dialog"
+    aria-labelledby="bulkResumeUpload"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="bulkResumeUploadLabel">
+                {% trans "Upload Resumes" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+            <div
+                class="oh-modal__dialog-body mb-4 p-0 pt-2"
+                id="bulkResumeUploadBody"
+            >
+            </div>
+        </div>
+    </div>
+</div>
+
 </section>
 <script>
   $(document).ready(function () {
