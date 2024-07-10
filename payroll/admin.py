@@ -14,6 +14,7 @@ from payroll.models.models import (
     LoanAccount,
     MultipleCondition,
     Payslip,
+    PayslipAutoGenerate,
     Reimbursement,
     ReimbursementrequestComment,
     WorkRecord,
@@ -32,3 +33,4 @@ admin.site.register(LoanAccount)
 admin.site.register(Reimbursement)
 admin.site.register(ReimbursementrequestComment)
 admin.site.register(MultipleCondition)
+admin.site.register(PayslipAutoGenerate)

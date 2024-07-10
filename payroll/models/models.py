@@ -1818,3 +1818,82 @@ class EncashmentGeneralSettings(models.Model):
     bonus_amount = models.IntegerField(default=1)
     leave_amount = models.IntegerField(blank=True, null=True, verbose_name="Amount")
     objects = models.Manager()
+
+
+DAYS = [
+    ("last day", _("Last Day")),
+    ("1", "1st"),
+    ("2", "2nd"),
+    ("3", "3rd"),
+    ("4", "4th"),
+    ("5", "5th"),
+    ("6", "6th"),
+    ("7", "7th"),
+    ("8", "8th"),
+    ("9", "9th"),
+    ("10", "10th"),
+    ("11", "11th"),
+    ("12", "12th"),
+    ("13", "13th"),
+    ("14", "14th"),
+    ("15", "15th"),
+    ("16", "16th"),
+    ("17", "17th"),
+    ("18", "18th"),
+    ("19", "19th"),
+    ("20", "20th"),
+    ("21", "21th"),
+    ("22", "22th"),
+    ("23", "23th"),
+    ("24", "24th"),
+    ("25", "25th"),
+    ("26", "26th"),
+    ("27", "27th"),
+    ("28", "28th"),
+    ("29", "29th"),
+    ("30", "30th"),
+    ("31", "31th"),
+]
+
+
+class PayslipAutoGenerate(models.Model):
+    """
+    Model for generating payslip automatically
+    """
+
+    generate_day = models.CharField(
+        max_length=30,
+        choices=DAYS,
+        default=("1"),
+        verbose_name="Payslip Generate Day",
+        help_text="On this day of every month,Payslip will auto generate",
+    )
+    auto_generate = models.BooleanField(default=False)
+    company_id = models.OneToOneField(
+        Company, on_delete=models.CASCADE, null=True, blank=True
+    )
+
+    def clean(self):
+        # Unique condition checking for all company
+        if (
+            not self.company_id
+            and PayslipAutoGenerate.objects.filter(company_id=None).exists()
+        ):
+            if not self.id:
+                raise ValidationError(
+                    {
+                        "company_id": "Auto payslip generation for all company is already exists"
+                    }
+                )
+            all_company_auto_payslip = PayslipAutoGenerate.objects.filter(
+                company_id=None
+            ).first()
+            if all_company_auto_payslip.id != self.id:
+                raise ValidationError(
+                    {
+                        "company_id": "Auto payslip generation for all company is already exists"
+                    }
+                )
+
+    def __str__(self) -> str:
+        return f"{self.generate_day} | {self.company_id} "

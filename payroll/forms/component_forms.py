@@ -31,6 +31,7 @@ from payroll.models.models import (
     LoanAccount,
     MultipleCondition,
     Payslip,
+    PayslipAutoGenerate,
     Reimbursement,
     ReimbursementMultipleAttachment,
 )
@@ -770,3 +771,18 @@ class ConditionForm(ModelForm):
             "condition",
             "value",
         ]
+
+
+# ===========================Auto payslip generate================================
+class PayslipAutoGenerateForm(ModelForm):
+    class Meta:
+        model = PayslipAutoGenerate
+        fields = ["generate_day", "company_id", "auto_generate"]
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html

@@ -1,0 +1,114 @@
+{% load i18n %}
+<div class="oh-sticky-table">
+	<div class="oh-sticky-table__table oh-table--sortable">
+		<div class="oh-sticky-table__thead">
+			<div class="oh-sticky-table__tr">
+				<div class="oh-sticky-table__th">{% trans "Payslip creation date" %}</div>
+				<div class="oh-sticky-table__th">{% trans "Company" %}</div>
+                {% if  perms.payroll.change_PayslipAutoGenerate %}
+                    <div class="oh-sticky-table__th">{% trans "Is active" %}</div>
+                {% endif %}
+				{% if perms.payroll.change_PayslipAutoGenerate or perms.payroll.delete_PayslipAutoGenerate %}
+					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+				{% endif %}
+			</div>
+		</div>
+		<div class="oh-sticky-table__tbody">
+			{% for auto in payslip_auto_generate %}
+			<div class="oh-sticky-table__tr" draggable="true">
+				<div class="oh-sticky-table__td">{{auto.get_generate_day_display}}</div>
+				<div class="oh-sticky-table__td">
+                    {% if auto.company_id is none %}
+                        {% trans "All company" %}
+                    {% else %}
+                        {{auto.company_id}}
+                    {% endif %}</div>
+				{% if perms.payroll.change_PayslipAutoGenerate or perms.payroll.delete_PayslipAutoGenerate %}
+                    <div class="oh-sticky-table__td">
+                        <div class="d-flex">
+                            <div class="oh-switch">
+                                {% if  perms.payroll.change_PayslipAutoGenerate %}
+                                    <input type="checkbox" id="GTIsActivate" data-id ="{{auto.id}}" class="oh-switch__checkbox" {% if auto.auto_generate %} checked {% endif %} onchange="updateAutoPayslipIsActivate(this)">
+                                {% else %}
+                                    <input type="checkbox" id="GTIsActivate" class="oh-switch__checkbox" {% if auto.auto_generate %} checked {% endif %} disabled>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+					<div class="oh-sticky-table__td">
+						<div class="oh-btn-group">
+							{% if perms.payroll.change_PayslipAutoGenerate %}
+							<a
+								hx-get="{% url 'update-auto-payslip' auto.id %}"
+								hx-target="#objectCreateModalTarget"
+								data-toggle="oh-modal-toggle"
+								data-target="#objectCreateModal"
+								type="button"
+								class="oh-btn oh-btn--light-bkg w-100"
+								title="{% trans 'Edit' %}"
+							>
+								<ion-icon name="create-outline"></ion-icon
+							></a>
+							{% endif %}
+							{% if perms.payroll.delete_PayslipAutoGenerate %}
+							<form 
+                                hx-get="{% url 'delete-auto-payslip' auto.id %}"
+								class="w-100"
+                                hx-confirm="{% trans 'Are you sure you want to delete this payslip auto generate?' %}"
+                                hx-target="#objectCreateModalTarget"
+								method='post'>
+								{% csrf_token %}
+								<button
+									type="submit"
+									class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+									title="{% trans 'Remove' %}"
+								>
+									<ion-icon name="trash-outline"></ion-icon>
+								</button>
+							</form>
+							{% endif %}
+						</div>
+					</div>
+				{% endif %}
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+        }
+    function updateAutoPayslipIsActivate(checkbox) {
+        // Using jQuery to check if the checkbox is checked
+        var isChecked = $(checkbox).prop('checked');
+        var autoId = $(checkbox).data('id');
+        $.ajax({
+          type: "POST",
+          url: "{% url 'activate-auto-payslip-generate' %}",
+          data: { 'isChecked': isChecked, 'autoId':autoId,'csrfmiddlewaretoken': getCookie('csrftoken') },
+          dataType: "json",
+          success: function (response) {
+            $("#ohMessages").append(`
+                    <div class="oh-alert-container">
+                      <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                        ${response.message}
+                      </div>
+                    </div>`);
+                    duration = 1500;
+          }
+        });
+      }
+</script>

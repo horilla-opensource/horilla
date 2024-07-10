@@ -172,4 +172,30 @@ urlpatterns = [
         views.initial_notice_period,
         name="initial-notice-period",
     ),
+    # ===========================Auto payslip generate================================
+    path(
+        "auto-payslip-settings-view",
+        views.auto_payslip_settings_view,
+        name="auto-payslip-settings-view",
+    ),
+    path(
+        "create-auto-payslip",
+        views.create_or_update_auto_payslip,
+        name="create-auto-payslip",
+    ),
+    path(
+        "update-auto-payslip/<int:auto_id>",
+        views.create_or_update_auto_payslip,
+        name="update-auto-payslip",
+    ),
+    path(
+        "delete-auto-payslip/<int:auto_id>",
+        views.delete_auto_payslip,
+        name="delete-auto-payslip",
+    ),
+    path(
+        "activate-auto-payslip-generate",
+        views.activate_auto_payslip_generate,
+        name="activate-auto-payslip-generate",
+    ),
 ]

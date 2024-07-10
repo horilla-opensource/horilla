@@ -2,14 +2,15 @@
 {% load i18n %}
 {% block settings %}{% load static %}
 <div class="oh-inner-sidebar-content">
+  <div id='message'></div>
     {% comment %} {% if perms.helpdesk.view_tickettype %} {% endcomment %}
         <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
             <h2 class="oh-inner-sidebar-content__title">{% trans "Compensatory Leave" %}</h2>
         </div>
-        <form  hx-get="{% url 'enable-compensatory-leave' %}" hx-swap="none">
+        <form  hx-get="{% url 'enable-compensatory-leave' %}" hx-swap="none" hx-target="#message">
           <div class="oh-label__info" for="application_tracking">
             <label class="oh-label" for="application_tracking">{% trans "Compensatory Leave Request" %}</label>
-            <span class="oh-info mr-2" title="{% trans "By enabling this normal users can request for compensatory leave" %}">
+            <span class="oh-info mr-2" title="{% trans "By enabling this compensatory leave feature will avilable on Leave." %}">
             </span>
           </div>
           <div class="oh-switch p-3">
