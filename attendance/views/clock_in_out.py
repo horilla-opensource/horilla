@@ -185,7 +185,14 @@ def clock_in(request):
     This method is used to mark the attendance once per a day and multiple attendance activities.
     """
     allowed_attendance_ips = AttendanceAllowedIP.objects.first()
-    if allowed_attendance_ips and allowed_attendance_ips.is_enabled:
+
+    # 'not request.__dict__.get("datetime")' used to check if the request is from biometric device
+
+    if (
+        not request.__dict__.get("datetime")
+        and allowed_attendance_ips
+        and allowed_attendance_ips.is_enabled
+    ):
 
         x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
         ip = request.META.get("REMOTE_ADDR")
