@@ -4482,11 +4482,11 @@ def enable_compensatory_leave(request):
     )
     compensatory_leave.compensatory_leave = "compensatory_leave" in request.GET.keys()
     compensatory_leave.save()
-    return HttpResponse(
-        '<div class="oh-alert-container">\n\t<div class="oh-alert oh-alert--animated {tags}">\n\t\t{message}\n\t</div>\n</div>'.format(
-            tags="success", message="Compensatory leave enabled"
-        )
-    )
+    if "compensatory_leave" in request.GET.keys():
+        messages.success(request, _("Compensatory leave is enabled successfully!"))
+    else:
+        messages.success(request, _("Compensatory leave is disabled successfully!"))
+    return HttpResponse("")
 
 
 @login_required
