@@ -114,53 +114,82 @@
 
 <div class="oh-wrapper" id="view-container">
 	<div class="oh-card mt-4 mb-5">
-		<div class="d-flex flex-row-reverse">
-			{% if perms.employee.change_employee %}
-			<a href="{% url 'employee-view-update' employee.id %}" class="">
-				<img
-				src="{% static 'images/ui/edit_btn.png' %}"
-				style="width: 25px; height: auto"
-				title="{% trans 'Edit' %}"
-				/>
-			</a>
-			{% endif %}
-			{% if enabled_block_unblock %}
-				{% if perms.employee.change_employee %}
-					{% if employee.employee_user_id.is_active %}
-						{% if not employee.employee_user_id.is_superuser %}
-							<form action = "{% url 'employee-account-block-unblock' employee.id %}"
-								  onsubmit="return confirm('{% trans "Do you really want to prevent this employee from accessing and logging into this webpage?" %}');"
-				  				>
-				  				{% csrf_token %}
-				  				<button type="submit" style=" width: 30px; height: 29px; margin-right: 22px; border: none; background: transparent;" title="{% trans 'Block Account' %}">
-									  <img src="{% static 'images/ui/block-user.png' %}" style="width: 26px; height: 25px; " >
-				  				</button>
-		  					</form>
-						{% endif %}
-					{% else %}
-						{% if not employee.employee_user_id.is_superuser %}
-							<form action = "{% url 'employee-account-block-unblock' employee.id %}"
-            	        	      onsubmit="return confirm('{% trans "Do you really want to allow this employee to access and log into this webpage?" %}');"
-            	        	    >
-            	        	    {% csrf_token %}
-            	        	    <button type="submit" style=" width: 30px; height: 29px; margin-right: 22px; border: none; background: transparent;" title="{% trans 'Un-Block Account' %}">
-									<img src="{% static 'images/ui/unlock.png' %}" style="width: 30px; height: 27px; " >
-            	        	    </button>
-            	        	</form>
-						{% endif %}
-					{% endif %}
-				{% endif %}
-			{% endif %}
+		<div class="d-flex flex-row-reverse align-items-center">
+			<div class="oh-dropdown" x-data="{open: false}">
+				<button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"style="margin-bottom:5px" @click="open = !open" @click.outside="open = false">
+					<ion-icon name="settings-outline" class="oh-navbar__icon md hydrated" role="img" aria-label="settings outline"></ion-icon>
+				</button>
+				<div class="oh-dropdown__menu oh-dropdown__menu--right" style="min-width:250px" x-show="open">
+					<ul class="oh-dropdown__items">
 
+						{% if perms.employee.change_employee or employee.employee_work_info.reporting_manager_id == request.user.employee_get %}
+							<li class="oh-dropdown__item">
+								<a href="{% url 'employee-view-update' employee.id %}" class="">
+									<img
+									src="{% static 'images/ui/edit_btn.png' %}"
+									style="width: 20px; height: auto"
+									title="{% trans 'Edit' %}"
+									/>
+									<button style="border: none; background: transparent;">{% trans 'Edit' %}</button>
+								</a>
+							</li>
+						{% endif %}
+
+						{% if enabled_block_unblock %}
+							{% if perms.employee.change_employee %}
+								{% if employee.employee_user_id.is_active %}
+									{% if not employee.employee_user_id.is_superuser %}
+										<li class="oh-dropdown__item">
+											<form action = "{% url 'employee-account-block-unblock' employee.id %}"
+												onsubmit="return confirm('{% trans "Do you really want to prevent this employee from accessing and logging into this webpage?" %}');"
+												>
+												{% csrf_token %}
+												<img src="{% static 'images/ui/block-user.png' %}" style="width: 20px; height: 20px; " >
+												<button type="submit" style=" border: none; background: transparent;" >
+													{% trans 'Block Account' %}
+												</button>
+											</form>
+										</li>
+									{% endif %}
+								{% else %}
+									{% if not employee.employee_user_id.is_superuser %}
+										<li class="oh-dropdown__item">
+											<form action = "{% url 'employee-account-block-unblock' employee.id %}"
+												onsubmit="return confirm('{% trans "Do you really want to allow this employee to access and log into this webpage?" %}');"
+											>
+												{% csrf_token %}
+												<img src="{% static 'images/ui/unlock.png' %}" style="width: 30px; height: 27px;" >
+												<button type="submit" style="  border: none; background: transparent;" >
+													{% trans 'Un-Block Account' %}
+												</button>
+											</form>
+										</li>
+									{% endif %}
+								{% endif %}
+							{% endif %}
+						{% endif %}
+						{% if perms.employee.add_employee or employee.employee_work_info.reporting_manager_id == request.user.employee_get %}
+							<li class="oh-dropdown__item">
+								<form action="{% url 'forgot-password' %}" method="post" role="button" >
+									<ion-icon name="key-outline" style="width: 20px; height: 20px; "></ion-icon>
+									{% csrf_token %}
+									<input name="email" hidden value="{{employee.employee_user_id.username}}" />
+									<button type="submit" style="border: none; background: transparent;">{% trans 'Send password reset link' %} </button>
+								</form>
+							</li>
+						{% endif %}
+					</ul>
+				</div>
+			</div>
 			{% if next != None %}
 				<a
-					href="{% url 'employee-view-individual' next %}" title='{% trans "Next Employee" %}' style="color:hsl(8, 77%, 56%);" class="ms-1 me-3 fw-bold"
+					href="{% url 'employee-view-individual' next %}" title='{% trans "Next Employee" %}' style="color:hsl(8, 77%, 56%);" class="ms-1 fw-bold"
 					>
 					<ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
 				</a>
 			{% else %}
 				<a
-					href="#" style="color:hsl(8 50% 83% / 1);" class="ms-1 me-3 fw-bold oh-btn--disabled"
+					href="#" style="color:hsl(8 50% 83% / 1);" class="ms-1 fw-bold oh-btn--disabled"
 					>
 					<ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
 				</a>
