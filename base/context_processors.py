@@ -12,6 +12,7 @@ from base.models import Company
 from base.urls import urlpatterns
 from employee.models import EmployeeGeneralSetting
 from horilla import horilla_apps
+from horilla.decorators import hx_request_required, login_required, permission_required
 from offboarding.models import OffboardingGeneralSetting
 from payroll.models.models import PayrollGeneralSetting
 from recruitment.models import RecruitmentGeneralSetting
@@ -60,6 +61,9 @@ def get_companies(request):
     return {"all_companies": companies, "company_selected": company_selected}
 
 
+@login_required
+@hx_request_required
+@permission_required("base.change_company")
 def update_selected_company(request):
     """
     This method is used to update the selected company on the session
