@@ -95,12 +95,6 @@ urlpatterns = [
         "settings/user-group-search/", views.user_group_search, name="user-group-search"
     ),
     path(
-        "settings/user-group-update/<int:id>/",
-        views.user_group_update,
-        name="user-group-update",
-        kwargs={"model": Group},
-    ),
-    path(
         "user-group-delete/<int:id>/",
         views.object_delete,
         name="user-group-delete",

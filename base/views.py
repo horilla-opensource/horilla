@@ -494,7 +494,14 @@ class HorillaPasswordResetView(PasswordResetView):
                 "extra_email_context": self.extra_email_context,
             }
             form.save(**opts)
+            if self.request.user.is_authenticated:
+                messages.success(
+                    self.request, _("Password reset link sent successfully")
+                )
+                return HttpResponseRedirect(self.request.META.get("HTTP_REFERER", "/"))
+
             return redirect(reverse_lazy("reset-send-success"))
+
         messages.info(self.request, _("No user found with the username"))
         return redirect("forgot-password")
 
@@ -982,27 +989,6 @@ def group_remove_user(request, uid, gid):
     user = User.objects.get(id=uid)
     group.user_set.remove(user)
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
-
-@login_required
-@permission_required("change_group")
-def user_group_update(request, id, **kwargs):
-    """
-    This method is used to render updating form template for user permission group
-    args:
-        id : group instance id
-    """
-    group = Group.objects.get(id=id)
-    form = UserGroupForm(instance=group)
-    if request.method == "POST":
-        form = UserGroupForm(request.POST, instance=group)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("User group updated."))
-            return redirect(user_group_create)
-
-    groups = Group.objects.all()
-    return render(request, "base/auth/group.html", {"form": form, "groups": groups})
 
 
 @login_required
@@ -5965,6 +5951,9 @@ def driver_viewed_status(request):
 
 @login_required
 def employee_charts(request):
+    """
+    This function is used to create personalized dashboard charts for employees
+    """
     employee_charts = DashboardEmployeeCharts.objects.get_or_create(
         employee=request.user.employee_get
     )[0]
@@ -5978,6 +5967,11 @@ def employee_charts(request):
 
 
 def check_permission(request, charts):
+    """
+    This function is used to check the permissions for the charts
+    Args:
+        charts: dashboard charts
+    """
     from recruitment.templatetags.recruitmentfilters import (
         is_recruitmentmangers,
         is_stagemanager,
@@ -6047,6 +6041,9 @@ def check_permission(request, charts):
 
 @login_required
 def employee_chart_show(request):
+    """
+    This function is used to choose which chart to show in the dashboard
+    """
     employee_charts = DashboardEmployeeCharts.objects.get_or_create(
         employee=request.user.employee_get
     )[0]
@@ -6133,6 +6130,9 @@ def activate_biometric_attendance(request):
 @login_required
 @permission_required("attendance.add_attendance")
 def allowed_ips(request):
+    """
+    This function is used to view the allowed ips
+    """
     allowed_ips = AttendanceAllowedIP.objects.first()
     return render(
         request,
@@ -6144,6 +6144,9 @@ def allowed_ips(request):
 @login_required
 @permission_required("attendance.add_attendance")
 def enable_ip_restriction(request):
+    """
+    This function is used to enable the allowed ips
+    """
     form = AttendanceAllowedIPForm()
     if request.method == "POST":
         ip_restiction = AttendanceAllowedIP.objects.first()
@@ -6162,6 +6165,12 @@ def enable_ip_restriction(request):
 
 
 def validate_ip_address(self, value):
+    """
+    This function is used to check if the provided IP is in the ipv4 or ipv6 format.
+
+    Args:
+        value: The IP address to validate
+    """
     try:
         validate_ipv46_address(value)
     except ValidationError:
@@ -6172,6 +6181,9 @@ def validate_ip_address(self, value):
 @login_required
 @permission_required("attendance.add_attendance")
 def create_allowed_ips(request):
+    """
+    This function is used to create the allowed ips
+    """
     form = AttendanceAllowedIPForm()
     if request.method == "POST":
         form = AttendanceAllowedIPForm(request.POST)
@@ -6203,6 +6215,9 @@ def create_allowed_ips(request):
 @login_required
 @permission_required("attendance.delete_attendance")
 def delete_allowed_ips(request):
+    """
+    This function is used to delete the allowed ips
+    """
     try:
         ids = request.GET.getlist("id")
         allowed_ips = AttendanceAllowedIP.objects.first()
@@ -6222,6 +6237,9 @@ def delete_allowed_ips(request):
 @login_required
 @permission_required("attendance.change_attendance")
 def edit_allowed_ips(request):
+    """
+    This function is used to edit the allowed ips
+    """
     try:
 
         allowed_ips = AttendanceAllowedIP.objects.first()
@@ -6253,5 +6271,8 @@ def edit_allowed_ips(request):
 
 @login_required
 def skills_view(request):
+    """
+    This function is used to view skills page in settings
+    """
     skills = Skill.objects.all()
     return render(request, "settings/skills/skills_view.html", {"skills": skills})
