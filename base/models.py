@@ -122,7 +122,7 @@ class JobPosition(HorillaModel):
     JobPosition model
     """
 
-    job_position = models.CharField(max_length=50, blank=False, null=False, unique=True)
+    job_position = models.CharField(max_length=50, blank=False, null=False)
     department_id = models.ForeignKey(
         Department,
         on_delete=models.PROTECT,
@@ -142,7 +142,7 @@ class JobPosition(HorillaModel):
         verbose_name_plural = _("Job Positions")
 
     def __str__(self):
-        return str(self.job_position)
+        return str(self.job_position + " - (" + self.department_id.department) + ")"
 
 
 class JobRole(HorillaModel):
