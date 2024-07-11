@@ -1,10 +1,10 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
   <span class="oh-modal__dialog-title" id="createModalLabel">
-    {% if form.instance.id %} 
-      {% trans "Update Auto Payslip Generate" %} 
-    {% else %} 
-      {% trans "Create Auto Payslip Generate" %} 
+    {% if form.instance.id %}
+      {% trans "Update Auto Payslip Generate" %}
+    {% else %}
+      {% trans "Create Auto Payslip Generate" %}
     {% endif %}
   </span>
   <button class="oh-modal__close" aria-label="Close">
@@ -25,5 +25,3 @@
     {{form.as_p}}
     </form>
 </div>
-
-

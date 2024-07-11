@@ -51,7 +51,7 @@
 							></a>
 							{% endif %}
 							{% if perms.payroll.delete_PayslipAutoGenerate %}
-							<form 
+							<form
                                 hx-get="{% url 'delete-auto-payslip' auto.id %}"
 								class="w-100"
                                 hx-confirm="{% trans 'Are you sure you want to delete this payslip auto generate?' %}"
