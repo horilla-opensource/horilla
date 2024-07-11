@@ -468,6 +468,38 @@ class JobPositionForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk:
+            self.fields["department_id"] = forms.ModelMultipleChoiceField(
+                queryset=self.fields["department_id"].queryset
+            )
+            attrs = self.fields["department_id"].widget.attrs
+            attrs["class"] = "oh-select oh-select2 w-100"
+            attrs["style"] = "height:45px;"
+
+    def save(self, commit, *args, **kwargs) -> Any:
+        if not self.instance.pk:
+            request = getattr(_thread_locals, "request")
+            department = Department.objects.filter(
+                id__in=self.data.getlist("department_id")
+            )
+            positions = []
+            for dep in department:
+                position = JobPosition()
+                position.department_id = dep
+                position.job_position = self.data["job_position"]
+                form_data = self.data["job_position"]
+                if JobPosition.objects.filter(
+                    department_id=dep, job_position=form_data
+                ).exists():
+                    messages.error(request, f"Job position already exists under {dep}")
+                else:
+                    position.save()
+                positions.append(position.pk)
+            return JobPosition.objects.filter(id__in=positions)
+        super().save(commit, *args, **kwargs)
+
 
 class JobRoleForm(ModelForm):
     """

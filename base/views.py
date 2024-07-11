@@ -1456,9 +1456,16 @@ def job_position_creation(request):
     form = JobPositionForm()
     if request.method == "POST":
         form = JobPositionForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("Job Position has been created successfully!"))
+        if form.instance.pk and form.is_valid():
+            form.save(commit=True)
+            messages.success(request, _("Job position has been created successfully!"))
+        elif (
+            not form.instance.pk
+            and form.data.getlist("department_id")
+            and form.data.get("job_position")
+        ):
+            form.save(commit=True)
+            messages.success(request, _("Job position has been created successfully!"))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
@@ -1485,7 +1492,7 @@ def job_position_update(request, id, **kwargs):
     if request.method == "POST":
         form = JobPositionForm(request.POST, instance=job_position)
         if form.is_valid():
-            form.save()
+            form.save(commit=True)
             messages.success(request, _("Job position updated."))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
