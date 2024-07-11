@@ -203,7 +203,7 @@
         value="{{assets.number }}"
         min="1"
         hx-get="{% url 'asset-list' cat_id=asset_category_id  %}?{{pg}}"
-        hx-target="#assetList{{asset_category_id}}"
+        hx-target="#assetCategory{{asset_category_id}}"
       />
       <span class="oh-pagination__label"
         >{% trans "of" %} {{ assets.paginator.num_pages }}</span
@@ -215,7 +215,7 @@
         <a
           hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{pg}}&page=1"
           class="oh-pagination__link"
-          hx-target="#assetList{{asset_category_id}}"
+          hx-target="#assetCategory{{asset_category_id}}"
           >{% trans "First" %}</a
         >
       </li>
@@ -223,7 +223,7 @@
         <a
           hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{pg}}&page={{ assets.previous_page_number }}"
           class="oh-pagination__link"
-          hx-target="#assetList{{asset_category_id}}"
+          hx-target="#assetCategory{{asset_category_id}}"
           >{% trans "Previous" %}</a
         >
       </li>
@@ -232,14 +232,14 @@
         <a
           hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{pg}}&page={{ assets.next_page_number }}"
           class="btn btn-outline-secondary"
-          hx-target="#assetList{{asset_category_id}}"
+          hx-target="#assetCategory{{asset_category_id}}"
           >{% trans "Next" %}</a
         >
       </li>
       <li class="oh-pagination__item oh-pagination__item--wide">
         <a
           hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{pg}}&page={{ assets.paginator.num_pages }}"
-          hx-target="#assetList{{asset_category_id}}"
+          hx-target="#assetCategory{{asset_category_id}}"
           class="oh-pagination__link"
           >{% trans "Last" %}</a
         >
