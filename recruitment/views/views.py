@@ -1925,7 +1925,7 @@ def send_acknowledgement(request):
         (file.name, file.read(), file.content_type) for file in other_attachments
     ]
     email_backend = ConfiguredEmailBackend()
-    host = email_backend.dynamic_username
+    host = email_backend.dynamic_from_email_with_display_name
     if candidate_id:
         candidate_obj = Candidate.objects.filter(id=candidate_id)
     else:

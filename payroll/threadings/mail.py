@@ -57,7 +57,7 @@ class MailSendThread(Thread):
             email = EmailMessage(
                 f"Hello, {record['instances'][0].get_name()} Your Payslips is Ready!",
                 html_message,
-                email_backend.dynamic_username_with_display_name,
+                email_backend.dynamic_from_email_with_display_name,
                 [employee.get_mail()],
                 # reply_to=["another@example.com"],
                 # headers={"Message-ID": "foo"},

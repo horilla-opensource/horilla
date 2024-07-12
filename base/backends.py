@@ -39,7 +39,7 @@ class DefaultHorillaMailBackend(EmailBackend):
             if self.configuration
             else ssl_certfile or getattr(settings, "ssl_certfile", None)
         )
-        self.mail_sent_from = self.dynamic_username
+        
         super().__init__(
             host=self.dynamic_host,
             port=self.dynamic_port,
@@ -94,15 +94,23 @@ class DefaultHorillaMailBackend(EmailBackend):
         )
 
     @property
+    def dynamic_mail_sent_from(self):
+        return (
+            self.configuration.from_email
+            if self.configuration
+            else getattr(settings, "DEFAULT_FROM_EMAIL", None)
+        )
+
+    @property
     def dynamic_display_name(self):
         return self.configuration.display_name if self.configuration else None
 
     @property
-    def dynamic_username_with_display_name(self):
+    def dynamic_from_email_with_display_name(self):
         return (
-            f"{self.dynamic_display_name} <{self.dynamic_username}>"
+            f"{self.dynamic_display_name} <{self.dynamic_mail_sent_from}>"
             if self.dynamic_display_name
-            else self.dynamic_username
+            else self.dynamic_mail_sent_from
         )
 
     @property
@@ -167,7 +175,7 @@ class ConfiguredEmailBackend(BACKEND_CLASS):
         for message in email_messages:
             email_log = EmailLog(
                 subject=message.subject,
-                from_email=self.mail_sent_from,
+                from_email=self.dynamic_from_email_with_display_name,
                 to=message.to,
                 body=message.body,
                 status="sent" if response else "failed",
@@ -177,9 +185,10 @@ class ConfiguredEmailBackend(BACKEND_CLASS):
 
 
 if EMAIL_BACKEND != default:
-    from_mail = getattr(settings, "EMAIL_HOST_USER", "example@gmail.com")
+    from_mail = getattr(settings, "DEFAULT_FROM_EMAIL", "example@gmail.com")
+    username  = getattr(settings, "EMAIL_HOST_USER", "example@gmail.com")
     ConfiguredEmailBackend.dynamic_username = from_mail
-    ConfiguredEmailBackend.dynamic_username_with_display_name = from_mail
+    ConfiguredEmailBackend.dynamic_from_email_with_display_name = from_mail
 
 
 __all__ = ["ConfiguredEmailBackend"]
