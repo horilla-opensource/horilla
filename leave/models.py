@@ -593,17 +593,20 @@ class LeaveRequest(HorillaModel):
                     # Set Sunday as the first day of the week
                     calendar.setfirstweekday(6)
                     month_calendar = calendar.monthcalendar(year, month)
-                    weeks = month_calendar[int(based_on_week)]
-                    weekdays_in_weeks = [day for day in weeks if day != 0]
-                    for day in weekdays_in_weeks:
-                        date = datetime.strptime(
-                            f"{year}-{month:02}-{day:02}", "%Y-%m-%d"
-                        ).date()
-                        if (
-                            date.weekday() == int(based_on_week_day)
-                            and date not in company_leave_dates
-                        ):
-                            company_leave_dates.append(date)
+                    try:
+                        weeks = month_calendar[int(based_on_week)]
+                        weekdays_in_weeks = [day for day in weeks if day != 0]
+                        for day in weekdays_in_weeks:
+                            date = datetime.strptime(
+                                f"{year}-{month:02}-{day:02}", "%Y-%m-%d"
+                            ).date()
+                            if (
+                                date.weekday() == int(based_on_week_day)
+                                and date not in company_leave_dates
+                            ):
+                                company_leave_dates.append(date)
+                    except IndexError:
+                        pass
                 else:
                     # Set Monday as the first day of the week
                     calendar.setfirstweekday(0)
