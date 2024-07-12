@@ -7,8 +7,8 @@ This module is used to map url pattens with django views or methods
 import json
 import uuid
 from datetime import datetime, timedelta
-from urllib.parse import parse_qs, unquote, urlencode
 from os import path
+from urllib.parse import parse_qs, unquote, urlencode
 
 from django import forms
 from django.apps import apps
@@ -505,6 +505,52 @@ class HorillaPasswordResetView(PasswordResetView):
 
         messages.info(self.request, _("No user found with the username"))
         return redirect("forgot-password")
+
+
+class EmployeePasswordResetView(PasswordResetView):
+    """
+    Horilla View for Employee Reset Password
+    """
+
+    template_name = "forgot_password.html"
+    form_class = PassWordResetForm
+
+    def form_valid(self, form):
+        try:
+            email_backend = ConfiguredEmailBackend()
+            default = "base.backends.ConfiguredEmailBackend"
+            is_default_backend = True
+            EMAIL_BACKEND = getattr(settings, "EMAIL_BACKEND", "")
+            if EMAIL_BACKEND and default != EMAIL_BACKEND:
+                is_default_backend = False
+            if is_default_backend and not email_backend.configuration:
+                messages.error(self.request, _("Primary mail server is not configured"))
+                return HttpResponseRedirect(self.request.META.get("HTTP_REFERER", "/"))
+
+            username = form.cleaned_data["email"]
+            user = User.objects.filter(username=username).first()
+            if user:
+                opts = {
+                    "use_https": self.request.is_secure(),
+                    "token_generator": self.token_generator,
+                    "from_email": email_backend.dynamic_username_with_display_name,
+                    "email_template_name": self.email_template_name,
+                    "subject_template_name": self.subject_template_name,
+                    "request": self.request,
+                    "html_email_template_name": self.html_email_template_name,
+                    "extra_email_context": self.extra_email_context,
+                }
+                form.save(**opts)
+                messages.success(
+                    self.request, _("Password reset link sent successfully")
+                )
+            else:
+                messages.error(self.request, _("No user with the given username"))
+            return HttpResponseRedirect(self.request.META.get("HTTP_REFERER", "/"))
+
+        except Exception as e:
+            messages.error(self.request, f"Something went wrong.....")
+            return HttpResponseRedirect(self.request.META.get("HTTP_REFERER", "/"))
 
 
 setattr(PasswordResetConfirmView, "template_name", "reset_password.html")
@@ -1206,7 +1252,9 @@ def mail_server_test_email(request):
                 msg.attach_alternative(html_content, "text/html")
 
                 # Attach the image
-                image_path = path.join(settings.STATIC_ROOT, "images/ui/horilla-logo.png")
+                image_path = path.join(
+                    settings.STATIC_ROOT, "images/ui/horilla-logo.png"
+                )
                 with open(image_path, "rb") as img:
                     msg_img = MIMEImage(img.read())
                     msg_img.add_header("Content-ID", "<unique_image_id>")

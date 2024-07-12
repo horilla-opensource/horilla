@@ -83,6 +83,11 @@ urlpatterns = [
         views.HorillaPasswordResetView.as_view(),
         name="forgot-password",
     ),
+    path(
+        "employee-reset-password",
+        views.EmployeePasswordResetView.as_view(),
+        name="employee-reset-password",
+    ),
     path("reset-send-success", views.reset_send_success, name="reset-send-success"),
     path("change-password", views.change_password, name="change-password"),
     path("logout", views.logout_user, name="logout"),
