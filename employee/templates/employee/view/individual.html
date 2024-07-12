@@ -170,7 +170,7 @@
 						{% endif %}
 						{% if perms.employee.add_employee or employee.employee_work_info.reporting_manager_id == request.user.employee_get %}
 							<li class="oh-dropdown__item">
-								<form action="{% url 'forgot-password' %}" method="post" role="button" >
+								<form action="{% url 'employee-reset-password' %}" method="post" role="button" >
 									<ion-icon name="key-outline" style="width: 20px; height: 20px; "></ion-icon>
 									{% csrf_token %}
 									<input name="email" hidden value="{{employee.employee_user_id.username}}" />
