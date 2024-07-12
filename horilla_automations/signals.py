@@ -176,10 +176,13 @@ def start_automation():
         def pre_bulk_update_handler(sender, queryset, *args, **kwargs):
             request = getattr(_thread_locals, "request", None)
             if request:
+                queryset_copy = queryset.none()
+                if queryset.count():
+                    queryset_copy = QuerySet.from_list(copy.deepcopy(list(queryset)))
                 _thread_locals.previous_bulk_record = {
                     "automation": automation,
                     "queryset": queryset,
-                    "queryset_copy": QuerySet.from_list(copy.deepcopy(list(queryset))),
+                    "queryset_copy": queryset_copy,
                 }
 
         func_name = f"{automation.method_title}_pre_bulk_signal_handler"
