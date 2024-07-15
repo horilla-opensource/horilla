@@ -60,6 +60,15 @@ def format_time(seconds):
     return f"{hour:02d}:{minutes:02d}"
 
 
+def validate_hh_mm_ss_format(value):
+    timeformat = "%H:%M:%S"
+    try:
+        validtime = datetime.strptime(value, timeformat)
+        return validtime.time()  # Return the time object if needed
+    except ValueError as e:
+        raise ValidationError(_("Invalid format, it should be HH:MM:SS format"))
+
+
 def validate_time_format(value):
     """
     this method is used to validate the format of duration like fields.
@@ -955,8 +964,8 @@ class GraceTime(HorillaModel):
     """
 
     allowed_time = models.CharField(
-        default="00:00",
-        validators=[validate_time_in_minutes],
+        default="00:00:00",
+        validators=[validate_hh_mm_ss_format],
         max_length=10,
         verbose_name=_("Allowed time"),
     )
@@ -995,13 +1004,18 @@ class GraceTime(HorillaModel):
 
     def save(self, *args, **kwargs):
         allowed_time = self.allowed_time
-        minute, secs = allowed_time.split(":")
-        minute_int = int(minute)
+        hours, minutes, secs = allowed_time.split(":")
+
+        hours_int = int(hours)
+        minutes_int = int(minutes)
         secs_int = int(secs)
-        minute_str = f"{minute_int:02d}"
+
+        hours_str = f"{hours_int:02d}"
+        minutes_str = f"{minutes_int:02d}"
         secs_str = f"{secs_int:02d}"
-        self.allowed_time = f"{minute_str}:{secs_str}"
-        self.allowed_time_in_secs = minute_int * 60 + secs_int
+
+        self.allowed_time = f"{hours_str}:{minutes_str}:{secs_str}"
+        self.allowed_time_in_secs = hours_int * 3600 + minutes_int * 60 + secs_int
         super().save(*args, **kwargs)
 
 

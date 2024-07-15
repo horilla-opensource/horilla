@@ -37,7 +37,7 @@
               </div>
               <div class="oh-sticky-table__tbody">
                   <div class="oh-sticky-table__tr" draggable="true">
-                    <div class="oh-sticky-table__td">{{ default_grace_time.allowed_time }} {% trans 'Minutes' %}</div>
+                    <div class="oh-sticky-table__td">{{ default_grace_time.allowed_time }} {% trans 'Hours' %}</div>
                     <div class="oh-sticky-table__td">
                       <div class="d-flex">
                         <div class="oh-switch">
@@ -198,7 +198,7 @@ $.ajax({
 				<div class="oh-sticky-table__tbody">
 					{% for grace_time in grace_times %}
 						<div class="oh-sticky-table__tr" draggable="true">
-							<div class="oh-sticky-table__td">{{ grace_time.allowed_time }} {% trans 'Minutes' %}</div>
+							<div class="oh-sticky-table__td">{{ grace_time.allowed_time }} {% trans 'Hours' %}</div>
 							<div class="oh-sticky-table__td">
 								<div class="d-flex">
 								<div class="oh-switch">

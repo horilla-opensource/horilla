@@ -859,7 +859,7 @@ class GraceTimeForm(ModelForm):
         fields = "__all__"
         widgets = {
             "is_default": forms.HiddenInput(),
-            "allowed_time": forms.TextInput(attrs={"placeholder": "00:00 minutes"}),
+            "allowed_time": forms.TextInput(attrs={"placeholder": "00:00:00 Hours"}),
         }
 
         exclude = ["objects", "allowed_time_in_secs", "is_active"]
