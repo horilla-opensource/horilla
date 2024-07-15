@@ -3030,7 +3030,7 @@ def department_leave_chart(request):
     values = [value for value in values if value != 0]
     dataset = [
         {
-            "label": "",
+            "label": _(""),
             "data": values,
         },
     ]

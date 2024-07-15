@@ -1768,7 +1768,18 @@ class ResetPasswordForm(SetPasswordForm):
         raise forms.ValidationError(_("Password must be same."))
 
 
-excluded_fields = ["id", "is_active", "shift_changed", "work_type_changed"]
+excluded_fields = [
+    "id",
+    "is_active",
+    "shift_changed",
+    "work_type_changed",
+    "created_at",
+    "created_by",
+    "modified_by",
+    "additional_data",
+    "horilla_history",
+    "additional_data",
+]
 
 
 class ShiftRequestColumnForm(forms.Form):

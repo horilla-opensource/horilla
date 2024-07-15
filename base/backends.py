@@ -39,7 +39,7 @@ class DefaultHorillaMailBackend(EmailBackend):
             if self.configuration
             else ssl_certfile or getattr(settings, "ssl_certfile", None)
         )
-        
+
         super().__init__(
             host=self.dynamic_host,
             port=self.dynamic_port,
@@ -186,7 +186,7 @@ class ConfiguredEmailBackend(BACKEND_CLASS):
 
 if EMAIL_BACKEND != default:
     from_mail = getattr(settings, "DEFAULT_FROM_EMAIL", "example@gmail.com")
-    username  = getattr(settings, "EMAIL_HOST_USER", "example@gmail.com")
+    username = getattr(settings, "EMAIL_HOST_USER", "example@gmail.com")
     ConfiguredEmailBackend.dynamic_username = from_mail
     ConfiguredEmailBackend.dynamic_from_email_with_display_name = from_mail
 

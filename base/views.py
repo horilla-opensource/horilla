@@ -1793,8 +1793,6 @@ def rotating_work_type_assign(request):
         "base/rotating_work_type/rotating_work_type_assign.html",
         {
             "f": filter,
-            "export_filter": RotatingWorkTypeAssignFilter(),
-            "export_columns": RotatingWorkTypeAssignExportForm(),
             "rwork_type_assign": paginator_qry(
                 rwork_type_assign, request.GET.get("page")
             ),
@@ -1986,6 +1984,17 @@ def rotating_work_type_assign_update(request, id):
 @login_required
 @manager_can_enter("base.change_rotatingworktypeassign")
 def rotating_work_type_assign_export(request):
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        context = {
+            "export_filter": RotatingWorkTypeAssignFilter(),
+            "export_columns": RotatingWorkTypeAssignExportForm(),
+        }
+        return render(
+            request,
+            "base/rotating_work_type/rotating_work_type_assign_export.html",
+            context=context,
+        )
+
     return export_data(
         request=request,
         model=RotatingWorkTypeAssign,
@@ -2635,6 +2644,16 @@ def rotating_shift_assign_update(request, id):
 @login_required
 @manager_can_enter("base.change_rotatingshiftassign")
 def rotating_shift_assign_export(request):
+    if request.META.get("HTTP_HX_REQUEST"):
+        context = {
+            "export_filter": RotatingShiftAssignFilters(),
+            "export_columns": RotatingShiftAssignExportForm(),
+        }
+        return render(
+            request,
+            "base/rotating_shift/rotating_shift_assign_export.html",
+            context=context,
+        )
     return export_data(
         request=request,
         model=RotatingShiftAssign,
@@ -3012,8 +3031,6 @@ def work_type_request_view(request):
     f = WorkTypeRequestFilter(request.GET, queryset=work_type_requests)
     data_dict = parse_qs(previous_data)
     get_key_instances(WorkTypeRequest, data_dict)
-    export_filter = WorkTypeRequestFilter()
-    export_fields = WorkTypeRequestColumnForm()
     form = WorkTypeRequestForm()
     form = choosesubordinates(
         request,
@@ -3028,9 +3045,7 @@ def work_type_request_view(request):
             "data": paginator_qry(f.qs, request.GET.get("page")),
             "f": f,
             "form": form,
-            "export_filter": export_filter,
             "filter_dict": data_dict,
-            "export_fields": export_fields,
             "requests_ids": requests_ids,
             "gp_fields": WorkTypeRequestReGroup.fields,
         },
@@ -3040,6 +3055,16 @@ def work_type_request_view(request):
 @login_required
 @manager_can_enter("base.view_worktyperequest")
 def work_type_request_export(request):
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        export_filter = WorkTypeRequestFilter()
+        export_fields = WorkTypeRequestColumnForm()
+        context = {
+            "export_fields": export_fields,
+            "export_filter": export_filter,
+        }
+        return render(
+            request, "work_type_request/work_type_request_export.html", context=context
+        )
     return export_data(
         request,
         WorkTypeRequest,
@@ -3731,8 +3756,7 @@ def shift_request_view(request):
     data_dict = parse_qs(previous_data)
     get_key_instances(ShiftRequest, data_dict)
     form = ShiftRequestForm()
-    export_fields = ShiftRequestColumnForm()
-    export_filter = ShiftRequestFilter()
+
     form = choosesubordinates(
         request,
         form,
@@ -3750,8 +3774,6 @@ def shift_request_view(request):
             "f": f,
             "form": form,
             "filter_dict": data_dict,
-            "export_fields": export_fields,
-            "export_filter": export_filter,
             "requests_ids": requests_ids,
             "allocated_ids": allocated_ids,
             "gp_fields": ShiftRequestReGroup.fields,
@@ -3762,6 +3784,17 @@ def shift_request_view(request):
 @login_required
 @manager_can_enter("base.view_shiftrequest")
 def shift_request_export(request):
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        export_fields = ShiftRequestColumnForm()
+        export_filter = ShiftRequestFilter()
+
+        context = {
+            "export_fields": export_fields,
+            "export_filter": export_filter,
+        }
+        return render(
+            request, "shift_request/shift_request_export.html", context=context
+        )
     return export_data(
         request,
         ShiftRequest,
