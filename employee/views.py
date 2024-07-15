@@ -186,7 +186,6 @@ def employee_profile(request):
         user_leaves = employee.available_leave.all()
     instances = LeaveRequest.objects.filter(employee_id=employee)
     leave_request_ids = json.dumps([instance.id for instance in instances])
-    employee = Employee.objects.filter(employee_user_id=user).first()
     assets = employee.allocated_employee.all()
     feedback_own = Feedback.objects.filter(employee_id=employee, archive=False)
     interviews = InterviewSchedule.objects.filter(employee_id=employee).order_by(
