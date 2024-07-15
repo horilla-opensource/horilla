@@ -6,6 +6,19 @@
     </form>
   </div>
   <script>
+      var rangeToggle = () => {
+        if ($("[name = 'if_condition']").val() == "range") {
+
+          $("[name = 'if_amount']").parent().hide();
+          $("[name = 'start_range']").parent().show();
+          $("[name = 'end_range']").parent().show();
+        } else {
+
+          $("[name = 'if_amount']").parent().show();
+          $("[name = 'start_range']").parent().hide();
+          $("[name = 'end_range']").parent().hide();
+        }
+      }
       function toggleFunction() {
         if ($("#id_calculate_daily_leave_amount").is(":checked")) {
           $(
@@ -56,6 +69,7 @@
         $("[type=checkbox]").change(function (e) {
           e.preventDefault();
           toggleFunction();
+          rangeToggle()
         });
 
           $("#id_is_condition_based").change()

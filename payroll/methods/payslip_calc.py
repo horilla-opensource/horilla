@@ -733,10 +733,14 @@ def if_condition_on(*_args, **kwargs):
         gross_pay = calculate_gross_pay(
             **kwargs,
         )["gross_pay"]
-    operator_func = operator_mapping.get(component.if_condition)
     condition_value = basic_pay if component.if_choice == "basic_pay" else gross_pay
-    if not operator_func(condition_value, component.if_amount):
-        amount = 0
+    if component.if_condition == "range":
+        if not component.start_range <= condition_value <= component.end_range:
+            amount = 0
+    else:
+        operator_func = operator_mapping.get(component.if_condition)
+        if not operator_func(condition_value, component.if_amount):
+            amount = 0
     return amount
 
 

@@ -72,6 +72,11 @@ class AllowanceForm(forms.ModelForm):
                 }
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
+        self.fields["if_condition"].widget.attrs.update(
+            {
+                "onchange": "rangeToggle($(this))",
+            }
+        )
         reload_queryset(self.fields)
         self.fields["style"].widget = widget.StyleWidget(form=self)
 
@@ -82,6 +87,36 @@ class AllowanceForm(forms.ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
+
+    def clean(self, *args, **kwargs):
+        cleaned_data = super().clean(*args, **kwargs)
+
+        if cleaned_data.get("if_condition") == "range":
+            cleaned_data["if_amount"] = 0
+            start_range = cleaned_data.get("start_range")
+            end_range = cleaned_data.get("end_range")
+            if start_range and end_range and end_range <= start_range:
+                raise forms.ValidationError(
+                    {"end_range": "End range cannot be less than start range."}
+                )
+            if not start_range and not end_range:
+                raise forms.ValidationError(
+                    {
+                        "start_range": 'This field is required when condition is "range".',
+                        "end_range": 'This field is required when condition is "range".',
+                    }
+                )
+            elif not start_range:
+                raise forms.ValidationError(
+                    {"start_range": 'This field is required when condition is "range".'}
+                )
+            elif not end_range:
+                raise forms.ValidationError(
+                    {"end_range": 'This field is required when condition is "range".'}
+                )
+        else:
+            cleaned_data["start_range"] = None
+            cleaned_data["end_range"] = None
 
     def save(self, commit: bool = ...) -> Any:
         super().save(commit)
@@ -140,10 +175,44 @@ class DeductionForm(forms.ModelForm):
                 }
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
+        self.fields["if_condition"].widget.attrs.update(
+            {
+                "onchange": "rangeToggle($(this))",
+            }
+        )
         reload_queryset(self.fields)
         self.fields["style"].widget = widget.StyleWidget(form=self)
 
-    def clean(self):
+    def clean(self, *args, **kwargs):
+        cleaned_data = super().clean(*args, **kwargs)
+        if cleaned_data.get("if_condition") == "range":
+            cleaned_data["if_amount"] = 0
+            start_range = cleaned_data.get("start_range")
+            end_range = cleaned_data.get("end_range")
+
+            if start_range and end_range and int(end_range) <= int(start_range):
+                raise forms.ValidationError(
+                    {"end_range": "End range cannot be less than start range."}
+                )
+            if not start_range and not end_range:
+                raise forms.ValidationError(
+                    {
+                        "start_range": 'This field is required when condition is "range".',
+                        "end_range": 'This field is required when condition is "range".',
+                    }
+                )
+            elif not start_range:
+                raise forms.ValidationError(
+                    {"start_range": 'This field is required when condition is "range".'}
+                )
+            elif not end_range:
+                raise forms.ValidationError(
+                    {"end_range": 'This field is required when condition is "range".'}
+                )
+        else:
+            cleaned_data["start_range"] = None
+            cleaned_data["end_range"] = None
+
         if (
             self.data.get("update_compensation") is not None
             and self.data.get("update_compensation") != ""
@@ -165,7 +234,7 @@ class DeductionForm(forms.ModelForm):
                 )
             if self.data.get("amount") is None and self.data.get("amount") == "":
                 raise forms.ValidationError({"amount": _("This field is required.")})
-        return super().clean()
+        return cleaned_data
 
     def as_p(self):
         """
