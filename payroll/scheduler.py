@@ -60,6 +60,8 @@ def generate_payslip(date, companies, all):
         payslip = Payslip.objects.filter(
             employee_id=employee, start_date=start_date, end_date=end_date
         ).first()
+        if payslip:
+            continue
         contract = Contract.objects.filter(
             employee_id=employee, contract_status="active"
         ).first()
