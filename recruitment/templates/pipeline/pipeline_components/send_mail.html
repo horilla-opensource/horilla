@@ -70,12 +70,14 @@
       <label for="body">
         <h6>{% trans "Message Body" %}</h6>
       </label>
-      <textarea hidden name="body" required class="oh-input w-100" id="body" cols="30"
+      <textarea hidden name="body" {% if not cand %} data-summernote {% endif %} required class="oh-input w-100" id="body" cols="30"
         rows="2"></textarea>
     </div>
-    <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
-      {% trans "Hint: Type '{' to get sender or receiver data" %}
-    </div>
+    {% if cand %}
+      <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
+        {% trans "Hint: Type '{' to get sender or receiver data" %}
+      </div>
+    {% endif %}
     <div class="form-group mt-2">
       <label for="template_attachments">
         <h6>{% trans "Template as Attachment" %}</h6>
@@ -120,7 +122,16 @@
   button.onclick = function (event) {
     var element = event.target;
     var valid = true
-    if (!$("#subject").val().length) {
+
+    if (!$('#candidates').val().length && "{{cand|default:'false'|safe}}"=="false") {
+      valid=false
+      $(`#messages`).html($(`
+      <div class="oh-alert oh-alert--animated oh-alert--danger" role="alert">
+        This field is required
+        </div>
+        `));
+    }
+    else if (!$("#subject").val().length) {
       valid=false
       $(`#messages`).html($(`
       <div class="oh-alert oh-alert--animated oh-alert--danger" role="alert">
