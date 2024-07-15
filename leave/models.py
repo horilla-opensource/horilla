@@ -690,8 +690,9 @@ class LeaveRequest(HorillaModel):
 
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         if not request.user.is_superuser:
-            if self.start_date < date.today():
-                raise ValidationError(_("Requests cannot be made for past dates."))
+            if EmployeePastLeaveRestrict.objects.first().enabled:
+                if self.start_date < date.today():
+                    raise ValidationError(_("Requests cannot be made for past dates."))
         if not request.user.is_superuser:
             for restrict in restricted_leave:
                 restri = restrict.id
@@ -1072,3 +1073,7 @@ class CompensatoryLeaverequestComment(HorillaModel):
 
     def __str__(self) -> str:
         return f"{self.comment}"
+
+
+class EmployeePastLeaveRestrict(HorillaModel):
+    enabled = models.BooleanField(default=True)

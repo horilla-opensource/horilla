@@ -5028,3 +5028,24 @@ def check_interview_conflicts(request):
     except Exception as e:
         logger.error(e)
         return JsonResponse(e)
+
+
+@login_required
+@permission_required("leave.view_leavegeneralsetting")
+def employee_past_leave_restriction(request):
+    enabled_restriction = EmployeePastLeaveRestrict.objects.first()
+    if not enabled_restriction:
+        enabled_restriction = EmployeePastLeaveRestrict.objects.create(enabled=True)
+    if request.method == "POST":
+        enabled = request.POST.get("enabled")
+        if enabled:
+            enabled_restriction.enabled = True
+        else:
+            enabled_restriction.enabled = False
+        enabled_restriction.save()
+
+    return render(
+        request,
+        "leave/settings/past_leave_restrict_view.html",
+        {"enabled_restriction": enabled_restriction},
+    )

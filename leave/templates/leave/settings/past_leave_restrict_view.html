@@ -1,0 +1,35 @@
+{% extends 'settings.html' %} {% load i18n %} {% block settings %}{% load static %}
+<div class="oh-inner-sidebar-content">
+    <div id="message"></div>
+    <div
+        class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
+    >
+        <h2 class="oh-inner-sidebar-content__title">
+            {% trans "Restrict Past Leave" %}
+        </h2>
+    </div>
+    <form
+        action = "" method="post" class="d-flex"
+    >
+        {% csrf_token %}
+        <div class="oh-label__info" for="enabled">
+            <label class="oh-label" for="enabled"
+                >{% trans "Restricts Past Date Leave Request Creation" %}</label
+            >
+            <span class="oh-info mr-2" title="{% trans "By enabling this only admins and managers can create leave requests for the past dates" %}"> </span>
+        </div>
+        <div class="oh-switch p-3"  style="margin-top:5px">
+            <input
+                type="checkbox"
+                class="oh-switch__checkbox"
+                id = "enabled"
+                name="enabled"
+                style = "cursor:pointer"
+                onchange="$(this).closest('form').submit();"
+                {% if enabled_restriction.enabled %} checked {% endif %}
+            />
+        </div>
+        {% comment %} <input type="submit" hidden /> {% endcomment %}
+    </form>
+</div>
+{% endblock settings %}

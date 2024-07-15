@@ -380,8 +380,20 @@
 									<ion-icon name="close-circle-outline" class="me-2"></ion-icon>
 									{% trans "Leave" %}
 								</div>
-									<div class="oh-accordion-body">
-										<div class="row">
+								<div class="oh-accordion-body">
+									<div class="row">
+										<div class="col-sm-12 col-md-12 col-lg-12">
+											<div class="oh-input-group">
+												{% if perms.attendance.view_attendancevalidationcondition %}
+													<a
+														id="condition"
+														href="{% url 'employee-past-leave-restriction' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Restrictions" %}</a
+													>
+												{% endif %}
+											</div>
+										</div>
 										<div class="col-sm-12 col-md-12 col-lg-12">
 											<div class="oh-input-group">
 												{% if perms.attendance.view_attendancevalidationcondition %}

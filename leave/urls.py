@@ -439,4 +439,9 @@ urlpatterns = [
         views.check_interview_conflicts,
         name="check-interview-conflicts",
     ),
+    path(
+        "employee-past-leave-restriction",
+        views.employee_past_leave_restriction,
+        name="employee-past-leave-restriction",
+    ),
 ]
