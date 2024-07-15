@@ -63,11 +63,9 @@ SUBMENUS = [
 def profile_accessibility(request, submenu, user_perms, *args, **kwargs):
     accessible = False
     try:
-        accessible = (
-            request.session["selected_company"] == "all"
-            or str(request.user.employee_get.employee_work_info.company_id.id)
-            == request.session["selected_company"]
-        )
+        accessible = request.session["selected_company"] == "all" or str(
+            request.user.employee_get.employee_work_info.company_id.id
+        ) == str(request.session["selected_company"])
     finally:
         return accessible
 
