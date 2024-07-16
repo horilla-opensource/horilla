@@ -8,7 +8,7 @@ registered on biometric devices.
 
 import json
 from datetime import datetime
-from threading import Thread
+from threading import Event, Thread
 from urllib.parse import parse_qs, unquote
 
 import pytz
@@ -156,78 +156,86 @@ class ZKBioAttendance(Thread):
     - machine_ip: The IP address of the ZKTeco biometric device.
     - port_no: The port number for communication with the ZKTeco biometric device.
     - conn: The connection object to the ZKTeco biometric device.
+    - _stop_event: Event flag to signal thread termination.
 
     Methods:
     - run(): Overrides the run method of the Thread class to capture live attendance data.
+    - stop(): Sets the _stop_event to signal the thread to stop gracefully.
     """
 
     def __init__(self, machine_ip, port_no):
+        super().__init__()
         self.machine_ip = machine_ip
         self.port_no = port_no
-        zk_device = ZK(
-            machine_ip,
-            port=port_no,
-            timeout=5,
-            password=0,
-            force_udp=False,
-            ommit_ping=False,
-        )
-        conn = zk_device.connect()
-        self.conn = conn
-        Thread.__init__(self)
+        self._stop_event = Event()  # Initialize stop event
+        self.conn = None
 
     def run(self):
         try:
-            device = BiometricDevices.objects.filter(
-                machine_ip=self.machine_ip, port=self.port_no
-            ).first()
-            if device.is_live:
-                attendances = self.conn.live_capture()
-                for attendance in attendances:
-                    if attendance:
-                        user_id = attendance.user_id
-                        punch_code = attendance.punch
-                        date_time = attendance.timestamp
-                        date = date_time.date()
-                        time = date_time.time()
-                        if device:
-                            device.last_fetch_date = date
-                            device.last_fetch_time = time
-                            device.save()
-                        bio_id = BiometricEmployees.objects.filter(
-                            user_id=user_id
-                        ).first()
-                        if bio_id:
-                            if punch_code in {0, 3, 4}:
-                                try:
-                                    clock_in(
-                                        Request(
-                                            user=bio_id.employee_id.employee_user_id,
-                                            date=date,
-                                            time=time,
-                                            datetime=date_time,
-                                        )
-                                    )
-                                except Exception as error:
-                                    print(f"Got an error in clock_in {error}")
-                                    continue
+            zk_device = ZK(
+                self.machine_ip,
+                port=self.port_no,
+                timeout=5,
+                password=0,
+                force_udp=False,
+                ommit_ping=False,
+            )
+            conn = zk_device.connect()
+            self.conn = conn
+            if conn:
+                device = BiometricDevices.objects.filter(
+                    machine_ip=self.machine_ip, port=self.port_no
+                ).first()
+                if device and device.is_live:
+                    while not self._stop_event.is_set():
+                        attendances = conn.live_capture()
+                        for attendance in attendances:
+                            if attendance:
+                                user_id = attendance.user_id
+                                punch_code = attendance.punch
+                                date_time = attendance.timestamp
+                                date = date_time.date()
+                                time = date_time.time()
+                                device.last_fetch_date = date
+                                device.last_fetch_time = time
+                                device.save()
+                                bio_id = BiometricEmployees.objects.filter(
+                                    user_id=user_id
+                                ).first()
+                                if bio_id:
+                                    if punch_code in {0, 3, 4}:
+                                        try:
+                                            clock_in(
+                                                Request(
+                                                    user=bio_id.employee_id.employee_user_id,
+                                                    date=date,
+                                                    time=time,
+                                                    datetime=date_time,
+                                                )
+                                            )
+                                        except Exception as error:
+                                            print(f"Got an error in clock_in {error}")
+                                            continue
+                                    else:
+                                        try:
+                                            clock_out(
+                                                Request(
+                                                    user=bio_id.employee_id.employee_user_id,
+                                                    date=date,
+                                                    time=time,
+                                                    datetime=date_time,
+                                                )
+                                            )
+                                        except Exception as error:
+                                            print(f"Got an error in clock_out {error}")
+                                            continue
                             else:
-                                try:
-                                    clock_out(
-                                        Request(
-                                            user=bio_id.employee_id.employee_user_id,
-                                            date=date,
-                                            time=time,
-                                            datetime=date_time,
-                                        )
-                                    )
-                                except Exception as error:
-                                    print(f"Got an error in clock_out {error}")
-                                    continue
-                    else:
-                        continue
+                                continue
         except ConnectionResetError as error:
             ZKBioAttendance(self.machine_ip, self.port_no).start()
+
+    def stop(self):
+        self.conn.end_live_capture = True
 
 
 class AnvizBiometricDeviceManager:
@@ -1516,20 +1524,13 @@ def add_biometric_user(request, device_id):
                             name=employee_name,
                             password="",
                             group_id="",
-                            user_id=(
-                                employee.badge_id
-                                if employee.badge_id.isalnum()
-                                else str(user_id)
-                            ),
+                            user_id=str(user_id),
                             card=0,
                         )
+                        # The ZK Biometric user ID must be a character value that can be converted to an integer.
                         BiometricEmployees.objects.create(
                             uid=uid,
-                            user_id=(
-                                employee.badge_id
-                                if employee.badge_id.isalnum()
-                                else str(user_id)
-                            ),
+                            user_id=str(user_id),
                             employee_id=employee,
                             device_id=device,
                         )
