@@ -38,14 +38,14 @@
                                         </div>
                                         <div class="oh-recuritment__details">
                                             <p class="oh-recuritment_company-name">{{recruitment.company_id}}</p>
-                                            <span class="oh-job_post--posteddate">02 days ago</span>
+                                            <span class="oh-job_post--posteddate">{{recruitment.created_at|timesince}}</span>
                                         </div>
                                     </div>
                                     <div class="oh-recuritment_tag" style="background:hsl(121deg 81.26% 91.23%)"><a class=" text-success text-decoration-none" href="{% url "application-form" %}?recruitmentId={{recruitment.id}}" rel="noopener noreferrer" target="_blank">{% trans "Apply Now" %}</a></div>
                                 </div>
                                 <div class="d-flex mt-3 flex-wrap">
                                 {% for job_position in recruitment.open_positions.all %}
-                                    <div class="oh-recuritment_tag">{{job_position}}</div>
+                                    <div class="oh-recuritment_tag">{{job_position.job_position}}</div>
                                 {% endfor %}
                                 </div>
                                 <h5 class="oh-job__post">{{recruitment.title}}</h5>
