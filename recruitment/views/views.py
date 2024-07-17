@@ -327,6 +327,11 @@ def recruitment_update(request, rec_id):
                 for sur in survey.recruitmentsurvey_set.all():
                     sur.recruitment_ids.add(recruitment_obj)
             recruitment_obj.save()
+            recruitment_obj.recruitment_managers.set(
+                Employee.objects.filter(
+                    id__in=form.data.getlist("recruitment_managers")
+                )
+            )
             messages.success(request, _("Recruitment Updated."))
             response = render(
                 request, "recruitment/recruitment_form.html", {"form": form}
@@ -717,6 +722,9 @@ def stage_update_pipeline(request, stage_id):
         form = StageCreationForm(request.POST, instance=stage_obj)
         if form.is_valid():
             stage_obj = form.save()
+            stage_obj.stage_managers.set(
+                Employee.objects.filter(id__in=form.data.getlist("stage_managers"))
+            )
             messages.success(request, _("Stage updated."))
             with contextlib.suppress(Exception):
                 managers = stage_obj.stage_managers.select_related("employee_user_id")
@@ -756,6 +764,11 @@ def recruitment_update_pipeline(request, rec_id):
         form = RecruitmentCreationForm(request.POST, instance=recruitment_obj)
         if form.is_valid():
             recruitment_obj = form.save()
+            recruitment_obj.recruitment_managers.set(
+                Employee.objects.filter(
+                    id__in=form.data.getlist("recruitment_managers")
+                )
+            )
             messages.success(request, _("Recruitment updated."))
             with contextlib.suppress(Exception):
                 managers = recruitment_obj.recruitment_managers.select_related(
@@ -1212,7 +1225,10 @@ def stage_update(request, stage_id):
     if request.method == "POST":
         form = StageCreationForm(request.POST, instance=stages)
         if form.is_valid():
-            form.save()
+            stage_obj = form.save()
+            stage_obj.stage_managers.set(
+                Employee.objects.filter(id__in=form.data.getlist("stage_managers"))
+            )
             messages.success(request, _("Stage updated."))
             response = render(
                 request, "recruitment/recruitment_form.html", {"form": form}

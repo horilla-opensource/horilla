@@ -261,18 +261,18 @@ class RecruitmentCreationForm(ModelForm):
         super().__init__(*args, **kwargs)
 
         reload_queryset(self.fields)
-        if not self.instance.pk:
-            self.fields["recruitment_managers"] = HorillaMultiSelectField(
-                queryset=Employee.objects.filter(is_active=True),
-                widget=HorillaMultiSelectWidget(
-                    filter_route_name="employee-widget-filter",
-                    filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
-                    filter_template_path="employee_filters.html",
-                    required=True,
-                ),
-                label="Employee",
-            )
+        self.fields["recruitment_managers"] = HorillaMultiSelectField(
+            queryset=Employee.objects.filter(is_active=True),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                required=True,
+                instance=self.instance,
+            ),
+            label="Managers",
+        )
 
         skill_choices = [("", _("---Choose Skills---"))] + list(
             self.fields["skills"].queryset.values_list("id", "title")
@@ -322,18 +322,18 @@ class StageCreationForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
-        if not self.instance.pk:
-            self.fields["stage_managers"] = HorillaMultiSelectField(
-                queryset=Employee.objects.filter(is_active=True),
-                widget=HorillaMultiSelectWidget(
-                    filter_route_name="employee-widget-filter",
-                    filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
-                    filter_template_path="employee_filters.html",
-                    required=True,
-                ),
-                label="Employee",
-            )
+        self.fields["stage_managers"] = HorillaMultiSelectField(
+            queryset=Employee.objects.filter(is_active=True),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                required=True,
+                instance=self.instance,
+            ),
+            label="Stage Managers",
+        )
 
     def clean(self):
         if isinstance(self.fields["stage_managers"], HorillaMultiSelectField):
