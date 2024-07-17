@@ -109,18 +109,32 @@ class ObjectiveForm(BaseForm):
             "employee", None
         )  # access the logged-in user's information
         super().__init__(*args, **kwargs)
-        if self.instance.pk is None:
-            self.fields["assignees"] = HorillaMultiSelectField(
-                queryset=Employee.objects.all(),
-                widget=HorillaMultiSelectWidget(
-                    filter_route_name="employee-widget-filter",
-                    filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
-                    filter_template_path="employee_filters.html",
-                    required=False,
-                ),
-                label="Assignees",
-            )
+        self.fields["assignees"] = HorillaMultiSelectField(
+            queryset=Employee.objects.all(),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                required=False,
+                instance=self.instance,
+            ),
+            label="Assignees",
+        )
+
+        self.fields["managers"] = HorillaMultiSelectField(
+            queryset=Employee.objects.all(),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                required=False,
+                instance=self.instance,
+            ),
+            label="Managers",
+        )
+
         reload_queryset(self.fields)
         self.fields["key_result_id"].choices = list(
             self.fields["key_result_id"].choices
@@ -723,17 +737,17 @@ class FeedbackForm(ModelForm):
         if instance:
             kwargs["initial"] = set_date_field_initial(instance)
         super().__init__(*args, **kwargs)
-        if self.instance.pk is None:
-            self.fields["subordinate_id"] = HorillaMultiSelectField(
-                queryset=Employee.objects.all(),
-                widget=HorillaMultiSelectWidget(
-                    filter_route_name="employee-widget-filter",
-                    filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
-                    filter_template_path="employee_filters.html",
-                ),
-                label="Subordinates",
-            )
+        self.fields["subordinate_id"] = HorillaMultiSelectField(
+            queryset=Employee.objects.all(),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                instance=self.instance,
+            ),
+            label="Subordinates",
+        )
         reload_queryset(self.fields)
         self.fields["period"].choices = list(self.fields["period"].choices)
         self.fields["period"].choices.append(("create_new_period", "Create new period"))
