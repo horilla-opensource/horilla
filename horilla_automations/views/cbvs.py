@@ -2,18 +2,22 @@
 horilla_automations/views/cbvs.py
 """
 
-from typing import Any
-
 from django.contrib import messages
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _trans
 
+from horilla.decorators import login_required, permission_required
 from horilla_automations import models
 from horilla_automations.filters import AutomationFilter
 from horilla_automations.forms import AutomationForm
 from horilla_views.generic.cbv import views
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+)
 class AutomationSectionView(views.HorillaSectionView):
     """
     AutomationSectionView
@@ -30,6 +34,10 @@ class AutomationSectionView(views.HorillaSectionView):
     template_name = "horilla_automations/section_view.html"
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+)
 class AutomationNavView(views.HorillaNavView):
     """
     AutomationNavView
@@ -49,6 +57,10 @@ class AutomationNavView(views.HorillaNavView):
     search_swap_target = "#listContainer"
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("horilla_automation.change_mailautomation"), name="dispatch"
+)
 class AutomationFormView(views.HorillaFormView):
     """
     AutomationFormView
@@ -78,6 +90,10 @@ class AutomationFormView(views.HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+)
 class AutomationListView(views.HorillaListView):
     """
     AutomationListView
@@ -126,6 +142,10 @@ class AutomationListView(views.HorillaListView):
     ]
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+)
 class AutomationDetailedView(views.HorillaDetailedView):
     """
     AutomationDetailedView
