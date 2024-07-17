@@ -185,7 +185,10 @@ def create_offboarding(request):
     if request.method == "POST":
         form = OffboardingForm(request.POST, instance=instance)
         if form.is_valid():
-            form.save()
+            off_obj = form.save()
+            off_obj.managers.set(
+                Employee.objects.filter(id__in=form.data.getlist("managers"))
+            )
             messages.success(request, _("Offboarding saved"))
             return HttpResponse("<script>window.location.reload()</script>")
 
