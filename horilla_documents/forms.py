@@ -34,18 +34,18 @@ class DocumentRequestForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.pk is None:
-            self.fields["employee_id"] = HorillaMultiSelectField(
-                queryset=Employee.objects.all(),
-                widget=HorillaMultiSelectWidget(
-                    filter_route_name="employee-widget-filter",
-                    filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
-                    filter_template_path="employee_filters.html",
-                    required=True,
-                ),
-                label="Employee",
-            )
+        self.fields["employee_id"] = HorillaMultiSelectField(
+            queryset=Employee.objects.all(),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                required=True,
+                instance=self.instance,
+            ),
+            label="Employee",
+        )
         reload_queryset(self.fields)
 
 
