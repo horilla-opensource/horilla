@@ -1,213 +1,215 @@
-{% load i18n %}
-<style>
-  .oh-modal__close-custom {
-    border: none;
-    background: none;
-    font-size: 1.5rem;
-    opacity: 0.7;
-    position: absolute;
-    top: 25px;
-    right: 15px;
-    cursor: pointer;
-  }
-  .tag-badge {
-    box-sizing: border-box;
-    display: inline-block;
-    /* background-color: orangered; */
-    color: black;
+<div id="{{section_id}}">
+  {% load i18n %}
+  <style>
+    .oh-modal__close-custom {
+      border: none;
+      background: none;
+      font-size: 1.5rem;
+      opacity: 0.7;
+      position: absolute;
+      top: 25px;
+      right: 15px;
+      cursor: pointer;
+    }
+    .tag-badge {
+      box-sizing: border-box;
+      display: inline-block;
+      /* background-color: orangered; */
+      color: black;
 
-    border-radius: 3rem;
-    text-align: center;
+      border-radius: 3rem;
+      text-align: center;
 
-    font-size: 1.6rem;
-    font-weight: 400;
-    padding: 0.05rem 0.8rem 0.1rem;
-    line-height: inherit;
-    padding: 7px;
-    padding-right: 10px;
-    margin-bottom: 5px;
-    border: solid orangered 2px;
-    cursor: pointer;
-  }
-  .tag-badge--primary {
-    background-color: orangered;
-    color: white;
-  }
-  .oh-profile__avatar-limit-height {
-    height: 30px !important;
-  }
-  .oh-profile_name_custom {
-    font-size: 13px;
-    padding-left: 4px;
-  }
-  .oh-profile__image_custm {
-    width: 26px;
-    height: 26px;
-  }
-  .badge-container {
-    height: 30vh;
-    overflow: auto;
-  }
-  .tag-badge--outline {
-    background: white;
-    border: solid orangered 2px;
-    color: black;
-  }
-  .oh-sticky-table__th--custom {
-    padding-left: 10px !important;
-  }
-  .oh-sticky-table__tr--selected {
-    background: #ff450017 !important;
-  }
+      font-size: 1.6rem;
+      font-weight: 400;
+      padding: 0.05rem 0.8rem 0.1rem;
+      line-height: inherit;
+      padding: 7px;
+      padding-right: 10px;
+      margin-bottom: 5px;
+      border: solid orangered 2px;
+      cursor: pointer;
+    }
+    .tag-badge--primary {
+      background-color: orangered;
+      color: white;
+    }
+    .oh-profile__avatar-limit-height {
+      height: 30px !important;
+    }
+    .oh-profile_name_custom {
+      font-size: 13px;
+      padding-left: 4px;
+    }
+    .oh-profile__image_custm {
+      width: 26px;
+      height: 26px;
+    }
+    .badge-container {
+      height: 30vh;
+      overflow: auto;
+    }
+    .tag-badge--outline {
+      background: white;
+      border: solid orangered 2px;
+      color: black;
+    }
+    .oh-sticky-table__th--custom {
+      padding-left: 10px !important;
+    }
+    .oh-sticky-table__tr--selected {
+      background: #ff450017 !important;
+    }
 
-  .avatars {
-    display: flex;
-    padding: 8px 10px 8px 10px;
-  }
-
-  .avatars__item {
-    background-color: #596376;
-    border: 2px solid white;
-    border-radius: 100%;
-    color: #ffffff;
-    display: block;
-    font-family: sans-serif;
-    font-size: 12px;
-    font-weight: 100;
-    height: 26px;
-    width: 26px;
-    line-height: 17px;
-    text-align: center;
-    transition: margin 0.1s ease-in-out;
-    overflow: hidden;
-    margin-left: -10px;
-  }
-
-  .avatars__item:first-child {
-    z-index: 5;
-  }
-
-  .avatars__item:nth-child(2) {
-    z-index: 4;
-  }
-
-  .avatars__item:nth-child(3) {
-    z-index: 3;
-  }
-
-  .avatars__item:nth-child(4) {
-    z-index: 2;
-  }
-
-  .avatars__item:nth-child(5) {
-    z-index: 1;
-  }
-
-  .avatars__item:last-child {
-    z-index: 0;
-  }
-
-  .avatars__item img {
-    width: 100%;
-  }
-
-  .avatars:hover .avatars__item {
-    margin-right: 10px;
-  }
-  .select2{
-    width: 100% !important;
-  }
-  #slectContainer{{self.attrs.id}} .select2-container .select2-selection{
-    padding: 5px !important;
-    max-height: 70px !important;
-    overflow: hidden;
-    overflow-y: scroll;
-  }
-  .custom-scroll{
-    overflow-x: scroll
-  }
-  .custom-scroll::-webkit-scrollbar{
-    background-color: #cacaca;
-    height: 4px;
-    border-radius: 6px;
-
-  }
-  .custom-scroll::-webkit-scrollbar-thumb{
-    background-color: #888;
-    border-radius: 6px;
-  }
-</style>
-<div id="slectContainer{{self.attrs.id}}">
-  <select name="{{field_name}}" id="{{self.attrs.id}}" {% if required  %}required{% endif %} class="w-100 oh-select oh-select2" multiple>
-    {% for instance in queryset %}
-    <option value="{{instance.id}}">{{instance}}</option>
-    {% endfor %}
-  </select>
-</div>
-<!-- custom scroll/ horizontal scroll section -->
-<div class="d-flex justify-content-between custom-scroll">
-  <div class="avatars" id="avatarsContainer"></div>
-</div>
-<span
-  style="
-    cursor: pointer;
-    padding: 10px;
-    display: flex;
-    justify-content: right;
-    color: orangered;
-  "
->
-  <span
-    data-toggle="oh-modal-toggle"
-    data-target="#filterChoose"
-    title="Filter and Choose {{field.label}}"
-    style="
-      justify-content: right;
-      align-items: center;
+    .avatars {
       display: flex;
-      width: 50px;
+      padding: 8px 10px 8px 10px;
+    }
+
+    .avatars__item {
+      background-color: #596376;
+      border: 2px solid white;
+      border-radius: 100%;
+      color: #ffffff;
+      display: block;
+      font-family: sans-serif;
+      font-size: 12px;
+      font-weight: 100;
+      height: 26px;
+      width: 26px;
+      line-height: 17px;
+      text-align: center;
+      transition: margin 0.1s ease-in-out;
+      overflow: hidden;
+      margin-left: -10px;
+    }
+
+    .avatars__item:first-child {
+      z-index: 5;
+    }
+
+    .avatars__item:nth-child(2) {
+      z-index: 4;
+    }
+
+    .avatars__item:nth-child(3) {
+      z-index: 3;
+    }
+
+    .avatars__item:nth-child(4) {
+      z-index: 2;
+    }
+
+    .avatars__item:nth-child(5) {
+      z-index: 1;
+    }
+
+    .avatars__item:last-child {
+      z-index: 0;
+    }
+
+    .avatars__item img {
+      width: 100%;
+    }
+
+    .avatars:hover .avatars__item {
+      margin-right: 10px;
+    }
+    .select2{
+      width: 100% !important;
+    }
+    #slectContainer{{self.attrs.id}} .select2-container .select2-selection{
+      padding: 5px !important;
+      max-height: 70px !important;
+      overflow: hidden;
+      overflow-y: scroll;
+    }
+    .custom-scroll{
+      overflow-x: scroll
+    }
+    .custom-scroll::-webkit-scrollbar{
+      background-color: #cacaca;
+      height: 4px;
+      border-radius: 6px;
+
+    }
+    .custom-scroll::-webkit-scrollbar-thumb{
+      background-color: #888;
+      border-radius: 6px;
+    }
+  </style>
+  <div id="slectContainer{{self.attrs.id}}">
+    <select name="{{field_name}}" id="{{self.attrs.id}}" {% if required  %}required{% endif %} class="w-100 oh-select oh-select2" multiple>
+      {% for instance in queryset %}
+      <option value="{{instance.id}}">{{instance}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <!-- custom scroll/ horizontal scroll section -->
+  <div class="d-flex justify-content-between custom-scroll">
+    <div class="avatars" id="avatarsContainer"></div>
+  </div>
+  <span
+    style="
+      cursor: pointer;
+      padding: 10px;
+      display: flex;
+      justify-content: right;
+      color: orangered;
     "
   >
-    <ion-icon name="filter-circle"></ion-icon> {% trans "Filter" %}
-  </span>
-</span>
-<div
-  class="oh-modal"
-  id="filterChoose"
-  role="dialog"
-  aria-labelledby="filterChoose"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <button
-        type="button"
-        class="oh-modal__close-custom"
-        onclick="event.stopPropagation();event.preventDefault;$('#filterChoose').toggleClass('oh-modal--show');"
-      >
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div
-      class="oh-modal__dialog-body"
-      id="filterChooseModalBody{{self.attrs.id}}"
+    <span
+      data-toggle="oh-modal-toggle"
+      data-target="#filterChoose{{section_id}}"
+      title="Filter and Choose {{field.label}}"
+      style="
+        justify-content: right;
+        align-items: center;
+        display: flex;
+        width: 50px;
+      "
     >
-      <div class="oh-wrapper">
-        <!-- Nav -->
-        {% include "horilla_widgets/multiselect_components/nav.html" %}
-        <!-- Filter Tags -->
-        {% include "horilla_widgets/multiselect_components/filter_tags.html" %}
-        <!-- Sticky Table -->
-        {% include "horilla_widgets/multiselect_components/table.html" %}
-        <!-- Pagination -->
-        {% include "horilla_widgets/multiselect_components/pagination.html" %}
-        <div class="d-flex flex-row-reverse">
-          <a
-            class="oh-btn oh-btn--secondary oh-btn--shadow pr-3 pl-3"
-            onclick="event.stopPropagation();event.preventDefault;$('#filterChoose').toggleClass('oh-modal--show');"
-          >
-            {% trans "Add" %}
-        </a>
+      <ion-icon name="filter-circle"></ion-icon> {% trans "Filter" %}
+    </span>
+  </span>
+  <div
+    class="oh-modal"
+    id="filterChoose{{section_id}}"
+    role="dialog"
+    aria-labelledby="filterChoose{{section_id}}"
+    aria-hidden="true"
+  >
+    <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+        <button
+          type="button"
+          class="oh-modal__close-custom"
+          onclick="event.stopPropagation();event.preventDefault;$('#filterChoose{{section_id}}').toggleClass('oh-modal--show');"
+        >
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div
+        class="oh-modal__dialog-body"
+        id="filterChooseModalBody{{self.attrs.id}}"
+      >
+        <div class="oh-wrapper">
+          <!-- Nav -->
+          {% include "horilla_widgets/multiselect_components/nav.html" %}
+          <!-- Filter Tags -->
+          {% include "horilla_widgets/multiselect_components/filter_tags.html" %}
+          <!-- Sticky Table -->
+          {% include "horilla_widgets/multiselect_components/table.html" %}
+          <!-- Pagination -->
+          {% include "horilla_widgets/multiselect_components/pagination.html" %}
+          <div class="d-flex flex-row-reverse">
+            <a
+              class="oh-btn oh-btn--secondary oh-btn--shadow pr-3 pl-3"
+              onclick="event.stopPropagation();event.preventDefault;$('#filterChoose{{section_id}}').removeClass('oh-modal--show');"
+            >
+              {% trans "Add" %}
+          </a>
+          </div>
         </div>
       </div>
     </div>

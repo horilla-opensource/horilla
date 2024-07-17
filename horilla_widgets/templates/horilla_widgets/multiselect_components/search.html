@@ -38,23 +38,23 @@
 <script>
   $(document).ready(function () {
     function updateSelectedCount(){
-        let selectedCount = $(".tag-badge").not(".tag-badge--outline").length
-        $(".selected-count").html(selectedCount);
+        let selectedCount = $("#{{section_id}} .tag-badge").not(".tag-badge--outline").length
+        $("#{{section_id}} .selected-count").html(selectedCount);
     }
-    $(".tag-badge").click(function (e) {
+    $("#{{section_id}} .tag-badge").click(function (e) {
       e.preventDefault();
       $(this).toggleClass("tag-badge--outline");
       updateSelectedCount()
     });
-    $("#selectSelected").click(function (e) {
+    $("#{{section_id}} #selectSelected").click(function (e) {
         e.preventDefault();
-        $(".tag-badge").removeClass("tag-badge--outline");
+        $("#{{section_id}} .tag-badge").removeClass("tag-badge--outline");
         updateSelectedCount()
     });
 
-    $("#unselectSelected").click(function (e) {
+    $("#{{section_id}} #unselectSelected").click(function (e) {
         e.preventDefault();
-        $(".tag-badge").addClass("tag-badge--outline");
+        $("#{{section_id}} .tag-badge").addClass("tag-badge--outline");
         updateSelectedCount()
     });
   });

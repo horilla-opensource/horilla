@@ -85,9 +85,9 @@
       return modifiedJson;
     }
 
-    $("#widgetFilterButton{{self.attrs.id}}").click(function (e) {
+    $("#{{section_id}} #widgetFilterButton{{self.attrs.id}}").click(function (e) {
       e.preventDefault();
-      const formFields = $("#widgetFilterFormContainer{{self.attrs.id}}").find(
+      const formFields = $("#{{section_id}} #widgetFilterFormContainer{{self.attrs.id}}").find(
         "[name]"
       );
       var formData = [];
@@ -103,25 +103,25 @@
         data: formData,
         success: function (response) {
           let ids = response.ids;
-          $("#chooseTableHeaderParent .oh-sticky-table__tbody").hide();
+          $("#{{section_id}} #chooseTableHeaderParent .oh-sticky-table__tbody").hide();
           $.each(ids, function (indexInArray, valueOfElement) {
             $(
-              `#chooseTableHeaderParent .oh-sticky-table__tbody[data-instance-id=${valueOfElement}]`
+              `#{{section_id}} #chooseTableHeaderParent .oh-sticky-table__tbody[data-instance-id=${valueOfElement}]`
             ).show();
           });
-          $(".visible-count").html(
-            $(".oh-sticky-table__tr--custom:visible .oh-sticky-table__sd")
+          $("#{{section_id}} .visible-count").html(
+            $("#{{section_id}} .oh-sticky-table__tr--custom:visible .oh-sticky-table__sd")
               .length
           );
           var labeledTags = transformJson(formData);
-          var tagContainer = $("#filterTagContainer{{self.attrs.id}}");
+          var tagContainer = $("#{{section_id}} #filterTagContainer{{self.attrs.id}}");
           tagContainer.html("");
           $.each(labeledTags, function (indexInArray, valueOfElement) {
             if (valueOfElement.value.length != 0) {
               tagContainer.append(
                 $(`
                 <span class="oh-filter-tag" id="tag-{{self.attrs.id}}"
-                  >${valueOfElement.name}<button class="oh-filter-tag__close" onclick="closeFilterTag(event, ${formData[indexInArray].name}, '#tag-{{self.attrs.id}}')">
+                  >${valueOfElement.name}<button class="oh-filter-tag__close" onclick="closeFilterTag(event, ${formData[indexInArray].name}, '#{{section_id}} #tag-{{self.attrs.id}}')">
                     <ion-icon name="close-outline"></ion-icon></button
                   >
                 </span>`)
@@ -131,9 +131,9 @@
         },
       });
     });
-    $("#widgetFilterFormContainer{{self.attrs.id}} [name=search]").keyup(
+    $("#{{section_id}} #widgetFilterFormContainer{{self.attrs.id}} [name=search]").keyup(
       function (e) {
-        $("#widgetFilterButton{{self.attrs.id}}").click();
+        $("#{{section_id}} #widgetFilterButton{{self.attrs.id}}").click();
       }
     );
   });
@@ -146,7 +146,7 @@
         .find(`#select2-${$(fieldName).attr("id")}-container`)
         .html("---------");
     }
-    $("#widgetFilterButton{{self.attrs.id}}").click();
+    $("#{{section_id}} #widgetFilterButton{{self.attrs.id}}").click();
     $(targetTag).remove();
   }
 </script>
