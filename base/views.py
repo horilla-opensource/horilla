@@ -2004,7 +2004,7 @@ def rotating_work_type_assign_export(request):
     )
 
 
-def rotating_work_type_assign_redirect(request, obj_id, employee_id):
+def rotating_work_type_assign_redirect(request, obj_id=None, employee_id=None):
     request_copy = request.GET.copy()
     request_copy.pop("instances_ids", None)
     previous_data = request_copy.urlencode()
@@ -2063,45 +2063,40 @@ def rotating_work_type_assign_archive(request, obj_id):
 @manager_can_enter("base.change_rotatingworktypeassign")
 def rotating_work_type_assign_bulk_archive(request):
     """
-    This method is used to archive/un-archive bulk rotating work type assigns
+    This method is used to archive/un-archive bulk rotating work type assigns.
     """
-    ids = request.POST["ids"]
-    ids = json.loads(ids)
-    is_active = True
-    message = _("un-archived")
-    if request.GET.get("is_active") == "False":
-        is_active = False
-        message = _("archived")
+    ids = json.loads(request.POST["ids"])
+    is_active = request.POST.get("is_active") != "false"
+    message = _("un-archived") if is_active else _("archived")
+    count = 0
+
     for id in ids:
-        # check permission right here...
         rwork_type_assign = RotatingWorkTypeAssign.objects.get(id=id)
         employees_rwork_type_assign = RotatingWorkTypeAssign.objects.filter(
             is_active=True, employee_id=rwork_type_assign.employee_id
         )
-        flag = True
-        if is_active:
-            if len(employees_rwork_type_assign) < 1:
-                flag = False
-                rwork_type_assign.is_active = is_active
-        else:
-            flag = False
-            rwork_type_assign.is_active = is_active
-        rwork_type_assign.save()
-        if not flag:
-            messages.success(
-                request,
-                _("Rotating work type for {employee_id} is {message}").format(
-                    employee_id=rwork_type_assign.employee_id, message=message
-                ),
-            )
-        else:
+
+        if is_active and employees_rwork_type_assign.exists():
             messages.error(
                 request,
-                _("Rotating work type for {employee_id} is already exists").format(
+                _("Rotating work type for {employee_id} already exists").format(
                     employee_id=rwork_type_assign.employee_id,
                 ),
             )
-    return JsonResponse({"message": "Success"})
+        else:
+            rwork_type_assign.is_active = is_active
+            rwork_type_assign.save()
+            count += 1
+
+    if count > 0:
+        messages.success(
+            request,
+            _("Rotating work type for {count} employees is {message}").format(
+                count=count, message=message
+            ),
+        )
+
+    return rotating_work_type_assign_redirect(request)
 
 
 @login_required
@@ -4100,6 +4095,16 @@ def shift_request_cancel(request, id):
     ):
         messages.error(request, _("You don't have permission"))
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    today_date = datetime.today().date()
+    if (
+        shift_request.approved
+        and shift_request.requested_date <= today_date <= shift_request.requested_till
+        and not shift_request.is_permanent_shift
+    ):
+        shift_request.employee_id.employee_work_info.shift_id = (
+            shift_request.previous_shift_id
+        )
+        shift_request.employee_id.employee_work_info.save()
     shift_request.canceled = True
     shift_request.approved = False
     work_info = EmployeeWorkInformation.objects.filter(
@@ -4271,6 +4276,13 @@ def shift_request_approve(request, id):
         )
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
+    today_date = datetime.today().date()
+    if not shift_request.is_permanent_shift:
+        if shift_request.requested_date <= today_date <= shift_request.requested_till:
+            shift_request.employee_id.employee_work_info.shift_id = (
+                shift_request.shift_id
+            )
+            shift_request.employee_id.employee_work_info.save()
     shift_request.approved = True
     shift_request.canceled = False
 
