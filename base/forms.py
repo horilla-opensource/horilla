@@ -821,7 +821,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
             rotating_work_type_assign.current_work_type = (
                 employee.employee_work_info.work_type_id
             )
-            rotating_work_type_assign.next_work_type = rotating_work_type.work_type2
+            rotating_work_type_assign.next_work_type = rotating_work_type.work_type1
             rotating_work_type_assign.additional_data["next_shift_index"] = 1
             based_on = self.cleaned_data["based_on"]
             start_date = self.cleaned_data["start_date"]
@@ -1771,6 +1771,8 @@ class ResetPasswordForm(SetPasswordForm):
 excluded_fields = [
     "id",
     "is_active",
+    "reallocate_approved",
+    "reallocate_canceled",
     "shift_changed",
     "work_type_changed",
     "created_at",

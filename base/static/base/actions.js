@@ -477,15 +477,11 @@ $("#exportRWorktypes").click(function (e) {
 
 $("#archiveRotatingWorkTypeAssign").click(function (e) {
   e.preventDefault();
-
-  var languageCode = null;
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
+  getCurrentLanguageCode(function (languageCode) {
     var confirmMessage = archiveMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    ids = [];
-    ids.push($("#selectedRWorktypes").attr("data-ids"));
-    ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
+    var ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
+
     if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
@@ -502,24 +498,10 @@ $("#archiveRotatingWorkTypeAssign").click(function (e) {
         confirmButtonText: "Confirm",
       }).then(function (result) {
         if (result.isConfirmed) {
-          ids = [];
-          ids.push($("#selectedRWorktypes").attr("data-ids"));
-          ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
-          $.ajax({
-            type: "POST",
-            url: "/rotating-work-type-assign-bulk-archive?is_active=False",
-            data: {
-              csrfmiddlewaretoken: getCookie("csrftoken"),
-              ids: JSON.stringify(ids),
-            },
-            success: function (response, textStatus, jqXHR) {
-              if (jqXHR.status === 200) {
-                location.reload(); // Reload the current page
-              } else {
-                // console.log("Unexpected HTTP status:", jqXHR.status);
-              }
-            },
-          });
+          var idsString = JSON.stringify(ids);
+          var hxSpan = $("#archiveRotatingWorkTypeAssignSpan");
+          hxSpan.attr("hx-vals", JSON.stringify({ ids: idsString, is_active: false }));
+          hxSpan.click();
         }
       });
     }
@@ -528,13 +510,11 @@ $("#archiveRotatingWorkTypeAssign").click(function (e) {
 
 $("#unArchiveRotatingWorkTypeAssign").click(function (e) {
   e.preventDefault();
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
+  getCurrentLanguageCode(function (languageCode) {
     var confirmMessage = unarchiveMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    ids = [];
-    ids.push($("#selectedRWorktypes").attr("data-ids"));
-    ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
+    var ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
+
     if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
@@ -551,29 +531,16 @@ $("#unArchiveRotatingWorkTypeAssign").click(function (e) {
         confirmButtonText: "Confirm",
       }).then(function (result) {
         if (result.isConfirmed) {
-          ids = [];
-          ids.push($("#selectedRWorktypes").attr("data-ids"));
-          ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
-          $.ajax({
-            type: "POST",
-            url: "/rotating-work-type-assign-bulk-archive?is_active=True",
-            data: {
-              csrfmiddlewaretoken: getCookie("csrftoken"),
-              ids: JSON.stringify(ids),
-            },
-            success: function (response, textStatus, jqXHR) {
-              if (jqXHR.status === 200) {
-                location.reload(); // Reload the current page
-              } else {
-                // console.log("Unexpected HTTP status:", jqXHR.status);
-              }
-            },
-          });
+          var idsString = JSON.stringify(ids);
+          var hxSpan = $("#archiveRotatingWorkTypeAssignSpan");
+          hxSpan.attr("hx-vals", JSON.stringify({ ids: idsString, is_active: true }));
+          hxSpan.click();
         }
       });
     }
   });
 });
+
 
 $("#deleteRotatingWorkTypeAssign").click(function (e) {
   e.preventDefault();

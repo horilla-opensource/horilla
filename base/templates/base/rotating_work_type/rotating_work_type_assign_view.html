@@ -13,28 +13,37 @@
   {% endfor %}
 </div>
 {% endif %}
-<div
-  class="oh-checkpoint-badge text-success mb-2"
-  id="selectAllRWorktypes"
-  style="cursor: pointer"
->
-  {% trans "Select All Worktypes" %}
-</div>
-<div
-  class="oh-checkpoint-badge text-secondary mb-2"
-  id="unselectAllRWorktypes"
-  style="cursor: pointer;display: none;"
->
-  {% trans "Unselect All Worktypes" %}
-</div>
-<div
-  class="oh-checkpoint-badge text-info mb-2"
-  id="exportRWorktypes"
-  style="cursor: pointer; display: none"
->
-  {% trans "Export Worktypes" %}
-</div>
-<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowRWorktypes" style="display: none"></div>
+{% if perms.base.view_worktyperequest and rwork_type_assign %}
+  {% if perms.base.change_worktyperequest %}
+  <span name="" id="archiveRotatingWorkTypeAssignSpan" style="display: none"
+    hx-post="{% url 'rotating-shift-work-type-bulk-archive' %}?{{pd}}"
+    hx-target="#view-container" hx-vals=""
+    >
+  </span>
+  {% endif %}
+  <div
+    class="oh-checkpoint-badge text-success mb-2"
+    id="selectAllRWorktypes"
+    style="cursor: pointer"
+  >
+    {% trans "Select All Worktypes" %}
+  </div>
+  <div
+    class="oh-checkpoint-badge text-secondary mb-2"
+    id="unselectAllRWorktypes"
+    style="cursor: pointer;display: none;"
+  >
+    {% trans "Unselect All Worktypes" %}
+  </div>
+  <div
+    class="oh-checkpoint-badge text-info mb-2"
+    id="exportRWorktypes"
+    style="cursor: pointer; display: none"
+  >
+    {% trans "Export Worktypes" %}
+  </div>
+  <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowRWorktypes" style="display: none"></div>
+{% endif %}
 
 {% if rwork_type_assign %}
   <div class="oh-table_sticky--wrapper">

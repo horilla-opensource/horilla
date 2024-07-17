@@ -721,6 +721,7 @@ def document_request_create(request):
         )
         if form.is_valid():
             form = form.save()
+            messages.success(request, _("Document request created successfully"))
             employees = [user.employee_user_id for user in form.employee_id.all()]
 
             notify.send(
@@ -762,8 +763,11 @@ def document_request_update(request, id):
     if request.method == "POST":
         form = DocumentRequestForm(request.POST, instance=document_request)
         if form.is_valid():
-            form = form.save()
-            documents.exclude(employee_id__in=form.employee_id.all()).delete()
+            doc_obj = form.save()
+            doc_obj.employee_id.set(
+                Employee.objects.filter(id__in=form.data.getlist("employee_id"))
+            )
+            documents.exclude(employee_id__in=doc_obj.employee_id.all()).delete()
             return HttpResponse("<script>window.location.reload();</script>")
 
     context = {
@@ -914,6 +918,7 @@ def file_upload(request, id):
         form = DocumentUpdateForm(request.POST, request.FILES, instance=document_item)
         if form.is_valid():
             form.save()
+            messages.success(request, _("Document uploaded successfully"))
             try:
                 notify.send(
                     request.user.employee_get,
@@ -1041,6 +1046,7 @@ def document_reject(request, id):
         if request.method == "POST":
             form = DocumentRejectForm(request.POST, instance=document_obj)
             if form.is_valid():
+                test = form.save()
                 document_obj.status = "rejected"
                 document_obj.save()
                 messages.error(request, _("Document request rejected"))
@@ -2096,7 +2102,6 @@ def employee_bulk_archive(request):
             for super_emp in employees:
                 if super_emp.employee_user_id.is_superuser:
                     count = count + 1
-            print(count)
             if count == 1:
                 messages.error(request, _("You can't archive the last superuser."))
                 return HttpResponse("<script>$('#filterEmployee').click();</script>")
@@ -2137,7 +2142,6 @@ def employee_archive(request, obj_id):
             for super_emp in employees:
                 if super_emp.employee_user_id.is_superuser:
                     count = count + 1
-            print(count)
             if count == 1:
                 messages.error(request, _("You can't archive the last superuser."))
                 return HttpResponse("<script>$('#filterEmployee').click();</script>")
