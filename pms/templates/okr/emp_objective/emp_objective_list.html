@@ -102,7 +102,7 @@
                                                         data-toggle="oh-modal-toggle"
                                                         data-target="#objectDetailsModal"
                                                         hx-get='{% url "update-employee-objective" emp_objective.id %}'
-                                                        hx-target="#objectivesTarget"
+                                                        hx-target="#objectDetailsModalTarget"
                                                         >{% trans "Edit" %}</a>
                                                     </li>
                                                     {% if emp_objective.archive %}

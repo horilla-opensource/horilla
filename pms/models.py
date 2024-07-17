@@ -47,6 +47,7 @@ class KeyResult(HorillaModel):
     )
     target_value = models.IntegerField(null=True, blank=True, default=100)
     duration = models.IntegerField(null=True, blank=True)
+    archive = models.BooleanField(default=False)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
     company_id = models.ForeignKey(
         Company,
@@ -109,7 +110,7 @@ class Objective(HorillaModel):
     )
     duration = models.IntegerField(default=1, validators=[MinValueValidator(0)])
     add_assignees = models.BooleanField(default=False)
-    archive = models.BooleanField(default=False, null=True, blank=True)
+    archive = models.BooleanField(default=False)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
     company_id = models.ForeignKey(
         Company,
@@ -194,6 +195,13 @@ class EmployeeObjective(HorillaModel):
     archive = models.BooleanField(default=False)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        unique_together = ("employee_id", "objective_id")
+
     def update_objective_progress(self):
         """
         used for updating progress percentage when current value of key result change
@@ -218,6 +226,10 @@ class EmployeeObjective(HorillaModel):
                 self.end_date = self.start_date + relativedelta(months=duration)
             elif self.objective_id.duration_unit == "years":
                 self.end_date = self.start_date + relativedelta(years=duration)
+        # Add assignees to the objective
+        objective = self.objective_id
+        if self.employee_id not in objective.assignees.all():
+            objective.assignees.add(self.employee_id)
         super().save(*args, **kwargs)
 
     def tracking(self):
@@ -357,12 +369,12 @@ class EmployeeKeyResult(models.Model):
         super().save(*args, **kwargs)
         self.employee_objective_id.update_objective_progress()
 
-    # class meta:
-    #     """
-    #     Meta class to add some additional options
-    #     """
+    class meta:
+        """
+        Meta class to add some additional options
+        """
 
-    #     unique_together = ("key_result_id", "employee_objective_id")
+        unique_together = ("key_result_id", "employee_objective_id")
 
 
 """360degree feedback section"""

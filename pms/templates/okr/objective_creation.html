@@ -54,12 +54,14 @@
       hx-post="{%url 'objective-update' objective_form.instance.id %}"
       hx-target="#objectCreateModalTarget"
       id="objectiveForm"
+      data-url="objective-update/{{objective_form.instance.id}}/?data="
     >
   {% else %}
     <form
       hx-post="{%url 'objective-creation' %}"
       hx-target="#objectCreateModalTarget"
       id="objectiveForm"
+      data-url="objective-creation/?data="
     >
   {% endif %}
     {% csrf_token %}
@@ -111,9 +113,7 @@ $(document).ready(function(){
   $('[id="id_start_date"]').parent().hide();
   {% comment %} $('label[for="id_assignees"]').hide();  {% endcomment %}
   $('#id_assignees').closest('div.col-12').hide();
-
   addAssignees()
-  $('#id_add_assignees').change()
 })
 $('#id_add_assignees').change(function(){
   addAssignees()

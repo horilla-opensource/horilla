@@ -68,6 +68,17 @@ class ObjectiveForm(BaseForm):
         widget=forms.DateInput(attrs={"class": "oh-input w-100", "type": "date"}),
     )
     add_assignees = forms.BooleanField(required=False)
+    archive = forms.BooleanField(required=False)
+    key_result_id = forms.ModelMultipleChoiceField(
+        queryset=KeyResult.objects.all().exclude(archive=True),
+        label=_("Key result"),
+        widget=forms.SelectMultiple(
+            attrs={
+                "class": "oh-select oh-select-2 select2-hidden-accessible",
+                "onchange": "keyResultChange($(this))",
+            }
+        ),
+    )
 
     class Meta:
         """
@@ -85,16 +96,9 @@ class ObjectiveForm(BaseForm):
             "add_assignees",
             "assignees",
             "start_date",
+            "archive",
         ]
         exclude = ["is_active"]
-        widgets = {
-            "key_result_id": forms.SelectMultiple(
-                attrs={
-                    "class": "oh-select oh-select-2 select2-hidden-accessible",
-                    "onchange": "keyResultChange($(this))",
-                }
-            ),
-        }
 
     def __init__(self, *args, **kwargs):
         """
@@ -270,13 +274,75 @@ class EmployeeObjectiveForm(BaseForm):
         return table_html
 
 
+class EmployeeObjectiveCreateForm(BaseForm):
+    """
+    A form to create or update instances of the EmployeeObjective, model.
+    """
+
+    key_result_id = forms.ModelMultipleChoiceField(
+        queryset=KeyResult.objects.all().exclude(archive=True),
+        label=_("Key result"),
+        widget=forms.SelectMultiple(
+            attrs={
+                "class": "oh-select oh-select-2 select2-hidden-accessible",
+                "onchange": "keyResultChange($(this))",
+            }
+        ),
+    )
+    objective_id = forms.ModelChoiceField(
+        queryset=Objective.objects.all().exclude(archive=True), required=True
+    )
+
+    class Meta:
+        """
+        A nested class that specifies the model,fields and style of fields for the form.
+        """
+
+        model = EmployeeObjective
+        fields = [
+            "employee_id",
+            "objective_id",
+            "key_result_id",
+            "start_date",
+            "end_date",
+            "status",
+            "archive",
+        ]
+        exclude = ["is_active"]
+        widgets = {
+            "start_date": forms.DateInput(
+                attrs={"class": "oh-input w-100", "type": "date"}
+            ),
+            "end_date": forms.DateInput(
+                attrs={"class": "oh-input w-100", "type": "date"}
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["key_result_id"].choices = list(
+            self.fields["key_result_id"].choices
+        )
+        self.fields["key_result_id"].choices.append(
+            ("create_new_key_result", "Create new Key result")
+        )
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+
 class EmployeeKeyResultForm(BaseForm):
     """
     A form to create or update instances of the EmployeeKeyResult, model.
     """
 
     key_result_id = forms.ModelChoiceField(
-        queryset=KeyResult.objects.all(),
+        queryset=KeyResult.objects.all().exclude(archive=True),
         label=_("Key result"),
         widget=forms.Select(
             attrs={
@@ -355,11 +421,18 @@ class KRForm(MF):
         """
 
         model = KeyResult
-        fields = "__all__"
+        fields = [
+            "title",
+            "description",
+            "progress_type",
+            "target_value",
+            "duration",
+            "company_id",
+            "archive",
+        ]
         exclude = [
             "history",
             "objects",
-            "is_active",
         ]
 
     def as_p(self):

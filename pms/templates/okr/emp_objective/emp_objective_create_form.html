@@ -1,0 +1,23 @@
+{% load static i18n%}
+{% load i18n %}
+
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" >
+        {% trans "Create Employee Objective" %}
+    </h2>
+    <button type="button" class=" oh-modal__close--custom" onclick="$('#objectDetailsModal').removeClass('oh-modal--show');">
+        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+      </button>
+    </div>
+<div class="oh-modal__dialog-body">
+    <form
+      hx-post="{%url 'create-employee-objective' %}"
+      hx-target="#objectCreateModalTarget"
+      id="empObjectiveCreateForm"
+      data-url="create-employee-objective/?data="
+    >
+        {% csrf_token %}
+        {{form.as_p}}
+    </form>
+</div>
+

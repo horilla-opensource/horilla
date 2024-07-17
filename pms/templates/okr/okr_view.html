@@ -139,10 +139,14 @@
     if(selectedValue.includes("create_new_key_result")){
       var parentForm = element.parents().closest("form");
       var view = parentForm.serialize();
+      var dataUrl = parentForm.data('url');
       let dynamicKeyResult = $("#dynamicKeyResult");
-      dynamicKeyResult.attr("hx-vals", `{"data":"${view}"}`);
+      if (dataUrl) {
+        dynamicKeyResult.attr("hx-vals", `{"data":"${view}","dataUrl":"${dataUrl}"}`);
+      }else{
+        dynamicKeyResult.attr("hx-vals", `{"data":"${view}"}`);
+      }
       dynamicKeyResult.click();
-
     }
   }
 

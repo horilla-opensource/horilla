@@ -66,6 +66,7 @@ from .forms import (
     AddAssigneesForm,
     AnonymousFeedbackForm,
     EmployeeKeyResultForm,
+    EmployeeObjectiveCreateForm,
     EmployeeObjectiveForm,
     FeedbackForm,
     KeyResultForm,
@@ -173,7 +174,6 @@ def objective_creation(request):
     """
     employee = request.user.employee_get
     objective_form = ObjectiveForm(employee=employee)
-
     if request.GET.get("key_result_id") is not None:
         objective_form = ObjectiveForm(request.GET)
 
@@ -332,6 +332,7 @@ def key_result_create(request):
     """
     form = KRForm()
     redirect_url = request.GET.get("data")
+    dataUrl = request.GET.get("dataUrl")
     if request.method == "POST":
         form = KRForm(request.POST)
         if form.is_valid():
@@ -348,15 +349,14 @@ def key_result_create(request):
                 key_result_ids.remove("create_new_key_result")
             key_result_ids.append(str(instance.id))
             mutable_get.setlist("key_result_id", key_result_ids)
-
-            redirect_url = f"/pms/objective-creation/?data={mutable_get.urlencode()}"
+            redirect_url = f"/pms/{dataUrl}{mutable_get.urlencode()}"
         else:
             redirect_url = request.GET.urlencode()
 
     return render(
         request,
         "okr/key_result/key_result_form.html",
-        {"k_form": form, "redirect_url": redirect_url},
+        {"k_form": form, "redirect_url": redirect_url, "dataUrl": dataUrl},
     )
 
 
@@ -1064,6 +1064,53 @@ def view_employee_objective(request, emp_obj_id):
 @login_required
 @hx_request_required
 @manager_can_enter(perm="pms.add_employeeobjective")
+def create_employee_objective(request):
+    """
+    This function is used to create the employee objective
+        args:
+            emp_obj_id(int) : pimarykey of EmployeeObjective
+        return:
+            redirect to form of employee objective
+    """
+    form = EmployeeObjectiveCreateForm()
+    if request.GET.get("data"):
+        form = EmployeeObjectiveCreateForm(request.GET)
+    if request.method == "POST":
+        form = EmployeeObjectiveCreateForm(request.POST)
+        if form.is_valid():
+            # get key result on form
+            krs = list(form.cleaned_data["key_result_id"])
+            emp_obj = form.save(commit=False)
+            obj = emp_obj.objective_id
+            # Add this employee as assignee
+            obj.assignees.add(emp_obj.employee_id)
+            krs.extend([key_result for key_result in obj.key_result_id.all()])
+            set_krs = set(krs)
+            emp_obj.save()
+            # Add all key results
+            for kr in set_krs:
+                emp_obj.key_result_id.add(kr)
+                if not EmployeeKeyResult.objects.filter(
+                    employee_objective_id=emp_obj, key_result_id=kr
+                ).exists():
+                    emp_kr = EmployeeKeyResult.objects.create(
+                        employee_objective_id=emp_obj,
+                        key_result_id=kr,
+                        progress_type=kr.progress_type,
+                        target_value=kr.target_value,
+                    )
+                    emp_kr.save()
+            messages.success(request, _("Employee objective Updated successfully"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    context = {"form": form, "k_form": KRForm(), "emp_obj": True}
+    return render(
+        request, "okr/emp_objective/emp_objective_create_form.html", context=context
+    )
+
+
+@login_required
+@hx_request_required
+@manager_can_enter(perm="pms.change_employeeobjective")
 def update_employee_objective(request, emp_obj_id):
     """
     This function is used to update the employee objective
@@ -1076,7 +1123,7 @@ def update_employee_objective(request, emp_obj_id):
     form = EmployeeObjectiveForm(instance=emp_objective)
     if request.method == "POST":
         form = EmployeeObjectiveForm(request.POST, instance=emp_objective)
-        if form.is_valid:
+        if form.is_valid():
             emp_obj = form.save(commit=False)
             emp_obj.save()
             messages.success(request, _("Employee objective Updated successfully"))

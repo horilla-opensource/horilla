@@ -294,6 +294,11 @@ urlpatterns = [
         name="view-employee-objective",
     ),
     path(
+        "create-employee-objective/",
+        views.create_employee_objective,
+        name="create-employee-objective",
+    ),
+    path(
         "update-employee-objective/<int:emp_obj_id>/",
         views.update_employee_objective,
         name="update-employee-objective",

@@ -221,12 +221,12 @@
                     </div> {% endcomment %}
 
                     <!-- checking  user permission for objective creation -->
-                    {% if perms.pms.add_employeeobjective or request.user|filtersubordinates %}
+                    {% if perms.pms.add_employeeobjective %}
                         <button
                             class="oh-btn oh-btn--secondary ml-2"
                             data-toggle="oh-modal-toggle"
                             data-target="#objectCreateModal"
-                            hx-get="{%url 'objective-creation' %}"
+                            hx-get="{%url 'create-employee-objective' %}"
                             hx-target="#objectCreateModalTarget"
                             onclick="event.preventDefault()"
                         >

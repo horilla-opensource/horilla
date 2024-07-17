@@ -42,7 +42,7 @@
   </div>
   <div class="oh-modal__dialog-body">
     <form
-      hx-post="{% url 'key-result-creation' %}?{{redirect_url}}"
+      hx-post="{% url 'key-result-creation' %}?{{redirect_url}}&dataUrl={{dataUrl}}"
       hx-target="#dynamicCreateModalBody"
       id="krForm"
     >
