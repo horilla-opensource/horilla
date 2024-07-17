@@ -262,18 +262,18 @@ class OnboardingViewTaskForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.pk is None:
-            self.fields["managers"] = HorillaMultiSelectField(
-                queryset=Employee.objects.all(),
-                widget=HorillaMultiSelectWidget(
-                    filter_route_name="employee-widget-filter",
-                    filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
-                    filter_template_path="employee_filters.html",
-                    required=True,
-                ),
-                label="Employee",
-            )
+        self.fields["managers"] = HorillaMultiSelectField(
+            queryset=Employee.objects.all(),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                required=True,
+                instance=self.instance,
+            ),
+            label="Task Managers",
+        )
         reload_queryset(self.fields)
         stage = self.initial.get("stage_id")
         if stage:
@@ -305,6 +305,18 @@ class OnboardingTaskForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["employee_id"] = HorillaMultiSelectField(
+            queryset=Employee.objects.all(),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                required=True,
+                instance=self.instance,
+            ),
+            label="Task Managers",
+        )
         stage_id = self.initial.get("stage_id")
         if stage_id:
             stage = OnboardingStage.objects.get(id=stage_id)
@@ -316,6 +328,13 @@ class OnboardingTaskForm(ModelForm):
             candidate_ids = stage.candidate.all().values_list("candidate_id", flat=True)
             cand_queryset = Candidate.objects.filter(id__in=candidate_ids)
             self.fields["candidates"].queryset = cand_queryset
+
+    def clean(self):
+        if isinstance(self.fields["employee_id"], HorillaMultiSelectField):
+            ids = self.data.getlist("employee_id")
+            if ids:
+                self.errors.pop("employee_id", None)
+        super().clean()
 
 
 class OnboardingViewStageForm(ModelForm):
@@ -339,6 +358,19 @@ class OnboardingViewStageForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
+        self.fields["employee_id"] = HorillaMultiSelectField(
+            queryset=Employee.objects.filter(is_active=True),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                required=True,
+                instance=self.instance,
+            ),
+            label="Stage Managers",
+        )
 
         # Loop through form fields and generate unique IDs for their attributes
         for field_name, field in self.fields.items():
@@ -354,6 +386,13 @@ class OnboardingViewStageForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
+
+    def clean(self):
+        if isinstance(self.fields["employee_id"], HorillaMultiSelectField):
+            ids = self.data.getlist("employee_id")
+            if ids:
+                self.errors.pop("employee_id", None)
+        super().clean()
 
 
 class EmployeeCreationForm(ModelForm):

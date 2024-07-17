@@ -104,6 +104,10 @@ def stage_creation(request, obj_id):
         recruitment = Recruitment.objects.get(id=obj_id)
         form = OnboardingViewStageForm(request.POST)
         if form.is_valid():
+            stage_obj = form.save()
+            stage_obj.employee_id.set(
+                Employee.objects.filter(id__in=form.data.getlist("employee_id"))
+            )
             return stage_save(form, recruitment, request, obj_id)
     return render(request, "onboarding/stage_form.html", {"form": form, "id": obj_id})
 
@@ -166,6 +170,9 @@ def stage_update(request, stage_id, recruitment_id):
         form = OnboardingViewStageForm(request.POST, instance=onboarding_stage)
         if form.is_valid():
             stage = form.save()
+            stage.employee_id.set(
+                Employee.objects.filter(id__in=form.data.getlist("employee_id"))
+            )
             messages.info(request, _("Stage is updated successfully.."))
             users = [employee.employee_user_id for employee in stage.employee_id.all()]
             notify.send(
@@ -309,6 +316,9 @@ def task_update(
         form = OnboardingTaskForm(request.POST, instance=onboarding_task)
         if form.is_valid():
             task = form.save()
+            task.employee_id.set(
+                Employee.objects.filter(id__in=form.data.getlist("employee_id"))
+            )
             for cand_task in onboarding_task.candidatetask_set.all():
                 if cand_task.candidate_id not in task.candidates.all():
                     cand_task.delete()
