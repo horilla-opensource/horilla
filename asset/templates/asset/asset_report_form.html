@@ -1,15 +1,12 @@
 {% load i18n %}
-
 {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
-    </div>
-  </div>
-  {% endfor %}
-  <script>
+  <div class="oh-wrapper">
+    {% for message in messages %}
+      <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{ message.tags }}">{{ message }}</div>
+      </div>
+    {% endfor %}
+    <script>
     {% if requests_ids %}
       setTimeout(function () {
         $('.oh-modal__close--custom').click()
@@ -20,48 +17,40 @@
       }, 1000);
     {% endif %}
   </script>
-</div>
+  </div>
 {% endif %}
-
-<form
-    id="add-form"
-    hx-post="{% url 'add-asset-report' %}"
-    hx-target="#addAssetReportForm"
-    hx-encoding="multipart/form-data"
-    onsubmit="return handleFormSubmit();"
->
+<div class="oh-modal__dialog-header">
+  <h2 class="oh-modal__dialog-title" id="addAssetReportLabel">{% trans 'Add Asset Report' %}</h2>
+  <button type="button" class="oh-modal_close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"><ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon></button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form id="add-form" hx-post="{% url 'add-asset-report' %}" hx-target="#dynamicCreateModalTarget" hx-encoding="multipart/form-data" onsubmit="return handleFormSubmit();">
     {% csrf_token %}
-    <input type="text" hidden name="asset_id" value="{{asset_id}}">
+    <input type="text" hidden name="asset_id" value="{{ asset_id }}" />
     <div class="oh-profile-section pt-0">
-        <div class="row">
-            <div class="col-12 col-sm-12 col-md-4 col-lg-6">
-                <div class="oh-input__group">
-                    <label class="oh-input__label" for="{{asset_report_form.title.id_for_label}}">{% trans "Title" %}</label>
-                    {{asset_report_form.title}}
-                    {{asset_report_form.title.errors}}
-
-                </div>
-            </div>
-            <div class="col-12 col-sm-12 col-md-4 col-lg-6">
-                <div class="oh-input__group">
-                    <label class="oh-input__label" for="{{asset_report_form.asset_id.id_for_label}}">{% trans "Asset" %}</label>
-                    {{asset_report_form.asset_id }}
-                    {{asset_report_form.asset_id.errors }}
-                </div>
-            </div>
-
+      <div class="row">
+        <div class="col-12 col-sm-12 col-md-4 col-lg-6">
+          <div class="oh-input__group">
+            <label class="oh-input__label" for="{{ asset_report_form.title.id_for_label }}">{% trans 'Title' %}</label>
+            {{ asset_report_form.title }}
+            {{ asset_report_form.title.errors }}
+          </div>
         </div>
-        <div class="oh-input__group ">
-            <label class="oh-input__label" for="fileUpload">{% trans "File" %}</label>
-            <input name= "file" multiple="True" type="file" id="fileUpload" />
+        <div class="col-12 col-sm-12 col-md-4 col-lg-6">
+          <div class="oh-input__group">
+            <label class="oh-input__label" for="{{ asset_report_form.asset_id.id_for_label }}">{% trans 'Asset' %}</label>
+            {{ asset_report_form.asset_id }}
+            {{ asset_report_form.asset_id.errors }}
+          </div>
         </div>
-        <div class="oh-modal__dialog-footer p-0">
-            <input
-                type="submit"
-                value="{% trans 'Save' %}"
-                class="oh-btn oh-btn--secondary oh-btn--shadow pl-5 pr-5"
-                onclick="$('.oh-modal_close--custom').click()"
-            />
-        </div>
+      </div>
+      <div class="oh-input__group">
+        <label class="oh-input__label" for="fileUpload">{% trans 'File' %}</label>
+        <input name="file" multiple="True" type="file" id="fileUpload" />
+      </div>
+      <div class="oh-modal__dialog-footer p-0">
+        <input type="submit" value="{% trans 'Save' %}" class="oh-btn oh-btn--secondary oh-btn--shadow pl-5 pr-5" onclick="$('.oh-modal_close--custom').click()" />
+      </div>
     </div>
-</form>
+  </form>
+</div>

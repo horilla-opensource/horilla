@@ -375,60 +375,6 @@
     </div>
   </div>
 </main>
-
-<!-- asset return modal start -->
-
-<div
-  class="oh-modal"
-  id="asset-return-allocation-modal"
-  role="dialog"
-  aria-labelledby="AssetRequestModal"
-  aria-hidden="true"
- >
-  <div class="oh-modal__dialog" style="max-width: 550px">
-    <div class="oh-modal__dialog-header">
-      <button type="button" class="oh-modal__close--custom" aria-label="Close" onclick="$('#asset-return-allocation-modal').toggleClass('oh-modal--show')">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-
-    <!-- htmx form -->
-    <div
-      class="oh-modal__dialog-body"
-      id="asset-return-allocation-modal-target"
-    ></div>
-  </div>
-</div>
-
-<div
-  class="oh-modal"
-  id="addAssetReport"
-  role="dialog"
-  aria-labelledby="addAssetReport"
-  aria-hidden="true"
-  style="z-index: 1022;"
-  >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="addAssetReportLabel">
-        {% trans "Add Asset Report" %}
-      </h2>
-      <button
-        type="button"
-        class="oh-modal_close--custom"
-        onclick="$('#addAssetReport').removeClass('oh-modal--show');"
-      >
-        <ion-icon
-          name="close-outline"
-          role="img"
-          aria-label="close outline"
-        ></ion-icon>
-      </button>
-    </div>
-    <div class="oh-modal__dialog-body" id="addAssetReportForm"></div>
-  </div>
-</div>
-
 <div
   class="oh-modal"
   id="assetFineModal"
@@ -436,7 +382,7 @@
   aria-labelledby="assetFineModal"
   aria-hidden="true"
   style="z-index: 1022;"
->
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <button

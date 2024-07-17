@@ -32,10 +32,10 @@
         <button
           class=" oh-btn oh-btn--info oh-btn--shadow w-100"
           type="button"
-          hx-get="{% url "add-asset-report" asset_id %}"
-          hx-target="#addAssetReportForm"
           data-toggle="oh-modal-toggle"
-          data-target="#addAssetReport"
+          data-target="#dynamicCreateModal"
+          hx-get="{% url "add-asset-report" asset_id %}"
+          hx-target="#dynamicCreateModalTarget"
           >
           {% trans "Add Report" %}
         </button>

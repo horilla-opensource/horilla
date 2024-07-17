@@ -118,10 +118,10 @@
                   <a
                     class="oh-btn oh-btn--light-bkg w-100"
                     onclick="event.preventDefault();event.stopPropagation()"
-                    hx-get="{% url 'add-asset-report' asset.id %}?asset_list=true"
-                    hx-target="#addAssetReportForm"
                     data-toggle="oh-modal-toggle"
-                    data-target="#addAssetReport"
+                    data-target="#dynamicCreateModal"
+                    hx-get="{% url 'add-asset-report' asset.id %}?asset_list=true"
+                    hx-target="#dynamicCreateModalTarget"
                     id="oh-btn-asset-update-modal"
                     title="{% trans 'Asset Report' %}"
                   >

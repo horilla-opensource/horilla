@@ -573,7 +573,8 @@ def asset_request_approve(request, req_id):
                 verb_es="¡Su solicitud de activo ha sido aprobada!",
                 verb_fr="Votre demande d'actif a été approuvée !",
                 redirect=reverse("asset-request-allocation-view")
-                + f"?asset_request_date={asset_request.asset_request_date}&asset_request_status={asset_request.asset_request_status}",
+                + f"?asset_request_date={asset_request.asset_request_date}\
+                &asset_request_status={asset_request.asset_request_status}",
                 icon="bag-check",
             )
             return HttpResponse("<script>window.location.reload()</script>")
@@ -611,7 +612,8 @@ def asset_request_reject(request, req_id):
         verb_es="¡Se ha rechazado su solicitud de activo!",
         verb_fr="Votre demande d'actif a été rejetée !",
         redirect=reverse("asset-request-allocation-view")
-        + f"?asset_request_date={asset_request.asset_request_date}&asset_request_status={asset_request.asset_request_status}",
+        + f"?asset_request_date={asset_request.asset_request_date}\
+        &asset_request_status={asset_request.asset_request_status}",
         icon="bag-check",
     )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

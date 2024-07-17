@@ -172,27 +172,6 @@
                         </div>
                     </div>
                 </div>
-                {% comment %} <div class="oh-dropdown" >
-                    <div class="oh-dropdown__import oh-dropdown__import--right " style="display: none;top:40px" id ="import-dropdown" >
-                        <button class="oh-modal__close close-import"  aria-label="Close">
-                            <ion-icon name="close-outline"></ion-icon>
-                          </button>
-                        <div id="AssetImportResponse"></div>
-                        <form action="{%url 'asset-import' %}" enctype="multipart/form-data" method="post">
-                            {% csrf_token %}
-                            <div class="oh-dropdown__import-form">
-                                <label class="oh-dropdown__import-label" for="uploadFile">
-                                    <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
-                                    <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
-                                    <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
-                                </label>
-                                <input type="file" name="asset_import" id="uploadFile" />
-                            </div>
-                            <button type="submit"
-                                class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3">{% trans "Upload" %}</button>
-                        </form>
-                    </div>
-                </div> {% endcomment %}
                 <!-- asset filter end -->
                 <div class="oh-dropdown ml-2" x-data="{open: false}">
                     <button
@@ -221,9 +200,9 @@
                             <a
                               href="#"
                               data-toggle="oh-modal-toggle"
-                              data-target="#assetExport"
+                              data-target="#objectCreateModal"
                               hx-get="{% url 'asset-export-excel' %}"
-                              hx-target="#assetExportTarget"
+                              hx-target="#objectCreateModalTarget"
                               >{% trans "Export" %}</a
                             >
                           </li>
@@ -247,9 +226,6 @@
             </div>
         </div>
     </section>
-    <div class="oh-modal" id="assetExport" role="dialog" aria-labelledby="assetExport" aria-hidden="true">
-        <div class="oh-modal__dialog" id="assetExportTarget">
-    </div>
 </div>
 <div class="oh-modal" id="assetImport" role="dialog" aria-labelledby="assetImport" aria-hidden="true">
     <div class="oh-modal__dialog">
@@ -295,40 +271,6 @@
     });
 </script>
 {% endif %}
-
-<div
-  class="oh-modal"
-  id="addAssetReport"
-  role="dialog"
-  aria-labelledby="addAssetReport"
-  aria-hidden="true"
-  style="z-index: 1022; "
-  >
-    <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header">
-            <h2 class="oh-modal__dialog-title" id="addAssetReportLabel">
-              {% trans "Add Asset Report" %}
-            </h2>
-            <button
-              type="button"
-              class="oh-modal_close--custom"
-              onclick="$('#addAssetReport').removeClass('oh-modal--show');"
-                >
-                <ion-icon
-                  name="close-outline"
-                  role="img"
-                  aria-label="close outline"
-                ></ion-icon>
-            </button>
-        </div>
-        <div class="oh-modal__dialog-body" id="addAssetReportForm"></div>
-    </div>
-</div>
-
-
-<div id="dynamicCreateModal" class="oh-modal" role="dialog" aria-hidden="true" style="z-index: 1022;">
-    <div id="dynamicCreateModalTarget" class="oh-modal__dialog" style="max-width: 550px"></div>
-</div>
 <script>
     function handleFormSubmit() {
 
