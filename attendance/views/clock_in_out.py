@@ -70,7 +70,10 @@ def late_come(attendance, start_time, end_time, shift):
     # Checking gracetime allowance before creating late come
     if shift.grace_time_id:
         # checking grace time in shift, it has the higher priority
-        if shift.grace_time_id.is_active == True:
+        if (
+            shift.grace_time_id.is_active == True
+            and shift.grace_time_id.allowed_clock_in == True
+        ):
             # Setting allowance for the check in time
             now_sec -= shift.grace_time_id.allowed_time_in_secs
     # checking default grace time
@@ -79,8 +82,9 @@ def late_come(attendance, start_time, end_time, shift):
             is_default=True,
             is_active=True,
         ).first()
-        # Setting allowance for the check in time
-        now_sec -= grace_time.allowed_time_in_secs
+        # Setting allowance for the check in time if grace allocate for clock in event
+        if grace_time.allowed_clock_in:
+            now_sec -= grace_time.allowed_time_in_secs
     else:
         pass
     if start_time > end_time and start_time != end_time:
@@ -377,7 +381,7 @@ def early_out_create(attendance):
     return late_come_obj
 
 
-def early_out(attendance, start_time, end_time):
+def early_out(attendance, start_time, end_time, shift):
     """
     This method is used to mark the early check-out attendance before the shift ends
     args:
@@ -385,9 +389,25 @@ def early_out(attendance, start_time, end_time):
         start_time : attendance day shift start time
         start_end : attendance day shift end time
     """
-
     now_sec = strtime_seconds(attendance.attendance_clock_out.strftime("%H:%M"))
     mid_day_sec = strtime_seconds("12:00")
+    # Checking gracetime allowance before creating early out
+    if shift and shift.grace_time_id:
+        if (
+            shift.grace_time_id.is_active == True
+            and shift.grace_time_id.allowed_clock_out == True
+        ):
+            now_sec += shift.grace_time_id.allowed_time_in_secs
+    elif GraceTime.objects.filter(is_default=True, is_active=True).exists():
+        grace_time = GraceTime.objects.filter(
+            is_default=True,
+            is_active=True,
+        ).first()
+        # Setting allowance for the check out time if grace allocate for clock out event
+        if grace_time.allowed_clock_out:
+            now_sec += grace_time.allowed_time_in_secs
+    else:
+        pass
     if start_time > end_time:
         # Early out condition for night shift
         if now_sec < mid_day_sec:
@@ -443,7 +463,10 @@ def clock_out(request):
     early_out_instance = attendance.late_come_early_out.filter(type="early_out")
     if not early_out_instance.exists():
         early_out(
-            attendance=attendance, start_time=start_time_sec, end_time=end_time_sec
+            attendance=attendance,
+            start_time=start_time_sec,
+            end_time=end_time_sec,
+            shift=shift,
         )
 
     script = ""

@@ -354,7 +354,7 @@ urlpatterns = [
         name="delete-grace-time",
     ),
     path(
-        "update-isactive-gracetime",
+        "update-isactive-gracetime/<int:obj_id>",
         views.update_isactive_gracetime,
         name="update-isactive-gracetime",
     ),

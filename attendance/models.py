@@ -970,12 +970,19 @@ class GraceTime(HorillaModel):
         verbose_name=_("Allowed time"),
     )
     allowed_time_in_secs = models.IntegerField()
+    allowed_clock_in = models.BooleanField(
+        default=True, help_text=_("Allcocate this grace time for Check-In Attendance")
+    )
+    allowed_clock_out = models.BooleanField(
+        default=False, help_text=_("Allcocate this grace time for Check-Out Attendance")
+    )
     is_default = models.BooleanField(default=False)
+
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
 
     def __str__(self) -> str:
-        return str(f"{self.allowed_time} - Minutes")
+        return str(f"{self.allowed_time} - Hours")
 
     def clean(self):
         """
@@ -999,7 +1006,11 @@ class GraceTime(HorillaModel):
             .exists()
         ):
             raise ValidationError(
-                _("There is already a grace time with this allowed time that exists.")
+                {
+                    "allowed_time": _(
+                        "There is already an existing grace time with this allowed time."
+                    )
+                }
             )
 
     def save(self, *args, **kwargs):

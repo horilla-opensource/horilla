@@ -22,6 +22,7 @@ from base.models import Company, DynamicPagination
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required
 from leave.models import LeaveRequest, LeaveRequestConditionApproval
+from recruitment.models import Candidate
 
 
 def filtersubordinates(request, queryset, perm=None, field=None):
@@ -588,6 +589,8 @@ def reload_queryset(fields):
     for k, v in fields.items():
         if isinstance(v, ModelChoiceField):
             if v.queryset.model == Employee:
+                v.queryset = v.queryset.model.objects.filter(is_active=True)
+            elif v.queryset.model == Candidate:
                 v.queryset = v.queryset.model.objects.filter(is_active=True)
             else:
                 v.queryset = v.queryset.model.objects.all()

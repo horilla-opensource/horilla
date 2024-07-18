@@ -1759,39 +1759,41 @@ def delete_grace_time(request, grace_id):
         messages.error(request, _("Grace Time Does not exists.."))
     except ProtectedError:
         messages.error(request, _("Related datas exists."))
-    if request.GET.get("view") == "shift":
-        return redirect("/settings/grace-settings-view")
-    else:
-        return redirect("/settings/grace-settings-view")
+    context = {
+        "condition": AttendanceValidationCondition.objects.first(),
+        "default_grace_time": GraceTime.objects.filter(is_default=True).first(),
+        "grace_times": GraceTime.objects.all().exclude(is_default=True),
+    }
+
+    return render(request, "attendance/grace_time/grace_time_table.html", context)
 
 
 @login_required
 @permission_required("attendance.update_gracetime")
-def update_isactive_gracetime(request):
+def update_isactive_gracetime(request, obj_id):
     """
     ajax function to update is active field in grace time.
     Args:
-    - isChecked: Boolean value representing the state of grace time,
-    - graceId: Id of grace time object
+    - is_active: Boolean value representing the state of grace time,
+    - obj_id: Id of grace time object
     """
-    isChecked = request.POST.get("isChecked")
-    graceId = request.POST.get("graceId")
-    grace_time = GraceTime.objects.get(id=graceId)
-    if isChecked == "true":
+    is_active = request.POST.get("is_active")
+    grace_time = GraceTime.objects.get(id=obj_id)
+    if is_active == "on":
         grace_time.is_active = True
-
-        response = {
-            "type": "success",
-            "message": _("Default grace time activated successfully."),
-        }
+        messages.success(request, _("Grace time activated successfully."))
     else:
         grace_time.is_active = False
-        response = {
-            "type": "success",
-            "message": _("Default grace time deactivated successfully."),
-        }
+        messages.success(request, _("Grace time deactivated successfully."))
     grace_time.save()
-    return JsonResponse(response)
+
+    context = {
+        "condition": AttendanceValidationCondition.objects.first(),
+        "default_grace_time": GraceTime.objects.filter(is_default=True).first(),
+        "grace_times": GraceTime.objects.all().exclude(is_default=True),
+    }
+
+    return render(request, "attendance/grace_time/grace_time_table.html", context)
 
 
 @login_required
