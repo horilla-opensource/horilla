@@ -724,13 +724,34 @@ def validate_start_date(request):
         contract = payroll.models.models.Contract.objects.filter(
             employee_id__id=emp_id, contract_status="active"
         ).first()
-
-        if start_datetime is not None and start_datetime < contract.contract_start_date:
-            error_message = f"<ul class='errorlist'><li>The {contract.employee_id}'s \
-                contract start date is smaller than pay period start date</li></ul>"
-            response["message"] = error_message
-            response["valid"] = False
-
+        if contract:
+            if contract.contract_end_date:
+                if not (
+                    contract.contract_start_date
+                    <= end_datetime
+                    <= contract.contract_end_date
+                ):
+                    error_message = (
+                        f"<ul class='errorlist'><li>The {contract.employee_id}'s "
+                        f"contract period is not within the payslip range</li></ul>"
+                    )
+                    response["message"] = error_message
+                    response["valid"] = False
+                elif start_datetime < contract.contract_start_date:
+                    start_datetime = contract.contract_start_date
+                    start_date = contract.contract_start_date
+            else:
+                if end_datetime < contract.contract_start_date:
+                    error_message = (
+                        f"<ul class='errorlist'><li>The payslip end date is less than {contract.employee_id}'s "
+                        f"contract start date ({contract.contract_start_date}).</li></ul>"
+                    )
+                    response["message"] = error_message
+                    response["valid"] = False
+                elif start_datetime <= contract.contract_start_date:
+                    if contract.contract_start_date <= end_datetime:
+                        start_datetime = contract.contract_start_date
+                        start_date = contract.contract_start_date
     if (
         start_datetime is not None
         and end_datetime is not None

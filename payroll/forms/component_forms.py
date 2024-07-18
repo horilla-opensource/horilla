@@ -339,7 +339,6 @@ class GeneratePayslipForm(HorillaForm):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
-
         today = datetime.date.today()
         if end_date < start_date:
             raise forms.ValidationError(
