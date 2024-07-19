@@ -78,6 +78,11 @@ urlpatterns = [
     ),
     path("view-payslip/", component_views.view_payslip, name="view-payslip"),
     path(
+        "payslip-create-form-initialize",
+        component_views.payslip_create_form_initialize,
+        name="payslip-create-form-initialize",
+    ),
+    path(
         "hx-create-allowance",
         component_views.hx_create_allowance,
         name="hx-create-allowance",

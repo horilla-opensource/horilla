@@ -360,7 +360,7 @@ $("#deletePayslipBulk").click(function (e) {
     } else {
       Swal.fire({
         text: confirmMessage,
-        icon: "error",
+        icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
         cancelButtonColor: "#d33",

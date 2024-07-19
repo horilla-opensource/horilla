@@ -824,6 +824,14 @@ def view_payslip(request):
     )
 
 
+def payslip_create_form_initialize(request):
+    return render(
+        request,
+        "payroll/payslip/create_payslip.html",
+        {"individual_form": forms.PayslipForm()},
+    )
+
+
 @login_required
 @hx_request_required
 def filter_payslip(request):

@@ -21,11 +21,16 @@
       <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
         {% trans "Create Payslip" %}
       </h1>
-      <button class="oh-modal__close" aria-label="Close">
+      <button
+        class="oh-modal__close--custom"
+        hx-get="{% url 'payslip-create-form-initialize' %}"
+        hx-target="#individualPayslipModalBody"
+        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
+      >
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
-    <div class="oh-modal__dialog-body" id="individualPayslipModal">
+    <div class="oh-modal__dialog-body" id="individualPayslipModalBody">
       {% include "payroll/payslip/create_payslip.html" %}
     </div>
   </div>
