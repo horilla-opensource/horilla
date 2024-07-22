@@ -1,109 +1,61 @@
 {% extends 'settings.html' %} {% load i18n %} {% block settings %}{% load static %}
-  <div id="ohMessages"></div>
+<div id="ohMessages"></div>
 
-  <div class="oh-inner-sidebar-content">
+<div class="oh-inner-sidebar-content">
     <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
-      <h2 class="oh-inner-sidebar-content__title">{% trans 'Break Point Condition' %}</h2>
-      {% if not condition and perms.attendance.add_attendancevalidationcondition%}
-        <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-target="#conditionModalTarget" type="button" hx-get="{% url 'attendance-settings-create' %}" class="oh-btn oh-btn--info" data-toggle="oh-modal-toggle" data-target="#conditionModal">
-          <ion-icon name="add-outline" class="me-1"></ion-icon>
-          {% trans 'Create' %}
-        </button>
-      {% endif %}
+        <h2 class="oh-inner-sidebar-content__title">{% trans 'Break Point Condition' %}</h2>
+        {% if not condition and perms.attendance.add_attendancevalidationcondition%}
+            <button class="oh-btn oh-btn--secondary oh-btn--shadow"  type="button" class="oh-btn oh-btn--info"
+                hx-get="{% url 'attendance-settings-create' %}" hx-target="#objectCreateModalTarget"
+                data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                >
+                <ion-icon name="add-outline" class="me-1"></ion-icon>
+                {% trans 'Create' %}
+            </button>
+        {% endif %}
     </div>
     {% if condition %}
-      <div class="oh-sticky-table">
+    <div class="oh-sticky-table">
         <div class="oh-sticky-table__table oh-table--sortable">
-          <div class="oh-sticky-table__thead">
-            <div class="oh-sticky-table__tr">
-              <div class="oh-sticky-table__th">
-                {% trans 'Auto Validate Till' %}
-              </div>
-              <div class="oh-sticky-table__th">
-                {% trans 'Min Hour To Approve OT' %}
-              </div>
-              <div class="oh-sticky-table__th">
-                {% trans 'OT Cut-Off/Day' %}
-              </div>
-              {% if perms.attendance.change_attendancevalidationcondition %}
-                <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-              {% endif %}
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">
+                        {% trans 'Auto Validate Till' %}
+                    </div>
+                    <div class="oh-sticky-table__th">
+                        {% trans 'Min Hour To Approve OT' %}
+                    </div>
+                    <div class="oh-sticky-table__th">
+                        {% trans 'OT Cut-Off/Day' %}
+                    </div>
+                    {% if perms.attendance.change_attendancevalidationcondition %}
+                        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    {% endif %}
+                </div>
             </div>
-          </div>
-          <div class="oh-sticky-table__tbody">
-            {% if condition != None %}
-              <div class="oh-sticky-table__tr" draggable="true">
-                <div class="oh-sticky-table__td">{{ condition.validation_at_work }}</div>
-                <div class="oh-sticky-table__td">{{ condition.minimum_overtime_to_approve }}</div>
-                <div class="oh-sticky-table__td">{{ condition.overtime_cutoff }}</div>
-                {% if perms.attendance.change_attendancevalidationcondition %}
-                  <div class="oh-sticky-table__td">
-                    <a hx-get="{% url 'attendance-settings-update' condition.id %}" hx-target="#conditionModalTarget" type="button" class="oh-btn oh-btn--info" data-toggle="oh-modal-toggle" data-target="#conditionModal">{% trans 'Edit' %}</a>
-                  </div>
+            <div class="oh-sticky-table__tbody">
+                {% if condition != None %}
+                    <div class="oh-sticky-table__tr" draggable="true">
+                        <div class="oh-sticky-table__td">{{ condition.validation_at_work }}</div>
+                        <div class="oh-sticky-table__td">{{ condition.minimum_overtime_to_approve }}</div>
+                        <div class="oh-sticky-table__td">{{ condition.overtime_cutoff }}</div>
+                        {% if perms.attendance.change_attendancevalidationcondition %}
+                            <div class="oh-sticky-table__td">
+                                <a hx-get="{% url 'attendance-settings-update' condition.id %}"
+                                    hx-target="#objectUpdateModalTarget" type="button" class="oh-btn oh-btn--info"
+                                    data-toggle="oh-modal-toggle" data-target="#objectUpdateModal">{% trans 'Edit' %}</a>
+                            </div>
+                        {% endif %}
+                    </div>
                 {% endif %}
-              </div>
-            {% endif %}
-          </div>
+            </div>
         </div>
-      </div>
+    </div>
     {% else %}
-      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-        <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/conditions.png' %}" class="" alt="Page not found. 404." />
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+        <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);"
+            src="{% static 'images/ui/conditions.png' %}" class="" alt="Page not found. 404." />
         <h5 class="oh-404__subtitle">{% trans "There is no attendance conditions at this moment." %}</h5>
     </div>
     {% endif %}
-
-<!-- start of condition modal -->
-<div
-	class="oh-modal"
-	id="conditionModal"
-	role="dialog"
-	aria-labelledby="conditionModal"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog" id="conditionModalTarget" >
-
-	</div>
-</div>
-<!-- end of condition modal -->
-
-<script>
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-  }
-
-  function updateIsActivate(checkbox) {
-    // Using jQuery to check if the checkbox is checked
-    var isChecked = $(checkbox).prop('checked');
-    var graceId = $(checkbox).data('id');
-    $.ajax({
-      type: "POST",
-      url: "/attendance/update-isactive-gracetime",
-      data: { 'isChecked': isChecked, 'graceId':graceId,'csrfmiddlewaretoken': getCookie('csrftoken') },
-      dataType: "json",
-      success: function (response) {
-        $("#ohMessages").append(`
-                <div class="oh-alert-container">
-                  <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-                    ${response.message}
-                  </div>
-                </div>`);
-                duration = 1500;
-      }
-    });
-  }
-</script>
-
 {% endblock %}

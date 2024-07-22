@@ -85,6 +85,7 @@ from base.forms import (
     ShiftRequestCommentForm,
     ShiftRequestForm,
     TagsForm,
+    TrackLateComeEarlyOutForm,
     UserGroupForm,
     WorkTypeForm,
     WorkTypeRequestColumnForm,
@@ -126,6 +127,7 @@ from base.models import (
     ShiftRequest,
     ShiftRequestComment,
     Tags,
+    TrackLateComeEarlyOut,
     WorkType,
     WorkTypeRequest,
     WorkTypeRequestComment,
@@ -4830,6 +4832,33 @@ def validation_condition_view(request):
         "attendance/break_point/condition.html",
         {"condition": condition, "default_grace_time": default_grace_time},
     )
+
+
+@login_required
+@permission_required("base.view_tracklatecomeearlyout")
+def track_late_come_early_out(request):
+    tracking = TrackLateComeEarlyOut.objects.first()
+    form = TrackLateComeEarlyOutForm(
+        initial={"is_enable": tracking.is_enable} if tracking else {}
+    )
+    return render(
+        request, "attendance/late_come_early_out/tracking.html", {"form": form}
+    )
+
+
+@login_required
+@permission_required("base.change_tracklatecomeearlyout")
+def enable_disable_tracking_late_come_early_out(request):
+    if request.method == "POST":
+        enable = bool(request.POST.get("is_enable"))
+        tracking, created = TrackLateComeEarlyOut.objects.get_or_create()
+        tracking.is_enable = enable
+        tracking.save()
+        message = _("enabled") if enable else _("disabled")
+        messages.success(
+            request, _("Tracking late come early out {} successfully").format(message)
+        )
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required

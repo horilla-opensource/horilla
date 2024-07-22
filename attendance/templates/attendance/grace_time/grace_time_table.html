@@ -47,10 +47,10 @@
                                     {% if perms.attendance.change_gracetime%}
                                     <input type="checkbox" name="is_active" id="GTIsActivate"
                                         hx-post="{% url 'update-isactive-gracetime' default_grace_time.id %}"
-                                        hx-trigger="change" hx-target="#graceTimeContainer" class="oh-switch__checkbox" 
+                                        hx-trigger="change" hx-target="#graceTimeContainer" class="oh-switch__checkbox"
                                         {% if default_grace_time.is_active %} checked {% endif %}>
                                     {% else %}
-                                    <input type="checkbox" id="GTIsActivate" class="oh-switch__checkbox" 
+                                    <input type="checkbox" id="GTIsActivate" class="oh-switch__checkbox"
                                         {% if default_grace_time.is_active %} checked {% endif %} disabled >
                                     {% endif %}
                                 </div>
@@ -137,12 +137,12 @@
                         <div class="d-flex">
                             <div class="oh-switch">
                                 {% if perms.attendance.change_gracetime%}
-                                <input type="checkbox" name="is_active" id="GTIsActivate" class="oh-switch__checkbox" 
+                                <input type="checkbox" name="is_active" id="GTIsActivate" class="oh-switch__checkbox"
                                     {% if grace_time.is_active %} checked {% endif %}
                                     hx-post="{% url 'update-isactive-gracetime' grace_time.id %}" hx-trigger="change"
                                     hx-target="#graceTimeContainer">
                                 {% else %}
-                                <input type="checkbox" id="GTIsActivate" class="oh-switch__checkbox" 
+                                <input type="checkbox" id="GTIsActivate" class="oh-switch__checkbox"
                                     {% if grace_time.is_active %} checked {% endif %} disabled>
                                 {% endif %}
                             </div>
@@ -159,7 +159,7 @@
                                 <ion-icon name="create-outline"></ion-icon></a>
                             {% endif %}
                             {% if perms.base.delete_gracetime %}
-                            <form class="w-50" hx-confirm="{% trans 'Are you sure you want to delete this grace time?' %}" 
+                            <form class="w-50" hx-confirm="{% trans 'Are you sure you want to delete this grace time?' %}"
                                 hx-post="{% url 'delete-grace-time' grace_time.id %}?view=shift" hx-target="#graceTimeContainer">
                                 {% csrf_token %}
                                 <button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"

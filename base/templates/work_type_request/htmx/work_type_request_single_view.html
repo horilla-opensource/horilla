@@ -10,6 +10,16 @@
   </div>
   {% endfor %}
 </div>
+<script>
+  setTimeout(function () {
+    $(".oh-span__class").click();
+  }, 1000);
+</script>
+<span
+  class="oh-span__class"
+  hx-get="{% url 'work-type-request-search' %}?{{pd}}"
+  hx-target="#view-container"
+></span>
 {% endif %}
 {% if work_type_request %}
 <div class="oh-modal__dialog-header">

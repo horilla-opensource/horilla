@@ -716,6 +716,16 @@ urlpatterns = [
         name="attendance-settings-view",
     ),
     path(
+        "settings/track-late-come-early-out",
+        views.track_late_come_early_out,
+        name="track-late-come-early-out",
+    ),
+    path(
+        "settings/enable-disable-tracking-late-come-early-out",
+        views.enable_disable_tracking_late_come_early_out,
+        name="enable-disable-tracking-late-come-early-out",
+    ),
+    path(
         "settings/grace-settings-view/",
         views.grace_time_view,
         name="grace-settings-view",

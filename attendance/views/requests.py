@@ -6,7 +6,7 @@ This module is used to register the endpoints to the attendance requests
 
 import copy
 import json
-from datetime import date, datetime
+from datetime import date, datetime, time
 from urllib.parse import parse_qs
 
 from django.contrib import messages
@@ -405,7 +405,9 @@ def approve_validate_attendance_request(request, attendance_id):
             attendance, start_time=start_time_sec, end_time=end_time_sec, shift=shift
         )
     if attendance.attendance_clock_out:
-        early_out(attendance, start_time=start_time_sec, end_time=end_time_sec)
+        early_out(
+            attendance, start_time=start_time_sec, end_time=end_time_sec, shift=shift
+        )
 
     messages.success(request, _("Attendance request has been approved"))
     employee = attendance.employee_id
@@ -602,7 +604,12 @@ def bulk_approve_attendance_request(request):
                 shift=shift,
             )
         if attendance.attendance_clock_out:
-            early_out(attendance, start_time=start_time_sec, end_time=end_time_sec)
+            early_out(
+                attendance,
+                start_time=start_time_sec,
+                end_time=end_time_sec,
+                shift=shift,
+            )
 
         messages.success(request, _("Attendance request has been approved"))
         employee = attendance.employee_id

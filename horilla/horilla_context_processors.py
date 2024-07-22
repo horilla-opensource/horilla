@@ -37,3 +37,6 @@ TEMPLATES[0]["OPTIONS"]["context_processors"].append(
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "base.context_processors.biometric_app_exists",
 )
+TEMPLATES[0]["OPTIONS"]["context_processors"].append(
+    "base.context_processors.enable_late_come_early_out_tracking",
+)

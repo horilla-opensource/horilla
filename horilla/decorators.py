@@ -8,7 +8,11 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from base.models import BiometricAttendance, MultipleApprovalManagers
+from base.models import (
+    BiometricAttendance,
+    MultipleApprovalManagers,
+    TrackLateComeEarlyOut,
+)
 from employee.models import Employee, EmployeeWorkInformation
 from horilla import settings
 from horilla.settings import BASE_DIR, TEMPLATES
@@ -37,6 +41,9 @@ def check_manager(employee, instance):
 @decorator_with_arguments
 def permission_required(function, perm):
     def _function(request, *args, **kwargs):
+        print("__________________________________________________________")
+        print(kwargs)
+        print(perm)
         if request.user.has_perm(perm):
             return function(request, *args, **kwargs)
         else:
@@ -294,6 +301,16 @@ def owner_can_enter(function, perm: str, model: object, manager_access=False):
 
 def install_required(function):
     def _function(request, *args, **kwargs):
+        if request.path_info.endswith("late-come-early-out-view/"):
+            object = TrackLateComeEarlyOut.objects.first()
+            if object.is_enable:
+                return function(request, *args, **kwargs)
+            else:
+                messages.info(
+                    request,
+                    _("Please enable the Track Late Come & Early Out from settings"),
+                )
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         object = BiometricAttendance.objects.all().first()
         if object.is_installed:
             return function(request, *args, **kwargs)

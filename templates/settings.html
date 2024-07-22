@@ -327,6 +327,16 @@
 											<div class="oh-input-group">
 												{% if perms.attendance.view_attendancevalidationcondition %}
 													<a
+														id="trackLateComeEalryOut"
+														href="{% url 'track-late-come-early-out' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Track Late Come & Early Out" %}</a
+														>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.attendance.view_attendancevalidationcondition %}
+													<a
 														id="condition"
 														href="{% url 'attendance-settings-view' %}"
 														class="oh-inner-sidebar__link oh-dropdown__link"

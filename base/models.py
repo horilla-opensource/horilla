@@ -1527,3 +1527,21 @@ class AttendanceAllowedIP(models.Model):
 
     def __str__(self):
         return f"AttendanceAllowedIP - {self.is_enabled}"
+
+
+class TrackLateComeEarlyOut(HorillaModel):
+    is_enable = models.BooleanField(
+        default=True,
+        verbose_name=_("Enable"),
+        help_text=_(
+            "By enabling this, you track the late comes and early outs of employees in their attendance."
+        ),
+    )
+
+    class Meta:
+        verbose_name = _("Track Late Come Early Out")
+        verbose_name_plural = _("Track Late Come Early Outs")
+
+    def __str__(self):
+        tracking = _("enabled") if self.is_enable else _("disabled")
+        return f"Tracking late come early out {tracking}"

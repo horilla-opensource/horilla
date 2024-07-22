@@ -1,29 +1,33 @@
 {% load i18n %}
 {% if form.errors %}
 <!-- form errors  -->
-    <div class="oh-wrapper">
-        <div class="oh-alert-container">
-            {% for error in form.non_field_errors %}
-            <div class="oh-alert oh-alert--animated oh-alert--danger">
-                {{ error }}
-            </div>
-            {% endfor %}
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+        {% for error in form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+            {{ error }}
         </div>
+        {% endfor %}
     </div>
+</div>
 {% endif %}
-<form
-    hx-post="{% url 'update-announcement' form.instance.id %}"
-    hx-target="#announcementUpdate"
-    method="post"
-    hx-encoding="multipart/form-data">
-    {% csrf_token %}
-    {{form.as_p}}
-    <div class="d-flex flex-row-reverse">
-        <button
-            type="submit"
-            class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-            >
-            {% trans "Save" %}
+<div class="oh-modal__dialog-header">
+    <h5 class="oh-modal__dialog-title" id="announcementUpdateModalLabel">{% trans "Edit Announcement." %}</span>
+        <button type="button" class="oh-modal_close--custom"
+            onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
+            <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
         </button>
-    </div>
-</form>
+</div>
+<div class="oh-modal__dialog-body">
+
+    <form hx-post="{% url 'update-announcement' form.instance.id %}" hx-target="#objectUpdateModalTarget"
+        hx-encoding="multipart/form-data" class="oh-profile-section">
+        {% csrf_token %}
+        {{form.as_p}}
+        <div class="d-flex flex-row-reverse">
+            <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+</div>

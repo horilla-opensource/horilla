@@ -3,9 +3,9 @@
 <div class="oh-modal__dialog-header pb-0">
 	<h2 class="oh-modal__dialog-title" id="editModaltitle">
 		{% if condition.id %}
-			{% trans "Update Attendance condition " %}
+		{% trans "Update Attendance condition " %}
 		{% else %}
-			{% trans "Create Attendance condition " %}
+		{% trans "Create Attendance condition " %}
 		{% endif %}
 	</h2>
 	<button class="oh-modal__close" aria-label="Close">
@@ -16,16 +16,15 @@
 	<form class="oh-profile-section"
 		{% if condition.id %}
 			hx-post="{% url 'attendance-settings-update' condition.id %}"
+			hx-target="#objectUpdateModalTarget"
 		{% else %}
 			hx-post="{% url 'attendance-settings-create' %}"
-		{% endif %}
-		hx-target='#conditionModalTarget'
-		>
+			hx-target="#objectCreateModalTarget" {% endif %}>
 		{% csrf_token %}
 		{{form.as_p}}
 		<div class="oh-modal__dialog-footer p-0 mt-3">
 			<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-			  {% trans "Save" %}
+				{% trans "Save" %}
 			</button>
 		</div>
 	</form>

@@ -773,7 +773,7 @@
                         width: 50px;
                         height: 28px;"
                         class="oh-btn oh-btn--secondary-outline float-end ms-3" hx-get='{% url "create-announcement" %}'
-                        hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal" title='{% trans "Create Announcement." %}'>
+                        hx-target="#objectCreateModalTarget" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" title='{% trans "Create Announcement." %}'>
                         <ion-icon name="add-outline" class="m-0"></ion-icon>
                     </button>
                 </span>
@@ -799,9 +799,9 @@
                         <div class="oh-sticky-table__tr" draggable="true">
                           <div class="announcement_title">
                               <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
-                                  data-target="#announcement"
+                                  data-target="#objectDetailsModal"
                                   hx-get="{% url 'announcement-single-view' i.id %}"
-                                  hx-target="#announcementModalBody"
+                                  hx-target="#objectDetailsModalTarget"
                                   onclick="closeNew(this)">
                                   <div class="oh-profile__avatar mr-1">
                                       <img src="https://ui-avatars.com/api/?name={{i.title}}&background=random" class="oh-profile__image" />

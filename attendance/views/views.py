@@ -78,6 +78,7 @@ from employee.filters import EmployeeFilter
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
     hx_request_required,
+    install_required,
     login_required,
     manager_can_enter,
     permission_required,
@@ -1002,6 +1003,7 @@ def on_time_view(request):
 
 
 @login_required
+@install_required
 def late_come_early_out_view(request):
     """
     This method render template to view all late come early out entries
@@ -1042,6 +1044,8 @@ def late_come_early_out_view(request):
     )
 
 
+@login_required
+@hx_request_required
 def late_in_early_out_single_view(request, obj_id):
     request_copy = request.GET.copy()
     request_copy.pop("instances_ids", None)
@@ -1064,6 +1068,7 @@ def late_in_early_out_single_view(request, obj_id):
 
 @login_required
 @permission_required("attendance.delete_attendancelatecomeearlyout")
+@hx_request_required
 @require_http_methods(["POST"])
 def late_come_early_out_delete(request, obj_id):
     """

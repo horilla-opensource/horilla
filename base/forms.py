@@ -56,6 +56,7 @@ from base.models import (
     ShiftRequest,
     ShiftRequestComment,
     Tags,
+    TrackLateComeEarlyOut,
     WorkType,
     WorkTypeRequest,
     WorkTypeRequestComment,
@@ -2303,3 +2304,19 @@ class AttendanceAllowedIPUpdateForm(ModelForm):
             cleaned_data[field_name] = self.validate_ip_address(value)
 
         return cleaned_data
+
+
+class TrackLateComeEarlyOutForm(ModelForm):
+    class Meta:
+        model = TrackLateComeEarlyOut
+        fields = ["is_enable"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["is_enable"].widget.attrs.update(
+            {
+                "hx-post": "/settings/enable-disable-tracking-late-come-early-out",
+                "hx-target": "this",
+                "hx-trigger": "change",
+            }
+        )

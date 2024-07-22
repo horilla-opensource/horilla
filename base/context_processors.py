@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.urls import path
 
 from attendance.models import AttendanceGeneralSetting
-from base.models import Company
+from base.models import Company, TrackLateComeEarlyOut
 from base.urls import urlpatterns
 from employee.models import EmployeeGeneralSetting
 from horilla import horilla_apps
@@ -201,3 +201,9 @@ def biometric_app_exists(request):
 
     biometric_app_exists = "biometric" in settings.INSTALLED_APPS
     return {"biometric_app_exists": biometric_app_exists}
+
+
+def enable_late_come_early_out_tracking(request):
+    tracking = TrackLateComeEarlyOut.objects.first()
+    enable = tracking.is_enable if tracking else True
+    return {"tracking": enable, "late_come_early_out_tracking": enable}

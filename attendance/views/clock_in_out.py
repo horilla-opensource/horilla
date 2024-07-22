@@ -25,7 +25,10 @@ from attendance.views.views import (
     shift_schedule_today,
     strtime_seconds,
 )
-from base.context_processors import timerunner_enabled
+from base.context_processors import (
+    enable_late_come_early_out_tracking,
+    timerunner_enabled,
+)
 from base.models import AttendanceAllowedIP, EmployeeShiftDay
 from horilla.decorators import hx_request_required, login_required
 from horilla.horilla_middlewares import _thread_locals
@@ -63,6 +66,8 @@ def late_come(attendance, start_time, end_time, shift):
         end_time : attendance day shift end time
 
     """
+    if not enable_late_come_early_out_tracking(None).get("tracking"):
+        return
     request = getattr(_thread_locals, "request", None)
     now_sec = strtime_seconds(attendance.attendance_clock_in.strftime("%H:%M"))
     mid_day_sec = strtime_seconds("12:00")
@@ -389,6 +394,8 @@ def early_out(attendance, start_time, end_time, shift):
         start_time : attendance day shift start time
         start_end : attendance day shift end time
     """
+    if not enable_late_come_early_out_tracking(None).get("tracking"):
+        return
     now_sec = strtime_seconds(attendance.attendance_clock_out.strftime("%H:%M"))
     mid_day_sec = strtime_seconds("12:00")
     # Checking gracetime allowance before creating early out
