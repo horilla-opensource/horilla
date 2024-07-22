@@ -472,6 +472,7 @@ class AttendanceFilters(FilterSet):
             "attendance_validated",
             "is_validate_request",
             "is_validate_request_approved",
+            "is_bulk_request",
             "at_work_second__lte",
             "at_work_second__gte",
             "overtime_second__lte",

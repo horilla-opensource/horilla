@@ -1069,6 +1069,7 @@ class BulkAttendanceRequestForm(ModelForm):
                 instance.is_validate_request = True
                 instance.employee_id = employee_id
                 instance.request_type = "create_request"
+                instance.is_bulk_request = True
                 instance.save()
             else:
                 logger(form.errors)

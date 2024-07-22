@@ -21,7 +21,11 @@
 {% load basefilters %}
 {% include 'filter_tags.html' %}
 <div class="d-flex flex-row-reverse mb-1">
-  <span class="me-5" hx-get='{% url "search-attendance-requests" %}?attendance_validated=false' hx-target="#view-container" style="cursor: pointer">
+  <span class="me-5" hx-get='{% url "search-attendance-requests" %}?is_bulk_request=True' hx-target="#view-container" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small" style="background-color:rgb(31 122 220 / 48%)"></span>
+    {% trans "Bulk-Requests" %}
+  </span>
+  <span class="me-3" hx-get='{% url "search-attendance-requests" %}?attendance_validated=false' hx-target="#view-container" style="cursor: pointer">
     <span class="oh-dot oh-dot--small" style="background-color:rgba(128, 128, 128, 0.482)"></span>
     {% trans "Not-Validated" %}
   </span>

@@ -263,6 +263,7 @@ class Attendance(HorillaModel):
     is_validate_request = models.BooleanField(
         default=False, verbose_name=_("Is validate request")
     )
+    is_bulk_request = models.BooleanField(default=False, editable=False)
     is_validate_request_approved = models.BooleanField(
         default=False, verbose_name=_("Is validate request approved")
     )
