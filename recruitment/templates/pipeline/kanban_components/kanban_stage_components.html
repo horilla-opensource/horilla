@@ -94,10 +94,47 @@
     </button>
 </div>
 {% endif %}
+<script>
+    function initializeSortable() {
+        $(".pipeline_item").parent().sortable({
+            handle: ".oh-kanban__section-head",
+            connectWith: ".pipeline_item",
+            placeholder: "ui-state-highlight",
+            stop: function(event, ui) {
+            }
+        }).disableSelection();
+    }
 
+    function executeScripts(container) {
+        const scripts = container.querySelectorAll('script');
+        scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            newScript.src = script.src;
+            newScript.textContent = script.textContent;
+            document.body.appendChild(newScript);
+        });
+    }
+
+    document.addEventListener("htmx:afterSettle", function(event) {
+        if (event.detail.target.querySelectorAll(".pipeline_item").length > 0) {
+            initializeSortable();
+        }
+        executeScripts(event.detail.target);
+    });
+
+
+    $(document).ready(function() {
+        initializeSortable();
+    });
+</script>
 <script>
 initialAvtiveTab = $(".oh-tabs__content--active").length
 if (!initialAvtiveTab) {
     $(".oh-tabs__tab:first").click()
 }
 </script>
+
+<script src="{% static 'pipeline/search.js' %}"></script>
+<script src="{% static 'pipeline/load.js' %}"></script>
+<script src="{% static 'pipeline/badge.js' %}"></script>
+<script src="{% static 'pipeline/pipelineDrag.js' %}"></script>

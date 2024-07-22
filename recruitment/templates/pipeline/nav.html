@@ -450,13 +450,13 @@
                                         );
                                         Toast.fire({
                                             icon: "success",
-                                            title: '{% trans "Candidate stage updated" %}',
+                                            title: '{% trans "Sequence updated" %}',
                                             position: "top-end",
                                         });
                                         if (response.message) {
                                             Swal.fire({
                                                 title: response.message,
-                                                text: `Total vacancy is ${response.vacancy}.`, // Using template literals
+                                                text: `Total vacancy is ${response.vacancy}.`,
                                                 icon: "info",
                                                 confirmButtonText: "Ok",
                                             });
@@ -527,7 +527,6 @@
     $(document).on("htmx:beforeRequest", function (event) {
         var target = event.target;
 
-        // Check if the event is for the element you're interested in
         isDrag = $(event.target).attr("data-drag-htmx");
         if (isDrag == "true") {
             $.ajax({

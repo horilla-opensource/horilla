@@ -61,61 +61,62 @@ function stageSequenceGet(stage) {
     },
   });
 }
-$(".stage").mousedown(function () {
-  window["stageSequence"] = $(this).attr("data-stage-sequence");
-  window["recruitmentId"] = $(this).attr("data-recruitment-id");
-  $(".stage").each(function (i, obj) {
-    if (recruitmentId == $(obj).attr("data-recruitment-id")) {
-      window["stages"].push($(obj).attr("data-stage-id"));
-      window["oldSequences"].push($(obj).attr("data-stage-sequence"));
-    }
-  });
-});
-
-$(".stage").mouseup(function () {
-  var newSequences = [];
-  setTimeout(() => {
-    stageSequenceGet($(this));
-  }, 0);
-  $(".stage").each(function (i, obj) {
-    if (
-      recruitmentId == $(obj).attr("data-recruitment-id") ||
-      $(obj).attr("data-recruitment-id") == undefined
-    ) {
-      newSequences.push($(obj).attr("data-stage-sequence"));
-      if ($(obj).attr("data-recruitment-id") != undefined) {
-        window["elements"].push(obj);
+$(document).ready(function () {
+  $(".stage").mousedown(function () {
+    window["stageSequence"] = $(this).attr("data-stage-sequence");
+    window["recruitmentId"] = $(this).attr("data-recruitment-id");
+    $(".stage").each(function (i, obj) {
+      if (recruitmentId == $(obj).attr("data-recruitment-id")) {
+        window["stages"].push($(obj).attr("data-stage-id"));
+        window["oldSequences"].push($(obj).attr("data-stage-sequence"));
       }
-    }
+    });
   });
 
-  if (newSequences.includes(undefined)) {
-    var newSequences = newSequences.filter((e) => e !== stageSequence);
-    var newSequences = newSequences.map((elem) =>
-      elem === undefined ? stageSequence : elem
-    );
-  }
-
-  oldSequences = JSON.stringify(oldSequences);
-  stages = JSON.stringify(stages);
-
-  elements.forEach(function (element) {
-    for (let index = 0; index < newSequences.length; index++) {
-      const sequence = newSequences[index];
-      if (sequence == $(element).attr("data-stage-sequence")) {
-        $(element).attr("data-stage-sequence", `${index + 1}`);
-        return;
+  $(".stage").mouseup(function () {
+    var newSequences = [];
+    setTimeout(() => {
+      stageSequenceGet($(this));
+    }, 0);
+    $(".stage").each(function (i, obj) {
+      if (
+        recruitmentId == $(obj).attr("data-recruitment-id") ||
+        $(obj).attr("data-recruitment-id") == undefined
+      ) {
+        newSequences.push($(obj).attr("data-stage-sequence"));
+        if ($(obj).attr("data-recruitment-id") != undefined) {
+          window["elements"].push(obj);
+        }
       }
+    });
+
+    if (newSequences.includes(undefined)) {
+      var newSequences = newSequences.filter((e) => e !== stageSequence);
+      var newSequences = newSequences.map((elem) =>
+        elem === undefined ? stageSequence : elem
+      );
     }
+
+    oldSequences = JSON.stringify(oldSequences);
+    stages = JSON.stringify(stages);
+
+    elements.forEach(function (element) {
+      for (let index = 0; index < newSequences.length; index++) {
+        const sequence = newSequences[index];
+        if (sequence == $(element).attr("data-stage-sequence")) {
+          $(element).attr("data-stage-sequence", `${index + 1}`);
+          return;
+        }
+      }
+    });
+
+    window["stageSequence"] = null;
+    window["recruitmentId"] = null;
+    window["oldSequences"] = [];
+    window["elements"] = [];
+    window["stages"] = [];
   });
-
-  window["stageSequence"] = null;
-  window["recruitmentId"] = null;
-  window["oldSequences"] = [];
-  window["elements"] = [];
-  window["stages"] = [];
-});
-
+})
 function countSequence(letmessage=true) {
   let childs = $(".change-cand");
   let data = {};
