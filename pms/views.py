@@ -29,6 +29,7 @@ from horilla.decorators import (
     login_required,
     manager_can_enter,
     meeting_manager_can_enter,
+    owner_can_enter,
     permission_required,
 )
 from horilla.group_by import group_by_queryset
@@ -1771,6 +1772,7 @@ def feedback_list_view(request):
 
 
 @login_required
+@owner_can_enter("pms.view_Feedback", Feedback)
 def feedback_detailed_view(request, id, **kwargs):
     """
     This view is used to for detailed view of feedback,

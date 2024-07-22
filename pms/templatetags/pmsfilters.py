@@ -1,7 +1,7 @@
 from django.template.defaultfilters import register
 
 from employee.models import Employee
-from pms.models import EmployeeObjective, Objective
+from pms.models import EmployeeObjective, Feedback, Objective
 
 
 @register.filter(name="replace")
@@ -51,5 +51,18 @@ def is_manager(objective, user):
     if EmployeeObjective.objects.filter(
         id=objective.id, objective_id__managers=employee
     ).exists():
+        return True
+    return False
+
+
+@register.filter(name="is_feedback_manager_or_owner")
+def is_feedback_manager_or_owner(feedback, user):
+    """
+    This method will return true, if the user is manger or owner of the feedback,
+    """
+    employee = Employee.objects.filter(employee_user_id=user).first()
+    if Feedback.objects.filter(id=feedback.id, manager_id=employee).exists():
+        return True
+    elif Feedback.objects.filter(id=feedback.id, employee_id=employee).exists():
         return True
     return False

@@ -103,10 +103,16 @@
         <div class="oh-sticky-table__tbody">
 
           {% for feedback in self_feedback.object_list %}
-          <div class="oh-sticky-table__tr" draggable="true">
+          <div class="oh-sticky-table__tr" draggable="true"
+            {% if perms.pms.view_feedback or feedback|is_feedback_manager_or_owner:request.user %}
+              onclick="window.location.href='{% url 'feedback-detailed-view' feedback.id %}'"
+            {% endif %}
+          >
             <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue
               {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray
-              {% elif feedback.status == 'Behind' %}row-status--orange {% elif feedback.status == 'At Risk' %}row-status--red{% endif %}">
+              {% elif feedback.status == 'Behind' %}row-status--orange {% elif feedback.status == 'At Risk' %}row-status--red{% endif %}"
+              onclick="event.stopPropagation()"
+            >
                 <div class="centered-div">
                   <input
                     type="checkbox"
@@ -116,23 +122,26 @@
                   />
                 </div>
             </div>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
+            <div class="oh-sticky-table__td">
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
                   <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"/>
                 </div>
                 <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
               </div>
-            </a>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;"class="oh-sticky-table__td">{{feedback.review_cycle | title}}</a>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;"class="oh-sticky-table__td">
+            </div>
+            <div class="oh-sticky-table__td">{{feedback.review_cycle | title}}</div>
+            <div class="oh-sticky-table__td">
               <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
               <span>{% trans feedback.status %}</span>
-            </a>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</a>
+            </div>
             <div class="oh-sticky-table__td">
+              {{ current_date|timesince:feedback.end_date }}
+            </div>
+            <div class="oh-sticky-table__td"
+              onclick="event.stopPropagation()"
+            >
               <div class="oh-btn-group">
-
                   <a class="oh-btn w-100"  href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><ion-icon name="create-outline"></ion-icon></a>
                   <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
                   <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
@@ -241,10 +250,16 @@
         <div class="oh-sticky-table__tbody">
 
           {% for feedback in requested_feedback.object_list %}
-          <div class="oh-sticky-table__tr" draggable="true">
+          <div class="oh-sticky-table__tr" draggable="true"
+            {% if perms.pms.view_feedback or feedback|is_feedback_manager_or_owner:request.user %}
+                onclick="window.location.href='{% url 'feedback-detailed-view' feedback.id %}'"
+            {% endif %}
+          >
             <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue
               {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray
-              {% elif feedback.status == 'Behind' %}row-status--orange {% elif feedback.status == 'At Risk' %}row-status--red{% endif %}">
+              {% elif feedback.status == 'Behind' %}row-status--orange {% elif feedback.status == 'At Risk' %}row-status--red{% endif %}"
+              onclick="event.stopPropagation()"
+            >
               <div class="centered-div">
                 <input
                   type="checkbox"
@@ -254,24 +269,22 @@
                 />
               </div>
             </div>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
+            <div class="oh-sticky-table__td">
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
                   <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"/>
                 </div>
                 <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
               </div>
-            </a>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{feedback.review_cycle | title}}</a>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
+            </div>
+            <div class="oh-sticky-table__td">{{feedback.review_cycle | title}}</div>
+            <div class="oh-sticky-table__td">
               <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
               <span>{% trans feedback.status %}</span>
-
-            </a>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</a>
-            <div class="oh-sticky-table__td">
+            </div>
+            <div class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</div>
+            <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
               <div class="oh-btn-group">
-
                 <a class="oh-btn w-100"  href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><ion-icon name="create-outline"></ion-icon></a>
                 <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
                 <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
@@ -383,10 +396,14 @@
         <div class="oh-sticky-table__tbody">
 
           {% for feedback in all_feedbacks.object_list %}
-          <div class="oh-sticky-table__tr" draggable="true">
+          <div class="oh-sticky-table__tr" draggable="true"
+            onclick="window.location.href='{% url 'feedback-detailed-view' feedback.id %}'"
+          >
             <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue
                 {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray
-                {% elif feedback.status == 'Behind' %}row-status--orange {% elif feedback.status == 'At Risk' %}row-status--red{% endif %}">
+                {% elif feedback.status == 'Behind' %}row-status--orange {% elif feedback.status == 'At Risk' %}row-status--red{% endif %}"
+                onclick="event.stopPropagation()"
+            >
               <div class="centered-div">
                 <input
                   type="checkbox"
@@ -396,20 +413,21 @@
                 />
               </div>
             </div>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
+            <div class="oh-sticky-table__td">
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
                   <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"/>
                 </div>
                 <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
               </div>
-            </a>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{feedback.review_cycle | title}}</a>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
-              <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
-              <span>{% trans feedback.status %}</span> </a>
-            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</a>
+            </div>
+            <div class="oh-sticky-table__td">{{feedback.review_cycle | title}}</div>
             <div class="oh-sticky-table__td">
+              <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
+              <span>{% trans feedback.status %}</span>
+            </div>
+            <div class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</div>
+            <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
               <div class="oh-btn-group">
 
                 <a class="oh-btn w-100"  href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><ion-icon name="create-outline"></ion-icon></a>
@@ -695,12 +713,6 @@
     });
 
     $("#anonymousFeedback").click(function (e) {
-
-      console.log('===============================')
-      console.log('===============================')
-      console.log('===============================')
-      console.log('===============================')
-
       var is_checked = $(this).is(":checked");
       if (is_checked) {
         $(".anonymous-feedback-row").prop("checked", true);
