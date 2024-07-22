@@ -72,6 +72,18 @@ class AllowanceForm(forms.ModelForm):
                 }
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
+
+        self.fields["specific_employees"] = HorillaMultiSelectField(
+            queryset=Employee.objects.all(),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                instance=self.instance,
+            ),
+            label="Specific Employees",
+        )
         self.fields["if_condition"].widget.attrs.update(
             {
                 "onchange": "rangeToggle($(this))",
@@ -90,6 +102,21 @@ class AllowanceForm(forms.ModelForm):
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
+
+        specific_employees = self.data.getlist("specific_employees")
+        include_all = self.data.get("include_active_employees")
+
+        for field_name, field_instance in self.fields.items():
+            if isinstance(field_instance, HorillaMultiSelectField):
+                self.errors.pop(field_name, None)
+                if not specific_employees and include_all is None:
+                    raise forms.ValidationError({field_name: "This field is required"})
+                cleaned_data = super().clean()
+                data = self.fields[field_name].queryset.filter(
+                    id__in=self.data.getlist(field_name)
+                )
+                cleaned_data[field_name] = data
+        cleaned_data = super().clean()
 
         if cleaned_data.get("if_condition") == "range":
             cleaned_data["if_amount"] = 0
@@ -175,6 +202,18 @@ class DeductionForm(forms.ModelForm):
                 }
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
+
+        self.fields["specific_employees"] = HorillaMultiSelectField(
+            queryset=Employee.objects.all(),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                instance=self.instance,
+            ),
+            label="Specific Employees",
+        )
         self.fields["if_condition"].widget.attrs.update(
             {
                 "onchange": "rangeToggle($(this))",
@@ -185,6 +224,22 @@ class DeductionForm(forms.ModelForm):
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
+
+        specific_employees = self.data.getlist("specific_employees")
+        include_all = self.data.get("include_active_employees")
+
+        for field_name, field_instance in self.fields.items():
+            if isinstance(field_instance, HorillaMultiSelectField):
+                self.errors.pop(field_name, None)
+                if not specific_employees and include_all is None:
+                    raise forms.ValidationError({field_name: "This field is required"})
+                cleaned_data = super().clean()
+                data = self.fields[field_name].queryset.filter(
+                    id__in=self.data.getlist(field_name)
+                )
+                cleaned_data[field_name] = data
+        cleaned_data = super().clean()
+
         if cleaned_data.get("if_condition") == "range":
             cleaned_data["if_amount"] = 0
             start_range = cleaned_data.get("start_range")
