@@ -1888,11 +1888,12 @@ class PayslipAutoGenerate(models.Model):
                     }
                 )
 
-    def save(self):
+    def save(self, *args, **kwargs):
         from payroll.scheduler import auto_payslip_generate
 
         if self.auto_generate:
             auto_payslip_generate()
+        super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         return f"{self.generate_day} | {self.company_id} "

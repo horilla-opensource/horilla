@@ -1777,6 +1777,7 @@ def initial_notice_period(request):
 @permission_required("payroll.view_PayslipAutoGenerate")
 def auto_payslip_settings_view(request):
     payslip_auto_generate = PayslipAutoGenerate.objects.all()
+    print("All autopayslip", payslip_auto_generate)
 
     context = {"payslip_auto_generate": payslip_auto_generate}
     return render(request, "payroll/settings/auto_payslip_settings.html", context)
