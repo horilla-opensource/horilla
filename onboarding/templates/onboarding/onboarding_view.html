@@ -122,7 +122,7 @@
           </nav>
         </div>
     {% else %}
-    {% if request.GET.closed %}
+    {% if request.GET.closed == 'true' %}
         <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
             <div style="" class="">
                 <img style="width: 190px;height: 190px; margin:0 auto;" src="{% static 'images/ui/recruitment.png' %}" class="oh-404__image d-block mb-4" alt="Page not found. 404."/>
