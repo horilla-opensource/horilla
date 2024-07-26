@@ -7,7 +7,8 @@ from django import forms
 from django_filters import filters
 
 from base.filters import FilterSet
-from onboarding.models import Candidate, CandidateStage, OnboardingStage
+from onboarding.models import CandidateStage, OnboardingStage
+from recruitment.models import Candidate
 
 
 class CandidateFilter(FilterSet):
