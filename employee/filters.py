@@ -236,40 +236,41 @@ class EmployeeFilter(FilterSet):
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
-        self.form.fields["is_active"].initial = True
-        self.form.fields["email"].widget.attrs["autocomplete"] = "email"
-        self.form.fields["phone"].widget.attrs["autocomplete"] = "phone"
-        self.form.fields["country"].widget.attrs["autocomplete"] = "country"
-        for field in self.form.fields.keys():
-            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
-        self.model_choice_filters = [
-            filter
-            for filter in self.filters.values()
-            if isinstance(filter, django_filters.ModelMultipleChoiceFilter)
-        ]
-        for model_choice_filter in self.model_choice_filters:
-            queryset = (
-                model_choice_filter.queryset.filter(is_active=True)
-                if model_choice_filter.queryset.model == Employee
-                else model_choice_filter.queryset
-            )
-            choices = [
-                ("not_set", _("Not Set")),
+        if getattr(request, "exclude_filter_form", False) != True:
+            self.form.fields["is_active"].initial = True
+            self.form.fields["email"].widget.attrs["autocomplete"] = "email"
+            self.form.fields["phone"].widget.attrs["autocomplete"] = "phone"
+            self.form.fields["country"].widget.attrs["autocomplete"] = "country"
+            for field in self.form.fields.keys():
+                self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+            self.model_choice_filters = [
+                filter
+                for filter in self.filters.values()
+                if isinstance(filter, django_filters.ModelMultipleChoiceFilter)
             ]
-            choices.extend([(obj.id, str(obj)) for obj in queryset])
-
-            self.form.fields[model_choice_filter.field_name] = (
-                forms.MultipleChoiceField(
-                    choices=choices,
-                    required=False,
-                    widget=forms.SelectMultiple(
-                        attrs={
-                            "class": "oh-select oh-select-2 select2-hidden-accessible",
-                            "id": uuid.uuid4(),
-                        }
-                    ),
+            for model_choice_filter in self.model_choice_filters:
+                queryset = (
+                    model_choice_filter.queryset.filter(is_active=True)
+                    if model_choice_filter.queryset.model == Employee
+                    else model_choice_filter.queryset
                 )
-            )
+                choices = [
+                    ("not_set", _("Not Set")),
+                ]
+                choices.extend([(obj.id, str(obj)) for obj in queryset])
+
+                self.form.fields[model_choice_filter.field_name] = (
+                    forms.MultipleChoiceField(
+                        choices=choices,
+                        required=False,
+                        widget=forms.SelectMultiple(
+                            attrs={
+                                "class": "oh-select oh-select-2 select2-hidden-accessible",
+                                "id": uuid.uuid4(),
+                            }
+                        ),
+                    )
+                )
 
 
 class EmployeeReGroup:
