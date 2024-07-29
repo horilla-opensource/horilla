@@ -67,6 +67,7 @@ urlpatterns = [
         views.initialize_database_job_position,
         name="initialize-database-job-position",
     ),
+    path("404", views.custom404, name="404"),
     path(
         "initialize-job-position-edit/<int:obj_id>",
         views.initialize_job_position_edit,

@@ -2,9 +2,26 @@ from auditlog.models import AuditlogHistoryField
 from auditlog.registry import auditlog
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.fields.files import FieldFile
+from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from horilla.horilla_middlewares import _thread_locals
+
+
+@property
+def url(self: FieldFile):
+    """
+    Custom url attribute/property
+    """
+    try:
+        self._require_file()
+    except Exception as e:
+        return reverse("404")
+    return self.storage.url(self.name)
+
+
+setattr(FieldFile, "url", url)
 
 
 class HorillaModel(models.Model):
