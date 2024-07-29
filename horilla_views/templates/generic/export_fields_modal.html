@@ -1,0 +1,112 @@
+{% load i18n %}
+<div id="{{view_id|safe}}">
+  <div
+    class="oh-modal"
+    id="exportFields{{view_id|safe}}"
+    role="dialog"
+    aria-labelledby="exportFields{{view_id|safe}}"
+    aria-hidden="true"
+  >
+    <div class="oh-modal__dialog" id="exportFields{{view_id|safe}}">
+      <div class="oh-modal__dialog-header">
+        <h2 class="oh-modal__dialog-title" id="exportModalLable{{view_id|safe}}">
+          {% trans "Export" %} {{verbose_name}}
+        </h2>
+        <button class="oh-modal__close" aria-label="Close">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="oh-modal__dialog-body">
+        <form
+          onsubmit="
+            event.preventDefault();
+            const selectedFields = $('#{{view_id|safe}} input[name=selected_fields]:checked').map(function() {
+                return [[$(this).attr('data-label'),this.value]];
+            }).get();
+            selectedIds = $('#{{selected_instances_key_id}}').attr('data-ids');
+            window.location.href = '/{{export_path}}' + '?ids='+selectedIds + '&columns='+JSON.stringify(selectedFields);
+            event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');
+          "
+          id="candidateExportForm"
+        >
+
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label" style="color:hsl(8deg 76.82% 46.12%);">
+                  <input type="checkbox" id="select-all-fields" /> {% trans "Select All Columns" %}
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            {% for col in columns %}
+            <div class="col-sm-12 col-md-6 col-lg-4">
+              <div class="oh-input-group">
+                <label class="oh-label">
+                  <label for="col_{{col.1}}"
+                    ><input
+                      type="checkbox"
+                      data-label="{{col.0}}"
+                      name="selected_fields"
+                      value="{{col.1}}"
+                      id="col_{{col.1}}"
+                      checked
+                    />
+                    {{col.0}}</label
+                  >
+                </label>
+              </div>
+            </div>
+            {% endfor %}
+            {% for col in hidden_columns %}
+            <div class="col-sm-12 col-md-6 col-lg-4">
+              <div class="oh-input-group">
+                <label class="oh-label">
+                  <label for="col_{{col.1}}"
+                    ><input
+                      type="checkbox"
+                      data-label="{{col.0}}"
+                      name="selected_fields"
+                      value="{{col.1}}"
+                      id="col_{{col.1}}"
+                    />
+                    {{col.0}}</label
+                  >
+                </label>
+              </div>
+            </div>
+            {% endfor %}
+            {% for col in export_fields %}
+            <div class="col-sm-12 col-md-6 col-lg-4">
+              <div class="oh-input-group">
+                <label class="oh-label">
+                  <label for="col_{{col.1}}"
+                    ><input
+                      type="checkbox"
+                      data-label="{{col.0}}"
+                      name="selected_fields"
+                      value="{{col.1}}"
+                      id="col_{{col.1}}"
+                    />
+                    {{col.0}}</label
+                  >
+                </label>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button
+              type="submit"
+              class="oh-btn oh-btn--secondary oh-btn--shadow"
+            >
+              Export
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
