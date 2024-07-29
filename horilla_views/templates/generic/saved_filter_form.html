@@ -1,0 +1,27 @@
+<form 
+  hx-post="{{request.path}}?{{request.GET.urlencode}}"
+  >
+  {% include "generic/form.html" %}
+  
+  <input type="hidden" name="path" value="{{path}}" />
+  <input type="hidden" name="referrer" value="{{referrer}}" />
+</form>
+<script>
+  $("#savedFilterForm").find(".col-md-6:first").removeClass("col-md-6");
+
+  $(".oh-modal__dialog-body form button").click(function (e) {
+    var titleField = $(".oh-modal__dialog-body form [name=title]");
+
+    if (titleField.val()) {
+      // $("#savedFilterModal").removeClass("oh-modal--show");
+    } else {
+      titleField[0].setCustomValidity("This field is required");
+      titleField[0].reportValidity();
+    }
+  });
+
+  // Reset custom validity when the user starts typing
+  $(".oh-modal__dialog-body form [name=title]").on("input", function () {
+    this.setCustomValidity("");
+  });
+</script>
