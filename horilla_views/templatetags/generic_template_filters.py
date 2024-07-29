@@ -5,6 +5,7 @@ This module is used to write custom template filters.
 
 """
 
+import datetime
 import re
 import types
 
@@ -20,6 +21,38 @@ register = template.Library()
 
 
 numeric_test = re.compile("^\d+$")
+
+date_format_mapping = {
+    "DD-MM-YYYY": "%d-%m-%Y",
+    "DD.MM.YYYY": "%d.%m.%Y",
+    "DD/MM/YYYY": "%d/%m/%Y",
+    "MM/DD/YYYY": "%m/%d/%Y",
+    "YYYY-MM-DD": "%Y-%m-%d",
+    "YYYY/MM/DD": "%Y/%m/%d",
+    "MMMM D, YYYY": "%B %d, %Y",
+    "DD MMMM, YYYY": "%d %B, %Y",
+    "MMM. D, YYYY": "%b. %d, %Y",
+    "D MMM. YYYY": "%d %b. %Y",
+    "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
+}
+
+time_format_mapping = {
+    "hh:mm A": "%I:%M %p",
+    "HH:mm": "%H:%M",
+}
+
+
+@register.filter(name="selected_format")
+def selected_format(date: datetime.date, company: object = None) -> str:
+    if company and (company.date_format or company.time_format):
+        if isinstance(date, datetime.date):
+            format = company.date_format
+            date_format_mapping.get(format)
+            return date.strftime(date_format_mapping[format])
+        elif isinstance(date, datetime.time):
+            format = company.time_format
+            return date.strftime(time_format_mapping[format])
+    return date
 
 
 @register.filter(name="getattribute")
@@ -77,3 +110,13 @@ def accessibility(method: str, instance=None):
             PermWrapper(request.user),
         )
     return True
+
+
+@register.filter("col")
+def col(field: object):
+    """
+    Method to get field col sepration
+    """
+    field_name = field.name
+    cols = getattr(field.form, "cols", {})
+    return cols.get(field_name, 6)
