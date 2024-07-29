@@ -47,37 +47,39 @@ def filter_by_name(queryset, name, value):
 class FilterSet(django_filters.FilterSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        reload_queryset(self.form.fields)
-        for field_name, field in self.form.fields.items():
-            filter_widget = self.filters[field_name]
-            widget = filter_widget.field.widget
-            if isinstance(
-                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
-            ):
-                field.widget.attrs.update({"class": "oh-input w-100"})
-            elif isinstance(widget, (forms.Select,)):
-                field.widget.attrs.update(
-                    {
-                        "class": "oh-select oh-select-2 select2-hidden-accessible",
-                        "id": uuid.uuid4(),
-                    }
-                )
-            elif isinstance(widget, (forms.Textarea)):
-                field.widget.attrs.update({"class": "oh-input w-100"})
-            elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
-            ):
-                field.widget.attrs.update({"class": "oh-switch__checkbox"})
-            elif isinstance(widget, (forms.ModelChoiceField)):
-                field.widget.attrs.update(
-                    {
-                        "class": "oh-select oh-select-2 select2-hidden-accessible",
-                    }
-                )
+        # exlude below loop if now need of form by just adding additional attr(exclude_form_setup) to the request
+        if not getattr(kwargs.get("request"), "exclude_form_setup", False):
+            reload_queryset(self.form.fields)
+            for field_name, field in self.form.fields.items():
+                filter_widget = self.filters[field_name]
+                widget = filter_widget.field.widget
+                if isinstance(
+                    widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
+                ):
+                    field.widget.attrs.update({"class": "oh-input w-100"})
+                elif isinstance(widget, (forms.Select,)):
+                    field.widget.attrs.update(
+                        {
+                            "class": "oh-select oh-select-2 select2-hidden-accessible",
+                            "id": uuid.uuid4(),
+                        }
+                    )
+                elif isinstance(widget, (forms.Textarea)):
+                    field.widget.attrs.update({"class": "oh-input w-100"})
+                elif isinstance(
+                    widget,
+                    (
+                        forms.CheckboxInput,
+                        forms.CheckboxSelectMultiple,
+                    ),
+                ):
+                    field.widget.attrs.update({"class": "oh-switch__checkbox"})
+                elif isinstance(widget, (forms.ModelChoiceField)):
+                    field.widget.attrs.update(
+                        {
+                            "class": "oh-select oh-select-2 select2-hidden-accessible",
+                        }
+                    )
 
 
 class HorillaPaginator(Paginator):
@@ -116,7 +118,7 @@ class HorillaFilterSet(FilterSet):
         """
         Search in generic method for filter field
         """
-        search = self.data.get("search", "")
+        search = self.data.get("search", "").lower()
         search_field = self.data.get("search_field")
         if not search_field:
             search_field = self.filters[name].field_name
