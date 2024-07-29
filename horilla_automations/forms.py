@@ -20,6 +20,8 @@ class AutomationForm(ModelForm):
     condition_html = forms.CharField(widget=forms.HiddenInput())
     condition_querystring = forms.CharField(widget=forms.HiddenInput())
 
+    cols = {"template_attachments": 12}
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.data:
