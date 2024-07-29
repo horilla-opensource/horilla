@@ -9,7 +9,9 @@ from venv import logger
 
 from django import template
 from django.contrib import messages
+from django.core.cache import cache as CACHE
 from django.core.paginator import Paginator
+from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 from django.http import HttpResponse
 from django.middleware.csrf import get_token
 from django.shortcuts import redirect, render
@@ -194,10 +196,11 @@ def get_short_uuid(length: int, prefix: str = "hlv"):
 
 
 def update_initial_cache(request: object, cache: dict, view: object):
-    if cache.get(request.session.session_key):
-        cache[request.session.session_key].update({view: {}})
+
+    if cache.get(request.session.session_key + "cbv"):
+        cache.get(request.session.session_key + "cbv").update({view: {}})
         return
-    cache.update({request.session.session_key: {view: {}}})
+    cache.set(request.session.session_key + "cbv", {view: {}})
     return
 
 
@@ -218,8 +221,24 @@ class Reverse:
     reverse: bool = True
     page: str = ""
 
+    def __str__(self) -> str:
+        return str(self.reverse)
 
-cache = {}
+
+def getmodelattribute(value, attr: str):
+    """
+    Gets an attribute of a model dynamically from a string name, handling related fields.
+    """
+    result = value
+    attrs = attr.split("__")
+    for attr in attrs:
+        if hasattr(result, attr):
+            result = getattr(result, attr)
+            if isinstance(result, ForwardManyToOneDescriptor):
+                result = result.field.related_model
+        else:
+            return None
+    return result
 
 
 def sortby(
@@ -230,16 +249,17 @@ def sortby(
     """
     request = getattr(_thread_locals, "request", None)
     sort_key = query_dict[key]
-    if not cache.get(request.session.session_key):
-        cache[request.session.session_key] = Reverse()
-        cache[request.session.session_key].page = (
+    if not CACHE.get(request.session.session_key + "cbvsortby"):
+        CACHE.set(request.session.session_key + "cbvsortby", Reverse())
+        CACHE.get(request.session.session_key + "cbvsortby").page = (
             "1" if not query_dict.get(page) else query_dict.get(page)
         )
-    reverse = cache[request.session.session_key].reverse
+    reverse_object = CACHE.get(request.session.session_key + "cbvsortby")
+    reverse = reverse_object.reverse
     none_ids = []
     none_queryset = []
     model = queryset.model
-    model_attr = getattribute(model, sort_key)
+    model_attr = getmodelattribute(model, sort_key)
     is_method = isinstance(model_attr, types.FunctionType)
     if not is_method:
         none_queryset = queryset.filter(**{f"{sort_key}__isnull": True})
@@ -256,19 +276,16 @@ def sortby(
     current_page = query_dict.get(page)
     if current_page or is_first_sort:
         order = not order
-        if (
-            cache[request.session.session_key].page == current_page
-            and not is_first_sort
-        ):
+        if reverse_object.page == current_page and not is_first_sort:
             order = not order
-        cache[request.session.session_key].page = current_page
+        reverse_object.page = current_page
     try:
         queryset = sorted(queryset, key=_sortby, reverse=order)
     except TypeError:
         none_queryset = list(queryset.filter(id__in=none_ids))
         queryset = sorted(queryset.exclude(id__in=none_ids), key=_sortby, reverse=order)
 
-    cache[request.session.session_key].reverse = order
+    reverse_object.reverse = order
     if order:
         order = "asc"
         queryset = list(queryset) + list(none_queryset)
@@ -277,6 +294,7 @@ def sortby(
         order = "desc"
     setattr(request, "sort_order", order)
     setattr(request, "sort_key", sort_key)
+    CACHE.set(request.session.session_key + "cbvsortby", reverse_object)
     return queryset
 
 
@@ -284,22 +302,21 @@ def update_saved_filter_cache(request, cache):
     """
     Method to save filter on cache
     """
-    if cache.get(request.session.session_key):
-        cache[request.session.session_key].update(
+    if cache.get(request.session.session_key + request.path + "cbv"):
+        cache.get(request.session.session_key + request.path + "cbv").update(
             {
                 "path": request.path,
                 "query_dict": request.GET,
-                "request": request,
+                # "request": request,
             }
         )
         return cache
-    cache.update(
+    cache.set(
+        request.session.session_key + request.path + "cbv",
         {
-            request.session.session_key: {
-                "path": request.path,
-                "query_dict": request.GET,
-                "request": request,
-            }
-        }
+            "path": request.path,
+            "query_dict": request.GET,
+            # "request": request,
+        },
     )
     return cache
