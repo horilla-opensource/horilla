@@ -2,6 +2,7 @@ APScheduler
 arabic-reshaper
 asgiref
 asn1crypto
+bs4
 certifi
 cffi
 chardet
