@@ -14,7 +14,7 @@
       ></ion-icon>
     </a>
   </div>
-  <form autocomplete="off" id="filterForm" onsubmit="event.preventDefault()" hx-get="{{search_url}}" hx-replace-url="true" hx-target="{{search_swap_target}}" class="oh-main__titlebar oh-main__titlebar--right">
+  <form autocomplete="off" id="filterForm" onsubmit="event.preventDefault()" hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}" hx-replace-url="true" hx-target="{{search_swap_target}}" class="oh-main__titlebar oh-main__titlebar--right">
     <div class="oh-input-group oh-input__search-group" id="searchGroup">
       <ion-icon
         name="search-outline"
@@ -73,11 +73,20 @@
       {% if view_types %}
       <ul class="oh-view-types">
         {% for type in view_types %}
-        <li class="oh-view-type" onclick="$(this).closest('form').attr('hx-get','{{type.url}}');$(this).closest('form').find('#applyFilter').click();
+        <li class="oh-view-type" data-url="{{type.url}}" data-type="{{type.type}}" hx-get="{% url "active-hnv-view-type" %}?view={{type.type}}&path={{request.path}}" hx-swap="none" onclick="$(this).closest('form').attr('hx-get','{{type.url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}');$(this).closest('form').find('#applyFilter').click();
            ">
           <a class="oh-btn oh-btn--view" {{type.attrs|safe}}
           ><ion-icon name="{{type.icon}}"></ion-icon
           ></a>
+          {% if active_view.type == type.type %}
+          <script>
+            $("form#filterForm.oh-main__titlebar oh-main__titlebar--right").attr('hx-get','{{type.url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}');
+            setTimeout(() => {
+              $(".oh-view-types .oh-view-type[data-type={{type.type}}]").click()
+              $(".oh-view-types .oh-view-type[data-type={{type.type}}] a").addClass("oh-btn--view-active")
+            }, 10);
+          </script>
+          {% endif %}
         </li>
         {% endfor %}
       </ul>
