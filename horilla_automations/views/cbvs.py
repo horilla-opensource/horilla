@@ -116,7 +116,7 @@ class AutomationListView(views.HorillaListView):
             "icon": "create-outline",
             "attrs": """
                 class="oh-btn oh-btn--light-bkg w-100"
-                hx-get="{edit_url}"
+                hx-get="{edit_url}?instance_ids={ordered_ids}"
                 hx-target="#genericModalBody"
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
@@ -169,7 +169,7 @@ class AutomationDetailedView(views.HorillaDetailedView):
             "action": "Edit",
             "icon": "create-outline",
             "attrs": """
-            hx-get="{edit_url}"
+            hx-get="{edit_url}?instance_ids={ordered_ids}"
             hx-target="#genericModalBody"
             data-toggle="oh-modal-toggle"
             data-target="#genericModal"
