@@ -4,7 +4,11 @@
 {% comment %} {% include "attendance/attendance/attendance_nav.html" %} {% endcomment %}
 {% load i18n generic_template_filters %}
 
-<div class="oh-tabs">
+<div class="oh-tabs HTV">
+  <script>
+      $("#reloadMessagesButton").click()
+  </script>
+  <div class="HTV"></div>
   <ul class="oh-tabs__tablist">
     {% for tab in tabs %}
     <li
