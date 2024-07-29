@@ -588,7 +588,7 @@
           {% if candidate.resume %}
           <iframe
             id="iframe_pdf"
-            src="/media/{{candidate.resume}}"
+            src="{{candidate.resume.url}}"
             style="width: 100%; height: 500px"
             frameborder="0"
           ></iframe>
@@ -627,7 +627,7 @@
                         {% elif question|slice:"0:11" == "percentage_" %}
                           {{ answer_list.0 }}%
                         {% elif question|slice:"0:5" == "file_" %}
-                          <a href="/media/{{ answer_list.0 }}" target="_blank">{{ answer_list.0 }}</a>
+                          <a href="{{ answer_list.0.url }}" target="_blank">{{ answer_list.0 }}</a>
                         {% elif question|slice:"0:7" == "rating_" %}
                             <div class="oh-rate">
                               <input type="radio" id="star5{{question.id}}" value="5" disabled {% if answer_list.0 == '5' %} checked {% endif %} />

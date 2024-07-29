@@ -170,7 +170,7 @@
                 </li>
                 {% endif %}
                 <li class="oh-dropdown__item">
-                    <a style="color: inherit;text-decoration: none;" class="oh-dropdown__link oh-dropdown__link--secondary" href="/media/{{cand.resume}}" target="_blank"
+                    <a style="color: inherit;text-decoration: none;" class="oh-dropdown__link oh-dropdown__link--secondary" href="{{cand.resume.url}}" target="_blank"
                     >{% trans "Resume" %}</a>
                 </li>
                 {% if perms.recruitment.change_candidate or request.user|is_stagemanager %}

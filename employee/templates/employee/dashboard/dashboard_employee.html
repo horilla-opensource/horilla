@@ -94,13 +94,9 @@
           {% for employee in birthdays %}
           <div class="oh-dashboard__event">
             <div class="oh-dasboard__event-photo">
-              {% if employee.employee_profile %}
-              <img src="/media/{{employee.employee_profile}}" class="oh-kanban-card__profile-image" alt="Username" />
-              {% else %}
               <img
-                src="https://ui-avatars.com/api/?name={{employee.employee_first_name}}+{{employee.employee_last_name}}&background=random"
+                src="{{employee.get_avatar}}"
                 class="oh-kanban-card__profile-image" alt="Username" />
-              {% endif %}
             </div>
             <div class="oh-dasboard__event-details">
               <span class="oh-dashboard__event-title">{% trans "Birthday" %}</span>

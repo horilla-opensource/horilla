@@ -83,7 +83,7 @@ function initializeSummernote(candId,searchWords,) {
       />
       {% else %}
       <img
-      src="/media/{{request.user.employee_get.employee_work_info.company_id.icon}}"
+      src="{{request.user.employee_get.employee_work_info.company_id.icon.url}}"
       style="width: 34px; border-radius: 3px"
       />
       {% endif %}
