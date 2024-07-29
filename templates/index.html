@@ -539,18 +539,18 @@
   </script>
 
   <script>
-    function addToSelectedId(newIds){
+    function addToSelectedId(newIds,key="selectedInstances"){
       ids = JSON.parse(
-        $("#selectedInstances").attr("data-ids") || "[]"
+        $(`#${key}`).attr("data-ids") || "[]"
       );
 
       ids = [...ids,...newIds.map(String)]
       ids = Array.from(new Set(ids));
-      $("#selectedInstances").attr("data-ids",JSON.stringify(ids))
+      $(`#${key}`).attr("data-ids",JSON.stringify(ids))
     }
-    function selectSelected(viewId){
+    function selectSelected(viewId,key="selectedInstances"){
       ids = JSON.parse(
-          $("#selectedInstances").attr("data-ids") || "[]"
+          $(`#${key}`).attr("data-ids") || "[]"
         );
       $.each(ids, function (indexInArray, valueOfElement) {
         $(`${viewId} .oh-sticky-table__tbody .list-table-row[value=${valueOfElement}]`).prop("checked",true).change()
@@ -560,7 +560,7 @@
       ) {
         id = $(this).val()
         ids = JSON.parse(
-            $("#selectedInstances").attr("data-ids") || "[]"
+          $(`#${key}`).attr("data-ids") || "[]"
           );
         ids = Array.from(new Set(ids));
         let index = ids.indexOf(id);
@@ -571,14 +571,12 @@
             ids.splice(index, 1);
           }
         }
-        $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+        $(`#${key}`).attr("data-ids", JSON.stringify(ids));
         }
       );
-      reloadSelectedCount($('#count_{{view_id|safe}}'));
-
     }
-    function reloadSelectedCount(targetElement) {
-      count = JSON.parse($("#selectedInstances").attr("data-ids") || "[]").length
+    function reloadSelectedCount(targetElement,key="selectedInstances") {
+      count = JSON.parse($(`#${key}`).attr("data-ids") || "[]").length
       id =targetElement.attr("id")
       if (id) {
         id =id.split("count_")[1]
@@ -595,16 +593,16 @@
 
       }
     }
-    function removeId(element){
+    function removeId(element,key="selectedInstances"){
       id = element.val();
       viewId = element.attr("data-view-id")
-      ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]")
+      ids = JSON.parse($(`#${key}`).attr("data-ids") || "[]")
       let elementToRemove = 5;
       if (ids[ids.length - 1] === id) {
           ids.pop();
       }
       ids = JSON.stringify(ids)
-      $("#selectedInstances").attr("data-ids", ids);
+      $(`#${key}`).attr("data-ids", ids);
 
     }
     function getCookie(name) {
