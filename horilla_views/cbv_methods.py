@@ -11,7 +11,11 @@ from django import template
 from django.contrib import messages
 from django.core.cache import cache as CACHE
 from django.core.paginator import Paginator
-from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
+from django.db.models.fields.related import ForeignKey
+from django.db.models.fields.related_descriptors import (
+    ForwardManyToOneDescriptor,
+    ReverseOneToOneDescriptor,
+)
 from django.http import HttpResponse
 from django.middleware.csrf import get_token
 from django.shortcuts import redirect, render
@@ -236,8 +240,12 @@ def getmodelattribute(value, attr: str):
             result = getattr(result, attr)
             if isinstance(result, ForwardManyToOneDescriptor):
                 result = result.field.related_model
-        else:
-            return None
+        elif hasattr(result, "field") and isinstance(result.field, ForeignKey):
+            result = getattr(result.field.remote_field.model, attr, None)
+        elif hasattr(result, "related") and isinstance(
+            result, ReverseOneToOneDescriptor
+        ):
+            result = getattr(result.related.related_model, attr, None)
     return result
 
 

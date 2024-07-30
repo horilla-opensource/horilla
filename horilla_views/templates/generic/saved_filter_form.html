@@ -1,8 +1,8 @@
-<form 
+<form
   hx-post="{{request.path}}?{{request.GET.urlencode}}"
   >
   {% include "generic/form.html" %}
-  
+
   <input type="hidden" name="path" value="{{path}}" />
   <input type="hidden" name="referrer" value="{{referrer}}" />
 </form>
