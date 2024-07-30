@@ -69,7 +69,7 @@ var reqAttendanceApproveMessages = {
   fr: "Voulez-vous vraiment approuver toutes les demandes de présence sélectionnées?",
 };
 
-var reqAttendanceApproveMessages = {
+var reqAttendanceRejectMessages = {
   ar: "هل ترغب حقًا في رفض جميع طلبات الحضور المحددة؟",
   de: "Möchten Sie wirklich alle ausgewählten Anwesenheitsanfragen ablehnen?",
   es: "¿Realmente quieres rechazar todas las solicitudes de asistencia seleccionadas?",
@@ -959,7 +959,7 @@ $("#validateAttendances").click(function (e) {
       });
     } else {
       Swal.fire({
-        text: confirmMessage,
+        text: "confirmMessage",
         icon: "info",
         showCancelButton: true,
         confirmButtonColor: "#008000",
@@ -1593,7 +1593,7 @@ $("#reqAttendanceBulkReject").click(function (e) {
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var confirmMessage = reqAttendanceApproveMessages[languageCode];
+    var confirmMessage = reqAttendanceRejectMessages[languageCode];
     var textMessage = noRowValidateMessages[languageCode];
     var checkedRows = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
     if (checkedRows.length === 0) {
