@@ -814,9 +814,9 @@ def leave_request_bulk_approve(request):
                 leave_request = (
                     LeaveRequest.objects.get(id=int(request_id)) if request_id else None
                 )
-                if (
-                    leave_request.status == "requested"
-                    and leave_request.start_date >= datetime.today().date()
+                if leave_request.status == "requested" and (
+                    leave_request.start_date >= datetime.today().date()
+                    or request.user.has_perm("leave.change_leaverequest")
                 ):
                     leave_request_approve(request, leave_request.id)
                 else:
