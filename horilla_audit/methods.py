@@ -5,7 +5,11 @@ This module is used to write methods related to the history
 """
 
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.db import models
+from django.shortcuts import render
+
+from horilla.decorators import apply_decorators
 
 
 class Bot:
@@ -146,3 +150,27 @@ def get_diff(instance):
             if track_fields:
                 delta_changes = filter_history(delta_changes, track_fields)
     return delta_changes
+
+
+def history_tracking(request, obj_id, **kwargs):
+    model = kwargs.get("model")
+    decorator_strings = kwargs.get("decorators", [])
+
+    @apply_decorators(decorator_strings)
+    def _history_tracking(request, obj_id, model):
+        instance = model.objects.get(pk=obj_id)
+        histories = instance.horilla_history.all()
+        page_number = request.GET.get("page", 1)
+        paginator = Paginator(histories, 4)
+        page_obj = paginator.get_page(page_number)
+        context = {
+            "histories": page_obj,
+            "model_name": model,
+        }
+        return render(
+            request,
+            "horilla_audit/history_tracking.html",
+            context,
+        )
+
+    return _history_tracking(request, obj_id, model)

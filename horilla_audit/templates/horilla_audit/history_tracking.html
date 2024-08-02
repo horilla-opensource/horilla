@@ -1,0 +1,144 @@
+{% load static %} {% load i18n %} {% load audit_filters %}
+<div class="oh-activity-sidebar__header" style="position:sticky; top:0; background:#fff; z-index:10">
+    <a
+        style="cursor: pointer"
+        onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');"
+    >
+        <ion-icon
+            name="chevron-forward-outline"
+            class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"
+            data-target="#activitySidebar"
+            role="img"
+            aria-label="chevron forward outline"
+        ></ion-icon>
+    </a>
+    <h1 class="oh-main__titlebar-title fw-bold ml-3 mb-3 mt-3">
+        {{model_name|verbose_name}} {% trans "History" %}
+    </h1>
+</div>
+<div style="height:60vh; overflow-y:auto" id="infiniteContainer">
+    <div class="row" style="" id = "infinite">
+        {% if histories %} {% for history in histories %}
+        <div class="oh-history__container item">
+            <div
+                class="oh-history_date oh-card__title oh-card__title--sm fw-bold me-2"
+            >
+                <span class="oh-history_date-content">
+                    <span class="dateformat_changer"
+                        >{{ history.timestamp|date:"M. d, Y" }}</span
+                    >&nbsp,&nbsp
+                    <span class="timeformat_changer"
+                        >{{ history.timestamp|date:"g:i A" }}</span
+                    >
+                </span>
+            </div>
+            <div class="d-flex">
+                <div class="oh-history_user-img">
+                    {% if history.actor.employee_get %}
+                    <img
+                        src="{{history.actor.employee_get.get_avatar}}"
+                        alt=""
+                        class="oh-history_user-pic"
+                    />
+                    {% else %}
+                    <img
+                        src="https://ui-avatars.com/api/?name=Horilla+Bot&background=random"
+                        alt=""
+                        class="oh-history_user-pic"
+                    />
+                    {% endif %}
+                    <div class="oh-history_user-state oh-user_inactive"></div>
+                </div>
+
+                <div class="oh-history_user-details">
+                    <span class="oh-history__username"
+                        >{% if history.actor.employee_get %} {{history.actor.employee_get.get_full_name}} {% else %} Horilla Bot {% endif %}</span
+                    >
+                    <div class="oh-history_abt pb-0">
+                        <span class="oh-history_task-state">
+                            {% if history.action == 0 %} 
+                                {% trans "Created" %} {{model_name|verbose_name}}
+                            {% elif history.action == 1 %}
+                                {% trans "Updated" %} {{model_name|verbose_name}}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="oh-history_msg-container">
+                        <div class="oh-history_task-tracker">
+                            <ul class="ul">
+                                {% for change,value in history.changes_dict.items %}
+                                {% if value.type == 'm2m' %}
+                                <li class="oh-history_task-list">
+                                    <div class="oh-history_track-value">
+                                        <span>{{model_name|verbose_name:change}}</span>
+                                        <img
+                                            src="{% static '/images/ui/arrow-right-line.svg' %}"
+                                            class="oh-progress_arrow"
+                                            alt=""
+                                        />
+                                        <span class="oh-history-task-state"
+                                            ><i
+                                                >{{value.objects|join:", "}}</i
+                                            ></span
+                                        >
+                                    </div>
+                                </li>
+                                {% endif %} 
+                                {% endfor %}
+                                {% for change,value in history.changes_display_dict.items %}
+                                {% if not value.0 == "type" %}
+                                <li class="oh-history_task-list">
+                                    <div class="oh-history_track-value">
+                                        <span>{{change}}</span>
+                                        <span class="oh-history_tracking-value"
+                                            ><i>({{value.0}})</i></span
+                                        >
+                                        <img
+                                            src="{% static '/images/ui/arrow-right-line.svg' %}"
+                                            class="oh-progress_arrow"
+                                            alt=""
+                                        />
+                                        <span class="oh-history-task-state"
+                                            ><i>({{value.1}})</i></span
+                                        >
+                                    </div>
+                                </li>
+                                {% endif %} 
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if histories.has_next and forloop.last %}
+            <div class="scrollButton" hx-get="{{request.META.PATH_INFO}}?page={{ histories.next_page_number }}"
+                hx-swap="beforeend" hx-target="#infinite" hx-select=".item"
+                > 
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div
+            class="d-flex justify-content-center align-items-center"
+            style="height: 40vh"
+        >
+            <h5 class="oh-404__subtitle">{% trans "No history found." %}</h5>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<script>
+    document.body.addEventListener('htmx:load', function(evt) {
+        var container ="#infiniteContainer";
+        var $container = $(container)
+        var $lastItem = $('.row .item .scrollButton').last();
+
+        $container.on('scroll', function() {
+            if ($container[0].scrollTop + $container[0].clientHeight + 2 >= $container[0].scrollHeight) {
+                $lastItem.click();
+                $lastItem.remove()
+            }
+        });
+    });
+</script>

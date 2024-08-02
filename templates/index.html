@@ -441,7 +441,7 @@
     $(document).on("htmx:beforeRequest", function (event, data) {
       var response = event.detail.xhr.response;
       var target = $(event.detail.elt.getAttribute("hx-target"));
-      var avoid_target = ["BiometricDeviceTestFormTarget","reloadMessages"];
+      var avoid_target = ["BiometricDeviceTestFormTarget","reloadMessages", "infinite"];
       if (!target.closest("form").length && avoid_target.indexOf(target.attr("id")) === -1) {
           target.html(`<div class="animated-background"></div>`);
       }
