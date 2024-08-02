@@ -1,5 +1,6 @@
 import logging
 import os
+from functools import wraps
 from urllib.parse import urlencode
 
 from django.contrib import messages
@@ -8,15 +9,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from base.models import (
-    BiometricAttendance,
-    MultipleApprovalManagers,
-    TrackLateComeEarlyOut,
-)
-from employee.models import Employee, EmployeeWorkInformation
 from horilla import settings
 from horilla.settings import BASE_DIR, TEMPLATES
-from recruitment.models import Recruitment
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +24,8 @@ decorator_with_arguments = (
 
 
 def check_manager(employee, instance):
+    from employee.models import Employee
+
     try:
         if isinstance(instance, Employee):
             return instance.employee_work_info.reporting_manager_id == employee
@@ -41,11 +37,9 @@ def check_manager(employee, instance):
 @decorator_with_arguments
 def permission_required(function, perm):
     def _function(request, *args, **kwargs):
-        print("__________________________________________________________")
-        print(kwargs)
-        print(perm)
         if request.user.has_perm(perm):
             return function(request, *args, **kwargs)
+
         else:
             messages.info(request, "You dont have permission.")
             previous_url = request.META.get("HTTP_REFERER", "/")
@@ -67,6 +61,8 @@ decorator_with_arguments = (
 
 @decorator_with_arguments
 def delete_permission(function):
+    from employee.models import EmployeeWorkInformation
+
     def _function(request, *args, **kwargs):
         user = request.user
         employee = user.employee_get
@@ -103,6 +99,8 @@ decorator_with_arguments = (
 
 @decorator_with_arguments
 def duplicate_permission(function):
+    from employee.models import EmployeeWorkInformation
+
     def _function(request, *args, **kwargs):
         user = request.user
         employee = user.employee_get
@@ -143,6 +141,9 @@ decorator_with_arguments = (
 
 @decorator_with_arguments
 def manager_can_enter(function, perm):
+    from base.models import MultipleApprovalManagers
+    from employee.models import EmployeeWorkInformation
+
     """
     This method is used to check permission to employee for enter to the function if the employee
     do not have permission also checks, has reporting manager.
@@ -181,6 +182,8 @@ def manager_can_enter(function, perm):
 
 @decorator_with_arguments
 def is_recruitment_manager(function, perm):
+    from recruitment.models import Recruitment
+
     """
     This method is used to check permission to employee for enter to the function if the employee
     do not have permission also checks, has manager of any recruitment.
@@ -210,9 +213,6 @@ def is_recruitment_manager(function, perm):
             return HttpResponse(script)
 
     return _function
-
-
-from urllib.parse import urlparse
 
 
 def login_required(view_func):
@@ -265,6 +265,8 @@ def hx_request_required(view_func):
 
 @decorator_with_arguments
 def owner_can_enter(function, perm: str, model: object, manager_access=False):
+    from employee.models import Employee, EmployeeWorkInformation
+
     """
     Only the users with permission, or the owner, or employees manager can enter,
     If manager_access:True then all the managers can enter
@@ -300,6 +302,8 @@ def owner_can_enter(function, perm: str, model: object, manager_access=False):
 
 
 def install_required(function):
+    from base.models import BiometricAttendance, TrackLateComeEarlyOut
+
     def _function(request, *args, **kwargs):
         if request.path_info.endswith("late-come-early-out-view/"):
             object = TrackLateComeEarlyOut.objects.first()
@@ -328,6 +332,8 @@ def install_required(function):
 
 @decorator_with_arguments
 def meeting_manager_can_enter(function, perm, answerable=False):
+    from employee.models import Employee
+
     def _function(request, *args, **kwargs):
 
         user = request.user
@@ -363,3 +369,63 @@ def meeting_manager_can_enter(function, perm, answerable=False):
             return HttpResponse(script)
 
     return _function
+
+
+DECORATOR_MAP = {
+    "login_required": login_required,
+    "permission_required": permission_required,
+    "delete_permission": delete_permission,
+    "duplicate_permission": duplicate_permission,
+    "manager_can_enter": manager_can_enter,
+    "is_recruitment_manager": is_recruitment_manager,
+    "hx_request_required": hx_request_required,
+    "owner_can_enter": owner_can_enter,
+    "install_required": install_required,
+    "meeting_manager_can_enter": meeting_manager_can_enter,
+}
+
+
+def get_decorator(decorator_string, args=None):
+    decorator = DECORATOR_MAP.get(decorator_string)
+    if decorator:
+        if args is not None:
+            if isinstance(args, (list, tuple)):
+                return decorator(*args)
+            else:
+                return decorator(args)
+        else:
+            return decorator
+    return None
+
+
+def apply_decorators(decorators):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            decorated_func = func
+            for decorator_item in decorators:
+                if isinstance(decorator_item, str):
+                    decorator = get_decorator(decorator_item)
+                elif (
+                    isinstance(decorator_item, (list, tuple))
+                    and len(decorator_item) == 2
+                ):
+                    decorator_string, decorator_args = decorator_item
+                    decorator = get_decorator(decorator_string, decorator_args)
+                else:
+                    print(f"Warning: Invalid decorator format: {decorator_item}")
+                    continue
+
+                if decorator:
+                    if callable(decorator):
+                        decorated_func = decorator(decorated_func)
+                    else:
+                        # For decorators returned by decorator_with_arguments
+                        decorated_func = decorator(decorated_func)
+                else:
+                    print(f"Warning: Decorator '{decorator_item}' not found or invalid")
+            return decorated_func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
