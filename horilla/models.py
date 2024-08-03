@@ -1,3 +1,13 @@
+"""
+models.py
+=========
+
+This module defines the abstract base model `HorillaModel` for the Horilla HRMS project.
+The `HorillaModel` provides common fields and functionalities for other models within
+the application, such as tracking creation and modification timestamps and user
+information, audit logging, and active/inactive status management.
+"""
+
 from auditlog.models import AuditlogHistoryField
 from auditlog.registry import auditlog
 from django.contrib.auth.models import User
@@ -25,6 +35,11 @@ setattr(FieldFile, "url", url)
 
 
 class HorillaModel(models.Model):
+    """
+    An abstract base model that includes common fields and functionalities
+    for models within the Horilla application.
+    """
+
     created_at = models.DateTimeField(
         auto_now_add=True,
         null=True,
@@ -50,16 +65,23 @@ class HorillaModel(models.Model):
         related_name="%(class)s_modified_by",
     )
     horilla_history = AuditlogHistoryField()
+    objects = models.Manager()
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
 
     class Meta:
+        """
+        Meta class for HorillaModel
+        """
+
         abstract = True
 
     def save(self, *args, **kwargs):
+        """
+        Override the save method to automatically set the created_by and
+        modified_by fields based on the current request user.
+        """
         request = getattr(_thread_locals, "request", None)
-        # also here will have scheduled activities
-        # at the time there will no change to the modified user,
-        # its remains same as previous
+
         if request:
             user = request.user
 
@@ -79,18 +101,25 @@ class HorillaModel(models.Model):
 
     @classmethod
     def find(cls, object_id):
+        """
+        Find an object of this class by its ID.
+        """
         try:
-            object = cls.objects.filter(id=object_id).first()
-            return object
-        except:
+            obj = cls.objects.filter(id=object_id).first()
+            return obj
+        except Exception as e:
+            # Log the exception if needed
             return None
 
     @classmethod
     def activate_deactivate(cls, object_id):
-        object = cls.find(object_id)
-        if object:
-            object.is_active = not object.is_active
-            object.save()
+        """
+        Toggle the is_active status of an object of this class.
+        """
+        obj = cls.find(object_id)
+        if obj:
+            obj.is_active = not obj.is_active
+            obj.save()
 
 
 auditlog.register(HorillaModel, serialize_data=True)

@@ -193,7 +193,6 @@ def is_recruitment_manager(function, perm):
 
         user = request.user
         perm = "recruitment.view_recruitmentsurvey"
-        employee = user.employee_get
         is_manager = False
         recs = Recruitment.objects.all()
         for i in recs:

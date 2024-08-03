@@ -7,6 +7,7 @@ Horilla app configurations
 import importlib
 import logging
 
+from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.context_processors import PermWrapper
 
@@ -38,46 +39,46 @@ def sidebar(request):
         MENUS = request.MENUS
 
         for app in base_dir_apps:
+            if apps.is_installed(app):
+                try:
+                    sidebar = importlib.import_module(app + ".sidebar")
 
-            try:
-                sidebar = importlib.import_module(app + ".sidebar")
+                except Exception as e:
+                    logger.error(e)
+                    continue
 
-            except Exception as e:
-                logger.error(e)
-                continue
+                if sidebar:
+                    accessibility = None
+                    if getattr(sidebar, "ACCESSIBILITY", None):
+                        accessibility = import_method(sidebar.ACCESSIBILITY)
 
-            if sidebar:
-                accessibility = None
-                if getattr(sidebar, "ACCESSIBILITY", None):
-                    accessibility = import_method(sidebar.ACCESSIBILITY)
+                    if not accessibility or accessibility(
+                        request,
+                        sidebar.MENU,
+                        PermWrapper(request.user),
+                    ):
+                        MENU = {}
+                        MENU["menu"] = sidebar.MENU
+                        MENU["app"] = app
+                        MENU["img_src"] = sidebar.IMG_SRC
+                        MENU["submenu"] = []
+                        MENUS.append(MENU)
+                        for submenu in sidebar.SUBMENUS:
 
-                if not accessibility or accessibility(
-                    request,
-                    sidebar.MENU,
-                    PermWrapper(request.user),
-                ):
-                    MENU = {}
-                    MENU["menu"] = sidebar.MENU
-                    MENU["app"] = app
-                    MENU["img_src"] = sidebar.IMG_SRC
-                    MENU["submenu"] = []
-                    MENUS.append(MENU)
-                    for submenu in sidebar.SUBMENUS:
+                            accessibility = None
 
-                        accessibility = None
+                            if submenu.get("accessibility"):
+                                accessibility = import_method(submenu["accessibility"])
+                            redirect: str = submenu["redirect"]
+                            redirect = redirect.split("?")
+                            submenu["redirect"] = redirect[0]
 
-                        if submenu.get("accessibility"):
-                            accessibility = import_method(submenu["accessibility"])
-                        redirect: str = submenu["redirect"]
-                        redirect = redirect.split("?")
-                        submenu["redirect"] = redirect[0]
-
-                        if not accessibility or accessibility(
-                            request,
-                            submenu,
-                            PermWrapper(request.user),
-                        ):
-                            MENU["submenu"].append(submenu)
+                            if not accessibility or accessibility(
+                                request,
+                                submenu,
+                                PermWrapper(request.user),
+                            ):
+                                MENU["submenu"].append(submenu)
         ALL_MENUS[request.session.session_key] = MENUS
 
 
