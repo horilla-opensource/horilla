@@ -1,0 +1,74 @@
+{% extends 'index.html' %}
+{% load current_month_record %}
+{% block content %}
+
+<style>
+    table {
+        width: 100%;
+    }
+
+    th,
+    td {
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    th {
+        background-color: lightgray;
+    }
+
+    .oh-card {
+        background-color: #f2f2f2;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+
+    .oh-card h4 {
+        color: #333;
+        margin: 0;
+        font-weight: bold;
+    }
+</style>
+
+<div class="oh-wrapper">
+    <div class="col-10">
+        <div class="oh-card">
+            <h4>{% trans "Date:" %} {{ current_date }}</h4>
+            <h4>{% trans "Month:" %} {{ current_date|date:"F" }}</h4>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>{% trans "Work Records" %}</th>
+                    {% for day in current_month_dates_list %}
+                    <th>{{ day.day }}</th>
+                    {% endfor %}
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee }}</td>
+                    {% for date in current_month_dates_list %}
+                    <td >
+                        {% for work_record in employee.workrecord_set.all|current_month_record %}
+                            {% if work_record.start_datetime.date == date %}
+                                {% if work_record.work_record_type.is_timeoff %}
+                                    <div style="background-color:{{work_record.work_record_type.color}};">{% trans "A" %}</div>
+                                {% else %}
+                                    <div style="background-color:{{work_record.work_record_type.color}};">{% trans "P" %}</div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock content %}

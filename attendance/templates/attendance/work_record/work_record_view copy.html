@@ -1,0 +1,37 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+
+
+<div class="oh-sticky-table__table" data-count="{{total_count}}">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th">{% trans "record_type_name" %}</div>
+
+      </div>
+    </div>
+    <div class="oh-sticky-table__tbody" id="assetPaginatorTarget">
+        {% for work_record in work_records %}
+        <div class="oh-sticky-table__tr oh-multiple-table-sort__movable" id="assetDelete{{asset.id}}">
+        <div class="oh-sticky-table__sd"
+             data-toggle="oh-modal-toggle"
+             data-target="#objectDetailsModal"
+             hx-get="{%url 'asset-information' asset_id=asset.id %}"
+             hx-target="#objectDetailsModalTarget">
+          <div class="oh-profile oh-profile--md">
+            <div class="oh-profile__avatar mr-1">
+              <img src="https://ui-avatars.com/api/?name={{work_record.work_record_name}}&background=random" class="oh-profile__image"
+                alt="Mary Magdalene" />
+            </div>
+            <span class="oh-profile__name oh-text--dark">{{work_record.work_record_name}}</span>
+          </div>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+
+{% endblock content %}

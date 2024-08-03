@@ -9,6 +9,7 @@ import uuid
 
 import django_filters
 from django import forms
+from django.apps import apps
 from django.db.models import OuterRef, Subquery
 from django.forms import DateTimeInput
 from django.utils.translation import gettext_lazy as _
@@ -18,7 +19,6 @@ from attendance.models import (
     AttendanceActivity,
     AttendanceLateComeEarlyOut,
     AttendanceOverTime,
-    PenaltyAccount,
     strtime_seconds,
 )
 from base.filters import FilterSet
@@ -244,16 +244,6 @@ class LateComeEarlyOutFilter(FilterSet):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
-
-
-class PenaltyFilter(FilterSet):
-    """
-    PenaltyFilter
-    """
-
-    class Meta:
-        model = PenaltyAccount
-        fields = "__all__"
 
 
 class AttendanceActivityFilter(FilterSet):

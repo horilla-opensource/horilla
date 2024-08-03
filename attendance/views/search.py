@@ -8,6 +8,7 @@ import json
 from datetime import datetime
 from urllib.parse import parse_qs
 
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
@@ -476,9 +477,6 @@ def search_attendance_requests(request):
             "field": field,
         },
     )
-
-
-from django.http import JsonResponse
 
 
 @login_required

@@ -44,7 +44,7 @@
               <div class="oh-sticky-table__th " data-cell-index="7" data-cell-title='{% trans "Min Hour" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Min Hour" %}</div>
               <div class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_id__at_work_second' %}arrow-up {% elif request.sort_option.order == 'attendance_id__at_work_second' %}arrow-down {% else %} arrow-up-down {% endif %}" data-cell-index="8" data-cell-title='{% trans "At Work" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__at_work_second">{% trans "At Work" %}</div>
               <div class="oh-sticky-table__th" data-cell-index="9" data-cell-title='{% trans "Penalties" %}' scope="col">{% trans "Penalties" %}</div>
-              {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or perms.attendance.delete_attendancelatecomeearlyout %}
+              {% if request.user|is_reportingmanager or perms.attendance.change_penaltyaccounts or perms.attendance.delete_attendancelatecomeearlyout %}
                 <div class="oh-sticky-table__th oh-sticky-table__right"  scope="col" style="width: 150px;">{% trans "Actions" %}</div>
               {% endif %}
               {% comment %} <div class='oh-sticky-table__th' scope="col" style="width: 80px;"></div> {% endcomment %}
@@ -90,10 +90,10 @@
                 <div class="" data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?late_early_id={{late_in_early_out.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">Penalties :{{late_in_early_out.get_penalties_count}}</div>
                 {% endif %}
               </div>
-              {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or perms.attendance.delete_attendancelatecomeearlyout %}
+              {% if request.user|is_reportingmanager or perms.attendance.change_penaltyaccounts or perms.attendance.delete_attendancelatecomeearlyout %}
                 <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation();">
                   <div class="oh-btn-group">
-                    {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount %}
+                    {% if request.user|is_reportingmanager or perms.attendance.change_penaltyaccounts %}
                     <button
                       data-toggle="oh-modal-toggle"
                       data-target="#penaltyModal"

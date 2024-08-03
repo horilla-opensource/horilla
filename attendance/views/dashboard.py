@@ -4,11 +4,11 @@ dashboard.py
 This module is used to register endpoints for dashboard-related requests
 """
 
-import calendar
 import json
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
-from django.db.models import Q, Sum
+from django.apps import apps
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
@@ -18,19 +18,25 @@ from attendance.filters import (
     AttendanceOverTimeFilter,
     LateComeEarlyOutFilter,
 )
+from attendance.methods.utils import (
+    get_month_start_end_dates,
+    get_week_start_end_dates,
+    pending_hour_data,
+    worked_hour_data,
+)
 from attendance.models import (
     Attendance,
     AttendanceLateComeEarlyOut,
-    AttendanceOverTime,
     AttendanceValidationCondition,
 )
 from attendance.views.views import strtime_seconds
 from base.methods import filtersubordinates
-from base.models import Department, EmployeeShiftSchedule
+from base.models import Department
 from employee.models import Employee
 from employee.not_in_out_dashboard import paginator_qry
+from horilla import settings
 from horilla.decorators import hx_request_required, login_required
-from leave.models import LeaveRequest
+from horilla.methods import get_horilla_model_class
 
 
 def find_on_time(request, today, week_day, department=None):
@@ -56,7 +62,11 @@ def find_expected_attendances(week_day):
     This method is used to find count of expected attendances for the week day
     """
     employees = Employee.objects.filter(is_active=True)
-    on_leave = LeaveRequest.objects.filter(status="Approved")
+    if apps.is_installed("leave"):
+        LeaveRequest = get_horilla_model_class(app_label="leave", model="leaverequest")
+        on_leave = LeaveRequest.objects.filter(status="Approved")
+    else:
+        on_leave = []
     expected_attendances = len(employees) - len(on_leave)
     return expected_attendances
 
@@ -232,38 +242,6 @@ def find_early_out(start_date, end_date=None, department=None):
     return early_out_obj
 
 
-def get_week_start_end_dates(week):
-    """
-    This method is use to return the start and end date of the week
-    """
-    # Parse the ISO week date
-    year, week_number = map(int, week.split("-W"))
-
-    # Get the date of the first day of the week
-    start_date = datetime.strptime(f"{year}-W{week_number}-1", "%Y-W%W-%w").date()
-
-    # Calculate the end date by adding 6 days to the start date
-    end_date = start_date + timedelta(days=6)
-
-    return start_date, end_date
-
-
-def get_month_start_end_dates(year_month):
-    """
-    This method is use to return the start and end date of the month
-    """
-    # split year and month separately
-    year, month = map(int, year_month.split("-"))
-    # Get the first day of the month
-    start_date = datetime(year, month, 1).date()
-
-    # Get the last day of the month
-    _, last_day = calendar.monthrange(year, month)
-    end_date = datetime(year, month, last_day).date()
-
-    return start_date, end_date
-
-
 def generate_data_set(request, start_date, type, end_date, dept):
     """
     This method is used to generate all the dashboard data
@@ -345,42 +323,6 @@ def dashboard_attendance(request):
     message = _("No data Found...")
     data_set = list(filter(None, data_set))
     return JsonResponse({"dataSet": data_set, "labels": labels, "message": message})
-
-
-def worked_hour_data(labels, records):
-    """
-    To find all the worked hours
-    """
-    data = {
-        "label": "Worked Hours",
-        "backgroundColor": "rgba(75, 192, 192, 0.6)",
-    }
-    dept_records = []
-    for dept in labels:
-        total_sum = records.filter(
-            employee_id__employee_work_info__department_id__department=dept
-        ).aggregate(total_sum=Sum("hour_account_second"))["total_sum"]
-        dept_records.append(total_sum / 3600 if total_sum else 0)
-    data["data"] = dept_records
-    return data
-
-
-def pending_hour_data(labels, records):
-    """
-    To find all the pending hours
-    """
-    data = {
-        "label": "Pending Hours",
-        "backgroundColor": "rgba(255, 99, 132, 0.6)",
-    }
-    dept_records = []
-    for dept in labels:
-        total_sum = records.filter(
-            employee_id__employee_work_info__department_id__department=dept
-        ).aggregate(total_sum=Sum("hour_pending_second"))["total_sum"]
-        dept_records.append(total_sum / 3600 if total_sum else 0)
-    data["data"] = dept_records
-    return data
 
 
 def pending_hours(request):
@@ -472,7 +414,67 @@ def department_overtime_chart(request):
         "labels": departments,
         "department_total": department_total,
         "message": _("No validated Overtimes were found"),
-        "emptyImageSrc": "/static/images/ui/overtime-icon.png",
+        "emptyImageSrc": f"/{settings.STATIC_URL}images/ui/overtime-icon.png",
     }
 
     return JsonResponse(response)
+
+
+@login_required
+def dashboard_overtime_approve(request):
+    previous_data = request.GET.urlencode()
+    page_number = request.GET.get("page")
+    min_ot = strtime_seconds("00:00")
+    if apps.is_installed("attendance"):
+        from attendance.models import Attendance, AttendanceValidationCondition
+
+        condition = AttendanceValidationCondition.objects.first()
+        if condition is not None and condition.minimum_overtime_to_approve is not None:
+            min_ot = strtime_seconds(condition.minimum_overtime_to_approve)
+        ot_attendances = Attendance.objects.filter(
+            overtime_second__gte=min_ot,
+            attendance_validated=True,
+            employee_id__is_active=True,
+            attendance_overtime_approve=False,
+        )
+    else:
+        ot_attendances = None
+    ot_attendances = filtersubordinates(
+        request, ot_attendances, "attendance.change_attendance"
+    )
+    ot_attendances = paginator_qry(ot_attendances, page_number)
+    ot_attendances_ids = json.dumps([instance.id for instance in ot_attendances])
+    return render(
+        request,
+        "request_and_approve/overtime_approve.html",
+        {
+            "overtime_attendances": ot_attendances,
+            "ot_attendances_ids": ot_attendances_ids,
+            "pd": previous_data,
+        },
+    )
+
+
+@login_required
+def dashboard_attendance_validate(request):
+    previous_data = request.GET.urlencode()
+    page_number = request.GET.get("page")
+    validate_attendances = Attendance.objects.filter(
+        attendance_validated=False, employee_id__is_active=True
+    )
+    validate_attendances = filtersubordinates(
+        request, validate_attendances, "attendance.change_attendance"
+    )
+    validate_attendances = paginator_qry(validate_attendances, page_number)
+    validate_attendances_ids = json.dumps(
+        [instance.id for instance in validate_attendances]
+    )
+    return render(
+        request,
+        "request_and_approve/attendance_validate.html",
+        {
+            "validate_attendances": validate_attendances,
+            "validate_attendances_ids": validate_attendances_ids,
+            "pd": previous_data,
+        },
+    )

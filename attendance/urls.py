@@ -5,6 +5,7 @@ This page is used to map request or url path with function
 
 """
 
+from django.apps import apps
 from django.urls import path
 
 import attendance.views.clock_in_out
@@ -12,10 +13,19 @@ import attendance.views.dashboard
 import attendance.views.penalty
 import attendance.views.requests
 import attendance.views.search
+import base
+from base.forms import AttendanceAllowedIPForm
+from base.models import AttendanceAllowedIP
 
 from .views import views
 
 urlpatterns = [
+    path(
+        "profile-attendance-tab",
+        views.profile_attendance_tab,
+        name="profile-attendance-tab",
+    ),
+    path("attendance-tab/<int:emp_id>", views.attendance_tab, name="attendance-tab"),
     path("attendance-create", views.attendance_create, name="attendance-create"),
     path("attendance-excel", views.attendance_excel, name="attendance-excel"),
     path(
@@ -334,14 +344,6 @@ urlpatterns = [
     path(
         "pending-hours/", attendance.views.dashboard.pending_hours, name="pending-hours"
     ),
-    path(
-        "cut-penalty/<int:instance_id>/",
-        attendance.views.penalty.cut_available_leave,
-        name="cut-penalty",
-    ),
-    path(
-        "view-penalties", attendance.views.penalty.view_penalties, name="view-penalties"
-    ),
     path("create-garce-time", views.create_grace_time, name="create-grace-time"),
     path(
         "update-garce-time/<int:grace_id>/",
@@ -390,5 +392,87 @@ urlpatterns = [
         "get-employee-shift",
         attendance.views.requests.get_employee_shift,
         name="get-employee-shift",
+    ),
+    path(
+        "cut-penalty/<int:instance_id>/",
+        attendance.views.penalty.cut_available_leave,
+        name="cut-penalty",
+    ),
+    path(
+        "dashboard-overtime-approve",
+        attendance.views.dashboard.dashboard_overtime_approve,
+        name="dashboard-overtime-approve",
+    ),
+    path(
+        "dashboard-attendance-validate",
+        attendance.views.dashboard.dashboard_attendance_validate,
+        name="dashboard-attendance-validate",
+    ),
+    path(
+        "attendance-settings-view/",
+        views.validation_condition_view,
+        name="attendance-settings-view",
+    ),
+    path(
+        "track-late-come-early-out",
+        views.track_late_come_early_out,
+        name="track-late-come-early-out",
+    ),
+    path(
+        "enable-disable-tracking-late-come-early-out",
+        views.enable_disable_tracking_late_come_early_out,
+        name="enable-disable-tracking-late-come-early-out",
+    ),
+    path(
+        "grace-settings-view/",
+        views.grace_time_view,
+        name="grace-settings-view",
+    ),
+    path(
+        "settings/attendance-settings-create/",
+        views.validation_condition_create,
+        name="attendance-settings-create",
+    ),
+    path(
+        "settings/attendance-settings-update/<int:obj_id>/",
+        views.validation_condition_update,
+        name="attendance-settings-update",
+    ),
+    path(
+        "allowed-ips/",
+        views.allowed_ips,
+        name="allowed-ips",
+    ),
+    path(
+        "settings/enable-ip-restriction/",
+        views.enable_ip_restriction,
+        name="enable-ip-restriction",
+    ),
+    path(
+        "settings/create-allowed-ip/",
+        views.create_allowed_ips,
+        name="create-allowed-ip",
+    ),
+    path(
+        "settings/delete-allowed-ip/",
+        views.delete_allowed_ips,
+        name="delete-allowed-ip",
+    ),
+    path(
+        "settings/edit-allowed-ip/",
+        views.edit_allowed_ips,
+        name="edit-allowed-ip",
+    ),
+    path(
+        "settings/add-remove-ip-fields/",
+        base.views.add_remove_dynamic_fields,
+        name="add-remove-ip-fields",
+        kwargs={
+            "model": AttendanceAllowedIP,
+            "form_class": AttendanceAllowedIPForm,
+            "template": "attendance/ip_restriction/add_more_ip_fields.html",
+            "field_type": "character",
+            "field_name_pre": "ip_address",
+        },
     ),
 ]
