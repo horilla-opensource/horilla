@@ -16,6 +16,7 @@ import contextlib
 import io
 import json
 import os
+import random
 import re
 from datetime import datetime
 from itertools import chain
@@ -41,8 +42,9 @@ from django.views.decorators.http import require_http_methods
 from base.backends import ConfiguredEmailBackend
 from base.context_processors import check_candidate_self_tracking
 from base.countries import country_arr, s_a, states
+from base.forms import MailTemplateForm
 from base.methods import export_data, generate_pdf, get_key_instances
-from base.models import EmailLog, JobPosition
+from base.models import EmailLog, HorillaMailTemplate, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
 from horilla import settings
 from horilla.decorators import (
@@ -67,7 +69,6 @@ from recruitment.forms import (
     AddCandidateForm,
     CandidateCreationForm,
     CandidateExportForm,
-    OfferLetterForm,
     RecruitmentCreationForm,
     RejectReasonForm,
     ResumeForm,
@@ -87,7 +88,6 @@ from recruitment.models import (
     InterviewSchedule,
     Recruitment,
     RecruitmentGeneralSetting,
-    RecruitmentMailTemplate,
     RecruitmentSurvey,
     RejectReason,
     Resume,
@@ -327,11 +327,6 @@ def recruitment_update(request, rec_id):
                 for sur in survey.recruitmentsurvey_set.all():
                     sur.recruitment_ids.add(recruitment_obj)
             recruitment_obj.save()
-            recruitment_obj.recruitment_managers.set(
-                Employee.objects.filter(
-                    id__in=form.data.getlist("recruitment_managers")
-                )
-            )
             messages.success(request, _("Recruitment Updated."))
             response = render(
                 request, "recruitment/recruitment_form.html", {"form": form}
@@ -722,9 +717,6 @@ def stage_update_pipeline(request, stage_id):
         form = StageCreationForm(request.POST, instance=stage_obj)
         if form.is_valid():
             stage_obj = form.save()
-            stage_obj.stage_managers.set(
-                Employee.objects.filter(id__in=form.data.getlist("stage_managers"))
-            )
             messages.success(request, _("Stage updated."))
             with contextlib.suppress(Exception):
                 managers = stage_obj.stage_managers.select_related("employee_user_id")
@@ -764,11 +756,6 @@ def recruitment_update_pipeline(request, rec_id):
         form = RecruitmentCreationForm(request.POST, instance=recruitment_obj)
         if form.is_valid():
             recruitment_obj = form.save()
-            recruitment_obj.recruitment_managers.set(
-                Employee.objects.filter(
-                    id__in=form.data.getlist("recruitment_managers")
-                )
-            )
             messages.success(request, _("Recruitment updated."))
             with contextlib.suppress(Exception):
                 managers = recruitment_obj.recruitment_managers.select_related(
@@ -1225,10 +1212,7 @@ def stage_update(request, stage_id):
     if request.method == "POST":
         form = StageCreationForm(request.POST, instance=stages)
         if form.is_valid():
-            stage_obj = form.save()
-            stage_obj.stage_managers.set(
-                Employee.objects.filter(id__in=form.data.getlist("stage_managers"))
-            )
+            form.save()
             messages.success(request, _("Stage updated."))
             response = render(
                 request, "recruitment/recruitment_form.html", {"form": form}
@@ -1738,7 +1722,7 @@ def form_send_mail(request, cand_id=None):
     else:
         stage_id = None
 
-    templates = RecruitmentMailTemplate.objects.all()
+    templates = HorillaMailTemplate.objects.all()
     return render(
         request,
         "pipeline/pipeline_components/send_mail.html",
@@ -1747,7 +1731,7 @@ def form_send_mail(request, cand_id=None):
             "templates": templates,
             "candidates": candidates,
             "stage_id": stage_id,
-            "searchWords": OfferLetterForm().get_template_language(),
+            "searchWords": MailTemplateForm().get_template_language(),
         },
     )
 
@@ -1951,7 +1935,7 @@ def send_acknowledgement(request):
     template_attachment_ids = request.POST.getlist("template_attachments")
     for candidate in candidates:
         bodys = list(
-            RecruitmentMailTemplate.objects.filter(
+            HorillaMailTemplate.objects.filter(
                 id__in=template_attachment_ids
             ).values_list("body", flat=True)
         )
@@ -2549,7 +2533,9 @@ def open_recruitments(request):
     This method is used to render the open recruitment page
     """
     recruitments = Recruitment.default.filter(closed=False, is_published=True)
-    context = {"recruitments": recruitments, "now": datetime.now()}
+    context = {
+        "recruitments": recruitments,
+    }
     response = render(request, "recruitment/open_recruitments.html", context)
     response["X-Frame-Options"] = "ALLOW-FROM *"
 
@@ -2846,6 +2832,15 @@ def check_vaccancy(request):
 
 
 @login_required
+def skills_view(request):
+    """
+    This function is used to view skills page in settings
+    """
+    skills = Skill.objects.all()
+    return render(request, "settings/skills/skills_view.html", {"skills": skills})
+
+
+@login_required
 def create_skills(request):
     """
     This method is used to create the skills
@@ -3052,3 +3047,51 @@ def matching_resume_completion(request):
     contact_info = extract_info(resume_file)
 
     return JsonResponse(contact_info)
+
+
+@login_required
+@permission_required("recruitment.view_rejectreason")
+def candidate_reject_reasons(request):
+    """
+    This method is used to view all the reject reasons
+    """
+    reject_reasons = RejectReason.objects.all()
+    return render(
+        request, "settings/reject_reasons.html", {"reject_reasons": reject_reasons}
+    )
+
+
+@login_required
+def hired_candidate_chart(request):
+    """
+    function used to show hired candidates in all recruitments.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return Json response labels, data, background_color, border_color.
+    """
+    labels = []
+    data = []
+    background_color = []
+    border_color = []
+    recruitments = Recruitment.objects.filter(closed=False, is_active=True)
+    for recruitment in recruitments:
+        red = random.randint(0, 255)
+        green = random.randint(0, 255)
+        blue = random.randint(0, 255)
+        background_color.append(f"rgba({red}, {green}, {blue}, 0.2")
+        border_color.append(f"rgb({red}, {green}, {blue})")
+        labels.append(f"{recruitment}")
+        data.append(recruitment.candidate.filter(hired=True).count())
+    return JsonResponse(
+        {
+            "labels": labels,
+            "data": data,
+            "background_color": background_color,
+            "border_color": border_color,
+            "message": _("No data Found..."),
+        },
+        safe=False,
+    )

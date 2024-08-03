@@ -58,4 +58,55 @@ $(document).ready(function () {
 		myChart.config.type = chartType;
 		myChart.update();
 	});
+	$.ajax({
+		type: "GET",
+		url: "/recruitment/hired-candidate-chart",
+		success: function (response) {
+			const ctx = document.getElementById("hiredCandidate");
+			if (ctx) {
+				new Chart(ctx, {
+					type: "bar",
+					data: {
+						labels: response.labels,
+						datasets: [
+							{
+								label: "#Hired candidates",
+								data: response.data,
+								backgroundColor: response.background_color,
+								borderColor: response.border_color,
+								borderWidth: 1,
+							},
+						],
+					},
+					options: {
+						responsive: true,
+
+						scales: {
+							y: {
+								beginAtZero: true,
+							},
+						},
+						onClick: (e, activeEls) => {
+							let datasetIndex = activeEls[0].datasetIndex;
+							let dataIndex = activeEls[0].index;
+							let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+							let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+							let label = e.chart.data.labels[dataIndex];
+							localStorage.removeItem("savedFilters");
+							window.location.href =
+								"/recruitment/candidate-view" +
+								"?recruitment=" +
+								label +
+								"&hired=true";
+						},
+					},
+					plugins: [
+						{
+							afterRender: (chart) => emptyChart(chart),
+						},
+					],
+				});
+			}
+		},
+	});
 });

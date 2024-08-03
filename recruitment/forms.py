@@ -28,25 +28,25 @@ from datetime import date, datetime
 from typing import Any
 
 from django import forms
+from django.apps import apps
 from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from base.forms import Form
 from base.methods import reload_queryset
+from base.models import HorillaMailTemplate
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla import horilla_middlewares
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-from leave.models import LeaveRequest
 from recruitment import widgets
 from recruitment.models import (
     Candidate,
     InterviewSchedule,
     JobPosition,
     Recruitment,
-    RecruitmentMailTemplate,
     RecruitmentSurvey,
     RejectedCandidate,
     RejectReason,
@@ -261,18 +261,18 @@ class RecruitmentCreationForm(ModelForm):
         super().__init__(*args, **kwargs)
 
         reload_queryset(self.fields)
-        self.fields["recruitment_managers"] = HorillaMultiSelectField(
-            queryset=Employee.objects.filter(is_active=True),
-            widget=HorillaMultiSelectWidget(
-                filter_route_name="employee-widget-filter",
-                filter_class=EmployeeFilter,
-                filter_instance_contex_name="f",
-                filter_template_path="employee_filters.html",
-                required=True,
-                instance=self.instance,
-            ),
-            label="Managers",
-        )
+        if not self.instance.pk:
+            self.fields["recruitment_managers"] = HorillaMultiSelectField(
+                queryset=Employee.objects.filter(is_active=True),
+                widget=HorillaMultiSelectWidget(
+                    filter_route_name="employee-widget-filter",
+                    filter_class=EmployeeFilter,
+                    filter_instance_contex_name="f",
+                    filter_template_path="employee_filters.html",
+                    required=True,
+                ),
+                label="Employee",
+            )
 
         skill_choices = [("", _("---Choose Skills---"))] + list(
             self.fields["skills"].queryset.values_list("id", "title")
@@ -322,18 +322,18 @@ class StageCreationForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
-        self.fields["stage_managers"] = HorillaMultiSelectField(
-            queryset=Employee.objects.filter(is_active=True),
-            widget=HorillaMultiSelectWidget(
-                filter_route_name="employee-widget-filter",
-                filter_class=EmployeeFilter,
-                filter_instance_contex_name="f",
-                filter_template_path="employee_filters.html",
-                required=True,
-                instance=self.instance,
-            ),
-            label="Stage Managers",
-        )
+        if not self.instance.pk:
+            self.fields["stage_managers"] = HorillaMultiSelectField(
+                queryset=Employee.objects.filter(is_active=True),
+                widget=HorillaMultiSelectWidget(
+                    filter_route_name="employee-widget-filter",
+                    filter_class=EmployeeFilter,
+                    filter_instance_contex_name="f",
+                    filter_template_path="employee_filters.html",
+                    required=True,
+                ),
+                label="Employee",
+            )
 
     def clean(self):
         if isinstance(self.fields["stage_managers"], HorillaMultiSelectField):
@@ -919,47 +919,6 @@ class CandidateExportForm(forms.Form):
     )
 
 
-class OfferLetterForm(ModelForm):
-    """
-    OfferLetterForm
-    """
-
-    class Meta:
-        model = RecruitmentMailTemplate
-        fields = "__all__"
-        # exclude = ["is_active"]
-        widgets = {
-            "body": forms.Textarea(
-                attrs={"data-summernote": "", "style": "display:none;"}
-            ),
-        }
-
-    def get_template_language(self):
-        mail_data = {
-            "Receiver|Full name": "instance.get_full_name",
-            "Sender|Full name": "self.get_full_name",
-            "Receiver|Recruitment": "instance.recruitment_id",
-            "Sender|Recruitment": "self.recruitment_id",
-            "Receiver|Company": "instance.get_company",
-            "Sender|Company": "self.get_company",
-            "Receiver|Job position": "instance.get_job_position",
-            "Sender|Job position": "self.get_job_position",
-            "Receiver|Email": "instance.get_mail",
-            "Sender|Email": "self.get_mail",
-            "Receiver|Employee Type": "instance.get_employee_type",
-            "Sender|Employee Type": "self.get_employee_type",
-            "Receiver|Work Type": "instance.get_work_type",
-            "Sender|Work Type": "self.get_work_type",
-            "Candidate|Full name": "instance.get_full_name",
-            "Candidate|Recruitment": "instance.recruitment_id",
-            "Candidate|Company": "instance.get_company",
-            "Candidate|Job position": "instance.get_job_position",
-            "Candidate|Email": "instance.get_email",
-            "Candidate|Interview Table": "instance.get_interview|safe",
-        }
-        return mail_data
-
-
 class SkillZoneCreateForm(ModelForm):
     verbose_name = "Skill Zone"
 
@@ -1174,6 +1133,7 @@ class ScheduleInterviewForm(ModelForm):
         )
 
     def clean(self):
+
         instance = self.instance
         cleaned_data = super().clean()
         interview_date = cleaned_data.get("interview_date")
@@ -1193,9 +1153,15 @@ class ScheduleInterviewForm(ModelForm):
                     "interview_time", _("Interview time cannot be in the past.")
                 )
 
-        leave_employees = LeaveRequest.objects.filter(
-            employee_id__in=managers, status="approved"
-        )
+        if apps.is_installed("leave"):
+            from leave.models import LeaveRequest
+
+            leave_employees = LeaveRequest.objects.filter(
+                employee_id__in=managers, status="approved"
+            )
+        else:
+            leave_employees = []
+
         employees = [
             leave.employee_id.get_full_name()
             for leave in leave_employees

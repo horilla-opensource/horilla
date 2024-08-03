@@ -1,5 +1,5 @@
 {% load basefilters %}
-{% load i18n %}{% load static %} {% load recruitmentfilters %}
+{% load i18n %}{% load static %} {% load recruitmentfilters horillafilters %}
 
 {% if messages %}
 <div class="oh-wrapper">
@@ -164,22 +164,24 @@
                 <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
                   <ion-icon name="thumbs-down-outline"></ion-icon></button>
               {% else %}
-                {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
-                <button
-                  type="button"
-                  class="oh-btn oh-btn--light-bkg w-100"
-                  hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
-                  hx-target="#createTarget"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#createModal"
-                  {% if cand.is_offer_rejected %}
-                  style="background: #ff4500a3 !important; color: white;"
-                  title="{% trans "Added In Rejected Candidates" %}"
-                  {% else %}
-                  title="{% trans "Add To Rejected Candidates" %}"
-                  {% endif %}>
-                <ion-icon name="thumbs-down-outline"></ion-icon>
-                </button>
+                {% if onboarding|app_installed %}
+                  {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
+                    <button
+                      type="button"
+                      class="oh-btn oh-btn--light-bkg w-100"
+                      hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
+                      hx-target="#createTarget"
+                      data-toggle="oh-modal-toggle"
+                      data-target="#createModal"
+                      {% if cand.is_offer_rejected %}
+                      style="background: #ff4500a3 !important; color: white;"
+                      title="{% trans "Added In Rejected Candidates" %}"
+                      {% else %}
+                      title="{% trans "Add To Rejected Candidates" %}"
+                      {% endif %}>
+                    <ion-icon name="thumbs-down-outline"></ion-icon>
+                    </button>
+                  {% endif %}
                 {% endif %}
               {% endif %}
               <button

@@ -2,7 +2,7 @@
 {% block content %}
 {% load static %}
 {% load i18n %}
-{% load recruitmentfilters %}
+{% load recruitmentfilters horillafilters %}
 <style>
   .search-highlight{
     background-color: rgba(255, 68, 0, 0.076);
@@ -213,30 +213,32 @@
                       >
                     </li>
                     {% endif %}
-                    {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
-                    <li class="oh-dropdown__item">
-                      <a
-                        class="oh-dropdown__link oh-dropdown__link--secondary"
-                        hx-target="#rejectModalBody"
-                          hx-swap="innerHTML"
-                          class="oh-btn oh-btn--light"
-                          data-toggle="oh-modal-toggle"
-                          data-target="#rejectModal"
-                          hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
-                          {% if cand.is_offer_rejected %}
-                          title="{% trans "Added In Rejected Candidates" %}"
+                    {% if onboarding|app_installed %}
+                      {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
+                      <li class="oh-dropdown__item">
+                        <a
+                          class="oh-dropdown__link oh-dropdown__link--secondary"
+                          hx-target="#rejectModalBody"
+                            hx-swap="innerHTML"
+                            class="oh-btn oh-btn--light"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#rejectModal"
+                            hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
+                            {% if cand.is_offer_rejected %}
+                            title="{% trans "Added In Rejected Candidates" %}"
+                            {% else %}
+                            title="{% trans "Add To Rejected Candidates" %}"
+                            {% endif %}
+                          >
+                          {% if not cand.is_offer_rejected %}
+                          {% trans "Add to Rejected" %}
                           {% else %}
-                          title="{% trans "Add To Rejected Candidates" %}"
+                          {% trans "Edit Rejected Candidate" %}
                           {% endif %}
+                          </a
                         >
-                        {% if not cand.is_offer_rejected %}
-                        {% trans "Add to Rejected" %}
-                        {% else %}
-                        {% trans "Edit Rejected Candidate" %}
-                        {% endif %}
-                        </a
-                      >
-                    </li>
+                      </li>
+                      {% endif %}
                     {% endif %}
                     {% if perms.view_stagenote or request.user|is_stagemanager %}
                     <li class="oh-dropdown__item">

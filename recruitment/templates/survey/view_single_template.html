@@ -1,4 +1,4 @@
-{% load i18n %} {% load yes_no %}
+{% load i18n %}
 {% if request.GET.instances_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button
@@ -80,7 +80,7 @@
         {% else %}
         <div class="oh-btn-group">
             {% if perms.recruitment.change_recruitmentsurvey %}
-            <a
+                <a
                     class="oh-btn oh-btn--info"
                     hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
                     data-toggle="oh-modal-toggle"
@@ -91,20 +91,21 @@
                     <ion-icon name="create-outline" role="img"
                     class="md hydrated" aria-label="create outline">
                     </ion-icon>{% trans "Edit" %}
-            </a>
+                </a>
             {% endif %}
             {% if perms.recruitment.delete_recruitmentsurvey %}
-            <a
+                <a
                     href="{% url 'recruitment-survey-question-template-delete' question.id %}"
                     onclick="return confirm('{% trans "Are you sure want to delete?" %}')"
-                    class="oh-btn oh-btn--danger"style="width: 100%;">
-                <ion-icon
-                name="trash-outline"
-                role="img"
-                class="md hydrated"
-                aria-label="create outline"
-                ></ion-icon>{% trans "Delete" %}
-            </a>
+                    class="oh-btn oh-btn--danger"style="width: 100%;"
+                >
+                    <ion-icon
+                    name="trash-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="create outline"
+                    ></ion-icon>{% trans "Delete" %}
+                </a>
             {% endif %}
         </div>
         {% endif %}
