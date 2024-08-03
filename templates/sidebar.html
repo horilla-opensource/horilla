@@ -1,5 +1,5 @@
-{% load static %} {% load i18n %} {% load attendancefilters offboarding_filter %}
-{% load recruitmentfilters %} {% load onboardingfilters %} {% load basefilters %} {% load leavefilters %}
+{% load static %} {% load i18n %} {% load horillafilters  %}
+{% load basefilters %}
 <script>
   function activeNav(id) {
     const navElement = $(`#${id}`);
@@ -229,7 +229,7 @@ function initializeSummernote(candId,searchWords,) {
           style="display: none"
           >
           <ul class="oh-sidebar__submenu-items">
-            {% if perms.Leave.view_leaverequest %}
+            {% if "leave"|app_installed and perms.Leave.view_leaverequest %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'multiple-approval-condition' %}"
@@ -238,7 +238,7 @@ function initializeSummernote(candId,searchWords,) {
               >
             </li>
             {% endif %}
-            {% if perms.recruitment.view_recruitmentmailtemplate %}
+            {% if perms.base.view_horillamailtemplate %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
@@ -248,7 +248,7 @@ function initializeSummernote(candId,searchWords,) {
               >
             </li>
             {% endif %}
-            {% if perms.recruitment.view_mailautomation %}
+            {% if "horilla_automations"|app_installed and perms.horilla_automations.view_mailautomation %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
@@ -258,7 +258,7 @@ function initializeSummernote(candId,searchWords,) {
               >
             </li>
             {% endif %}
-            {% if perms.leave.add_holiday %}
+            {% if perms.base.add_holiday %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'holiday-view' %}"
@@ -267,7 +267,7 @@ function initializeSummernote(candId,searchWords,) {
               >
             </li>
             {% endif %}
-            {% if perms.leave.add_companyleave %}
+            {% if perms.base.view_companyleave %}
             <li class="oh-sidebar__submenu-item">
               <a
               href="{% url 'company-leave-view' %}"
@@ -276,6 +276,7 @@ function initializeSummernote(candId,searchWords,) {
               >
             </li>
             {% endif %}
+            {% if "leave"|app_installed %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'restrict-view' %}"
@@ -283,6 +284,7 @@ function initializeSummernote(candId,searchWords,) {
                 >{% trans "Restrict Leaves" %}</a
               >
             </li>
+            {% endif %}
           </ul>
         </div>
       </li>
@@ -400,7 +402,7 @@ function initializeSummernote(candId,searchWords,) {
       var noDataImage = new Image();
       noDataImage.src = chart.data.emptyImageSrc
         ? chart.data.emptyImageSrc
-        : "/static/images/ui/joiningchart.png";
+        : "{% static '/images/ui/joiningchart.png' %}";
 
       message = chart.data.message
         ? chart.data.message
