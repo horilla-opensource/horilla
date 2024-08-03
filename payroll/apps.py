@@ -16,6 +16,13 @@ class PayrollConfig(AppConfig):
 
     def ready(self) -> None:
         ready = super().ready()
+        from django.urls import include, path
+
+        from horilla.urls import urlpatterns
+
+        urlpatterns.append(
+            path("payroll/", include("payroll.urls.urls")),
+        )
         try:
             from payroll.scheduler import auto_payslip_generate
 

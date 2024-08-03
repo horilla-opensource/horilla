@@ -8,7 +8,10 @@ pre-tax deductions, and post-tax deductions.
 import contextlib
 import operator
 
-from attendance.models import Attendance
+from django.apps import apps
+
+# from attendance.models import Attendance
+from horilla.methods import get_horilla_model_class
 from payroll.methods.limits import compute_limit
 from payroll.models import models
 from payroll.models.models import (
@@ -313,8 +316,12 @@ def calculate_allowance(**kwargs):
                 filter_params = filter_mapping[allowance.based_on]["filter"](
                     employee, allowance, start_date, end_date
                 )
-                if Attendance.objects.filter(**filter_params):
-                    employee_allowances.append(allowance)
+                if apps.is_installed("attendance"):
+                    Attendance = get_horilla_model_class(
+                        app_label="attendance", model="attendance"
+                    )
+                    if Attendance.objects.filter(**filter_params):
+                        employee_allowances.append(allowance)
             else:
                 employee_allowances.append(allowance)
     # Filter and append taxable allowance and not taxable allowance
@@ -852,6 +859,11 @@ def calculate_based_on_attendance(*_args, **kwargs):
     Returns:
         float: The calculated amount of the component based on the attendance.
     """
+
+    if not apps.is_installed("attendance"):
+        return 0
+
+    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
     employee = kwargs["employee"]
     start_date = kwargs["start_date"]
     end_date = kwargs["end_date"]
@@ -884,6 +896,10 @@ def calculate_based_on_shift(*_args, **kwargs):
     Returns:
         float: The calculated amount of the component based on the shift attendance.
     """
+    if not apps.is_installed("attendance"):
+        return 0
+
+    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
     employee = kwargs["employee"]
     start_date = kwargs["start_date"]
     end_date = kwargs["end_date"]
@@ -917,7 +933,10 @@ def calculate_based_on_overtime(*_args, **kwargs):
     Returns:
         float: The calculated amount of the allowance or deduction based on the overtime hours.
     """
+    if not apps.is_installed("attendance"):
+        return 0
 
+    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
     employee = kwargs["employee"]
     start_date = kwargs["start_date"]
     end_date = kwargs["end_date"]
@@ -956,6 +975,10 @@ def calculate_based_on_work_type(*_args, **kwargs):
         float: The calculated amount of the allowance or deduction based on the
                attendance with the specified work type.
     """
+    if not apps.is_installed("attendance"):
+        return 0
+
+    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
     employee = kwargs["employee"]
     start_date = kwargs["start_date"]
     end_date = kwargs["end_date"]

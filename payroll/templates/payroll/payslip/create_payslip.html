@@ -47,28 +47,3 @@
     />
   </div>
 </form>
-
-<script>
-  $(
-          `[action="/payroll/create-payslip"]`
-        ).submit(function (e) {
-          e.preventDefault();
-
-          var form = $(this); // Get the form element
-          var formData = form.serialize(); // Serialize the form data as a URL-encoded string
-
-          $(".errorlist").remove();
-          $.ajax({
-            type: "get",
-            url: "{% url 'validate-start-date' %}",
-            data: formData,
-            success: function (response) {
-              form.prepend(response.message);
-              if (response.valid) {
-                form[0].submit();
-              }
-            },
-          });
-        });
-
-</script>

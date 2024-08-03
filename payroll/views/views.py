@@ -54,7 +54,6 @@ from payroll.models.models import (
     Reimbursement,
     ReimbursementFile,
     ReimbursementrequestComment,
-    WorkRecord,
 )
 from payroll.models.tax_models import PayrollSettings
 
@@ -405,73 +404,6 @@ def contract_filter(request):
             "contract_ids": contract_ids_json,
             "field": field,
         },
-    )
-
-
-@login_required
-@permission_required("payroll.view_workrecord")
-def work_record_create(request):
-    """
-    Work record create view
-    """
-    from payroll.forms.forms import WorkRecordForm
-
-    form = WorkRecordForm()
-
-    context = {"form": form}
-    if request.POST:
-        form = WorkRecordForm(request.POST)
-        if form.is_valid():
-            form.save()
-        else:
-            context["form"] = form
-    return render(request, "payroll/work_record/work_record_create.html", context)
-
-
-@login_required
-@permission_required("payroll.view_workrecord")
-def work_record_view(request):
-    """
-    Work record view method
-    """
-    contracts = WorkRecord.objects.all()
-    context = {"contracts": contracts}
-    return render(request, "payroll/work_record/work_record_view.html", context)
-
-
-@login_required
-@permission_required("payroll.workrecord")
-def work_record_employee_view(request):
-    """
-    Work record by employee view method
-    """
-    current_month_start_date = datetime.now().replace(day=1)
-    next_month_start_date = current_month_start_date + timedelta(days=31)
-    current_month_records = WorkRecord.objects.filter(
-        start_datetime__gte=current_month_start_date,
-        start_datetime__lt=next_month_start_date,
-    ).order_by("start_datetime")
-    current_date = timezone.now().date()
-    current_month = current_date.strftime("%B")
-    start_of_month = current_date.replace(day=1)
-    employees = Employee.objects.all()
-
-    current_month_dates_list = [
-        datetime.now().replace(day=day).date() for day in range(1, 32)
-    ]
-
-    context = {
-        "days": range(1, 32),
-        "employees": employees,
-        "current_date": current_date,
-        "current_month": current_month,
-        "start_of_month": start_of_month,
-        "current_month_dates_list": current_month_dates_list,
-        "work_records": current_month_records,
-    }
-
-    return render(
-        request, "payroll/work_record/work_record_employees_view.html", context
     )
 
 
@@ -1777,7 +1709,6 @@ def initial_notice_period(request):
 @permission_required("payroll.view_PayslipAutoGenerate")
 def auto_payslip_settings_view(request):
     payslip_auto_generate = PayslipAutoGenerate.objects.all()
-    print("All autopayslip", payslip_auto_generate)
 
     context = {"payslip_auto_generate": payslip_auto_generate}
     return render(request, "payroll/settings/auto_payslip_settings.html", context)

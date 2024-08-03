@@ -22,7 +22,6 @@ from payroll.models.models import (
     PayrollGeneralSetting,
     ReimbursementFile,
     ReimbursementrequestComment,
-    WorkRecord,
 )
 
 
@@ -153,20 +152,6 @@ class ContractForm(ModelForm):
 
     def get_dynamic_hx_post_url(self, instance):
         return f"/payroll/update-contract-status/{instance.pk}"
-
-
-class WorkRecordForm(ModelForm):
-    """
-    WorkRecordForm
-    """
-
-    class Meta:
-        """
-        Meta class for additional options
-        """
-
-        fields = "__all__"
-        model = WorkRecord
 
 
 class ReimbursementRequestCommentForm(ModelForm):

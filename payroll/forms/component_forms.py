@@ -9,6 +9,7 @@ import uuid
 from typing import Any
 
 from django import forms
+from django.apps import apps
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
@@ -18,10 +19,12 @@ from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import BonusPoint, Employee
 from horilla import horilla_middlewares
+from horilla.methods import get_horilla_model_class
 from horilla_widgets.forms import HorillaForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-from leave.models import AvailableLeave, LeaveType
+
+# from leave.models import AvailableLeave, LeaveType
 from notifications.signals import notify
 from payroll.models import tax_models as models
 from payroll.models.models import (
@@ -384,7 +387,6 @@ class GeneratePayslipForm(HorillaForm):
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
             filter_template_path="employee_filters.html",
-            required=True,
         ),
         label="Employee",
     )
@@ -395,6 +397,7 @@ class GeneratePayslipForm(HorillaForm):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
+
         today = datetime.date.today()
         if end_date < start_date:
             raise forms.ValidationError(
@@ -685,13 +688,16 @@ class ReimbursementForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
 
-    def get_encashable_leaves(self, employee):
-        leaves = LeaveType.objects.filter(
-            employee_available_leave__employee_id=employee,
-            employee_available_leave__total_leave_days__gte=1,
-            is_encashable=True,
-        )
-        return leaves
+    if apps.is_installed("leave"):
+
+        def get_encashable_leaves(self, employee):
+            LeaveType = get_horilla_model_class(app_label="leave", model="leavetype")
+            leaves = LeaveType.objects.filter(
+                employee_available_leave__employee_id=employee,
+                employee_available_leave__total_leave_days__gte=1,
+                is_encashable=True,
+            )
+            return leaves
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -707,13 +713,18 @@ class ReimbursementForm(ModelForm):
                 else self.instance.employee_id
             )
         self.initial["employee_id"] = employee.id
-        assigned_leaves = self.get_encashable_leaves(employee)
-        self.assigned_leaves = AvailableLeave.objects.filter(
-            leave_type_id__in=assigned_leaves, employee_id=employee
-        )
-        self.fields["leave_type_id"].queryset = assigned_leaves
-        self.fields["leave_type_id"].empty_label = None
-        self.fields["employee_id"].empty_label = None
+        if apps.is_installed("leave"):
+            AvailableLeave = get_horilla_model_class(
+                app_label="leave", model="availableleave"
+            )
+
+            assigned_leaves = self.get_encashable_leaves(employee)
+            self.assigned_leaves = AvailableLeave.objects.filter(
+                leave_type_id__in=assigned_leaves, employee_id=employee
+            )
+            self.fields["leave_type_id"].queryset = assigned_leaves
+            self.fields["leave_type_id"].empty_label = None
+            self.fields["employee_id"].empty_label = None
 
         type_attr = self.fields["type"].widget.attrs
         type_attr["onchange"] = "toggleReimbursmentType($(this))"

@@ -8,99 +8,21 @@ import calendar
 from datetime import date, datetime, timedelta
 
 from dateutil.relativedelta import relativedelta
+from django.apps import apps
 from django.core.paginator import Paginator
 from django.db.models import F, Q
 
-from attendance.models import Attendance
-from base.methods import get_pagination
-from leave.models import CompanyLeave, Holiday
+# from attendance.models import Attendance
+from base.methods import (
+    get_company_leave_dates,
+    get_date_range,
+    get_holiday_dates,
+    get_pagination,
+    get_working_days,
+)
+from base.models import CompanyLeaves, Holidays
+from horilla.methods import get_horilla_model_class
 from payroll.models.models import Contract, Deduction, Payslip
-
-
-def get_holiday_dates(range_start: date, range_end: date) -> list:
-    """
-    :return: this functions returns a list of all holiday dates.
-    """
-    pay_range_dates = get_date_range(start_date=range_start, end_date=range_end)
-    query = Q()
-    for check_date in pay_range_dates:
-        query |= Q(start_date__lte=check_date, end_date__gte=check_date)
-    holidays = Holiday.objects.filter(query)
-    holiday_dates = set([])
-    for holiday in holidays:
-        holiday_dates = holiday_dates | (
-            set(
-                get_date_range(start_date=holiday.start_date, end_date=holiday.end_date)
-            )
-        )
-    return list(set(holiday_dates))
-
-
-def get_company_leave_dates(year):
-    """
-    :return: This function returns a list of all company leave dates
-    """
-    company_leaves = CompanyLeave.objects.all()
-    company_leave_dates = []
-    for company_leave in company_leaves:
-        based_on_week = company_leave.based_on_week
-        based_on_week_day = company_leave.based_on_week_day
-        for month in range(1, 13):
-            if based_on_week is not None:
-                # Set Sunday as the first day of the week
-                calendar.setfirstweekday(6)
-                month_calendar = calendar.monthcalendar(year, month)
-                weeks = month_calendar[int(based_on_week)]
-                weekdays_in_weeks = [day for day in weeks if day != 0]
-                for day in weekdays_in_weeks:
-                    leave_date = datetime.strptime(
-                        f"{year}-{month:02}-{day:02}", "%Y-%m-%d"
-                    ).date()
-                    if (
-                        leave_date.weekday() == int(based_on_week_day)
-                        and leave_date not in company_leave_dates
-                    ):
-                        company_leave_dates.append(leave_date)
-            else:
-                # Set Monday as the first day of the week
-                calendar.setfirstweekday(0)
-                month_calendar = calendar.monthcalendar(year, month)
-                for week in month_calendar:
-                    if week[int(based_on_week_day)] != 0:
-                        leave_date = datetime.strptime(
-                            f"{year}-{month:02}-{week[int(based_on_week_day)]:02}",
-                            "%Y-%m-%d",
-                        ).date()
-                        if leave_date not in company_leave_dates:
-                            company_leave_dates.append(leave_date)
-    return company_leave_dates
-
-
-def get_date_range(start_date, end_date):
-    """
-    Returns a list of all dates within a given date range.
-
-    Args:
-        start_date (date): The start date of the range.
-        end_date (date): The end date of the range.
-
-    Returns:
-        list: A list of date objects representing all dates within the range.
-
-    Example:
-        start_date = date(2023, 1, 1)
-        end_date = date(2023, 1, 10)
-        date_range = get_date_range(start_date, end_date)
-        for date_obj in date_range:
-            print(date_obj)
-    """
-    date_list = []
-    delta = end_date - start_date
-
-    for i in range(delta.days + 1):
-        current_date = start_date + timedelta(days=i)
-        date_list.append(current_date)
-    return date_list
 
 
 def get_total_days(start_date, end_date):
@@ -125,52 +47,6 @@ def get_total_days(start_date, end_date):
     return total_days
 
 
-def get_working_days(start_date, end_date):
-    """
-    This method is used to calculate the total working days, total leave, worked days on that period
-
-    Args:
-        start_date (_type_): the start date from the data needed
-        end_date (_type_): the end date till the date needed
-    """
-
-    holiday_dates = get_holiday_dates(start_date, end_date)
-
-    # appending company/holiday leaves
-    # Note: Duplicate entry may exist
-    company_leave_dates = (
-        list(
-            set(
-                get_company_leave_dates(start_date.year)
-                + get_company_leave_dates(end_date.year)
-            )
-        )
-        + holiday_dates
-    )
-
-    date_range = get_date_range(start_date, end_date)
-
-    # making unique list of company/holiday leave dates then filtering
-    # the leave dates only between the start and end date
-    company_leave_dates = [
-        date
-        for date in list(set(company_leave_dates))
-        if start_date <= date <= end_date
-    ]
-
-    working_days_between_ranges = list(set(date_range) - set(company_leave_dates))
-    total_working_days = len(working_days_between_ranges)
-
-    return {
-        # Total working days on that period
-        "total_working_days": total_working_days,
-        # All the working dates between the start and end date
-        "working_days_on": working_days_between_ranges,
-        # All the company/holiday leave dates between the range
-        "company_leave_dates": company_leave_dates,
-    }
-
-
 def get_leaves(employee, start_date, end_date):
     """
     This method is used to return all the leaves taken by the employee
@@ -181,7 +57,10 @@ def get_leaves(employee, start_date, end_date):
         start_date (obj): the start date from the data needed
         end_date (obj): the end date till the date needed
     """
-    approved_leaves = employee.leaverequest_set.filter(status="approved")
+    if apps.is_installed("leave"):
+        approved_leaves = employee.leaverequest_set.filter(status="approved")
+    else:
+        approved_leaves = None
     paid_leave = 0
     unpaid_leave = 0
     paid_half = 0
@@ -190,7 +69,7 @@ def get_leaves(employee, start_date, end_date):
     unpaid_leave_dates = []
     company_leave_dates = get_working_days(start_date, end_date)["company_leave_dates"]
 
-    if approved_leaves.exists():
+    if approved_leaves and approved_leaves.exists():
         for instance in approved_leaves:
             if instance.leave_type_id.payment == "paid":
                 # if the taken leave is paid
@@ -233,47 +112,53 @@ def get_leaves(employee, start_date, end_date):
     }
 
 
-def get_attendance(employee, start_date, end_date):
-    """
-    This method is used to render attendance details between the range
+if apps.is_installed("attendance"):
 
-    Args:
-        employee (obj): Employee user instance
-        start_date (obj): start date of the period
-        end_date (obj): end date of the period
-    """
+    def get_attendance(employee, start_date, end_date):
+        """
+        This method is used to render attendance details between the range
 
-    attendances_on_period = Attendance.objects.filter(
-        employee_id=employee,
-        attendance_date__range=(start_date, end_date),
-        attendance_validated=True,
-    )
-    present_on = [attendance.attendance_date for attendance in attendances_on_period]
-    working_days_between_range = get_working_days(start_date, end_date)[
-        "working_days_on"
-    ]
-    leave_dates = get_leaves(employee, start_date, end_date)["leave_dates"]
-    conflict_dates = list(
-        set(working_days_between_range) - set(attendances_on_period) - set(leave_dates)
-    )
-    conflict_dates = conflict_dates + [
-        date
-        for date in present_on
-        if date in get_holiday_dates(start_date, end_date)
-        or date
-        in list(
-            set(
-                get_company_leave_dates(start_date.year)
-                + get_company_leave_dates(end_date.year)
-            )
+        Args:
+            employee (obj): Employee user instance
+            start_date (obj): start date of the period
+            end_date (obj): end date of the period
+        """
+        Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
+        attendances_on_period = Attendance.objects.filter(
+            employee_id=employee,
+            attendance_date__range=(start_date, end_date),
+            attendance_validated=True,
         )
-    ]
+        present_on = [
+            attendance.attendance_date for attendance in attendances_on_period
+        ]
+        working_days_between_range = get_working_days(start_date, end_date)[
+            "working_days_on"
+        ]
+        leave_dates = get_leaves(employee, start_date, end_date)["leave_dates"]
+        conflict_dates = list(
+            set(working_days_between_range)
+            - set(attendances_on_period)
+            - set(leave_dates)
+        )
+        conflict_dates = conflict_dates + [
+            date
+            for date in present_on
+            if date in get_holiday_dates(start_date, end_date)
+            or date
+            in list(
+                set(
+                    get_company_leave_dates(start_date.year)
+                    + get_company_leave_dates(end_date.year)
+                )
+            )
+        ]
 
-    return {
-        "attendances_on_period": attendances_on_period,
-        "present_on": present_on,
-        "conflict_dates": conflict_dates,
-    }
+        return {
+            "attendances_on_period": attendances_on_period,
+            "present_on": present_on,
+            "conflict_dates": conflict_dates,
+        }
 
 
 def hourly_computation(employee, wage, start_date, end_date):
@@ -286,6 +171,11 @@ def hourly_computation(employee, wage, start_date, end_date):
         start_date (obj): start of the pay period
         end_date (obj): end date of the period
     """
+    if not apps.is_installed("attendance"):
+        return {
+            "basic_pay": 0,
+            "loss_of_pay": 0,
+        }
     attendance_data = get_attendance(employee, start_date, end_date)
     attendances_on_period = attendance_data["attendances_on_period"]
     total_worked_hour_in_second = 0
@@ -490,24 +380,34 @@ def monthly_computation(employee, wage, start_date, end_date):
     contract = employee.contract_set.filter(contract_status="active").first()
     loss_of_pay = 0
     date_range = get_date_range(start_date, end_date)
-    half_day_leaves_between_period_on_start_date = (
-        employee.leaverequest_set.filter(
-            leave_type_id__payment="unpaid",
-            start_date__in=date_range,
-            status="approved",
+    if apps.is_installed("leave"):
+        start_date_leaves = (
+            employee.leaverequest_set.filter(
+                leave_type_id__payment="unpaid",
+                start_date__in=date_range,
+                status="approved",
+            )
+            .exclude(start_date_breakdown="full_day")
+            .count()
         )
-        .exclude(start_date_breakdown="full_day")
-        .count()
-    )
+        end_date_leaves = (
+            employee.leaverequest_set.filter(
+                leave_type_id__payment="unpaid",
+                end_date__in=date_range,
+                status="approved",
+            )
+            .exclude(end_date_breakdown="full_day")
+            .exclude(start_date=F("end_date"))
+            .count()
+        )
+    else:
+        start_date_leaves = 0
+        end_date_leaves = 0
 
-    half_day_leaves_between_period_on_end_date = (
-        employee.leaverequest_set.filter(
-            leave_type_id__payment="unpaid", end_date__in=date_range, status="approved"
-        )
-        .exclude(end_date_breakdown="full_day")
-        .exclude(start_date=F("end_date"))
-        .count()
-    )
+    half_day_leaves_between_period_on_start_date = start_date_leaves
+
+    half_day_leaves_between_period_on_end_date = end_date_leaves
+
     unpaid_half_leaves = (
         half_day_leaves_between_period_on_start_date
         + half_day_leaves_between_period_on_end_date

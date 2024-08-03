@@ -12,6 +12,7 @@ from itertools import groupby
 from urllib.parse import parse_qs
 
 import pandas as pd
+from django.apps import apps
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
@@ -20,7 +21,8 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import payroll.models.models
-from asset.models import Asset
+
+# from asset.models import Asset
 from base.backends import ConfiguredEmailBackend
 from base.methods import closest_numbers, filter_own_records, get_key_instances, sortby
 from base.models import Company
@@ -32,7 +34,9 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
-from leave.models import AvailableLeave
+from horilla.methods import get_horilla_model_class
+
+# from leave.models import AvailableLeave
 from notifications.signals import notify
 from payroll.filters import (
     AllowanceFilter,
@@ -152,18 +156,6 @@ def payroll_calculation(employee, start_date, end_date):
     taxable_gross_pay = calculate_taxable_gross_pay(**kwargs)
     tax_deductions = calculate_tax_deduction(**kwargs)
     federal_tax = calculate_taxable_amount(**kwargs)
-
-    # gross_pay = (basic_pay + total_allowances)
-    # deduction = (
-    #   post_tax_deductions_amount
-    #   + pre_tax_deductions _amount
-    #   + tax_deductions + federal_tax_amount
-    #   + lop_amount
-    #   + one_time_basic_deduction_amount
-    #   + one_time_gross_deduction_amount
-    #   )
-    # net_pay = gross_pay - deduction
-    # net_pay = net_pay - net_pay_deduction
 
     total_allowance = sum(item["amount"] for item in allowances["allowances"])
     total_pretax_deduction = sum(
@@ -724,34 +716,13 @@ def validate_start_date(request):
         contract = payroll.models.models.Contract.objects.filter(
             employee_id__id=emp_id, contract_status="active"
         ).first()
-        if contract:
-            if contract.contract_end_date:
-                if not (
-                    contract.contract_start_date
-                    <= end_datetime
-                    <= contract.contract_end_date
-                ):
-                    error_message = (
-                        f"<ul class='errorlist'><li>The {contract.employee_id}'s "
-                        f"contract period is not within the payslip range</li></ul>"
-                    )
-                    response["message"] = error_message
-                    response["valid"] = False
-                elif start_datetime < contract.contract_start_date:
-                    start_datetime = contract.contract_start_date
-                    start_date = contract.contract_start_date
-            else:
-                if end_datetime < contract.contract_start_date:
-                    error_message = (
-                        f"<ul class='errorlist'><li>The payslip end date is less than {contract.employee_id}'s "
-                        f"contract start date ({contract.contract_start_date}).</li></ul>"
-                    )
-                    response["message"] = error_message
-                    response["valid"] = False
-                elif start_datetime <= contract.contract_start_date:
-                    if contract.contract_start_date <= end_datetime:
-                        start_datetime = contract.contract_start_date
-                        start_date = contract.contract_start_date
+
+        if start_datetime is not None and start_datetime < contract.contract_start_date:
+            error_message = f"<ul class='errorlist'><li>The {contract.employee_id}'s \
+                contract start date is smaller than pay period start date</li></ul>"
+            response["message"] = error_message
+            response["valid"] = False
+
     if (
         start_datetime is not None
         and end_datetime is not None
@@ -821,14 +792,6 @@ def view_payslip(request):
             "filter_dict": data_dict,
             "gp_fields": PayslipReGroup.fields,
         },
-    )
-
-
-def payslip_create_form_initialize(request):
-    return render(
-        request,
-        "payroll/payslip/create_payslip.html",
-        {"individual_form": forms.PayslipForm()},
     )
 
 
@@ -1286,6 +1249,8 @@ def asset_fine(request):
     """
     Add asset fine method
     """
+    if apps.is_installed("asset"):
+        Asset = get_horilla_model_class(app_label="asset", model="asset")
     asset_id = request.GET["asset_id"]
     employee_id = request.GET["employee_id"]
     asset = Asset.objects.get(id=asset_id)
@@ -1427,6 +1392,11 @@ def get_assigned_leaves(request):
     This method is used to return assigned leaves of the employee
     in Json
     """
+    if apps.is_installed("leave"):
+        AvailableLeave = get_horilla_model_class(
+            app_label="leave", model="availableleave"
+        )
+
     assigned_leaves = (
         AvailableLeave.objects.filter(
             employee_id__id=request.GET["employeeId"],

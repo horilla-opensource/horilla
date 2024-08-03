@@ -1,15 +1,17 @@
+staticUrl = $("#statiUrl").attr("data-url");
+
 $(document).ready(function () {
   var myDate = new Date();
   var year = myDate.getFullYear();
   var month = ("0" + myDate.getMonth()).slice(-2);
-  if (month == "00"){
-    month = "12"
-    year = year-1
+  if (month == "00") {
+    month = "12";
+    year = year - 1;
   }
   var formattedDate = year + "-" + month;
   var start_index = 0;
   var per_page = 10;
-  var initialLoad = true
+  var initialLoad = true;
 
   $("#monthYearField").val(formattedDate);
 
@@ -91,10 +93,15 @@ $(document).ready(function () {
             var clickedBarIndex = activeBars[0].index;
             var clickedLabel = employeeChartData.labels[clickedBarIndex];
             localStorage.removeItem("savedFilters");
-			var selectedDate = $("#monthYearField").val()
-			const [year, month] = selectedDate.split('-');
+            var selectedDate = $("#monthYearField").val();
+            const [year, month] = selectedDate.split("-");
             window.location.href =
-              "/payroll/view-payslip?month=" +month+"&year=" +year + "&search=" + clickedLabel;
+              "/payroll/view-payslip?month=" +
+              month +
+              "&year=" +
+              year +
+              "&search=" +
+              clickedLabel;
           }
         });
       },
@@ -145,8 +152,12 @@ $(document).ready(function () {
           $("#employee_canvas_body").html(
             `<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
                         <div style="" class="">
-                        <img style="display: block;width: 70px;margin: 10px auto ;" src="/static/images/ui/no-money.png" class="" alt=""/>
-                        <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+                        <img style="display: block;width: 70px;margin: 10px auto ;" src="${
+                          staticUrl + "images/ui/no-money.png"
+                        }" class="" alt=""/>
+                        <h3 style="font-size:16px" class="oh-404__subtitle">${
+                          response.message
+                        }</h3>
                         </div>
                     </div>`
           );
@@ -214,7 +225,9 @@ $(document).ready(function () {
         if (activeBars.length > 0) {
           var clickedBarIndex = activeBars[0].index;
           var clickedLabel = departmentChartData.labels[clickedBarIndex];
-          window.location.href = `/payroll/view-payslip?start_date=${$("#monthYearField").val()}-01&department=${clickedLabel}`
+          window.location.href = `/payroll/view-payslip?start_date=${$(
+            "#monthYearField"
+          ).val()}-01&department=${clickedLabel}`;
         }
       });
     }
@@ -235,21 +248,25 @@ $(document).ready(function () {
         department_total = response.department_total;
         if (department_total.length != 0) {
           $("#department_total").html("");
-          $("#department_total").show()
-          $("#department_total_empty").hide()
+          $("#department_total").show();
+          $("#department_total_empty").hide();
           $.each(department_total, function (key, value) {
             $("#department_total").append(
               `<li class='m-3 department' style = 'cursor: pointer;''><span class='department_item'>${value["department"]}</span>: <span> ${value["amount"]}</span></li>`
             );
           });
         } else {
-          $("#department_total").hide()
-          $("#department_total_empty").show()
+          $("#department_total").hide();
+          $("#department_total_empty").show();
           $("#department_total_empty").html(
             `<div style="display:flex;align-items: center;justify-content: center; padding-top:50px" class="">
                         <div style="" class="">
-                        <img style="display: block;width: 70px;margin: 10px auto ;" src="/static/images/ui/money.png" class="" alt=""/>
-                        <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+                        <img style="display: block;width: 70px;margin: 10px auto ;" src="${
+                          staticUrl + "images/ui/money.png"
+                        }" class="" alt=""/>
+                        <h3 style="font-size:16px" class="oh-404__subtitle">${
+                          response.message
+                        }</h3>
                         </div>
                     </div>`
           );
@@ -259,8 +276,12 @@ $(document).ready(function () {
           $("#department_canvas_body").html(
             `<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
                         <div style="" class="">
-                        <img style="display: block;width: 70px;margin: 10px auto ;" src="/static/images/ui/no-money.png" class="" alt=""/>
-                        <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+                        <img style="display: block;width: 70px;margin: 10px auto ;" src="${
+                          staticUrl + "images/ui/no-money.png"
+                        }" class="" alt=""/>
+                        <h3 style="font-size:16px" class="oh-404__subtitle">${
+                          response.message
+                        }</h3>
                         </div>
                     </div>`
           );
@@ -276,16 +297,26 @@ $(document).ready(function () {
 
   function contract_ending(initialLoad) {
     var period = $("#monthYearField").val();
-    var date = period.split('-');
+    var date = period.split("-");
     var year = date[0];
     var month = parseInt(date[1]);
 
     var monthNames = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
-    if (initialLoad){
-      let date = new Date()
+    if (initialLoad) {
+      let date = new Date();
       let year = date.getFullYear();
       let month = date.getMonth();
       var formattedDate = `${monthNames[month]} ${year}`;
@@ -302,7 +333,7 @@ $(document).ready(function () {
       },
       data: {
         period: period,
-        initialLoad:initialLoad
+        initialLoad: initialLoad,
       },
       success: (response) => {
         var contract_end = response.contract_end;
@@ -314,14 +345,22 @@ $(document).ready(function () {
 
             $("#contract_ending").append(elem);
           });
-          $(".contract-number").html(`${formattedDate} : ${contract_end.length}`);
+          $(".contract-number").html(
+            `${formattedDate} : ${contract_end.length}`
+          );
         } else {
-          $(".contract-number").html(`${formattedDate} : ${contract_end.length}`);
+          $(".contract-number").html(
+            `${formattedDate} : ${contract_end.length}`
+          );
           $("#contract_ending").html(
             `<div style="display:flex;align-items: center;justify-content: center; padding-top:50px" class="">
               <div style="" class="">
-                <img style="display: block;width: 70px;margin: 10px auto ;" src="/static/images/ui/contract.png" class="" alt=""/>
-                <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+                <img style="display: block;width: 70px;margin: 10px auto ;" src="${
+                  staticUrl + "images/ui/contract.png"
+                }" class="" alt=""/>
+                <h3 style="font-size:16px" class="oh-404__subtitle">${
+                  response.message
+                }</h3>
               </div>
             </div>`
           );
@@ -339,7 +378,7 @@ $(document).ready(function () {
   contract_ending(initialLoad);
 
   $("#monthYearField").on("change", function () {
-    initialLoad = false
+    initialLoad = false;
     employee_chart_view();
     payslip_details();
     department_chart_view();
@@ -423,7 +462,6 @@ $(document).ready(function () {
     });
   });
 
-
   $(".filter").on("click", function () {
     $("#back_button").removeClass("d-none");
   });
@@ -456,6 +494,8 @@ $(document).ready(function () {
 
   $("#department_total").on("click", ".department", function () {
     department = $(this).children(".department_item").text();
-    window.location.href = `/payroll/view-payslip?start_date=${$("#monthYearField").val()}-01&department=${department}`
+    window.location.href = `/payroll/view-payslip?start_date=${$(
+      "#monthYearField"
+    ).val()}-01&department=${department}`;
   });
 });
