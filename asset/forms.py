@@ -411,6 +411,9 @@ class AssetReturnForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """
+        Initializes the AssetReturnForm with initial values and custom field settings.
+        """
         super(AssetReturnForm, self).__init__(*args, **kwargs)
         self.fields["return_date"].initial = date.today()
 

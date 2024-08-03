@@ -1,3 +1,4 @@
+staticUrl = $("#statiUrl").attr("data-url");
 $(document).ready(function() {
     function available_asset_chart(dataSet) {
       var Asset_available_chart = document.getElementById("assetAvailableChart");
@@ -83,7 +84,7 @@ function emptyAssetAvialabeChart(assetAvailableChartChart,args,options){
       var noDataImage = new Image();
       noDataImage.src = assetAvailableChartChart.data.emptyImageSrc
         ? assetAvailableChartChart.data.emptyImageSrc
-        : "/static/images/ui/joiningchart.png";
+        : staticUrl +"images/ui/joiningchart.png";
 
       message = assetAvailableChartChart.data.message
         ? assetAvailableChartChart.data.message

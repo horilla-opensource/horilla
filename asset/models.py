@@ -210,7 +210,9 @@ class AssetRequest(HorillaModel):
         null=False,
         blank=False,
     )
-    asset_category_id = models.ForeignKey(AssetCategory, on_delete=models.PROTECT)
+    asset_category_id = models.ForeignKey(
+        AssetCategory, on_delete=models.PROTECT, verbose_name=_("Asset Category")
+    )
     asset_request_date = models.DateField(auto_now_add=True)
     description = models.TextField(null=True, blank=True, max_length=255)
     asset_request_status = models.CharField(

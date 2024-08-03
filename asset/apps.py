@@ -18,3 +18,13 @@ class AssetConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "asset"
+
+    def ready(self):
+        from django.urls import include, path
+
+        from horilla.urls import urlpatterns
+
+        urlpatterns.append(
+            path("asset/", include("asset.urls")),
+        )
+        super().ready()
