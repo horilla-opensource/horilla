@@ -1,18 +1,18 @@
-{% extends 'settings.html' %} {% block settings %}{% load i18n %}
+{% extends 'settings.html' %} {% block settings %}{% load i18n %} {% load horillafilters %}
 
-{% if perms.recruitment.change_recruitmentgeneralsetting %}
+{% if "recruitment"|app_installed and perms.recruitment.change_recruitmentgeneralsetting %}
     {% include "recruitment/settings/settings.html" %}
 {% endif %}
 
-{% if perms.offboarding.change_offboardinggeneralsetting %}
+{% if "offboarding"|app_installed and perms.offboarding.change_offboardinggeneralsetting %}
     {% include "offboarding/settings/settings.html" %}
 {% endif %}
 
-{% if perms.attendance.change_attendancegeneralsetting %}
+{% if "attendance"|app_installed and perms.attendance.change_attendancegeneralsetting %}
     {% include "attendance/settings/settings.html" %}
 {% endif %}
 
-{% if perms.payroll.change_payrollgeneralsetting %}
+{% if "payroll"|app_installed and perms.payroll.change_payrollgeneralsetting %}
     {% include "payroll/settings/settings.html" %}
 {% endif %}
 
@@ -24,8 +24,10 @@
     {% include "announcement/expiry_day.html" %}
 {% endif %}
 
-{% if perms.payroll.change_encashmentgeneralsetting %}
-    {% include "settings/encashment_settings.html" %}
+{% if "payroll"|app_installed %}
+    {% if perms.payroll.change_encashmentgeneralsetting %}
+        {% include "settings/encashment_settings.html" %}
+    {% endif %}
 {% endif %}
 
 {% if perms.base.view_historytrackingfields %}
@@ -36,7 +38,7 @@
     {% include "base/audit_tag/employee_account_block_unblock.html" %}
 {% endif %}
 
-{% if perms.payroll.view_payrollsettings %}
+{% if "payroll"|app_installed and perms.payroll.view_payrollsettings %}
     {% include "payroll/settings/payroll_settings.html" %}
 {% endif %}
 

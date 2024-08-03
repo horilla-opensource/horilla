@@ -4,18 +4,16 @@ context_processor.py
 This module is used to register context processor`
 """
 
+from django.apps import apps
 from django.http import HttpResponse
 from django.urls import path
 
-from attendance.models import AttendanceGeneralSetting
 from base.models import Company, TrackLateComeEarlyOut
 from base.urls import urlpatterns
 from employee.models import EmployeeGeneralSetting
 from horilla import horilla_apps
 from horilla.decorators import hx_request_required, login_required, permission_required
-from offboarding.models import OffboardingGeneralSetting
-from payroll.models.models import PayrollGeneralSetting
-from recruitment.models import RecruitmentGeneralSetting
+from horilla.methods import get_horilla_model_class
 
 
 class AllCompany:
@@ -132,8 +130,13 @@ def resignation_request_enabled(request):
     """
     Check weather resignation_request enabled of not in offboarding
     """
-    first = OffboardingGeneralSetting.objects.first()
     enabled_resignation_request = False
+    first = None
+    if apps.is_installed("offboarding"):
+        OffboardingGeneralSetting = get_horilla_model_class(
+            app_label="offboarding", model="offboardinggeneralsetting"
+        )
+        first = OffboardingGeneralSetting.objects.first()
     if first:
         enabled_resignation_request = first.resignation_request
     return {"enabled_resignation_request": enabled_resignation_request}
@@ -143,8 +146,13 @@ def timerunner_enabled(request):
     """
     Check weather resignation_request enabled of not in offboarding
     """
-    first = AttendanceGeneralSetting.objects.first()
+    first = None
     enabled_timerunner = True
+    if apps.is_installed("attendance"):
+        AttendanceGeneralSetting = get_horilla_model_class(
+            app_label="attendance", model="attendancegeneralsetting"
+        )
+        first = AttendanceGeneralSetting.objects.first()
     if first:
         enabled_timerunner = first.time_runner
     return {"enabled_timerunner": enabled_timerunner}
@@ -154,8 +162,13 @@ def intial_notice_period(request):
     """
     Check weather resignation_request enabled of not in offboarding
     """
-    first = PayrollGeneralSetting.objects.first()
     initial = 30
+    first = None
+    if apps.is_installed("payroll"):
+        PayrollGeneralSetting = get_horilla_model_class(
+            app_label="payroll", model="payrollgeneralsetting"
+        )
+        first = PayrollGeneralSetting.objects.first()
     if first:
         initial = first.notice_period
     return {"get_initial_notice_period": initial}
@@ -165,8 +178,15 @@ def check_candidate_self_tracking(request):
     """
     This method is used to get the candidate self tracking is enabled or not
     """
-    first = RecruitmentGeneralSetting.objects.first()
+
     candidate_self_tracking = False
+    if apps.is_installed("recruitment"):
+        RecruitmentGeneralSetting = get_horilla_model_class(
+            app_label="recruitment", model="recruitmentgeneralsetting"
+        )
+        first = RecruitmentGeneralSetting.objects.first()
+    else:
+        first = None
     if first:
         candidate_self_tracking = first.candidate_self_tracking
     return {"check_candidate_self_tracking": candidate_self_tracking}
@@ -176,8 +196,14 @@ def check_candidate_self_tracking_rating(request):
     """
     This method is used to check enabled/disabled of rating option
     """
-    first = RecruitmentGeneralSetting.objects.first()
     rating_option = False
+    if apps.is_installed("recruitment"):
+        RecruitmentGeneralSetting = get_horilla_model_class(
+            app_label="recruitment", model="recruitmentgeneralsetting"
+        )
+        first = RecruitmentGeneralSetting.objects.first()
+    else:
+        first = None
     if first:
         rating_option = first.show_overall_rating
     return {"check_candidate_self_tracking_rating": rating_option}

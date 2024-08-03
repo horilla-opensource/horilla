@@ -60,10 +60,8 @@
                 {% endif %}
             </h5>
             <span class="text-muted fw-bold"><small>
-                    {% trans "Posted on" %} &nbsp<span class="dateformat_changer">{{ anoun.created_at|date:"F j, Y"
-                        }}</span> &nbsp
-                    {% trans "at" %} &nbsp <span class="timeformat_changer">{{ anoun.created_at|time:"g:i A"
-                        }}</span></small>
+                    {% trans "Posted on" %} &nbsp<span class="dateformat_changer">{{ anoun.created_at|date:"F j, Y"}}</span> &nbsp
+                    {% trans "at" %} &nbsp <span class="timeformat_changer">{{ anoun.created_at|time:"g:i A"}}</span></small>
             </span>
         </div>
         <div class="card-body">

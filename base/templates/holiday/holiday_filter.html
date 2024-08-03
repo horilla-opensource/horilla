@@ -1,0 +1,45 @@
+{% load i18n %}
+<form hx-get="{% url 'holiday-filter' %}" hx-target="#holidays" id="filterForm" onsubmit="event.preventDefault()">
+  <div
+    class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+    x-show="open"
+    @click.outside="open = false"
+    style="display: none"
+  >
+    <div class="oh-dropdown__filter-body">
+      <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Holiday" %}</div>
+        <div class="oh-accordion-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label" for="{{ form.from_date.id_for_label }}">{% trans "From Date" %}</label>
+                {{form.from_date}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label" for="{{ form.to_date.id_for_label }}">{% trans "To Date" %}</label>
+                  {{form.to_date}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <div class="oh-input-group">
+                <label class="oh-label" for="{{ form.recurring.id_for_label }}">{% trans "Recurring" %}</label>
+                  {{form.recurring}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="oh-dropdown__filter-footer">
+      <button
+        class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+        type="submit"
+      >
+        {% trans "Filter" %}
+      </button>
+    </div>
+  </div>
+</form>

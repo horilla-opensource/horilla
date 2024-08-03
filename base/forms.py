@@ -12,6 +12,7 @@ from datetime import date, timedelta
 from typing import Any
 
 from django import forms
+from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import SetPasswordForm, _unicode_ci_compare
@@ -38,6 +39,7 @@ from base.models import (
     AttendanceAllowedIP,
     BaserequestFile,
     Company,
+    CompanyLeaves,
     Department,
     DriverViewed,
     DynamicEmailConfiguration,
@@ -46,9 +48,12 @@ from base.models import (
     EmployeeShiftDay,
     EmployeeShiftSchedule,
     EmployeeType,
+    Holidays,
+    HorillaMailTemplate,
     JobPosition,
     JobRole,
     MultipleApprovalCondition,
+    PenaltyAccounts,
     RotatingShift,
     RotatingShiftAssign,
     RotatingWorkType,
@@ -63,9 +68,10 @@ from base.models import (
 )
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
-from employee.models import Employee, EmployeeTag
+from employee.models import Employee
 from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
+from horilla.methods import get_horilla_model_class
 from horilla_audit.models import AuditTag
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
@@ -1527,7 +1533,7 @@ class ShiftRequestForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("attendance_form.html", context)
+        table_html = render_to_string("horilla_form.html", context)
         return table_html
 
     def save(self, commit: bool = ...):
@@ -1590,7 +1596,7 @@ class ShiftAllocationForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("attendance_form.html", context)
+        table_html = render_to_string("horilla_form.html", context)
         return table_html
 
     def save(self, commit: bool = ...):
@@ -1639,7 +1645,7 @@ class WorkTypeRequestForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("attendance_form.html", context)
+        table_html = render_to_string("horilla_form.html", context)
         return table_html
 
     def save(self, commit: bool = ...):
@@ -1891,24 +1897,8 @@ class TagsForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("attendance_form.html", context)
+        table_html = render_to_string("horilla_form.html", context)
         return table_html
-
-
-class EmployeeTagForm(ModelForm):
-    """
-    Employee Tags form
-    """
-
-    class Meta:
-        """
-        Meta class for additional options
-        """
-
-        model = EmployeeTag
-        fields = "__all__"
-        exclude = ["is_active"]
-        widgets = {"color": TextInput(attrs={"type": "color", "style": "height:50px"})}
 
 
 class AuditTagForm(ModelForm):
@@ -1971,7 +1961,7 @@ class DynamicMailConfForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("attendance_form.html", context)
+        table_html = render_to_string("horilla_form.html", context)
         return table_html
 
 
@@ -1981,6 +1971,46 @@ class DynamicMailTestForm(forms.Form):
     """
 
     to_email = forms.EmailField(label="To email", required=True)
+
+
+class MailTemplateForm(ModelForm):
+    """
+    MailTemplateForm
+    """
+
+    class Meta:
+        model = HorillaMailTemplate
+        fields = "__all__"
+        widgets = {
+            "body": forms.Textarea(
+                attrs={"data-summernote": "", "style": "display:none;"}
+            ),
+        }
+
+    def get_template_language(self):
+        mail_data = {
+            "Receiver|Full name": "instance.get_full_name",
+            "Sender|Full name": "self.get_full_name",
+            "Receiver|Recruitment": "instance.recruitment_id",
+            "Sender|Recruitment": "self.recruitment_id",
+            "Receiver|Company": "instance.get_company",
+            "Sender|Company": "self.get_company",
+            "Receiver|Job position": "instance.get_job_position",
+            "Sender|Job position": "self.get_job_position",
+            "Receiver|Email": "instance.get_mail",
+            "Sender|Email": "self.get_mail",
+            "Receiver|Employee Type": "instance.get_employee_type",
+            "Sender|Employee Type": "self.get_employee_type",
+            "Receiver|Work Type": "instance.get_work_type",
+            "Sender|Work Type": "self.get_work_type",
+            "Candidate|Full name": "instance.get_full_name",
+            "Candidate|Recruitment": "instance.recruitment_id",
+            "Candidate|Company": "instance.get_company",
+            "Candidate|Job position": "instance.get_job_position",
+            "Candidate|Email": "instance.get_email",
+            "Candidate|Interview Table": "instance.get_interview|safe",
+        }
+        return mail_data
 
 
 class MultipleApproveConditionForm(ModelForm):
@@ -2315,8 +2345,135 @@ class TrackLateComeEarlyOutForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["is_enable"].widget.attrs.update(
             {
-                "hx-post": "/settings/enable-disable-tracking-late-come-early-out",
+                "hx-post": "enable-disable-tracking-late-come-early-out",
                 "hx-target": "this",
                 "hx-trigger": "change",
             }
         )
+
+
+class HolidayForm(ModelForm):
+    """
+    Form for creating or updating a holiday.
+
+    This form allows users to create or update holiday data by specifying details such as
+    the start date and end date.
+
+    Attributes:
+        - start_date: A DateField representing the start date of the holiday.
+        - end_date: A DateField representing the end date of the holiday.
+    """
+
+    start_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+    def clean_end_date(self):
+        start_date = self.cleaned_data.get("start_date")
+        end_date = self.cleaned_data.get("end_date")
+
+        if start_date and end_date and end_date < start_date:
+            raise ValidationError(
+                _("End date should not be earlier than the start date.")
+            )
+
+        return end_date
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = Holidays
+        fields = "__all__"
+        exclude = ["is_active"]
+        labels = {
+            "name": _("Name"),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(HolidayForm, self).__init__(*args, **kwargs)
+        self.fields["name"].widget.attrs["autocomplete"] = "name"
+
+
+class HolidaysColumnExportForm(forms.Form):
+    """
+    Form for selecting columns to export in holiday data.
+
+    This form allows users to select specific columns from the Holidays model
+    for export. The available columns are dynamically generated based on the
+    model's meta information, excluding specified excluded_fields.
+
+    Attributes:
+        - model_fields: A list of fields in the Holidays model.
+        - field_choices: A list of field choices for the form, consisting of field names
+          and their verbose names, excluding specified excluded_fields.
+        - selected_fields: A MultipleChoiceField representing the selected columns
+          to be exported.
+    """
+
+    model_fields = Holidays._meta.get_fields()
+    field_choices = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "name",
+            "start_date",
+            "end_date",
+            "recurring",
+        ],
+    )
+
+
+class CompanyLeaveForm(ModelForm):
+    """
+    Form for managing company leave data.
+
+    This form allows users to manage company leave data by including all fields from
+    the CompanyLeaves model except for is_active.
+
+    Attributes:
+        - Meta: Inner class defining metadata options.
+            - model: The model associated with the form (CompanyLeaves).
+            - fields: A special value indicating all fields should be included in the form.
+            - exclude: A list of fields to exclude from the form (is_active).
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = CompanyLeaves
+        fields = "__all__"
+        exclude = ["is_active"]
+
+
+class PenaltyAccountForm(ModelForm):
+    """
+    PenaltyAccountForm
+    """
+
+    class Meta:
+        model = PenaltyAccounts
+        fields = "__all__"
+        exclude = ["is_active"]
+
+    def __init__(self, *args, **kwargs):
+        employee = kwargs.pop("employee", None)
+        super().__init__(*args, **kwargs)
+        if apps.is_installed("leave") and employee:
+            LeaveType = get_horilla_model_class(app_label="leave", model="leavetype")
+            available_leaves = employee.available_leave.all()
+            assigned_leave_types = LeaveType.objects.filter(
+                id__in=available_leaves.values_list("leave_type_id", flat=True)
+            )
+            self.fields["leave_type_id"].queryset = assigned_leave_types

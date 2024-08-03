@@ -7,9 +7,13 @@ import uuid
 
 import django_filters
 from django import forms
-from django_filters import CharFilter
+from django.utils.translation import gettext as __
+from django_filters import CharFilter, DateFilter, FilterSet, NumberFilter, filters
 
 from base.models import (
+    CompanyLeaves,
+    Holidays,
+    PenaltyAccounts,
     RotatingShiftAssign,
     RotatingWorkTypeAssign,
     ShiftRequest,
@@ -279,3 +283,116 @@ class RotatingShiftRequestReGroup:
         ("employee_id__employee_work_info__job_role_id", "Job Role"),
         ("employee_id__employee_work_info__reporting_manager_id", "Reporting Manager"),
     ]
+
+
+class HolidayFilter(FilterSet):
+    """
+    Filter class for Holidays model.
+
+    This filter allows searching Holidays objects based on name and date range.
+    """
+
+    search = filters.CharFilter(field_name="name", lookup_expr="icontains")
+    from_date = DateFilter(
+        field_name="start_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    to_date = DateFilter(
+        field_name="end_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+    start_date = DateFilter(
+        field_name="start_date",
+        lookup_expr="exact",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+    end_date = DateFilter(
+        field_name="end_date",
+        lookup_expr="exact",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+    class Meta:
+        """
+        Meta class defines the model and fields to filter
+        """
+
+        model = Holidays
+        fields = {
+            "recurring": ["exact"],
+        }
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+
+
+class CompanyLeaveFilter(FilterSet):
+    """
+    Filter class for CompanyLeaves model.
+
+    This filter allows searching CompanyLeaves objects based on
+    name, week day and based_on_week choices.
+    """
+
+    name = filters.CharFilter(field_name="based_on_week_day", lookup_expr="icontains")
+    search = filters.CharFilter(method="filter_week_day")
+
+    class Meta:
+        """ "
+        Meta class defines the model and fields to filter
+        """
+
+        model = CompanyLeaves
+        fields = {
+            "based_on_week": ["exact"],
+            "based_on_week_day": ["exact"],
+        }
+
+    def filter_week_day(self, queryset, _, value):
+        week_qry = CompanyLeaves.objects.none()
+        weekday_values = []
+        week_values = []
+        WEEK_DAYS = [
+            ("0", __("Monday")),
+            ("1", __("Tuesday")),
+            ("2", __("Wednesday")),
+            ("3", __("Thursday")),
+            ("4", __("Friday")),
+            ("5", __("Saturday")),
+            ("6", __("Sunday")),
+        ]
+        WEEKS = [
+            (None, __("All")),
+            ("0", __("First Week")),
+            ("1", __("Second Week")),
+            ("2", __("Third Week")),
+            ("3", __("Fourth Week")),
+            ("4", __("Fifth Week")),
+        ]
+
+        for day_value, day_name in WEEK_DAYS:
+            if value.lower() in day_name.lower():
+                weekday_values.append(day_value)
+        for day_value, day_name in WEEKS:
+            if value.lower() in day_name.lower() and value.lower() != __("All").lower():
+                week_values.append(day_value)
+                week_qry = queryset.filter(based_on_week__in=week_values)
+            elif value.lower() in __("All").lower():
+                week_qry = queryset.filter(based_on_week__isnull=True)
+        return queryset.filter(based_on_week_day__in=weekday_values) | week_qry
+
+
+class PenaltyFilter(FilterSet):
+    """
+    PenaltyFilter
+    """
+
+    class Meta:
+        model = PenaltyAccounts
+        fields = "__all__"

@@ -20,7 +20,7 @@
         <div class="oh-sticky-table__th">{% trans "Condition Operator" %}</div>
         <div class="oh-sticky-table__th">{% trans "Condition Value" %}</div>
         <div class="oh-sticky-table__th">{% trans "Approval Managers" %}</div>
-        {% if perms.leave.change_availableleave or perms.leave.delete_availableleave or request.user|is_reportingmanager %}
+        {% if perms.base.change_multipleapprovalcondition or perms.base.delete_multipleapprovalcondition or request.user|is_reportingmanager %}
             <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
         {% endif %}
       </div>
@@ -47,10 +47,10 @@
                 {{ forloop.counter}}. {{ manager }}<br />
             {% endfor %}
           </div>
-          {% if perms.leave.change_availableleave or perms.leave.delete_availableleave or request.user|is_reportingmanager %}
+          {% if perms.base.change_multipleapprovalcondition or perms.base.delete_multipleapprovalcondition or request.user|is_reportingmanager %}
               <div class="oh-sticky-table__td">
                 <div class="oh-btn-group">
-                  {% if request.user|is_reportingmanager or perms.leave.change_availableleave %}
+                  {% if request.user|is_reportingmanager or perms.base.change_multipleapprovalcondition %}
                       <button
                         title="{% trans 'Edit' %}"
                         class="oh-btn oh-btn--light-bkg w-100"
@@ -62,7 +62,7 @@
                         <ion-icon name="create-outline"></ion-icon>
                       </button>
                   {% endif %}
-                  {% if request.user|is_reportingmanager or perms.leave.delete_availableleave %}
+                  {% if request.user|is_reportingmanager or perms.base.delete_multipleapprovalcondition %}
                       <a hx-confirm="{% trans 'Are you sure you want to delete ?' %}" hx-get={% url "multiple-level-approval-delete" condition.id %}
                         hx-target="#multipleApproveCondition" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                         id="delete-link" title="{% trans 'Delete' %}">

@@ -1,0 +1,63 @@
+{% load i18n %} {% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{ message.tags }}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<script>
+  setTimeout(() => {
+    $(".oh-modal__close").click();
+  }, 1000);
+</script>
+{% endif %}
+<div class="oh-modal__dialog-header pb-0">
+  <span class="oh-modal__dialog-title" id="editDialogDialog"
+    >{% trans "Update Holiday" %}</span
+  >
+  <button
+    class="oh-modal__close"
+    aria-label="Close"
+    {% if messages %}
+      hx-get="{% url 'holiday-filter' %}?{{pd}}"
+      hx-target="#holidays"
+    {% endif %}
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
+    hx-post="{% url 'holiday-update' id %}?{{pd}}"
+    hx-target="#objectUpdateModalTarget"
+    class="oh-profile-section pt-0"
+  >
+    <label class="oh-label d-block" for="{{ form.name.id_for_label }}"
+      >{% trans "Holiday Name" %}</label
+    >
+    {{form.name}} {{form.name.errors}}
+
+    <label class="oh-label d-block" for="{{ form.start_date.id_for_label }}"
+      >{% trans "Start Date" %}</label
+    >
+    {{form.start_date}} {{form.start_date.errors}}
+
+    <label class="oh-label d-block" for="{{ form.end_date.id_for_label }}"
+      >{% trans "End Date" %}</label
+    >
+    {{form.end_date}} {{form.end_date.errors}}
+
+    <label class="oh-label d-block" for="{{ form.recurring.id_for_label }}"
+      >{% trans "Recurring" %}</label
+    >
+    <div class="oh-switch">{{form.recurring}} {{form.recurring.errors}}</div>
+    <div class="oh-modal__dialog-footer p-0">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
+    </div>
+  </form>
+</div>

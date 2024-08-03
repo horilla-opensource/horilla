@@ -1,0 +1,89 @@
+{% extends 'index.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+  <style>
+    .truncated-text {
+        position: relative;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .truncated-text::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 80%);
+        pointer-events: none;
+        /* Allow interaction with the text beneath the overlay */
+    }
+</style>
+
+  <section class="oh-wrapper oh-main__topbar">
+    <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
+      <h1 class="oh-main__titlebar-title fw-bold">{% trans "Mail Templates" %}</h1>
+    </div>
+    {% if perms.base.add_horillamailtemplate %}
+      <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
+        <a href="#" data-toggle="oh-modal-toggle" data-target="#addTemplateModal" class="oh-btn oh-btn--secondary ml-2"><ion-icon name="add" class="mr-1 md hydrated" role="img" aria-label="add"></ion-icon>{% trans "Add" %}</a>
+      </div>
+    {% endif %}
+  </section>
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+
+    <div class="oh-wrapper">
+      <div class="oh-404">
+          <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/email.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+          <h5 class="oh-404__subtitle">{% trans "There are currently no email templates." %}</h5>
+      </div>
+    </div>
+  </main>
+
+  <div class="oh-modal" id="viewTemplateModal" role="dialog" aria-labelledby="viewTemplateModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+        <span class="oh-modal__dialog-title" id="viewTemplateModalLabel"></span>
+        <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+      <div class="oh-modal__dialog-body" id="viewTemplateModalBody"></div>
+      <div class="oh-modal__dialog-footer">
+        <button type="submit" onclick="$('#submitFormButton')[0].click()" class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans "Save" %}</button>
+      </div>
+    </div>
+  </div>
+  <div class="oh-modal" id="addTemplateModal" role="dialog" aria-labelledby="addTemplateModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+        <span class="oh-modal__dialog-title" id="addTemplateModalLabel">{% trans "Add Template" %}</span>
+        <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+      <div class="oh-modal__dialog-body" id="addTemplateModalBody">
+        {% include 'mail/htmx/form.html' %}
+      </div>
+      <div class="oh-modal__dialog-footer">
+        <button type="submit" onclick="$('#submitFormButton')[0].click()" class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans "Save" %}</button>
+      </div>
+    </div>
+  </div>
+  <div class="oh-modal" id="duplicateTemplateModal" role="dialog" aria-labelledby="duplicateTemplateModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+        <span class="oh-modal__dialog-title" id="duplicateTemplateModalLabel">{% trans "Duplicate Template" %}</span>
+        <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+      <div class="oh-modal__dialog-body" id="duplicateTemplateFormModal"></div>
+      <div class="oh-modal__dialog-footer">
+        <button type="submit" onclick="$('#submitFormButton')[0].click()" class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans "Save Duplicate" %}</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    function setModalLabel(label, modalTarget) {
+        $(modalTarget).html(label)
+    }
+</script>
+{% endblock content %}

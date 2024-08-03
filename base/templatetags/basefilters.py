@@ -1,6 +1,7 @@
 import json
 
 from django import template
+from django.apps import apps
 from django.core.paginator import Page, Paginator
 from django.template.defaultfilters import register
 
@@ -127,18 +128,26 @@ def abs_value(value):
 
 @register.filter(name="config_perms")
 def config_perms(user):
-    permissions = [
-        "leave.add_holiday",
-        "leave.change_holiday",
-        "leave.add_companyleaves",
-        "leave.change_companyleaves",
-        "leave.view_restrictleave",
-        "recruitment.add_recritmentmailtemplates",
-        "recruitment.view_recritmentmailtemplates",
-    ]
-    for perm in permissions:
-        if user.has_perm(perm):
-            return True
+    app_permissions = {
+        "leave": [
+            "leave.add_holiday",
+            "leave.change_holiday",
+            "leave.add_companyleaves",
+            "leave.change_companyleaves",
+            "leave.view_restrictleave",
+        ],
+        "base": [
+            "base.add_horillamailtemplates",
+            "base.view_horillamailtemplates",
+        ],
+    }
+
+    for app, perms in app_permissions.items():
+        if apps.is_installed(app):
+            for perm in perms:
+                if user.has_perm(perm):
+                    return True
+    return False
 
 
 @register.filter(name="startswith")
