@@ -1,3 +1,19 @@
+"""
+Custom template filters for the PMS application.
+
+This module includes custom template filters used in the PMS (Performance Management System) application.
+The filters help with various operations like replacing underscores in strings, counting key results for objectives,
+and checking if a user is a manager or owner of an objective or feedback.
+
+Filters:
+    - replace: Replaces underscores in a string with spaces.
+    - kr_count: Counts and returns the key results for a given objective.
+    - is_manager_or_owner: Checks if the user is a manager or owner of the given objective.
+    - is_manager: Checks if the user is a manager of the given objective.
+    - is_feedback_manager_or_owner: Checks if the user is a manager or owner of the given feedback.
+    - is_feedback_answer: Checks if the user is a manager, owner, or subordinate of the given feedback.
+"""
+
 from django.template.defaultfilters import register
 
 from employee.models import Employee
@@ -15,6 +31,19 @@ def replace(string):
 
 @register.filter(name="kr_count")
 def kr_count(objective_id):
+    """
+    Retrieves a list of all key results associated with a given objective.
+
+    This filter function takes an objective ID as input, retrieves the corresponding
+    Objective instance, and then collects all key results from the employee objectives
+    associated with that objective.
+
+    Args:
+        objective_id (int): The ID of the objective for which to retrieve key results.
+
+    Returns:
+        list: A list of all key results (KR) associated with the given objective.
+    """
     objective = Objective.objects.get(id=objective_id)
     empl_objectives = objective.employee_objective.all()
     kr_list = []

@@ -409,4 +409,10 @@ urlpatterns = [
         views.meeting_employee_remove,
         name="meeting-employee-remove",
     ),
+    path("performance-tab/<int:emp_id>", views.performance_tab, name="performance-tab"),
+    path(
+        "dashboard-feedback-answer",
+        views.dashboard_feedback_answer,
+        name="dashboard-feedback-answer",
+    ),
 ]

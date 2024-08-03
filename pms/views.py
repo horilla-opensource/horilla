@@ -44,7 +44,23 @@ from pms.filters import (
     ObjectiveFilter,
     ObjectiveReGroup,
 )
-from pms.methods import pms_manager_can_enter, pms_owner_and_manager_can_enter
+from pms.forms import (
+    AddAssigneesForm,
+    AnonymousFeedbackForm,
+    EmployeeKeyResultForm,
+    EmployeeObjectiveCreateForm,
+    EmployeeObjectiveForm,
+    FeedbackForm,
+    KeyResultForm,
+    KRForm,
+    MeetingsForm,
+    ObjectiveCommentForm,
+    ObjectiveForm,
+    PeriodForm,
+    QuestionForm,
+    QuestionTemplateForm,
+)
+from pms.methods import pms_owner_and_manager_can_enter
 from pms.models import (
     AnonymousFeedback,
     Answer,
@@ -61,23 +77,6 @@ from pms.models import (
     Question,
     QuestionOptions,
     QuestionTemplate,
-)
-
-from .forms import (
-    AddAssigneesForm,
-    AnonymousFeedbackForm,
-    EmployeeKeyResultForm,
-    EmployeeObjectiveCreateForm,
-    EmployeeObjectiveForm,
-    FeedbackForm,
-    KeyResultForm,
-    KRForm,
-    MeetingsForm,
-    ObjectiveCommentForm,
-    ObjectiveForm,
-    PeriodForm,
-    QuestionForm,
-    QuestionTemplateForm,
 )
 
 
@@ -2221,11 +2220,12 @@ def question_delete(request, id):
 @manager_can_enter(perm="pms.add_questiontemplate")
 def question_template_creation(request):
     """
-    This view is used to  create   question template object.
+    This view is used to create a question template object.
     Args:
     Returns:
-        it will redirect to  question_template_detailed_view.
+        It will redirect to question_template_detailed_view.
     """
+    form = QuestionTemplateForm()
     if request.method == "POST":
         form = QuestionTemplateForm(request.POST)
         if form.is_valid():
@@ -3506,3 +3506,45 @@ def meeting_single_view(request, id):
         context["previous"] = previous_id
         context["next"] = next_id
     return render(request, "meetings/meeting_single_view.html", context)
+
+
+@login_required
+@hx_request_required
+@owner_can_enter("pms.view_feedback", Employee)
+def performance_tab(request, emp_id):
+    """
+    This function is used to view performance tab of an employee in employee individual
+    & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return performance-tab template
+
+    """
+    feedback_own = Feedback.objects.filter(employee_id=emp_id, archive=False)
+
+    today = datetime.datetime.today()
+    context = {
+        "self_feedback": feedback_own,
+        "current_date": today,
+    }
+    return render(request, "tabs/performance-tab.html", context=context)
+
+
+@login_required
+def dashboard_feedback_answer(request):
+    employee = request.user.employee_get
+    feedback_requested = Feedback.objects.filter(
+        Q(manager_id=employee, manager_id__is_active=True)
+        | Q(colleague_id=employee, colleague_id__is_active=True)
+        | Q(subordinate_id=employee, subordinate_id__is_active=True)
+    ).distinct()
+    feedbacks = feedback_requested.exclude(feedback_answer__employee_id=employee)
+
+    return render(
+        request,
+        "request_and_approve/feedback_answer.html",
+        {"feedbacks": feedbacks, "current_date": datetime.date.today()},
+    )

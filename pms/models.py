@@ -384,7 +384,7 @@ class QuestionTemplate(HorillaModel):
     """question template creation"""
 
     question_template = models.CharField(
-        max_length=100, null=False, blank=False, unique=True
+        max_length=100, null=False, blank=False, unique=True, verbose_name="Title"
     )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 

@@ -1025,7 +1025,7 @@ class MeetingsForm(BaseForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("attendance_form.html", context)
+        table_html = render_to_string("horilla_form.html", context)
         return table_html
 
     def clean(self):
@@ -1043,13 +1043,6 @@ class MeetingsForm(BaseForm):
             ids = self.data.getlist("employee_id")
             if ids:
                 self.errors.pop("employee_id", None)
-
-        if (
-            cleaned_data["date"].date() <= datetime.datetime.now().date()
-            and cleaned_data["date"].time() < datetime.datetime.now().time()
-        ):
-            raise ValidationError("Date and time cannot be in the past")
-
         return cleaned_data
 
     def __init__(self, *args, **kwargs):
