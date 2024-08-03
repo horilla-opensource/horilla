@@ -261,9 +261,10 @@
         var type = $("#id_type").val()
         var prefix = $("#id_prefix").val()
         var is_active = $("#id_ticket_type_is_active").val()
+
 		$.ajax({
 			type: "post",
-			url: "{% url 'ticket-type-create' %}?ajax=True",
+			url: `{% url 'ticket-type-create' %}?ajax=True`,
 			data: {
 			  csrfmiddlewaretoken: getCookie("csrftoken"),
 			  "title": title,

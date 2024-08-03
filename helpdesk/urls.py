@@ -106,4 +106,21 @@ urlpatterns = [
         views.update_priority,
         name="update-priority",
     ),
+    path("ticket-type-view/", views.ticket_type_view, name="ticket-type-view"),
+    path("ticket-type-create", views.ticket_type_create, name="ticket-type-create"),
+    path(
+        "ticket-type-update/<int:t_type_id>",
+        views.ticket_type_update,
+        name="ticket-type-update",
+    ),
+    path(
+        "ticket-type-delete/<int:t_type_id>",
+        views.ticket_type_delete,
+        name="ticket-type-delete",
+    ),
+    path(
+        "department-manager-view/",
+        views.view_department_managers,
+        name="department-manager-view",
+    ),
 ]

@@ -10,6 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_http_methods
 from haystack.query import SearchQuerySet
 
 from base.forms import TagsForm
@@ -1263,3 +1264,97 @@ def update_priority(request, ticket_id):
     ti.save()
     messages.success(request, _("Priority updated successfully."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+@permission_required("helpdesk.view_tickettype")
+def ticket_type_view(request):
+    """
+    This method is used to show Ticket type
+    """
+    ticket_types = TicketType.objects.all()
+    return render(
+        request, "base/ticket_type/ticket_type.html", {"ticket_types": ticket_types}
+    )
+
+
+@login_required
+# @hx_request_required
+@permission_required("helpdesk.create_tickettype")
+def ticket_type_create(request):
+    """
+    This method renders form and template to create Ticket type
+    """
+    form = TicketTypeForm()
+    if request.method == "POST":
+        form = TicketTypeForm(request.POST)
+        if request.GET.get("ajax"):
+            if form.is_valid():
+                instance = form.save()
+                response = {
+                    "errors": "no_error",
+                    "ticket_id": instance.id,
+                    "title": instance.title,
+                }
+                return JsonResponse(response)
+
+            errors = form.errors.as_json()
+            return JsonResponse({"errors": errors})
+        if form.is_valid():
+            form.save()
+            form = TicketTypeForm()
+            messages.success(request, _("Ticket type has been created successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/ticket_type/ticket_type_form.html",
+        {
+            "form": form,
+        },
+    )
+
+
+@login_required
+@hx_request_required
+@permission_required("helpdesk.update_tickettype")
+def ticket_type_update(request, t_type_id):
+    """
+    This method renders form and template to create Ticket type
+    """
+    ticket_type = TicketType.objects.get(id=t_type_id)
+    form = TicketTypeForm(instance=ticket_type)
+    if request.method == "POST":
+        form = TicketTypeForm(request.POST, instance=ticket_type)
+        if form.is_valid():
+            form.save()
+            form = TicketTypeForm()
+            messages.success(request, _("Ticket type has been updated successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/ticket_type/ticket_type_form.html",
+        {"form": form, "t_type_id": t_type_id},
+    )
+
+
+@login_required
+@require_http_methods(["POST", "DELETE"])
+@permission_required("helpdesk.delete_tickettype")
+def ticket_type_delete(request, t_type_id):
+    ticket_type = TicketType.find(t_type_id)
+    if ticket_type:
+        ticket_type.delete()
+        messages.success(request, _("Ticket type has been deleted successfully!"))
+    else:
+        messages.error(request, _("Ticket type not found"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def view_department_managers(request):
+    department_managers = DepartmentManager.objects.all()
+
+    context = {
+        "department_managers": department_managers,
+    }
+    return render(request, "department_managers/department_managers.html", context)

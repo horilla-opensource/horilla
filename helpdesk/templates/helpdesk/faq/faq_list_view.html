@@ -83,6 +83,7 @@
 	role="dialog"
 	aria-labelledby="editDialogModal"
 	aria-hidden="true"
+	style="z-index: 1100;"
 >
 	<div class="oh-modal__dialog">
 		<div class="oh-modal__dialog-header">
@@ -103,12 +104,12 @@
 			>
 				{% csrf_token %}
 				{{create_tag_f.as_p}}
-				<button
+				{% comment %} <button
 					type="submit"
 					class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
 				>
 					{% trans "Save" %}
-				</button>
+				</button> {% endcomment %}
 			</form>
 		</div>
 	</div>
