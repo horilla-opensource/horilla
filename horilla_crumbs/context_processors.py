@@ -1,11 +1,11 @@
 from urllib.parse import urlparse
 
+from django.apps import apps
 from django.shortcuts import redirect
 from django.urls import Resolver404, path, resolve, reverse
 
 from employee.models import Employee
 from horilla.urls import urlpatterns
-from recruitment.models import Candidate
 
 
 def _split_path(self, path=None):
@@ -161,7 +161,14 @@ def breadcrumbs(request):
         parts = _split_path(request)
         path = base_url
 
-        candidates = Candidate.objects.filter(is_active=True)
+        if apps.is_installed("recruitment"):
+            from recruitment.models import Candidate
+
+            candidates = Candidate.objects.filter(is_active=True)
+
+        else:
+            candidates = None
+
         employees = Employee.objects.all()
 
         if len(parts) > 1:
