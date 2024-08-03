@@ -1,7 +1,11 @@
 import calendar
 from datetime import datetime, timedelta
 
+from django.apps import apps
 from django.db.models import Q
+
+from employee.models import Employee
+from horilla.methods import get_horilla_model_class
 
 
 def calculate_requested_days(
@@ -113,7 +117,7 @@ def get_leave_day_attendance(employee, comp_id=None):
     """
     This function returns a queryset of attendance on leave dates
     """
-    from attendance.models import Attendance
+    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
     from leave.models import CompensatoryLeaveRequest
 
     attendances_to_exclude = Attendance.objects.none()  # Empty queryset to start with
@@ -160,70 +164,29 @@ def attendance_days(employee, attendances):
     return attendance_days
 
 
-def is_holiday(date):
+def filter_conditional_leave_request(request):
     """
-    Check if the given date is a holiday.
-    Args:
-        date (datetime.date): The date to check.
-    Returns:
-        Holiday or bool: The Holiday object if the date is a holiday, otherwise False.
+    Filters and returns LeaveRequest objects that have been conditionally approved by the previous sequence of approvals.
     """
-    from leave.models import Holiday
+    approval_manager = Employee.objects.filter(employee_user_id=request.user).first()
+    leave_request_ids = []
+    if apps.is_installed("leave"):
+        from leave.models import LeaveRequest, LeaveRequestConditionApproval
 
-    holidays = Holiday.objects.all()
-    for holiday in holidays:
-        start_date = holiday.start_date
-        end_date = holiday.end_date
-        # Check if the date is within the range of the holiday dates
-        if start_date <= date <= end_date:
-            return holiday
-        # Check for recurring holidays
-        if holiday.recurring:
-            try:
-                # Create a new date object for comparison without the year
-                start_date_without_year = datetime(
-                    year=date.year, month=start_date.month, day=start_date.day
-                ).date()
-                end_date_without_year = datetime(
-                    year=date.year, month=end_date.month, day=end_date.day
-                ).date()
-                if start_date_without_year <= date <= end_date_without_year:
-                    return holiday
-            except:
-                return False
-    return False
-
-
-def is_company_leave(input_date):
-    """
-    Check if the given date is a company leave.
-    Args:
-        input_date (datetime.date): The date to check.
-    Returns:
-        CompanyLeave or bool: The CompanyLeave object if the date is a company leave, otherwise False.
-    """
-    from leave.models import CompanyLeave
-
-    # Calculate the week number within the month (1-5)
-    first_day_of_month = input_date.replace(day=1)
-    first_week_day = first_day_of_month.weekday()  # Monday is 0 and Sunday is 6
-    adjusted_day = input_date.day + first_week_day
-    date_week_no = (adjusted_day - 1) // 7
-    # Calculate the weekday (1 for Monday to 7 for Sunday)
-    date_week_day = input_date.isoweekday() - 1
-    company_leaves = CompanyLeave.objects.all()
-    for company_leave in company_leaves:
-        week_no = (
-            company_leave.based_on_week
-            if not company_leave.based_on_week
-            else int(company_leave.based_on_week)
-        )  # from 0 for the first week to 4 for the fifth week
-        week_day = int(
-            company_leave.based_on_week_day
-        )  # from 0 to 6 for Monday to Sunday
-        if not week_no:
-            if date_week_day == week_day:
-                return company_leave
-        if date_week_no == week_no and date_week_day == week_day:
-            return company_leave
-    return False
+        multiple_approval_requests = LeaveRequestConditionApproval.objects.filter(
+            manager_id=approval_manager
+        )
+    else:
+        multiple_approval_requests = None
+    for instance in multiple_approval_requests:
+        if instance.sequence > 1:
+            pre_sequence = instance.sequence - 1
+            leave_request_id = instance.leave_request_id
+            instance = LeaveRequestConditionApproval.objects.filter(
+                leave_request_id=leave_request_id, sequence=pre_sequence
+            ).first()
+            if instance and instance.is_approved:
+                leave_request_ids.append(instance.leave_request_id.id)
+        else:
+            leave_request_ids.append(instance.leave_request_id.id)
+    return LeaveRequest.objects.filter(pk__in=leave_request_ids)

@@ -56,7 +56,7 @@
 		{% for comment in comments %}
 			<li class="oh-activity-sidebar__qa-item">
 				<span class="oh-activity-sidebar__q">{{ comment.comment }}
-					<span class="float-end" title="Delete" hx-get="{% url 'leave-request-delete-comment' comment.id %}?compensatory=True" data-target="#leaveactivitySidebar" hx-swap="innerHTML" hx-target="#commentContainer">
+					<span class="float-end" title="Delete" hx-get="{% url 'compensatory-request-delete-comment' comment.id %}?compensatory=True" data-target="#leaveactivitySidebar" hx-swap="innerHTML" hx-target="#commentContainer">
 						<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
 					</span>
 				</span>
@@ -74,7 +74,7 @@
 							><img
 								src="{% static 'images/ui/minus-icon.png' %}"
 								style="display: block; width: 50%; height: 50%"
-								hx-get="{% url 'delete-leave-comment-file' %}?ids={{ file.id }}&leave_id={{ request_id }}&compensatory=True"
+								hx-get="{% url 'delete-compensatory-comment-file' %}?ids={{ file.id }}&leave_id={{ request_id }}&compensatory=True"
 								hx-target="#commentContainer"
 								onclick="event.stopPropagation();event.preventDefault()" /></span
 					></a>
@@ -137,7 +137,7 @@
 				>
 				<img
 					style="display: block; width: 100px; margin: 20px auto"
-					src="/static/images/ui/comment.png"
+					src="{% static "/images/ui/comment.png" %}"
 					class=""
 				/>
 			</div>

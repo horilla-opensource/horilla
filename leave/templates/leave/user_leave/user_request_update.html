@@ -1,4 +1,4 @@
-{% load i18n %} {% if messages %}
+{% load i18n %}{% load horillafilters %} {% if messages %}
 <div class="oh-wrapper">
     {% for message in messages %}
     <div class="oh-alert-container">
@@ -45,66 +45,68 @@
     </form>
 </div>
 
-<script>
-    $("#userLeaveForm [type=submit]").hide();
-    var button = `
-    <div class="oh-modal__dialog-footer p-0 mt-3">
-      <button id="buttonID" class="oh-btn oh-btn--secondary oh-btn--shadow">
-        Save
-      </button>
-    </div>
-    `;
-    $("#userLeaveForm .row").after(button);
+{% if "recruitment"|app_installed %}
+    <script>
+        $("#userLeaveForm [type=submit]").hide();
+        var button = `
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+        <button id="buttonID" class="oh-btn oh-btn--secondary oh-btn--shadow">
+            Save
+        </button>
+        </div>
+        `;
+        $("#userLeaveForm .row").after(button);
 
-    $(document).ready(function () {
-        $("#buttonID").on("click", function () {
-            event.preventDefault();
-            event.stopPropagation();
-            var startDate = $("#userLeaveForm [name = start_date]").val();
-            var endDate = $("#userLeaveForm [name = end_date]").val();
-            var employee = "{{request.user.employee_get.id}}";
+        $(document).ready(function () {
+            $("#buttonID").on("click", function () {
+                event.preventDefault();
+                event.stopPropagation();
+                var startDate = $("#userLeaveForm [name = start_date]").val();
+                var endDate = $("#userLeaveForm [name = end_date]").val();
+                var employee = "{{request.user.employee_get.id}}";
 
-            $.ajax({
-                type: "GET",
-                url: "{% url 'check-interview-conflicts' %}",
-                data: {
-                    start_date: startDate,
-                    end_date: endDate,
-                    employee_id: employee,
-                },
-                success: function (response) {
-                    var interviews = response.interviews;
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'check-interview-conflicts' %}",
+                    data: {
+                        start_date: startDate,
+                        end_date: endDate,
+                        employee_id: employee,
+                    },
+                    success: function (response) {
+                        var interviews = response.interviews;
 
-                    title = "Leave Request Alert.";
-                    var content = `<div>
-            <p>{{request.user.employee_get}} has interview in the requested date.</p>
-            <ol style="margin-left:5%">`;
-                    interviews.forEach(function (interview, index) {
-                        content += `<li style="text-align:left; font-size:14px">${interview}</li>`;
-                    });
-                    content += `</ol>
-            <p style="font-weight:700">Are you sure you want to proceed with the request?</p>
-          </div>`;
-
-                    if (interviews.length != 0) {
-                        Swal.fire({
-                            title: title,
-                            icon: "info",
-                            html: content,
-                            showCancelButton: true,
-                            confirmButtonColor: "#008000",
-                            cancelButtonColor: "#d33",
-                            confirmButtonText: "Confirm",
-                        }).then(function (result) {
-                            if (result.isConfirmed) {
-                                $("#userLeaveForm [type=submit]").click();
-                            }
+                        title = "Leave Request Alert.";
+                        var content = `<div>
+                <p>{{request.user.employee_get}} has interview in the requested date.</p>
+                <ol style="margin-left:5%">`;
+                        interviews.forEach(function (interview, index) {
+                            content += `<li style="text-align:left; font-size:14px">${interview}</li>`;
                         });
-                    } else {
-                        $("#userLeaveForm [type=submit]").click();
-                    }
-                },
+                        content += `</ol>
+                <p style="font-weight:700">Are you sure you want to proceed with the request?</p>
+            </div>`;
+
+                        if (interviews.length != 0) {
+                            Swal.fire({
+                                title: title,
+                                icon: "info",
+                                html: content,
+                                showCancelButton: true,
+                                confirmButtonColor: "#008000",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Confirm",
+                            }).then(function (result) {
+                                if (result.isConfirmed) {
+                                    $("#userLeaveForm [type=submit]").click();
+                                }
+                            });
+                        } else {
+                            $("#userLeaveForm [type=submit]").click();
+                        }
+                    },
+                });
             });
         });
-    });
-</script>
+    </script>
+{% endif %}

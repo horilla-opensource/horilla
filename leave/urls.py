@@ -1,5 +1,8 @@
 from django import views
+from django.apps import apps
 from django.urls import path
+
+from employee.models import Employee
 
 from . import models, views
 
@@ -99,7 +102,6 @@ urlpatterns = [
         name="assigned-leaves-info-export",
     ),
     path("assign-filter", views.leave_assign_filter, name="assign-filter"),
-    path("holiday-view", views.holiday_view, name="holiday-view"),
     path("get_job_positions", views.get_job_positions, name="get_job_positions"),
     path("restrict-view", views.restrict_view, name="restrict-view"),
     path("restrict-filter", views.restrict_filter, name="restrict-filter"),
@@ -117,42 +119,6 @@ urlpatterns = [
         name="restrict-day-select-filter",
     ),
     path("restrict-day-select", views.restrict_day_select, name="restrict-day-select"),
-    path(
-        "holidays-excel-template",
-        views.holidays_excel_template,
-        name="holidays-excel-template",
-    ),
-    path(
-        "holidays-info-import", views.holidays_info_import, name="holidays-info-import"
-    ),
-    path("holiday-info-export", views.holiday_info_export, name="holiday-info-export"),
-    path("holiday-creation", views.holiday_creation, name="holiday-creation"),
-    path("holiday-update/<int:id>", views.holiday_update, name="holiday-update"),
-    path("holiday-delete/<int:id>", views.holiday_delete, name="holiday-delete"),
-    path(
-        "holidays-bulk-delete", views.bulk_holiday_delete, name="holidays-bulk-delete"
-    ),
-    path("holiday-filter", views.holiday_filter, name="holiday-filter"),
-    path(
-        "company-leave-creation",
-        views.company_leave_creation,
-        name="company-leave-creation",
-    ),
-    path("company-leave-view", views.company_leave_view, name="company-leave-view"),
-    path(
-        "company-leave-update/<int:id>",
-        views.company_leave_update,
-        name="company-leave-update",
-    ),
-    path(
-        "company-leave-delete/<int:id>",
-        views.company_leave_delete,
-        name="company-leave-delete",
-    ),
-    path(
-        "company-leave-filter", views.company_leave_filter, name="company-leave-filter"
-    ),
-    # path("user-leave", views.user_leave_view, name="user-leave"),
     path("user-leave-filter", views.user_leave_filter, name="user-leave-filter"),
     path("user-request-view/", views.user_request_view, name="user-request-view"),
     path(
@@ -270,12 +236,6 @@ urlpatterns = [
         views.assigned_leave_select_filter,
         name="assigned-leave-select-filter",
     ),
-    path("holiday-select/", views.holiday_select, name="holiday-select"),
-    path(
-        "holiday-select-filter/",
-        views.holiday_select_filter,
-        name="holiday-select-filter",
-    ),
     path(
         "leave-request-bulk-delete",
         views.leave_request_bulk_delete,
@@ -306,25 +266,10 @@ urlpatterns = [
         views.user_request_select_filter,
         name="user-request-select-filter",
     ),
-    # path(
-    #     "leave-type-widget-filter",
-    #     views.leave_type_widget_filter,
-    #     name="leave-type-widget-filter",
-    # ),
     path(
         "employee-leave-details",
         views.employee_leave_details,
         name="employee-leave-details",
-    ),
-    path(
-        "cut-penalty/<int:instance_id>/",
-        views.cut_available_leave,
-        name="leave-cut-penalty",
-    ),
-    path(
-        "view-penalty/<int:instance_id>/",
-        views.view_penalties,
-        name="leave-view-penalty",
     ),
     path(
         "leave-request-add-comment/<int:leave_id>/",
@@ -380,68 +325,112 @@ urlpatterns = [
         name="enable-compensatory-leave",
     ),
     path(
-        "get-leave-attendance-dates",
-        views.get_leave_attendance_dates,
-        name="get-leave-attendance-dates",
-    ),
-    path(
-        "view-compensatory-leave",
-        views.view_compensatory_leave,
-        name="view-compensatory-leave",
-    ),
-    path(
-        "filter-compensatory-leave",
-        views.filter_compensatory_leave,
-        name="filter-compensatory-leave",
-    ),
-    path(
-        "create-compensatory-leave",
-        views.create_compensatory_leave,
-        name="create-compensatory-leave",
-    ),
-    path(
-        "update-compensatory-leave/<int:comp_id>",
-        views.create_compensatory_leave,
-        name="update-compensatory-leave",
-    ),
-    path(
-        "delete-compensatory-leave/<int:comp_id>",
-        views.delete_compensatory_leave,
-        name="delete-compensatory-leave",
-    ),
-    path(
-        "approve-compensatory-leave/<int:comp_id>",
-        views.approve_compensatory_leave,
-        name="approve-compensatory-leave",
-    ),
-    path(
-        "reject-compensatory-leave/<int:comp_id>",
-        views.reject_compensatory_leave,
-        name="reject-compensatory-leave",
-    ),
-    path(
-        "compensatory-leave-individual-view/<int:comp_leave_id>",
-        views.compensatory_leave_individual_view,
-        name="compensatory-leave-individual-view",
-    ),
-    path(
-        "view-compensatory-leave-comment/<int:comp_leave_id>",
-        views.view_compensatory_leave_comment,
-        name="view-compensatory-leave-comment",
-    ),
-    path(
-        "create-compensatory-leave-comment/<int:comp_leave_id>/",
-        views.create_compensatory_leave_comment,
-        name="create-compensatory-leave-comment",
-    ),
-    path(
-        "check-interview-conflicts",
-        views.check_interview_conflicts,
-        name="check-interview-conflicts",
-    ),
-    path(
         "employee-past-leave-restriction",
         views.employee_past_leave_restriction,
         name="employee-past-leave-restriction",
     ),
+    path(
+        "leave-tab/<int:obj_id>/",
+        views.employee_view_individual_leave_tab,
+        name="leave-tab",
+        kwargs={"model": Employee},
+    ),
+    path(
+        "leave-request-and-approve",
+        views.leave_request_and_approve,
+        name="leave-request-and-approve",
+    ),
+    path(
+        "leave-allocation-approve",
+        views.leave_allocation_approve,
+        name="leave-allocation-approve",
+    ),
+    path(
+        "cut-penalty/<int:instance_id>/",
+        views.cut_available_leave,
+        name="leave-cut-penalty",
+    ),
 ]
+
+if apps.is_installed("recruitment"):
+    urlpatterns.extend(
+        [
+            path(
+                "check-interview-conflicts",
+                views.check_interview_conflicts,
+                name="check-interview-conflicts",
+            ),
+        ]
+    )
+
+if apps.is_installed("attendance"):
+
+    urlpatterns.extend(
+        [
+            path(
+                "get-leave-attendance-dates",
+                views.get_leave_attendance_dates,
+                name="get-leave-attendance-dates",
+            ),
+            path(
+                "view-compensatory-leave",
+                views.view_compensatory_leave,
+                name="view-compensatory-leave",
+            ),
+            path(
+                "filter-compensatory-leave",
+                views.filter_compensatory_leave,
+                name="filter-compensatory-leave",
+            ),
+            path(
+                "create-compensatory-leave",
+                views.create_compensatory_leave,
+                name="create-compensatory-leave",
+            ),
+            path(
+                "update-compensatory-leave/<int:comp_id>",
+                views.create_compensatory_leave,
+                name="update-compensatory-leave",
+            ),
+            path(
+                "delete-compensatory-leave/<int:comp_id>",
+                views.delete_compensatory_leave,
+                name="delete-compensatory-leave",
+            ),
+            path(
+                "approve-compensatory-leave/<int:comp_id>",
+                views.approve_compensatory_leave,
+                name="approve-compensatory-leave",
+            ),
+            path(
+                "reject-compensatory-leave/<int:comp_id>",
+                views.reject_compensatory_leave,
+                name="reject-compensatory-leave",
+            ),
+            path(
+                "compensatory-leave-individual-view/<int:comp_leave_id>",
+                views.compensatory_leave_individual_view,
+                name="compensatory-leave-individual-view",
+            ),
+            path(
+                "view-compensatory-leave-comment/<int:comp_leave_id>",
+                views.view_compensatory_leave_comment,
+                name="view-compensatory-leave-comment",
+            ),
+            path(
+                "create-compensatory-leave-comment/<int:comp_leave_id>/",
+                views.create_compensatory_leave_comment,
+                name="create-compensatory-leave-comment",
+            ),
+            path(
+                "compensatory-request-delete-comment/<int:comment_id>/",
+                views.delete_leaverequest_compensatory_comment,
+                name="compensatory-request-delete-comment",
+            ),
+            path(
+                "delete-compensatory-comment-file/",
+                views.delete_comment_compensatory_file,
+                name="delete-compensatory-comment-file",
+            ),
+        ]
+    )
