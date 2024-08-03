@@ -36,7 +36,7 @@
                 {% elif employee.notice_period_ends < today %}
                     {% trans "Notice period ended" %}
                 {% else %}
-                    {% if employee.notice_period_ends|sub:today %}
+                    {% if employee.notice_period_ends %}
                         {% trans 'In' %} {{employee.notice_period_ends|timeuntil}}
                     {% endif %}
                 {% endif %}
