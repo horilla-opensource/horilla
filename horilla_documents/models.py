@@ -1,13 +1,13 @@
 import os
 from datetime import date
 
+from django.apps import apps
 from django.db import models
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.forms import ValidationError
 from django.utils.translation import gettext as _
 
-from asset.models import Asset, AssetCategory
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
 from horilla.models import HorillaModel
@@ -110,20 +110,23 @@ class Document(HorillaModel):
             raise ValidationError(_("Title must be at least 3 characters"))
         super().save(*args, **kwargs)
         if self.is_digital_asset:
-            asset_category = AssetCategory.objects.get_or_create(
-                asset_category_name="Digital Asset"
-            )
+            if apps.is_installed("asset"):
+                from asset.models import Asset, AssetCategory
 
-            Asset.objects.create(
-                asset_name=self.title,
-                asset_purchase_date=date.today(),
-                asset_category_id=asset_category[0],
-                asset_status="Not-Available",
-                asset_purchase_cost=0,
-                expiry_date=self.expiry_date,
-                notify_before=self.notify_before,
-                asset_tracking_id=f"DIG_ID0{self.pk}",
-            )
+                asset_category = AssetCategory.objects.get_or_create(
+                    asset_category_name="Digital Asset"
+                )
+
+                Asset.objects.create(
+                    asset_name=self.title,
+                    asset_purchase_date=date.today(),
+                    asset_category_id=asset_category[0],
+                    asset_status="Not-Available",
+                    asset_purchase_cost=0,
+                    expiry_date=self.expiry_date,
+                    notify_before=self.notify_before,
+                    asset_tracking_id=f"DIG_ID0{self.pk}",
+                )
 
     def upload_documents_count(self):
         total_requests = Document.objects.filter(
