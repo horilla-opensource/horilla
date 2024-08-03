@@ -1,4 +1,4 @@
-{% load onboardingfilters %} {% load i18n %}
+{% load i18n %}
 
 <style>
     .height-adj{
@@ -18,7 +18,7 @@
                 <div class="oh-sticky-table__th">{% trans "Basic Salary" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Filing Status" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-				{% if perms.leave.change_contract %}
+				{% if perms.payroll.change_contract %}
                     <div class="oh-sticky-table__th  oh-sticky-table__right"></div>
                 {% endif %}
                 </div>
@@ -40,7 +40,7 @@
                     <div class="oh-sticky-table__td">
                         {{ contract.get_contract_status_display}}
                     </div>
-					{% if perms.leave.change_contract %}
+					{% if perms.payroll.change_contract %}
                         <div class="oh-sticky-table__td  oh-sticky-table__right">
                             <div class="oh-btn-group">
                             <a

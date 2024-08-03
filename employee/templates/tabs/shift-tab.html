@@ -1,6 +1,6 @@
 {% load i18n %} {% load static %}
 {% load basefilters %}
-{% load attendancefilters %}
+{% load horillafilters %}
 {% if messages %}
 <div class="oh-wrapper">
   {% for message in messages %}
@@ -14,7 +14,7 @@
 {% endif %}
 
 <div class="oh-wrapper mt-4">
-	{% if employee.employee_work_info.shift_id or shift_data%}
+	{% if employee.employee_work_info.shift_id %}
 	<span class="fw-bold" style="font-size:17px;"> {% if employee.employee_work_info.shift_id %} {% trans "Current Shift" %} &nbsp : &nbsp {{employee.employee_work_info.shift_id}} {% endif %}</span>
 	<button style="display:inline-block;"
 			class="oh-btn oh-btn--secondary ms-3"

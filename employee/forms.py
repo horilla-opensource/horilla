@@ -42,6 +42,7 @@ from employee.models import (
     Employee,
     EmployeeBankDetails,
     EmployeeNote,
+    EmployeeTag,
     EmployeeWorkInformation,
     NoteFiles,
     Policy,
@@ -681,3 +682,19 @@ class ActiontypeForm(ModelForm):
                 "onchange": "actionChange($(this))",
             }
         )
+
+
+class EmployeeTagForm(ModelForm):
+    """
+    Employee Tags form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = EmployeeTag
+        fields = "__all__"
+        exclude = ["is_active"]
+        widgets = {"color": TextInput(attrs={"type": "color", "style": "height:50px"})}

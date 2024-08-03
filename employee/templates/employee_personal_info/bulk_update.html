@@ -41,7 +41,7 @@
 
       // Make AJAX request to fetch available job positions for the selected department
       $.ajax({
-        url: '{% url "get_job_positions" %}',
+        url: '{% url "get-job-positions" %}',
         method: 'GET',
         data: {
           'department_id': departmentId
@@ -71,7 +71,7 @@
 
     // Make AJAX request to fetch available job roles for the selected job positions
     $.ajax({
-      url: '{% url "get_job_roles" %}',
+      url: '{% url "get-job-roles" %}',
       method: 'GET',
       data: {
         'job_id': jobId

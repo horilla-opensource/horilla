@@ -13,7 +13,7 @@
     {% if perms.payroll.add_policyaccount %}
       <div class="oh-main__titlebar-button-container">
         <div class="oh-main__titlebar-button-container">
-          <a hx-get="{% url 'create-policy' %}" hx-target="#policyModalBody" data-toggle="oh-modal-toggle" data-target="#policyModal" class="oh-btn oh-btn--secondary">
+          <a hx-get="{% url 'create-policy' %}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--secondary">
             <ion-icon name="add-outline"></ion-icon>
             {% trans 'Create' %}
           </a>
@@ -22,13 +22,3 @@
     {% endif %}
   </div>
 </section>
-
-<div class="oh-modal" id="policyModal" role="dialog" aria-hidden="true">
-  <div class="oh-modal__dialog" style="max-width: 550px">
-    <div class="oh-modal__dialog-header">
-      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
-    </div>
-
-    <div class="oh-modal__dialog-body" id="policyModalBody"></div>
-  </div>
-</div>
