@@ -362,7 +362,7 @@
 					{% if perms.employee.view_employee or perms.payroll.view_contract or request.user == employee.employee_user_id %}
 						<div class="oh-tabs__content" id="tab_2">
 							{% if "payroll"|app_installed and perms.payroll.view_contract %}
-								{% include "tabs/about-tab.html" %}
+								{% include "tabs/contract-tab.html" %}
 							{% endif %}
 						</div>
 					{% endif %}
