@@ -959,7 +959,7 @@ $("#validateAttendances").click(function (e) {
       });
     } else {
       Swal.fire({
-        text: confirmMessage,
+        text: "confirmMessage",
         icon: "info",
         showCancelButton: true,
         confirmButtonColor: "#008000",
