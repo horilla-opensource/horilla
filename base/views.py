@@ -5173,7 +5173,6 @@ def audit_tag_update(request, tag_id):
 
 
 @login_required
-@install_required
 @permission_required("base.view_multipleapprovalcondition")
 def multiple_approval_condition(request):
     form = MultipleApproveConditionForm()
