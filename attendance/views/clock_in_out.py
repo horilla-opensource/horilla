@@ -10,21 +10,21 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 
-from attendance.models import (
-    Attendance,
-    AttendanceActivity,
-    AttendanceLateComeEarlyOut,
-    GraceTime,
-)
-from attendance.views.views import (
+from attendance.methods.utils import (
     activity_datetime,
-    attendance_validate,
     employee_exists,
     format_time,
     overtime_calculation,
     shift_schedule_today,
     strtime_seconds,
 )
+from attendance.models import (
+    Attendance,
+    AttendanceActivity,
+    AttendanceLateComeEarlyOut,
+    GraceTime,
+)
+from attendance.views.views import attendance_validate
 from base.context_processors import (
     enable_late_come_early_out_tracking,
     timerunner_enabled,

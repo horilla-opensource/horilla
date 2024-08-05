@@ -1,0 +1,78 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header pb-0">
+  <h2 class="oh-modal__dialog-title" id="holidayExportLavel">
+    {% trans "Export Holidays" %}
+  </h2>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body" id="holidayExportModalBody">
+  <form
+    action="{%url 'holiday-info-export' %}"
+    method="get"
+    onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+    id="holidayExportForm"
+    class="oh-profile-section pt-0"
+  >
+    {% csrf_token %}
+    <div class="oh-dropdown__filter-body">
+      <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
+        <div class="oh-accordion-body">
+          <div class="row">
+            {% for field in export_column.selected_fields %}
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label"> {{ field }} </label>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Holiday" %}</div>
+        <div class="oh-accordion-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label
+                  class="oh-label"
+                  for="{{ export_filter.form.from_date.id_for_label }}"
+                  >{% trans "From Date" %}</label
+                >
+                {{export_filter.form.from_date}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label
+                  class="oh-label"
+                  for="{{ export_filter.form.to_date.id_for_label }}"
+                  >{% trans "To Date" %}</label
+                >
+                {{export_filter.form.to_date}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <div class="oh-input-group">
+                <label
+                  class="oh-label"
+                  for="{{ export_filter.form.recurring.id_for_label }}"
+                  >{% trans "Recurring" %}</label
+                >
+                {{export_filter.form.recurring}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="oh-modal__dialog-footer p-0 mt-3">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Export" %}
+      </button>
+    </div>
+  </form>
+</div>

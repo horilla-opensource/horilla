@@ -4,22 +4,45 @@ models.py
 This module is used to register django models
 """
 
+from datetime import date, datetime, timedelta
 from typing import Iterable
 
 import django
+from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
+from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # Create your models here.
+WEEKS = [
+    ("0", _("First Week")),
+    ("1", _("Second Week")),
+    ("2", _("Third Week")),
+    ("3", _("Fourth Week")),
+    ("4", _("Fifth Week")),
+]
+
+
+WEEK_DAYS = [
+    ("0", _("Monday")),
+    ("1", _("Tuesday")),
+    ("2", _("Wednesday")),
+    ("3", _("Thursday")),
+    ("4", _("Friday")),
+    ("5", _("Saturday")),
+    ("6", _("Sunday")),
+]
 
 
 def validate_time_format(value):
@@ -491,14 +514,15 @@ class EmployeeShift(HorillaModel):
         max_length=6, default="200:00", validators=[validate_time_format]
     )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
-    grace_time_id = models.ForeignKey(
-        "attendance.GraceTime",
-        null=True,
-        blank=True,
-        related_name="employee_shift",
-        on_delete=models.PROTECT,
-        verbose_name=_("Grace Time"),
-    )
+    if apps.is_installed("attendance"):
+        grace_time_id = models.ForeignKey(
+            "attendance.GraceTime",
+            null=True,
+            blank=True,
+            related_name="employee_shift",
+            on_delete=models.PROTECT,
+            verbose_name=_("Grace Time"),
+        )
 
     objects = HorillaCompanyManager("employee_shift__company_id")
 
@@ -1092,6 +1116,21 @@ class Tags(HorillaModel):
         return self.title
 
 
+class HorillaMailTemplate(HorillaModel):
+    title = models.CharField(max_length=25, unique=True)
+    body = models.TextField()
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Company"),
+    )
+
+    def __str__(self) -> str:
+        return f"{self.title}"
+
+
 class DynamicEmailConfiguration(HorillaModel):
     """
     SingletonModel to keep the mail server configurations
@@ -1545,3 +1584,151 @@ class TrackLateComeEarlyOut(HorillaModel):
     def __str__(self):
         tracking = _("enabled") if self.is_enable else _("disabled")
         return f"Tracking late come early out {tracking}"
+
+
+class Holidays(HorillaModel):
+    name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
+    start_date = models.DateField(verbose_name=_("Start Date"))
+    end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
+    recurring = models.BooleanField(default=False, verbose_name=_("Recurring"))
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
+    objects = HorillaCompanyManager(related_company_field="company_id")
+
+    def __str__(self):
+        return self.name
+
+
+class CompanyLeaves(HorillaModel):
+    based_on_week = models.CharField(
+        max_length=100, choices=WEEKS, blank=True, null=True
+    )
+    based_on_week_day = models.CharField(max_length=100, choices=WEEK_DAYS)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
+    objects = HorillaCompanyManager(related_company_field="company_id")
+
+    class Meta:
+        unique_together = ("based_on_week", "based_on_week_day")
+
+    def __str__(self):
+        return f"{dict(WEEK_DAYS).get(self.based_on_week_day)} | {dict(WEEKS).get(self.based_on_week)}"
+
+
+class PenaltyAccounts(HorillaModel):
+    """
+    LateComeEarlyOutPenaltyAccount
+    """
+
+    employee_id = models.ForeignKey(
+        "employee.Employee",
+        on_delete=models.PROTECT,
+        related_name="penalty_accounts",
+        editable=False,
+        verbose_name="Employee",
+        null=True,
+    )
+    if apps.is_installed("attendance"):
+        late_early_id = models.ForeignKey(
+            "attendance.AttendanceLateComeEarlyOut",
+            on_delete=models.CASCADE,
+            null=True,
+            editable=False,
+        )
+    if apps.is_installed("leave"):
+        leave_request_id = models.ForeignKey(
+            "leave.LeaveRequest", null=True, on_delete=models.CASCADE, editable=False
+        )
+        leave_type_id = models.ForeignKey(
+            "leave.LeaveType",
+            on_delete=models.DO_NOTHING,
+            blank=True,
+            null=True,
+            verbose_name="Leave type",
+        )
+        minus_leaves = models.FloatField(default=0.0, null=True)
+        deduct_from_carry_forward = models.BooleanField(default=False)
+    penalty_amount = models.FloatField(default=0.0, null=True)
+
+    def clean(self) -> None:
+        super().clean()
+        if apps.is_installed("leave") and not self.leave_type_id and self.minus_leaves:
+            raise ValidationError(
+                {"leave_type_id": _("Specify the leave type to deduct the leave.")}
+            )
+        if apps.is_installed("leave") and self.leave_type_id and not self.minus_leaves:
+            raise ValidationError(
+                {
+                    "minus_leaves": _(
+                        "If a leave type is chosen for a penalty, minus leaves are required."
+                    )
+                }
+            )
+        if not self.minus_leaves and not self.penalty_amount:
+            raise ValidationError(
+                {
+                    "leave_type_id": _(
+                        "Either minus leaves or a penalty amount is required"
+                    )
+                }
+            )
+
+        if (
+            self.minus_leaves or self.deduct_from_carry_forward
+        ) and not self.leave_type_id:
+            raise ValidationError({"leave_type_id": _("Leave type is required")})
+        return
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+@receiver(post_save, sender=PenaltyAccounts)
+def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
+    """
+    This is post save method, used to create deduction and cut availabl leave days"""
+    # only work when creating
+    if created:
+        penalty_amount = instance.penalty_amount
+        if apps.is_installed("payroll") and penalty_amount:
+            Deduction = get_horilla_model_class(app_label="payroll", model="Deduction")
+            penalty = Deduction()
+            if instance.late_early_id:
+                penalty.title = f"{instance.late_early_id.get_type_display()} penalty"
+                penalty.one_time_date = (
+                    instance.late_early_id.attendance_id.attendance_date
+                )
+            elif instance.leave_request_id:
+                penalty.title = f"Leave penalty {instance.leave_request_id.end_date}"
+                penalty.one_time_date = instance.leave_request_id.end_date
+            else:
+                penalty.title = f"Penalty on {datetime.today()}"
+                penalty.one_time_date = datetime.today()
+            penalty.include_active_employees = False
+            penalty.is_fixed = True
+            penalty.amount = instance.penalty_amount
+            penalty.only_show_under_employee = True
+            penalty.save()
+            penalty.include_active_employees = False
+            penalty.specific_employees.add(instance.employee_id)
+            penalty.save()
+
+        if (
+            apps.is_installed("leave")
+            and instance.leave_type_id
+            and instance.minus_leaves
+        ):
+            available = instance.employee_id.available_leave.filter(
+                leave_type_id=instance.leave_type_id
+            ).first()
+            unit = round(instance.minus_leaves * 2) / 2
+            if not instance.deduct_from_carry_forward:
+                available.available_days = max(0, (available.available_days - unit))
+            else:
+                available.carryforward_days = max(
+                    0, (available.carryforward_days - unit)
+                )
+
+            available.save()

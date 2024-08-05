@@ -51,7 +51,7 @@
     aria-hidden="true"
 >
     <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header">
+        <div class="oh-modal__dialog-header pb-0">
             <h2 class="oh-modal__dialog-title" id="editTitle">
                 {% trans "Create Tag" %}
             </h2>
@@ -76,7 +76,7 @@
             </button>
         </div>
         <div class="oh-modal__dialog-body" id="editTarget">
-            <form onsubmit="saveTag();event.preventDefault();">
+            <form onsubmit="saveTag();event.preventDefault();" class="oh-profile-section">
                 {% csrf_token %}
 
                 <label class="oh-label">{% trans "Title" %}</label>
@@ -110,12 +110,11 @@
                     style="display: none"
                 />
 
-                <button
-                    type="submit"
-                    class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-                >
-                    {% trans "Save" %}
-                </button>
+                <div class="oh-modal__dialog-footer p-0 mt-3">
+                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" >
+                        {% trans "Save" %}
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -147,7 +146,7 @@
             </button>
         </div>
         <div class="oh-modal__dialog-body" id="editTarget">
-            <form onsubmit="saveTicketType();event.preventDefault();">
+            <form onsubmit="saveTicketType();event.preventDefault();" class="oh-profile-section">
                 {% csrf_token %}
 
                 <label class="oh-label">{% trans "Title" %}</label>

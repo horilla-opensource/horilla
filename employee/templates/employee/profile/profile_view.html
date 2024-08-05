@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% load i18n %} {% load static %} {% block content %}
+{% extends 'index.html' %} {% load i18n %} {% load static %} {% load basefilters %} {% load horillafilters %} {% block content %}
 <style>
 	.oh-general__tab{
 		margin-bottom: 15px;
@@ -100,7 +100,7 @@
 		<div class="d-flex flex-row-reverse">
 			<a href="{% url 'edit-profile' %}" class="">
 				<img
-				src="/static/images/ui/edit_btn.png"
+				src="{% static "/images/ui/edit_btn.png" %}"
 				style="width: 25px; height: auto"
 				title="{% trans 'Edit' %}"
 				/>
@@ -128,16 +128,18 @@
 								{% endif %}
 							/>
 						</div>
-						{% if employee.check_online %}
-						<span
-							class="oh-profile__active-badge oh-profile__active-badge--secondary" style="background-color: yellowgreen;"
-							title="{% trans 'Online' %}">
-						</span>
-						{% else %}
-						<span
-							class="oh-profile__active-badge oh-profile__active-badge--secondary" style="background-color: rgba(128, 128, 128, 0.482);"
-							title="{% trans 'Offline' %}">
-						</span>
+						{% if "attendance"|app_installed %}
+							{% if employee.check_online %}
+								<span
+									class="oh-profile__active-badge oh-profile__active-badge--secondary" style="background-color: yellowgreen;"
+									title="{% trans 'Online' %}">
+								</span>
+							{% else %}
+								<span
+									class="oh-profile__active-badge oh-profile__active-badge--secondary" style="background-color: rgba(128, 128, 128, 0.482);"
+									title="{% trans 'Offline' %}">
+								</span>
+							{% endif %}
 						{% endif %}
 					</div>
 					<div class="oh-profile__info-container">
@@ -200,12 +202,10 @@
 			<div id="employee-tab-profile" data-table-name="employee_tab_profile">
 				<div class="row">
 					<div class="col-sm-12 col-md-12 col lg-12">
-						<ul
-						class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
-						>
+						<ul class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5" >
 							<li class="oh-general__tab">
 								<a
-									hx-get={% url 'contract-tab' employee.id %}
+									hx-get="{% url 'about-tab' employee.id %}"
 									hx-target="#personal_target"
 									class="oh-general__tab-link oh-general__tab-link--active"
 									data-action="general-tab"
@@ -214,7 +214,8 @@
 									>{% trans "About" %}</a
 								>
 							</li>
-							<li data-cell-index="19" data-cell-title="{% trans "Work type & Shift" %}" class="oh-general__tab">
+
+							<li data-cell-index="19" data-cell-title="{% trans 'Work type & Shift' %}" class="oh-general__tab">
 								<a
 								hx-get="{% url 'shift-tab' employee.id %}?profile=true"
 								hx-target="#shift_target"
@@ -225,56 +226,65 @@
 								>{% trans "Work Type & Shift" %}</a
 								>
 							</li>
-							<li data-cell-index="18" data-cell-title="{% trans "Attendance" %}" class="oh-general__tab">
-								<a
-								hx-get={% url 'profile-attendance-tab' %}
-								hx-target="#attendance_target"
-								data-action="general-tab"
-								data-target="#attendance_target"
-								id="asset"
-								class="oh-general__tab-link"
-								role="button"
-								>{% trans "Attendance" %}</a
-								>
-							</li>
-							<li data-cell-index="17" data-cell-title="{% trans "Leave" %}" class="oh-general__tab">
-								<a
-								href="#"
-								class="oh-general__tab-link"
-								data-action="general-tab"
-								data-target="#leave"
-								>{% trans "Leave" %}</a
-								>
-							</li>
-							<li data-cell-index="16" data-cell-title="{% trans "Payroll" %}" class="oh-general__tab">
-								<a
-								href="#"
-								class="oh-general__tab-link"
-								data-action="general-tab"
-								data-target="#payroll"
-								>{% trans "Payroll" %}</a
-								>
-							</li>
-							{% comment %} <li data-cell-index="16" data-cell-title="{% trans "Interview" %}" class="oh-general__tab">
-								<a
-								href="#"
-								class="oh-general__tab-link"
-								data-action="general-tab"
-								data-target="#interview"
-								>{% trans "Interview" %}</a
-								>
-							</li> {% endcomment %}
-							<li data-cell-index="15" data-cell-title="{% trans "Allowance & Deduction" %}" class="oh-general__tab">
-								<a
-								hx-get="{% url 'allowances-deductions-tab' employee.id %}"
-								hx-target="#allowance_deduction"
-								data-action="general-tab"
-								data-target="#allowance_deduction"
-								class="oh-general__tab-link"
-								role="button"
-								>{% trans "Allowance & Deduction" %}</a
-								>
-							</li>
+
+							{% if "attendance"|app_installed %}
+								<li data-cell-index="18" data-cell-title="{% trans 'Attendance' %}" class="oh-general__tab">
+									<a
+									hx-get="{% url 'profile-attendance-tab' %}"
+									hx-target="#attendance_target"
+									data-action="general-tab"
+									data-target="#attendance_target"
+									id="asset"
+									class="oh-general__tab-link"
+									role="button"
+									>{% trans "Attendance" %}</a
+									>
+								</li>
+							{% endif %}
+
+							{% if "leave"|app_installed %}
+                				{% if perms.leave.view_leaverequest or request.user|check_manager:employee or request.user == employee.employee_user_id %}
+                				  <li data-cell-index="12" data-cell-title="{% trans 'Leave' %}" class="oh-general__tab">
+                				    <a
+                				    hx-get = "{% url 'leave-tab' employee.id %}"
+                				    hx-target = "#leave"
+                				    class="oh-general__tab-link"
+                				    data-action="general-tab"
+                				    data-target="#leave"
+                				    role = "button"
+                				    >{% trans "Leave" %}</a
+                				    >
+                				  </li>
+                				{% endif %}
+              				{% endif %}
+
+							{% if "payroll"|app_installed %}
+								<li data-cell-index="16" data-cell-title="{% trans 'Payroll' %}" class="oh-general__tab">
+									<a
+									href="#"
+									class="oh-general__tab-link"
+									data-action="general-tab"
+									data-target="#payroll"
+									>{% trans "Payroll" %}</a
+									>
+								</li>
+							{% endif %}
+
+							{% if "payroll"|app_installed %}
+								<li data-cell-index="15" data-cell-title="{% trans 'Allowance & Deduction' %}" class="oh-general__tab">
+									<a
+									hx-get="{% url 'allowances-deductions-tab' employee.id %}"
+									hx-target="#allowance_deduction"
+									data-action="general-tab"
+									data-target="#allowance_deduction"
+									class="oh-general__tab-link"
+									role="button"
+									>{% trans "Allowance & Deduction" %}</a
+									>
+								</li>
+							{% endif %}
+
+							{% if "attendance"|app_installed %}
 							<li data-cell-index="14" data-cell-title="{% trans "Penalty Account" %}" class="oh-general__tab">
 								<a
 								data-action="general-tab"
@@ -285,21 +295,27 @@
 								>{% trans "Penalty Account" %}</a
 								>
 							</li>
-							<li data-cell-index="13" data-cell-title="{% trans "Assets" %}" class="oh-general__tab">
+							{% endif %}
+
+							{% if "asset"|app_installed %}
+								<li data-cell-index="13" data-cell-title="{% trans 'Assets' %}" class="oh-general__tab">
+									<a
+									hx-get="{% url 'profile-asset-tab' employee.id %}"
+									hx-target="#asset_target"
+									data-action="general-tab"
+									data-target="#asset_target"
+									id="asset"
+									class="oh-general__tab-link pointer"
+									role="button"
+									>{% trans "Assets" %}</a
+									>
+								</li>
+							{% endif %}
+
+							{% if "pms"|app_installed %}
+							<li data-cell-index="12" data-cell-title="{% trans 'Performance' %}" class="oh-general__tab">
 								<a
-								hx-get={% url 'profile-asset-tab' employee.id %}
-								hx-target="#asset_target"
-								data-action="general-tab"
-								data-target="#asset_target"
-								id="asset"
-								class="oh-general__tab-link pointer"
-								role="button"
-								>{% trans "Assets" %}</a
-								>
-							</li>
-							<li data-cell-index="12" data-cell-title="{% trans "Performance" %}" class="oh-general__tab">
-								<a
-								hx-get={% url 'performance-tab' employee.id %}
+								hx-get="{% url 'performance-tab' employee.id %}"
 								hx-target="#performance_target"
 								data-action="general-tab"
 								data-target="#performance_target"
@@ -309,7 +325,9 @@
 								>{% trans "Performance" %}</a
 								>
 							</li>
-							<li data-cell-index="11" data-cell-title="{% trans "Documents" %}" class="oh-general__tab">
+							{% endif %}
+
+							<li data-cell-index="11" data-cell-title="{% trans 'Documents' %}" class="oh-general__tab">
 								<a
 								hx-get="{% url 'document-tab' employee.id %}?employee_view=true"
 								hx-target="#document_target"
@@ -320,9 +338,11 @@
 								>{% trans "Documents" %}</a
 								>
 							</li>
-							<li data-cell-index="10" data-cell-title="{% trans "Bonus Points" %}" class="oh-general__tab">
+
+							{% if "payroll"|app_installed %}
+							<li data-cell-index="10" data-cell-title="{% trans 'Bonus Points' %}" class="oh-general__tab">
 								<a
-								hx-get={% url 'bonus-points-tab' employee.id %}
+								hx-get="{% url 'bonus-points-tab' employee.id %}"
 								hx-target="#bonus_points_target"
 								data-action="general-tab"
 								data-target="#bonus_points_target"
@@ -331,17 +351,22 @@
 								>{% trans "Bonus Points" %}</a
 								>
 							</li>
-							<li data-cell-index="20" data-cell-title="{% trans "Interview" %}" class="oh-general__tab">
-								<a
-								href="#"
-								class="oh-general__tab-link"
-								data-action="general-tab"
-								data-target="#interview"
-								>{% trans "Scheduled Interview" %}</a
-								>
-							</li>
-							{% if enabled_resignation_request %}
-							<li data-cell-index="09" data-cell-title="{% trans "Resignation" %}" class="oh-general__tab">
+							{% endif %}
+
+							{% if "recruitment"|app_installed %}
+								<li data-cell-index="20" data-cell-title="{% trans "Interview" %}" class="oh-general__tab">
+									<a
+									href="#"
+									class="oh-general__tab-link"
+									data-action="general-tab"
+									data-target="#interview"
+									>{% trans "Scheduled Interview" %}</a
+									>
+								</li>
+							{% endif %}
+
+							{% if "offboarding"|app_installed and enabled_resignation_request %}
+							<li data-cell-index="09" data-cell-title="{% trans 'Resignation' %}" class="oh-general__tab">
 								<a
 								hx-get="{% url 'search-resignation-request' %}?employee_id={{employee.id}}"
 								hx-target="#resignation_hx_target"
@@ -353,109 +378,73 @@
 								>
 							</li>
 							{% endif %}
+
 						</ul>
 
-						<div
-							class="oh-general__tab-target oh-profile__info-tab mb-4"
-							id="personal_target"
-						>
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4" id="personal_target" > </div>
+
+						{% if "attendance"|app_installed %}
+							<div class="oh-general__tab-target oh-profile__info-tab mb-4" id="penaltyTarget">
+								{% include 'tabs/penalty_account.html' %}
+							</div>
+						{% endif %}
+
+						{% if "payroll"|app_installed %}
+							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="payroll">
+								{% include 'tabs/payroll-tab.html' %}
+							</div>
+						{% endif %}
+
+						{% if "recruitment"|app_installed %}
+							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="interview">
+								{% include 'tabs/scheduled_interview.html' %}
+							</div>
+						{% endif %}
+
+						{% if "payroll"|app_installed %}
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="bonus_points_target">
+							{% include "tabs/bonus_points.html" %}
 						</div>
-						<div
-						class="oh-general__tab-target oh-profile__info-tab mb-4"
-						id="penaltyTarget"
-						>
-						{% include 'tabs/penalty_account.html' %}
-						</div>
-						<div
-							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-							id="payroll"
-						>
-							{% include 'tabs/payroll-tab.html' %}
-						</div>
-						<div
-							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-							id="interview"
-						>
-							{% include 'tabs/scheduled_interview.html' %}
-						</div>
-						<div
-							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-							id="bonus_points_target"
-						 >
-							{% comment %} {% include "tabs/bonus_points.html" %} {% endcomment %}
-						</div>
-						<div
-							class="oh-general__tab-target oh-profile__info-tab mt-3 mb-4 d-none"
-							id="resignation_target"
-						 >
+						{% endif %}
+
+						<div class="oh-general__tab-target oh-profile__info-tab mt-3 mb-4 d-none" id="resignation_target">
 							{% include "tabs/resignation.html" %}
 							<div id="resignation_hx_target" class="mt-2"></div>
 						</div>
-						<div
-							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-							id="allowance_deduction"
-						>
-						</div>
-						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-							id="shift_target"
-						>
-						</div>
 
-						<div
-							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-							id="attendance_target"
-						>
-						</div>
+						{% if "payroll"|app_installed %}
+							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="allowance_deduction"></div>
+						{% endif %}
+
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="shift_target"></div>
+
+						{% if "attendance"|app_installed %}
+							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="attendance_target"></div>
+						{% endif %}
 
 
-						<div
-						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-						id="allowance_deduction"
-						>
-						</div>
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="allowance_deduction"></div>
 
+						{% if "asset"|app_installed %}
+							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="asset_target"></div>
+						{% endif %}
 
-						<!-- <div
-							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-							id="team"
-						>
-						</div>
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="document_target" ></div>
 
-						<div
-							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-							id="timesheet"
-						>
-						</div> -->
-						<div
-							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-							id="asset_target"
-						>
-						</div>
+						{% if "pms"|app_installed %}
+							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="performance_target"></div>
+						{% endif %}
 
-						<div
-						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-						id="document_target"
-						>
-						</div>
+						{% if "leave"|app_installed %}
+							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="leave">
+								{% include 'tabs/leave-tab.html' %}
+							</div>
+						{% endif %}
 
-						<div
-							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-							id="performance_target"
-						>
-						</div>
-
-						<div
-							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-							id="leave"
-						>
-							{% include 'tabs/leave-tab.html' %}
-						</div>
-						<div
-						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-						id="note_target"
-						>
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="note_target">
 						{% include 'tabs/note_tab.html' %}
 						</div>
+
 					</div>
 				</div>
 			</div>

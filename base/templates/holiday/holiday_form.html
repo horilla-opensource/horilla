@@ -1,0 +1,70 @@
+{% load i18n %} {% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{ message.tags }}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<script>
+  setTimeout(() => {
+    $(".oh-modal__close").click();
+  }, 1000);
+</script>
+{% endif %}
+<div class="oh-modal__dialog-header pb-0">
+  <span class="oh-modal__dialog-title" id="editDialogDialog"
+    >{% trans "Create Holiday" %}</span
+  >
+  <button
+    class="oh-modal__close"
+    aria-label="Close"
+    {% if messages %}
+      hx-get="{% url 'holiday-filter' %}?{{pd}}"
+      hx-target="#holidays"
+    {% endif %}
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
+    hx-post="{% url 'holiday-creation' %}?{{pd}}"
+    hx-target="#objectCreateModalTarget"
+    class="oh-profile-section pt-0"
+  >
+    <label class="oh-label d-block" for="{{ form.name.id_for_label }}"
+      >{% trans "Holiday Name" %}</label
+    >
+    {{form.name}} {{form.name.errors}}
+    <div class="row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="oh-input__group">
+          <label class="oh-input__label" for="{{form.start_date.id_for_label}}"
+            >{% trans "Start Date" %}</label
+          >
+          {{form.start_date }} {{form.start_date.errors }}
+        </div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="oh-input__group">
+          <label class="oh-input__label" for="{{form.end_date.id_for_label}}"
+            >{% trans "End Date" %}</label
+          >
+          {{form.end_date }} {{form.end_date.errors}}
+        </div>
+      </div>
+    </div>
+    <label class="oh-label d-block" for="{{ form.name.id_for_label }}"
+      >{% trans "Recurring" %}</label
+    >
+    <div class="oh-switch">{{form.recurring}} {{form.recurring.errors}}</div>
+    <div class="oh-modal__dialog-footer p-0">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
+    </div>
+  </form>
+</div>

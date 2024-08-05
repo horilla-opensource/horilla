@@ -21,11 +21,13 @@ from datetime import date, datetime, timedelta
 from urllib.parse import parse_qs
 
 import pandas as pd
+from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import F, ProtectedError
+from django.db.models.query import QuerySet
 from django.forms import DateInput, Select
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
@@ -35,7 +37,6 @@ from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
-from attendance.models import Attendance, AttendanceOverTime
 from base.forms import ModelForm
 from base.methods import (
     choosesubordinates,
@@ -70,6 +71,7 @@ from employee.forms import (
     EmployeeExportExcelForm,
     EmployeeForm,
     EmployeeNoteForm,
+    EmployeeTagForm,
     EmployeeWorkInformationForm,
     EmployeeWorkInformationUpdateForm,
     excel_columns,
@@ -81,6 +83,7 @@ from employee.models import (
     EmployeeBankDetails,
     EmployeeGeneralSetting,
     EmployeeNote,
+    EmployeeTag,
     EmployeeWorkInformation,
     NoteFiles,
 )
@@ -94,6 +97,7 @@ from horilla.decorators import (
 )
 from horilla.filters import HorillaPaginator
 from horilla.group_by import group_by_queryset
+from horilla.methods import dynamic_attr, get_horilla_model_class
 from horilla_audit.models import AccountBlockUnblock, HistoryTrackingFields
 from horilla_documents.forms import (
     DocumentForm,
@@ -102,24 +106,7 @@ from horilla_documents.forms import (
     DocumentUpdateForm,
 )
 from horilla_documents.models import Document, DocumentRequest
-from leave.models import LeaveGeneralSetting, LeaveRequest
 from notifications.signals import notify
-from onboarding.models import OnboardingStage, OnboardingTask
-from payroll.methods.payslip_calc import dynamic_attr
-from payroll.models.models import (
-    Allowance,
-    Contract,
-    Deduction,
-    EncashmentGeneralSettings,
-    Reimbursement,
-)
-from pms.models import Feedback
-from recruitment.models import Candidate, InterviewSchedule, Recruitment, Stage
-
-
-def return_none(a, b):
-    return None
-
 
 operator_mapping = {
     "equal": operator.eq,
@@ -129,7 +116,6 @@ operator_mapping = {
     "le": operator.le,
     "ge": operator.ge,
     "icontains": operator.contains,
-    "range": return_none,
 }
 filter_mapping = {
     "work_type_id": {
@@ -180,23 +166,11 @@ def employee_profile(request):
     """
     This method is used to view own profile of employee.
     """
-    user = request.user
     employee = request.user.employee_get
-    user_leaves = employee.available_leave.all().exclude(
-        leave_type_id__is_compensatory_leave=True
-    )
-    if (
-        LeaveGeneralSetting.objects.first()
-        and LeaveGeneralSetting.objects.first().compensatory_leave
-    ):
-        user_leaves = employee.available_leave.all()
-    instances = LeaveRequest.objects.filter(employee_id=employee)
-    leave_request_ids = json.dumps([instance.id for instance in instances])
-    assets = employee.allocated_employee.all()
-    feedback_own = Feedback.objects.filter(employee_id=employee, archive=False)
-    interviews = InterviewSchedule.objects.filter(employee_id=employee).order_by(
-        "-interview_date"
-    )
+    # interviews = InterviewSchedule.objects.filter(employee_id=employee).order_by(
+    #     "-interview_date"
+    # )
+    interviews = None
     today = datetime.today()
     now = timezone.now()
     return render(
@@ -204,10 +178,8 @@ def employee_profile(request):
         "employee/profile/profile_view.html",
         {
             "employee": employee,
-            "user_leaves": user_leaves,
-            "assets": assets,
-            "leave_request_ids": leave_request_ids,
-            "self_feedback": feedback_own,
+            "user_leaves": None,
+            "leave_request_ids": json.dumps([]),
             "current_date": today,
             "interviews": interviews,
             "now": now,
@@ -259,9 +231,9 @@ def employee_view_individual(request, obj_id, **kwargs):
     This method is used to view profile of an employee.
     """
     employee = Employee.objects.get(id=obj_id)
-    instances = LeaveRequest.objects.filter(employee_id=employee)
-    leave_request_ids = json.dumps([instance.id for instance in instances])
-    employee_leaves = employee.available_leave.all()
+    employee_leaves = (
+        employee.available_leave.all() if apps.is_installed("leave") else None
+    )
     enabled_block_unblock = (
         AccountBlockUnblock.objects.exists()
         and AccountBlockUnblock.objects.first().is_enabled
@@ -309,7 +281,7 @@ def employee_view_individual(request, obj_id, **kwargs):
         "next": next_id,
         "requests_ids": requests_ids,
         "current_date": date.today(),
-        "leave_request_ids": leave_request_ids,
+        "leave_request_ids": json.dumps([]),
         "enabled_block_unblock": enabled_block_unblock,
     }
     # if the requesting user opens own data
@@ -327,13 +299,15 @@ def employee_view_individual(request, obj_id, **kwargs):
 
 @login_required
 @hx_request_required
-def contract_tab(request, obj_id, **kwargs):
+def about_tab(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
     """
     employee = Employee.objects.get(id=obj_id)
-    employee_leaves = employee.available_leave.all()
-    contracts = Contract.objects.filter(employee_id=obj_id)
+    contracts = employee.contract_set.all() if apps.is_installed("payroll") else None
+    employee_leaves = (
+        employee.available_leave.all() if apps.is_installed("leave") else None
+    )
     return render(
         request,
         "tabs/personal-tab.html",
@@ -343,160 +317,6 @@ def contract_tab(request, obj_id, **kwargs):
             "contracts": contracts,
         },
     )
-
-
-@login_required
-@owner_can_enter("asset.view_asset", Employee)
-def asset_tab(request, emp_id):
-    """
-    This function is used to view asset tab of an employee in employee individual view.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    emp_id (int): The id of the employee.
-
-    Returns: return asset-tab template
-
-    """
-    employee = Employee.objects.get(id=emp_id)
-    assets_requests = employee.requested_employee.all()
-    assets = employee.allocated_employee.all()
-    assets_ids = json.dumps([instance.id for instance in assets])
-    context = {
-        "assets": assets,
-        "requests": assets_requests,
-        "assets_ids": assets_ids,
-        "employee": emp_id,
-    }
-    return render(request, "tabs/asset-tab.html", context=context)
-
-
-@login_required
-@hx_request_required
-def profile_asset_tab(request, emp_id):
-    """
-    This function is used to view asset tab of an employee in employee profile view.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    emp_id (int): The id of the employee.
-
-    Returns: return profile-asset-tab template
-
-    """
-    employee = Employee.objects.get(id=emp_id)
-    assets = employee.allocated_employee.all()
-    assets_ids = json.dumps([instance.id for instance in assets])
-    context = {
-        "assets": assets,
-        "assets_ids": assets_ids,
-    }
-    return render(request, "tabs/profile-asset-tab.html", context=context)
-
-
-@login_required
-@hx_request_required
-def asset_request_tab(request, emp_id):
-    """
-    This function is used to view asset request tab of an employee in employee individual view.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    emp_id (int): The id of the employee.
-
-    Returns: return asset-request-tab template
-
-    """
-    employee = Employee.objects.get(id=emp_id)
-    assets_requests = employee.requested_employee.all()
-    context = {"asset_requests": assets_requests, "emp_id": emp_id}
-    return render(request, "tabs/asset-request-tab.html", context=context)
-
-
-@login_required
-@hx_request_required
-@owner_can_enter("pms.view_feedback", Employee)
-def performance_tab(request, emp_id):
-    """
-    This function is used to view performance tab of an employee in employee individual
-    & profile view.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    emp_id (int): The id of the employee.
-
-    Returns: return performance-tab template
-
-    """
-    feedback_own = Feedback.objects.filter(employee_id=emp_id, archive=False)
-    today = datetime.today()
-    context = {
-        "self_feedback": feedback_own,
-        "current_date": today,
-    }
-    return render(request, "tabs/performance-tab.html", context=context)
-
-
-@login_required
-@hx_request_required
-def profile_attendance_tab(request):
-    """
-    This function is used to view attendance tab of an employee in profile view.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    emp_id (int): The id of the employee.
-
-    Returns: return asset-request-tab template
-
-    """
-    user = request.user
-    employee = user.employee_get
-    employee_attendances = employee.employee_attendances.all()
-    attendances_ids = json.dumps([instance.id for instance in employee_attendances])
-    context = {
-        "attendances": employee_attendances,
-        "attendances_ids": attendances_ids,
-    }
-    return render(request, "tabs/profile-attendance-tab.html", context)
-
-
-@login_required
-@manager_can_enter("employee.view_employee")
-def attendance_tab(request, emp_id):
-    """
-    This function is used to view attendance tab of an employee in individual view.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    emp_id (int): The id of the employee.
-
-    Returns: return attendance-tab template
-    """
-
-    requests = Attendance.objects.filter(
-        is_validate_request=True,
-        employee_id=emp_id,
-    )
-    attendances_ids = json.dumps([instance.id for instance in requests])
-    validate_attendances = Attendance.objects.filter(
-        attendance_validated=False, employee_id=emp_id
-    )
-    validate_attendances_ids = json.dumps(
-        [instance.id for instance in validate_attendances]
-    )
-    accounts = AttendanceOverTime.objects.filter(employee_id=emp_id)
-    accounts_ids = json.dumps([instance.id for instance in accounts])
-
-    context = {
-        "requests": requests,
-        "attendances_ids": attendances_ids,
-        "accounts": accounts,
-        "accounts_ids": accounts_ids,
-        "validate_attendances": validate_attendances,
-        "validate_attendances_ids": validate_attendances_ids,
-    }
-    return render(request, "tabs/attendance-tab.html", context=context)
 
 
 @login_required
@@ -512,12 +332,17 @@ def allowances_deductions_tab(request, emp_id):
     deduction tab template.
     """
     employee = Employee.objects.get(id=emp_id)
-    active_contracts = employee.contract_set.filter(contract_status="active").first()
+    active_contracts = (
+        employee.contract_set.filter(contract_status="active").first()
+        if apps.is_installed("payroll")
+        else None
+    )
     basic_pay = active_contracts.wage if active_contracts else None
     employee_allowances = []
     employee_deductions = []
     if basic_pay:
         # Find the applicable allowances for the employee
+        Allowance = get_horilla_model_class(app_label="payroll", model="allowance")
         specific_allowances = Allowance.objects.filter(specific_employees=employee)
         conditional_allowances = Allowance.objects.filter(
             is_condition_based=True
@@ -533,6 +358,7 @@ def allowances_deductions_tab(request, emp_id):
                 condition_operator = allowance.condition
                 condition_value = allowance.value.lower().replace(" ", "_")
                 employee_value = dynamic_attr(employee, condition_field)
+                employee_value = 0
                 operator_func = operator_mapping.get(condition_operator)
                 if employee_value is not None:
                     condition_value = type(employee_value)(condition_value)
@@ -547,6 +373,7 @@ def allowances_deductions_tab(request, emp_id):
                     employee_allowances.remove(allowance)
 
         # Find the applicable deductions for the employee
+        Deduction = get_horilla_model_class(app_label="payroll", model="deduction")
         specific_deductions = Deduction.objects.filter(
             specific_employees=employee, is_pretax=True, is_tax=False
         )
@@ -559,6 +386,7 @@ def allowances_deductions_tab(request, emp_id):
         deductions = (
             specific_deductions | conditional_deduction | active_employee_deduction
         )
+        deductions = None
         employee_deductions = list(deductions)
         for deduction in deductions:
             if deduction.is_condition_based:
@@ -566,6 +394,7 @@ def allowances_deductions_tab(request, emp_id):
                 condition_operator = deduction.condition
                 condition_value = deduction.value.lower().replace(" ", "_")
                 employee_value = dynamic_attr(employee, condition_field)
+                employee_value = 0
                 operator_func = operator_mapping.get(condition_operator)
 
                 if (
@@ -660,7 +489,6 @@ def document_request_view(request):
     documents = group_by_queryset(
         documents, "document_request_id", request.GET.get("page"), "page"
     )
-    # documents = paginator_qry(documents,request.GET.get("page"))
     data_dict = parse_qs(previous_data)
     get_key_instances(Document, data_dict)
     context = {
@@ -1181,7 +1009,6 @@ def employee_view(request):
     )
 
     filter_obj = EmployeeFilter(request.GET, queryset=queryset)
-    export_form = EmployeeExportExcelForm()
     update_fields = BulkUpdateFieldForm()
     data_dict = parse_qs(previous_data)
     get_key_instances(Employee, data_dict)
@@ -1197,8 +1024,6 @@ def employee_view(request):
             "data": paginator_qry(filter_obj.qs, page_number),
             "pd": previous_data,
             "f": filter_obj,
-            "export_filter": EmployeeFilter(queryset=filter_obj.qs),
-            "export_form": export_form,
             "update_fields_form": update_fields,
             "view_type": view_type,
             "filter_dict": data_dict,
@@ -2029,11 +1854,12 @@ def employee_delete(request, obj_id):
     try:
         view = request.POST.get("view")
         employee = Employee.objects.get(id=obj_id)
-        if Contract.objects.filter(employee_id=obj_id).exists():
-            contracts = Contract.objects.filter(employee_id=obj_id)
-            for contract in contracts:
-                if contract.contract_status != "active":
-                    contract.delete()
+        if apps.is_installed("payroll"):
+            if employee.contract_set.all().exists():
+                contracts = employee.contract_set.all()
+                for contract in contracts:
+                    if contract.contract_status != "active":
+                        contract.delete()
         user = employee.employee_user_id
         try:
             user.delete()
@@ -2066,11 +1892,12 @@ def employee_bulk_delete(request):
     for employee_id in ids:
         try:
             employee = Employee.objects.get(id=employee_id)
-            if Contract.objects.filter(employee_id=employee_id).exists():
-                contracts = Contract.objects.filter(employee_id=employee_id)
-                for contract in contracts:
-                    if contract.contract_status != "active":
-                        contract.delete()
+            if apps.is_installed("payroll"):
+                if employee.contract_set.all().exists():
+                    contracts = employee.contract_set.all()
+                    for contract in contracts:
+                        if contract.contract_status != "active":
+                            contract.delete()
             user = employee.employee_user_id
             user.delete()
             messages.success(
@@ -2200,9 +2027,13 @@ def replace_employee(request, emp_id):
                         reporting_manager_id=emp_id
                     ).update(reporting_manager_id=replace_emp)
                 elif (
-                    field_name == "recruitment_managers"
+                    apps.is_installed("recruitment")
+                    and field_name == "recruitment_managers"
                     and str(emp_id) != replace_emp_id
                 ):
+                    Recruitment = get_horilla_model_class(
+                        app_label="recruitment", model="recruitment"
+                    )
                     recruitment_query = Recruitment.objects.filter(
                         recruitment_managers=emp_id
                     )
@@ -2211,9 +2042,13 @@ def replace_employee(request, emp_id):
                             recruitment.recruitment_managers.remove(emp_id)
                             recruitment.recruitment_managers.add(replace_emp)
                 elif (
-                    field_name == "recruitment_stage_managers"
+                    apps.is_installed("recruitment")
+                    and field_name == "recruitment_stage_managers"
                     and str(emp_id) != replace_emp_id
                 ):
+                    Stage = get_horilla_model_class(
+                        app_label="recruitment", model="stage"
+                    )
                     recruitment_stage_query = Stage.objects.filter(
                         stage_managers=emp_id
                     )
@@ -2222,9 +2057,13 @@ def replace_employee(request, emp_id):
                             stage.stage_managers.remove(emp_id)
                             stage.stage_managers.add(replace_emp)
                 elif (
-                    field_name == "onboarding_stage_manager"
+                    apps.is_installed("onboarding")
+                    and field_name == "onboarding_stage_manager"
                     and str(emp_id) != replace_emp_id
                 ):
+                    OnboardingStage = get_horilla_model_class(
+                        app_label="onboarding", model="onboardingstage"
+                    )
                     onboarding_stage_query = OnboardingStage.objects.filter(
                         employee_id=emp_id
                     )
@@ -2233,9 +2072,13 @@ def replace_employee(request, emp_id):
                             stage.employee_id.remove(emp_id)
                             stage.employee_id.add(replace_emp)
                 elif (
-                    field_name == "onboarding_task_manager"
+                    apps.is_installed("onboarding")
+                    and field_name == "onboarding_task_manager"
                     and str(emp_id) != replace_emp_id
                 ):
+                    OnboardingTask = get_horilla_model_class(
+                        app_label="onboarding", model="onboardingtask"
+                    )
                     onboarding_task_query = OnboardingTask.objects.filter(
                         employee_id=emp_id
                     )
@@ -2926,6 +2769,12 @@ def work_info_export(request):
     """
     This method is used to export employee data to xlsx
     """
+    if request.META.get("HTTP_HX_REQUEST"):
+        context = {
+            "export_filter": EmployeeFilter(),
+            "export_form": EmployeeExportExcelForm(),
+        }
+        return render(request, "employee_export_filter.html", context)
     employees_data = {}
     selected_columns = []
     form = EmployeeExportExcelForm()
@@ -3186,47 +3035,24 @@ def dashboard_employee_tiles(request):
     This method returns json response.
     """
     data = {}
-    # active employees count
+    # # active employees count
     data["total_employees"] = Employee.objects.filter(is_active=True).count()
-    # filtering newbies
-    data["newbies_today"] = Candidate.objects.filter(
-        joining_date__range=[date.today(), date.today() + timedelta(days=1)],
-        is_active=True,
-    ).count()
-    try:
-        data[
-            "newbies_today_percentage"
-        ] = f"""{
-        (EmployeeWorkInformation.objects.filter(
-            date_joining__range=[date.today(), date.today() + timedelta(days=1)]
-            ).count() / Employee.objects.filter(
-                employee_work_info__isnull=False).count()
-                ) * 100:.2f}%"""
-    except Exception:
-        data["newbies_today_percentage"] = 0
-    # filtering newbies on this week
-
-    data["newbies_week"] = Candidate.objects.filter(
-        joining_date__range=[
-            date.today() - timedelta(days=date.today().weekday()),
-            date.today() + timedelta(days=6 - date.today().weekday()),
-        ],
-        is_active=True,
-        hired=True,
-    ).count()
-    try:
-        data[
-            "newbies_week_percentage"
-        ] = f"""{(
-            EmployeeWorkInformation.objects.filter(
-            date_joining__range=[date.today() - timedelta(days=7), date.today()]
-            ).count() / Employee.objects.filter(
-            employee_work_info__isnull=False
-            ).count()
-            ) * 100:.2f}%"""
-
-    except Exception:
-        data["newbies_week_percentage"] = 0
+    # # filtering newbies
+    if apps.is_installed("recruitment"):
+        Candidate = get_horilla_model_class(app_label="recruitment", model="candidate")
+        data["newbies_today"] = Candidate.objects.filter(
+            joining_date__range=[date.today(), date.today() + timedelta(days=1)],
+            is_active=True,
+        ).count()
+        # filtering newbies on this week
+        data["newbies_week"] = Candidate.objects.filter(
+            joining_date__range=[
+                date.today() - timedelta(days=date.today().weekday()),
+                date.today() + timedelta(days=6 - date.today().weekday()),
+            ],
+            is_active=True,
+            hired=True,
+        ).count()
     return JsonResponse(data)
 
 
@@ -3450,9 +3276,15 @@ def bonus_points_tab(request, emp_id):
     """
     employee_obj = Employee.objects.get(id=emp_id)
     points = BonusPoint.objects.get(employee_id=emp_id)
-    requested_bonus_points = Reimbursement.objects.filter(
-        employee_id=emp_id, type="bonus_encashment", status="requested"
-    )
+    if apps.is_installed("payroll"):
+        Reimbursement = get_horilla_model_class(
+            app_label="payroll", model="reimbursement"
+        )
+        requested_bonus_points = Reimbursement.objects.filter(
+            employee_id=emp_id, type="bonus_encashment", status="requested"
+        )
+    else:
+        requested_bonus_points = QuerySet().none()
     trackings = points.tracking()
     activity_list = []
     for history in trackings:
@@ -3550,11 +3382,16 @@ def redeem_points(request, emp_id):
     user = Employee.objects.get(id=emp_id)
     form = BonusPointRedeemForm()
     form.instance.employee_id = user
-    amount_for_bonus_point = (
-        EncashmentGeneralSettings.objects.first().bonus_amount
-        if EncashmentGeneralSettings.objects.first()
-        else 1
-    )
+    amount_for_bonus_point = 0
+    if apps.is_installed("payroll"):
+        EncashmentGeneralSettings = get_horilla_model_class(
+            app_label="payroll", model="encashmentgeneralsettings"
+        )
+        amount_for_bonus_point = (
+            EncashmentGeneralSettings.objects.first().bonus_amount
+            if EncashmentGeneralSettings.objects.first()
+            else 1
+        )
     if request.method == "POST":
         form = BonusPointRedeemForm(request.POST)
         form.instance.employee_id = user
@@ -3562,15 +3399,19 @@ def redeem_points(request, emp_id):
             form.save(commit=False)
             points = form.cleaned_data["points"]
             amount = amount_for_bonus_point * points
-            Reimbursement.objects.create(
-                title=f"Bonus point Redeem for {user}",
-                type="bonus_encashment",
-                employee_id=user,
-                bonus_to_encash=points,
-                amount=amount,
-                description=f"{user} want to redeem {points} points",
-                allowance_on=date.today(),
-            )
+            if apps.is_installed("payroll"):
+                Reimbursement = get_horilla_model_class(
+                    app_label="payroll", model="reimbursement"
+                )
+                Reimbursement.objects.create(
+                    title=f"Bonus point Redeem for {user}",
+                    type="bonus_encashment",
+                    employee_id=user,
+                    bonus_to_encash=points,
+                    amount=amount,
+                    description=f"{user} want to redeem {points} points",
+                    allowance_on=date.today(),
+                )
             return HttpResponse("<script>window.location.reload();</script>")
     return render(
         request,
@@ -3670,35 +3511,42 @@ def organisation_chart(request):
 
 
 @login_required
+@permission_required("payroll.add_encashmentgeneralsettings")
 def encashment_condition_create(request):
     """
     Handle the creation and updating of encashment general settings.
-
-    This view function retrieves the first instance of EncashmentGeneralSettings
-    and initializes a form with it. If the request method is POST, it attempts
-    to update the instance with the submitted data. If the form is valid, the
-    settings are saved and a success message is displayed. The user is then
-    redirected to the referring page or the root URL. If the request method is
-    GET, it renders the encashment settings form.
     """
-    from payroll.forms.forms import EncashmentGeneralSettingsForm
+    if apps.is_installed("payroll"):
+        from payroll.forms.forms import EncashmentGeneralSettingsForm
 
-    instance = EncashmentGeneralSettings.objects.first()
-    encashment_form = EncashmentGeneralSettingsForm(instance=instance)
-    if request.method == "POST":
-        encashment_form = EncashmentGeneralSettingsForm(request.POST, instance=instance)
-        if encashment_form.is_valid():
-            encashment_form.save()
-            messages.success(request, _("Settings updated."))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        EncashmentGeneralSettings = get_horilla_model_class(
+            app_label="payroll", model="encashmentgeneralsettings"
+        )
+        instance = (
+            EncashmentGeneralSettings.objects.first()
+            if apps.is_installed("payroll")
+            else QuerySet().none()
+        )
 
-    return render(
-        request,
-        "settings/encashment_settings.html",
-        {
-            "encashment_form": encashment_form,
-        },
-    )
+        if request.method == "POST":
+            encashment_form = EncashmentGeneralSettingsForm(
+                request.POST, instance=instance
+            )
+            if encashment_form.is_valid():
+                encashment_form.save()
+                messages.success(request, _("Settings updated."))
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        else:
+            encashment_form = EncashmentGeneralSettingsForm(instance=instance)
+
+        return render(
+            request,
+            "settings/encashment_settings.html",
+            {"encashment_form": encashment_form},
+        )
+
+    messages.warning(request, _("Payroll app not installed"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -3749,6 +3597,20 @@ def employee_get_mail_log(request):
     return render(request, "tabs/mail_log.html", {"tracked_mails": tracked_mails})
 
 
+@login_required
+def get_job_positions(request):
+    department_id = request.GET.get("department_id")
+    job_positions = (
+        JobPosition.objects.filter(department_id=department_id).values_list(
+            "id", "job_position"
+        )
+        if department_id
+        else []
+    )
+    return JsonResponse({"job_positions": dict(job_positions)})
+
+
+@login_required
 def get_job_roles(request):
     """
     Retrieve job roles associated with a specific job position.
@@ -3762,3 +3624,64 @@ def get_job_roles(request):
         "id", "job_role"
     )
     return JsonResponse({"job_roles": dict(job_roles)})
+
+
+@login_required
+@permission_required("employee.view_employeetag")
+def employee_tag_view(request):
+    """
+    This method is used to Employee tags
+    """
+    employeetags = EmployeeTag.objects.all()
+    return render(
+        request,
+        "base/tags/employee_tags.html",
+        {"employeetags": employeetags},
+    )
+
+
+@login_required
+@hx_request_required
+@permission_required("employee.add_employeetag")
+def employee_tag_create(request):
+    """
+    This method renders form and template to create Ticket type
+    """
+    form = EmployeeTagForm()
+    if request.method == "POST":
+        form = EmployeeTagForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = EmployeeTagForm()
+            messages.success(request, _("Tag has been created successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/employee_tag/employee_tag_form.html",
+        {
+            "form": form,
+        },
+    )
+
+
+@login_required
+@hx_request_required
+@permission_required("employee.add_employeetag")
+def employee_tag_update(request, tag_id):
+    """
+    This method renders form and template to create Ticket type
+    """
+    tag = EmployeeTag.objects.get(id=tag_id)
+    form = EmployeeTagForm(instance=tag)
+    if request.method == "POST":
+        form = EmployeeTagForm(request.POST, instance=tag)
+        if form.is_valid():
+            form.save()
+            form = EmployeeTagForm()
+            messages.success(request, _("Tag has been updated successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/employee_tag/employee_tag_form.html",
+        {"form": form, "tag_id": tag_id},
+    )

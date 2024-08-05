@@ -30,7 +30,9 @@ from collections import OrderedDict
 from typing import Any, Dict
 
 from django import forms
+from django.apps import apps
 from django.core.exceptions import ValidationError
+from django.db.models.query import QuerySet
 from django.forms import DateTimeInput
 from django.template.loader import render_to_string
 from django.utils.html import format_html
@@ -46,22 +48,19 @@ from attendance.models import (
     AttendanceRequestFile,
     AttendanceValidationCondition,
     GraceTime,
-    PenaltyAccount,
+    WorkRecords,
     attendance_date_validate,
     strtime_seconds,
     validate_time_format,
 )
 from base.forms import MultipleFileField
-from base.methods import reload_queryset
+from base.methods import get_working_days, reload_queryset
 from base.models import Company, EmployeeShift
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla import horilla_middlewares
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-from leave.filters import LeaveRequestFilter
-from leave.models import LeaveType
-from payroll.methods.methods import get_working_days
 
 logger = logging.getLogger(__name__)
 
@@ -756,27 +755,6 @@ class AttendanceExportForm(forms.Form):
     )
 
 
-class PenaltyAccountForm(ModelForm):
-    """
-    PenaltyAccountForm
-    """
-
-    class Meta:
-        model = PenaltyAccount
-        fields = "__all__"
-        exclude = ["is_active"]
-
-    def __init__(self, *args, **kwargs):
-        employee = kwargs.pop("employee", None)
-        super().__init__(*args, **kwargs)
-        if employee:
-            available_leaves = employee.available_leave.all()
-            assigned_leave_types = LeaveType.objects.filter(
-                id__in=available_leaves.values_list("leave_type_id", flat=True)
-            )
-            self.fields["leave_type_id"].queryset = assigned_leave_types
-
-
 class LateComeEarlyOutExportForm(forms.Form):
     model_fields = AttendanceLateComeEarlyOut._meta.get_fields()
     field_choices_1 = [
@@ -889,15 +867,20 @@ def get_date_list(employee_id, from_date, to_date):
     attendance_dates = []
     if len(working_date_list) > 0:
         # filter through approved leave of employee
-        approved_leave_dates_filtered = LeaveRequestFilter(
-            data={
-                "from_date": working_date_list[0],
-                "to_date": working_date_list[-1],
-                "employee_id": employee_id,
-                "status": "approved",
-            }
-        )
-        approved_leave_dates_filtered = approved_leave_dates_filtered.qs
+        if apps.is_installed("leave"):
+            from leave.filters import LeaveRequestFilter
+
+            approved_leave_dates_filtered = LeaveRequestFilter(
+                data={
+                    "from_date": working_date_list[0],
+                    "to_date": working_date_list[-1],
+                    "employee_id": employee_id,
+                    "status": "approved",
+                }
+            )
+            approved_leave_dates_filtered = approved_leave_dates_filtered.qs
+        else:
+            approved_leave_dates_filtered = QuerySet().none()
         approved_leave_dates = []
         # Extract the list of approved leave dates
         if len(approved_leave_dates_filtered) > 0:
@@ -1078,3 +1061,17 @@ class BulkAttendanceRequestForm(ModelForm):
             instance.save()
 
         return instance
+
+
+class WorkRecordsForm(ModelForm):
+    """
+    WorkRecordForm
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        fields = "__all__"
+        model = WorkRecords

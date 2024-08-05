@@ -1,7 +1,22 @@
 {% load i18n %}
-<form hx-post="{% url 'create-policy' %}?instance_id={{form.instance.id}}" hx-encoding="multipart/form-data">
-  {{ form.as_p }}
-  <div class="d-flex flex-row-reverse">
-    <button type="submit" class="oh-btn oh-btn--secondary">{% trans 'Save' %}</button>
-  </div>
-</form>
+
+<div class="oh-modal__dialog-header">
+  <h2 class="oh-modal__dialog-title">
+    {% trans "Policy" %}
+  </h2>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+
+<div class="oh-modal__dialog-body">
+  <form hx-post="{% url 'create-policy' %}?instance_id={{form.instance.id}}" hx-encoding="multipart/form-data"
+    class="oh-profile-section" hx-target="#objectCreateModalTarget">
+    {{ form.as_p }}
+    <div class="oh-modal__dialog-footer p-0">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow mt-3">
+        {% trans "Save" %}
+      </button>
+    </div>
+  </form>
+</div>

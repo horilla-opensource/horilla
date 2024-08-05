@@ -1,4 +1,4 @@
-{% load basefilters %}
+{% load basefilters static %}
 {% load i18n %}
 
 
@@ -54,7 +54,7 @@
                 >
                 <img
                     style="display: block; width: 100px; margin: 20px auto"
-                    src="/static/images/ui/comment.png"
+                    src="{% static "/images/ui/comment.png" %}"
                     class=""
                 />
             </div>

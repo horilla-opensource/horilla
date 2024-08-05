@@ -96,11 +96,6 @@ urlpatterns = [
     ),
     path("welcome-aboard", views.welcome_aboard, name="welcome-aboard"),
     path(
-        "hired-candidate-chart",
-        views.hired_candidate_chart,
-        name="hired-candidate-chart",
-    ),
-    path(
         "onboard-candidate-chart",
         views.onboard_candidate_chart,
         name="onboard-candidate-chart",

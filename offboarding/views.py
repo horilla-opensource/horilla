@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timedelta
 from urllib.parse import parse_qs
 
+from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse
@@ -20,6 +21,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset as group_by
+from horilla.methods import get_horilla_model_class
 from notifications.signals import notify
 from offboarding.decorators import (
     any_manager_can_enter,
@@ -54,9 +56,6 @@ from offboarding.models import (
     OffboardingTask,
     ResignationLetter,
 )
-from onboarding.filters import OnboardingStageFilter
-from payroll.models.models import Contract, PayrollGeneralSetting
-from recruitment.pipeline_grouper import group_by_queryset
 
 
 def pipeline_grouper(filters={}, offboardings=[]):
@@ -78,7 +77,7 @@ def pipeline_grouper(filters={}, offboardings=[]):
                 ),
             ).qs.order_by("stage_id__id")
             page_name = "page" + stage.title + str(offboarding.id)
-            employee_grouper = group_by_queryset(
+            employee_grouper = group_by(
                 stage_employees,
                 "stage_id",
                 filters.get(page_name),
@@ -185,10 +184,7 @@ def create_offboarding(request):
     if request.method == "POST":
         form = OffboardingForm(request.POST, instance=instance)
         if form.is_valid():
-            off_obj = form.save()
-            off_obj.managers.set(
-                Employee.objects.filter(id__in=form.data.getlist("managers"))
-            )
+            form.save()
             messages.success(request, _("Offboarding saved"))
             return HttpResponse("<script>window.location.reload()</script>")
 
@@ -811,7 +807,14 @@ def update_status(request):
     ids = request.GET.getlist("letter_ids")
     status = request.GET["status"]
     offboarding_id = request.GET.get("offboarding_id")
-    default_notice_end = PayrollGeneralSetting.objects.first()
+    default_notice_end = (
+        get_horilla_model_class(
+            app_label="payroll", model="payrollgeneralsetting"
+        ).objects.first()
+        if apps.is_installed("payroll")
+        else None
+    )
+
     if offboarding_id:
         offboarding = Offboarding.objects.get(id=offboarding_id)
         notice_period_starts = request.GET.get("notice_period_starts")
@@ -888,15 +891,23 @@ def get_notice_period(request):
     This method is used to get initial details for notice period
     """
     employee_id = request.GET["employee_id"]
-    employee_contract = (
-        (Contract.objects.order_by("-id").filter(employee_id__id=employee_id).first())
-        if Contract.objects.filter(
-            employee_id__id=employee_id, contract_status="active"
-        ).first()
-        else Contract.objects.filter(
-            employee_id__id=employee_id, contract_status="active"
-        ).first()
-    )
+    if apps.is_installed("payroll"):
+        Contract = get_horilla_model_class(app_label="payroll", model="contract")
+        employee_contract = (
+            (
+                Contract.objects.order_by("-id")
+                .filter(employee_id__id=employee_id)
+                .first()
+            )
+            if Contract.objects.filter(
+                employee_id__id=employee_id, contract_status="active"
+            ).first()
+            else Contract.objects.filter(
+                employee_id__id=employee_id, contract_status="active"
+            ).first()
+        )
+    else:
+        employee_contract = None
 
     response = {
         "notice_period": intial_notice_period(request)["get_initial_notice_period"],
@@ -909,6 +920,9 @@ def get_notice_period(request):
 
 
 def get_notice_period_end_date(request):
+    """
+    Calculates and returns the end date of the notice period based on the provided start date.
+    """
     start_date = request.GET.get("start_date")
     start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
     notice_period = intial_notice_period(request)["get_initial_notice_period"]

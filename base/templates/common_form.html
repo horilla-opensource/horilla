@@ -1,0 +1,49 @@
+{% load widget_tweaks %}
+{% load i18n %}
+<style>
+  .condition-highlight {
+    background-color: #ffa5000f;
+  }
+</style>
+<div class="oh-general__tab-target oh-profile-section" id="personal">
+  {% if form.verbose_name %}
+  <div class="oh-payslip__header">
+    <div class="oh-payslip__header-left">
+      <div class="oh-payroll__component-title">{{ form.verbose_name }}</div>
+    </div>
+  </div>
+  {% endif %}
+  <div class="oh-profile-section__card">
+    <div class="row">
+      <div class="col-12">{{ form.non_field_errors }}</div>
+      {% for field in form.visible_fields %}
+        <div class="col-12 col-md-6">
+          <div class="oh-label__info" for="id_{{ field.name }}">
+            <label class="oh-label {% if field.field.required %} required-star{% endif %}" for="id_{{ field.name }}">{% trans field.label %}</label>
+            {% if field.help_text != '' %}
+              <span class="oh-info mr-2" title="{{ field.help_text|safe }}"></span>
+            {% endif %}
+          </div>
+
+          {% if field.field.widget.input_type == 'checkbox' %}
+            <div class="oh-switch" style="width: 30px;">{{ field|add_class:'oh-switch__checkbox' }}</div>
+          {% else %}
+            {{ field|add_class:'form-control' }}
+          {% endif %}
+          {{ field.errors }}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% for field in form.hidden_fields %}
+      {{ field }}
+    {% endfor %}
+
+    <div class="d-flex flex-row-reverse">
+      <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">{% trans 'Save' %}</button>
+    </div>
+  </div>
+</div>
+<script>
+  $("#personal").closest(".oh-modal--show").find("button[aria-label='Close']").attr("style","top: 33px; right: 20px; z-index:1");
+</script>

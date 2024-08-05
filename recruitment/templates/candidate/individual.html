@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% load i18n %} {% load yes_no %} {% load static %} {% block content %} {% load recruitmentfilters %}
+{% extends 'index.html' %} {% load i18n %} {% load horillafilters %} {% load static %} {% block content %} {% load recruitmentfilters %}
 <script>
   function submitForm(elem) {
     $(elem).siblings(".add_more_submit").click();
@@ -101,7 +101,7 @@
     {% endif %}
 
     <a href="{% url 'rec-candidate-update' candidate.id %}" class="mt-1 mb-1 m-3">
-      <img src="/static/images/ui/edit_btn.png" style="width: 25px; height: auto;" title="{% trans 'Edit' %}">
+      <img src="{% static "/images/ui/edit_btn.png" %}" style="width: 25px; height: auto;" title="{% trans 'Edit' %}">
     </a>
       {% if perms.recruitment.change_candidate %}
         <div class='d-flex float-end ms-4'>
@@ -627,7 +627,7 @@
                         {% elif question|slice:"0:11" == "percentage_" %}
                           {{ answer_list.0 }}%
                         {% elif question|slice:"0:5" == "file_" %}
-                          <a href="{{ answer_list.0.url }}" target="_blank">{{ answer_list.0 }}</a>
+                          <a href="/media/{{ answer_list.0 }}" target="_blank">{{ answer_list.0 }}</a>
                         {% elif question|slice:"0:7" == "rating_" %}
                             <div class="oh-rate">
                               <input type="radio" id="star5{{question.id}}" value="5" disabled {% if answer_list.0 == '5' %} checked {% endif %} />

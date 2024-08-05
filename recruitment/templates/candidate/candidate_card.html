@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load basefilters recruitmentfilters %}
+{% load basefilters recruitmentfilters horillafilters %}
 {% load static %}
 {{candidates}}
 
@@ -36,8 +36,8 @@
       </div>
 
       <div class="oh-kanban-card__details">
-        <span class="oh-kanban-card__title" {% if cand.name|length >= 30 %}title = "{{cand.name}}" {% endif %}>{{cand.name|truncatechars:30}}</span>
-        <span class="oh-kanban-card__subtitle" {% if cand.email|length >= 30 %}title = "{{cand.email}}" {% endif %}>{{cand.email|truncatechars:30}}</span><br>
+        <span class="oh-kanban-card__title">{{cand.name}}</span>
+        <span class="oh-kanban-card__subtitle">{{cand.email}}</span><br>
         <span class="oh-kanban-card__subtitle">{{cand.job_position_id}}</span>
       </div>
     </a>
@@ -68,30 +68,32 @@
                     >{% trans "Add to Skill Zone" %}</a>
                   </li>
                 {% endif %}
-                {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
-                  <li class="oh-dropdown__item">
-                    <a
-                            class="oh-dropdown__link oh-dropdown__link--secondary"
-                            hx-target="#createTarget"
-                              hx-swap="innerHTML"
-                              class="oh-btn oh-btn--light"
-                              data-toggle="oh-modal-toggle"
-                              data-target="#createModal"
-                              hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
-                              {% if cand.is_offer_rejected %}
-                              title="{% trans "Added In Rejected Candidates" %}"
+                {% if onboarding|app_installed %}
+                  {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
+                    <li class="oh-dropdown__item">
+                      <a
+                              class="oh-dropdown__link oh-dropdown__link--secondary"
+                              hx-target="#createTarget"
+                                hx-swap="innerHTML"
+                                class="oh-btn oh-btn--light"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#createModal"
+                                hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
+                                {% if cand.is_offer_rejected %}
+                                title="{% trans "Added In Rejected Candidates" %}"
+                                {% else %}
+                                title="{% trans "Add To Rejected Candidates" %}"
+                                {% endif %}
+                              >
+                              {% if not cand.is_offer_rejected %}
+                              {% trans "Add to Rejected" %}
                               {% else %}
-                              title="{% trans "Add To Rejected Candidates" %}"
+                              {% trans "Edit Rejected Candidate" %}
                               {% endif %}
+                              </a
                             >
-                            {% if not cand.is_offer_rejected %}
-                            {% trans "Add to Rejected" %}
-                            {% else %}
-                            {% trans "Edit Rejected Candidate" %}
-                            {% endif %}
-                            </a
-                          >
-                  </li>
+                    </li>
+                  {% endif %}
                 {% endif %}
               {% endif %}
               {% if perms.recruitment.change_candidate %}

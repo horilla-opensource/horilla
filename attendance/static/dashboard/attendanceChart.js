@@ -1,12 +1,14 @@
+staticUrl = $("#statiUrl").attr("data-url");
 $(document).ready(function () {
-
-	// initializing the department overtime chart.
+  // initializing the department overtime chart.
   var departmentChartData = {
     labels: [],
     datasets: [],
   };
   window["departmentOvertimeChart"] = {};
-  const departmentOvertimeChart = document.getElementById("departmentOverChart");
+  const departmentOvertimeChart = document.getElementById(
+    "departmentOverChart"
+  );
   if (departmentOvertimeChart) {
     var departmentAttendanceChart = new Chart(departmentOvertimeChart, {
       type: "pie",
@@ -17,7 +19,8 @@ $(document).ready(function () {
       },
       plugins: [
         {
-          afterRender: (departmentAttendanceChart) => emptyOvertimeChart(departmentAttendanceChart),
+          afterRender: (departmentAttendanceChart) =>
+            emptyOvertimeChart(departmentAttendanceChart),
         },
       ],
     });
@@ -43,14 +46,14 @@ $(document).ready(function () {
     },
   });
 
-	// Function to update the department overtime chart according to the response fetched from backend.
+  // Function to update the department overtime chart according to the response fetched from backend.
 
   function departmentDataUpdate(response) {
     departmentChartData.labels = response.labels;
-    departmentChartData.datasets=response.dataset;
-    departmentChartData.message=response.message;
-    departmentChartData.emptyImageSrc=response.emptyImageSrc;
-    if (departmentAttendanceChart){
+    departmentChartData.datasets = response.dataset;
+    departmentChartData.message = response.message;
+    departmentChartData.emptyImageSrc = response.emptyImageSrc;
+    if (departmentAttendanceChart) {
       departmentAttendanceChart.update();
     }
   }
@@ -77,7 +80,7 @@ $(document).ready(function () {
     });
   }
 
-	// Function to update the input fields according to type select field.
+  // Function to update the input fields according to type select field.
 
   function changeDepartmentView(element) {
     var dataType = $(element).val();
@@ -93,10 +96,9 @@ $(document).ready(function () {
       $("#department_month2").remove();
       if (dataType === "weekly") {
         $("#department_month").prop("type", "week");
-        if (currentWeek <10){
+        if (currentWeek < 10) {
           $("#department_month").val(`${year}-W0${currentWeek}`);
-        }
-        else {
+        } else {
           $("#department_month").val(`${year}-W${currentWeek}`);
         }
         changeDepartmentMonth();
@@ -112,12 +114,13 @@ $(document).ready(function () {
     }
   }
 
-	// Function for empty message for department overtime chart.
+  // Function for empty message for department overtime chart.
 
   function emptyOvertimeChart(departmentAttendanceChart, args, options) {
     flag = false;
     for (let i = 0; i < departmentAttendanceChart.data.datasets.length; i++) {
-      flag = flag + departmentAttendanceChart.data.datasets[i].data.some(Boolean);
+      flag =
+        flag + departmentAttendanceChart.data.datasets[i].data.some(Boolean);
     }
     if (!flag) {
       const { ctx, canvas } = departmentAttendanceChart;
@@ -133,7 +136,7 @@ $(document).ready(function () {
       var noDataImage = new Image();
       noDataImage.src = departmentAttendanceChart.data.emptyImageSrc
         ? departmentAttendanceChart.data.emptyImageSrc
-        : "/static/images/ui/joiningchart.png";
+        : staticUrl + "images/ui/joiningchart.png";
 
       message = departmentAttendanceChart.data.message
         ? departmentAttendanceChart.data.message
@@ -153,7 +156,7 @@ $(document).ready(function () {
     }
   }
 
-	// Ajax request to create department overtime chart initially.
+  // Ajax request to create department overtime chart initially.
 
   $.ajax({
     url: "/attendance/department-overtime-chart",
@@ -163,29 +166,26 @@ $(document).ready(function () {
       "X-Requested-With": "XMLHttpRequest",
     },
     success: (response) => {
-
       departmentDataUpdate(response);
-
     },
     error: (error) => {
       console.log("Error", error);
     },
   });
 
-	// Functions to update department overtime chart while changing the date input field and select input field.
+  // Functions to update department overtime chart while changing the date input field and select input field.
 
-  $("#departmentChartCard").on("change","#department_date_type", function (e) {
-    changeDepartmentView($(this))
-  })
+  $("#departmentChartCard").on("change", "#department_date_type", function (e) {
+    changeDepartmentView($(this));
+  });
 
-  $("#departmentChartCard").on("change","#department_month", function (e) {
-    changeDepartmentMonth()
-  })
+  $("#departmentChartCard").on("change", "#department_month", function (e) {
+    changeDepartmentMonth();
+  });
 
-  $("#departmentChartCard").on("change","#department_month2", function (e) {
-    changeDepartmentMonth()
-  })
-
+  $("#departmentChartCard").on("change", "#department_month2", function (e) {
+    changeDepartmentMonth();
+  });
 });
 
 var data;
@@ -222,7 +222,7 @@ function createAttendanceChart(dataSet, labels) {
   };
   // Create chart using the Chart.js library
   window["attendanceChart"] = {};
-  if (document.getElementById("dailyAnalytic")){
+  if (document.getElementById("dailyAnalytic")) {
     const ctx = document.getElementById("dailyAnalytic").getContext("2d");
     attendanceChart = new Chart(ctx, {
       type: "bar",
@@ -278,7 +278,8 @@ function createAttendanceChart(dataSet, labels) {
               error: (error) => {},
             });
           } else {
-            window.location.href = "/attendance/late-come-early-out-view" + parms;
+            window.location.href =
+              "/attendance/late-come-early-out-view" + parms;
           }
         },
       },
@@ -326,10 +327,9 @@ function changeView(element) {
     $("#attendance_month2").remove();
     if (dataType === "weekly") {
       $("#attendance_month").prop("type", "week");
-      if (currentWeek <10){
+      if (currentWeek < 10) {
         $("#attendance_month").val(`${year}-W0${currentWeek}`);
-      }
-      else {
+      } else {
         $("#attendance_month").val(`${year}-W${currentWeek}`);
       }
       changeMonth();
@@ -344,11 +344,8 @@ function changeView(element) {
     }
   }
 }
-if (document.getElementById("pendingHoursCanvas")){
-  var chart = new Chart(
-    document.getElementById("pendingHoursCanvas"),
-    {}
-  );
+if (document.getElementById("pendingHoursCanvas")) {
+  var chart = new Chart(document.getElementById("pendingHoursCanvas"), {});
 }
 window["pendingHoursCanvas"] = chart;
 function pendingHourChart(year, month) {
@@ -358,7 +355,7 @@ function pendingHourChart(year, month) {
     data: { month: month, year: year },
     success: function (response) {
       var ctx = document.getElementById("pendingHoursCanvas");
-      if (ctx){
+      if (ctx) {
         pendingHoursCanvas.destroy();
         pendingHoursCanvas = new Chart(ctx, {
           type: "bar", // Bar chart type

@@ -357,6 +357,9 @@ class OnboardingViewStageForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """
+        Initializes the form with custom field settings and widgets.
+        """
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
         self.fields["employee_id"] = HorillaMultiSelectField(

@@ -19,3 +19,13 @@ class RecruitmentConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "recruitment"
+
+    def ready(self):
+        from django.urls import include, path
+
+        from horilla.urls import urlpatterns
+
+        urlpatterns.append(
+            path("recruitment/", include("recruitment.urls")),
+        )
+        super().ready()

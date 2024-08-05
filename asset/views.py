@@ -55,11 +55,13 @@ from base.methods import (
 )
 from base.models import Company
 from base.views import paginator_qry
-from employee.models import EmployeeWorkInformation
+from employee.models import Employee, EmployeeWorkInformation
+from horilla import settings
 from horilla.decorators import (
     hx_request_required,
     login_required,
     manager_can_enter,
+    owner_can_enter,
     permission_required,
 )
 from horilla.group_by import group_by_queryset
@@ -1422,7 +1424,7 @@ def asset_available_chart(request):
         "labels": labels,
         "dataset": dataset,
         "message": _("Oops!! No Asset found..."),
-        "emptyImageSrc": "/static/images/ui/asset.png",
+        "emptyImageSrc": f"/{settings.STATIC_URL}images/ui/asset.png",
     }
     return JsonResponse(response)
 
@@ -1452,7 +1454,7 @@ def asset_category_chart(request):
         "labels": labels,
         "dataset": dataset,
         "message": _("Oops!! No Asset found..."),
-        "emptyImageSrc": "/static/images/ui/asset.png",
+        "emptyImageSrc": f"/{settings.STATIC_URL}images/ui/asset.png",
     }
     return JsonResponse(response)
 
@@ -1565,6 +1567,100 @@ def asset_history_search(request):
             "filter_dict": data_dict,
             "field": field,
             "pd": previous_data,
+            "requests_ids": requests_ids,
+        },
+    )
+
+
+@login_required
+@owner_can_enter("asset.view_asset", Employee)
+def asset_tab(request, emp_id):
+    """
+    This function is used to view asset tab of an employee in employee individual view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return asset-tab template
+
+    """
+    employee = Employee.objects.get(id=emp_id)
+    assets_requests = employee.requested_employee.all()
+    assets = employee.allocated_employee.all()
+    assets_ids = (
+        json.dumps([instance.id for instance in assets]) if assets else json.dumps([])
+    )
+    context = {
+        "assets": assets,
+        "requests": assets_requests,
+        "assets_ids": assets_ids,
+        "employee": emp_id,
+    }
+    return render(request, "tabs/asset-tab.html", context=context)
+
+
+@login_required
+@hx_request_required
+def profile_asset_tab(request, emp_id):
+    """
+    This function is used to view asset tab of an employee in employee profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return profile-asset-tab template
+
+    """
+    employee = Employee.objects.get(id=emp_id)
+    assets = employee.allocated_employee.all()
+    assets_ids = json.dumps([instance.id for instance in assets])
+    context = {
+        "assets": assets,
+        "assets_ids": assets_ids,
+    }
+    return render(request, "tabs/profile-asset-tab.html", context=context)
+
+
+@login_required
+@hx_request_required
+def asset_request_tab(request, emp_id):
+    """
+    This function is used to view asset request tab of an employee in employee individual view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return asset-request-tab template
+
+    """
+    employee = Employee.objects.get(id=emp_id)
+    assets_requests = employee.requested_employee.all()
+    context = {"asset_requests": assets_requests, "emp_id": emp_id}
+    return render(request, "tabs/asset-request-tab.html", context=context)
+
+
+@login_required
+def dashboard_asset_request_approve(request):
+
+    asset_requests = AssetRequest.objects.filter(
+        asset_request_status="Requested", requested_employee_id__is_active=True
+    )
+    asset_requests = filtersubordinates(
+        request,
+        asset_requests,
+        "asset.change_assetrequest",
+        field="requested_employee_id",
+    )
+    requests_ids = json.dumps([instance.id for instance in asset_requests])
+
+    return render(
+        request,
+        "request_and_approve/asset_requests_approve.html",
+        {
+            "asset_requests": asset_requests,
             "requests_ids": requests_ids,
         },
     )

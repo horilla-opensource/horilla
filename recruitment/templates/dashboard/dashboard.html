@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% block content %} {% load mathfilters static recruitmentfilters i18n %}
+{% extends 'index.html' %} {% block content %} {% load static i18n horillafilters mathfilters recruitmentfilters %}
 <style>
 	.oh-card-dashboard{
 		height: 100;
@@ -97,21 +97,21 @@
 						</div>
 					</div>
 				</div>
-
-				<div class="col-12 col-sm-12 col-md-6 col-lg-3">
-					<div class="oh-card-dashboard oh-card-dashboard--success">
-						<div class="oh-card-dashboard__header" onmouseover="acceptance_helptext()">
-							<span class="oh-card-dashboard__title">{% trans "Offer Acceptance Rate (OAR)" %}</span>
-							<ion-icon name="help-circle-outline" id="offerhelptext"></ion-icon>
-						</div>
-						<div class="oh-card-dashboard__body">
-							<div class="oh-card-dashboard__counts">
-								<span class="oh-card-dashboard__count">{{acceptance_ratio}}%</span>
+				{% if "onboarding"|app_installed %}
+					<div class="col-12 col-sm-12 col-md-6 col-lg-3">
+						<div class="oh-card-dashboard oh-card-dashboard--success">
+							<div class="oh-card-dashboard__header" onmouseover="acceptance_helptext()">
+								<span class="oh-card-dashboard__title">{% trans "Offer Acceptance Rate (OAR)" %}</span>
+								<ion-icon name="help-circle-outline" id="offerhelptext"></ion-icon>
+							</div>
+							<div class="oh-card-dashboard__body">
+								<div class="oh-card-dashboard__counts">
+									<span class="oh-card-dashboard__count">{{acceptance_ratio}}%</span>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-
+				{% endif %}
 			</div>
 
 				<div class="oh-dashboard__movable-cards row mt-4">
@@ -176,7 +176,7 @@
 					</div> {% endcomment %}
 
 
-					<div class="col-12 col-sm-12 col-md-6 col-lg-3 oh-card-dashboard--moveable me-4" style="background-color: white;">
+					<div class="col-12 col-sm-12 col-md-6 col-lg-3 me-4" style="background-color: white;">
 						<div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent ">
 							<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
 								<span class="oh-card-dashboard__title">{% trans "Candidate Offer Letter Status" %}</span>
@@ -201,103 +201,46 @@
 							</div>
 						</div>
 					</div>
-
-					<div class="col-12 col-sm-12 col-md-6 col-lg-4 oh-card" style="border:0px solid white" >
-						<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-							<span class="oh-card-dashboard__title">{% trans "Candidate on Onboard" %}</span>
-							{% if onboarding_count %}<span class="oh-card-dashboard__title float-end"><a href="{% url 'candidate-view' %}?start_onboard=true" style="text-decoration:none; color:orange;">{% trans "View" %}</a></span>{% endif %}
-						</div>
-						<div class="oh-card-dashboard__body" style="height:325px; overflow-y:auto;">
-							{% if onboarding_count %}
-								<ul class="oh-card-dashboard__user-list">
-									{% for cand in onboard_candidates %}
-									<li class="oh-card-dashboard__user-item">
-										<div class="oh-profile oh-profile--md">
-										<div class="oh-profile__avatar mr-1">
-											<img
-											src="https://ui-avatars.com/api/?name={{cand}}&background=random"
-											class="oh-profile__image"
-											alt="{{cand}}"
-											/>
+					{% if "onboarding"|app_installed %}
+						<div class="col-12 col-sm-12 col-md-6 col-lg-4 oh-card" style="border:0px solid white" >
+							<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+								<span class="oh-card-dashboard__title">{% trans "Candidate on Onboard" %}</span>
+								{% if onboarding_count %}<span class="oh-card-dashboard__title float-end"><a href="{% url 'candidate-view' %}?start_onboard=true" style="text-decoration:none; color:orange;">{% trans "View" %}</a></span>{% endif %}
+							</div>
+							<div class="oh-card-dashboard__body" style="height:325px; overflow-y:auto;">
+								{% if onboarding_count %}
+									<ul class="oh-card-dashboard__user-list">
+										{% for cand in onboard_candidates %}
+										<li class="oh-card-dashboard__user-item">
+											<div class="oh-profile oh-profile--md">
+											<div class="oh-profile__avatar mr-1">
+												<img
+												src="https://ui-avatars.com/api/?name={{cand}}&background=random"
+												class="oh-profile__image"
+												alt="{{cand}}"
+												/>
+											</div>
+											<span class="oh-profile__name oh-text--dark">{{cand|truncatechars:15}}</span>
+											</div>
+											<p class="oh-profile__name float-end mt-1 me-3">
+												{{cand.job_position_id|truncatechars:15}}</p>
+										</li>
+										{% endfor %}
+									</ul>
+								{% else %}
+									<div style="height: 240px; display:flex;align-items: center;justify-content: center;" class="">
+										<div style="" class="">
+											<img style="display: block;width: 100px;margin: 20px auto ;" src="{% static 'images/ui/no_candidate.png' %}" class=""/>
+											<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No candidates started onboarding." %}</h3>
 										</div>
-										<span class="oh-profile__name oh-text--dark">{{cand|truncatechars:15}}</span>
-										</div>
-										<p class="oh-profile__name float-end mt-1 me-3">
-											{{cand.job_position_id|truncatechars:15}}</p>
-									</li>
-									{% endfor %}
-								</ul>
-							{% else %}
-								<div style="height: 240px; display:flex;align-items: center;justify-content: center;" class="">
-									<div style="" class="">
-										<img style="display: block;width: 100px;margin: 20px auto ;" src="{% static 'images/ui/no_candidate.png' %}" class=""/>
-										<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No candidates started onboarding." %}</h3>
 									</div>
-								</div>
-							{% endif %}
-						</div>
-					</div>
-				</div>
-
-
-				<div class="oh-dashboard__movable-cards row mt-4">
-					{% if request.user|is_in_task_managers %}
-						<div
-								class="col-12 col-sm-12 col-md-6 col-lg-7 oh-card-dashboard--moveable"
-								style="height: 455px;
-								background-color: white;"
-								id="taskStatus"
-								hx-get="{% url "task-report-onboarding" %}"
-								hx-trigger="load"
-								>
-						</div>
-					{% else %}
-						<div
-							class="col-12 col-sm-12 col-md-6 col-lg-7 oh-card-dashboard--moveable"
-						>
-						<div
-						class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" >
-						<span class="oh-card-dashboard__title">{% trans "My Onboarding Tasks" %}</span>
-								<div style="height: 403px; display:grid;align-items: center;justify-content: center;" class="">
-									<img style="display: block;width: 120px;margin: 20px auto ;" src="{% static 'images/ui/time-management.png' %}" class="mb-0"/>
-									<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No onboarding tasks are currently available." %}</h3>
-								</div>
+								{% endif %}
 							</div>
 						</div>
 					{% endif %}
-
-
-					<div
-					class="col-12 col-sm-12 col-md-6 col-lg-5 oh-card-dashboard--moveable"
-					>
-						<div
-							class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
-						>
-							<div
-							class="oh-card-dashboard__header oh-card-dashboard__header--divider"
-							>
-								<span class="oh-card-dashboard__title">{% trans "Candidates Per Stage" %}</span>
-								<span class="oh-card-dashboard__title float-end" id="chart1"><ion-icon name="caret-forward"></ion-icon></span>
-							</div>
-							<div class="oh-card-dashboard__body">
-							{% if stage_chart_count %}
-								<canvas id="recruitmentChart1" width="385" height="228"></canvas>
-							{% else %}
-								<div style="height: 362px; display:flex;align-items: center;justify-content: center;" class="">
-									<div style="" class="">
-										<img style="display: block;width: 120px;margin: 20px auto ;" src="{% static 'images/ui/interview.png' %}" class=""/>
-										<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No recruitment stages currently available." %}</h3>
-									</div>
-								</div>
-							{% endif %}
-							</div>
-						</div>
-					</div>
 				</div>
 
 				<div class="oh-dashboard__movable-cards row mt-4">
-
-
 					<div
 					class="col-12 col-sm-12 col-md-6 col-lg-7 oh-card-dashboard--moveable"
 					>
@@ -363,17 +306,68 @@
 							</div>
 						{% endif %}
 					</div>
-
 				</div>
 
+				<div class="oh-dashboard__movable-cards row">
+					{% if "onboarding"|app_installed %}
+						{% if request.user|is_in_task_managers %}
+							<div
+								class="col-12 col-sm-12 col-md-6 col-lg-7 oh-card-dashboard--moveable mt-4"
+								style="height: 455px;
+								background-color: white;"
+								id="taskStatus"
+								hx-get="{% url "task-report-onboarding" %}"
+								hx-trigger="load"
+								>
+							</div>
+						{% else %}
+							<div
+								class="col-12 col-sm-12 col-md-6 col-lg-7 mt-4 oh-card-dashboard--moveable"
+							>
+							<div
+							class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" >
+							<span class="oh-card-dashboard__title">{% trans "My Onboarding Tasks" %}</span>
+									<div style="height: 403px; display:grid;align-items: center;justify-content: center;" class="">
+										<img style="display: block;width: 120px;margin: 20px auto ;" src="{% static 'images/ui/time-management.png' %}" class="mb-0"/>
+										<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No onboarding tasks are currently available." %}</h3>
+									</div>
+								</div>
+							</div>
+						{% endif %}
+					{% endif %}
 
-				<div class="oh-dashboard__movable-cards row mt-4 mb-5">
+					<div
+					class="col-12 col-sm-12 col-md-6 col-lg-5 mt-4 oh-card-dashboard--moveable"
+					>
+						<div
+							class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+						>
+							<div
+							class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+							>
+								<span class="oh-card-dashboard__title">{% trans "Candidates Per Stage" %}</span>
+								<span class="oh-card-dashboard__title float-end" id="chart1"><ion-icon name="caret-forward"></ion-icon></span>
+							</div>
+							<div class="oh-card-dashboard__body">
+							{% if stage_chart_count %}
+								<canvas id="recruitmentChart1" width="385" height="228"></canvas>
+							{% else %}
+								<div style="height: 362px; display:flex;align-items: center;justify-content: center;" class="">
+									<div style="" class="">
+										<img style="display: block;width: 120px;margin: 20px auto ;" src="{% static 'images/ui/interview.png' %}" class=""/>
+										<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No recruitment stages currently available." %}</h3>
+									</div>
+								</div>
+							{% endif %}
+							</div>
+						</div>
+					</div>
 					{% if ongoing_recruitments %}
-						<div class="col-12 col-sm-12 col-md-12 col-lg-6	 oh-card-dashboard--moveable">
+						<div class="col-12 col-sm-12 col-md-12 col-lg-6	mt-4 ">
 							<div class="oh-card-dashboard__header">
 								<span class="oh-card-dashboard__title">{% trans "Ongoing Recruitments & Hiring Managers" %}</span>
 							</div>
-							<div class="oh-sticky-table float-start" style="height:200px">
+							<div class="oh-sticky-table float-start">
 								<div class="oh-sticky-table__table">
 									<div class="oh-sticky-table__thead">
 										<div class="oh-sticky-table__tr">

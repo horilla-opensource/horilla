@@ -281,7 +281,7 @@
       id === "#dynamicDept" ? { department_id: value } : { job_id: value };
 
     if (id === "#dynamicDept") {
-      url = '{% url "get_job_positions" %}';
+      url = '{% url "get-job-positions" %}';
       dropdownId = "#id_job_position_id";
       createText = "Create New Job Position";
       emptyText = "---Choose Job Position---";
@@ -289,7 +289,7 @@
         '<option value="">---Choose Job Role---</option>'
       );
     } else if (id === "#dynamicJobPosition") {
-      url = '{% url "get_job_roles" %}';
+      url = '{% url "get-job-roles" %}';
       dropdownId = "#id_job_role_id";
       createText = "Create New Job Role";
       emptyText = "---Choose Job Role---";
@@ -337,7 +337,7 @@
 
     // Make AJAX request to fetch available job positions for the selected department
     $.ajax({
-      url: '{% url "get_job_positions" %}',
+      url: '{% url "get-job-positions" %}',
       method: "GET",
       data: {
         department_id: departmentId,
@@ -375,7 +375,7 @@
 
     if (selectedJobPosition) {
       $.ajax({
-        url: '{% url "get_job_roles" %}',
+        url: '{% url "get-job-roles" %}',
         method: "GET",
         data: {
           job_id: selectedJobPosition,

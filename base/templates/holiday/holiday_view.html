@@ -1,0 +1,297 @@
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+<!-- start of nav bar -->
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <!-- start of title -->
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Holidays" %}</h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon"
+      ></ion-icon>
+    </a>
+  </div>
+  <!-- end of title -->
+
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    {% if holidays %}
+    <!-- start of search -->
+    <div
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        id="searchHoliday"
+        type="text"
+        class="oh-input oh-input__icon"
+        aria-label="Search Input"
+        placeholder="{% trans 'Search' %}"
+        name="search"
+        hx-get="{% url 'holiday-filter' %}"
+        hx-trigger="keyup"
+        hx-target="#holidays"
+      />
+    </div>
+    <!-- end of search -->
+
+    <!-- start of Nav bar buttons -->
+    <div class="oh-main__titlebar-button-container">
+      <!-- start of filter -->
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open">
+          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+          <div id="filterCount"></div>
+        </button>
+        {% include "holiday/holiday_filter.html" %}
+      </div>
+      <!-- end of filter -->
+      {% endif %}
+
+      <!-- start of Actions -->
+      {% if perms.base.add_holiday or perms.base.delete_holiday%}
+      <div class="oh-dropdown ml-2" x-data="{open: false}">
+        <button
+          class="oh-btn oh-btn--dropdown"
+          @click="open = !open"
+          @click.outside="open = false"
+        >
+          {% trans "Actions" %}
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right"
+          x-show="open"
+          style="display: none"
+        >
+          <ul class="oh-dropdown__items">
+            {% if perms.base.add_holiday %}
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                class="oh-dropdown__link"
+                id="holidaysInfoImport"
+                data-toggle="oh-modal-toggle"
+                data-target="#holidayImport"
+                >{% trans "Import" %}</a
+              >
+            </li>
+            {% endif %} {% if holidays %} {% if perms.base.add_holiday %}
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                class="oh-dropdown__link"
+                id="holidays-export"
+                data-toggle="oh-modal-toggle"
+                data-target="#holidayExportModal"
+                hx-target="#holidayExportModalTarget"
+                hx-get="{% url 'holiday-info-export' %}"
+                >{% trans "Export" %}</a
+              >
+            </li>
+            {% endif %} {% if perms.base.delete_holiday %}
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                id="bulkHolidaysDelete"
+                class="oh-dropdown__link oh-dropdown__link--danger"
+                >{% trans "Delete" %}</a
+              >
+            </li>
+            {% endif %} {% endif %}
+          </ul>
+        </div>
+      </div>
+      {% endif %}
+      <!-- end of actions -->
+
+      <!-- start of create -->
+      {% if perms.base.add_holiday %}
+      <div class="oh-btn-group ml-2">
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            id="holidayCreateButton"
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'holiday-creation' %}"
+            hx-target="#objectCreateModalTarget"
+            onclick="createHolidayHxValue();"
+          >
+            <ion-icon name="add-outline" class="me-1"></ion-icon>
+            {% trans "Create" %}
+          </button>
+        </div>
+      </div>
+      {% endif %}
+      <!-- end of create -->
+    </div>
+    <!-- end of nav bar buttons -->
+  </div>
+</section>
+<!-- end of nav bar -->
+
+<div
+  class="oh-checkpoint-badge mb-2"
+  id="selectedHolidays"
+  data-ids="[]"
+  data-clicked=""
+  style="display: none"
+>
+  {% trans "Selected Holidays" %}
+</div>
+
+<!--start of holiday display  -->
+<div class="oh-wrapper" id="holidays">
+  {% if holidays %}
+    {% include 'holiday/holiday.html' %}
+  {% else %}
+  <!--start of empty page  -->
+    <div
+      style="
+        height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+      class=""
+      >
+      <div style="" class="oh-404">
+        <img
+          style="display: block; width: 150px; height: 150px; margin: 10px auto"
+          src="{% static 'images/ui/leave_types.png' %}"
+          class="mb-4"
+          alt=""
+        />
+        <h3 style="font-size: 20px" class="oh-404__subtitle">
+          {% trans "There are no holidays at the moment." %}
+        </h3>
+      </div>
+    </div>
+  <!-- end of empty page -->
+  {% endif %}
+</div>
+<!-- end of Holiday display -->
+
+<!-- start Import Holiday Modal -->
+<div
+  class="oh-modal"
+  id="holidayImport"
+  role="dialog"
+  aria-labelledby="holidayImport"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="holidayImportLavel">
+        {% trans "Import Holidays" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div class="oh-modal__dialog-body p-0 pt-2" id="holidayImportModalBody">
+        <form
+          action="{%url 'holidays-info-import' %}"
+          enctype="multipart/form-data"
+          method="post"
+          id="holidaysImportForm"
+        >
+          {% csrf_token %}
+          <div
+            class="oh-modal__dialog-body mr-5"
+            id="uploading"
+            style="display: none"
+          >
+            <div class="loader-container">
+              <div class="loader"></div>
+              <div class="loader-text">{% trans "Uploading..." %}</div>
+            </div>
+          </div>
+          <div id="uploadContainer">
+            <label class="oh-dropdown__import-label" for="importHoliday">
+              <ion-icon
+                name="cloud-upload"
+                class="oh-dropdown__import-form-icon"
+              ></ion-icon>
+              <span class="oh-dropdown__import-form-title"
+                >{% trans "Upload a File" %}</span
+              >
+              <span class="oh-dropdown__import-form-text"
+                >{% trans "Drag and drop files here" %}</span
+              >
+            </label>
+            <input
+              type="file"
+              name="holidays_import"
+              id="importHoliday"
+              required
+            />
+          </div>
+          <button
+            onclick="
+              validateFile($(this),'importHoliday');
+            "
+            type="submit"
+            class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
+          >
+            {% trans "Upload" %}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end of holiday import modal  -->
+
+<!-- start of holiday export modal -->
+<div
+  class="oh-modal"
+  id="holidayExportModal"
+  role="dialog"
+  aria-labelledby="holidayExportModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog" id="holidayExportModalTarget">
+  </div>
+</div>
+<!-- end of holiday export modal -->
+<!-- end of modals -->
+<script>
+  $(document).on("htmx:load", "#holidays", function () {
+    // Create a new script element
+    var scriptElement = document.createElement("script");
+    // Set the source URL of the script file to be loaded
+    scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
+    // Append the script element to the head of the HTML document
+    document.head.appendChild(scriptElement);
+  });
+  $(document).ready(function () {
+    $("#delete").submit(function (e) {
+      e.preventDefault(); // Prevent form submission
+      if (confirm("Are you sure you want to delete this record?")) {
+        // If user confirms, submit the form
+        this.submit();
+      } else {
+        // If user cancels, do nothing
+        return false;
+      }
+    });
+  });
+</script>
+
+<script src="{% static '/base/filter.js' %}"></script>
+<script src="{% static '/holiday/action.js' %}"></script>
+<script>
+  $(document).ready(function () {
+    $("[name=recurring]").select2;
+  });
+</script>
+
+{% endblock %}

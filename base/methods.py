@@ -1,8 +1,9 @@
+import calendar
 import io
 import json
 import os
 import random
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 
 import pandas as pd
 from django.apps import apps
@@ -10,7 +11,7 @@ from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import F, ForeignKey, ManyToManyField, OneToOneField
+from django.db.models import F, ForeignKey, ManyToManyField, OneToOneField, Q
 from django.db.models.functions import Lower
 from django.forms.models import ModelChoiceField
 from django.http import HttpResponse
@@ -18,11 +19,9 @@ from django.template.loader import get_template, render_to_string
 from django.utils.translation import gettext as _
 from xhtml2pdf import pisa
 
-from base.models import Company, DynamicPagination
+from base.models import Company, CompanyLeaves, DynamicPagination, Holidays
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required
-from leave.models import LeaveRequest, LeaveRequestConditionApproval
-from recruitment.models import Candidate
 
 
 def filtersubordinates(request, queryset, perm=None, field=None):
@@ -586,15 +585,21 @@ def reload_queryset(fields):
     """
     This method is used to reload the querysets in the form
     """
-    for k, v in fields.items():
-        if isinstance(v, ModelChoiceField):
-            if v.queryset.model == Employee:
-                v.queryset = v.queryset.model.objects.filter(is_active=True)
-            elif v.queryset.model == Candidate:
-                v.queryset = v.queryset.model.objects.filter(is_active=True)
+    model_filters = {
+        "Employee": {"is_active": True},
+        "Candidate": {"is_active": True} if apps.is_installed("recruitment") else None,
+    }
+
+    for field in fields.values():
+        if isinstance(field, ModelChoiceField):
+            model_name = field.queryset.model.__name__
+            filter_criteria = model_filters.get(model_name)
+            if filter_criteria is not None:
+                field.queryset = field.queryset.model.objects.filter(**filter_criteria)
             else:
-                v.queryset = v.queryset.model.objects.all()
-    return
+                field.queryset = field.queryset.model.objects.all()
+
+    return fields
 
 
 def check_manager(employee, instance):
@@ -680,26 +685,6 @@ def generate_pdf(template_path, context, path=True, title=None, html=True):
     return response
 
 
-def filter_conditional_leave_request(request):
-    approval_manager = Employee.objects.filter(employee_user_id=request.user).first()
-    leave_request_ids = []
-    multiple_approval_requests = LeaveRequestConditionApproval.objects.filter(
-        manager_id=approval_manager
-    )
-    for instance in multiple_approval_requests:
-        if instance.sequence > 1:
-            pre_sequence = instance.sequence - 1
-            leave_request_id = instance.leave_request_id
-            instance = LeaveRequestConditionApproval.objects.filter(
-                leave_request_id=leave_request_id, sequence=pre_sequence
-            ).first()
-            if instance and instance.is_approved:
-                leave_request_ids.append(instance.leave_request_id.id)
-        else:
-            leave_request_ids.append(instance.leave_request_id.id)
-    return LeaveRequest.objects.filter(pk__in=leave_request_ids)
-
-
 def get_pagination():
     from horilla.horilla_middlewares import _thread_locals
 
@@ -710,3 +695,200 @@ def get_pagination():
     if page:
         count = page.pagination
     return count
+
+
+def is_holiday(date):
+    """
+    Check if the given date is a holiday.
+    Args:
+        date (datetime.date): The date to check.
+    Returns:
+        Holidays or bool: The Holidays object if the date is a holiday, otherwise False.
+    """
+    holidays = Holidays.objects.all()
+    for holiday in holidays:
+        start_date = holiday.start_date
+        end_date = holiday.end_date
+        # Check if the date is within the range of the holiday dates
+        if start_date <= date <= end_date:
+            return holiday
+        # Check for recurring holidays
+        if holiday.recurring:
+            try:
+                # Create a new date object for comparison without the year
+                start_date_without_year = datetime(
+                    year=date.year, month=start_date.month, day=start_date.day
+                ).date()
+                end_date_without_year = datetime(
+                    year=date.year, month=end_date.month, day=end_date.day
+                ).date()
+                if start_date_without_year <= date <= end_date_without_year:
+                    return holiday
+            except:
+                return False
+    return False
+
+
+def is_company_leave(input_date):
+    """
+    Check if the given date is a company leave.
+    Args:
+        input_date (datetime.date): The date to check.
+    Returns:
+        CompanyLeaves or bool: The CompanyLeaves object if the date is a company leave, otherwise False.
+    """
+    # Calculate the week number within the month (1-5)
+    first_day_of_month = input_date.replace(day=1)
+    first_week_day = first_day_of_month.weekday()  # Monday is 0 and Sunday is 6
+    adjusted_day = input_date.day + first_week_day
+    date_week_no = (adjusted_day - 1) // 7
+    # Calculate the weekday (1 for Monday to 7 for Sunday)
+    date_week_day = input_date.isoweekday() - 1
+    company_leaves = CompanyLeaves.objects.all()
+    for company_leave in company_leaves:
+        week_no = (
+            company_leave.based_on_week
+            if not company_leave.based_on_week
+            else int(company_leave.based_on_week)
+        )  # from 0 for the first week to 4 for the fifth week
+        week_day = int(
+            company_leave.based_on_week_day
+        )  # from 0 to 6 for Monday to Sunday
+        if not week_no:
+            if date_week_day == week_day:
+                return company_leave
+        if date_week_no == week_no and date_week_day == week_day:
+            return company_leave
+    return False
+
+
+def get_date_range(start_date, end_date):
+    """
+    Returns a list of all dates within a given date range.
+
+    Args:
+        start_date (date): The start date of the range.
+        end_date (date): The end date of the range.
+
+    Returns:
+        list: A list of date objects representing all dates within the range.
+
+    Example:
+        start_date = date(2023, 1, 1)
+        end_date = date(2023, 1, 10)
+        date_range = get_date_range(start_date, end_date)
+        for date_obj in date_range:
+            print(date_obj)
+    """
+    date_list = []
+    delta = end_date - start_date
+
+    for i in range(delta.days + 1):
+        current_date = start_date + timedelta(days=i)
+        date_list.append(current_date)
+    return date_list
+
+
+def get_holiday_dates(range_start: date, range_end: date) -> list:
+    """
+    :return: this functions returns a list of all holiday dates.
+    """
+    pay_range_dates = get_date_range(start_date=range_start, end_date=range_end)
+    query = Q()
+    for check_date in pay_range_dates:
+        query |= Q(start_date__lte=check_date, end_date__gte=check_date)
+    holidays = Holidays.objects.filter(query)
+    holiday_dates = set([])
+    for holiday in holidays:
+        holiday_dates = holiday_dates | (
+            set(
+                get_date_range(start_date=holiday.start_date, end_date=holiday.end_date)
+            )
+        )
+    return list(set(holiday_dates))
+
+
+def get_company_leave_dates(year):
+    """
+    :return: This function returns a list of all company leave dates
+    """
+    company_leaves = CompanyLeaves.objects.all()
+    company_leave_dates = []
+    for company_leave in company_leaves:
+        based_on_week = company_leave.based_on_week
+        based_on_week_day = company_leave.based_on_week_day
+        for month in range(1, 13):
+            if based_on_week is not None:
+                # Set Sunday as the first day of the week
+                calendar.setfirstweekday(6)
+                month_calendar = calendar.monthcalendar(year, month)
+                weeks = month_calendar[int(based_on_week)]
+                weekdays_in_weeks = [day for day in weeks if day != 0]
+                for day in weekdays_in_weeks:
+                    leave_date = datetime.strptime(
+                        f"{year}-{month:02}-{day:02}", "%Y-%m-%d"
+                    ).date()
+                    if (
+                        leave_date.weekday() == int(based_on_week_day)
+                        and leave_date not in company_leave_dates
+                    ):
+                        company_leave_dates.append(leave_date)
+            else:
+                # Set Monday as the first day of the week
+                calendar.setfirstweekday(0)
+                month_calendar = calendar.monthcalendar(year, month)
+                for week in month_calendar:
+                    if week[int(based_on_week_day)] != 0:
+                        leave_date = datetime.strptime(
+                            f"{year}-{month:02}-{week[int(based_on_week_day)]:02}",
+                            "%Y-%m-%d",
+                        ).date()
+                        if leave_date not in company_leave_dates:
+                            company_leave_dates.append(leave_date)
+    return company_leave_dates
+
+
+def get_working_days(start_date, end_date):
+    """
+    This method is used to calculate the total working days, total leave, worked days on that period
+
+    Args:
+        start_date (_type_): the start date from the data needed
+        end_date (_type_): the end date till the date needed
+    """
+
+    holiday_dates = get_holiday_dates(start_date, end_date)
+
+    # appending company/holiday leaves
+    # Note: Duplicate entry may exist
+    company_leave_dates = (
+        list(
+            set(
+                get_company_leave_dates(start_date.year)
+                + get_company_leave_dates(end_date.year)
+            )
+        )
+        + holiday_dates
+    )
+
+    date_range = get_date_range(start_date, end_date)
+
+    # making unique list of company/holiday leave dates then filtering
+    # the leave dates only between the start and end date
+    company_leave_dates = [
+        date
+        for date in list(set(company_leave_dates))
+        if start_date <= date <= end_date
+    ]
+
+    working_days_between_ranges = list(set(date_range) - set(company_leave_dates))
+    total_working_days = len(working_days_between_ranges)
+
+    return {
+        # Total working days on that period
+        "total_working_days": total_working_days,
+        # All the working dates between the start and end date
+        "working_days_on": working_days_between_ranges,
+        # All the company/holiday leave dates between the range
+        "company_leave_dates": company_leave_dates,
+    }

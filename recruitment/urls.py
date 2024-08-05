@@ -11,27 +11,10 @@ import recruitment.views.dashboard
 import recruitment.views.search
 import recruitment.views.surveys
 from base.views import add_remove_dynamic_fields, object_duplicate
-from recruitment.forms import (
-    OfferLetterForm,
-    QuestionForm,
-    RecruitmentCreationForm,
-    StageCreationForm,
-)
-from recruitment.models import (
-    Candidate,
-    Recruitment,
-    RecruitmentMailTemplate,
-    RecruitmentSurvey,
-    Stage,
-)
+from recruitment.forms import QuestionForm, RecruitmentCreationForm, StageCreationForm
+from recruitment.models import Candidate, Recruitment, RecruitmentSurvey, Stage
 from recruitment.views import views
-from recruitment.views.mail_templates import (
-    create_letter,
-    delete_mail_templates,
-    get_template,
-    view_letter,
-    view_mail_templates,
-)
+from recruitment.views.actions import get_template
 
 urlpatterns = [
     path("recruitment-create", views.recruitment, name="recruitment-create"),
@@ -472,20 +455,6 @@ urlpatterns = [
         views.skill_zone_cand_delete,
         name="skill-zone-cand-delete",
     ),
-    path("view-mail-templates/", view_mail_templates, name="view-mail-templates"),
-    path("view-mail-template/<int:obj_id>/", view_letter, name="view-mail-template"),
-    path(
-        "duplicate-mail-template/<int:obj_id>/",
-        object_duplicate,
-        name="duplicate-mail-template",
-        kwargs={
-            "model": RecruitmentMailTemplate,
-            "form": OfferLetterForm,
-            "template": "offerletter/htmx/form.html",
-        },
-    ),
-    path("create-mail-template/", create_letter, name="create-mail-template"),
-    path("delete-mail-template/", delete_mail_templates, name="delete-mail-template"),
     path("get-template/<int:obj_id>/", get_template, name="get-template"),
     path("get-template-hint/", get_template, name="get-template-hint"),
     path(
@@ -563,6 +532,11 @@ urlpatterns = [
         name="check-vaccancy",
     ),
     path(
+        "settings/skills-view/",
+        views.skills_view,
+        name="skills-view",
+    ),
+    path(
         "create-skills/",
         views.create_skills,
         name="create-skills",
@@ -596,5 +570,15 @@ urlpatterns = [
         "matching-resume-completion",
         views.matching_resume_completion,
         name="matching-resume-completion",
+    ),
+    path(
+        "settings/candidate-reject-reasons/",
+        views.candidate_reject_reasons,
+        name="candidate-reject-reasons",
+    ),
+    path(
+        "hired-candidate-chart",
+        views.hired_candidate_chart,
+        name="hired-candidate-chart",
     ),
 ]

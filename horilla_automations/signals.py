@@ -351,6 +351,7 @@ def send_mail(request, automation, instance):
     to = tos[:1]
     cc = tos[1:]
     email_backend = ConfiguredEmailBackend()
+    print("MAIL SENTTTTT METHODDDDDDDDDD")
     host = email_backend.dynamic_from_email_with_display_name
     if mail_to_instance and request:
         attachments = []

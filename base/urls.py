@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from base import announcement, request_and_approve, views
 from base.forms import (
     AttendanceAllowedIPForm,
+    MailTemplateForm,
     RotatingShiftAssignForm,
     RotatingShiftForm,
     RotatingWorkTypeAssignForm,
@@ -20,6 +21,7 @@ from base.models import (
     EmployeeShift,
     EmployeeShiftSchedule,
     EmployeeType,
+    HorillaMailTemplate,
     JobPosition,
     JobRole,
     RotatingShift,
@@ -67,7 +69,6 @@ urlpatterns = [
         views.initialize_database_job_position,
         name="initialize-database-job-position",
     ),
-    path("404", views.custom404, name="404"),
     path(
         "initialize-job-position-edit/<int:obj_id>",
         views.initialize_job_position_edit,
@@ -78,6 +79,7 @@ urlpatterns = [
         views.initialize_job_position_delete,
         name="initialize-job-position-delete",
     ),
+    path("404", views.custom404, name="404"),
     path("login/", views.login_user, name="login"),
     path(
         "forgot-password",
@@ -159,6 +161,36 @@ urlpatterns = [
     path("mail-server-delete", views.mail_server_delete, name="mail-server-delete"),
     path(
         "replace-primary-mail", views.replace_primary_mail, name="replace-primary-mail"
+    ),
+    path(
+        "configuration/view-mail-templates/",
+        views.view_mail_templates,
+        name="view-mail-templates",
+    ),
+    path(
+        "view-mail-template/<int:obj_id>/",
+        views.view_mail_template,
+        name="view-mail-template",
+    ),
+    path(
+        "create-mail-template/",
+        views.create_mail_templates,
+        name="create-mail-template",
+    ),
+    path(
+        "duplicate-mail-template/<int:obj_id>/",
+        views.object_duplicate,
+        name="duplicate-mail-template",
+        kwargs={
+            "model": HorillaMailTemplate,
+            "form": MailTemplateForm,
+            "template": "mail/htmx/form.html",
+        },
+    ),
+    path(
+        "delete-mail-template/",
+        views.delete_mail_templates,
+        name="delete-mail-template",
     ),
     path("settings/company-create/", views.company_create, name="company-create"),
     path("settings/company-view/", views.company_view, name="company-view"),
@@ -447,16 +479,6 @@ urlpatterns = [
         },
     ),
     path(
-        "settings/department-manager-view/",
-        views.view_department_managers,
-        name="department-manager-view",
-    ),
-    path(
-        "settings/candidate-reject-reasons/",
-        views.candidate_reject_reasons,
-        name="candidate-reject-reasons",
-    ),
-    path(
         "employee/rotating-shift-assign/",
         views.rotating_shift_assign,
         name="rotating-shift-assign",
@@ -712,36 +734,6 @@ urlpatterns = [
         name="enable-account-block-unblock",
     ),
     path(
-        "settings/attendance-settings-view/",
-        views.validation_condition_view,
-        name="attendance-settings-view",
-    ),
-    path(
-        "settings/track-late-come-early-out",
-        views.track_late_come_early_out,
-        name="track-late-come-early-out",
-    ),
-    path(
-        "settings/enable-disable-tracking-late-come-early-out",
-        views.enable_disable_tracking_late_come_early_out,
-        name="enable-disable-tracking-late-come-early-out",
-    ),
-    path(
-        "settings/grace-settings-view/",
-        views.grace_time_view,
-        name="grace-settings-view",
-    ),
-    path(
-        "settings/attendance-settings-create/",
-        views.validation_condition_create,
-        name="attendance-settings-create",
-    ),
-    path(
-        "settings/attendance-settings-update/<int:obj_id>/",
-        views.validation_condition_update,
-        name="attendance-settings-update",
-    ),
-    path(
         "rwork-individual-view/<int:instance_id>/",
         views.rotating_work_individual_view,
         name="rwork-individual-view",
@@ -779,22 +771,7 @@ urlpatterns = [
         views.rotating_work_type_select_filter,
         name="r-work-type-select-filter",
     ),
-    path("settings/ticket-type-view/", views.ticket_type_view, name="ticket-type-view"),
-    path("ticket-type-create", views.ticket_type_create, name="ticket-type-create"),
-    path(
-        "ticket-type-update/<int:t_type_id>",
-        views.ticket_type_update,
-        name="ticket-type-update",
-    ),
-    path(
-        "ticket-type-delete/<int:t_type_id>",
-        views.ticket_type_delete,
-        name="ticket-type-delete",
-    ),
     path("settings/tag-view/", views.tag_view, name="tag-view"),
-    path(
-        "settings/employee-tag-view/", views.employee_tag_view, name="employee-tag-view"
-    ),
     path(
         "settings/helpdesk-tag-view/", views.helpdesk_tag_view, name="helpdesk-tag-view"
     ),
@@ -805,18 +782,6 @@ urlpatterns = [
         views.object_delete,
         name="tag-delete",
         kwargs={"model": Tags, "redirect": "/settings/tag-view/"},
-    ),
-    path("employee-tag-create", views.employee_tag_create, name="employee-tag-create"),
-    path(
-        "employee-tag-update/<int:tag_id>",
-        views.employee_tag_update,
-        name="employee-tag-update",
-    ),
-    path(
-        "employee-tag-delete/<int:id>/",
-        views.object_delete,
-        name="employee-tag-delete",
-        kwargs={"model": EmployeeTag, "redirect": "/settings/tag-view/"},
     ),
     path("audit-tag-create", views.audit_tag_create, name="audit-tag-create"),
     path(
@@ -919,36 +884,6 @@ urlpatterns = [
         name="dashboard-work-type-request",
     ),
     path(
-        "dashboard-overtime-approve",
-        request_and_approve.dashboard_overtime_approve,
-        name="dashboard-overtime-approve",
-    ),
-    path(
-        "dashboard-attendance-validate",
-        request_and_approve.dashboard_attendance_validate,
-        name="dashboard-attendance-validate",
-    ),
-    path(
-        "leave-request-and-approve",
-        request_and_approve.leave_request_and_approve,
-        name="leave-request-and-approve",
-    ),
-    path(
-        "leave-allocation-approve",
-        request_and_approve.leave_allocation_approve,
-        name="leave-allocation-approve",
-    ),
-    path(
-        "dashboard-feedback-answer",
-        request_and_approve.dashboard_feedback_answer,
-        name="dashboard-feedback-answer",
-    ),
-    path(
-        "dashboard-asset-request-approve",
-        request_and_approve.dashboard_asset_request_approve,
-        name="dashboard-asset-request-approve",
-    ),
-    path(
         "settings/pagination-settings-view/",
         views.pagination_settings_view,
         name="pagination-settings-view",
@@ -1028,45 +963,55 @@ urlpatterns = [
         name="emp-workinfo-complete",
     ),
     path(
-        "settings/allowed-ips/",
-        views.allowed_ips,
-        name="allowed-ips",
+        "get-horilla-installed-apps/",
+        views.get_horilla_installed_apps,
+        name="get-horilla-installed-apps",
+    ),
+    path("configuration/holiday-view", views.holiday_view, name="holiday-view"),
+    path(
+        "configuration/holidays-excel-template",
+        views.holidays_excel_template,
+        name="holidays-excel-template",
     ),
     path(
-        "settings/enable-ip-restriction/",
-        views.enable_ip_restriction,
-        name="enable-ip-restriction",
+        "holidays-info-import", views.holidays_info_import, name="holidays-info-import"
+    ),
+    path("holiday-info-export", views.holiday_info_export, name="holiday-info-export"),
+    path("holiday-creation", views.holiday_creation, name="holiday-creation"),
+    path("holiday-update/<int:id>", views.holiday_update, name="holiday-update"),
+    path("holiday-delete/<int:id>", views.holiday_delete, name="holiday-delete"),
+    path(
+        "holidays-bulk-delete", views.bulk_holiday_delete, name="holidays-bulk-delete"
+    ),
+    path("holiday-filter", views.holiday_filter, name="holiday-filter"),
+    path("holiday-select/", views.holiday_select, name="holiday-select"),
+    path(
+        "holiday-select-filter/",
+        views.holiday_select_filter,
+        name="holiday-select-filter",
     ),
     path(
-        "settings/add-remove-ip-fields/",
-        views.add_remove_dynamic_fields,
-        name="add-remove-ip-fields",
-        kwargs={
-            "model": AttendanceAllowedIP,
-            "form_class": AttendanceAllowedIPForm,
-            "template": "attendance/ip_restriction/add_more_ip_fields.html",
-            "field_type": "character",
-            "field_name_pre": "ip_address",
-        },
+        "company-leave-creation",
+        views.company_leave_creation,
+        name="company-leave-creation",
     ),
     path(
-        "settings/create-allowed-ip/",
-        views.create_allowed_ips,
-        name="create-allowed-ip",
+        "configuration/company-leave-view",
+        views.company_leave_view,
+        name="company-leave-view",
     ),
     path(
-        "settings/delete-allowed-ip/",
-        views.delete_allowed_ips,
-        name="delete-allowed-ip",
+        "company-leave-update/<int:id>",
+        views.company_leave_update,
+        name="company-leave-update",
     ),
     path(
-        "settings/edit-allowed-ip/",
-        views.edit_allowed_ips,
-        name="edit-allowed-ip",
+        "company-leave-delete/<int:id>",
+        views.company_leave_delete,
+        name="company-leave-delete",
     ),
     path(
-        "settings/skills-view/",
-        views.skills_view,
-        name="skills-view",
+        "company-leave-filter", views.company_leave_filter, name="company-leave-filter"
     ),
+    path("view-penalties", views.view_penalties, name="view-penalties"),
 ]

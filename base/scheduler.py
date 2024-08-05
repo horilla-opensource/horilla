@@ -1,4 +1,5 @@
 import calendar
+import datetime as dt
 from datetime import date, datetime, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -406,6 +407,28 @@ def undo_work_type():
     return
 
 
+def recurring_holiday():
+    from .models import Holidays
+
+    recurring_holidays = Holidays.objects.filter(recurring=True)
+    today = datetime.now()
+    # Looping through all recurring holiday
+    for recurring_holiday in recurring_holidays:
+        start_date = recurring_holiday.start_date
+        end_date = recurring_holiday.end_date
+        new_start_date = dt.date(start_date.year + 1, start_date.month, start_date.day)
+        new_end_date = dt.date(end_date.year + 1, end_date.month, end_date.day)
+        # Checking that end date is not none
+        if end_date is None:
+            # checking if that start date is day before today
+            if start_date == (today - timedelta(days=1)).date():
+                recurring_holiday.start_date = new_start_date
+        elif end_date == (today - timedelta(days=1)).date():
+            recurring_holiday.start_date = new_start_date
+            recurring_holiday.end_date = new_end_date
+        recurring_holiday.save()
+
+
 scheduler = BackgroundScheduler()
 
 # Set the initial start time to the current time
@@ -467,5 +490,5 @@ try:
 except:
     pass
 
-
+scheduler.add_job(recurring_holiday, "interval", hours=4)
 scheduler.start()

@@ -1,0 +1,100 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+{% load i18n %}
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">{% trans "Company Leaves" %}</h1>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+        </a>
+    </div>
+    <form  hx-get="{% url 'company-leave-filter' %}" hx-target="#companyLeave" id="filterForm" onsubmit="event.preventDefault()">
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            {% if company_leaves %}
+            <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+                <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+                <input type="text" class="oh-input oh-input__icon" aria-label="Search Input"
+                    placeholder="{% trans 'Search' %}" name="search" onkeyup="$('.filterButton').click()" id="search" />
+            </div>
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+                    </button>
+
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                        @click.outside="open = false" style="display: none;">
+                        <div class="oh-dropdown__filter-body">
+                            <div class="oh-accordion">
+                                <div class="oh-accordion-header">{% trans "Company Leave" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-12">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Based On week" %}</label>
+                                                {{form.based_on_week}}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Based On Weekday" %}</label>
+                                                {{form.based_on_week_day}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="oh-dropdown__filter-footer">
+                            <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" type="submit">{% trans "Filter" %}</button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if perms.base.add_companyleave %}
+                    <div class="oh-btn-group ml-2">
+                        <div class="oh-dropdown" x-data="{open: false}">
+                            <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                                data-target="#objectCreateModal" hx-get="{% url 'company-leave-creation' %}"
+                                hx-target="#objectCreateModalTarget" id="companyLeaveCreate">
+                                <ion-icon name="add-outline" class="me-1"></ion-icon>
+                                {% trans "Create" %}
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </form>
+</section>
+
+<div class="oh-wrapper" id="companyLeave">
+    {% include 'company_leave/company_leave.html' %}
+</div>
+
+
+<script>
+
+    $(document).on('htmx:load','#companyLeave', function () {
+        // Create a new script element
+        var scriptElement = document.createElement("script");
+        // Set the source URL of the script file to be loaded
+        scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
+        // Append the script element to the head of the HTML document
+        document.head.appendChild(scriptElement);
+    });
+
+    $("#companyLeaveCreate").click(function (e) {
+        $("#objectCreateModalTarget").css("max-width", "350px");
+    });
+
+</script>
+
+<script src="{% static '/base/filter.js' %}"></script>
+
+{% endblock %}

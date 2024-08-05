@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n %}{% load horillafilters %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button
         hx-get="{% url 'one-request-view' previous %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" hx-target="#objectDetailsModalW25Target"

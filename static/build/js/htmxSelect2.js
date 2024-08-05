@@ -3997,6 +3997,7 @@
     t = e.require("jquery.select2");
   return (u.fn.select2.amd = e), t;
 });
+staticUrl = $("#statiUrl").attr("data-url");
 
 $(document).on("htmx:afterRequest", function (event, data) {
   var response = event.detail.xhr.response;
@@ -4011,34 +4012,46 @@ $(document).on("htmx:afterSettle", function (event, data) {
 });
 
 $(document).on("htmx:afterSwap", function (evt) {
-  // load rare JS code here
-  $("[src='/static/attendance/actions.js']").remove();
-  $("[src='/static/employee/actions.js']").remove();
-  $("[src='/static/candidate/actions.js']").remove();
-  $("[src='/static/base/actions.js']").remove();
+  // AJAX request to get the installed apps
+  $.ajax({
+      url: '/get-horilla-installed-apps/',
+      method: 'GET',
+      success: function(response) {
+          const installedApps = response.installed_apps;
+          // Conditionally remove and add scripts based on installed apps
+          if (installedApps.includes('attendance')) {
+              $(`[src='${staticUrl}attendance/actions.js']`).remove();
+              const script1 = document.createElement("script");
+              script1.src = `${staticUrl}attendance/actions.js`;
+              document.head.appendChild(script1);
+          }
 
-  //   $("[src='/static/build/js/web.frontend.min.js']").remove()
-  //   const script = document.createElement('script');
-  //   script.src = '/static/build/js/web.frontend.min.js';
-  //   script.defer =true
-  //   document.head.appendChild(script);
+          if (installedApps.includes('employee')) {
+              $(`[src='${staticUrl}employee/actions.js']`).remove();
+              const script2 = document.createElement("script");
+              script2.src = `${staticUrl}employee/actions.js`;
+              document.head.appendChild(script2);
+          }
 
-  const script1 = document.createElement("script");
-  script1.src = "/static/attendance/actions.js";
-  document.head.appendChild(script1);
+          if (installedApps.includes('candidate')) {
+              $(`[src='${staticUrl}candidate/actions.js']`).remove();
+              const script3 = document.createElement("script");
+              script3.src = `${staticUrl}candidate/actions.js`;
+              document.head.appendChild(script3);
+          }
 
-  const script2 = document.createElement("script");
-  script2.src = "/static/employee/actions.js";
-  document.head.appendChild(script2);
-
-  const script3 = document.createElement("script");
-  script3.src = "/static/candidate/actions.js";
-  document.head.appendChild(script3);
-
-  const script4 = document.createElement("script");
-  script4.src = "/static/base/actions.js";
-  document.head.appendChild(script4);
+          // Always remove and add base script
+          $(`[src='${staticUrl}base/actions.js']`).remove();
+          const script4 = document.createElement("script");
+          script4.src = `${staticUrl}base/actions.js`;
+          document.head.appendChild(script4);
+      },
+      error: function(error) {
+          console.error("Error fetching installed apps:", error);
+      }
+  });
 });
+
 
 $(document).on("htmx:afterSettle", function (e) {
   var targetId = e.detail.target.id;

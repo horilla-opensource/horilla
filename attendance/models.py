@@ -12,127 +12,34 @@ from collections.abc import Iterable
 from datetime import date, datetime, timedelta
 
 import pandas as pd
+from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from attendance.methods.differentiate import get_diff_dict
+from attendance.methods.utils import (
+    MONTH_MAPPING,
+    attendance_date_validate,
+    format_time,
+    get_diff_dict,
+    strtime_seconds,
+    validate_hh_mm_ss_format,
+    validate_time_format,
+    validate_time_in_minutes,
+)
 from base.horilla_company_manager import HorillaCompanyManager
-from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
+from base.methods import is_company_leave, is_holiday
+from base.models import Company, EmployeeShift, EmployeeShiftDay, Holidays, WorkType
 from employee.models import Employee
+from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
-from leave.methods import is_company_leave, is_holiday
-from leave.models import (
-    WEEK_DAYS,
-    WEEKS,
-    CompanyLeave,
-    Holiday,
-    LeaveRequest,
-    LeaveType,
-)
 
 # Create your models here.
-
-
-def strtime_seconds(time):
-    """
-    this method is used to reconvert time in H:M formate string back to seconds and return it
-    args:
-        time : time in H:M format
-    """
-    ftr = [3600, 60, 1]
-    return sum(a * b for a, b in zip(ftr, map(int, time.split(":"))))
-
-
-def format_time(seconds):
-    """
-    This method is used to formate seconds to H:M and return it
-    args:
-        seconds : seconds
-    """
-    hour = int(seconds // 3600)
-    minutes = int((seconds % 3600) // 60)
-    seconds = int((seconds % 3600) % 60)
-    return f"{hour:02d}:{minutes:02d}"
-
-
-def validate_hh_mm_ss_format(value):
-    timeformat = "%H:%M:%S"
-    try:
-        validtime = datetime.strptime(value, timeformat)
-        return validtime.time()  # Return the time object if needed
-    except ValueError as e:
-        raise ValidationError(_("Invalid format, it should be HH:MM:SS format"))
-
-
-def validate_time_format(value):
-    """
-    this method is used to validate the format of duration like fields.
-    """
-    if len(value) > 6:
-        raise ValidationError(_("Invalid format, it should be HH:MM format"))
-    try:
-        hour, minute = value.split(":")
-        if len(hour) > 3 or len(minute) > 2:
-            raise ValidationError(_("Invalid time"))
-        hour = int(hour)
-        minute = int(minute)
-        if len(str(hour)) > 3 or len(str(minute)) > 2 or minute not in range(60):
-            raise ValidationError(_("Invalid time, excepted MM:SS"))
-    except ValueError as error:
-        raise ValidationError(_("Invalid format")) from error
-
-
-def validate_time_in_minutes(value):
-    """
-    this method is used to validate the format of duration like fields.
-    """
-    if len(value) > 5:
-        raise ValidationError(_("Invalid format, it should be MM:SS format"))
-    try:
-        minutes, sec = value.split(":")
-        if len(minutes) > 2 or len(sec) > 2:
-            raise ValidationError(_("Invalid time, excepted MM:SS"))
-        minutes = int(minutes)
-        sec = int(sec)
-        if minutes not in range(60) or sec not in range(60):
-            raise ValidationError(_("Invalid time, excepted MM:SS"))
-    except ValueError as e:
-        raise ValidationError(_("Invalid format,  excepted MM:SS")) from e
-
-
-def attendance_date_validate(date):
-    """
-    Validates if the provided date is not a future date.
-
-    :param date: The date to validate.
-    :raises ValidationError: If the provided date is in the future.
-    """
-    today = datetime.today().date()
-    if not date:
-        raise ValidationError(_("Check date format."))
-    elif date > today:
-        raise ValidationError(_("You cannot choose a future date."))
-
-
-month_mapping = {
-    "january": 1,
-    "february": 2,
-    "march": 3,
-    "april": 4,
-    "may": 5,
-    "june": 6,
-    "july": 7,
-    "august": 8,
-    "september": 9,
-    "october": 10,
-    "november": 11,
-    "december": 12,
-}
 
 
 class AttendanceActivity(HorillaModel):
@@ -378,7 +285,7 @@ class Attendance(HorillaModel):
 
         # Taking all holidays into a list
         leaves = []
-        holidays = Holiday.objects.all()
+        holidays = Holidays.objects.all()
         for holi in holidays:
             start_date = holi.start_date
             end_date = holi.end_date
@@ -511,11 +418,14 @@ class Attendance(HorillaModel):
         Args:
             employee_ot (obj): AttendanceOverTime instance
         """
-        approved_leave_requests = self.employee_id.leaverequest_set.filter(
-            start_date__lte=self.attendance_date,
-            end_date__gte=self.attendance_date,
-            status="approved",
-        )
+        if apps.is_installed("leave"):
+            approved_leave_requests = self.employee_id.leaverequest_set.filter(
+                start_date__lte=self.attendance_date,
+                end_date__gte=self.attendance_date,
+                status="approved",
+            )
+        else:
+            approved_leave_requests = []
 
         # Create a Q object to combine multiple conditions for the exclude clause
         exclude_condition = Q()
@@ -698,7 +608,7 @@ class AttendanceOverTime(HorillaModel):
         hrs_to_vlaidate = sum(
             list(
                 Attendance.objects.filter(
-                    attendance_date__month=month_mapping[self.month],
+                    attendance_date__month=MONTH_MAPPING[self.month],
                     attendance_date__year=self.year,
                     employee_id=self.employee_id,
                     attendance_validated=False,
@@ -714,7 +624,7 @@ class AttendanceOverTime(HorillaModel):
         hrs_to_approve = sum(
             list(
                 Attendance.objects.filter(
-                    attendance_date__month=month_mapping[self.month],
+                    attendance_date__month=MONTH_MAPPING[self.month],
                     attendance_date__year=self.year,
                     employee_id=self.employee_id,
                     attendance_validated=True,
@@ -728,7 +638,7 @@ class AttendanceOverTime(HorillaModel):
         """
         This method will return the index of the month
         """
-        return month_mapping[self.month]
+        return MONTH_MAPPING[self.month]
 
     def save(self, *args, **kwargs):
         self.hour_account_second = strtime_seconds(self.worked_hours)
@@ -787,7 +697,7 @@ class AttendanceLateComeEarlyOut(HorillaModel):
         """
         This method is used to return the total penalties in the late early instance
         """
-        return self.penaltyaccount_set.count()
+        return self.penaltyaccounts_set.count()
 
     def save(self, *args, **kwargs) -> None:
         super().save(*args, **kwargs)
@@ -831,132 +741,6 @@ class AttendanceValidationCondition(HorillaModel):
         super().clean()
         if not self.id and AttendanceValidationCondition.objects.exists():
             raise ValidationError(_("You cannot add more conditions."))
-
-
-months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-]
-
-
-class PenaltyAccount(HorillaModel):
-    """
-    LateComeEarlyOutPenaltyAccount
-    """
-
-    employee_id = models.ForeignKey(
-        Employee,
-        on_delete=models.PROTECT,
-        related_name="penalty_set",
-        editable=False,
-        verbose_name="Employee",
-        null=True,
-    )
-    late_early_id = models.ForeignKey(
-        AttendanceLateComeEarlyOut, on_delete=models.CASCADE, null=True, editable=False
-    )
-    leave_request_id = models.ForeignKey(
-        LeaveRequest, null=True, on_delete=models.CASCADE, editable=False
-    )
-    leave_type_id = models.ForeignKey(
-        LeaveType,
-        on_delete=models.DO_NOTHING,
-        blank=True,
-        null=True,
-        verbose_name="Leave type",
-    )
-    minus_leaves = models.FloatField(default=0.0, null=True)
-    deduct_from_carry_forward = models.BooleanField(default=False)
-    penalty_amount = models.FloatField(default=0.0, null=True)
-
-    def clean(self) -> None:
-        super().clean()
-        if not self.leave_type_id and self.minus_leaves:
-            raise ValidationError(
-                {"leave_type_id": _("Specify the leave type to deduct the leave.")}
-            )
-        if self.leave_type_id and not self.minus_leaves:
-            raise ValidationError(
-                {
-                    "minus_leaves": _(
-                        "If a leave type is chosen for a penalty, minus leaves are required."
-                    )
-                }
-            )
-        if not self.minus_leaves and not self.penalty_amount:
-            raise ValidationError(
-                {
-                    "leave_type_id": _(
-                        "Either minus leaves or a penalty amount is required"
-                    )
-                }
-            )
-
-        if (
-            self.minus_leaves or self.deduct_from_carry_forward
-        ) and not self.leave_type_id:
-            raise ValidationError({"leave_type_id": _("Leave type is required")})
-        return
-
-    class Meta:
-        ordering = ["-created_at"]
-
-
-@receiver(post_save, sender=PenaltyAccount)
-def create_initial_stage(sender, instance, created, **kwargs):
-    """
-    This is post save method, used to create initial stage for the recruitment
-    """
-    # only work when creating
-    if created:
-        penalty_amount = instance.penalty_amount
-        if penalty_amount:
-            from payroll.models.models import Deduction
-
-            penalty = Deduction()
-            if instance.late_early_id:
-                penalty.title = f"{instance.late_early_id.get_type_display()} penalty"
-                penalty.one_time_date = (
-                    instance.late_early_id.attendance_id.attendance_date
-                )
-            elif instance.leave_request_id:
-                penalty.title = f"Leave penalty {instance.leave_request_id.end_date}"
-                penalty.one_time_date = instance.leave_request_id.end_date
-            else:
-                penalty.title = f"Penalty on {datetime.today()}"
-                penalty.one_time_date = datetime.today()
-            penalty.include_active_employees = False
-            penalty.is_fixed = True
-            penalty.amount = instance.penalty_amount
-            penalty.only_show_under_employee = True
-            penalty.save()
-            penalty.include_active_employees = False
-            penalty.specific_employees.add(instance.employee_id)
-            penalty.save()
-
-        if instance.leave_type_id and instance.minus_leaves:
-            available = instance.employee_id.available_leave.filter(
-                leave_type_id=instance.leave_type_id
-            ).first()
-            unit = round(instance.minus_leaves * 2) / 2
-            if not instance.deduct_from_carry_forward:
-                available.available_days = max(0, (available.available_days - unit))
-            else:
-                available.carryforward_days = max(
-                    0, (available.carryforward_days - unit)
-                )
-
-            available.save()
 
 
 class GraceTime(HorillaModel):
@@ -1038,3 +822,278 @@ class AttendanceGeneralSetting(HorillaModel):
 
     time_runner = models.BooleanField(default=True)
     company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+
+
+if apps.is_installed("leave") and apps.is_installed("payroll"):
+
+    class PenaltyAccount(HorillaModel):
+        """
+        LateComeEarlyOutPenaltyAccount
+        """
+
+        employee_id = models.ForeignKey(
+            Employee,
+            on_delete=models.PROTECT,
+            related_name="penalty_set",
+            editable=False,
+            verbose_name="Employee",
+            null=True,
+        )
+        late_early_id = models.ForeignKey(
+            AttendanceLateComeEarlyOut,
+            on_delete=models.CASCADE,
+            null=True,
+            editable=False,
+        )
+        leave_request_id = models.ForeignKey(
+            "leave.LeaveRequest", null=True, on_delete=models.CASCADE, editable=False
+        )
+        leave_type_id = models.ForeignKey(
+            "leave.LeaveType",
+            on_delete=models.DO_NOTHING,
+            blank=True,
+            null=True,
+            verbose_name="Leave type",
+        )
+        minus_leaves = models.FloatField(default=0.0, null=True)
+        deduct_from_carry_forward = models.BooleanField(default=False)
+        penalty_amount = models.FloatField(default=0.0, null=True)
+
+        def clean(self) -> None:
+            super().clean()
+            if not self.leave_type_id and self.minus_leaves:
+                raise ValidationError(
+                    {"leave_type_id": _("Specify the leave type to deduct the leave.")}
+                )
+            if self.leave_type_id and not self.minus_leaves:
+                raise ValidationError(
+                    {
+                        "minus_leaves": _(
+                            "If a leave type is chosen for a penalty, minus leaves are required."
+                        )
+                    }
+                )
+            if not self.minus_leaves and not self.penalty_amount:
+                raise ValidationError(
+                    {
+                        "leave_type_id": _(
+                            "Either minus leaves or a penalty amount is required"
+                        )
+                    }
+                )
+
+            if (
+                self.minus_leaves or self.deduct_from_carry_forward
+            ) and not self.leave_type_id:
+                raise ValidationError({"leave_type_id": _("Leave type is required")})
+            return
+
+        class Meta:
+            ordering = ["-created_at"]
+
+    @receiver(post_save, sender=PenaltyAccount)
+    def create_initial_stage(sender, instance, created, **kwargs):
+        """
+        This is post save method, used to create initial stage for the recruitment
+        """
+        # only work when creating
+        if created:
+            penalty_amount = instance.penalty_amount
+            if penalty_amount:
+                Deduction = get_horilla_model_class(
+                    app_label="payroll", model="deduction"
+                )
+                penalty = Deduction()
+                if instance.late_early_id:
+                    penalty.title = (
+                        f"{instance.late_early_id.get_type_display()} penalty"
+                    )
+                    penalty.one_time_date = (
+                        instance.late_early_id.attendance_id.attendance_date
+                    )
+                elif instance.leave_request_id:
+                    penalty.title = (
+                        f"Leave penalty {instance.leave_request_id.end_date}"
+                    )
+                    penalty.one_time_date = instance.leave_request_id.end_date
+                else:
+                    penalty.title = f"Penalty on {datetime.today()}"
+                    penalty.one_time_date = datetime.today()
+                penalty.include_active_employees = False
+                penalty.is_fixed = True
+                penalty.amount = instance.penalty_amount
+                penalty.only_show_under_employee = True
+                penalty.save()
+                penalty.include_active_employees = False
+                penalty.specific_employees.add(instance.employee_id)
+                penalty.save()
+
+            if instance.leave_type_id and instance.minus_leaves:
+                available = instance.employee_id.available_leave.filter(
+                    leave_type_id=instance.leave_type_id
+                ).first()
+                unit = round(instance.minus_leaves * 2) / 2
+                if not instance.deduct_from_carry_forward:
+                    available.available_days = max(0, (available.available_days - unit))
+                else:
+                    available.carryforward_days = max(
+                        0, (available.carryforward_days - unit)
+                    )
+
+                available.save()
+
+
+class WorkRecords(models.Model):
+    """
+    WorkRecord Model
+    """
+
+    choices = [
+        ("FDP", _("Present")),
+        ("HDP", _("Half Day Present")),
+        ("ABS", _("Absent")),
+        ("HD", _("Holiday/Company Leave")),
+        ("CONF", _("Conflict")),
+        ("DFT", _("Draft")),
+    ]
+
+    record_name = models.CharField(max_length=250, null=True, blank=True)
+    work_record_type = models.CharField(max_length=5, null=True, choices=choices)
+    employee_id = models.ForeignKey(
+        Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
+    )
+    date = models.DateField(null=True, blank=True)
+    at_work = models.CharField(
+        null=True,
+        blank=True,
+        validators=[
+            validate_time_format,
+        ],
+        default="00:00",
+        max_length=5,
+    )
+    min_hour = models.CharField(
+        null=True,
+        blank=True,
+        validators=[
+            validate_time_format,
+        ],
+        default="00:00",
+        max_length=5,
+    )
+    at_work_second = models.IntegerField(null=True, blank=True, default=0)
+    min_hour_second = models.IntegerField(null=True, blank=True, default=0)
+    note = models.TextField(max_length=255)
+    message = models.CharField(max_length=30, null=True, blank=True)
+    is_attendance_record = models.BooleanField(default=False)
+    is_leave_record = models.BooleanField(default=False)
+    day_percentage = models.FloatField(default=0)
+    last_update = models.DateTimeField(null=True, blank=True)
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+
+    def save(self, *args, **kwargs):
+        self.last_update = timezone.now()
+
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        super().clean()
+        if not 0.0 <= self.day_percentage <= 1.0:
+            raise ValidationError(_("Day percentage must be between 0.0 and 1.0"))
+
+    def __str__(self):
+        return (
+            self.record_name
+            if self.record_name is not None
+            else f"{self.work_record_type}-{self.date}"
+        )
+
+
+class OverrideAttendances(Attendance):
+    """
+    Class to override Attendance model save method
+    """
+
+    # Additional fields and methods specific to AnotherModel
+    @receiver(post_save, sender=Attendance)
+    def attendance_post_save(sender, instance, **kwargs):
+        """
+        Overriding Attendance model save method
+        """
+        if instance.first_save:
+            min_hour_second = strtime_seconds(instance.minimum_hour)
+            at_work_second = strtime_seconds(instance.attendance_worked_hour)
+
+            status = "FDP" if instance.at_work_second >= min_hour_second else "HDP"
+
+            status = "CONF" if instance.attendance_validated is False else status
+            message = (
+                _("Validate the attendance") if status == "CONF" else _("Validated")
+            )
+
+            message = (
+                _("Incomplete minimum hour")
+                if status == "HDP" and min_hour_second > at_work_second
+                else message
+            )
+            work_record = WorkRecords.objects.filter(
+                date=instance.attendance_date,
+                is_attendance_record=True,
+                employee_id=instance.employee_id,
+            )
+            work_record = (
+                WorkRecords()
+                if not WorkRecords.objects.filter(
+                    date=instance.attendance_date,
+                    employee_id=instance.employee_id,
+                ).exists()
+                else WorkRecords.objects.filter(
+                    date=instance.attendance_date,
+                    employee_id=instance.employee_id,
+                ).first()
+            )
+            work_record.employee_id = instance.employee_id
+            work_record.date = instance.attendance_date
+            work_record.at_work = instance.attendance_worked_hour
+            work_record.min_hour = instance.minimum_hour
+            work_record.min_hour_second = min_hour_second
+            work_record.at_work_second = at_work_second
+            work_record.work_record_type = status
+            work_record.message = message
+            work_record.is_attendance_record = True
+            if instance.attendance_validated:
+                work_record.day_percentage = (
+                    1.00 if at_work_second > min_hour_second / 2 else 0.50
+                )
+            work_record.save()
+
+            if status == "HDP" and work_record.is_leave_record:
+                message = _("Half day leave")
+
+            if status == "FDP":
+                message = _("Present")
+
+            work_record.message = message
+            work_record.save()
+
+            message = work_record.message
+            status = work_record.work_record_type
+            if not instance.attendance_clock_out:
+                status = "FDP"
+                message = _("Currently working")
+            work_record.message = message
+            work_record.work_record_type = status
+            work_record.save()
+
+    @receiver(pre_delete, sender=Attendance)
+    def attendance_pre_delete(sender, instance, **_kwargs):
+        """
+        Overriding Attendance model delete method
+        """
+        # Perform any actions before deleting the instance
+        # ...
+        WorkRecords.objects.filter(
+            employee_id=instance.employee_id,
+            is_attendance_record=True,
+            date=instance.attendance_date,
+        ).delete()

@@ -1,5 +1,5 @@
 {% load basefilters %}
-{% load i18n %}
+{% load i18n static %}
 
 {% if no_comments %}
 
@@ -7,7 +7,7 @@
     <div class="">
         <div>
             <span class="oh-timeoff-title fw-bold" style="display: block;">{% trans "There is no comments to show." %}</span>
-            <img style="display: block;width: 100px;margin: 20px auto ;" src="/static/images/ui/comment.png" class="">
+            <img style="display: block;width: 100px;margin: 20px auto ;" src="{% static "/images/ui/comment.png" %}" class="">
         </div>
     </div>
 </div>

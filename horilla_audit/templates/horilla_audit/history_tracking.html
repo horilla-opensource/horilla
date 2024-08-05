@@ -56,7 +56,7 @@
                     >
                     <div class="oh-history_abt pb-0">
                         <span class="oh-history_task-state">
-                            {% if history.action == 0 %} 
+                            {% if history.action == 0 %}
                                 {% trans "Created" %} {{model_name|verbose_name}}
                             {% elif history.action == 1 %}
                                 {% trans "Updated" %} {{model_name|verbose_name}}
@@ -83,7 +83,7 @@
                                         >
                                     </div>
                                 </li>
-                                {% endif %} 
+                                {% endif %}
                                 {% endfor %}
                                 {% for change,value in history.changes_display_dict.items %}
                                 {% if not value.0 == "type" %}
@@ -103,7 +103,7 @@
                                         >
                                     </div>
                                 </li>
-                                {% endif %} 
+                                {% endif %}
                                 {% endfor %}
                             </ul>
                         </div>
@@ -113,7 +113,7 @@
             {% if histories.has_next and forloop.last %}
             <div class="scrollButton" hx-get="{{request.META.PATH_INFO}}?page={{ histories.next_page_number }}"
                 hx-swap="beforeend" hx-target="#infinite" hx-select=".item"
-                > 
+                >
             </div>
             {% endif %}
         </div>

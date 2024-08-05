@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 {% load basefilters %}
 {% if instances_ids %}
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
@@ -89,7 +89,7 @@
                         <div class="oh-timeoff-modal__stat-count">
                             <span style="color: #665d5d;">{% trans "Requested days" %} : {{leave_allocation_request.allocate_tracking.old}}</span>
                             <br >
-                            <img src="/static/images/ui/arrow-right-line.svg" style="width: 100px; height: 20px;" class="oh-progress_arrow">
+                            <img src="{% static "/images/ui/arrow-right-line.svg" %}" style="width: 100px; height: 20px;" class="oh-progress_arrow">
                             <br >
                             <span style="color: #35b835;"> {% trans "Allocated days" %} : {{leave_allocation_request.allocate_tracking.new}}</span>
                         </div>

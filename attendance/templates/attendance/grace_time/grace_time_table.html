@@ -68,7 +68,7 @@
                                 {% endif %}
                                 {% if perms.base.delete_gracetime %}
                                 <form hx-confirm="{% trans 'Are you sure you want to delete this grace time?' %}" class="w-50"
-                                    hx-post="{% url 'delete-grace-time' default_grace_time.id %}?view=conditon"
+                                    hx-post="{% url 'delete-grace-time' default_grace_time.id %}?view=conditon" hx-target="#graceTimeContainer"
                                     >
                                     {% csrf_token %}
                                     <button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"

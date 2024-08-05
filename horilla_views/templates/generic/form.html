@@ -1,5 +1,4 @@
 {% load widget_tweaks %} {% load i18n %}
-{% load generic_template_filters %}
 <style>
   .condition-highlight {
     background-color: #ffa5000f;
@@ -15,36 +14,15 @@
   </button>
 </div>
 {% endif %}
-<div class="oh-modal__dialog-body oh-modal__dialog-relative">
-  {% if form.instance_ids %}
-  <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button
-      hx-get="{{form.previous_url}}?{{form.ids_key}}={{form.instance_id}}&{{request.GET.urlencode}}"
-      hx-swap="innerHTML"
-      hx-target="#genericModalBody"
-      class="oh-modal__diaglog-nav oh-modal__nav-prev"
-    >
-      <ion-icon name="chevron-back-outline"></ion-icon>
-    </button>
-
-    <button
-      hx-get="{{form.next_url}}?{{form.ids_key}}={{form.instance_id}}&{{request.GET.urlencode}}"
-      hx-swap="innerHTML"
-      hx-target="#genericModalBody"
-      class="oh-modal__diaglog-nav oh-modal__nav-next"
-    >
-      <ion-icon name="chevron-forward-outline"></ion-icon>
-    </button>
-  </div>
-  {% endif %}
+<div class="oh-modal__dialog-body">
   <div class="oh-general__tab-target oh-profile-section" id="personal">
     <div class="oh-profile-section__card row">
-      <div class="row" style="padding-right: 0;">
-        <div class="col-12" style="padding-right: 0;">{{ form.non_field_errors }}</div>
+      <div class="row">
+        <div class="col-12">{{ form.non_field_errors }}</div>
         {% for field in form.visible_fields %}
-        <div class="col-12 col-md-{{field|col}}" id="id_{{ field.name }}_parent_div" style="padding-right: 0;">
+        <div class="col-12 col-md-6">
           <div class="oh-label__info" for="id_{{ field.name }}">
-            <label class="oh-label {% if field.field.required %} required-star{% endif %}" for="id_{{ field.name }}"
+            <label class="oh-label" for="id_{{ field.name }}"
               >{% trans field.label %}</label
             >
             {% if field.help_text != '' %}
@@ -61,10 +39,8 @@
           </div>
           {% else %}
           <div id="dynamic_field_{{field.name}}">
-            {{ field|add_class:'form-control' }}
-            {{ field.errors }}
+            {{ field|add_class:'form-control' }} {% endif %} {{ field.errors }}
           </div>
-          {% endif %}
         </div>
         {% endfor %}
       </div>

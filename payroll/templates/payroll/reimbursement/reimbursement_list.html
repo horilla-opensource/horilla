@@ -1,4 +1,4 @@
-{% load i18n %} {% load static %}{% include "filter_tags.html" %}
+{% load i18n %} {% load static horillafilters %}{% include "filter_tags.html" %}
 <div class="d-flex flex-row-reverse oh-wrapper mb-2">
     <span
         class="me-3"
@@ -41,10 +41,11 @@
         <li class="oh-tabs__tab" data-target="#reimbursement_tab">
             {% trans "Reimbursements" %}
         </li>
-        <!-- normal user can't view all objective  -->
+        {% if "leave"|app_installed %}
         <li class="oh-tabs__tab" data-target="#leave_encashment_tab">
             {% trans "Leave Encashments" %}
         </li>
+        {% endif %}
         <li class="oh-tabs__tab" data-target="#bonus_encashment_tab">
             {% trans "Bonus Encashments" %}
         </li>

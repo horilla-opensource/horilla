@@ -1,4 +1,5 @@
 {% load static %}
+{% load horillafilters %}
 <style>
     .round {
         border-radius: 50%;
@@ -120,17 +121,20 @@
             <i class="material-icons mt-2">leaderboard</i>
         </a>
     </div>
-    <div id="fab8" class="fab round" data-tooltip="Create Ticket">
-        <a
-            class="text-light"
-            data-toggle="oh-modal-toggle"
-            data-target="#objectCreateModal"
-            hx-get="{% url 'ticket-create' %}"
-            hx-target="#objectCreateModalTarget"
-        >
-            <i class="material-icons mt-2">sell</i>
-        </a>
-    </div>
+    {% if "helpdesk"|app_installed %}
+        <div id="fab8" class="fab round" data-tooltip="Create Ticket">
+            <a
+                class="text-light"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-get="{% url 'ticket-create' %}"
+                hx-target="#objectCreateModalTarget"
+                >
+                <i class="material-icons mt-2">sell</i>
+            </a>
+        </div>
+    {% endif %}
+    {% if "asset"|app_installed %}
     <div id="fab7" class="fab round" data-tooltip="Create Asset Request">
         <a
             class="text-light"
@@ -142,6 +146,8 @@
             <i class="material-icons mt-2">devices</i>
         </a>
     </div>
+    {% endif %}
+    {% if "payroll"|app_installed %}
     <div id="fab6" class="fab round" data-tooltip="Create Reimbursement">
         <a
             class="text-light"
@@ -153,6 +159,7 @@
             <i class="material-icons mt-2">paid</i>
         </a>
     </div>
+    {% endif %}
     <div id="fab5" class="fab round" data-tooltip="Create Work Type Request">
         <a
             class="text-light"
@@ -175,23 +182,26 @@
             <i class="material-icons mt-2">history</i>
         </a>
     </div>
-    <div id="fab3" class="fab round" data-tooltip="Create Leave Request">
-        <a
-            class="text-light"
-            data-toggle="oh-modal-toggle"
-            data-target="#objectCreateModal"
-            {% if perms.leave.create_leaverequest %}
-                hx-get="{% url 'request-creation' %}"
-            {% else %}
-                hx-get="{% url 'leave-request-create' %}"
-            {% endif %}
-            hx-target="#objectCreateModalTarget"
-        >
-            <span class="material-symbols-outlined mt-2">
-            calendar_add_on
-            </span>
-        </a>
-    </div>
+    {% if "leave"|app_installed %}
+        <div id="fab3" class="fab round" data-tooltip="Create Leave Request">
+            <a
+                class="text-light"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                {% if perms.leave.create_leaverequest %}
+                    hx-get="{% url 'request-creation' %}"
+                {% else %}
+                    hx-get="{% url 'leave-request-create' %}"
+                {% endif %}
+                hx-target="#objectCreateModalTarget"
+            >
+                <span class="material-symbols-outlined mt-2">
+                calendar_add_on
+                </span>
+            </a>
+        </div>
+    {% endif %}
+    {% if "attendance"|app_installed %}
     <div id="fab2" class="fab round" data-tooltip="Create Attendance Request">
         <a
             class="text-light"
@@ -205,6 +215,7 @@
             </span>
         </a>
     </div>
+    {% endif %}
 </div>
 <div id="fab1" class="fab round" data-tooltip="Quick Action">
     <i id="fabIcon" class="material-icons">add</i>

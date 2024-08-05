@@ -8,9 +8,17 @@ import operator
 from django.core.exceptions import FieldDoesNotExist
 from django.http import QueryDict
 
+from base.templatetags.horillafilters import app_installed
 from employee.models import Employee
 from horilla.models import HorillaModel
-from recruitment.models import Candidate
+
+recruitment_installed = False
+if app_installed("recruitment"):
+    from recruitment.models import Candidate
+
+    recruitment_installed = True
+
+app_installed
 
 
 def get_related_models(model: HorillaModel) -> list:
@@ -33,7 +41,10 @@ def generate_choices(model_path):
 
     for field in list(model_class._meta.fields) + list(model_class._meta.many_to_many):
         related_model = field.related_model
-        if related_model in [Candidate, Employee]:
+        models = [Employee]
+        if recruitment_installed:
+            models.append(Candidate)
+        if related_model in models:
             email_field = (
                 f"{field.name}__get_email",
                 f"{field.verbose_name.capitalize().replace(' id','')} mail field ",
@@ -58,7 +69,10 @@ def generate_choices(model_path):
 
             to_fields.append(email_field)
             mail_details_choice.append(mail_detail)
-    if model_class in [Candidate, Employee]:
+    models = [Employee]
+    if recruitment_installed:
+        models.append(Candidate)
+    if model_class in models:
         to_fields.append(
             (
                 "get_email",

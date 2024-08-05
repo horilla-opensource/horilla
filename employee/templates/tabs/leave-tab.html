@@ -1,4 +1,5 @@
 {% load i18n %} {% load basefilters %}
+<br>
 <style>
   .oh-sticky-table-container {
     max-width: 2000px;
@@ -29,6 +30,7 @@
   }
   .oh-kanban-card {
     min-width: 350px;
+    border-radius:10px;
     flex-basis: calc(17% - 15px);
   }
   .oh-sticky-table-container + .oh-sticky-table-request {
@@ -69,7 +71,7 @@
 {% endif %}  -->
 {% if user_leaves %}
 <!-- Profile leave type card -->
-<div class="oh-sticky-table-container mt-2">
+<div class="oh-sticky-table-container">
   <div class="oh-sticky-table">
     <div class="kanban-card-container">
       <!-- Container for Kanban cards -->
@@ -124,7 +126,7 @@
 </div>
 {% elif employee_leaves %}
 <!-- Employe leave type card -->
-<div class="oh-sticky-table-container mt-2">
+<div class="oh-sticky-table-container">
   <div class="oh-sticky-table">
     <div class="kanban-card-container">
       <!-- Container for Kanban cards -->

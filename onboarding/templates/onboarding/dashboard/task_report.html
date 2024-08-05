@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
   <div class="oh-card-dashboard__header oh-card-dashboard__header--divider mb-0">
     <span class="oh-card-dashboard__title">{% trans 'My Onboarding Tasks' %}</span>
@@ -50,7 +50,7 @@
   {% else %}
     <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
       <div style="" class="">
-        <img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt="" />
+        <img style="display: block;width: 70px;margin: 20px auto ;" src="{% static "/images/ui/joiningchart.png" %}" class="" alt="" />
         <h3 style="font-size:16px" class="oh-404__subtitle">{% trans 'No data Found...' %}</h3>
       </div>
     </div>

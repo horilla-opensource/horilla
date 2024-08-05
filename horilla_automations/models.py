@@ -1,15 +1,10 @@
-from typing import Any
-
-from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _trans
 
-from employee.models import Employee
+from base.models import HorillaMailTemplate
 from horilla.models import HorillaModel
-from horilla_automations.methods.methods import get_related_models
 from horilla_views.cbv_methods import render_template
-from recruitment.models import RecruitmentMailTemplate
 
 MODEL_CHOICES = []
 
@@ -46,9 +41,9 @@ class MailAutomation(HorillaModel):
     trigger = models.CharField(max_length=10, choices=choices)
     # udpate the on_update logic to if and only if when
     # changes in the previous and current value
-    mail_template = models.ForeignKey(RecruitmentMailTemplate, on_delete=models.CASCADE)
+    mail_template = models.ForeignKey(HorillaMailTemplate, on_delete=models.CASCADE)
     template_attachments = models.ManyToManyField(
-        RecruitmentMailTemplate,
+        HorillaMailTemplate,
         related_name="template_attachment",
         blank=True,
     )

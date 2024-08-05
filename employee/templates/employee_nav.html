@@ -100,39 +100,11 @@
     </div>
   </div>
 </div>
-<div
-  class="oh-modal"
-  id="employeeExport"
-  role="dialog"
-  aria-labelledby="employeeExport"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog" style="max-width: 750px">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="employeeExportLavel">
-        {% trans "Export Employees" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-      <div class="oh-modal__dialog-body p-0 pt-2" id="employeeExportModalBody">
-        <form
-          action="{%url 'work-info-export' %}"
-          method="get"
-          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-          id="employeeExportForm"
-        >
-          {% csrf_token %} {% include 'employee_export_filter.html' %}
-          <div class="oh-dropdown__filter-footer">
-            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
-              {% trans "Export" %}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+
+<div id="employeeExport" class="oh-modal" role="dialog" aria-labelledby="employeeExport" aria-hidden="true">
+  <div id="employeeExportTarget" class="oh-modal__dialog" style="max-width: 750px" ></div>
 </div>
+
 {% endif %}
 {% if perms.employee.change_employee %}
 <div
@@ -150,19 +122,20 @@
       <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
       </button>
-      <div class="oh-modal__dialog-body p-0 pt-2" id="bulkUpdateModalBody">
+      <div class="oh-modal__dialog-body p-0 pt-2 pb-4" id="bulkUpdateModalBody">
         <form
           action="{%url 'employee-bulk-update' %}"
           method="post"
           onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
           id="bulkUpdateModalForm"
+          class="oh-profile-section"
         >
           {% csrf_token %} {{update_fields_form.update_fields.label}}
           {{update_fields_form.update_fields}}
           {{update_fields_form.bulk_employee_ids}}
-          <div class="oh-dropdown__filter-footer">
-            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
-              {% trans "Update" %}
+          <div class="oh-modal__dialog-footer p-0 pt-4">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Export" %}
             </button>
           </div>
         </form>
@@ -428,6 +401,8 @@
                         id="employee-info-export"
                         data-toggle="oh-modal-toggle"
                         data-target="#employeeExport"
+                        hx-get="{% url 'work-info-export' %}"
+                        hx-target="#employeeExportTarget"
                       >
                         {% trans "Export" %}
                       </a>

@@ -1,4 +1,4 @@
-{% load i18n %} {% load yes_no %} {% load static %}
+{% load i18n %} {% load horillafilters %} {% load static %}
 {% include 'filter_tags.html' %}
 {% if messages %}
 <div class="oh-wrapper">
@@ -15,7 +15,6 @@
   <div class="oh-layout--grid-3">
     {% for kr in krs %}
     <div class="oh-kanban-card "
-
     >
         <div class="oh-kanban-card__avatar">
         <div class="oh-kanban-card__profile-container">

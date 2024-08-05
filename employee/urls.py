@@ -9,7 +9,7 @@ from django.urls import path
 from base.views import object_delete, object_duplicate
 from employee import not_in_out_dashboard, policies, views
 from employee.forms import DisciplinaryActionForm
-from employee.models import DisciplinaryAction, Employee
+from employee.models import DisciplinaryAction, Employee, EmployeeTag
 from horilla_documents.models import DocumentRequest
 
 urlpatterns = [
@@ -183,23 +183,6 @@ urlpatterns = [
         name="dashboard-employee-count",
     ),
     path("employee-widget-filter", views.widget_filter, name="employee-widget-filter"),
-    path("asset-tab/<int:emp_id>", views.asset_tab, name="asset-tab"),
-    path(
-        "profile-asset-tab/<int:emp_id>",
-        views.profile_asset_tab,
-        name="profile-asset-tab",
-    ),
-    path(
-        "profile-attendance-tab",
-        views.profile_attendance_tab,
-        name="profile-attendance-tab",
-    ),
-    path(
-        "asset-request-tab/<int:emp_id>",
-        views.asset_request_tab,
-        name="asset-request-tab",
-    ),
-    path("performance-tab/<int:emp_id>", views.performance_tab, name="performance-tab"),
     path("note-tab/<int:emp_id>", views.note_tab, name="note-tab"),
     path("add-employee-note/<int:emp_id>/", views.add_note, name="add-employee-note"),
     path("add-employee-note-post", views.add_note, name="add-employee-note-post"),
@@ -223,7 +206,6 @@ urlpatterns = [
         views.employee_note_delete,
         name="employee-note-delete",
     ),
-    path("attendance-tab/<int:emp_id>", views.attendance_tab, name="attendance-tab"),
     path(
         "allowances-deductions-tab/<int:emp_id>",
         views.allowances_deductions_tab,
@@ -231,9 +213,9 @@ urlpatterns = [
     ),
     path("shift-tab/<int:emp_id>", views.shift_tab, name="shift-tab"),
     path(
-        "contract-tab/<int:obj_id>",
-        views.contract_tab,
-        name="contract-tab",
+        "about-tab/<int:obj_id>",
+        views.about_tab,
+        name="about-tab",
         kwargs={"model": Employee},
     ),
     path("document-tab/<int:emp_id>", views.document_tab, name="document-tab"),
@@ -412,5 +394,19 @@ urlpatterns = [
         views.get_manager_in,
         name="get-manager-in",
     ),
-    path("get_job_roles", views.get_job_roles, name="get_job_roles"),
+    path("get-job-positions", views.get_job_positions, name="get-job-positions"),
+    path("get-job-roles", views.get_job_roles, name="get-job-roles"),
+    path("employee-tag-view/", views.employee_tag_view, name="employee-tag-view"),
+    path("employee-tag-create", views.employee_tag_create, name="employee-tag-create"),
+    path(
+        "employee-tag-update/<int:tag_id>",
+        views.employee_tag_update,
+        name="employee-tag-update",
+    ),
+    path(
+        "employee-tag-delete/<int:id>/",
+        object_delete,
+        name="employee-tag-delete",
+        kwargs={"model": EmployeeTag, "redirect": "/employee/employee-tag-view/"},
+    ),
 ]

@@ -40,11 +40,11 @@ SUBMENUS = [
         "menu": trans("Leave Allocation Request"),
         "redirect": reverse("leave-allocation-request-view"),
     },
-    {
-        "menu": trans("Compensatory Leave Requests"),
-        "redirect": reverse("view-compensatory-leave"),
-        "accessibility": "leave.sidebar.componstory_accessibility",
-    },
+    # {
+    #     "menu": trans("Compensatory Leave Requests"),
+    #     "redirect": reverse("view-compensatory-leave"),
+    #     "accessibility": "leave.sidebar.componstory_accessibility",
+    # },
     {
         "menu": trans("Holidays"),
         "redirect": reverse("holiday-view"),
@@ -96,5 +96,5 @@ def company_leave_accessibility(request, submenu, user_perms, *args, **kwargs):
     return not request.user.has_perm("leave.add_companyleave")
 
 
-def componstory_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return is_compensatory(request.user)
+# def componstory_accessibility(request, submenu, user_perms, *args, **kwargs):
+#     return is_compensatory(request.user)

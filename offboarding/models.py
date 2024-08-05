@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 from datetime import date, timedelta
 
+from django.apps import apps
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
@@ -12,10 +13,10 @@ from base.models import Company
 from employee.models import Employee
 from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
+from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from notifications.signals import notify
-from payroll.models.models import Contract
 
 # Create your models here.
 
@@ -183,9 +184,14 @@ class ResignationLetter(HorillaModel):
             .filter(offboarding_id=offboarding)
             .first()
         )
-        contract_notice_end_date = Contract.objects.filter(
-            employee_id=self.employee_id, contract_status="active"
-        ).first()
+        contract_notice_end_date = (
+            get_horilla_model_class(app_label="payroll", model="contract")
+            .objects.filter(employee_id=self.employee_id, contract_status="active")
+            .first()
+            if apps.is_installed("payroll")
+            else None
+        )
+
         try:
             notice_period_ends = (
                 notice_period_starts

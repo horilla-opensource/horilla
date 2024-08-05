@@ -1,4 +1,4 @@
-{% load i18n %} {% load static %}
+{% load i18n %} {% load static %} {% load horillafilters %}
 
 <div class="row">
 	<div class="col-sm-12 col-md-12 col-lg-4">
@@ -16,10 +16,9 @@
 							<span>{% trans "Date of Birth" %}</span>
 						</span>
 						{% if employee.dob %}
-							<span class="oh-profile__info-value dateformat_changer">{{employee.dob}}</span>
+						<span class="oh-profile__info-value dateformat_changer">{{employee.dob}}</span>
 						{% else %}
-							<span class="oh-profile__info-value"
-							>{% trans "None" %}</span>
+						<span class="oh-profile__info-value">{% trans "None" %}</span>
 						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
@@ -27,9 +26,7 @@
 							<ion-icon name="transgender-outline"></ion-icon>
 							<span>{% trans "Gender" %}</span>
 						</span>
-						<span class="oh-profile__info-value"
-							>{% trans employee.get_gender_display %}</span
-						>
+						<span class="oh-profile__info-value">{% trans employee.get_gender_display %}</span>
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
@@ -37,10 +34,9 @@
 							<span>{% trans "Address" %}</span>
 						</span>
 						{% if employee.address %}
-							<span class="oh-profile__info-value mb-0">{{employee.address}}</span>
+						<span class="oh-profile__info-value mb-0">{{employee.address}}</span>
 						{% else %}
-							<span class="oh-profile__info-value"
-							>{% trans "None" %}</span>
+						<span class="oh-profile__info-value">{% trans "None" %}</span>
 						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
@@ -49,10 +45,9 @@
 							<span>{% trans "Country" %}</span>
 						</span>
 						{% if employee.country %}
-							<span class="oh-profile__info-value"> {{employee.country}} </span>
+						<span class="oh-profile__info-value"> {{employee.country}} </span>
 						{% else %}
-							<span class="oh-profile__info-value"
-							>{% trans "None" %}</span>
+						<span class="oh-profile__info-value">{% trans "None" %}</span>
 						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
@@ -61,10 +56,9 @@
 							<span>{% trans "State" %}</span>
 						</span>
 						{% if employee.state %}
-							<span class="oh-profile__info-value"> {{employee.state}} </span>
+						<span class="oh-profile__info-value"> {{employee.state}} </span>
 						{% else %}
-							<span class="oh-profile__info-value"
-							>{% trans "None" %}</span>
+						<span class="oh-profile__info-value">{% trans "None" %}</span>
 						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
@@ -73,10 +67,9 @@
 							<span>{% trans "City" %}</span>
 						</span>
 						{% if employee.city %}
-							<span class="oh-profile__info-value"> {{employee.city}}</span>
+						<span class="oh-profile__info-value"> {{employee.city}}</span>
 						{% else %}
-							<span class="oh-profile__info-value"
-							>{% trans "None" %}</span>
+						<span class="oh-profile__info-value">{% trans "None" %}</span>
 						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
@@ -85,10 +78,9 @@
 							<span>{% trans "Qualification" %}</span>
 						</span>
 						{% if employee.qualification %}
-							<span class="oh-profile__info-value">{{employee.qualification}}</span>
+						<span class="oh-profile__info-value">{{employee.qualification}}</span>
 						{% else %}
-							<span class="oh-profile__info-value"
-							>{% trans "None" %}</span>
+						<span class="oh-profile__info-value">{% trans "None" %}</span>
 						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
@@ -97,10 +89,9 @@
 							<span>{% trans "Experience" %}</span>
 						</span>
 						{% if employee.experience %}
-							<span class="oh-profile__info-value">{{employee.experience}}</span>
+						<span class="oh-profile__info-value">{{employee.experience}}</span>
 						{% else %}
-							<span class="oh-profile__info-value"
-							>{% trans "None" %}</span>
+						<span class="oh-profile__info-value">{% trans "None" %}</span>
 						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
@@ -116,10 +107,9 @@
 							<span>{% trans "Children" %}</span>
 						</span>
 						{% if employee.children %}
-							<span class="oh-profile__info-value"> {{employee.children}} </span>
+						<span class="oh-profile__info-value"> {{employee.children}} </span>
 						{% else %}
-							<span class="oh-profile__info-value"
-							>{% trans "None" %}</span>
+						<span class="oh-profile__info-value">{% trans "None" %}</span>
 						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
@@ -128,10 +118,9 @@
 							<span>{% trans "Emergency Contact" %}</span>
 						</span>
 						{% if employee.emergency_contact %}
-							<span class="oh-profile__info-value">{{employee.emergency_contact}}</span>
+						<span class="oh-profile__info-value">{{employee.emergency_contact}}</span>
 						{% else %}
-							<span class="oh-profile__info-value"
-							>{% trans "None" %}</span>
+						<span class="oh-profile__info-value">{% trans "None" %}</span>
 						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
@@ -140,12 +129,11 @@
 							<span>{% trans "Emergency Contact Name" %}</span>
 						</span>
 						{% if employee.emergency_contact_name %}
-							<span class="oh-profile__info-value">
-								{{employee.emergency_contact_name}}
-							</span>
+						<span class="oh-profile__info-value">
+							{{employee.emergency_contact_name}}
+						</span>
 						{% else %}
-							<span class="oh-profile__info-value"
-							>{% trans "None" %}</span>
+						<span class="oh-profile__info-value">{% trans "None" %}</span>
 						{% endif %}
 					</li>
 					<li class="oh-profile__card-info-item">
@@ -154,12 +142,11 @@
 							<span>{% trans "Emergency Contact Relation" %}</span>
 						</span>
 						{% if employee.emergency_contact_relation %}
-							<span class="oh-profile__info-value">
-								{{employee.emergency_contact_relation}}
-							</span>
+						<span class="oh-profile__info-value">
+							{{employee.emergency_contact_relation}}
+						</span>
 						{% else %}
-							<span class="oh-profile__info-value"
-							>{% trans "None" %}</span>
+						<span class="oh-profile__info-value">{% trans "None" %}</span>
 						{% endif %}
 					</li>
 				</ul>
@@ -172,34 +159,28 @@
 				<ul class="oh-tabs__tablist">
 					<li class="oh-tabs__tab oh-tabs__tab--active" data-target="#tab_1">
 						<div>
-							<img
-								src="{% static 'images/ui/work-info.png' %}"
-								alt=""
-								style="width: 25px; height: 25px; margin-right: 3px;opacity: 0.7"
-							/>
+							<img src="{% static 'images/ui/work-info.png' %}" alt=""
+								style="width: 25px; height: 25px; margin-right: 3px;opacity: 0.7" />
 							{% trans "Work Information" %}
 						</div>
 					</li>
 
-					{% if perms.employee.view_employee or perms.payroll.view_contract or request.user == employee.employee_user_id %}
-					<li class="oh-tabs__tab" data-target="#tab_2">
-						<div>
-							<img
-								src="{% static 'images/ui/contract.png' %}"
-								alt=""
-								style="width: 25px; height: 25px; margin-right: 3px"
-							/>
-							{% trans "Contract details" %}
-						</div>
-					</li>
+					{% if "payroll"|app_installed %}
+						{% if perms.employee.view_employee or perms.payroll.view_contract or request.user == employee.employee_user_id %}
+							<li class="oh-tabs__tab" data-target="#tab_2">
+								<div>
+									<img src="{% static 'images/ui/contract.png' %}" alt=""
+										style="width: 25px; height: 25px; margin-right: 3px" />
+									{% trans "Contract details" %}
+								</div>
+							</li>
+						{% endif %}
 					{% endif %}
 				</ul>
 				<div class="oh-tabs__contents" id="view-container">
 					<div class="oh-tabs__content oh-tabs__content--active" id="tab_1">
 						<div class="oh-card__header">
-							<span class="oh-card__title oh-card__title--sm fw-bold me-2"
-								>{% trans "Work Information" %}</span
-							>
+							<span class="oh-card__title oh-card__title--sm fw-bold me-2">{% trans "Work Information" %}</span>
 						</div>
 						<div class="oh-card__body mt-4">
 							<div class="row">
@@ -211,12 +192,10 @@
 												<span>{% trans "Department" %}</span>
 											</span>
 											{% if employee.employee_work_info.department_id %}
-												<span class="oh-profile__info-value"
-													>{{employee.employee_work_info.department_id}}</span
-												>
+											<span
+												class="oh-profile__info-value">{{employee.employee_work_info.department_id}}</span>
 											{% else %}
-												<span class="oh-profile__info-value"
-												>{% trans "None" %}</span>
+											<span class="oh-profile__info-value">{% trans "None" %}</span>
 											{% endif %}
 										</li>
 										<li class="oh-profile__card-info-item">
@@ -225,12 +204,10 @@
 												<span>{% trans "Shift Information" %}</span>
 											</span>
 											{% if employee.employee_work_info.shift_id %}
-												<span class="oh-profile__info-value"
-													>{{employee.employee_work_info.shift_id}}</span
-												>
+											<span
+												class="oh-profile__info-value">{{employee.employee_work_info.shift_id}}</span>
 											{% else %}
-												<span class="oh-profile__info-value"
-												>{% trans "None" %}</span>
+											<span class="oh-profile__info-value">{% trans "None" %}</span>
 											{% endif %}
 										</li>
 
@@ -240,12 +217,10 @@
 												<span>{% trans "Employee Type" %}</span>
 											</span>
 											{% if employee.employee_work_info.employee_type_id %}
-												<span class="oh-profile__info-value"
-													>{{employee.employee_work_info.employee_type_id}}</span
-												>
+											<span
+												class="oh-profile__info-value">{{employee.employee_work_info.employee_type_id}}</span>
 											{% else %}
-												<span class="oh-profile__info-value"
-												>{% trans "None" %}</span>
+											<span class="oh-profile__info-value">{% trans "None" %}</span>
 											{% endif %}
 										</li>
 
@@ -255,12 +230,10 @@
 												<span>{% trans "Reporting Manager" %}</span>
 											</span>
 											{% if employee.employee_work_info.reporting_manager_id %}
-												<span class="oh-profile__info-value"
-													>{{employee.employee_work_info.reporting_manager_id}}</span
-												>
+											<span
+												class="oh-profile__info-value">{{employee.employee_work_info.reporting_manager_id}}</span>
 											{% else %}
-												<span class="oh-profile__info-value"
-												>{% trans "None" %}</span>
+											<span class="oh-profile__info-value">{% trans "None" %}</span>
 											{% endif %}
 										</li>
 
@@ -270,12 +243,10 @@
 												<span>{% trans "Work Location" %}</span>
 											</span>
 											{% if employee.employee_work_info.location %}
-												<span class="oh-profile__info-value"
-													>{{employee.employee_work_info.location}}</span
-												>
+											<span
+												class="oh-profile__info-value">{{employee.employee_work_info.location}}</span>
 											{% else %}
-												<span class="oh-profile__info-value"
-												>{% trans "None" %}</span>
+											<span class="oh-profile__info-value">{% trans "None" %}</span>
 											{% endif %}
 										</li>
 										<li class="oh-profile__card-info-item">
@@ -284,12 +255,10 @@
 												<span>{% trans "End Date" %}</span>
 											</span>
 											{% if employee.employee_work_info.contract_end_date %}
-												<span class="oh-profile__info-value dateformat_changer"
-													>{{employee.employee_work_info.contract_end_date}}</span
-												>
+											<span
+												class="oh-profile__info-value dateformat_changer">{{employee.employee_work_info.contract_end_date}}</span>
 											{% else %}
-												<span class="oh-profile__info-value"
-												>{% trans "None" %}</span>
+											<span class="oh-profile__info-value">{% trans "None" %}</span>
 											{% endif %}
 										</li>
 									</ul>
@@ -303,12 +272,10 @@
 												<span>{% trans "Job Position" %}</span>
 											</span>
 											{% if employee.employee_work_info.job_position_id %}
-												<span class="oh-profile__info-value"
-													>{{employee.employee_work_info.job_position_id}}</span
-												>
+											<span
+												class="oh-profile__info-value">{{employee.employee_work_info.job_position_id}}</span>
 											{% else %}
-												<span class="oh-profile__info-value"
-												>{% trans "None" %}</span>
+											<span class="oh-profile__info-value">{% trans "None" %}</span>
 											{% endif %}
 										</li>
 										<li class="oh-profile__card-info-item">
@@ -317,12 +284,10 @@
 												<span>{% trans "Work Type" %}</span>
 											</span>
 											{% if employee.employee_work_info.work_type_id %}
-												<span class="oh-profile__info-value"
-													>{{employee.employee_work_info.work_type_id}}</span
-												>
+											<span
+												class="oh-profile__info-value">{{employee.employee_work_info.work_type_id}}</span>
 											{% else %}
-												<span class="oh-profile__info-value"
-												>{% trans "None" %}</span>
+											<span class="oh-profile__info-value">{% trans "None" %}</span>
 											{% endif %}
 										</li>
 										<li class="oh-profile__card-info-item">
@@ -331,18 +296,15 @@
 												<span>{% trans "Salary" %}</span>
 											</span>
 											{% if employee.employee_work_info.basic_salary %}
-												<span class="oh-profile__info-value"
-													>
-													{% if perms.employee.view_employee or request.user == employee.employee_user_id %}
-														{{employee.employee_work_info.basic_salary}}
-														{% else %}
-														**********
-													{% endif %}
-													</span
-												>
+											<span class="oh-profile__info-value">
+												{% if perms.employee.view_employee or request.user == employee.employee_user_id %}
+													{{employee.employee_work_info.basic_salary}}
+												{% else %}
+													**********
+												{% endif %}
+											</span>
 											{% else %}
-												<span class="oh-profile__info-value"
-												>{% trans "None" %}</span>
+											<span class="oh-profile__info-value">{% trans "None" %}</span>
 											{% endif %}
 										</li>
 										<li class="oh-profile__card-info-item">
@@ -351,12 +313,10 @@
 												<span>{% trans "Company" %}</span>
 											</span>
 											{% if employee.employee_work_info.company_id %}
-												<span class="oh-profile__info-value"
-													>{{employee.employee_work_info.company_id}}</span
-												>
+											<span
+												class="oh-profile__info-value">{{employee.employee_work_info.company_id}}</span>
 											{% else %}
-												<span class="oh-profile__info-value"
-												>{% trans "None" %}</span>
+											<span class="oh-profile__info-value">{% trans "None" %}</span>
 											{% endif %}
 										</li>
 
@@ -366,12 +326,10 @@
 												<span>{% trans "Joining Date" %}</span>
 											</span>
 											{% if employee.employee_work_info.date_joining %}
-												<span class="oh-profile__info-value dateformat_changer"
-													>{{employee.employee_work_info.date_joining}}</span
-												>
+											<span
+												class="oh-profile__info-value dateformat_changer">{{employee.employee_work_info.date_joining}}</span>
 											{% else %}
-												<span class="oh-profile__info-value"
-												>{% trans "None" %}</span>
+											<span class="oh-profile__info-value">{% trans "None" %}</span>
 											{% endif %}
 
 										</li>
@@ -381,18 +339,17 @@
 												<ion-icon name="business-outline"></ion-icon>
 												<span>{% trans "Tags" %}</span>
 											</span>
-											<div style= "display: flex; flex-wrap: wrap;">
+											<div style="display: flex; flex-wrap: wrap;">
 												{% if employee.employee_work_info.tags.all %}
-													{% for i in employee.employee_work_info.tags.all %}
-														{% with tag_width=i.title|length %}
-															<span class="oh-profile__info-value mt-1 mb-1 mr-1" style="background-color: {{ i.color }};
-																font-size: .8rem; padding: 4px 10px; border-radius: 18px; font-weight: 600; width: {{ tag_width }}em;"
-															>{{ i.title }}</span>
-														{% endwith %}
-													{% endfor %}
+												{% for i in employee.employee_work_info.tags.all %}
+												{% with tag_width=i.title|length %}
+												<span class="oh-profile__info-value mt-1 mb-1 mr-1"
+													style="background-color: {{ i.color }};
+																font-size: .8rem; padding: 4px 10px; border-radius: 18px; font-weight: 600; width: {{ tag_width }}em;">{{ i.title }}</span>
+												{% endwith %}
+												{% endfor %}
 												{% else %}
-													<span class="oh-profile__info-value dateformat_changer"
-													>{% trans "None" %}</span>
+												<span class="oh-profile__info-value dateformat_changer">{% trans "None" %}</span>
 												{% endif %}
 											</div>
 										</li>
@@ -403,11 +360,11 @@
 						</div>
 					</div>
 					{% if perms.employee.view_employee or perms.payroll.view_contract or request.user == employee.employee_user_id %}
-					<div class="oh-tabs__content" id="tab_2">
-						{% include "tabs/contract-tab.html" %}
-						{% endif %}
-						{% if perms.leave.view_contract %}
-					</div>
+						<div class="oh-tabs__content" id="tab_2">
+							{% if "payroll"|app_installed and perms.payroll.view_contract %}
+								{% include "tabs/contract-tab.html" %}
+							{% endif %}
+						</div>
 					{% endif %}
 				</div>
 			</div>
@@ -415,9 +372,7 @@
 		{% if perms.employee.view_employeebankdetails or request.user == employee.employee_user_id %}
 		<div class="oh-card oh-card--margin">
 			<div class="oh-card__header">
-				<span class="oh-card__title oh-card__title--sm fw-bold me-2"
-					>{% trans "Bank Information" %}</span
-				>
+				<span class="oh-card__title oh-card__title--sm fw-bold me-2">{% trans "Bank Information" %}</span>
 			</div>
 			<div class="oh-card__body mt-4">
 				<div class="row">
@@ -429,12 +384,11 @@
 									<span>{% trans "Bank Name" %}</span>
 								</span>
 								{% if employee.employee_bank_details.bank_name %}
-									<span class="oh-profile__info-value">
-										{{employee.employee_bank_details.bank_name}}
-									</span>
+								<span class="oh-profile__info-value">
+									{{employee.employee_bank_details.bank_name}}
+								</span>
 								{% else %}
-									<span class="oh-profile__info-value"
-									>{% trans "None" %}</span>
+								<span class="oh-profile__info-value">{% trans "None" %}</span>
 								{% endif %}
 							</li>
 							<li class="oh-profile__card-info-item">
@@ -443,12 +397,11 @@
 									<span>{% trans "Branch" %}</span>
 								</span>
 								{% if employee.employee_bank_details.branch %}
-									<span class="oh-profile__info-value">
-										{{employee.employee_bank_details.branch}}
-									</span>
+								<span class="oh-profile__info-value">
+									{{employee.employee_bank_details.branch}}
+								</span>
 								{% else %}
-									<span class="oh-profile__info-value"
-									>{% trans "None" %}</span>
+								<span class="oh-profile__info-value">{% trans "None" %}</span>
 								{% endif %}
 							</li>
 							<li class="oh-profile__card-info-item">
@@ -457,12 +410,11 @@
 									<span>{% trans "Bank Address" %}</span>
 								</span>
 								{% if employee.employee_bank_details.address %}
-									<span class="oh-profile__info-value">
-										{{employee.employee_bank_details.address}}
-									</span>
+								<span class="oh-profile__info-value">
+									{{employee.employee_bank_details.address}}
+								</span>
 								{% else %}
-									<span class="oh-profile__info-value"
-									>{% trans "None" %}</span>
+								<span class="oh-profile__info-value">{% trans "None" %}</span>
 								{% endif %}
 							</li>
 							<li class="oh-profile__card-info-item">
@@ -471,12 +423,11 @@
 									<span>{% trans "Bank Code" %} #1</span>
 								</span>
 								{% if employee.employee_bank_details.any_other_code1 %}
-									<span class="oh-profile__info-value">
-										{{employee.employee_bank_details.any_other_code1}}
-									</span>
+								<span class="oh-profile__info-value">
+									{{employee.employee_bank_details.any_other_code1}}
+								</span>
 								{% else %}
-									<span class="oh-profile__info-value"
-									>{% trans "None" %}</span>
+								<span class="oh-profile__info-value">{% trans "None" %}</span>
 								{% endif %}
 							</li>
 						</ul>
@@ -489,12 +440,11 @@
 									<span>{% trans "Account Number" %}</span>
 								</span>
 								{% if employee.employee_bank_details.account_number %}
-									<span class="oh-profile__info-value">
-										{{employee.employee_bank_details.account_number}}
-									</span>
+								<span class="oh-profile__info-value">
+									{{employee.employee_bank_details.account_number}}
+								</span>
 								{% else %}
-									<span class="oh-profile__info-value"
-									>{% trans "None" %}</span>
+								<span class="oh-profile__info-value">{% trans "None" %}</span>
 								{% endif %}
 							</li>
 							<li class="oh-profile__card-info-item">
@@ -503,12 +453,11 @@
 									<span>{% trans "Bank Code" %} #2</span>
 								</span>
 								{% if employee.employee_bank_details.any_other_code2 %}
-									<span class="oh-profile__info-value">
-										{{employee.employee_bank_details.any_other_code2}}
-									</span>
+								<span class="oh-profile__info-value">
+									{{employee.employee_bank_details.any_other_code2}}
+								</span>
 								{% else %}
-									<span class="oh-profile__info-value"
-									>{% trans "None" %}</span>
+								<span class="oh-profile__info-value">{% trans "None" %}</span>
 								{% endif %}
 							</li>
 							<li class="oh-profile__card-info-item">
@@ -517,12 +466,11 @@
 									<span>{% trans "Country" %}</span>
 								</span>
 								{% if employee.employee_bank_details.country %}
-									<span class="oh-profile__info-value">
-										{{employee.employee_bank_details.country}}
-									</span>
+								<span class="oh-profile__info-value">
+									{{employee.employee_bank_details.country}}
+								</span>
 								{% else %}
-									<span class="oh-profile__info-value"
-									>{% trans "None" %}</span>
+								<span class="oh-profile__info-value">{% trans "None" %}</span>
 								{% endif %}
 							</li>
 						</ul>

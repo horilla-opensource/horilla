@@ -7,11 +7,13 @@ This module is used to register models for employee app
 
 from datetime import date, datetime, timedelta
 
+from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db import models
+from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
@@ -30,6 +32,7 @@ from base.models import (
 )
 from employee.methods.duration_methods import format_time, strtime_seconds
 from horilla import horilla_middlewares
+from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
@@ -200,42 +203,52 @@ class Employee(models.Model):
         This method is used to get the leave status of the employee
         """
         today = date.today()
-        leaves_requests = self.leaverequest_set.filter(
-            start_date__lte=today, end_date__gte=today
+        leaves_requests = (
+            self.leaverequest_set.filter(start_date__lte=today, end_date__gte=today)
+            if apps.is_installed("leave")
+            else QuerySet().none()
         )
-        status = "Expected working"
+        status = _("Expected working")
         if leaves_requests.exists():
             if leaves_requests.filter(status="approved").exists():
-                status = "On Leave"
+                status = _("On Leave")
             elif leaves_requests.filter(status="requested"):
-                status = "Waiting Approval"
+                status = _("Waiting Approval")
             else:
-                status = "Canceled / Rejected"
-        elif self.employee_attendances.filter(
-            attendance_date=today,
-        ).exists():
-            status = "On a break"
+                status = _("Canceled / Rejected")
+        elif (
+            apps.is_installed("attendance")
+            and self.employee_attendances.filter(
+                attendance_date=today,
+            ).exists()
+        ):
+            status = _("On a break")
         return status
 
     def get_forecasted_at_work(self):
         """
         This method is used to the employees current day shift status
         """
-        today = datetime.today()
-        attendance = self.employee_attendances.filter(attendance_date=today).first()
-        minimum_hour_seconds = strtime_seconds(getattr(attendance, "minimum_hour", "0"))
-        at_work = 0
-        forecasted_pending_hours = 0
-        if attendance:
-            at_work = attendance.get_at_work_from_activities()
-        forecasted_pending_hours = max(0, (minimum_hour_seconds - at_work))
+        if apps.is_installed("attendance"):
+            today = datetime.today()
+            attendance = self.employee_attendances.filter(attendance_date=today).first()
+            minimum_hour_seconds = strtime_seconds(
+                getattr(attendance, "minimum_hour", "0")
+            )
+            at_work = 0
+            forecasted_pending_hours = 0
+            if attendance:
+                at_work = attendance.get_at_work_from_activities()
+            forecasted_pending_hours = max(0, (minimum_hour_seconds - at_work))
 
-        return {
-            "forecasted_at_work": format_time(at_work),
-            "forecasted_pending_hours": format_time(forecasted_pending_hours),
-            "forecasted_at_work_seconds": at_work,
-            "forecasted_pending_hours_seconds": forecasted_pending_hours,
-        }
+            return {
+                "forecasted_at_work": format_time(at_work),
+                "forecasted_pending_hours": format_time(forecasted_pending_hours),
+                "forecasted_at_work_seconds": at_work,
+                "forecasted_pending_hours_seconds": forecasted_pending_hours,
+            }
+        else:
+            return {}
 
     def get_today_attendance(self):
         """
@@ -261,25 +274,33 @@ class Employee(models.Model):
         they are considered eligible for archiving. If they are associated,
         a dictionary is returned with a list of related models of that employee.
         """
-        from onboarding.models import OnboardingStage, OnboardingTask
-        from recruitment.models import Recruitment, Stage
-
+        if apps.is_installed("onboarding"):
+            OnboardingStage = get_horilla_model_class("onboarding", "onboardingstage")
+            OnboardingTask = get_horilla_model_class("onboarding", "onboardingtask")
+            onboarding_stage_query = OnboardingStage.objects.filter(employee_id=self.pk)
+            onboarding_task_query = OnboardingTask.objects.filter(employee_id=self.pk)
+        else:
+            onboarding_stage_query = None
+            onboarding_task_query = None
+        if apps.is_installed("recruitment"):
+            Recruitment = get_horilla_model_class("recruitment", "recruitment")
+            Stage = get_horilla_model_class("recruitment", "stage")
+            recruitment_stage_query = Stage.objects.filter(stage_managers=self.pk)
+            recruitment_manager_query = Recruitment.objects.filter(
+                recruitment_managers=self.pk
+            )
+        else:
+            recruitment_stage_query = None
+            recruitment_manager_query = None
         reporting_manager_query = EmployeeWorkInformation.objects.filter(
             reporting_manager_id=self.pk
         )
-        recruitment_stage_query = Stage.objects.filter(stage_managers=self.pk)
-        onboarding_stage_query = OnboardingStage.objects.filter(employee_id=self.pk)
-        onboarding_task_query = OnboardingTask.objects.filter(employee_id=self.pk)
-        recruitment_manager_query = Recruitment.objects.filter(
-            recruitment_managers=self.pk
-        )
-
         if not (
             reporting_manager_query.exists()
-            or recruitment_stage_query.exists()
-            or onboarding_stage_query.exists()
-            or onboarding_task_query.exists()
-            or recruitment_manager_query.exists()
+            or (recruitment_stage_query and recruitment_stage_query.exists())
+            or (onboarding_stage_query and onboarding_stage_query.exists())
+            or (onboarding_task_query and onboarding_task_query.exists())
+            or (recruitment_manager_query and recruitment_manager_query.exists())
         ):
             return False
         else:
@@ -347,22 +368,28 @@ class Employee(models.Model):
 
     def check_online(self):
         """
-        This method is used to check the user in online users or not
+        This method is used to check if the user is in the list of online users.
         """
-        from attendance.models import Attendance
+        if apps.is_installed("attendance"):
+            Attendance = get_horilla_model_class("attendance", "attendance")
+            request = getattr(horilla_middlewares._thread_locals, "request", None)
 
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-        if not getattr(request, "working_employees", None):
-            today = datetime.now().date()
-            yesterday = today - timedelta(days=1)
-            working_employees = Attendance.objects.filter(
-                attendance_date__gte=yesterday,
-                attendance_date__lte=today,
-                attendance_clock_out_date__isnull=True,
-            ).values_list("employee_id", flat=True)
-            setattr(request, "working_employees", working_employees)
-        working_employees = request.working_employees
-        return self.pk in working_employees
+            if request is not None:
+                if (
+                    not hasattr(request, "working_employees")
+                    or request.working_employees is None
+                ):
+                    today = datetime.now().date()
+                    yesterday = today - timedelta(days=1)
+                    working_employees = Attendance.objects.filter(
+                        attendance_date__gte=yesterday,
+                        attendance_date__lte=today,
+                        attendance_clock_out_date__isnull=True,
+                    ).values_list("employee_id", flat=True)
+                    setattr(request, "working_employees", working_employees)
+                working_employees = request.working_employees
+                return self.pk in working_employees
+        return False
 
     class Meta:
         """

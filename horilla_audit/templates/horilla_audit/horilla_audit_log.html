@@ -1,60 +1,48 @@
-{% load i18n %}{% load widget_tweaks %} {% load attendancefilters %}
+{% load i18n %}{% load widget_tweaks %} {% load horillafilters %}
 <script>
-  function auditDynamicTag(optionElement) {
-    var val = optionElement.val();
-    $.ajax({
-      type: "post",
-      url: "/horilla-audit-log",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        title: val,
-      },
-      success: function (response) {
-        optionElement.val(response.id);
-      },
-    });
-  }
+    function auditDynamicTag(optionElement) {
+        var val = optionElement.val();
+        $.ajax({
+            type: "post",
+            url: "/horilla-audit-log",
+            data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                title: val,
+            },
+            success: function (response) {
+                optionElement.val(response.id);
+            },
+        });
+    }
 </script>
-<div
-  class="oh-modal"
-  id="historyModal"
-  role="dialog"
-  aria-labelledby="historyModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="historyModalLabel">
-        {% trans "Why this change?" %}
-      </h2>
-      <a
-        class="oh-modal__close"
-        aria-label="Close"
-        onclick='$("#historyModal").removeClass("oh-modal--show")'
-      >
-        <ion-icon name="close-outline"></ion-icon>
-      </a>
+<div class="oh-modal" id="historyModal" role="dialog" aria-labelledby="historyModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="historyModalLabel">
+                {% trans "Why this change?" %}
+            </h2>
+            <a class="oh-modal__close" aria-label="Close" onclick='$("#historyModal").removeClass("oh-modal--show")'>
+                <ion-icon name="close-outline"></ion-icon>
+            </a>
+        </div>
+        <div class="oh-modal__dialog-body" id="historyModalBody">
+            {{form.as_p}}
+            <div class="d-flex flex-row-reverse">
+                <button type="submit"
+                    class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp history-modal-button">
+                    {% trans "Save" %}
+                </button>
+            </div>
+        </div>
     </div>
-    <div class="oh-modal__dialog-body" id="historyModalBody">
-      {{form.as_p}}
-      <div class="d-flex flex-row-reverse">
-        <button
-          type="submit"
-          class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp history-modal-button"
-        >
-          {% trans "Save" %}
-        </button>
-      </div>
-    </div>
-  </div>
 </div>
 <script>
-  $("#historyModalBody").ready(function () {
-    $("form[method=post] button").click(function (e) {
-      if ($(this).closest("form").find("#historyModal").length && !$(this).closest("form").find("#historyModal.oh-modal--show").length) {
-        e.preventDefault();
-        $("#historyModal").addClass("oh-modal--show");
-      }
+    $("#historyModalBody").ready(function () {
+        $("form[method=post] button").click(function (e) {
+            if ($(this).closest("form").find("#historyModal").length && !$(this).closest("form").find("#historyModal.oh-modal--show").length) {
+                e.preventDefault();
+                $("#historyModal").addClass("oh-modal--show");
+            }
+        });
     });
-  });
 </script>

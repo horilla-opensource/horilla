@@ -1,4 +1,4 @@
-{% load attendancefilters %} {% load basefilters %} {% load static %}
+{% load horillafilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %}
   <!-- start of selection buttons -->
 
@@ -144,12 +144,12 @@
                                       <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                           <div class="oh-btn-group">
                                               {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or request.user|is_leave_approval_manager %}
-                                                <button  data-toggle="oh-modal-toggle" data-target="#penaltyModal"
-                                                  hx-target="#penaltyModalBody" hx-get="{% url "leave-cut-penalty" leave_request.id %}?{{pd}}"
-                                                  type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                                  title="{% trans 'Penalty' %}">
-                                                  <ion-icon name="information-circle-outline"></ion-icon>
-                                                </button>
+                                                  <button  data-toggle="oh-modal-toggle" data-target="#penaltyModal"
+                                                    hx-target="#penaltyModalBody" hx-get="{% url "leave-cut-penalty" leave_request.id %}?{{pd}}"
+                                                    type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                    title="{% trans 'Penalty' %}">
+                                                    <ion-icon name="information-circle-outline"></ion-icon>
+                                                  </button>
                                               {% endif %}
                                               <button  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
                                                   data-target="#objectUpdateModal" hx-get="{% url 'request-update' leave_request.id %}"

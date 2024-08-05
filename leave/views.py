@@ -2,6 +2,7 @@
 views.py
 """
 
+import ast
 import contextlib
 import json
 from collections import defaultdict
@@ -9,6 +10,7 @@ from datetime import date, datetime, timedelta
 from urllib.parse import parse_qs, unquote
 
 import pandas as pd
+from django.apps import apps
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import ProtectedError, Q
@@ -19,20 +21,18 @@ from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
-from attendance.filters import PenaltyFilter
-from attendance.forms import PenaltyAccountForm
-from attendance.models import PenaltyAccount
+from base.filters import PenaltyFilter
+from base.forms import PenaltyAccountForm
 from base.methods import (
     choosesubordinates,
     closest_numbers,
     export_data,
-    filter_conditional_leave_request,
     filtersubordinates,
     get_key_instances,
     get_pagination,
     sortby,
 )
-from base.models import *
+from base.models import CompanyLeaves, Holidays, PenaltyAccounts
 from employee.models import Employee
 from horilla.decorators import (
     hx_request_required,
@@ -43,23 +43,26 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
+from horilla.methods import get_horilla_model_class
 from leave.decorators import *
 from leave.filters import *
 from leave.forms import *
-from leave.models import *
-from leave.threading import LeaveMailSendThread
-from notifications.signals import notify
-from recruitment.models import InterviewSchedule
-
-from .methods import (
+from leave.methods import (
     calculate_requested_days,
     company_leave_dates_list,
+    filter_conditional_leave_request,
     holiday_dates_list,
     leave_requested_dates,
 )
+from leave.models import *
+from leave.threading import LeaveMailSendThread
+from notifications.signals import notify
 
 
 def generate_error_report(error_list, error_data, file_name):
+    """
+    Function used to generate error excle file for imported datas
+    """
     for item in error_list:
         for key, value in error_data.items():
             if key in item:
@@ -328,6 +331,25 @@ def get_employee_leave_types(request):
     return HttpResponse(leave_type_field_html)
 
 
+def multiple_approvals_check(id):
+    approvals = LeaveRequestConditionApproval.objects.filter(leave_request_id=id)
+    requested_query = approvals.filter(is_approved=False).order_by("sequence")
+    approved_query = approvals.filter(is_approved=True).order_by("sequence")
+    managers = []
+    for manager in approvals:
+        managers.append(manager.manager_id)
+    if approvals.exists():
+        result = {
+            "managers": managers,
+            "approved": approved_query,
+            "requested": requested_query,
+            "approvals": approvals,
+        }
+    else:
+        result = False
+    return result
+
+
 @login_required
 @hx_request_required
 @manager_can_enter("leave.add_leaverequest")
@@ -403,6 +425,25 @@ def leave_request_creation(request, type_id=None, emp_id=None):
             if save:
                 leave_request.created_by = request.user.employee_get
                 leave_request.save()
+
+                if multiple_approvals_check(leave_request.id):
+                    conditional_requests = multiple_approvals_check(leave_request.id)
+                    managers = []
+                    for manager in conditional_requests["managers"]:
+                        managers.append(manager.employee_user_id)
+                    with contextlib.suppress(Exception):
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=managers[0],
+                            verb="You have a new leave request to validate.",
+                            verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
+                            verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
+                            verb_es="Tiene una nueva solicitud de permiso que debe validar.",
+                            verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                            icon="people-circle",
+                            redirect=f"/leave/request-view?id={leave_request.id}",
+                        )
+
                 mail_thread = LeaveMailSendThread(
                     request, leave_request, type="request"
                 )
@@ -466,16 +507,24 @@ def leave_request_view(request):
     leave_requests = queryset
 
     leave_requests_with_interview = []
-    for leave_request in leave_requests:
+    if apps.is_installed("recruitment"):
+        for leave_request in leave_requests:
 
-        # Fetch interviews for the employee within the requested leave period
-        interviews = InterviewSchedule.objects.filter(
-            employee_id=leave_request.employee_id,
-            interview_date__range=[leave_request.start_date, leave_request.end_date],
-        )
-        if interviews:
-            # If interview exists then adding the leave request to the list
-            leave_requests_with_interview.append(leave_request)
+            # Fetch interviews for the employee within the requested leave period
+            InterviewSchedule = get_horilla_model_class(
+                app_label="recruitment", model="interviewschedule"
+            )
+
+            interviews = InterviewSchedule.objects.filter(
+                employee_id=leave_request.employee_id,
+                interview_date__range=[
+                    leave_request.start_date,
+                    leave_request.end_date,
+                ],
+            )
+            if interviews:
+                # If interview exists then adding the leave request to the list
+                leave_requests_with_interview.append(leave_request)
 
     requests = queryset.filter(status="requested").count()
     requests_ids = json.dumps(list(page_obj.object_list.values_list("id", flat=True)))
@@ -537,16 +586,24 @@ def leave_request_filter(request):
     leave_requests = queryset
 
     leave_requests_with_interview = []
-    for leave_request in leave_requests:
+    if apps.is_installed("recruitment"):
+        for leave_request in leave_requests:
 
-        # Fetch interviews for the employee within the requested leave period
-        interviews = InterviewSchedule.objects.filter(
-            employee_id=leave_request.employee_id,
-            interview_date__range=[leave_request.start_date, leave_request.end_date],
-        )
-        if interviews:
-            # If interview exists then adding the leave request to the list
-            leave_requests_with_interview.append(leave_request)
+            # Fetch interviews for the employee within the requested leave period
+            InterviewSchedule = get_horilla_model_class(
+                app_label="recruitment", model="interviewschedule"
+            )
+
+            interviews = InterviewSchedule.objects.filter(
+                employee_id=leave_request.employee_id,
+                interview_date__range=[
+                    leave_request.start_date,
+                    leave_request.end_date,
+                ],
+            )
+            if interviews:
+                # If interview exists then adding the leave request to the list
+                leave_requests_with_interview.append(leave_request)
 
     field = request.GET.get("field")
     queryset = filtersubordinates(request, queryset, "leave.view_leaverequest")
@@ -771,6 +828,23 @@ def leave_request_approve(request, id, emp_id=None):
                         manager_id=approver[0], leave_request_id=leave_request
                     ).first()
                     condition_approval.is_approved = True
+                    managers = []
+                    for manager in conditional_requests["managers"]:
+                        managers.append(manager.employee_user_id)
+                    if len(managers) > condition_approval.sequence:
+                        with contextlib.suppress(Exception):
+                            notify.send(
+                                request.user.employee_get,
+                                recipient=managers[condition_approval.sequence],
+                                verb="You have a new leave request to validate.",
+                                verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
+                                verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
+                                verb_es="Tiene una nueva solicitud de permiso que debe validar.",
+                                verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                                icon="people-circle",
+                                redirect=f"/leave/request-view?id={leave_request.id}",
+                            )
+
                     condition_approval.save()
                     if approver[0] == conditional_requests["managers"][-1]:
                         super(AvailableLeave, available_leave).save()
@@ -814,9 +888,9 @@ def leave_request_bulk_approve(request):
                 leave_request = (
                     LeaveRequest.objects.get(id=int(request_id)) if request_id else None
                 )
-                if leave_request.status == "requested" and (
-                    leave_request.start_date >= datetime.today().date()
-                    or request.user.has_perm("leave.change_leaverequest")
+                if (
+                    leave_request.status == "requested"
+                    and leave_request.start_date >= datetime.today().date()
                 ):
                     leave_request_approve(request, leave_request.id)
                 else:
@@ -1724,425 +1798,6 @@ def restrict_day_select_filter(request):
 
 @login_required
 @hx_request_required
-@permission_required("leave.add_holiday")
-def holiday_creation(request):
-    """
-    function used to create holidays.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return holiday creation form template
-    POST : return holiday view template
-    """
-
-    query_string = request.GET.urlencode()
-    if query_string.startswith("pd="):
-        previous_data = unquote(query_string[len("pd=") :])
-    else:
-        previous_data = unquote(query_string)
-    form = HolidayForm()
-    if request.method == "POST":
-        form = HolidayForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("New holiday created successfully.."))
-            if Holiday.objects.filter().count() == 1:
-                return HttpResponse("<script>window.location.reload();</script>")
-    return render(
-        request, "leave/holiday/holiday_form.html", {"form": form, "pd": previous_data}
-    )
-
-
-def holidays_excel_template(request):
-    try:
-        columns = [
-            "Name of Holiday",
-            "Start Date",
-            "End Date",
-            "Recurring",
-        ]
-        data_frame = pd.DataFrame(columns=columns)
-        response = HttpResponse(content_type="application/ms-excel")
-        response["Content-Disposition"] = (
-            'attachment; filename="assign_leave_type_excel.xlsx"'
-        )
-        data_frame.to_excel(response, index=False)
-        return response
-    except Exception as exception:
-        return HttpResponse(exception)
-
-
-def holidays_info_import(request):
-    file_name = "HolidaysImportError.xlsx"
-    error_list = []
-    error_data = {
-        "Name of Holiday": [],
-        "Start Date": [],
-        "End Date": [],
-        "Recurring": [],
-        "Error1": [],
-        "Error2": [],
-        "Error3": [],
-        "Error4": [],
-    }
-    if request.method == "POST":
-        file = request.FILES["holidays_import"]
-        data_frame = pd.read_excel(file)
-        holiday_dicts = data_frame.to_dict("records")
-        for holiday in holiday_dicts:
-            save = True
-            try:
-                name = holiday["Name of Holiday"]
-                try:
-                    start_date = pd.to_datetime(holiday["Start Date"]).date()
-                except Exception as e:
-                    save = False
-                    holiday["Error1"] = _("Invalid start date format {}").format(
-                        holiday["Start Date"]
-                    )
-                try:
-                    end_date = pd.to_datetime(holiday["End Date"]).date()
-                except Exception as e:
-                    save = False
-                    holiday["Error2"] = _("Invalid end date format {}").format(
-                        holiday["End Date"]
-                    )
-                if holiday["Recurring"].lower() in ["yes", "no"]:
-                    recurring = True if holiday["Recurring"].lower() == "yes" else False
-                else:
-                    save = False
-                    holiday["Error3"] = _("Recurring must be {} or {}").format(
-                        "yes", "no"
-                    )
-                if save:
-                    holiday = Holiday(
-                        name=name,
-                        start_date=start_date,
-                        end_date=end_date,
-                        recurring=recurring,
-                    )
-                    holiday.save()
-                else:
-                    error_list.append(holiday)
-
-            except Exception as e:
-                holiday["Error4"] = f"{str(e)}"
-                error_list.append(holiday)
-        if error_list:
-            response = generate_error_report(error_list, error_data, file_name)
-        else:
-            return JsonResponse()
-
-
-@login_required
-def holiday_info_export(request):
-    if request.META.get("HTTP_HX_REQUEST"):
-        export_filter = HolidayFilter()
-        export_column = HolidaysColumnExportForm()
-        content = {
-            "export_filter": export_filter,
-            "export_column": export_column,
-        }
-        return render(
-            request, "leave/holiday/holiday_export_filter_form.html", context=content
-        )
-    return export_data(
-        request=request,
-        model=Holiday,
-        filter_class=HolidayFilter,
-        form_class=HolidaysColumnExportForm,
-        file_name="Holidays_export",
-    )
-
-
-@login_required
-def holiday_view(request):
-    """
-    function used to view holidays.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return holiday view  template
-    """
-    queryset = Holiday.objects.all()[::-1]
-    previous_data = request.GET.urlencode()
-    page_number = request.GET.get("page")
-    page_obj = paginator_qry(queryset, page_number)
-    holiday_filter = HolidayFilter()
-
-    return render(
-        request,
-        "leave/holiday/holiday_view.html",
-        {
-            "holidays": page_obj,
-            "form": holiday_filter.form,
-            "pd": previous_data,
-        },
-    )
-
-
-@login_required
-@hx_request_required
-def holiday_filter(request):
-    """
-    function used to filter holidays.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return holiday view template
-    """
-    queryset = Holiday.objects.all()
-    previous_data = request.GET.urlencode()
-    holiday_filter = HolidayFilter(request.GET, queryset).qs
-    if request.GET.get("sortby"):
-        holiday_filter = sortby(request, holiday_filter, "sortby")
-    page_number = request.GET.get("page")
-    page_obj = paginator_qry(holiday_filter[::-1], page_number)
-    data_dict = parse_qs(previous_data)
-    get_key_instances(Holiday, data_dict)
-    return render(
-        request,
-        "leave/holiday/holiday.html",
-        {"holidays": page_obj, "pd": previous_data, "filter_dict": data_dict},
-    )
-
-
-@login_required
-@hx_request_required
-@permission_required("leave.change_holiday")
-def holiday_update(request, id):
-    """
-    function used to update holiday.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    id : holiday id
-
-    Returns:
-    GET : return holiday update form template
-    POST : return holiday view template
-    """
-    query_string = request.GET.urlencode()
-    if query_string.startswith("pd="):
-        previous_data = unquote(query_string[len("pd=") :])
-    else:
-        previous_data = unquote(query_string)
-    holiday = Holiday.objects.get(id=id)
-    form = HolidayForm(instance=holiday)
-    if request.method == "POST":
-        form = HolidayForm(request.POST, instance=holiday)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("Holiday updated successfully.."))
-    return render(
-        request,
-        "leave/holiday/holiday_update_form.html",
-        {"form": form, "id": id, "pd": previous_data},
-    )
-
-
-@login_required
-@hx_request_required
-@permission_required("leave.delete_holiday")
-def holiday_delete(request, id):
-    """
-    function used to delete holiday.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    id : holiday id
-
-    Returns:
-    GET : return holiday view template
-    """
-    query_string = request.GET.urlencode()
-    try:
-        Holiday.objects.get(id=id).delete()
-        messages.success(request, _("Holiday deleted successfully.."))
-    except Holiday.DoesNotExist:
-        messages.error(request, _("Holiday not found."))
-    except ProtectedError:
-        messages.error(request, _("Related entries exists"))
-    if not Holiday.objects.filter():
-        return HttpResponse("<script>window.location.reload();</script>")
-    return redirect(f"/leave/holiday-filter?{query_string}")
-
-
-@require_http_methods(["POST"])
-@permission_required("leave.delete_holiday")
-def bulk_holiday_delete(request):
-    """
-    This method is used to delete bulk of holidays
-    """
-    ids = request.POST["ids"]
-    ids = json.loads(ids)
-    del_ids = []
-    for holiday_id in ids:
-        try:
-            holiday = Holiday.objects.get(id=holiday_id)
-            holiday.delete()
-            del_ids.append(holiday_id)
-        except Exception as e:
-            messages.error(request, _("Holiday not found."))
-    messages.success(
-        request, _("{} Holidays have been successfully deleted.".format(len(del_ids)))
-    )
-    return JsonResponse({"message": "Success"})
-
-
-@login_required
-@hx_request_required
-@permission_required("leave.add_companyleave")
-def company_leave_creation(request):
-    """
-    function used to create company leave.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return company leave creation form template
-    POST : return company leave view template
-    """
-    form = CompanyLeaveForm()
-    if request.method == "POST":
-        form = CompanyLeaveForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("New company leave created successfully.."))
-            if CompanyLeave.objects.filter().count() == 1:
-                return HttpResponse("<script>window.location.reload();</script>")
-    return render(
-        request, "leave/company_leave/company_leave_creation_form.html", {"form": form}
-    )
-
-
-@login_required
-def company_leave_view(request):
-    """
-    function used to view company leave.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return company leave view template
-    """
-    queryset = CompanyLeave.objects.all()
-    previous_data = request.GET.urlencode()
-    page_number = request.GET.get("page")
-    page_obj = paginator_qry(queryset, page_number)
-    company_leave_filter = CompanyLeaveFilter()
-    return render(
-        request,
-        "leave/company_leave/company_leave_view.html",
-        {
-            "company_leaves": page_obj,
-            "weeks": WEEKS,
-            "week_days": WEEK_DAYS,
-            "form": company_leave_filter.form,
-            "pd": previous_data,
-        },
-    )
-
-
-@login_required
-@hx_request_required
-def company_leave_filter(request):
-    """
-    function used to filter company leave.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return company leave view template
-    """
-    queryset = CompanyLeave.objects.all()
-    previous_data = request.GET.urlencode()
-    page_number = request.GET.get("page")
-    company_leave_filter = CompanyLeaveFilter(request.GET, queryset).qs
-    page_obj = paginator_qry(company_leave_filter, page_number)
-    data_dict = parse_qs(previous_data)
-    get_key_instances(CompanyLeave, data_dict)
-
-    return render(
-        request,
-        "leave/company_leave/company_leave.html",
-        {
-            "company_leaves": page_obj,
-            "weeks": WEEKS,
-            "week_days": WEEK_DAYS,
-            "pd": previous_data,
-            "filter_dict": data_dict,
-        },
-    )
-
-
-@login_required
-@hx_request_required
-@permission_required("leave.change_companyleave")
-def company_leave_update(request, id):
-    """
-    function used to update company leave.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    id : company leave id
-
-    Returns:
-    GET : return company leave update form template
-    POST : return company leave view template
-    """
-    company_leave = CompanyLeave.objects.get(id=id)
-    form = CompanyLeaveForm(instance=company_leave)
-    if request.method == "POST":
-        form = CompanyLeaveForm(request.POST, instance=company_leave)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("Company leave updated successfully.."))
-    return render(
-        request,
-        "leave/company_leave/company_leave_update_form.html",
-        {"form": form, "id": id},
-    )
-
-
-@login_required
-@hx_request_required
-@permission_required("leave.delete_companyleave")
-def company_leave_delete(request, id):
-    """
-    function used to create company leave.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return company leave creation form template
-    POST : return company leave view template
-    """
-    query_string = request.GET.urlencode()
-    try:
-        CompanyLeave.objects.get(id=id).delete()
-        messages.success(request, _("Company leave deleted successfully.."))
-    except CompanyLeave.DoesNotExist:
-        messages.error(request, _("Company leave not found."))
-    except ProtectedError:
-        messages.error(request, _("Related entries exists"))
-    if not CompanyLeave.objects.filter():
-        return HttpResponse("<script>window.location.reload();</script>")
-    return redirect(f"/leave/company-leave-filter?{query_string}")
-
-
-@login_required
-@hx_request_required
 def user_leave_request(request, id):
     """
     function used to create user leave request.
@@ -2178,9 +1833,9 @@ def user_leave_request(request, id):
         )
         requested_dates = leave_requested_dates(start_date, end_date)
         requested_dates = [date.date() for date in requested_dates]
-        holidays = Holiday.objects.all()
+        holidays = Holidays.objects.all()
         holiday_dates = holiday_dates_list(holidays)
-        company_leaves = CompanyLeave.objects.all()
+        company_leaves = CompanyLeaves.objects.all()
         company_leave_dates = company_leave_dates_list(company_leaves, start_date)
         if (
             leave_type.exclude_company_leave == "yes"
@@ -2251,6 +1906,27 @@ def user_leave_request(request, id):
                 if save:
                     leave_request.created_by = employee
                     leave_request.save()
+
+                    if multiple_approvals_check(leave_request.id):
+                        conditional_requests = multiple_approvals_check(
+                            leave_request.id
+                        )
+                        managers = []
+                        for manager in conditional_requests["managers"]:
+                            managers.append(manager.employee_user_id)
+                        with contextlib.suppress(Exception):
+                            notify.send(
+                                request.user.employee_get,
+                                recipient=managers[0],
+                                verb="You have a new leave request to validate.",
+                                verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
+                                verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
+                                verb_es="Tiene una nueva solicitud de permiso que debe validar.",
+                                verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                                icon="people-circle",
+                                redirect=f"/leave/request-view?id={leave_request.id}",
+                            )
+
                     messages.success(request, _("Leave request created successfully.."))
                     with contextlib.suppress(Exception):
                         notify.send(
@@ -2352,9 +2028,9 @@ def user_request_update(request, id):
                         start_date, end_date, start_date_breakdown, end_date_breakdown
                     )
                     requested_dates = leave_requested_dates(start_date, end_date)
-                    holidays = Holiday.objects.all()
+                    holidays = Holidays.objects.all()
                     holiday_dates = holiday_dates_list(holidays)
-                    company_leaves = CompanyLeave.objects.all()
+                    company_leaves = CompanyLeaves.objects.all()
                     company_leave_dates = company_leave_dates_list(
                         company_leaves, start_date
                     )
@@ -2533,19 +2209,24 @@ def user_request_view(request):
         leave_requests = queryset
 
         leave_requests_with_interview = []
-        for leave_request in leave_requests:
+        if apps.is_installed("recruitment"):
+            for leave_request in leave_requests:
 
-            # Fetch interviews for the employee within the requested leave period
-            interviews = InterviewSchedule.objects.filter(
-                employee_id=leave_request.employee_id,
-                interview_date__range=[
-                    leave_request.start_date,
-                    leave_request.end_date,
-                ],
-            )
-            if interviews:
-                # If interview exists then adding the leave request to the list
-                leave_requests_with_interview.append(leave_request)
+                # Fetch interviews for the employee within the requested leave period
+                InterviewSchedule = get_horilla_model_class(
+                    app_label="recruitment", model="interviewschedule"
+                )
+
+                interviews = InterviewSchedule.objects.filter(
+                    employee_id=leave_request.employee_id,
+                    interview_date__range=[
+                        leave_request.start_date,
+                        leave_request.end_date,
+                    ],
+                )
+                if interviews:
+                    # If interview exists then adding the leave request to the list
+                    leave_requests_with_interview.append(leave_request)
 
         user_request_filter = UserLeaveRequestFilter(request.GET, queryset=queryset)
         page_obj = paginator_qry(user_request_filter.qs.order_by("-id"), page_number)
@@ -2603,19 +2284,25 @@ def user_request_filter(request):
         leave_requests = queryset
 
         leave_requests_with_interview = []
-        for leave_request in leave_requests:
+        if apps.is_installed("recruitment"):
 
-            # Fetch interviews for the employee within the requested leave period
-            interviews = InterviewSchedule.objects.filter(
-                employee_id=leave_request.employee_id,
-                interview_date__range=[
-                    leave_request.start_date,
-                    leave_request.end_date,
-                ],
-            )
-            if interviews:
-                # If interview exists then adding the leave request to the list
-                leave_requests_with_interview.append(leave_request)
+            for leave_request in leave_requests:
+
+                # Fetch interviews for the employee within the requested leave period
+                InterviewSchedule = get_horilla_model_class(
+                    app_label="recruitment", model="interviewschedule"
+                )
+
+                interviews = InterviewSchedule.objects.filter(
+                    employee_id=leave_request.employee_id,
+                    interview_date__range=[
+                        leave_request.start_date,
+                        leave_request.end_date,
+                    ],
+                )
+                if interviews:
+                    # If interview exists then adding the leave request to the list
+                    leave_requests_with_interview.append(leave_request)
 
         queryset = sortby(request, queryset, "sortby")
         user_request_filter = UserLeaveRequestFilter(request.GET, queryset).qs
@@ -2774,7 +2461,7 @@ def dashboard(request):
     rejected = LeaveRequest.objects.filter(
         status="rejected", start_date__month=today.month
     )
-    holidays = Holiday.objects.filter(start_date__gte=today)
+    holidays = Holidays.objects.filter(start_date__gte=today)
     next_holiday = (
         holidays.order_by("start_date").first() if holidays.exists() else None
     )
@@ -2831,7 +2518,7 @@ def employee_dashboard(request):
     approved = leave_requests.filter(status="approved")
     rejected = leave_requests.filter(status="rejected")
 
-    holidays = Holiday.objects.filter(start_date__gte=today)
+    holidays = Holidays.objects.filter(start_date__gte=today)
     next_holiday = (
         holidays.order_by("start_date").first() if holidays.exists() else None
     )
@@ -3197,6 +2884,27 @@ def leave_request_create(request):
                 if save:
                     leave_request.created_by = request.user.employee_get
                     leave_request.save()
+
+                    if multiple_approvals_check(leave_request.id):
+                        conditional_requests = multiple_approvals_check(
+                            leave_request.id
+                        )
+                        managers = []
+                        for manager in conditional_requests["managers"]:
+                            managers.append(manager.employee_user_id)
+                        with contextlib.suppress(Exception):
+                            notify.send(
+                                request.user.employee_get,
+                                recipient=managers[0],
+                                verb="You have a new leave request to validate.",
+                                verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
+                                verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
+                                verb_es="Tiene una nueva solicitud de permiso que debe validar.",
+                                verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                                icon="people-circle",
+                                redirect=f"/leave/request-view?id={leave_request.id}",
+                            )
+
                     messages.success(request, _("Leave request created successfully.."))
                     with contextlib.suppress(Exception):
                         notify.send(
@@ -3760,42 +3468,7 @@ def assigned_leave_select_filter(request):
 
 
 @login_required
-def holiday_select(request):
-    page_number = request.GET.get("page")
-
-    if page_number == "all":
-        employees = Holiday.objects.all()
-
-    employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
-
-    context = {"employee_ids": employee_ids, "total_count": total_count}
-
-    return JsonResponse(context, safe=False)
-
-
-@login_required
-def holiday_select_filter(request):
-    page_number = request.GET.get("page")
-    filtered = request.GET.get("filter")
-    filters = json.loads(filtered) if filtered else {}
-
-    if page_number == "all":
-        employee_filter = HolidayFilter(filters, queryset=Holiday.objects.all())
-
-        # Get the filtered queryset
-        filtered_employees = employee_filter.qs
-
-        employee_ids = [str(emp.id) for emp in filtered_employees]
-        total_count = filtered_employees.count()
-
-        context = {"employee_ids": employee_ids, "total_count": total_count}
-
-        return JsonResponse(context)
-
-
 @require_http_methods(["POST"])
-@login_required
 @manager_can_enter("leave.delete_leaverequest")
 def leave_request_bulk_delete(request):
     """
@@ -3967,7 +3640,7 @@ def employee_leave_details(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("leave.change_availableleave")
+@manager_can_enter("base.add_penaltyaccounts")
 def cut_available_leave(request, instance_id):
     """
     This method is used to create the penalties
@@ -3980,8 +3653,7 @@ def cut_available_leave(request, instance_id):
         form = PenaltyAccountForm(request.POST)
         if form.is_valid():
             penalty_instance = form.instance
-            penalty = PenaltyAccount()
-            # leave request id
+            penalty = PenaltyAccounts()
             penalty.leave_request_id = instance
             penalty.deduct_from_carry_forward = (
                 penalty_instance.deduct_from_carry_forward
@@ -4002,18 +3674,6 @@ def cut_available_leave(request, instance_id):
             "instance": instance,
             "pd": previous_data,
         },
-    )
-
-
-@login_required
-@manager_can_enter("attendance.view_penalty")
-def view_penalties(request):
-    """
-    This method is used to filter or view the penalties
-    """
-    records = PenaltyFilter(request.GET).qs
-    return render(
-        request, "leave/leave_request/penalty/penalty_view.html", {"records": records}
     )
 
 
@@ -4167,55 +3827,6 @@ def view_leaverequest_comment(request, leave_id):
         "leave/leave_request/leave_comment.html",
         {"comments": comments, "no_comments": no_comments, "request_id": leave_id},
     )
-
-
-@login_required
-def delete_comment_file(request):
-    """
-    Used to delete attachment
-    """
-    ids = request.GET.getlist("ids")
-    LeaverequestFile.objects.filter(id__in=ids).delete()
-    leave_id = request.GET["leave_id"]
-    comments = CompensatoryLeaverequestComment.objects.all()
-    if not request.user.has_perm("leave.delete_compensatoryleaverequestcomment"):
-        comments = comments.filter(employee_id__employee_user_id=request.user)
-    if request.GET.get("compensatory"):
-        comments = comments.filter(request_id=leave_id).order_by("-created_at")
-        template = "leave/compensatory_leave/compensatory_leave_comment.html"
-    else:
-        comments = comments.filter(request_id=leave_id).order_by("-created_at")
-        template = "leave/leave_request/leave_comment.html"
-    return render(
-        request,
-        template,
-        {
-            "comments": comments,
-            "request_id": leave_id,
-        },
-    )
-
-
-@login_required
-@hx_request_required
-def delete_leaverequest_comment(request, comment_id):
-    """
-    This method is used to delete Leave request comments
-    """
-    if request.GET.get("compensatory"):
-        comment = CompensatoryLeaverequestComment.objects.filter(id=comment_id)
-        if not request.user.has_perm("leave.delete_compensatoryleaverequestcomment"):
-            comment = comment.filter(employee_id__employee_user_id=request.user)
-        redirect_url = "view-compensatory-leave-comment"
-    else:
-        comment = LeaverequestComment.objects.filter(id=comment_id)
-        if not request.user.has_perm("leave.delete_leaverequestcomment"):
-            comment = comment.filter(employee_id__employee_user_id=request.user)
-        redirect_url = "leave-request-view-comment"
-    leave_id = comment.first().request_id.id
-    comment.delete()
-    messages.success(request, _("Comment deleted successfully!"))
-    return redirect(redirect_url, leave_id)
 
 
 @login_required
@@ -4490,456 +4101,577 @@ def enable_compensatory_leave(request):
 
 
 @login_required
-def get_leave_attendance_dates(request):
+@hx_request_required
+def delete_leaverequest_comment(request, comment_id):
     """
-    function used to return attendance dates that taken on leave days .
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return attendance dates
+    This method is used to delete Leave request comments
     """
-    if request.GET.get("employee_id"):
-        employee = Employee.objects.get(id=request.GET.get("employee_id"))
-        holiday_attendance = get_leave_day_attendance(employee)
-        # Get a list of tuples containing (id, attendance_date)
-        attendance_dates = list(holiday_attendance.values_list("id", "attendance_date"))
-        form = CompensatoryLeaveForm()
-        form.fields["attendance_id"].choices = attendance_dates
-        attendance_id = render_to_string(
-            "leave/compensatory_leave/attendance_id.html",
+    comment = LeaverequestComment.objects.filter(id=comment_id)
+    if not request.user.has_perm("leave.delete_leaverequestcomment"):
+        comment = comment.filter(employee_id__employee_user_id=request.user)
+    redirect_url = "leave-request-view-comment"
+    leave_id = comment.first().request_id.id
+    comment.delete()
+    messages.success(request, _("Comment deleted successfully!"))
+    return redirect(redirect_url, leave_id)
+
+
+@login_required
+def delete_comment_file(request):
+    """
+    Used to delete attachment
+    """
+    ids = request.GET.getlist("ids")
+    LeaverequestFile.objects.filter(id__in=ids).delete()
+    comments = LeaverequestComment.objects.all()
+    leave_id = request.GET["leave_id"]
+    comments = comments.filter(request_id=leave_id).order_by("-created_at")
+    template = "leave/leave_request/leave_comment.html"
+    return render(
+        request,
+        template,
+        {
+            "comments": comments,
+            "request_id": leave_id,
+        },
+    )
+
+
+if apps.is_installed("attendance"):
+    from leave.models import CompensatoryLeaveRequest, CompensatoryLeaverequestComment
+
+    @login_required
+    def get_leave_attendance_dates(request):
+        """
+        function used to return attendance dates that taken on leave days .
+
+        Parameters:
+        request (HttpRequest): The HTTP request object.
+
+        Returns:
+        GET : return attendance dates
+        """
+        if request.GET.get("employee_id"):
+            employee = Employee.objects.get(id=request.GET.get("employee_id"))
+            holiday_attendance = get_leave_day_attendance(employee)
+            # Get a list of tuples containing (id, attendance_date)
+            attendance_dates = list(
+                holiday_attendance.values_list("id", "attendance_date")
+            )
+            form = CompensatoryLeaveForm()
+            form.fields["attendance_id"].choices = attendance_dates
+            attendance_id = render_to_string(
+                "leave/compensatory_leave/attendance_id.html",
+                {
+                    "form": form,
+                },
+            )
+            return HttpResponse(f"{attendance_id}")
+
+    @login_required
+    def delete_comment_compensatory_file(request):
+        """
+        Used to delete attachment
+        """
+        ids = request.GET.getlist("ids")
+        LeaverequestFile.objects.filter(id__in=ids).delete()
+        leave_id = request.GET["leave_id"]
+        comments = CompensatoryLeaverequestComment.objects.all()
+        if not request.user.has_perm("leave.delete_compensatoryleaverequestcomment"):
+            comments = comments.filter(employee_id__employee_user_id=request.user)
+        if request.GET.get("compensatory"):
+            comments = comments.filter(request_id=leave_id).order_by("-created_at")
+            template = "leave/compensatory_leave/compensatory_leave_comment.html"
+        else:
+            comments = comments.filter(request_id=leave_id).order_by("-created_at")
+            template = "leave/leave_request/leave_comment.html"
+        return render(
+            request,
+            template,
             {
-                "form": form,
+                "comments": comments,
+                "request_id": leave_id,
             },
         )
-        return HttpResponse(f"{attendance_id}")
 
+    @login_required
+    @hx_request_required
+    def delete_leaverequest_compensatory_comment(request, comment_id):
+        """
+        This method is used to delete Leave request comments
+        """
+        if request.GET.get("compensatory"):
+            comment = CompensatoryLeaverequestComment.objects.filter(id=comment_id)
+            if not request.user.has_perm(
+                "leave.delete_compensatoryleaverequestcomment"
+            ):
+                comment = comment.filter(employee_id__employee_user_id=request.user)
+            redirect_url = "view-compensatory-leave-comment"
+        else:
+            comment = LeaverequestComment.objects.filter(id=comment_id)
+            if not request.user.has_perm("leave.delete_leaverequestcomment"):
+                comment = comment.filter(employee_id__employee_user_id=request.user)
+            redirect_url = "leave-request-view-comment"
+        leave_id = comment.first().request_id.id
+        comment.delete()
+        messages.success(request, _("Comment deleted successfully!"))
+        return redirect(redirect_url, leave_id)
 
-@login_required
-@is_compensatory_leave_enabled()
-def view_compensatory_leave(request):
-    """
-    function used to view compensatory leave requests.
+    @login_required
+    @is_compensatory_leave_enabled()
+    def view_compensatory_leave(request):
+        """
+        function used to view compensatory leave requests.
 
-    Parameters:
-    request (HttpRequest): The HTTP request object.
+        Parameters:
+        request (HttpRequest): The HTTP request object.
 
-    Returns:
-    GET : return compensetory leave request view template
-    """
-    employee = request.user.employee_get
-    queryset = CompensatoryLeaveRequest.objects.all().order_by("-id")
-    queryset = CompensatoryLeaveRequestFilter(request.GET, queryset).qs
-    queryset = filtersubordinates(
-        request, queryset, "leave.view_compensatoryleaverequest"
-    )
-    page_number = request.GET.get("page")
-    comp_leave_requests = paginator_qry(queryset, page_number)
-    requests_ids = json.dumps(
-        list(comp_leave_requests.object_list.values_list("id", flat=True))
-    )
-    my_comp_leave_requests = CompensatoryLeaveRequest.objects.filter(
-        employee_id=employee.id
-    ).order_by("-id")
-    my_comp_leave_requests = CompensatoryLeaveRequestFilter(
-        request.GET, my_comp_leave_requests
-    ).qs
-    my_page_number = request.GET.get("m_page")
-    my_comp_leave_requests = paginator_qry(my_comp_leave_requests, my_page_number)
-    my_requests_ids = json.dumps(
-        list(my_comp_leave_requests.object_list.values_list("id", flat=True))
-    )
-    comp_leave_requests_filter = CompensatoryLeaveRequestFilter()
-    previous_data = request.GET.urlencode()
-    data_dict = parse_qs(previous_data)
-    data_dict = get_key_instances(CompensatoryLeaveRequest, data_dict)
-    context = {
-        "my_comp_leave_requests": my_comp_leave_requests,
-        "comp_leave_requests": comp_leave_requests,
-        "pd": previous_data,
-        "form": comp_leave_requests_filter.form,
-        "filter_dict": data_dict,
-        "gp_fields": LeaveAllocationRequestReGroup.fields,
-        "requests_ids": requests_ids,
-        "my_requests_ids": my_requests_ids,
-    }
-    return render(
-        request, "leave/compensatory_leave/compensatory_leave_view.html", context
-    )
-
-
-@login_required
-@is_compensatory_leave_enabled()
-@hx_request_required
-def filter_compensatory_leave(request):
-    """
-    function used to view compensatory leave requests.
-    """
-    field = request.GET.get("field")
-    employee = request.user.employee_get
-    page_number = request.GET.get("page")
-    my_page_number = request.GET.get("m_page")
-    previous_data = request.GET.urlencode()
-    template = "leave/compensatory_leave/compensatory_leave_req_list.html"
-
-    # Filter compensatory leave requests
-    comp_leave_requests_filtered = CompensatoryLeaveRequestFilter(
-        request.GET
-    ).qs.order_by("-id")
-    my_comp_leave_requests_filtered = CompensatoryLeaveRequest.objects.filter(
-        employee_id=employee.id
-    ).order_by("-id")
-    my_comp_leave_requests_filtered = CompensatoryLeaveRequestFilter(
-        request.GET, my_comp_leave_requests_filtered
-    ).qs
-    comp_leave_requests_filtered = filtersubordinates(
-        request, comp_leave_requests_filtered, "leave.view_leaveallocationrequest"
-    )
-
-    # Sort compensatory leave requests if requested
-    if request.GET.get("sortby"):
-        comp_leave_requests_filtered = sortby(
-            request, comp_leave_requests_filtered, "sortby"
+        Returns:
+        GET : return compensetory leave request view template
+        """
+        employee = request.user.employee_get
+        queryset = CompensatoryLeaveRequest.objects.all().order_by("-id")
+        queryset = CompensatoryLeaveRequestFilter(request.GET, queryset).qs
+        queryset = filtersubordinates(
+            request, queryset, "leave.view_compensatoryleaverequest"
         )
-        my_comp_leave_requests_filtered = sortby(
-            request, my_comp_leave_requests_filtered, "sortby"
-        )
-
-    # Group compensatory leave requests if field parameter is provided
-    if field:
-        comp_leave_requests = group_by_queryset(
-            comp_leave_requests_filtered, field, page_number, "page"
-        )
-        my_comp_leave_requests = group_by_queryset(
-            my_comp_leave_requests_filtered, field, my_page_number, "m_page"
-        )
-
-        # Convert IDs to JSON format for details view
-        list_values = [entry["list"] for entry in comp_leave_requests]
-        id_list = [
-            instance.id for value in list_values for instance in value.object_list
-        ]
-        requests_ids = json.dumps(list(id_list))
-
-        list_values = [entry["list"] for entry in my_comp_leave_requests]
-        id_list = [
-            instance.id for value in list_values for instance in value.object_list
-        ]
-        my_requests_ids = json.dumps(list(id_list))
-        template = (
-            "leave/leave_allocation_request/leave_allocation_request_group_by.html"
-        )
-    else:
-        comp_leave_requests = paginator_qry(comp_leave_requests_filtered, page_number)
-        my_comp_leave_requests = paginator_qry(
-            my_comp_leave_requests_filtered, my_page_number
-        )
+        page_number = request.GET.get("page")
+        comp_leave_requests = paginator_qry(queryset, page_number)
         requests_ids = json.dumps(
             list(comp_leave_requests.object_list.values_list("id", flat=True))
         )
+        my_comp_leave_requests = CompensatoryLeaveRequest.objects.filter(
+            employee_id=employee.id
+        ).order_by("-id")
+        my_comp_leave_requests = CompensatoryLeaveRequestFilter(
+            request.GET, my_comp_leave_requests
+        ).qs
+        my_page_number = request.GET.get("m_page")
+        my_comp_leave_requests = paginator_qry(my_comp_leave_requests, my_page_number)
         my_requests_ids = json.dumps(
             list(my_comp_leave_requests.object_list.values_list("id", flat=True))
         )
+        comp_leave_requests_filter = CompensatoryLeaveRequestFilter()
+        previous_data = request.GET.urlencode()
+        data_dict = parse_qs(previous_data)
+        data_dict = get_key_instances(CompensatoryLeaveRequest, data_dict)
+        context = {
+            "my_comp_leave_requests": my_comp_leave_requests,
+            "comp_leave_requests": comp_leave_requests,
+            "pd": previous_data,
+            "form": comp_leave_requests_filter.form,
+            "filter_dict": data_dict,
+            "gp_fields": LeaveAllocationRequestReGroup.fields,
+            "requests_ids": requests_ids,
+            "my_requests_ids": my_requests_ids,
+        }
+        return render(
+            request, "leave/compensatory_leave/compensatory_leave_view.html", context
+        )
 
-    # Parse previous data and construct context for filter tag
-    data_dict = parse_qs(previous_data)
-    data_dict = get_key_instances(CompensatoryLeaveRequest, data_dict)
-    data_dict.pop("m_page", None)
+    @login_required
+    @is_compensatory_leave_enabled()
+    @hx_request_required
+    def filter_compensatory_leave(request):
+        """
+        function used to view compensatory leave requests.
+        """
+        field = request.GET.get("field")
+        employee = request.user.employee_get
+        page_number = request.GET.get("page")
+        my_page_number = request.GET.get("m_page")
+        previous_data = request.GET.urlencode()
+        template = "leave/compensatory_leave/compensatory_leave_req_list.html"
 
-    context = {
-        "comp_leave_requests": comp_leave_requests,
-        "my_comp_leave_requests": my_comp_leave_requests,
-        "pd": previous_data,
-        "filter_dict": data_dict,
-        "field": field,
-        "requests_ids": requests_ids,
-        "my_requests_ids": my_requests_ids,
-    }
-    return render(request, template, context=context)
+        # Filter compensatory leave requests
+        comp_leave_requests_filtered = CompensatoryLeaveRequestFilter(
+            request.GET
+        ).qs.order_by("-id")
+        my_comp_leave_requests_filtered = CompensatoryLeaveRequest.objects.filter(
+            employee_id=employee.id
+        ).order_by("-id")
+        my_comp_leave_requests_filtered = CompensatoryLeaveRequestFilter(
+            request.GET, my_comp_leave_requests_filtered
+        ).qs
+        comp_leave_requests_filtered = filtersubordinates(
+            request, comp_leave_requests_filtered, "leave.view_leaveallocationrequest"
+        )
 
-
-@login_required
-@is_compensatory_leave_enabled()
-@hx_request_required
-def create_compensatory_leave(request, comp_id=None):
-    """
-    function used to create or update compensatory leave request.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return leave allocation request form template
-    POST : return leave allocation request view
-    """
-    employee = request.user.employee_get
-    template = "leave/compensatory_leave/comp_leave_form.html"
-    instance = None
-    if comp_id != None:
-        instance = CompensatoryLeaveRequest.objects.get(id=comp_id)
-    form = CompensatoryLeaveForm(instance=instance)
-    if request.method == "POST":
-        form = CompensatoryLeaveForm(request.POST, instance=instance)
-        if form.is_valid():
-            comp_req = form.save()
-            comp_req.requested_days = attendance_days(
-                comp_req.employee_id, comp_req.attendance_id.all()
+        # Sort compensatory leave requests if requested
+        if request.GET.get("sortby"):
+            comp_leave_requests_filtered = sortby(
+                request, comp_leave_requests_filtered, "sortby"
             )
-            comp_req.save()
-            if comp_id != None:
-                messages.success(request, _("Compensatory Leave updated."))
-            else:
-                messages.success(request, _("Compensatory Leave created."))
-            return HttpResponse("<script>window.location.reload();</script>")
+            my_comp_leave_requests_filtered = sortby(
+                request, my_comp_leave_requests_filtered, "sortby"
+            )
 
-    context = {
-        "employee": employee,
-        "form": form,
-    }
-    return render(request, template, context)
+        # Group compensatory leave requests if field parameter is provided
+        if field:
+            comp_leave_requests = group_by_queryset(
+                comp_leave_requests_filtered, field, page_number, "page"
+            )
+            my_comp_leave_requests = group_by_queryset(
+                my_comp_leave_requests_filtered, field, my_page_number, "m_page"
+            )
 
+            # Convert IDs to JSON format for details view
+            list_values = [entry["list"] for entry in comp_leave_requests]
+            id_list = [
+                instance.id for value in list_values for instance in value.object_list
+            ]
+            requests_ids = json.dumps(list(id_list))
 
-@login_required
-@is_compensatory_leave_enabled()
-@hx_request_required
-@owner_can_enter(
-    perm="leave.delete_compensatoryleaverequest",
-    model=CompensatoryLeaveRequest,
-    manager_access=True,
-)
-def delete_compensatory_leave(request, comp_id):
-    """
-    function used to delete compensatory leave request,
-    and reload the list view of compensatory leave requests.
-    """
-    try:
-        comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_id).delete()
-        messages.success(request, _("Compensatory leave request deleted."))
-
-    except:
-        messages.error(request, _("Sorry, something went wrong!"))
-    if request.GET.get("list") == "True":
-        return redirect(filter_compensatory_leave)
-    else:
-        return HttpResponse("<script>location.reload();</script>")
-
-
-@login_required
-@is_compensatory_leave_enabled()
-@hx_request_required
-@manager_can_enter(perm="leave.change_compensatoryleaverequest")
-def approve_compensatory_leave(request, comp_id):
-    """
-    function used to approve compensatory leave request,
-    and reload the list view of compensatory leave requests.
-    """
-    try:
-        comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_id)
-        if comp_leave_req.status == "requested":
-            comp_leave_req.status = "approved"
-            comp_leave_req.assign_compensatory_leave_type()
-            comp_leave_req.save()
-            messages.success(request, _("Compensatory leave request approved."))
-            with contextlib.suppress(Exception):
-                notify.send(
-                    request.user.employee_get,
-                    recipient=comp_leave_req.employee_id.employee_user_id,
-                    verb="Your compensatory leave request has been approved",
-                    verb_ar="تمت الموافقة على طلب إجازة الاعتذار الخاص بك",
-                    verb_de="Ihr Antrag auf Freizeitausgleich wurde genehmigt",
-                    verb_es="Su solicitud de permiso compensatorio ha sido aprobada",
-                    verb_fr="Votre demande de congé compensatoire a été approuvée",
-                    redirect=reverse("view-compensatory-leave")
-                    + f"?id={comp_leave_req.id}",
-                )
+            list_values = [entry["list"] for entry in my_comp_leave_requests]
+            id_list = [
+                instance.id for value in list_values for instance in value.object_list
+            ]
+            my_requests_ids = json.dumps(list(id_list))
+            template = (
+                "leave/leave_allocation_request/leave_allocation_request_group_by.html"
+            )
         else:
-            messages.info(
-                request,
-                _("The compensatory leave request is not in the 'requested' status."),
+            comp_leave_requests = paginator_qry(
+                comp_leave_requests_filtered, page_number
             )
-    except:
-        messages.error(request, _("Sorry, something went wrong!"))
-    if request.GET.get("individual"):
-        return HttpResponse("<script>location.reload();</script>")
-    return redirect(filter_compensatory_leave)
+            my_comp_leave_requests = paginator_qry(
+                my_comp_leave_requests_filtered, my_page_number
+            )
+            requests_ids = json.dumps(
+                list(comp_leave_requests.object_list.values_list("id", flat=True))
+            )
+            my_requests_ids = json.dumps(
+                list(my_comp_leave_requests.object_list.values_list("id", flat=True))
+            )
 
+        # Parse previous data and construct context for filter tag
+        data_dict = parse_qs(previous_data)
+        data_dict = get_key_instances(CompensatoryLeaveRequest, data_dict)
+        data_dict.pop("m_page", None)
 
-@login_required
-@is_compensatory_leave_enabled()
-@hx_request_required
-@manager_can_enter(perm="leave.delete_compensatoryleaverequest")
-def reject_compensatory_leave(request, comp_id):
-    """
-    function used to Reject compensatoey leave request.
+        context = {
+            "comp_leave_requests": comp_leave_requests,
+            "my_comp_leave_requests": my_comp_leave_requests,
+            "pd": previous_data,
+            "filter_dict": data_dict,
+            "field": field,
+            "requests_ids": requests_ids,
+            "my_requests_ids": my_requests_ids,
+        }
+        return render(request, template, context=context)
 
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    comp_id : compensatory leave request id
+    @login_required
+    @is_compensatory_leave_enabled()
+    @hx_request_required
+    def create_compensatory_leave(request, comp_id=None):
+        """
+        function used to create or update compensatory leave request.
 
-    Returns:
-    GET : It returns to the default compensatory leave request view template.
+        Parameters:
+        request (HttpRequest): The HTTP request object.
 
-    """
-    comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_id)
-    if comp_leave_req.status == "requested" or comp_leave_req.status == "approved":
-        form = CompensatoryLeaveRequestRejectForm()
+        Returns:
+        GET : return leave allocation request form template
+        POST : return leave allocation request view
+        """
+        employee = request.user.employee_get
+        template = "leave/compensatory_leave/comp_leave_form.html"
+        instance = None
+        if comp_id != None:
+            instance = CompensatoryLeaveRequest.objects.get(id=comp_id)
+        form = CompensatoryLeaveForm(instance=instance)
         if request.method == "POST":
-            form = CompensatoryLeaveRequestRejectForm(request.POST)
+            form = CompensatoryLeaveForm(request.POST, instance=instance)
             if form.is_valid():
-                comp_leave_req.reject_reason = form.cleaned_data["reason"]
-                comp_leave_req.status = "rejected"
-                comp_leave_req.exclude_compensatory_leave()
+                comp_req = form.save()
+                comp_req.requested_days = attendance_days(
+                    comp_req.employee_id, comp_req.attendance_id.all()
+                )
+                comp_req.save()
+                if comp_id != None:
+                    messages.success(request, _("Compensatory Leave updated."))
+                else:
+                    messages.success(request, _("Compensatory Leave created."))
+                return HttpResponse("<script>window.location.reload();</script>")
+
+        context = {
+            "employee": employee,
+            "form": form,
+        }
+        return render(request, template, context)
+
+    @login_required
+    @is_compensatory_leave_enabled()
+    @hx_request_required
+    @owner_can_enter(
+        perm="leave.delete_compensatoryleaverequest",
+        model=CompensatoryLeaveRequest,
+        manager_access=True,
+    )
+    def delete_compensatory_leave(request, comp_id):
+        """
+        function used to delete compensatory leave request,
+        and reload the list view of compensatory leave requests.
+        """
+        try:
+            comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_id).delete()
+            messages.success(request, _("Compensatory leave request deleted."))
+
+        except:
+            messages.error(request, _("Sorry, something went wrong!"))
+        if request.GET.get("list") == "True":
+            return redirect(filter_compensatory_leave)
+        else:
+            return HttpResponse("<script>location.reload();</script>")
+
+    @login_required
+    @is_compensatory_leave_enabled()
+    @hx_request_required
+    @manager_can_enter(perm="leave.change_compensatoryleaverequest")
+    def approve_compensatory_leave(request, comp_id):
+        """
+        function used to approve compensatory leave request,
+        and reload the list view of compensatory leave requests.
+        """
+        try:
+            comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_id)
+            if comp_leave_req.status == "requested":
+                comp_leave_req.status = "approved"
+                comp_leave_req.assign_compensatory_leave_type()
                 comp_leave_req.save()
-                messages.success(request, _("Compensatory Leave request rejected."))
+                messages.success(request, _("Compensatory leave request approved."))
                 with contextlib.suppress(Exception):
                     notify.send(
                         request.user.employee_get,
                         recipient=comp_leave_req.employee_id.employee_user_id,
-                        verb="Your compensatory leave request has been rejected",
-                        verb_ar="تم رفض طلبك للإجازة التعويضية",
-                        verb_de="Ihr Antrag auf Freizeitausgleich wurde abgelehnt",
-                        verb_es="Se ha rechazado su solicitud de permiso compensatorio",
-                        verb_fr="Votre demande de congé compensatoire a été rejetée",
+                        verb="Your compensatory leave request has been approved",
+                        verb_ar="تمت الموافقة على طلب إجازة الاعتذار الخاص بك",
+                        verb_de="Ihr Antrag auf Freizeitausgleich wurde genehmigt",
+                        verb_es="Su solicitud de permiso compensatorio ha sido aprobada",
+                        verb_fr="Votre demande de congé compensatoire a été approuvée",
                         redirect=reverse("view-compensatory-leave")
                         + f"?id={comp_leave_req.id}",
                     )
-                return HttpResponse("<script>location.reload();</script>")
-        return render(
-            request,
-            "leave/compensatory_leave/compensatory_leave_reject_form..html",
-            {"form": form, "comp_id": comp_id},
-        )
-    else:
-        messages.error(request, _("The leave allocation request can't be rejected"))
-        return HttpResponse("<script>location.reload();</script>")
+            else:
+                messages.info(
+                    request,
+                    _(
+                        "The compensatory leave request is not in the 'requested' status."
+                    ),
+                )
+        except:
+            messages.error(request, _("Sorry, something went wrong!"))
+        if request.GET.get("individual"):
+            return HttpResponse("<script>location.reload();</script>")
+        return redirect(filter_compensatory_leave)
 
+    @login_required
+    @is_compensatory_leave_enabled()
+    @hx_request_required
+    @manager_can_enter(perm="leave.delete_compensatoryleaverequest")
+    def reject_compensatory_leave(request, comp_id):
+        """
+        function used to Reject compensatoey leave request.
 
-@login_required
-@is_compensatory_leave_enabled()
-@hx_request_required
-def compensatory_leave_individual_view(request, comp_leave_id):
-    """
-    function used to present the compensatory leave request detailed view.
+        Parameters:
+        request (HttpRequest): The HTTP request object.
+        comp_id : compensatory leave request id
 
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    comp_leave_id : compensatory leave request id
+        Returns:
+        GET : It returns to the default compensatory leave request view template.
 
-    Returns:
-    return compensatory leave request single view
-    """
-    requests_ids_json = request.GET.get("instances_ids")
-    if requests_ids_json:
-        requests_ids = json.loads(requests_ids_json)
-        previous_id, next_id = closest_numbers(requests_ids, comp_leave_id)
-    comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_leave_id)
-    context = {
-        "comp_leave_req": comp_leave_req,
-        "my_request": eval(request.GET.get("my_request")),
-        "instances_ids": requests_ids_json,
-        "previous": previous_id,
-        "next": next_id,
-    }
-    return render(
-        request,
-        "leave/compensatory_leave/individual_view_compensatory.html",
-        context=context,
-    )
-
-
-@login_required
-@is_compensatory_leave_enabled()
-@hx_request_required
-def view_compensatory_leave_comment(request, comp_leave_id):
-    """
-    This method is used to show Leave request comments
-    """
-    comments = CompensatoryLeaverequestComment.objects.filter(
-        request_id=comp_leave_id
-    ).order_by("-created_at")
-    no_comments = False
-    if not comments.exists():
-        no_comments = True
-
-    if request.FILES:
-        files = request.FILES.getlist("files")
-        comment_id = request.GET["comment_id"]
-        comment = CompensatoryLeaverequestComment.objects.get(id=comment_id)
-        attachments = []
-        for file in files:
-            file_instance = LeaverequestFile()
-            file_instance.file = file
-            file_instance.save()
-            attachments.append(file_instance)
-        comment.files.add(*attachments)
-
-    return render(
-        request,
-        "leave/compensatory_leave/compensatory_leave_comment.html",
-        {"comments": comments, "no_comments": no_comments, "request_id": comp_leave_id},
-    )
-
-
-@login_required
-@is_compensatory_leave_enabled()
-@hx_request_required
-def create_compensatory_leave_comment(request, comp_leave_id):
-    """
-    This method renders form and template to create Compensatory leave comments
-    """
-    comp_leave = CompensatoryLeaveRequest.objects.filter(id=comp_leave_id).first()
-    emp = request.user.employee_get
-    form = CompensatoryLeaveRequestcommentForm(
-        initial={"employee_id": emp.id, "request_id": comp_leave}
-    )
-    target = request.GET.get("target")
-    url = "request-filter" if target == "leaveRequest" else "user-request-filter"
-    previous_data = request.GET.urlencode()
-    if request.method == "POST":
-        form = CompensatoryLeaveRequestcommentForm(request.POST)
-        if form.is_valid():
-            form.instance.employee_id = emp
-            form.instance.request_id = comp_leave
-            form.save()
-            comments = CompensatoryLeaverequestComment.objects.filter(
-                request_id=comp_leave
-            ).order_by("-created_at")
-            no_comments = False
-            if not comments.exists():
-                no_comments = True
-            form = CompensatoryLeaveRequestcommentForm(
-                initial={"employee_id": emp.id, "request_id": comp_leave}
-            )
-            messages.success(request, _("Comment added successfully!"))
-            work_info = EmployeeWorkInformation.objects.filter(
-                employee_id=comp_leave.employee_id
-            )
-            if work_info.exists():
-                if (
-                    comp_leave.employee_id.employee_work_info.reporting_manager_id
-                    is not None
-                ):
-                    if request.user.employee_get.id == comp_leave.employee_id.id:
-                        rec = (
-                            comp_leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
-                        )
+        """
+        comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_id)
+        if comp_leave_req.status == "requested" or comp_leave_req.status == "approved":
+            form = CompensatoryLeaveRequestRejectForm()
+            if request.method == "POST":
+                form = CompensatoryLeaveRequestRejectForm(request.POST)
+                if form.is_valid():
+                    comp_leave_req.reject_reason = form.cleaned_data["reason"]
+                    comp_leave_req.status = "rejected"
+                    comp_leave_req.exclude_compensatory_leave()
+                    comp_leave_req.save()
+                    messages.success(request, _("Compensatory Leave request rejected."))
+                    with contextlib.suppress(Exception):
                         notify.send(
                             request.user.employee_get,
-                            recipient=rec,
-                            verb=f"{comp_leave.employee_id}'s Compensatory leave request has received a comment.",
-                            verb_ar=f"تلقى طلب إجازة الاعتذار لـ {comp_leave.employee_id} تعليقًا.",
-                            verb_de=f"Der Antrag auf Freizeitausgleich von {comp_leave.employee_id} hat einen Kommentar erhalten.",
-                            verb_es=f"La solicitud de permiso compensatorio de {comp_leave.employee_id} ha recibido un comentario.",
-                            verb_fr=f"La demande de congé compensatoire de {comp_leave.employee_id} a reçu un commentaire.",
+                            recipient=comp_leave_req.employee_id.employee_user_id,
+                            verb="Your compensatory leave request has been rejected",
+                            verb_ar="تم رفض طلبك للإجازة التعويضية",
+                            verb_de="Ihr Antrag auf Freizeitausgleich wurde abgelehnt",
+                            verb_es="Se ha rechazado su solicitud de permiso compensatorio",
+                            verb_fr="Votre demande de congé compensatoire a été rejetée",
                             redirect=reverse("view-compensatory-leave")
-                            + f"?id={comp_leave.id}",
-                            icon="chatbox-ellipses",
+                            + f"?id={comp_leave_req.id}",
                         )
-                    elif (
-                        request.user.employee_get.id
-                        == comp_leave.employee_id.employee_work_info.reporting_manager_id.id
+                    return HttpResponse("<script>location.reload();</script>")
+            return render(
+                request,
+                "leave/compensatory_leave/compensatory_leave_reject_form..html",
+                {"form": form, "comp_id": comp_id},
+            )
+        else:
+            messages.error(request, _("The leave allocation request can't be rejected"))
+            return HttpResponse("<script>location.reload();</script>")
+
+    @login_required
+    @is_compensatory_leave_enabled()
+    @hx_request_required
+    def compensatory_leave_individual_view(request, comp_leave_id):
+        """
+        function used to present the compensatory leave request detailed view.
+
+        Parameters:
+        request (HttpRequest): The HTTP request object.
+        comp_leave_id : compensatory leave request id
+
+        Returns:
+        return compensatory leave request single view
+        """
+        requests_ids_json = request.GET.get("instances_ids")
+        if requests_ids_json:
+            requests_ids = json.loads(requests_ids_json)
+            previous_id, next_id = closest_numbers(requests_ids, comp_leave_id)
+        comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_leave_id)
+        context = {
+            "comp_leave_req": comp_leave_req,
+            "my_request": eval(request.GET.get("my_request")),
+            "instances_ids": requests_ids_json,
+            "previous": previous_id,
+            "next": next_id,
+        }
+        return render(
+            request,
+            "leave/compensatory_leave/individual_view_compensatory.html",
+            context=context,
+        )
+
+    @login_required
+    @is_compensatory_leave_enabled()
+    @hx_request_required
+    def view_compensatory_leave_comment(request, comp_leave_id):
+        """
+        This method is used to show Leave request comments
+        """
+        comments = CompensatoryLeaverequestComment.objects.filter(
+            request_id=comp_leave_id
+        ).order_by("-created_at")
+        no_comments = False
+        if not comments.exists():
+            no_comments = True
+
+        if request.FILES:
+            files = request.FILES.getlist("files")
+            comment_id = request.GET["comment_id"]
+            comment = CompensatoryLeaverequestComment.objects.get(id=comment_id)
+            attachments = []
+            for file in files:
+                file_instance = LeaverequestFile()
+                file_instance.file = file
+                file_instance.save()
+                attachments.append(file_instance)
+            comment.files.add(*attachments)
+
+        return render(
+            request,
+            "leave/compensatory_leave/compensatory_leave_comment.html",
+            {
+                "comments": comments,
+                "no_comments": no_comments,
+                "request_id": comp_leave_id,
+            },
+        )
+
+    @login_required
+    @is_compensatory_leave_enabled()
+    @hx_request_required
+    def create_compensatory_leave_comment(request, comp_leave_id):
+        """
+        This method renders form and template to create Compensatory leave comments
+        """
+        comp_leave = CompensatoryLeaveRequest.objects.filter(id=comp_leave_id).first()
+        emp = request.user.employee_get
+        form = CompensatoryLeaveRequestcommentForm(
+            initial={"employee_id": emp.id, "request_id": comp_leave}
+        )
+        target = request.GET.get("target")
+        url = "request-filter" if target == "leaveRequest" else "user-request-filter"
+        previous_data = request.GET.urlencode()
+        if request.method == "POST":
+            form = CompensatoryLeaveRequestcommentForm(request.POST)
+            if form.is_valid():
+                form.instance.employee_id = emp
+                form.instance.request_id = comp_leave
+                form.save()
+                comments = CompensatoryLeaverequestComment.objects.filter(
+                    request_id=comp_leave
+                ).order_by("-created_at")
+                no_comments = False
+                if not comments.exists():
+                    no_comments = True
+                form = CompensatoryLeaveRequestcommentForm(
+                    initial={"employee_id": emp.id, "request_id": comp_leave}
+                )
+                messages.success(request, _("Comment added successfully!"))
+                work_info = EmployeeWorkInformation.objects.filter(
+                    employee_id=comp_leave.employee_id
+                )
+                if work_info.exists():
+                    if (
+                        comp_leave.employee_id.employee_work_info.reporting_manager_id
+                        is not None
                     ):
+                        if request.user.employee_get.id == comp_leave.employee_id.id:
+                            rec = (
+                                comp_leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                            )
+                            notify.send(
+                                request.user.employee_get,
+                                recipient=rec,
+                                verb=f"{comp_leave.employee_id}'s Compensatory leave request has received a comment.",
+                                verb_ar=f"تلقى طلب إجازة الاعتذار لـ {comp_leave.employee_id} تعليقًا.",
+                                verb_de=f"Der Antrag auf Freizeitausgleich von {comp_leave.employee_id} hat einen Kommentar erhalten.",
+                                verb_es=f"La solicitud de permiso compensatorio de {comp_leave.employee_id} ha recibido un comentario.",
+                                verb_fr=f"La demande de congé compensatoire de {comp_leave.employee_id} a reçu un commentaire.",
+                                redirect=reverse("view-compensatory-leave")
+                                + f"?id={comp_leave.id}",
+                                icon="chatbox-ellipses",
+                            )
+                        elif (
+                            request.user.employee_get.id
+                            == comp_leave.employee_id.employee_work_info.reporting_manager_id.id
+                        ):
+                            rec = comp_leave.employee_id.employee_user_id
+                            notify.send(
+                                request.user.employee_get,
+                                recipient=rec,
+                                verb="Your compensatory leave request has received a comment.",
+                                verb_ar="تلقى طلب إجازة العوض الخاص بك تعليقًا.",
+                                verb_de="Ihr Antrag auf Freizeitausgleich hat einen Kommentar erhalten.",
+                                verb_es="Su solicitud de permiso compensatorio ha recibido un comentario.",
+                                verb_fr="Votre demande de congé compensatoire a reçu un commentaire.",
+                                redirect=reverse("view-compensatory-leave")
+                                + f"?id={comp_leave.id}",
+                                icon="chatbox-ellipses",
+                            )
+                        else:
+                            rec = [
+                                comp_leave.employee_id.employee_user_id,
+                                comp_leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                            ]
+                            notify.send(
+                                request.user.employee_get,
+                                recipient=rec,
+                                verb=f"{comp_leave.employee_id}'s compensatory leave request has received a comment.",
+                                verb_ar=f"تلقى طلب إجازة التعويض لـ {comp_leave.employee_id} تعليقًا.",
+                                verb_de=f"Der Antrag auf Freizeitausgleich von {comp_leave.employee_id} hat einen Kommentar erhalten.",
+                                verb_es=f"El pedido de permiso compensatorio de {comp_leave.employee_id} ha recibido un comentario.",
+                                verb_fr=f"La demande de congé compensatoire de {comp_leave.employee_id} a reçu un commentaire.",
+                                redirect=reverse("view-compensatory-leave")
+                                + f"?id={comp_leave.id}",
+                                icon="chatbox-ellipses",
+                            )
+                    else:
                         rec = comp_leave.employee_id.employee_user_id
                         notify.send(
                             request.user.employee_get,
@@ -4953,81 +4685,59 @@ def create_compensatory_leave_comment(request, comp_leave_id):
                             + f"?id={comp_leave.id}",
                             icon="chatbox-ellipses",
                         )
-                    else:
-                        rec = [
-                            comp_leave.employee_id.employee_user_id,
-                            comp_leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                        ]
-                        notify.send(
-                            request.user.employee_get,
-                            recipient=rec,
-                            verb=f"{comp_leave.employee_id}'s compensatory leave request has received a comment.",
-                            verb_ar=f"تلقى طلب إجازة التعويض لـ {comp_leave.employee_id} تعليقًا.",
-                            verb_de=f"Der Antrag auf Freizeitausgleich von {comp_leave.employee_id} hat einen Kommentar erhalten.",
-                            verb_es=f"El pedido de permiso compensatorio de {comp_leave.employee_id} ha recibido un comentario.",
-                            verb_fr=f"La demande de congé compensatoire de {comp_leave.employee_id} a reçu un commentaire.",
-                            redirect=reverse("view-compensatory-leave")
-                            + f"?id={comp_leave.id}",
-                            icon="chatbox-ellipses",
-                        )
-                else:
-                    rec = comp_leave.employee_id.employee_user_id
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=rec,
-                        verb="Your compensatory leave request has received a comment.",
-                        verb_ar="تلقى طلب إجازة العوض الخاص بك تعليقًا.",
-                        verb_de="Ihr Antrag auf Freizeitausgleich hat einen Kommentar erhalten.",
-                        verb_es="Su solicitud de permiso compensatorio ha recibido un comentario.",
-                        verb_fr="Votre demande de congé compensatoire a reçu un commentaire.",
-                        redirect=reverse("view-compensatory-leave")
-                        + f"?id={comp_leave.id}",
-                        icon="chatbox-ellipses",
-                    )
-            return render(
-                request,
-                "leave/compensatory_leave/compensatory_leave_comment.html",
-                {
-                    "comments": comments,
-                    "no_comments": no_comments,
-                    "request_id": comp_leave_id,
-                },
-            )
-    return render(
-        request,
-        "leave/compensatory_leave/compensatory_leave_comment.html",
-        {
-            "form": form,
-            "request_id": comp_leave_id,
-            "pd": previous_data,
-            "target": target,
-            "url": url,
-        },
-    )
-
-
-def check_interview_conflicts(request):
-    start_date = request.GET.get("start_date")
-    end_date = request.GET.get("end_date")
-    employee_id = request.GET.get("employee_id")
-
-    try:
-        start_date_obj = datetime.strptime(start_date, "%Y-%m-%d")
-        end_date_obj = datetime.strptime(end_date, "%Y-%m-%d")
-        delta = start_date_obj - end_date_obj
-        date_list = [start_date_obj + timedelta(days=i) for i in range(delta.days + 1)]
-
-        interviews = InterviewSchedule.objects.filter(
-            employee_id=employee_id, interview_date__in=date_list
+                return render(
+                    request,
+                    "leave/compensatory_leave/compensatory_leave_comment.html",
+                    {
+                        "comments": comments,
+                        "no_comments": no_comments,
+                        "request_id": comp_leave_id,
+                    },
+                )
+        return render(
+            request,
+            "leave/compensatory_leave/compensatory_leave_comment.html",
+            {
+                "form": form,
+                "request_id": comp_leave_id,
+                "pd": previous_data,
+                "target": target,
+                "url": url,
+            },
         )
 
-        response = {
-            "interviews": list(interviews.values_list("candidate_id__name", flat=True)),
-        }
-        return JsonResponse(response)
-    except Exception as e:
-        logger.error(e)
-        return JsonResponse(e)
+
+if apps.is_installed("recruitment"):
+
+    def check_interview_conflicts(request):
+        start_date = request.GET.get("start_date")
+        end_date = request.GET.get("end_date")
+        employee_id = request.GET.get("employee_id")
+
+        try:
+            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d")
+            end_date_obj = datetime.strptime(end_date, "%Y-%m-%d")
+            delta = start_date_obj - end_date_obj
+            date_list = [
+                start_date_obj + timedelta(days=i) for i in range(delta.days + 1)
+            ]
+            InterviewSchedule = get_horilla_model_class(
+                app_label="recruitment", model="interviewschedule"
+            )
+
+            interviews = InterviewSchedule.objects.filter(
+                employee_id=employee_id, interview_date__in=date_list
+            )
+
+            response = {
+                "interviews": list(
+                    interviews.values_list("candidate_id__name", flat=True)
+                ),
+            }
+            return JsonResponse(response)
+        except Exception as e:
+            logger.error(e)
+            return JsonResponse(e)
 
 
 @login_required
@@ -5048,4 +4758,167 @@ def employee_past_leave_restriction(request):
         request,
         "leave/settings/past_leave_restrict_view.html",
         {"enabled_restriction": enabled_restriction},
+    )
+
+
+@login_required
+def employee_profile_leave_tab(request):
+    """
+    This method is used to view own profile of employee.
+    """
+    user = request.user
+    employee = request.user.employee_get
+    if apps.is_installed("leave"):
+        instances = LeaveRequest.objects.filter(employee_id=employee)
+        user_leaves = employee.available_leave.all().exclude(
+            leave_type_id__is_compensatory_leave=True
+        )
+        if (
+            LeaveGeneralSetting.objects.first()
+            and LeaveGeneralSetting.objects.first().compensatory_leave
+        ):
+            user_leaves = employee.available_leave.all()
+    else:
+        user_leaves = None
+        instances = None
+
+    leave_request_ids = (
+        json.dumps([instance.id for instance in instances])
+        if instances
+        else json.dumps([])
+    )
+    today = datetime.today()
+    now = timezone.now()
+    return render(
+        request,
+        "employee/profile/profile_view.html",
+        {
+            "employee": employee,
+            "user_leaves": user_leaves,
+            "leave_request_ids": leave_request_ids,
+            "current_date": today,
+            "now": now,
+        },
+    )
+
+
+@login_required
+def employee_view_individual_leave_tab(request, obj_id, **kwargs):
+    """
+    This method is used to view profile of an employee.
+    """
+    employee = Employee.objects.get(id=obj_id)
+    instances = (
+        LeaveRequest.objects.filter(employee_id=employee)
+        if apps.is_installed("leave")
+        else None
+    )
+    leave_request_ids = (
+        json.dumps([instance.id for instance in instances])
+        if instances
+        else json.dumps([])
+    )
+    employee_leaves = employee.available_leave.all()
+    filtered_employee_ids = request.session.get("filtered_employees", [])
+    filtered_employees = Employee.objects.filter(id__in=filtered_employee_ids)
+
+    request_ids_str = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                filtered_employees, request.GET.get("page")
+            ).object_list
+        ]
+    )
+
+    # Convert the string to an actual list of integers
+    requests_ids = (
+        ast.literal_eval(request_ids_str)
+        if isinstance(request_ids_str, str)
+        else request_ids_str
+    )
+
+    employee_id = employee.id
+    previous_id = None
+    next_id = None
+
+    for index, req_id in enumerate(requests_ids):
+        if req_id == employee_id:
+
+            if index == len(requests_ids) - 1:
+                next_id = None
+            else:
+                next_id = requests_ids[index + 1]
+            if index == 0:
+                previous_id = None
+            else:
+                previous_id = requests_ids[index - 1]
+            break
+
+    context = {
+        "employee": employee,
+        "previous": previous_id,
+        "next": next_id,
+        "requests_ids": requests_ids,
+        "current_date": date.today(),
+        "leave_request_ids": leave_request_ids,
+    }
+    # if the requesting user opens own data
+    if request.user.employee_get == employee:
+        context["user_leaves"] = employee_leaves
+    else:
+        context["employee_leaves"] = employee_leaves
+
+    return render(request, "tabs/leave-tab.html", context=context)
+
+
+@login_required
+def leave_request_and_approve(request):
+    previous_data = request.GET.urlencode()
+    page_number = request.GET.get("page")
+    leave_requests = LeaveRequest.objects.filter(
+        status="requested",
+        employee_id__is_active=True,
+        start_date__gte=date.today(),
+    )
+    leave_requests = filtersubordinates(
+        request, leave_requests, "leave.change_leaverequest"
+    )
+    leave_requests = paginator_qry(leave_requests, page_number)
+    leave_requests_ids = json.dumps([instance.id for instance in leave_requests])
+    return render(
+        request,
+        "request_and_approve/leave_request_approve.html",
+        {
+            "leave_requests": leave_requests,
+            "requests_ids": leave_requests_ids,
+            "pd": previous_data,
+            # "current_date":date.today(),
+        },
+    )
+
+
+@login_required
+def leave_allocation_approve(request):
+    previous_data = request.GET.urlencode()
+    page_number = request.GET.get("page")
+    allocation_reqests = LeaveAllocationRequest.objects.filter(
+        status="requested", employee_id__is_active=True
+    )
+    allocation_reqests = filtersubordinates(
+        request, allocation_reqests, "leave.view_leaveallocationrequest"
+    )
+    # allocation_reqests = paginator_qry(allocation_reqests, page_number)
+    allocation_reqests_ids = json.dumps(
+        [instance.id for instance in allocation_reqests]
+    )
+    return render(
+        request,
+        "request_and_approve/leave_allocation_approve.html",
+        {
+            "allocation_reqests": allocation_reqests,
+            "reqests_ids": allocation_reqests_ids,
+            "pd": previous_data,
+            # "current_date":date.today(),
+        },
     )

@@ -1,0 +1,58 @@
+{% load i18n %} {% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{ message.tags }}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<script>
+  setTimeout(() => {
+    $(".oh-modal__close").click();
+  }, 1000);
+</script>
+{% endif %}
+{% if form.errors %}
+<!-- form errors  -->
+<div class="oh-wrapper">
+  <div class="oh-alert-container">
+    {% for error in form.non_field_errors %}
+    <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+<div class="oh-modal__dialog-header pb-0">
+  <span class="oh-modal__dialog-title" id="editDialogDialog"
+    >{% trans "Update Company Leaves" %}</span
+  >
+  <button
+    class="oh-modal__close"
+    aria-label="Close"
+    {% if messages %}
+      hx-target="#companyLeave"
+      hx-get="{% url 'company-leave-filter' %}"
+    {% endif %}
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body pt-1">
+  <form
+    hx-post="{% url 'company-leave-update' id %}"
+    hx-target="#objectUpdateModalTarget"
+    class="oh-profile-section"
+  >
+    <label class="oh-label d-block">{% trans "Based On Week" %}</label>
+    {{form.based_on_week}}
+    <label class="oh-label d-block">{% trans "Based On Week Day" %}</label>
+    {{form.based_on_week_day}}
+    <div class="oh-modal__dialog-footer p-0 mt-3">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
+    </div>
+  </form>
+</div>

@@ -166,7 +166,7 @@
                                             {% for employee in get_active_employees %}
                                                 {% if request.user == employee.employee_user_id %}
                                                     <option value="{{employee.id}}" selected>{{employee.get_full_name}}</option>
-                                                    {% else %}
+                                                {% else %}
                                                     <option value="{{employee.id}}">{{employee.get_full_name}}</option>
                                                 {% endif %}
                                             {% endfor %}

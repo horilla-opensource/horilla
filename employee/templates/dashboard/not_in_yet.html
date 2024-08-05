@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 <div
     class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
     style="min-height: 423px"
@@ -69,7 +69,7 @@
 			<div style="" class="">
 				<img
 					style="display: block; width: 70px; margin: 20px auto"
-					src="/static/images/ui/joiningchart.png"
+					src="{% static "/images/ui/joiningchart.png" %}"
 					class=""
 					alt=""
 				/>

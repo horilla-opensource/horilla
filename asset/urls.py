@@ -178,4 +178,20 @@ urlpatterns = [
         views.asset_history_search,
         name="asset-history-search",
     ),
+    path("asset-tab/<int:emp_id>", views.asset_tab, name="asset-tab"),
+    path(
+        "profile-asset-tab/<int:emp_id>",
+        views.profile_asset_tab,
+        name="profile-asset-tab",
+    ),
+    path(
+        "asset-request-tab/<int:emp_id>",
+        views.asset_request_tab,
+        name="asset-request-tab",
+    ),
+    path(
+        "dashboard-asset-request-approve",
+        views.dashboard_asset_request_approve,
+        name="dashboard-asset-request-approve",
+    ),
 ]

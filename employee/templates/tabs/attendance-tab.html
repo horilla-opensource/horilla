@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load static %}
 {% load basefilters %}
-{% load attendancefilters %}
+{% load horillafilters %}
 <div class="oh-wrapper mt-4">
     <div class="oh-tabs">
 		<ul class="oh-tabs__tablist">
@@ -170,7 +170,7 @@
 								<div class="oh-sticky-table__th" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=year" hx-target="#ot-table">{% trans "Year" %}</div>
 								<div class="oh-sticky-table__th" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=hour_account_second" hx-target="#ot-table">{% trans "Hour Account" %}</div>
 								<div class="oh-sticky-table__th" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=overtime_second" hx-target="#ot-table">{% trans "Overtime" %}</div>
-								{% if perms.recruitment.change_attendanceovertime or perms.recruitment.delete_attendanceovertime %}
+								{% if perms.attendance.change_attendanceovertime or perms.attendance.delete_attendanceovertime %}
 								<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 								{% endif %}
 							</div>
@@ -196,7 +196,7 @@
 									<div class="oh-sticky-table__td">{{ot.year}}</div>
 									<div class="oh-sticky-table__td">{{ot.worked_hours}}</div>
 									<div class="oh-sticky-table__td">{{ot.overtime}}</div>
-									{% if perms.recruitment.change_attendanceovertime or perms.recruitment.delete_attendanceovertime %}
+									{% if perms.attendance.change_attendanceovertime or perms.attendance.delete_attendanceovertime %}
 									<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 										<div class="oh-btn-group">
 											{% if perms.attendance.change_attendanceovertime %}

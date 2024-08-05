@@ -22,10 +22,14 @@ from attendance.forms import (
     BulkAttendanceRequestForm,
     NewRequestForm,
 )
-from attendance.methods.differentiate import get_diff_dict
+from attendance.methods.utils import (
+    get_diff_dict,
+    get_employee_last_name,
+    paginator_qry,
+    shift_schedule_today,
+)
 from attendance.models import Attendance, AttendanceActivity, AttendanceLateComeEarlyOut
 from attendance.views.clock_in_out import early_out, late_come
-from attendance.views.views import paginator_qry, shift_schedule_today
 from base.methods import (
     choosesubordinates,
     closest_numbers,
@@ -37,15 +41,6 @@ from base.models import EmployeeShift, EmployeeShiftDay
 from employee.models import Employee
 from horilla.decorators import hx_request_required, login_required, manager_can_enter
 from notifications.signals import notify
-
-
-def get_employee_last_name(attendance):
-    """
-    This method is used to return the last name
-    """
-    if attendance.employee_id.employee_last_name:
-        return attendance.employee_id.employee_last_name
-    return ""
 
 
 @login_required

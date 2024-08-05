@@ -12,13 +12,8 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 
 from base.forms import ModelForm
-from base.methods import reload_queryset
-from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
-from employee.models import Employee
 from horilla import horilla_middlewares
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
-from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from notifications.signals import notify
 from offboarding.models import (
     EmployeeTask,
@@ -52,30 +47,6 @@ class OffboardingForm(ModelForm):
         table_html = render_to_string("common_form.html", context)
         return table_html
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        reload_queryset(self.fields)
-        self.fields["managers"] = HorillaMultiSelectField(
-            queryset=Employee.objects.filter(is_active=True),
-            widget=HorillaMultiSelectWidget(
-                filter_route_name="employee-widget-filter",
-                filter_class=EmployeeFilter,
-                filter_instance_contex_name="f",
-                filter_template_path="employee_filters.html",
-                required=True,
-                instance=self.instance,
-            ),
-            label="Managers",
-        )
-
-    def clean(self):
-        if isinstance(self.fields["managers"], HorillaMultiSelectField):
-            ids = self.data.getlist("managers")
-            if ids:
-                self.errors.pop("managers", None)
-        super().clean()
-
 
 class OffboardingStageForm(ModelForm):
     """
@@ -96,30 +67,6 @@ class OffboardingStageForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        reload_queryset(self.fields)
-        self.fields["managers"] = HorillaMultiSelectField(
-            queryset=Employee.objects.filter(is_active=True),
-            widget=HorillaMultiSelectWidget(
-                filter_route_name="employee-widget-filter",
-                filter_class=EmployeeFilter,
-                filter_instance_contex_name="f",
-                filter_template_path="employee_filters.html",
-                required=True,
-                instance=self.instance,
-            ),
-            label="Managers",
-        )
-
-    def clean(self):
-        if isinstance(self.fields["managers"], HorillaMultiSelectField):
-            ids = self.data.getlist("managers")
-            if ids:
-                self.errors.pop("managers", None)
-        super().clean()
 
 
 class OffboardingEmployeeForm(ModelForm):

@@ -1,119 +1,97 @@
-{% load i18n %}
-{% if messages %}
-  <div class="oh-alert-container">
-    {% for message in messages %}
-    <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
-    {% endfor %}
-  </div>
-  <script>
-    setTimeout(() => {
-      $(".oh-modal__close--custom").click();
-      const spanElement = document.querySelector(".oh-span__class");
-      if (spanElement) {
-        spanElement.click();
-      }
-    }, 1000);
-  </script>
-  {% if late_in_early_out_ids %}
-    <span
-      class="oh-span__class"
-      hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
-      hx-target="#report-container"
-    ></span>
-  {% endif %}
-{% endif %}
-<div class="oh-modal__dialog-header">
-  <button
-    type="button"
-    class="oh-modal__close--custom"
-    aria-label="Close"
-    onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
-    {% if late_in_early_out_ids %}
-      hx-get="{% url 'late-in-early-out-single-view' instance.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}"
-      hx-target="#objectDetailsModalTarget"
-    {% else %}
-      hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
-      hx-target="#report-container"
-      hx-swap="innerHTML"
-    {% endif %}
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
-</div>
-<div class="oh-modal__dialog-body">
-  <div class="oh-timeoff-modal__profile-content">
-    <div class="oh-profile mb-2">
-      <div class="oh-profile__avatar">
-        <img
-          src="{{ instance.employee_id.get_avatar }}"
-          class="oh-profile__image me-2"
-          alt="Mary Magdalene"
-        />
-      </div>
-      <div class="oh-timeoff-modal__profile-info">
-        <span class="oh-timeoff-modal__user fw-bold"
-          >{{ instance.employee_id.get_full_name }}</span
-        >
-        <span
-          class="oh-timeoff-modal__user m-0"
-          style="font-size: 18px; color: #4d4a4a"
-        >
-          {{ instance.employee_id.get_department }} / {{ instance.employee_id.get_job_position }}
-        </span>
-      </div>
-    </div>
-  </div>
-  <form
-    hx-post="{% url 'cut-penalty' instance.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}"
-    hx-target="#penaltyModalBody"
-  >
-    {{ form.as_p }}
+{% load i18n %} {% load horillafilters %}
 
-    <div class="oh-sticky-table__table oh-table--sortable">
-      <div class="oh-sticky-table__thead">
-        <div class="oh-sticky-table__tr">
-          <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
-          <div class="oh-sticky-table__th">{% trans "Available Days" %}</div>
-          <div class="oh-sticky-table__th">
-            {% trans "Carry Forward Days" %}
-          </div>
-        </div>
-      </div>
-      <div class="oh-sticky-table__tbody">
-        {% for acc in available %}
-        <div class="oh-sticky-table__tr">
-          <div class="oh-sticky-table__th">{{ acc.leave_type_id }}</div>
-          <div class="oh-sticky-table__th">{{ acc.available_days }}</div>
-          <div class="oh-sticky-table__th">{{ acc.carryforward_days }}</div>
-        </div>
+{% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
         {% endfor %}
-      </div>
     </div>
-    <ol class="mt-3">
-      <li>
-        <i>{% trans "Leave type is optional when 'minus leave' is 0" %}</i>
-      </li>
-      <li>
-        <i>{% trans "Penalty amount will affect payslip on the date" %}</i>
-      </li>
-      <li>
-        <i
-          >{% trans "By default minus leave will cut/deduct from available leaves" %}</i
+    <script>
+        setTimeout(() => {
+            $(".oh-modal__close--custom").click();
+            const spanElement = document.querySelector(".oh-span__class");
+            if (spanElement) {
+                spanElement.click();
+            }
+        }, 1000);
+    </script>
+    {% if late_in_early_out_ids %}
+        <span class="oh-span__class" hx-get="{% url 'late-come-early-out-search' %}?{{pd}}" hx-target="#report-container"></span>
+    {% endif %}
+{% endif %}
+
+<div class="oh-modal__dialog-header">
+    <button type="button" class="oh-modal__close--custom" aria-label="Close"
+        onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+        {% if late_in_early_out_ids %}
+            hx-get="{% url 'late-in-early-out-single-view' instance.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}"
+            hx-target="#objectDetailsModalTarget" {% else %} hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
+            hx-target="#report-container" hx-swap="innerHTML"
+        {% endif %}
         >
-      </li>
-      <li>
-        <i
-          >{% trans "By enabling 'Deduct from carry forward' leave will cut/deduct from carry forward days" %}</i
-        >
-      </li>
-    </ol>
-    <div class="d-flex flex-row-reverse">
-      <button
-        type="submit"
-        class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
-      >
-        {% trans "Save" %}
-      </button>
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+
+<div class="oh-modal__dialog-body">
+    <div class="oh-timeoff-modal__profile-content">
+        <div class="oh-profile mb-2">
+            <div class="oh-profile__avatar">
+                <img src="{{ instance.employee_id.get_avatar }}" class="oh-profile__image me-2" alt="Mary Magdalene" />
+            </div>
+            <div class="oh-timeoff-modal__profile-info">
+                <span class="oh-timeoff-modal__user fw-bold">{{ instance.employee_id.get_full_name }}</span>
+                <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: #4d4a4a">
+                    {{ instance.employee_id.get_department }} / {{ instance.employee_id.get_job_position }}
+                </span>
+            </div>
+        </div>
     </div>
-  </form>
+
+    <form hx-post="{% url 'cut-penalty' instance.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}" hx-target="#penaltyModalBody" >
+        {{ form.as_p }}
+        {% if "leave"|app_installed %}
+            <div class="oh-sticky-table__table oh-table--sortable">
+                <div class="oh-sticky-table__thead">
+                    <div class="oh-sticky-table__tr">
+                        <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
+                        <div class="oh-sticky-table__th">{% trans "Available Days" %}</div>
+                        <div class="oh-sticky-table__th">
+                            {% trans "Carry Forward Days" %}
+                        </div>
+                    </div>
+                </div>
+                <div class="oh-sticky-table__tbody">
+                    {% for acc in available %}
+                    <div class="oh-sticky-table__tr">
+                        <div class="oh-sticky-table__th">{{ acc.leave_type_id }}</div>
+                        <div class="oh-sticky-table__th">{{ acc.available_days }}</div>
+                        <div class="oh-sticky-table__th">{{ acc.carryforward_days }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <ol class="mt-3">
+                <li>
+                    <i>{% trans "Leave type is optional when 'minus leave' is 0" %}</i>
+                </li>
+                <li>
+                    <i>{% trans "Penalty amount will affect payslip on the date" %}</i>
+                </li>
+                <li>
+                    <i>{% trans "By default minus leave will cut/deduct from available leaves" %}</i>
+                </li>
+                <li>
+                    <i>{% trans "By enabling 'Deduct from carry forward' leave will cut/deduct from carry forward days"
+                        %}</i>
+                </li>
+            </ol>
+        {% endif %}
+        <div class="d-flex flex-row-reverse">
+            <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+
 </div>

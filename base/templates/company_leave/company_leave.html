@@ -1,0 +1,127 @@
+{% load i18n %} {% load static %}
+{% if messages %}
+  <div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+      <div class="oh-alert oh-alert--animated {{ message.tags }}">
+        {{ message }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% include 'filter_tags.html' %}
+{% if company_leaves %}
+<div class="oh-sticky-table">
+  <div class="oh-sticky-table__table">
+      <div class="oh-sticky-table__thead">
+          <div class="oh-sticky-table__tr">
+              <div class="oh-sticky-table__th ps-4">{% trans "Based On Week" %} </div>
+              <div class="oh-sticky-table__th">{% trans "Based On Week Day" %}</div>
+              {% if perms.base.change_companyleave or perms.base.delete_companyleave %}
+                <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+              {% endif %}
+          </div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+          {% for company_leave in company_leaves %}
+          <div class="oh-sticky-table__tr company_leave" style="height:60px;">
+              <div class="oh-sticky-table__sd ps-4">
+                    {% if company_leave.based_on_week != None %}
+                        {% for week in weeks %}
+                            {% if week.0 == company_leave.based_on_week %}
+                                {{week.1}}
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% trans "All" %}
+                    {% endif %}
+              </div>
+              <div class="oh-sticky-table__sd week_days">
+                    {% for week_day in week_days %}
+                        {% if week_day.0 == company_leave.based_on_week_day %}
+                            {{week_day.1}}
+                        {% endif %}
+                    {% endfor %}
+              </div>
+
+              {% if perms.base.change_companyleave or perms.base.delete_companyleave %}
+              <div class="oh-sticky-table__td">
+                  <div class="oh-btn-group">
+                    {% if perms.base.change_companyleave %}
+                      <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
+                          data-target="#objectUpdateModal" hx-get="{% url 'company-leave-update' company_leave.id %}"
+                          hx-target="#objectUpdateModalTarget"><ion-icon name="create-outline"></ion-icon></button>
+                    {% endif %}
+                    {% if perms.base.delete_companyleave %}
+                        <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                            hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+                            hx-post="{% url 'company-leave-delete' company_leave.id %}?{{pd}}"
+                            hx-target="#companyLeave"
+                            title="{% trans 'Delete' %}"><ion-icon name="trash-outline"></ion-icon>
+                        </a>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endif %}
+          </div>
+          {% endfor %}
+
+      </div>
+  </div>
+</div>
+
+<div class="oh-pagination">
+  <span class="oh-pagination__page">
+      {% trans "Page" %} {{ company_leaves.number }} {% trans "of" %} {{ company_leaves.paginator.num_pages }}.
+  </span>
+  <nav class="oh-pagination__nav">
+      <div class="oh-pagination__input-container me-3">
+          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+          <input type="number" name="page" class="oh-pagination__input" value="{{company_leaves.number}}"
+              hx-get="{% url 'company-leave-filter' %}?{{pd}}" hx-target="#companyLeave" min="1" />
+          <span class="oh-pagination__label">{% trans "of" %} {{company_leaves.paginator.num_pages}}</span>
+      </div>
+      <ul class="oh-pagination__items">
+          {% if company_leaves.has_previous %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target='#companyLeave' hx-get="{% url 'company-leave-filter' %}?{{pd}}&page=1"
+                  class="oh-pagination__link">{% trans "First" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target='#companyLeave'
+                  hx-get="{% url 'company-leave-filter' %}?{{pd}}&page={{ company_leaves.previous_page_number }}"
+                  class="oh-pagination__link">{% trans "Previous" %}</a>
+          </li>
+          {% endif %}
+          {% if company_leaves.has_next %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target='#companyLeave'
+                  hx-get="{% url 'company-leave-filter' %}?{{pd}}&page={{ company_leaves.next_page_number }}"
+                  class="oh-pagination__link">{% trans "Next" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target='#companyLeave'
+                  hx-get="{% url 'company-leave-filter' %}?{{pd}}&page={{ company_leaves.paginator.num_pages }}"
+                  class="oh-pagination__link">{% trans "Last" %}</a>
+          </li>
+          {% endif %}
+
+      </ul>
+  </nav>
+</div>
+<script>
+    $(document).ready(function() {
+        $('[data-target="#objectUpdateModal"]').click(function() {
+            $("#objectUpdateModalTarget").css("max-width", "350px");
+        });
+    });
+</script>
+{% else %}
+    <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
+        <div style="" class="oh-404">
+        <img style="display: block;width:150px;height:150px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="mb-4" alt=""/>
+        <h3 style="font-size:20px" class="oh-404__subtitle">{% trans "There are no company leaves at the moment." %}</h3>
+        </div>
+    </div>
+{% endif %}

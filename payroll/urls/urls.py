@@ -53,12 +53,6 @@ urlpatterns = [
     ),
     path("payslip-pdf/<int:id>", views.payslip_pdf, name="payslip-pdf"),
     path("contract-filter", views.contract_filter, name="contract-filter"),
-    path("work-record-view", views.work_record_view, name="work-record-view"),
-    path(
-        "work-record-employees-view",
-        views.work_record_employee_view,
-        name="work-record-employees-view",
-    ),
     path("settings", views.settings, name="payroll-settings"),
     path(
         "payslip-status-update/<int:payslip_id>/",
