@@ -475,37 +475,76 @@ class JobPositionForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if not self.instance.pk:
-            self.fields["department_id"] = forms.ModelMultipleChoiceField(
-                queryset=self.fields["department_id"].queryset
-            )
-            attrs = self.fields["department_id"].widget.attrs
-            attrs["class"] = "oh-select oh-select2 w-100"
-            attrs["style"] = "height:45px;"
 
-    def save(self, commit, *args, **kwargs) -> Any:
+class JobPositionMultiForm(ModelForm):
+    """
+    JobPosition model's form
+    """
+
+    department_id = HorillaMultiSelectField(queryset=Department.objects.all())
+
+    class Meta:
+        model = JobPosition
+        fields = "__all__"
+        exclude = ["department_id", "is_active"]
+        widgets = {
+            "department_id": forms.SelectMultiple(
+                attrs={
+                    "class": "oh-select oh-select2 w-100",
+                    "style": "height:45px;",
+                }
+            ),
+        }
+
+    def clean(self):
+        """
+        Validate that the job position does not already exist in the selected departments.
+        """
+        cleaned_data = super().clean()
+        department_ids = self.data.getlist("department_id")
+        job_position = self.data.get("job_position")
+
+        existing_positions = JobPosition.objects.filter(
+            department_id__in=department_ids, job_position=job_position
+        )
+
+        if existing_positions.exists():
+            existing_deps = existing_positions.values_list("department_id", flat=True)
+            dep_names = Department.objects.filter(id__in=existing_deps).values_list(
+                "department", flat=True
+            )
+            raise ValidationError(
+                {
+                    "department_id": _("Job position already exists under {}").format(
+                        ", ".join(dep_names)
+                    )
+                }
+            )
+        return cleaned_data
+
+    def save(self, *args, **kwargs):
+        """
+        Save the job positions for each selected department.
+        """
         if not self.instance.pk:
             request = getattr(_thread_locals, "request")
-            department = Department.objects.filter(
-                id__in=self.data.getlist("department_id")
-            )
+            department_ids = self.data.getlist("department_id")
+            job_position = self.data.get("job_position")
             positions = []
-            for dep in department:
-                position = JobPosition()
-                position.department_id = dep
-                position.job_position = self.data["job_position"]
-                form_data = self.data["job_position"]
+
+            for dep_id in department_ids:
+                dep = Department.objects.get(id=dep_id)
                 if JobPosition.objects.filter(
-                    department_id=dep, job_position=form_data
+                    department_id=dep, job_position=job_position
                 ).exists():
                     messages.error(request, f"Job position already exists under {dep}")
                 else:
+                    position = JobPosition(department_id=dep, job_position=job_position)
                     position.save()
-                positions.append(position.pk)
+                    positions.append(position.pk)
+
             return JobPosition.objects.filter(id__in=positions)
-        super().save(commit, *args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class JobRoleForm(ModelForm):

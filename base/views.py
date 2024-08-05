@@ -68,6 +68,7 @@ from base.forms import (
     HolidayForm,
     HolidaysColumnExportForm,
     JobPositionForm,
+    JobPositionMultiForm,
     JobRoleForm,
     MailTemplateForm,
     MultipleApproveConditionForm,
@@ -329,12 +330,12 @@ def initialize_department_delete(request, obj_id):
 @hx_request_required
 def initialize_database_job_position(request):
     company = Company.objects.first()
-    form = JobPositionForm(initial={"company_id": company})
+    form = JobPositionMultiForm(initial={"company_id": company})
     if request.method == "POST":
-        form = JobPositionForm(request.POST)
+        form = JobPositionMultiForm(request.POST)
         if form.is_valid():
             form.save()
-            form = JobPositionForm(initial={"company_id": Company.objects.first()})
+            form = JobPositionMultiForm(initial={"company_id": Company.objects.first()})
         return render(
             request,
             "initialize_database/horilla_job_position_form.html",
@@ -364,7 +365,7 @@ def initialize_job_position_edit(request, obj_id):
                 request,
                 "initialize_database/horilla_job_position_form.html",
                 {
-                    "form": JobPositionForm(initial={"company_id": company}),
+                    "form": JobPositionMultiForm(initial={"company_id": company}),
                     "job_positions": JobPosition.objects.all(),
                     "company": company,
                 },
@@ -390,7 +391,9 @@ def initialize_job_position_delete(request, obj_id):
         request,
         "initialize_database/horilla_job_position_form.html",
         {
-            "form": JobPositionForm(initial={"company_id": Company.objects.first()}),
+            "form": JobPositionMultiForm(
+                initial={"company_id": Company.objects.first()}
+            ),
             "job_positions": JobPosition.objects.all(),
             "company": company,
         },
@@ -1550,20 +1553,13 @@ def job_position_creation(request):
     """
     This method is used to create job position
     """
-    dynamic = request.GET.get("dynamic")
-    form = JobPositionForm()
+    dynamic = request.GET.get("dynamic") if request.GET.get("dynamic") else ""
+    form = JobPositionMultiForm()
     if request.method == "POST":
-        form = JobPositionForm(request.POST)
-        if form.instance.pk and form.is_valid():
-            form.save(commit=True)
-            messages.success(request, _("Job position has been created successfully!"))
-        elif (
-            not form.instance.pk
-            and form.data.getlist("department_id")
-            and form.data.get("job_position")
-        ):
-            form.save(commit=True)
-            messages.success(request, _("Job position has been created successfully!"))
+        form = JobPositionMultiForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Job Position has been created successfully!"))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
