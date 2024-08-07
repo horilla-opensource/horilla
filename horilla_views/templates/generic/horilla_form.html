@@ -12,12 +12,12 @@
   ></div>
 </div>
 {% endfor %}
-<form id="{{view_id}}" hx-post="{{request.path}}?{{request.GET.urlencode}}" hx-swap="outerHTML">{{form.structured}}</form>
+<form id="{{view_id}}" hx-post="{{request.path}}?{{request.GET.urlencode}}" hx-encoding="multipart/form-data" hx-swap="outerHTML">{{form.structured}}</form>
 {% for field_tuple in dynamic_create_fields %}
 <button
   hidden
   id="modalButton{{field_tuple.0}}"
-  hx-get="dynamic-path-{{field_tuple.0}}-{{request.session.session_key}}?dynamic_field={{field_tuple.0}}"
+  hx-get="/dynamic-path-{{field_tuple.0}}-{{request.session.session_key}}?dynamic_field={{field_tuple.0}}"
   hx-target="#dynamicModal{{field_tuple.0}}Body"
   onclick="$('#dynamicModal{{field_tuple.0}}').addClass('oh-modal--show');"
 >

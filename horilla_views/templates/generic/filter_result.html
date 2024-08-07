@@ -1,0 +1,10 @@
+{% for object in instances|slice:"3" %}
+<a
+  hx-get="{{object.get_profile_url}}"
+  hx-target="#{{view_id|safe}}"
+  hx-swap="outerHTML"
+  ><img {% if instance.pk == object.pk %} class="active" {% endif %}
+  style="border-radius :50px ;overflow :hidden;" src="{{object.get_avatar}}" />
+  <span>{{object}}</span>
+</a>
+{% endfor %}

@@ -13,4 +13,25 @@ urlpatterns = [
     path("active-group", views.ActiveGroup.as_view(), name="cbv-active-group"),
     path("reload-field", views.ReloadField.as_view(), name="reload-field"),
     path("reload-messages", ReloadMessages.as_view(), name="reload-messages"),
+    path("saved-filter/", views.SavedFilter.as_view(), name="saved-filter"),
+    path(
+        "saved-filter/<int:pk>/",
+        views.SavedFilter.as_view(),
+        name="saved-filter-update",
+    ),
+    path(
+        "delete-saved-filter/<int:pk>/",
+        views.DeleteSavedFilter.as_view(),
+        name="delete-saved-filter",
+    ),
+    path(
+        "active-hnv-view-type/",
+        views.ActiveView.as_view(),
+        name="active-hnv-view-type",
+    ),
+    path(
+        "search-in-instance-ids",
+        views.SearchInIds.as_view(),
+        name="search-in-instance-ids",
+    ),
 ]

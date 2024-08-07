@@ -1,13 +1,18 @@
 {% load static i18n generic_template_filters %}
 <div id="{{view_id|safe}}">
+  <script>
+    if (!$(".HTV").length) {
+      $("#reloadMessagesButton").click()
+    }
+  </script>
   {% if bulk_select_option %}
   <div class="d-flex justify-content-between">
     <div>
       <div class="oh-checkpoint-badge text-success"
         onclick="
-        addToSelectedId({{select_all_ids|safe}});
-        selectSelected('#{{view_id|safe}}');
-        reloadSelectedCount($('#count_{{view_id|safe}}'));
+        addToSelectedId({{select_all_ids|safe}},'{{selected_instances_key_id}}');
+        selectSelected('#{{view_id|safe}}','{{selected_instances_key_id}}');
+        reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
         "
         style="cursor: pointer;">
         {% trans "Select All" %} ({{queryset.paginator.count}})
@@ -17,9 +22,9 @@
       class="oh-checkpoint-badge text-secondary d-none"
       style="cursor: pointer;"
       onclick="
-        $('#selectedInstances').attr('data-ids',JSON.stringify([]));
-        selectSelected('#{{view_id|safe}}');
-        reloadSelectedCount($('#count_{{view_id|safe}}'));
+        $('#{{selected_instances_key_id}}').attr('data-ids',JSON.stringify([]));
+        selectSelected('#{{view_id|safe}}','{{selected_instances_key_id}}');
+        reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
         $('#{{view_id}} .list-table-row').prop('checked',false);
         $('#{{view_id}} .highlight-selected').removeClass('highlight-selected');
         $('#{{view_id}} .bulk-list-table-row').prop('checked',false);
@@ -39,12 +44,31 @@
       class="oh-checkpoint-badge text-info d-none"
       style="cursor: pointer;"
       onclick="
-      selectedIds = $('#selectedInstances').attr('data-ids')
+      selectedIds = $('#{{selected_instances_key_id}}').attr('data-ids')
       window.location.href = '{{export_path}}' + '?ids='+selectedIds
       "
       >
           {% trans "Export" %}
       </div>
+      {% for filter in stored_filters %}
+      <div class="oh-hover-btn-container"
+        hx-get="{{request.path}}?{{filter.urlencode}}"
+        hx-target="#{{view_id|safe}}" hx-swap="outerHTML"
+        >
+        <button class="oh-hover-btn" style="
+        cursor: pointer;
+        border: solid 2px {{filter.color}};
+        color: {{filter.color}} !important;
+        ">
+          {{filter.title}}
+        </button>
+        <div class="oh-hover-btn-drawer" onclick="event.stopPropagation()">
+          <button class="oh-hover-btn__small" onclick="$('#savedFilterModal').addClass('oh-modal--show')" hx-get="{% url "saved-filter-update" filter.id %}" hx-target="#SavedFilterFormTarget" hx-swap="innerHTML"><ion-icon name="create-outline"></ion-icon></button>
+          <button class="oh-hover-btn__small" onclick="$(this).parent().find('button:hidden').click();$(this).closest('.oh-hover-btn-container').remove()" ><ion-icon name="trash-outline"></ion-icon></button>
+          <button hidden hx-get="{% url "delete-saved-filter" filter.id %}" hx-swap="none"></button>
+        </div>
+      </div>
+      {% endfor %}
     </div>
     {% if row_status_indications %}
     <div class="d-flex flex-row-reverse">
@@ -73,7 +97,6 @@
           onclick="
             event.stopPropagation()
             $(this).parent().find('.oh-accordion-meta__body').toggleClass('d-none')
-            $(this).toggleClass('oh-accordion-meta__header--show')
           "
           >
           <span class="oh-accordion-meta__title p-2">
@@ -112,7 +135,7 @@
                         onchange="
                         $(this).closest('.oh-sticky-table').find('.list-table-row').prop('checked',$(this).is(':checked')).change();
                         $(document).ready(function () {
-                          reloadSelectedCount($('#count_{{view_id|safe}}'));
+                          reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
                         });
                         "
                         title="Select All"
@@ -163,7 +186,7 @@
                           if (!element.is(':checked')) {
                             removeId(element)
                           }
-                          reloadSelectedCount($('#count_{{view_id|safe}}'));
+                          reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
                         });
                         "
                         value = "{{instance.pk}}"
@@ -176,7 +199,7 @@
                   <div
                     class="{% if index == 1 %} oh-sticky-table__sd {% else %} oh-sticky-table__td{% endif %}"
                   >
-                    {{instance|getattribute:attribute|safe}}
+                    {{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
                   </div>
                   {% else %}
                   <div
@@ -362,7 +385,7 @@
     {% if bulk_select_option %}
     <script>
       ids = JSON.parse(
-            $("#selectedInstances").attr("data-ids") || "[]"
+            $("#{{selected_instances_key_id}}").attr("data-ids") || "[]"
           );
       $.each(ids, function (indexInArray, valueOfElement) {
         $(`#{{view_id|safe}} .oh-sticky-table__tbody .list-table-row[value=${valueOfElement}]`).prop("checked",true).change()
@@ -372,7 +395,7 @@
       ) {
         id = $(this).val()
         ids = JSON.parse(
-            $("#selectedInstances").attr("data-ids") || "[]"
+            $("#{{selected_instances_key_id}}").attr("data-ids") || "[]"
           );
         ids = Array.from(new Set(ids));
         let index = ids.indexOf(id);
@@ -383,7 +406,7 @@
             ids.splice(index, 1);
           }
         }
-        $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+        $("#{{selected_instances_key_id}}").attr("data-ids", JSON.stringify(ids));
         }
       );
 
@@ -395,6 +418,11 @@
   $(".oh-accordion-meta__header").click(function (e) {
     var open = $(this).attr("data-open");
     open = JSON.parse(open)
+    if (!$(this).parent().parent().find(".oh-accordion-meta__body.d-none").length && !$(this).find(".oh-accordion-meta__header--show").length) {
+      $(this).removeClass("oh-accordion-meta__header--show");
+    }else{
+      $(this).addClass("oh-accordion-meta__header--show");
+    }
     $(this).attr("data-open", !open);
     var field =  $(this).attr("data-field");
     var groupIndex = $(this).attr("data-group");

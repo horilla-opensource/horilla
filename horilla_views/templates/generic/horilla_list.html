@@ -1,5 +1,11 @@
 {% load static i18n generic_template_filters %}
 <div id="{{view_id|safe}}">
+  {% include "generic/export_fields_modal.html" %}
+  <script>
+    if (!$(".HTV").length) {
+      $("#reloadMessagesButton").click()
+    }
+  </script>
   <button class="reload-record" hidden hx-get="{{request.path}}?{{saved_filters.urlencode}}" hx-target="#{{view_id|safe}}" hx-swap="outerHTML">
   </button>
   {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
@@ -9,9 +15,9 @@
     <div>
       <div class="oh-checkpoint-badge text-success"
         onclick="
-        addToSelectedId({{select_all_ids|safe}});
-        selectSelected('#{{view_id|safe}}');
-        reloadSelectedCount($('#count_{{view_id|safe}}'));
+        addToSelectedId({{select_all_ids|safe}},'{{selected_instances_key_id}}');
+        selectSelected('#{{view_id|safe}}','{{selected_instances_key_id}}');
+        reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
         "
         style="cursor: pointer;">
         {% trans "Select All" %} ({{queryset.paginator.count}})
@@ -21,9 +27,9 @@
       class="oh-checkpoint-badge text-secondary d-none"
       style="cursor: pointer;"
       onclick="
-        $('#selectedInstances').attr('data-ids',JSON.stringify([]));
-        selectSelected('#{{view_id|safe}}');
-        reloadSelectedCount($('#count_{{view_id|safe}}'));
+        $('#{{selected_instances_key_id}}').attr('data-ids',JSON.stringify([]));
+        selectSelected('#{{view_id|safe}}','{{selected_instances_key_id}}');
+        reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
         $('#{{view_id}} .list-table-row').prop('checked',false);
         $('#{{view_id}} .highlight-selected').removeClass('highlight-selected');
         $('#{{view_id}} .bulk-list-table-row').prop('checked',false);
@@ -42,13 +48,31 @@
       id="export_{{view_id}}"
       class="oh-checkpoint-badge text-info d-none"
       style="cursor: pointer;"
-      onclick="
-      selectedIds = $('#selectedInstances').attr('data-ids')
-      window.location.href = '/{{export_path}}' + '?ids='+selectedIds
-      "
+      data-toggle="oh-modal-toggle"
+      data-target="#exportFields{{view_id|safe}}"
       >
           {% trans "Export" %}
       </div>
+      {% for filter in stored_filters %}
+      <div class="oh-hover-btn-container"
+        hx-get="{{request.path}}?{{filter.urlencode}}"
+        hx-target="#{{view_id|safe}}" hx-swap="outerHTML"
+        >
+        <button class="oh-hover-btn" style="
+        cursor: pointer;
+        border: solid 2px {{filter.color}};
+        color: {{filter.color}} !important;
+        ">
+          {{filter.title}}
+        </button>
+        <div class="oh-hover-btn-drawer" onclick="event.stopPropagation()">
+          <button class="oh-hover-btn__small" onclick="$('#savedFilterModal').addClass('oh-modal--show')" hx-get="{% url "saved-filter-update" filter.id %}" hx-target="#SavedFilterFormTarget" hx-swap="innerHTML"><ion-icon name="create-outline"></ion-icon></button>
+          <button class="oh-hover-btn__small" onclick="$(this).parent().find('button:hidden').click();$(this).closest('.oh-hover-btn-container').remove()" ><ion-icon name="trash-outline"></ion-icon></button>
+          <button hidden hx-get="{% url "delete-saved-filter" filter.id %}" hx-swap="none"></button>
+        </div>
+      </div>
+      {% endfor %}
+
     </div>
     {% if row_status_indications %}
     <div class="d-flex flex-row-reverse">
@@ -108,7 +132,7 @@
                   onchange="
                   $(this).closest('.oh-sticky-table').find('.list-table-row').prop('checked',$(this).is(':checked')).change();
                   $(document).ready(function () {
-                    reloadSelectedCount($('#count_{{view_id|safe}}'));
+                    reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
                   });
                   "
                   title="Select All"
@@ -183,7 +207,7 @@
                     if (!element.is(':checked')) {
                       removeId(element)
                     }
-                    reloadSelectedCount($('#count_{{view_id|safe}}'));
+                    reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
                   });
                   "
                   value = "{{instance.pk}}"
@@ -195,7 +219,7 @@
             <div
               class="{% if index == 1 %} oh-sticky-table__sd {% else %} oh-sticky-table__td{% endif %}"
             >
-              {{instance|getattribute:attribute|safe}}
+              {{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
             </div>
             {% else %}
             <div
@@ -329,7 +353,7 @@
     </nav>
   </div>
   <script>
-    reloadSelectedCount($('#count_{{view_id|safe}}'));
+    reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
     var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
     let badge = $(`#badge-${tabId}`);
     let count = "{{queryset.paginator.count}}";
@@ -340,11 +364,10 @@
   </script>
   {% if bulk_select_option %}
   <script>
-    selectSelected("#{{view_id|safe}}")
+    selectSelected("#{{view_id|safe}}",'{{selected_instances_key_id}}')
   </script>
   {% endif %}
   {% endif %}
-  </div>
   <script>
     $("ul[data-search-url] a").click(function (e) {
       e.preventDefault();

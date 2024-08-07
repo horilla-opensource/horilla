@@ -1,0 +1,301 @@
+{% load static i18n generic_template_filters %}
+<div class="oh-card mt-4 mb-5" id="{{view_id|safe}}">
+  <button
+    hidden
+    hx-get="{{request.path}}"
+    class="reload-profile-view"
+    hx-target="#{{view_id|safe}}"
+    hx-swap="outerHTML"
+  ></button>
+  <div class="row">
+    <div
+      class="col-lg-12 d-flex justify-content-between align-items-center mb-4"
+    >
+      <div class="members-container d-flex float-left">
+        <ul class="m-0 p-0 d-flex align-items-center">
+          {% for object in instances|slice:"6" %}
+          <li {% if instance.pk == object.pk %} class="active" {% endif %}>
+            <a
+              hx-get="{{object.get_profile_url}}"
+              hx-target="#{{view_id|safe}}"
+              hx-swap="outerHTML"
+             class="d-block">
+              <img
+              style="border-radius :50px ;overflow :hidden;"
+              src="{{object.get_avatar}}"
+              width="28px"
+              />
+            </a>
+          </li>
+          {% endfor %}
+          {% if display_count %}
+          <li class="li-last">
+            <a href="#" class="d-block" id="dropdownLink"> {{display_count}} </a>
+            <div class="dropdown-content" id="dropdownContent">
+              <div
+                class="oh-input-group oh-input__search-group my-2"
+              >
+                <ion-icon
+                  name="search-outline"
+                  class="oh-input-group__icon oh-input-group__icon--left md hydrated oh-faq_search--icon"
+                  role="img"
+                  aria-label="search outline"
+                ></ion-icon>
+                <input
+                  type="text"
+                  hx-get="{% url "search-in-instance-ids" %}?instance_ids={{instance_ids}}"
+                  hx-target="#{{view_id|safe}} #profileSearch"
+                  hx-trigger="keyup"
+                  class="oh-input oh-input__icon"
+                  aria-label="Search Input"
+                  name="search"
+                  placeholder="Search"
+                />
+                <div class="oh-autocomplete-suggestions"></div>
+              </div>
+              <div id="profileSearch">
+                {% for object in instances|slice:"6:9" %}
+                <a 
+                hx-get="{{object.get_profile_url}}"
+                hx-target="#{{view_id|safe}}"
+                hx-swap="outerHTML"
+                  ><img 
+                    {% if instance.pk == object.pk %} class="active" {% endif %}
+                    style="border-radius :30px ;overflow :hidden;"
+                    src="{{object.get_avatar}}" />
+                  <span>{{object}}</span>
+                </a>
+                {% endfor %}
+              </div>
+            </div>
+          </li>
+          {% endif %}
+
+        </ul>
+      </div>
+
+      <div class="d-flex align-items-center gap-3">
+        <div class="container-right-left-arrows float-right">
+          <a
+            
+          hx-get="{{previous_url}}?instance_ids={{instance_ids}}"
+          hx-target="#{{view_id|safe}}"
+          hx-swap="outerHTML"
+            title=""
+            style="color: hsl(8, 77%, 56%);cursor: pointer;"
+            class="ms-1 fw-bold"
+          >
+            <ion-icon
+              name="arrow-back-circle-outline"
+              style="font-size: 35px"
+              role="img"
+              class="md"
+              aria-label="arrow back circle outline"
+            ></ion-icon>
+          </a>
+          <a
+            hx-get="{{next_url}}?instance_ids={{instance_ids}}"
+            hx-target="#{{view_id|safe}}"
+            hx-swap="outerHTML"
+            title=""
+            style="color: hsl(8, 77%, 56%);cursor: pointer;"
+            class="ms-1 fw-bold"
+          >
+            <ion-icon
+              name="arrow-forward-circle-outline"
+              style="font-size: 35px"
+              role="img"
+              class="md d"
+              aria-label="arrow forward circle outline"
+            ></ion-icon>
+          </a>
+        </div>
+        {% if actions %}
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn py-0 px-2 mb-2"
+            @click="open = !open"
+            @click.outside="open = false"
+          >
+            <ion-icon
+              name="settings-outline"
+              class="oh-navbar__icon md hydrated"
+              role="img"
+              aria-label="settings outline"
+            ></ion-icon>
+          </button>
+          <div
+          class="oh-dropdown__menu oh-dropdown__menu--right"
+          style="min-width: 250px"
+            x-show="open"
+            >
+            <ul class="oh-dropdown__items">
+              {% for action in actions %}
+              <li class="oh-dropdown__item">
+                <a href="#" class="oh-profile-dropdown-link" {{action.attrs|safe}}>
+                  <img
+                  src="{{action.icon}}"
+                    style="width: 20px; height: auto"
+                    title="{{action.title}}"
+                    />
+                    <button
+                    style="border: none; background: transparent"
+                    >
+                    {{action.title}}
+                  </button>
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-4">
+      <div class="d-flex align-items-center">
+        <div class="oh-profile oh-profile--lg me-3">
+          <div class="oh-profile__avatar">
+            <img src="{{instance.get_avatar}}" class="oh-profile__image" />
+          </div>
+          <span
+            class="oh-profile__active-badge oh-profile__active-badge--secondary"
+            title="Active"
+          ></span>
+        </div>
+        <div class="oh-profile__info-container">
+          <h1 class="oh-profile__info-name">{{instance}}</h1>
+          <p class="oh-profile__info-designation">{{instance.get_subtitle}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-8 d-flex align-items-center">
+      <ul class="oh-profile__info-list">
+        <li class="oh-profile__info-list-item">
+          <span class="oh-profile__info-label">
+            <ion-icon name="mail-outline"></ion-icon>
+            <span>{% trans "E-mail" %}:</span>
+          </span>
+          <span class="oh-profile__info-value">{{instance.get_email}}</span>
+        </li>
+        <li class="oh-profile__info-list-item">
+          <span class="oh-profile__info-label">
+            <ion-icon name="call-outline"></ion-icon>
+            <span>{% trans "Phone" %}:</span>
+          </span>
+          <span class="oh-profile__info-value">{{instance.get_contact}}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-12 col lg-12 oh-table_sticky--wrapper">
+      <div class="oh-sticky-dropdown--header" style="border: none">
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button class="oh-sticky-dropdown_btn" @click="open = !open">
+            <ion-icon
+              name="ellipsis-vertical-sharp"
+              role="img"
+              class="md hydrated"
+              aria-label="ellipsis vertical sharp"
+            ></ion-icon>
+          </button>
+          <div
+            class="oh-dropdown__menu oh-sticky-table_dropdown"
+            x-show="open"
+            @click.outside="
+              open = false
+              $($el).closest('#{{view_id|safe}}').parent().find('.reload-profile-view').click();
+            "
+          >
+            {{toggle_form.as_list}}
+          </div>
+        </div>
+      </div>
+      <ul
+        class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
+      >
+        {% for tab in visible_tabs %} {% if not tab.accessibility or tab.accessibility|accessibility:instance %}
+        <li class="oh-general__tab">
+          <a
+            href="#"
+            class="oh-general__tab-link {% if forloop.counter == 1 and not active_target %} oh-general__tab-link--active {% endif %}"
+            data-action="general-tab"
+            onclick="switchGeneralTab(event)"
+            data-target="#profileTab{{forloop.counter}}"
+            hx-get="{{tab.url|format:instance}}"
+            hx-trigger="revealed"
+            hx-target="#profileTab{{forloop.counter}}"
+            >{{tab.title}}</a
+          >
+        </li>
+        {% endif %} {% endfor %}
+      </ul>
+      {% for tab in visible_tabs %}
+      <div
+        class="oh-general__tab-target oh-profile__info-tab mb-4 pt-4 {% if forloop.counter == 1 and not active_target %} {% else %} d-none {% endif %}"
+        id="profileTab{{forloop.counter}}"
+      >
+        {{tab.title}}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <script>
+    $(".oh-general__tab-link").click(function (e) { 
+      var target = `[data-target="${$(this).attr('data-target')}"]`
+      e.preventDefault();
+      $.ajax({
+        type: "get",
+        url: "{% url 'active-tab' %}",
+        data: {
+          "path":"{{request.path}}",
+          "target":target,
+        },
+        success: function (response) {
+          
+        }
+      });
+    });
+    {% if active_target %}
+    $("#{{view_id|safe}}").find(`{{active_target|safe}}`).click();
+    {% endif %}
+  </script>
+  <script>
+    document.querySelectorAll("ul li").forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        document.querySelectorAll("ul li").forEach(function (link) {
+          link.classList.remove("active");
+        });
+        this.classList.add("active");
+      });
+    });
+  </script>
+
+  <script>
+    document
+      .getElementById("dropdownLink")
+      .addEventListener("click", function (event) {
+        event.preventDefault();
+        document.getElementById("dropdownContent").classList.toggle("show");
+      });
+
+    window.onclick = function (event) {
+      if (
+        !event.target.matches("#dropdownLink") &&
+        !event.target.closest("#dropdownContent")
+      ) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains("show")) {
+            openDropdown.classList.remove("show");
+          }
+        }
+      }
+    };
+  </script>
+</div>

@@ -1,6 +1,16 @@
 {% load i18n %} {% load basefilters %}
 
 <!-- filter items showing here -->
+<div
+  class="oh-modal"
+  id="savedFilterModal"
+  role="dialog"
+  aria-labelledby="savedFilterModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog" style="max-width: 550px" id="SavedFilterFormTarget"></div>
+</div>
+<button  hx-get='{% url "saved-filter" %}?path={{request.path}}&referrer={{request.META.HTTP_REFERER}}&{{saved_filters.urlencode}}' hx-target="#SavedFilterFormTarget"  hidden id="loadsavedfilterform"></button>
 <div style="display: none">{{filter_dict}}</div>
 <script>
   function fieldLabel(value, field) {
@@ -47,23 +57,26 @@
     {% endif %}
     {%for field,values in filter_dict.items %} {% if values %}
     {% with translation_field=field|filter_field %}
+    {% if field != "path" %}
     <span class="oh-titlebar__tag filter-field" >
       {% trans translation_field %} :
-	  {% for value in values %}
-		${fieldLabel("{% trans value %}", "{{field}}")}
-	  {% endfor %}
+      {% for value in values %}
+      ${fieldLabel("{% trans value %}", "{{field}}")}
+      {% endfor %}
       <button class="oh-titlebar__tag-close" onclick="clearFilterFromTag($(this))" data-x-field="{{field}}">
         <ion-icon
           name="close-outline"
           role="img"
           class="md hydrated close-icon"
           aria-label="close outline"
-        >
+          >
         </ion-icon>
       </button>
     </span>
+    {% endif %}
     {% endwith %} {% endif %} {% endfor %}
     {% if filter_dict %}
+    <button class="oh-titlebar__save" onclick="$('#loadsavedfilterform').click();$('#savedFilterModal').addClass('oh-modal--show')" name="save" aria-label="save" title='{% trans "Save filter" %}''><ion-icon name="bookmark-outline"></ion-icon>Save</button></span>
     <span class="oh-titlebar__tag oh-titlebar__tag--custom" title="{% trans 'Clear All' %}" role="button" onclick="clearAllFilter($(this));"
       ><ion-icon class="close-icon" name="close-outline"></ion-icon></span
     >

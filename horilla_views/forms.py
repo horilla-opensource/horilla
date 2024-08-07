@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import SafeText
 
 from horilla.horilla_middlewares import _thread_locals
+from horilla_views import models
 
 
 class ToggleColumnForm(forms.Form):
@@ -34,3 +35,43 @@ class ToggleColumnForm(forms.Form):
         context = {"form": self, "request": self.request}
         table_html = render_to_string("generic/as_list.html", context)
         return table_html
+
+
+class SavedFilterForm(forms.ModelForm):
+    """
+    SavedFilterForm
+    """
+
+    color = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "oh-input w-100",
+                "type": "color",
+                "placeholder": "Choose a color",
+            }
+        )
+    )
+
+    class Meta:
+        model = models.SavedFilter
+        fields = ["title", "is_default", "color"]
+
+    def structured(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        request = getattr(_thread_locals, "request", None)
+        context = {
+            "form": self,
+            "request": request,
+        }
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        attrs = self.fields["title"].widget.attrs
+        attrs["class"] = "oh-input w-100"
+        attrs["placeholder"] = "Saved filter title"
+        if self.instance.pk:
+            self.verbose_name = self.instance.title
