@@ -493,10 +493,24 @@ def leave_request_view(request):
     """
     queryset = LeaveRequestFilter(request.GET).qs.order_by("-id").distinct()
     multiple_approvals = filter_conditional_leave_request(request).distinct()
-    queryset = (
-        filtersubordinates(request, queryset, "leave.view_leaverequest")
-        | multiple_approvals
-    )
+    normal_requests = filtersubordinates(request, queryset, "leave.view_leaverequest")
+
+    if not request.user.is_superuser:
+        multi_approve_requests = LeaveRequestConditionApproval.objects.filter(
+            is_approved=False, is_rejected=False
+        )
+
+        multi_ids = [request.leave_request_id.id for request in multi_approve_requests]
+
+        # Create a new list excluding leave requests with IDs in multi_ids
+        normal_requests = [
+            leave.id for leave in normal_requests if leave.id not in multi_ids
+        ]
+
+        # Convert the list of IDs back to a queryset
+        normal_requests = LeaveRequest.objects.filter(id__in=normal_requests).distinct()
+
+    queryset = normal_requests | multiple_approvals
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     leave_request_filter = LeaveRequestFilter()
@@ -606,7 +620,24 @@ def leave_request_filter(request):
                 leave_requests_with_interview.append(leave_request)
 
     field = request.GET.get("field")
+    multiple_approvals = filter_conditional_leave_request(request)
+
     queryset = filtersubordinates(request, queryset, "leave.view_leaverequest")
+
+    if not request.user.is_superuser:
+        multi_approve_requests = LeaveRequestConditionApproval.objects.filter(
+            is_approved=False, is_rejected=False
+        )
+
+        multi_ids = [request.leave_request_id.id for request in multi_approve_requests]
+
+        # Create a new list excluding leave requests with IDs in multi_ids
+        queryset = [leave.id for leave in queryset if leave.id not in multi_ids]
+
+        # Convert the list of IDs back to a queryset
+        queryset = LeaveRequest.objects.filter(id__in=queryset)
+
+    queryset = queryset | multiple_approvals
     leave_request_filter = LeaveRequestFilter(request.GET, queryset).qs
     page_number = request.GET.get("page")
     template = ("leave/leave_request/leave_requests.html",)
@@ -4884,6 +4915,19 @@ def leave_request_and_approve(request):
     leave_requests = filtersubordinates(
         request, leave_requests, "leave.change_leaverequest"
     )
+
+    # Filter the initial query set for multi_approve_requests
+    multi_approve_requests = LeaveRequestConditionApproval.objects.filter(
+        is_approved=False, is_rejected=False
+    )
+    if multi_approve_requests:
+        multi_ids = [request.leave_request_id.id for request in multi_approve_requests]
+
+        # Create a new list excluding leave requests with IDs in multi_ids
+        leave_requests = [
+            leave for leave in leave_requests if leave.id not in multi_ids
+        ]
+
     leave_requests = paginator_qry(leave_requests, page_number)
     leave_requests_ids = json.dumps([instance.id for instance in leave_requests])
     return render(

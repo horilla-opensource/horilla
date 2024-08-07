@@ -219,21 +219,22 @@
         </div>
       </div>
       {% endif %}
-
-      <div class="oh-btn-group ml-2">
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            id="requestCreateButton"
-            class="oh-btn oh-btn--secondary oh-btn--shadow"
-            data-toggle="oh-modal-toggle"
-            data-target="#objectCreateModal"
-            hx-get="{% url 'request-creation' %}"
-            hx-target="#objectCreateModalTarget"
-          >
-          <ion-icon name="add-outline" class="me-1"></ion-icon>
-          {% trans "Create" %}
-        </button>
-      </div>
+      {% if perms.leave.add_leaverequest or request.user|is_reportingmanager %}
+        <div class="oh-btn-group ml-2">
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button
+              id="requestCreateButton"
+              class="oh-btn oh-btn--secondary oh-btn--shadow"
+              data-toggle="oh-modal-toggle"
+              data-target="#objectCreateModal"
+              hx-get="{% url 'request-creation' %}"
+              hx-target="#objectCreateModalTarget"
+            >
+            <ion-icon name="add-outline" class="me-1"></ion-icon>
+            {% trans "Create" %}
+          </button>
+        </div>
+      {% endif %}
 
     </div>
   </div>
