@@ -680,6 +680,26 @@
       });
   }
   </script>
+  <script>
+    // Switch General Tab
+    function switchGeneralTab(e) {
+      // DO NOT USE GENERAL TABS TWICE ON A SINGLE PAGE.
+      e.preventDefault();
+      e.stopPropagation();
+      let clickedEl = e.target.closest(".oh-general__tab-link");
+      let targetSelector = clickedEl.dataset.target;
+
+      // Remove active class from all the tabs
+      $(".oh-general__tab-link").removeClass("oh-general__tab-link--active");
+      // Remove active class to the clicked tab
+      clickedEl.classList.add("oh-general__tab-link--active");
+
+      // Hide all the general tabs
+      $(".oh-general__tab-target").addClass("d-none");
+      // Show the tab with the chosen target
+      $(`.oh-general__tab-target${targetSelector}`).removeClass("d-none");
+    }
+  </script>
 </body>
 
 </html>
