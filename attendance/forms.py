@@ -874,11 +874,12 @@ def get_date_list(employee_id, from_date, to_date):
                 data={
                     "from_date": working_date_list[0],
                     "to_date": working_date_list[-1],
-                    "employee_id": employee_id,
                     "status": "approved",
                 }
             )
-            approved_leave_dates_filtered = approved_leave_dates_filtered.qs
+            approved_leave_dates_filtered = approved_leave_dates_filtered.qs.filter(
+                employee_id=employee_id
+            )
         else:
             approved_leave_dates_filtered = QuerySet().none()
         approved_leave_dates = []
@@ -890,10 +891,9 @@ def get_date_list(employee_id, from_date, to_date):
             data={
                 "attendance_date__gte": working_date_list[0],
                 "attendance_date__lte": working_date_list[-1],
-                "employee_id": employee_id,
             }
         )
-        existing_attendance = attendance_filters.qs
+        existing_attendance = attendance_filters.qs.filter(employee_id=employee_id)
         # Extract the list of attendance dates
         attendance_dates = list(
             existing_attendance.values_list("attendance_date", flat=True)
