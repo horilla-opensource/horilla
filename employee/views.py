@@ -392,7 +392,6 @@ def allowances_deductions_tab(request, emp_id):
         deductions = (
             specific_deductions | conditional_deduction | active_employee_deduction
         )
-        deductions = None
         employee_deductions = list(deductions)
         for deduction in deductions:
             if deduction.is_condition_based:
