@@ -679,6 +679,37 @@
         },
       });
   }
+  function checkSequence(element) {
+    var preStageId = $(element).data("stage_id")
+    var canIds = $(element).data("cand_id")
+    var stageOrderJson = $(element).attr("data-stage_order")
+    var stageId = $(element).val()
+
+    var parsedStageOrder = JSON.parse(stageOrderJson);
+
+    var stage = parsedStageOrder.find(stage => stage.id == stageId);
+    var preStage = parsedStageOrder.find(stage => stage.id == preStageId);
+    var stageOrder = parsedStageOrder.map(stage => stage.id);
+
+    if (stageOrder.indexOf(parseInt(stageId)) != stageOrder.indexOf(parseInt(preStageId)) + 1 && stage.type != "cancelled" ) {
+      Swal.fire({
+        title: "Confirm",
+        text: `Are you sure to change the candidate from ${preStage.stage} stage to ${stage.stage} stage`,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          updateCandStage(canIds,stageId,preStageId)
+        }
+      });
+    }
+    else {
+      updateCandStage(canIds,stageId,preStageId)
+    }
+  }
   </script>
   <script>
     // Switch General Tab

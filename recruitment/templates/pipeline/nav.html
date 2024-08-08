@@ -409,103 +409,98 @@
                 toast.addEventListener("mouseleave", Swal.resumeTimer);
             },
         });
+
+        function isNextStage(currentStageId, targetStageId, parsedStageOrder) {
+            var currentStageIndex = parsedStageOrder.findIndex(stage => stage.id == currentStageId);
+            var targetStageIndex = parsedStageOrder.findIndex(stage => stage.id == targetStageId);
+            return targetStageIndex === currentStageIndex + 1 || currentStageIndex === targetStageIndex ;
+        }
+
         htmx.onLoad(function (content) {
             var sortables = content.querySelectorAll(".hx-sortable");
 
             for (var i = 0; i < sortables.length; i++) {
                 var sortable = sortables[i];
                 window.candidateCurrentStage = undefined;
-                $(sortable).droppable({
-                    drop: function (event, ui) {
-                        stageId = $(this)
-                            .closest(".candidate-table")
-                            .attr("data-stage-id");
-                        row = $(ui.draggable);
-                        candidateId = row.attr("data-candidate-id");
-                        currentStage = row.find('[name="stage_id"]').val();
-                        if (stageId != window.candidateCurrentStage) {
-                            array = $(this).find(
-                                "input[type=text][name=order]:hidden"
-                            );
-                            values = [];
-                            setTimeout(function () {
-                                for (
-                                    let index = 0;
-                                    index < array.length;
-                                    index++
-                                ) {
-                                    values.push($(array[index]).val());
-                                }
-                                $.ajax({
-                                    type: "get",
-                                    url: "{% url 'update-candidate-stage-and-sequence' %}",
-                                    data: {
-                                        stage_id: stageId,
-                                        candidate_id: candidateId,
-                                        order: values,
-                                    },
-                                    success: function (response) {
-                                        row.find('[name="stage_id"]').val(
-                                            stageId
-                                        );
-                                        Toast.fire({
-                                            icon: "success",
-                                            title: '{% trans "Sequence updated" %}',
-                                            position: "top-end",
-                                        });
-                                        if (response.message) {
-                                            Swal.fire({
-                                                title: response.message,
-                                                text: `Total vacancy is ${response.vacancy}.`,
-                                                icon: "info",
-                                                confirmButtonText: "Ok",
-                                            });
-                                        }
-                                    },
-                                    error: function (xhr, status, error) {
-                                        Toast.fire({
-                                            icon: "error",
-                                            title: '{% trans "Something went wrong" %}',
-                                            position: "top-end",
-                                        });
-                                    },
-                                });
-                            }, 100);
-                        }
-                    },
-                });
+
                 $(sortable).sortable({
                     connectWith: ".hx-sortable",
                     animation: 150,
                     ghostClass: "blue-background-class",
                     items: "> :not(.htmx-indicator)",
                     start: function (event, ui) {
-                        row = $(ui.item);
-                        candidateCurrentStage = row
-                            .closest(".candidate-table")
-                            .attr("data-stage-id");
+                        var row = $(ui.item);
+                        window.candidateCurrentStage = row.closest(".candidate-table").attr("data-stage-id");
+                    },
+                    stop: function (event, ui) {
+                        var row = $(ui.item);
+                        var candidateId = row.attr("data-candidate-id");
+                        var currentStageId = parseInt($(this).closest(".candidate-table").attr("data-stage-id"));
+                        var targetStageId = parseInt(row.find('[name="stage_id"]').val());
+
+                        var stageOrderJson = row.attr("data-stage_order");
+
+                        if (stageOrderJson) {
+                            var parsedStageOrder = JSON.parse(stageOrderJson);
+                            var preStageId = row.attr("data-pre_stage_id");
+                            var preStage = parsedStageOrder.find(stage => stage.id == preStageId);
+                            var stageOrder = parsedStageOrder.map(stage => stage.id);
+
+                            if (!isNextStage(currentStageId, targetStageId, parsedStageOrder)) {
+                                if (sessionStorage.getItem('showRecuitmentKanbanConfirmation') !== 'false') {
+                                    Swal.fire({
+                                        title: "Confirm Stage Change",
+                                        text: "The candidate is not being moved to the next stage. Do you want to proceed?",
+                                        html: `
+                                            <p>The candidate is not being moved to the next stage. Do you want to proceed?</p>
+                                            <label><input type="checkbox" id="doNotShowAgain"> Don't show this again in this session</label>
+                                        `,
+                                        icon: "warning",
+                                        showCancelButton: true,
+                                        cancelButtonColor: "#d33",
+                                        confirmButtonColor: "#008000",
+                                        confirmButtonText: "Confirm",
+                                        preConfirm: () => {
+                                            const doNotShowAgain = Swal.getPopup().querySelector('#doNotShowAgain').checked;
+                                            if (doNotShowAgain) {
+                                                sessionStorage.setItem('showRecuitmentKanbanConfirmation', 'false');
+                                            }
+                                        }
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            handleValidDrop(targetStageId, candidateId, row, sortable);
+                                        } else {
+                                            $(sortable).sortable('cancel');
+                                        }
+                                    });
+                                } else {
+                                    handleValidDrop(targetStageId, candidateId, row, sortable);
+                                }
+
+                            } else {
+                                handleValidDrop(targetStageId, candidateId, row, sortable);
+                            }
+                        } else {
+                            handleValidDrop(targetStageId, candidateId, row, sortable);
+                        }
                     },
                     update: function (event, ui) {
-                        array = $(this).find(
-                            "input[type=text][name=order]:hidden"
-                        );
-                        stageSelect = $(ui.item).find("[name=stage_id]");
-                        stageId = $(this).attr("data-stage-id");
-                        parent = $(this).parent();
+                        var array = $(this).find("input[type=text][name=order]:hidden");
+                        var stageSelect = $(ui.item).find("[name=stage_id]");
+                        var stageId = $(this).attr("data-stage-id");
+                        var parent = $(this).parent();
+
                         if (stageId != stageSelect.val()) {
                             stageSelect.val(stageId);
-                            stageTitle = $(
-                                `[name=stage_id] option[value=${stageId}]:first`
-                            ).html();
-                            stageSelect
-                                .next()
-                                .find(".select2-selection__rendered")
-                                .html(stageTitle);
+                            var stageTitle = $(`[name=stage_id] option[value=${stageId}]:first`).html();
+                            stageSelect.next().find(".select2-selection__rendered").html(stageTitle);
                         }
-                        values = [];
+
+                        var values = [];
                         for (let index = 0; index < array.length; index++) {
                             values.push($(array[index]).val());
                         }
+
                         $.ajax({
                             type: "get",
                             url: "{% url 'update-candidate-sequence' %}",
@@ -523,7 +518,52 @@
                 });
             }
         });
+
+        function handleValidDrop(stageId, candidateId, row, sortable) {
+            if (stageId != window.candidateCurrentStage) {
+                var array = $(sortable).find("input[type=text][name=order]:hidden");
+                var values = [];
+                setTimeout(function () {
+                    for (let index = 0; index < array.length; index++) {
+                        values.push($(array[index]).val());
+                    }
+                    $.ajax({
+                        type: "get",
+                        url: "{% url 'update-candidate-stage-and-sequence' %}",
+                        data: {
+                            stage_id: stageId,
+                            candidate_id: candidateId,
+                            order: values,
+                        },
+                        success: function (response) {
+                            row.find('[name="stage_id"]').val(stageId);
+                            Toast.fire({
+                                icon: "success",
+                                title: '{% trans "Sequence updated" %}',
+                                position: "top-end",
+                            });
+                            if (response.message) {
+                                Swal.fire({
+                                    title: response.message,
+                                    text: `Total vacancy is ${response.vacancy}.`,
+                                    icon: "info",
+                                    confirmButtonText: "Ok",
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            Toast.fire({
+                                icon: "error",
+                                title: '{% trans "Something went wrong" %}',
+                                position: "top-end",
+                            });
+                        },
+                    });
+                }, 100);
+            }
+        }
     });
+
     $(document).on("htmx:beforeRequest", function (event) {
         var target = event.target;
 

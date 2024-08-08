@@ -5,6 +5,7 @@ This module is used to write custom template filters.
 
 """
 
+import json
 import uuid
 
 from django import template
@@ -155,3 +156,11 @@ def pipeline_grouper(grouper: dict = {}):
     This method is used itemize the dictionary
     """
     return grouper["title"], grouper["stages"]
+
+
+@register.filter(name="to_json")
+def to_json(value):
+    ordered_list = [
+        {"id": val.id, "stage": val.stage, "type": val.stage_type} for val in value
+    ]
+    return json.dumps(ordered_list)

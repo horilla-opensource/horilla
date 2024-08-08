@@ -8,6 +8,8 @@
         style="cursor: pointer;overflow: visible;"
         data-candidate = "{{cand.name}}"
         data-job-position ="{{cand.job_position_id}}"
+        data-pre_stage_id ="{{cand.stage_id.id}}"
+        data-stage_order = '{{cand.recruitment_id.ordered_stages|to_json|safe}}'
         onclick="window.location.href = `{% url 'candidate-view-individual' cand.id %}`"
     >
         <div class="oh-kanban__card-head align-items-baseline pb-0" {% if cand.is_offer_rejected %}
