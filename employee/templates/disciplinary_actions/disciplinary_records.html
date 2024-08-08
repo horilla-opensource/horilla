@@ -6,310 +6,214 @@
 {% include 'filter_tags.html' %}
 {% if messages %}
 <div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+            {{ message }}
+        </div>
     </div>
-  </div>
-  {% endfor %}
+    {% endfor %}
 </div>
 {% endif %}
 {% if data %}
 <!-- start of column toggle -->
 <div class="oh-table_sticky--wrapper">
-  <div class="oh-sticky-dropdown--header m-0">
-    <div class="oh-dropdown" x-data="{open: false}">
-      <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-        role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
-      <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-      <ul class="oh-dropdown__items" id="displinaryActionCells">
-      </ul>
-      </div>
+    <div class="oh-sticky-dropdown--header m-0">
+        <div class="oh-dropdown" x-data="{open: false}">
+            <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
+                    role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+            <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+                <ul class="oh-dropdown__items" id="displinaryActionCells">
+                </ul>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 <!-- end of column toggle -->
 <div id="displinary-column-table" data-table-name="displinary_column_tab">
-  <!-- sticky table Start-->
-  <div class="oh-sticky-table">
-    <div class="oh-sticky-table__table oh-table--sortable">
-        <div class="oh-sticky-table__thead">
-            <div class="oh-sticky-table__tr">
-                <div class="oh-sticky-table__th">
-                    {% trans "Employee" %}
-                </div>
-                <div data-cell-index="1" data-cell-title='{% trans "Action Taken" %}' class="oh-sticky-table__th">{% trans "Action Taken" %}</div>
-                <div data-cell-index="5" data-cell-title='{% trans "Login Block" %}' class="oh-sticky-table__th">{% trans "Login Block" %}</div>
-                <div data-cell-index="2" data-cell-title='{% trans "Action Date" %}' class="oh-sticky-table__th">{% trans "Action Date" %}</div>
-                <div data-cell-index="3" data-cell-title='{% trans "Attachments" %}' class="oh-sticky-table__th">{% trans "Attachments" %}</div>
-                <div data-cell-index="4" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
-                {% if perms.payroll.change_disciplinaryaction or perms.payroll.delete_disciplinaryaction %}
-                  <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-                {% endif %}
-            </div>
-        </div>
-        <div class="oh-sticky-table__tbody" data-id="{{action_id}}">
-          {% for i in data %}
-          <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed" data-id="{{i.id}}">
-            <div class="oh-sticky-table__sd oh-permission-table--toggle"  data-toggle-count>
-              <div class="d-flex align-items-center">
-                <button class="oh-permission-table__collapse me-2">
-                  <span  title="{% trans "Reveal" %}" class="reveal-span"><ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline"></ion-icon></span>
-                  <span  title="{% trans "Collapse" %}" class="collapse-span"><ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon></span>
-                </button>
-                <span class="count-span" style="font-style:italic;color:hsl(0deg,0%,37%);">{{i.employee_id.all|length}}
-                  {% if i.employee_id.all|length > 1 %}
-                    {% trans "Employees" %}
-                  {% else %}
-                    {% trans "Employee" %}
-                  {% endif %}
-                </span>
-              </div>
-              {% for emp in i.employee_id.all %}
-                <span class="oh-user-panel oh-collapse-panel" data-type="user">
-                  <div class="oh-profile oh-profile--md">
-                    <div class="oh-profile__avatar mr-1">
-                      <img
-                      src="https://ui-avatars.com/api/?name={{emp.get_full_name}}&background=random"
-                      class="oh-profile__image"
-                      alt="Baby C."
-                      />
+    <!-- sticky table Start-->
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">
+                        {% trans "Employee" %}
                     </div>
-                    <span class="oh-profile__name oh-text--dark" title="{{emp}}"
-                    >{{emp.get_full_name}}</span>
-                  </div>
-                  <a title="{% trans "Remove" %}" hx-post="{% url 'remove-employee-disciplinary-action' i.id emp.id %}" hx-target="#actionContainer" class="oh-user-panel__remove"
-                    hx-confirm="{% trans 'Are you sure want to remove this employee from this action?' %}">
-                    <ion-icon name="close-outline"></ion-icon>
-                  </a>
-                </span>
-              {% endfor %}
+                    <div data-cell-index="1" data-cell-title='{% trans "Action Taken" %}' class="oh-sticky-table__th">{% trans "Action Taken" %}</div>
+                    <div data-cell-index="5" data-cell-title='{% trans "Login Block" %}' class="oh-sticky-table__th">{% trans "Login Block" %}</div>
+                    <div data-cell-index="2" data-cell-title='{% trans "Action Date" %}' class="oh-sticky-table__th">{% trans "Action Date" %}</div>
+                    <div data-cell-index="3" data-cell-title='{% trans "Attachments" %}' class="oh-sticky-table__th">{% trans "Attachments" %}</div>
+                    <div data-cell-index="4" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
+                    {% if perms.payroll.change_disciplinaryaction or perms.payroll.delete_disciplinaryaction %}
+                        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    {% endif %}
+                </div>
             </div>
-                {% if i.action.action_type == 'suspension' %}
+            <div class="oh-sticky-table__tbody" data-id="{{action_id}}">
+                {% for i in data %}
+                <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
+                    data-id="{{i.id}}">
+                    <div class="oh-sticky-table__sd oh-permission-table--toggle" data-toggle-count>
+                        <div class="d-flex align-items-center">
+                            <button class="oh-permission-table__collapse me-2">
+                                <span title="{% trans 'Reveal' %}" class="reveal-span"><ion-icon
+                                        class="oh-permission-table__collapse-down"
+                                        name="chevron-down-outline"></ion-icon></span>
+                                <span title="{% trans 'Collapse' %}" class="collapse-span"><ion-icon
+                                        class="oh-permission-table__collapse-up"
+                                        name="chevron-up-outline"></ion-icon></span>
+                            </button>
+                            <span class="count-span"
+                                style="font-style:italic;color:hsl(0deg,0%,37%);">{{i.employee_id.all|length}}
+                                {% if i.employee_id.all|length > 1 %}
+                                {% trans "Employees" %}
+                                {% else %}
+                                {% trans "Employee" %}
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% for emp in i.employee_id.all %}
+                            <span class="oh-user-panel oh-collapse-panel" data-type="user">
+                                <div class="oh-profile oh-profile--md">
+                                    <div class="oh-profile__avatar mr-1">
+                                        <img src="https://ui-avatars.com/api/?name={{emp.get_full_name}}&background=random" class="oh-profile__image" alt="Baby C." />
+                                    </div>
+                                    <span class="oh-profile__name oh-text--dark" title="{{emp}}">{{emp.get_full_name}}</span>
+                                </div>
+                                <a title="{% trans 'Remove' %}" hx-confirm="{% trans 'Are you sure want to remove this employee from this action?' %}"
+                                        hx-post="{% url 'remove-employee-disciplinary-action' i.id emp.id %}" hx-target="#actionContainer"
+                                        class="oh-user-panel__remove" >
+                                    <ion-icon name="close-outline"></ion-icon>
+                                </a>
+                            </span>
+                        {% endfor %}
+                    </div>
+                    {% if i.action.action_type == 'suspension' %}
                     <div data-cell-index="1" class="oh-sticky-table__td">{{ i.action }}
-                      <p class="fw-bold mt-2">{% trans "Suspended for" %}
-                        {% if i.unit_in == "days" %}
-                         {{ i.days }} {% trans "days" %}.
-                         {% else %}
-                         {{ i.hours }} {% trans "hours" %}.
-                        {% endif %}
-                      </p>
+                        <p class="fw-bold mt-2">{% trans "Suspended for" %}
+                            {% if i.unit_in == "days" %}
+                            {{ i.days }} {% trans "days" %}.
+                            {% else %}
+                            {{ i.hours }} {% trans "hours" %}.
+                            {% endif %}
+                        </p>
                     </div>
-                {% else %}
+                    {% else %}
                     <div data-cell-index="1" class="oh-sticky-table__td">{{ i.action }}</div>
-                {% endif %}
-                <div data-cell-index="5" class="oh-sticky-table__td">
-                  {% if i.action.block_option %} {% trans "Yes" %}
-					        {% else %}{% trans "No" %}{% endif %}
-                </div>
-                {% if i.action.action_type == 'suspension' and i.unit_in == "days" %}
-                  <div data-cell-index="2" class="oh-sticky-table__td">
-                    <span class="dateformat_changer">{{ i.start_date }}</span>
-                    &nbsp to &nbsp<span class="dateformat_changer">{{ i.start_date | add_days:i.days }}</span>
-                  </div>
-                {% else %}
+                    {% endif %}
+                    <div data-cell-index="5" class="oh-sticky-table__td">
+                        {% if i.action.block_option %} {% trans "Yes" %}
+                        {% else %}{% trans "No" %}{% endif %}
+                    </div>
+                    {% if i.action.action_type == 'suspension' and i.unit_in == "days" %}
+                    <div data-cell-index="2" class="oh-sticky-table__td">
+                        <span class="dateformat_changer">{{ i.start_date }}</span>
+                        &nbsp to &nbsp<span class="dateformat_changer">{{ i.start_date | add_days:i.days }}</span>
+                    </div>
+                    {% else %}
                     <div data-cell-index="2" class="oh-sticky-table__td dateformat_changer">{{ i.start_date }}</div>
-                {% endif %}
+                    {% endif %}
 
-                {% if i.attachment %}
-                  <div data-cell-index="3" class="oh-sticky-table__td">
-                    <div class="oh-helpdesk_attached--content">
-                      <div class="oh-helpdesk__attachment-icon">
-                        <a href="{{ i.attachment.url }}" target="_blank"><span class="oh-file-icon oh-file-icon--pdf"></span></a>
-                      </div>
-                      <a href="{{ i.attachment.url }}" target="_blank"><span class="oh-helpdesk__filename">{% trans "View File" %}</span></a>
+                    {% if i.attachment %}
+                    <div data-cell-index="3" class="oh-sticky-table__td">
+                        <div class="oh-helpdesk_attached--content">
+                            <div class="oh-helpdesk__attachment-icon">
+                                <a href="{{ i.attachment.url }}" target="_blank"><span
+                                        class="oh-file-icon oh-file-icon--pdf"></span></a>
+                            </div>
+                            <a href="{{ i.attachment.url }}" target="_blank"><span class="oh-helpdesk__filename">{%
+                                    trans "View File"
+                                    %}</span></a>
+                        </div>
                     </div>
-                  </div>
-                {% else %}
-                  <div data-cell-index="3" class="oh-sticky-table__td">{% trans "No file has been uploaded." %}</div>
-                {% endif %}
-                <div data-cell-index="4" class="oh-sticky-table__td">{{ i.description|truncatechars:25}}</div>
+                    {% else %}
+                    <div data-cell-index="3" class="oh-sticky-table__td">{% trans "No file has been uploaded." %}</div>
+                    {% endif %}
+                    <div data-cell-index="4" class="oh-sticky-table__td">{{ i.description|truncatechars:25}}</div>
 
-                {% if perms.payroll.change_disciplinaryaction or perms.payroll.delete_disciplinaryaction %}
-                  <div class="oh-sticky-table__td">
-                    <div class="oh-btn-group" >
-                      {% if perms.payroll.change_disciplinaryaction %}
-                        <a hx-get="{% url 'update-actions' i.id %}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target="#objectUpdateModal" class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
-                        <ion-icon name="create-outline"></ion-icon></a>
-                      {% endif %}
-                      {% if perms.payroll.add_disciplinaryaction %}
-                      <a class="oh-btn oh-btn--light-bkg w-50" data-toggle="oh-modal-toggle"
-                        data-target="#objectCreateModal" hx-get="{% url 'duplicate-disciplinary-actions' i.id %}?{{pg}}"
-                        title="{% trans 'Duplicate' %}" hx-target="#objectCreateModalTarget"
-                        style= "cursor: pointer;"
-                      >
-                        <ion-icon name="copy-outline"></ion-icon>
-                      </a>
-                      {% endif %}
-                      {% if perms.payroll.delete_disciplinaryaction %}
-                        <form hx-confirm="{% trans "Are you sure you want to delete this disciplinary action?" %}" hx-post="{% url 'delete-actions' i.id %}" hx-target="#actionContainer" class="w-50">
-                          {% csrf_token %}
-                          <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-                        </form>
-                      {% endif %}
+                    {% if perms.payroll.change_disciplinaryaction or perms.payroll.delete_disciplinaryaction %}
+                    <div class="oh-sticky-table__td">
+                        <div class="oh-btn-group">
+                            {% if perms.payroll.change_disciplinaryaction %}
+                            <a hx-get="{% url 'update-actions' i.id %}" hx-target='#objectUpdateModalTarget'
+                                data-toggle='oh-modal-toggle' data-target="#objectUpdateModal"
+                                class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
+                                <ion-icon name="create-outline"></ion-icon></a>
+                            {% endif %}
+                            {% if perms.payroll.add_disciplinaryaction %}
+                            <a class="oh-btn oh-btn--light-bkg w-50" data-toggle="oh-modal-toggle"
+                                data-target="#objectCreateModal"
+                                hx-get="{% url 'duplicate-disciplinary-actions' i.id %}?{{pg}}"
+                                title="{% trans 'Duplicate' %}" hx-target="#objectCreateModalTarget"
+                                style="cursor: pointer;">
+                                <ion-icon name="copy-outline"></ion-icon>
+                            </a>
+                            {% endif %}
+                            {% if perms.payroll.delete_disciplinaryaction %}
+                            <form hx-confirm="{% trans 'Are you sure you want to delete this disciplinary action?' %}"
+                                hx-post="{% url 'delete-actions' i.id %}" hx-target="#actionContainer" class="w-50">
+                                {% csrf_token %}
+                                <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                    title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                            </form>
+                            {% endif %}
+                        </div>
                     </div>
-                  </div>
-                {% endif %}
+                    {% endif %}
+                </div>
+                {% endfor %}
             </div>
-          {% endfor %}
         </div>
     </div>
-  </div>
-  <!-- sticky table end-->
+    <!-- sticky table end-->
 
-  <!-- Pagination Start-->
-  <div class="oh-pagination">
-    <span class="oh-pagination__page">
-      {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
-    </span>
-    <nav class="oh-pagination__nav">
-      <div class="oh-pagination__input-container me-3">
-        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-        <input
-          type="number"
-          name="page"
-          class="oh-pagination__input"
-          value="{{data.number}}"
-          hx-get="{% url 'disciplinary-filter-view' %}?{{pd}}"
-          hx-target="#policyContainer"
-          min="1"
-        />
-        <span class="oh-pagination__label"
-          >{% trans "of" %} {{data.paginator.num_pages}}</span
-        >
-      </div>
-      <ul class="oh-pagination__items">
-        {% if data.has_previous %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-target="#policyContainer"
-            hx-get="{% url 'disciplinary-filter-view' %}?{{pd}}&page=1"
-            class="oh-pagination__link"
-            >{% trans "First" %}</a
-          >
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-target="#policyContainer"
-            hx-get="{% url 'disciplinary-filter-view' %}?{{pd}}&page={{ data.previous_page_number }}"
-            class="oh-pagination__link"
-            >{% trans "Previous" %}</a
-          >
-        </li>
-        {% endif %} {% if data.has_next %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-target="#policyContainer"
-            hx-get="{% url 'disciplinary-filter-view' %}?{{pd}}&page={{ data.next_page_number }}"
-            class="oh-pagination__link"
-            >{% trans "Next" %}</a
-          >
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-target="#policyContainer"
-            hx-get="{% url 'disciplinary-filter-view' %}?{{pd}}&page={{ data.paginator.num_pages }}"
-            class="oh-pagination__link"
-            >{% trans "Last" %}</a
-          >
-        </li>
-        {% endif %}
-      </ul>
-    </nav>
-  </div>
-  <!-- Pagination End-->
+    <!-- Pagination Start-->
+    <div class="oh-pagination">
+        <span class="oh-pagination__page">
+            {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
+        </span>
+        <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                <input type="number" name="page" class="oh-pagination__input" value="{{data.number}}"
+                    hx-get="{% url 'disciplinary-filter-view' %}?{{pd}}" hx-target="#actionContainer" min="1" />
+                <span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
+            </div>
+            <ul class="oh-pagination__items">
+                {% if data.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target="#actionContainer" hx-get="{% url 'disciplinary-filter-view' %}?{{pd}}&page=1"
+                        class="oh-pagination__link">{% trans "First" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target="#actionContainer"
+                        hx-get="{% url 'disciplinary-filter-view' %}?{{pd}}&page={{ data.previous_page_number }}"
+                        class="oh-pagination__link">{% trans "Previous" %}</a>
+                </li>
+                {% endif %} {% if data.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target="#actionContainer"
+                        hx-get="{% url 'disciplinary-filter-view' %}?{{pd}}&page={{ data.next_page_number }}"
+                        class="oh-pagination__link">{% trans "Next" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target="#actionContainer"
+                        hx-get="{% url 'disciplinary-filter-view' %}?{{pd}}&page={{ data.paginator.num_pages }}"
+                        class="oh-pagination__link">{% trans "Last" %}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    <!-- Pagination End-->
 </div>
 {% else %}
-  <!-- start of empty page -->
-  <div class="oh-404">
-    <img
-      style="width: 150px; height: 150px"
-      src="{% static 'images/ui/no-results.png' %}"
-      class="oh-404__image mb-4"
-    />
+<!-- start of empty page -->
+<div class="oh-404">
+    <img style="width: 150px; height: 150px" src="{% static 'images/ui/no-results.png' %}" class="oh-404__image mb-4" />
     <h5 class="oh-404__subtitle">
-      {% trans "No search result found!" %}
+        {% trans "No search result found!" %}
     </h5>
-  </div>
-  <!-- end of empty page -->
+</div>
+<!-- end of empty page -->
 {% endif %}
-
-<script>
-  function actionTypeChange(selectElement) {
-    var selectedActiontype = selectElement.val();
-    var parentForm = selectElement.parents().closest("form");
-    if (selectedActiontype !== "create" && selectedActiontype) {
-      $.ajax({
-        type: "post",
-        url: "{% url 'action-type-details' %}",
-        data: {
-          csrfmiddlewaretoken: getCookie("csrftoken"),
-          action_type: selectedActiontype,
-        },
-        success: function (response) {
-          // Check if the response.action_type is "suspension"
-          $("[id=id_unit_in]").change(function (e) {
-            e.preventDefault();
-            if (this.value == "days") {
-              parentForm.find("[id=id_days]").parent().show();
-              parentForm.find("[id=id_hours]").parent().hide();
-              parentForm.find("[name=days]").prop("required", true);
-            } else {
-              parentForm.find("[id=id_hours]").parent().show();
-              parentForm.find("[id=id_days]").parent().hide();
-              parentForm.find("[name=days]").prop("required", false);
-            }
-          });
-          if (response.action_type === "suspension") {
-            // Show the 'days' field
-            parentForm.find("[id=id_unit_in]").parent().show();
-            parentForm.find("[id=id_hours]").parent().show();
-            $("[id=id_unit_in]").change();
-          } else {
-            // Hide the 'days' field
-            $("[id=id_unit_in]").change();
-            parentForm.find("[id=id_days]").parent().hide();
-            parentForm.find("[id=id_unit_in]").parent().hide();
-            parentForm.find("[id=id_hours]").parent().hide();
-            parentForm.find("[name=days]").prop("required", false);
-          }
-        },
-      });
-    } else {
-      let dynamicActionType = $("#dynamicActionType");
-      var view = parentForm.serialize();
-      dynamicActionType.attr("hx-vals", `{"data":"${view}"}`);
-      dynamicActionType.click();
-    }
-  }
-  // toggle columns //
-  toggleColumns("displinary-column-table", "displinaryActionCells");
-  localStoragedisplinaryActionCells = localStorage.getItem(
-    "displinary_column_tab"
-  );
-  if (!localStoragedisplinaryActionCells) {
-    $("#displinaryActionCells").find("[type=checkbox]").prop("checked", true);
-  }
-  $("[type=checkbox]").change();
-  $(document).ready(function () {
-    $("[data-toggle-count]").click(function (e) {
-      e.preventDefault();
-      span = $(this).parent().find(".count-span").toggle();
-    });
-    $(".oh-sticky-table__tbody").each(function () {
-      var parentId = $(this).data("id");
-      $(this)
-        .find(".oh-sticky-table__tr")
-        .each(function () {
-          var childId = $(this).data("id");
-          if (parentId === childId) {
-            var revealSpan = $(this).find(".reveal-span");
-            if (revealSpan.length > 0) {
-              revealSpan.click();
-            }
-          }
-        });
-    });
-  });
-</script>

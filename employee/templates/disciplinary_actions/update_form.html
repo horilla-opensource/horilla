@@ -1,53 +1,45 @@
 {% load i18n %} {% if messages %}
 <div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
-    </div>
-  </div>
-  {% endfor %}
+    {% for message in messages %}
+        <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+                {{ message }}
+            </div>
+        </div>
+    {% endfor %}
 </div>
 <script>
-  setTimeout(function () {
-    $(".oh-modal__close").click();
-  }, 1000);
+    setTimeout(function () {
+        $(".oh-modal__close").click();
+    }, 1000);
 </script>
-{% endif %} {% if form.errors %}
-<!-- form errors  -->
-<div class="oh-wrapper">
-  <div class="oh-alert-container">
-    {% for error in form.non_field_errors %}
-    <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
-    {% endfor %}
-  </div>
-</div>
+{% endif %}
+{% if form.errors %}
+    <!-- form errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in form.non_field_errors %}
+            <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endif %}
 <div class="oh-modal__dialog-header">
-  <h5 class="oh-modal__dialog-title" id="objectUpdateModalLabel">
-    {% trans "Edit Action." %}
-  </h5>
-  <button
-    class="oh-modal__close"
-    aria-label="Close"
-    {% if messages %}
-      hx-get="{% url 'disciplinary-filter-view' %}"
-      hx-target="#actionContainer"
-    {% endif %}
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <h5 class="oh-modal__dialog-title" id="objectUpdateModalLabel">
+        {% trans "Edit Action." %}
+    </h5>
+    <button class="oh-modal__close" aria-label="Close" {% if messages %} hx-get="{% url 'disciplinary-filter-view' %}"
+        hx-target="#actionContainer" {% endif %}>
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    hx-post="{% url 'update-actions' form.instance.id %}"
-    hx-target="#objectUpdateModalTarget"
-    hx-encoding="multipart/form-data"
-  >
-    {% csrf_token %} {{form.as_p}}
-  </form>
+    <form hx-post="{% url 'update-actions' form.instance.id %}" hx-target="#objectUpdateModalTarget"
+        hx-encoding="multipart/form-data">
+        {% csrf_token %} {{form.as_p}}
+    </form>
 </div>
 
 <script>
-  $("#objectUpdateModalTarget #id_action").change();
+    $("#objectUpdateModalTarget #id_action").change();
 </script>

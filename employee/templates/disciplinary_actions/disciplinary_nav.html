@@ -3,210 +3,235 @@
 {% load static %}
 {% load i18n %}
 <section class="oh-wrapper oh-main__topbar" style="padding-bottom: 1rem;">
-  <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
-    <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Disciplinary Actions' %}</h1>
-  </div>
-    <form
-      hx-get="{% url 'disciplinary-filter-view' %}"
-      hx-target="#actionContainer"
-      id="filterForm"
-      class="d-flex"
-      onsubmit = "event.preventDefault()"
-    >
-      <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
-
-        {% if perms.employee.add_disciplinaryaction %}
-        {% if data %}
-          <div class="oh-main__titlebar-button-container">
-            <div class="oh-input-group oh-input__search-group mr-4">
-              <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
-              <input
-                name="search" type="text" placeholder="Search"
-                style="margin-right:10px" class="oh-input oh-input__icon mr-3"
-                autocomplete="false"
-                aria-label="Search Input"
-                onkeyup="$('.filterButton')[0].click()"
-              />
-            </div>
-            <div class="oh-dropdown" x-data="{open: false}">
-              <button
-                class="oh-btn ml-2"
-                @click="open = !open"
-                onclick="event.preventDefault()"
-              >
-                <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-                <div id="filterCount"></div>
-              </button>
-              <div
-                class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-                x-show="open"
-                @click.outside="open = false"
-                style="display: none"
-              >
-                <div class="oh-dropdown__filter-body">
-                  <div class="oh-accordion">
-                    <div class="oh-accordion-header">{% trans "Disciplinary Action" %}</div>
-                    <div class="oh-accordion-body">
-                      <div class="row">
-                        <div class="col-sm-12 col-md-12 col-lg-12">
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{f.form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
-                            {{f.form.employee_id}}
-                          </div>
-                          <div class="oh-input-group">
-                            <label class="oh-label" for ="{{f.form.action.id_for_label}}"
-                              >{% trans "Action Taken" %}</label
-                            >
-                            {{f.form.action}}
-                          </div>
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{f.form.start_date.id_for_label}}">{% trans "Date" %}</label>
-                            {{f.form.start_date}}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="oh-accordion">
-                    <div class="oh-accordion-header">{% trans "Work Information" %}</div>
-                    <div class="oh-accordion-body">
-                      <div class="row">
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{f.form.employee_id__employee_work_info__company_id.id_for_label}}">{% trans "Company" %}</label>
-                            {{f.form.employee_id__employee_work_info__company_id}}
-                          </div>
-                          <div class="oh-input-group">
-                            <label class="oh-label" for ="{{f.form.employee_id__employee_work_info__department_id.id_for_label}}"
-                              >{% trans "Department" %}</label
-                            >
-                            {{f.form.employee_id__employee_work_info__department_id}}
-                          </div>
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{f.form.employee_id__employee_work_info__shift_id.id_for_label}}">{% trans "Shift" %}</label>
-                            {{f.form.employee_id__employee_work_info__shift_id}}
-                          </div>
-                        </div>
-
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                          <div class="oh-input-group">
-                            <label class="oh-label" for ="{{f.form.employee_id__employee_work_info__reporting_manager_id.id_for_label}}"
-                              >{% trans "Reporting Manager" %}</label
-                            >
-                            {{f.form.employee_id__employee_work_info__reporting_manager_id}}
-                          </div>
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{f.form.employee_id__employee_work_info__job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
-                            {{f.form.employee_id__employee_work_info__job_position_id}}
-                          </div>
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{f.form.employee_id__employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
-                            {{f.form.employee_id__employee_work_info__work_type_id}}
-                          </div>
-                        </div>
-
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="oh-dropdown__filter-footer">
-                  <button
-                    class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-                  >
-                    {% trans "Filter" %}
-                  </button>
-                </div>
-              </div>
-            </div>
-          {% endif %}
-          <div class="oh-main__titlebar-button-container">
-            <a hx-get="{% url 'create-actions' %}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--secondary">
-              <ion-icon name="add-outline"></ion-icon>
-              {% trans 'Take An Action' %}
-            </a>
-          </div>
-        </div>
-      {% endif %}
+    <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
+        <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Disciplinary Actions' %}</h1>
     </div>
-  </form>
+    <form hx-get="{% url 'disciplinary-filter-view' %}" hx-target="#actionContainer" id="filterForm" class="d-flex"
+        onsubmit="event.preventDefault()">
+        <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
+
+            {% if perms.employee.add_disciplinaryaction %}
+            {% if data %}
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-input-group oh-input__search-group mr-4">
+                    <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated"
+                        role="img" aria-label="search outline"></ion-icon>
+                    <input name="search" type="text" placeholder="Search" style="margin-right:10px"
+                        class="oh-input oh-input__icon mr-3" autocomplete="false" aria-label="Search Input"
+                        onkeyup="$('.filterButton')[0].click()" />
+                </div>
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                        <div id="filterCount"></div>
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                        @click.outside="open = false" style="display: none">
+                        <div class="oh-dropdown__filter-body">
+                            <div class="oh-accordion">
+                                <div class="oh-accordion-header">{% trans "Disciplinary Action" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-12">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
+                                                {{f.form.employee_id}}
+                                            </div>
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.action.id_for_label}}">{% trans "Action Taken" %}</label>
+                                                {{f.form.action}}
+                                            </div>
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.start_date.id_for_label}}">{% trans "Date" %}</label>
+                                                {{f.form.start_date}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="oh-accordion">
+                                <div class="oh-accordion-header">{% trans "Work Information" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.employee_id__employee_work_info__company_id.id_for_label}}">{% trans "Company" %}</label>
+                                                {{f.form.employee_id__employee_work_info__company_id}}
+                                            </div>
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.employee_id__employee_work_info__department_id.id_for_label}}">{% trans "Department" %}</label>
+                                                {{f.form.employee_id__employee_work_info__department_id}}
+                                            </div>
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.employee_id__employee_work_info__shift_id.id_for_label}}">{% trans "Shift" %}</label>
+                                                {{f.form.employee_id__employee_work_info__shift_id}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.employee_id__employee_work_info__reporting_manager_id.id_for_label}}">{% trans "Reporting Manager" %}</label>
+                                                {{f.form.employee_id__employee_work_info__reporting_manager_id}}
+                                            </div>
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.employee_id__employee_work_info__job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
+                                                {{f.form.employee_id__employee_work_info__job_position_id}}
+                                            </div>
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.employee_id__employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
+                                                {{f.form.employee_id__employee_work_info__work_type_id}}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="oh-dropdown__filter-footer">
+                            <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">
+                                {% trans "Filter" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="oh-main__titlebar-button-container">
+                    <a hx-get="{% url 'create-actions' %}" hx-target="#objectCreateModalTarget"
+                        data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--secondary">
+                        <ion-icon name="add-outline"></ion-icon>
+                        {% trans 'Take An Action' %}
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </form>
 </section>
 <div class="oh-modal" id="dynamicCreateModal" role="dialog" aria-hidden="true" style="z-index: 1022;">
-  <div class="oh-modal__dialog" style="max-width: 550px;" id="dynamicCreateModalBody"></div>
+    <div class="oh-modal__dialog" style="max-width: 550px;" id="dynamicCreateModalBody"></div>
 </div>
-  <span name="" id="dynamicActionType" style="display: none" data-toggle="oh-modal-toggle" data-target="#dynamicCreateModal"
-        hx-get="{% url 'action-type-create' %}?dynamic=employee" hx-target="#dynamicCreateModalBody">
-  </span>
-  {% if data  %}
-    <div class="oh-wrapper" id="actionContainer">
-      {% include 'disciplinary_actions/disciplinary_records.html' %}
-    </div>
-  {% else %}
-    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+<span name="" id="dynamicActionType" style="display: none" data-toggle="oh-modal-toggle"
+    data-target="#dynamicCreateModal" hx-get="{% url 'action-type-create' %}?dynamic=employee"
+    hx-target="#dynamicCreateModalBody">
+</span>
+{% if data %}
+<div class="oh-wrapper" id="actionContainer">
+    {% include 'disciplinary_actions/disciplinary_records.html' %}
+</div>
+{% else %}
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
 
-      <div class="oh-wrapper">
+    <div class="oh-wrapper">
         <div class="oh-404">
-            <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/legal.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+            <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/legal.png' %}"
+                class="oh-404__image mb-4" alt="Page not found. 404." />
             <h5 class="oh-404__subtitle">{% trans "There are currently no disciplinary actions to consider." %}</h5>
         </div>
-      </div>
-    </main>
-    <script>
-      function actionTypeChange(selectElement) {
-        var selectedActiontype = selectElement.val();
-        var parentForm = selectElement.parents().closest("form");
-        if (selectedActiontype !== "create") {
-          $.ajax({
-              type: "post",
-              url: "{% url 'action-type-details' %}",
-              data: {
-                  csrfmiddlewaretoken: getCookie("csrftoken"),
-                  "action_type": selectedActiontype,
-              },
-              success: function (response) {
-                  if (response.action_type === "suspension") {
-                      parentForm.find('#daysDiv').show();
-                      parentForm.find('[name=days]').prop('required', true);
-                  } else {
-                      parentForm.find('#daysDiv').hide();
-                      parentForm.find('[name=days]').prop('required', false);
-                  }
-              },
-          });
-        }else{
-          let dynamicActionType = $("#dynamicActionType");
-          var view = parentForm.serialize()
-          dynamicActionType.attr("hx-vals", `{"data":"${view}"}`);
-          dynamicActionType.click();
-        }
-      }
-    </script>
-  {% endif %}
+    </div>
+</main>
+{% endif %}
 
 <script>
-	function actionChange(selectElement) {
-		var selectedActiontype = selectElement.val();
-		var parentForm = selectElement.parents().closest("form");
-		$.ajax({
-			type: "post",
-			url: "{% url 'action-type-name' %}",
-			data: {
-				csrfmiddlewaretoken: getCookie("csrftoken"),
-				"action_type": selectedActiontype,
-			},
-			success: function (response) {
+    function actionTypeChange(selectElement) {
+        var selectedActiontype = selectElement.val();
+        var parentForm = selectElement.parents().closest("form");
+        if (selectedActiontype !== "create" && selectedActiontype) {
+            $.ajax({
+                type: "post",
+                url: "{% url 'action-type-details' %}",
+                data: {
+                    csrfmiddlewaretoken: getCookie("csrftoken"),
+                    action_type: selectedActiontype,
+                },
+                success: function (response) {
+                    // Check if the response.action_type is "suspension"
+                    $("[id=id_unit_in]").change(function (e) {
+                        e.preventDefault();
+                        if (this.value == "days") {
+                            parentForm.find("[id=id_days]").parent().show();
+                            parentForm.find("[id=id_hours]").parent().hide();
+                            parentForm.find("[name=days]").prop("required", true);
+                        } else {
+                            parentForm.find("[id=id_hours]").parent().show();
+                            parentForm.find("[id=id_days]").parent().hide();
+                            parentForm.find("[name=days]").prop("required", false);
+                        }
+                    });
+                    if (response.action_type === "suspension") {
+                        // Show the 'days' field
+                        parentForm.find("[id=id_unit_in]").parent().show();
+                        parentForm.find("[id=id_hours]").parent().show();
+                        $("[id=id_unit_in]").change();
+                    } else {
+                        // Hide the 'days' field
+                        $("[id=id_unit_in]").change();
+                        parentForm.find("[id=id_days]").parent().hide();
+                        parentForm.find("[id=id_unit_in]").parent().hide();
+                        parentForm.find("[id=id_hours]").parent().hide();
+                        parentForm.find("[name=days]").prop("required", false);
+                    }
+                },
+            });
+        } else {
+            let dynamicActionType = $("#dynamicActionType");
+            var view = parentForm.serialize();
+            dynamicActionType.attr("hx-vals", `{"data":"${view}"}`);
+            dynamicActionType.click();
+        }
+    }
+    // toggle columns //
+    toggleColumns("displinary-column-table", "displinaryActionCells");
+    localStoragedisplinaryActionCells = localStorage.getItem(
+        "displinary_column_tab"
+    );
+    if (!localStoragedisplinaryActionCells) {
+        $("#displinaryActionCells").find("[type=checkbox]").prop("checked", true);
+    }
+    $("[type=checkbox]").change();
+    $(document).ready(function () {
+        $("[data-toggle-count]").click(function (e) {
+            e.preventDefault();
+            span = $(this).parent().find(".count-span").toggle();
+        });
+        $(".oh-sticky-table__tbody").each(function () {
+            var parentId = $(this).data("id");
+            $(this)
+                .find(".oh-sticky-table__tr")
+                .each(function () {
+                    var childId = $(this).data("id");
+                    if (parentId === childId) {
+                        var revealSpan = $(this).find(".reveal-span");
+                        if (revealSpan.length > 0) {
+                            revealSpan.click();
+                        }
+                    }
+                });
+        });
+    });
+    function actionChange(selectElement) {
+        var selectedActiontype = selectElement.val();
+        var parentForm = selectElement.parents().closest("form");
+        $.ajax({
+            type: "post",
+            url: "{% url 'action-type-name' %}",
+            data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                "action_type": selectedActiontype,
+            },
+            success: function (response) {
 
-				// Check if the response.action_type is "warning"
-				if (response.action_type === "warning") {
-					// Hide the 'block_option' field
-					parentForm.find('[id=id_block_option]').parent().hide();
-				} else {
-					// Show the 'block_option' field
-					parentForm.find('[id=id_block_option]').parent().show();
-				}
+                // Check if the response.action_type is "warning"
+                if (response.action_type === "warning") {
+                    // Hide the 'block_option' field
+                    parentForm.find('[id=id_block_option]').parent().hide();
+                } else {
+                    // Show the 'block_option' field
+                    parentForm.find('[id=id_block_option]').parent().show();
+                }
 
-			},
-		});
-	  }
+            },
+        });
+    }
 </script>
 
 {% endblock %}

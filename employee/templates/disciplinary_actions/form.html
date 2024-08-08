@@ -1,62 +1,52 @@
 {% load i18n %} {% if messages %}
 <div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
-    </div>
-  </div>
-  {% endfor %}
+    {% for message in messages %}
+        <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+                {{ message }}
+            </div>
+        </div>
+    {% endfor %}
 </div>
 <script>
-  {% if dynamic %}
-    setTimeout(function () {
-      $('#dynamicCreateModal').removeClass('oh-modal--show');
-    }, 1000);
-  {% else %}
-    setTimeout(function () {
-      $('.oh-modal__close').click();
-    }, 1000);
-  {% endif %}
+    {% if dynamic %}
+        setTimeout(function () {
+            $('#dynamicCreateModal').removeClass('oh-modal--show');
+        }, 1000);
+    {% else %}
+        setTimeout(function () {
+            $('.oh-modal__close').click();
+        }, 1000);
+    {% endif %}
 </script>
 {% endif %}
 <div class="oh-modal__dialog-header">
-  <h2 class="oh-modal__dialog-title" id="createModalTitle">
-    {% trans "Take An Action." %}
-  </h2>
-  <button
-    class="oh-modal__close"
-    aria-label="Close"
-    {% if messages %}
-      hx-get="{% url 'disciplinary-filter-view' %}"
-      hx-target="#actionContainer"
-    {% endif %}
-    >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <h2 class="oh-modal__dialog-title" id="createModalTitle">
+        {% trans "Take An Action." %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close" {% if messages %} hx-get="{% url 'disciplinary-filter-view' %}"
+        hx-target="#actionContainer" {% endif %}>
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    hx-post="{% url 'create-actions' %}"
-    hx-target="#objectCreateModalTarget"
-    hx-encoding="multipart/form-data"
-    id="disciplinaryActionForm"
-    >
-    {% csrf_token %} {{form.as_p}}
-  </form>
+    <form hx-post="{% url 'create-actions' %}" hx-target="#objectCreateModalTarget" hx-encoding="multipart/form-data"
+        id="disciplinaryActionForm">
+        {% csrf_token %} {{form.as_p}}
+    </form>
 </div>
 <script>
-  $(document).ready(function () {
-    var actionElement = $("#id_action");
-    if (actionElement.length > 0) {
-      var action = actionElement.val();
-      if (action) {
-        actionTypeChange(actionElement);
-      }
-    }
-  });
-  $("#id_days").parent().hide();
-  $("#id_unit_in").parent().hide();
-  $("#id_hours").parent().hide();
-  $("[name=days]").prop("required", false);
+    $(document).ready(function () {
+        var actionElement = $("#id_action");
+        if (actionElement.length > 0) {
+            var action = actionElement.val();
+            if (action) {
+                actionTypeChange(actionElement);
+            }
+        }
+    });
+    $("#id_days").parent().hide();
+    $("#id_unit_in").parent().hide();
+    $("#id_hours").parent().hide();
+    $("[name=days]").prop("required", false);
 </script>
