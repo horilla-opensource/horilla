@@ -2,6 +2,7 @@
 leave/sidebar.py
 """
 
+from django.apps import apps
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as trans
 
@@ -39,21 +40,6 @@ SUBMENUS = [
     {
         "menu": trans("Leave Allocation Request"),
         "redirect": reverse("leave-allocation-request-view"),
-    },
-    # {
-    #     "menu": trans("Compensatory Leave Requests"),
-    #     "redirect": reverse("view-compensatory-leave"),
-    #     "accessibility": "leave.sidebar.componstory_accessibility",
-    # },
-    {
-        "menu": trans("Holidays"),
-        "redirect": reverse("holiday-view"),
-        "accessibility": "leave.sidebar.holiday_accessibility",
-    },
-    {
-        "menu": trans("Company Leaves"),
-        "redirect": reverse("company-leave-view"),
-        "accessibility": "leave.sidebar.company_leave_accessibility",
     },
     {
         "menu": trans("Restrict Leaves"),
@@ -96,5 +82,14 @@ def company_leave_accessibility(request, submenu, user_perms, *args, **kwargs):
     return not request.user.has_perm("leave.add_companyleave")
 
 
-# def componstory_accessibility(request, submenu, user_perms, *args, **kwargs):
-#     return is_compensatory(request.user)
+if apps.is_installed("attendance"):
+    SUBMENUS.append(
+        {
+            "menu": trans("Compensatory Leave Requests"),
+            "redirect": reverse("view-compensatory-leave"),
+            "accessibility": "leave.sidebar.componstory_accessibility",
+        }
+    )
+
+    def componstory_accessibility(request, submenu, user_perms, *args, **kwargs):
+        return is_compensatory(request.user)
