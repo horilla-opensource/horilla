@@ -54,14 +54,6 @@ SUBMENUS = [
         "redirect": reverse("view-my-attendance"),
     },
 ]
-if apps.is_installed("leave"):
-    SUBMENUS.append(
-        {
-            "menu": trans("Work Records"),
-            "redirect": reverse("work-records"),
-            "accessibility": "attendance.sidebar.work_record_accessibility",
-        },
-    )
 
 
 def attendances_accessibility(request, submenu, user_perms, *args, **kwargs):
