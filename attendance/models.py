@@ -1069,8 +1069,9 @@ class OverrideAttendances(Attendance):
 
             if status == "HDP" and work_record.is_leave_record:
                 message = _("Half day leave")
-
-            if status == "FDP":
+            elif status == "FDP" and work_record.is_leave_record:
+                message = _("An approved leave exists")
+            elif status == "FDP":
                 message = _("Present")
 
             work_record.message = message
