@@ -760,7 +760,7 @@ class QuestionForm(ModelForm):
                 if key.startswith("options") and value:
                     additional_options.append(value)
 
-            instance.options = ",".join(additional_options)
+            instance.options = ", ".join(additional_options)
             if commit:
                 instance.save()
                 self.save_m2m()
