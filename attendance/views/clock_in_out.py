@@ -76,7 +76,7 @@ def late_come(attendance, start_time, end_time, shift):
     mid_day_sec = strtime_seconds("12:00")
 
     # Checking gracetime allowance before creating late come
-    if shift.grace_time_id:
+    if shift and shift.grace_time_id:
         # checking grace time in shift, it has the higher priority
         if (
             shift.grace_time_id.is_active == True
