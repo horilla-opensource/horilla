@@ -305,7 +305,7 @@ def install_required(function):
 
     def _function(request, *args, **kwargs):
         if request.path_info.endswith("late-come-early-out-view/"):
-            object = TrackLateComeEarlyOut.objects.first()
+            object, created = TrackLateComeEarlyOut.objects.get_or_create()
             if object.is_enable:
                 return function(request, *args, **kwargs)
             else:
