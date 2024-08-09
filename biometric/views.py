@@ -1004,40 +1004,42 @@ def biometric_device_employees(request, device_id, **kwargs):
     previous_data = request.GET.urlencode()
     device = BiometricDevices.find(device_id)
     if device:
-        # try:
-        if device.machine_type == "zk":
-            employee_add_form = EmployeeBiometricAddForm()
-            employees = zk_employees_fetch(device)
-            employees = paginator_qry(employees, request.GET.get("page"))
-            context = {
-                "employees": employees,
-                "device_id": device_id,
-                "form": employee_add_form,
-                "pd": previous_data,
-            }
-            return render(request, "biometric/view_employees_biometric.html", context)
-        if device.machine_type == "cosec":
-            employee_add_form = CosecUserAddForm()
-            employees = cosec_employee_fetch(device_id)
-            employees = biometric_paginator_qry(
-                employees, int(request.GET.get("page", 1))
+        try:
+            if device.machine_type == "zk":
+                employee_add_form = EmployeeBiometricAddForm()
+                employees = zk_employees_fetch(device)
+                employees = paginator_qry(employees, request.GET.get("page"))
+                context = {
+                    "employees": employees,
+                    "device_id": device_id,
+                    "form": employee_add_form,
+                    "pd": previous_data,
+                }
+                return render(
+                    request, "biometric/view_employees_biometric.html", context
+                )
+            if device.machine_type == "cosec":
+                employee_add_form = CosecUserAddForm()
+                employees = cosec_employee_fetch(device_id)
+                employees = biometric_paginator_qry(
+                    employees, int(request.GET.get("page", 1))
+                )
+                context = {
+                    "employees": employees,
+                    "device_id": device.id,
+                    "form": employee_add_form,
+                    "pd": previous_data,
+                }
+                return render(request, "biometric/view_cosec_employees.html", context)
+        except Exception as error:
+            print(f"An error occurred: {error}")
+            messages.info(
+                request,
+                _(
+                    "Failed to establish a connection. Please verify the accuracy of the IP\
+                    Address and Port No. of the device."
+                ),
             )
-            context = {
-                "employees": employees,
-                "device_id": device.id,
-                "form": employee_add_form,
-                "pd": previous_data,
-            }
-            return render(request, "biometric/view_cosec_employees.html", context)
-    # except Exception as error:
-    #     print(f"An error occurred: {error}")
-    #     messages.info(
-    #         request,
-    #         _(
-    #             "Failed to establish a connection. Please verify the accuracy of the IP\
-    #             Address and Port No. of the device."
-    #         ),
-    #     )
     else:
         messages.error(request, _("Biometric device not found"))
     return redirect(biometric_devices_view)
