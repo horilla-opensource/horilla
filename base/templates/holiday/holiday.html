@@ -1,4 +1,4 @@
-{% load i18n %} {% load static %} {% include 'filter_tags.html' %} 
+{% load i18n %} {% load static %} {% include 'filter_tags.html' %}
 {% if messages %}
 <div class="oh-wrapper">
   {% for message in messages %}
@@ -88,10 +88,10 @@
           {{holiday.end_date}}
         </div>
         <div class="oh-sticky-table__td">
-          {% if holiday.recurring %} 
-            {% trans "Yes" %} 
-          {% else %} 
-            {% trans "No"%} 
+          {% if holiday.recurring %}
+            {% trans "Yes" %}
+          {% else %}
+            {% trans "No"%}
           {% endif %}
         </div>
         {% if perms.base.change_holiday or perms.base.delete_holiday %}
@@ -131,7 +131,7 @@
 
 <div class="oh-pagination" data-pd="{{pd}}">
   <span class="oh-pagination__page">
-    {% trans "Page" %} {{ holidays.number }} 
+    {% trans "Page" %} {{ holidays.number }}
     {% trans "of" %} {{ holidays.paginator.num_pages }}.
   </span>
   <nav class="oh-pagination__nav">

@@ -2879,8 +2879,10 @@ def employee_permission_assign(request):
     context = {}
     template = "base/auth/permission.html"
     if request.GET.get("profile_tab"):
-        template = "base/auth/permission_accordion.html"
+        template = "tabs/group_permissions.html"
         employees = Employee.objects.filter(id=request.GET["employee_id"]).distinct()
+        emoloyee = employees.first()
+        context["employee"] = emoloyee
     else:
         employees = Employee.objects.filter(
             employee_user_id__user_permissions__isnull=False

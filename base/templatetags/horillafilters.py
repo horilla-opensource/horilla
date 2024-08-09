@@ -16,10 +16,10 @@ from django.template import TemplateSyntaxError
 from django.template.defaultfilters import register
 from django.utils.translation import gettext as _
 
-from horilla.horilla_middlewares import _thread_locals
-from horilla.methods import get_horilla_model_class
 from base.models import EmployeeShiftSchedule
 from employee.methods.duration_methods import strtime_seconds
+from horilla.horilla_middlewares import _thread_locals
+from horilla.methods import get_horilla_model_class
 
 register = template.Library()
 

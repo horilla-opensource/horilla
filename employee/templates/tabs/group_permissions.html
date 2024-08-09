@@ -1,46 +1,32 @@
-{% load i18n %} {% if perms.auth.view_permission or perms.auth.view_group %}
-
+{% load i18n %}
+{% if perms.auth.view_permission or perms.auth.view_group %}
 <div class="oh-tabs__contents">
-    <div
-        class="oh-tabs__content oh-tabs__content--active"
-        id="tab_1_permission"
-    >
+    <div class="oh-tabs__content oh-tabs__content--active" id="tab_1_permission">
+        {% if employee %}
+        {% include "base/auth/permission_accordion.html" %}
+        {% else %}
         {% include "base/auth/permission_table.html" %}
+        {% endif %}
     </div>
     {% if employee.employee_user_id.groups.all.first %}
-    <div
-        class="oh-tabs__content oh-tabs__content--active"
-        style="display: none"
-        id="tab_2_permission"
-    >
-        <div
-            class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
-        >
+    <div class="oh-tabs__content oh-tabs__content--active" style="display: none" id="tab_2_permission">
+        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
             <h2 class="oh-inner-sidebar-content__title">
                 {% trans "Groups" %}
             </h2>
         </div>
         {% for gp in employee.employee_user_id.groups.all %}
-        <div
-            class="oh-user_permission-list_item exclude-accordion-style"
-            onclick="event.stopPropagation()"
-        >
+        <div class="oh-user_permission-list_item exclude-accordion-style" onclick="event.stopPropagation()">
             <div class="oh-user_permission-list_profile">
                 <div class="oh-navbar__user-photo oh-user_permission--profile">
-                    <img
-                        src="https://ui-avatars.com/api/?name={{gp}}&amp;background=random"
-                        class="oh-navbar__user-image"
-                        loading="lazy"
-                    />
+                    <img src="https://ui-avatars.com/api/?name={{gp}}&amp;background=random"
+                        class="oh-navbar__user-image" loading="lazy" />
                 </div>
                 <div class="oh-feedback-card__name-container ms-1">
-                    <span class="oh-card__title oh-card__title--sm fw-bold me-1"
-                        >{{gp}}</span
-                    >
-                    <span class="oh-user_permission_list-text oh-text--light"
-                        >{% trans "Total" %} {{gp.user_set.all|length}}
-						{% trans "users in this group" %}</span
-                    >
+                    <span class="oh-card__title oh-card__title--sm fw-bold me-1">{{gp}}</span>
+                    <span class="oh-user_permission_list-text oh-text--light">{% trans "Total" %}
+                        {{gp.user_set.all|length}}
+                        {% trans "users in this group" %}</span>
                 </div>
             </div>
         </div>
@@ -49,54 +35,14 @@
     {% endif %}
 </div>
 <script>
-    function updateBadge(element=false) {
-        var panels = $(".panel");
-        $.each(panels, function (indexInArray, valueOfElement) {
-          var check = $(valueOfElement).find("[name=permissions]:checked").length;
-          $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
-          $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title",check + " Permissions");
-        });
-
-        var permissionLine = $(".oh-sticky-table__tr");
-        $.each(permissionLine, function(index,value){
-          var check = $(value).find("[name=permissions]:checked").length;
-          if (check === 4) {
-            $(value).find(".row-permission").prop("checked", true);
-          }
-        })
-
-        var permissionApps = $(".oh-sticky-table__tbody")
-        $.each(permissionApps, function(index,value){
-          var total_permission_count = $(value).find("[name=permissions]").length;
-          var checked_permission_count = $(value).find("[name=permissions]:checked").length
-          if (checked_permission_count===total_permission_count){
-            $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked",true);
-          } else {
-            $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked",false)
-          }
-        })
-    }
+    var showSearch = true
     $(document).ready(function () {
-      setTimeout(() => {
-      $("#tab_2_permission").show();
-    }, 150);
+        setTimeout(() => {
+            $("#tab_2_permission").show();
+        }, 150);
     });
     function selectAllPermissions(elem) {
-        $(elem).closest('.oh-sticky-table__thead').siblings('.oh-sticky-table__tbody').find('.row-permission').prop('checked',$(elem).is(':checked')).change()
-    }
-
-    function checkSelected(names, target, initial = false) {
-      names = JSON.parse(`${names}`);
-      $.each(names, function (indexInArray, valueOfElement) {
-        if (!initial) {
-          $(target)
-            .find(`[value=${valueOfElement}]`)
-            .prop("checked", true)
-            .change();
-        } else {
-          $(target).find(`[value=${valueOfElement}]`).prop("checked", true);
-        }
-      });
+        $(elem).closest('.oh-sticky-table__thead').siblings('.oh-sticky-table__tbody').find('.row-permission').prop('checked', $(elem).is(':checked')).change()
     }
 </script>
 {% endif %}

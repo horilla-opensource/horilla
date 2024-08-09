@@ -413,14 +413,14 @@
 							{% endif %}
 
 							{% if perms.auth.view_permission or perms.auth.view_group %}
-								<li data-cell-index="18" data-cell-title="{% trans 'Groups & Permissions' %}"
-									class="oh-general__tab">
-									<a data-action="general-tab" data-target="#permission_tab_content"
-										hx-get="{% url 'employee-permission-assign' %}?profile_tab=true&employee_id={{employee.id}}"
-										hx-target="#tab_1_permission" class="oh-general__tab-link" role="button">
-										{% trans "Groups & Permissions" %}
-									</a>
-								</li>
+							<li data-cell-index="18" data-cell-title="{% trans 'Groups & Permissions' %}"
+								class="oh-general__tab">
+								<a data-action="general-tab" data-target="#permission_tab_content"
+									hx-get="{% url 'employee-permission-assign' %}?profile_tab=true&employee_id={{employee.id}}"
+									hx-target="#permission_tab_content" class="oh-general__tab-link" role="button">
+									{% trans "Groups & Permissions" %}
+								</a>
+							</li>
 							{% endif %}
 
 							{% if perms.employee.view_employeenote or request.user|check_manager:employee %}
@@ -499,11 +499,9 @@
 
 						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="document_target"> </div>
 
-						<div class="oh-general__tab-target oh-profile__info-tab mb-4 p-4" id="permission_tab_content">
-							{% if perms.auth.view_permission or perms.auth.view_group or request.user|is_reportingmanager or request.user == employee.employee_user_id %}
-								{% include "tabs/group_permissions.html" %}
-							{% endif %}
-						</div>
+						{% if perms.auth.view_permission or perms.auth.view_group or request.user|is_reportingmanager or request.user == employee.employee_user_id %}
+							<div class="oh-general__tab-target oh-profile__info-tab mb-4" id="permission_tab_content"></div>
+						{% endif %}
 
 						{% if request.user|check_manager:employee or request.user == employee.employee_user_id or perms.employee.view_historicalemployeeworkinformation %}
 							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="history">
@@ -577,7 +575,46 @@
 			$(iframe_image).attr('style', 'width:100%; height:100%;')
 		}, 100)
 	}
+	function checkSelected(names, target, initial = false) {
+        names = JSON.parse(`${names}`);
+        $.each(names, function (indexInArray, valueOfElement) {
+            if (!initial) {
+                $(target)
+                    .find(`[value=${valueOfElement}]`)
+                    .prop("checked", true)
+                    .change();
+            } else {
+                $(target).find(`[value=${valueOfElement}]`).prop("checked", true);
+            }
+        });
+    }
+	function updateBadge(element = false) {
+        var panels = $(".panel");
+        $.each(panels, function (indexInArray, valueOfElement) {
+            var check = $(valueOfElement).find("[name=permissions]:checked").length;
+            $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+            $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title", check + " Permissions");
+        });
 
+        var permissionLine = $(".oh-sticky-table__tr");
+        $.each(permissionLine, function (index, value) {
+            var check = $(value).find("[name=permissions]:checked").length;
+            if (check === 4) {
+                $(value).find(".row-permission").prop("checked", true);
+            }
+        })
+
+        var permissionApps = $(".oh-sticky-table__tbody")
+        $.each(permissionApps, function (index, value) {
+            var total_permission_count = $(value).find("[name=permissions]").length;
+            var checked_permission_count = $(value).find("[name=permissions]:checked").length
+            if (checked_permission_count === total_permission_count) {
+                $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", true);
+            } else {
+                $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", false)
+            }
+        })
+    }
 	function hideEnlargeDoc() {
 		var enlargeDocContainer = $('.enlargeDocContainer')
 		enlargeDocContainer.empty()

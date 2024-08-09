@@ -21,7 +21,7 @@
 			<div class="oh-sticky-table__thead">
 				<div class="oh-sticky-table__tr">
 					<div class="oh-sticky-table__th" style="width: 50px;" align="center">
-						<input type="checkbox" class="row-permission__select-all" onchange="selectAllPermissions(this)">
+						<input type="checkbox" class="row-permission__select-all" id="id{{perm.app}}Permissions" onchange="selectAllPermissions(this)">
 					</div>
 					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 					<div class="oh-sticky-table__th" style="width: 80px;">
@@ -50,7 +50,7 @@
 				{% for model in perm.app_models %}
 				<div class="oh-sticky-table__tr" draggable="true">
 					<div class="oh-sticky-table__sd" align="center" >
-						<input type="checkbox" class="row-permission" onchange="
+						<input type="checkbox" id="id_{{perm.app}}{{model.model_name}}" class="row-permission" onchange="
 							$(this).closest('.oh-sticky-table__tr').find('[type=checkbox][name=permissions]').prop('checked',$(this).is(':checked')).change();
 						">
 					</div>
