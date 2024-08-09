@@ -5,8 +5,9 @@ This module is used write custom methods
 """
 
 import calendar
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 
+import pandas as pd
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db import models
@@ -16,6 +17,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.methods import get_pagination
 from base.models import WEEK_DAYS, CompanyLeaves, Holidays
+from employee.models import Employee
 
 MONTH_MAPPING = {
     "january": 1,
@@ -474,3 +476,112 @@ def validate_time_in_minutes(value):
             raise ValidationError(_("Invalid time, excepted MM:SS"))
     except ValueError as e:
         raise ValidationError(_("Invalid format,  excepted MM:SS")) from e
+
+
+class Request:
+    """
+    Represents a request for clock-in or clock-out.
+
+    Attributes:
+    - user: The user associated with the request.
+    - date: The date of the request.
+    - time: The time of the request.
+    - path: The path associated with the request (default: "/").
+    - session: The session data associated with the request (default: {"title": None}).
+    """
+
+    def __init__(
+        self,
+        user,
+        date,
+        time,
+        datetime,
+    ) -> None:
+        self.user = user
+        self.path = "/"
+        self.session = {"title": None}
+        self.date = date
+        self.time = time
+        self.datetime = datetime
+        self.META = META()
+
+
+class META:
+    """
+    Provides access to HTTP metadata keys.
+    """
+
+    @classmethod
+    def keys(cls):
+        """
+        Retrieve the list of available HTTP metadata keys.
+
+        Returns:
+            list: A list of HTTP metadata keys.
+        """
+        return ["HTTP_HX_REQUEST"]
+
+
+def parse_time(time_str):
+    time_formats = {
+        "hh:mm A": "%I:%M %p",  # 12-hour format
+        "HH:mm": "%H:%M",  # 24-hour format
+    }
+    if isinstance(time_str, time):  # Check if it's already a time object
+        return time_str
+
+    if isinstance(time_str, str):
+        for format_str in time_formats.values():
+            try:
+                return datetime.strptime(time_str, format_str).time()
+            except ValueError:
+                continue
+    return None
+
+
+def parse_date(date_str, error_key, activity):
+    try:
+        return pd.to_datetime(date_str).date()
+    except (pd.errors.ParserError, ValueError):
+        activity[error_key] = f"Invalid date format for {error_key.split()[-1]}"
+        return None
+
+
+def get_date(date):
+    date_formats = {
+        "DD-MM-YYYY": "%d-%m-%Y",
+        "DD.MM.YYYY": "%d.%m.%Y",
+        "DD/MM/YYYY": "%d/%m/%Y",
+        "MM/DD/YYYY": "%m/%d/%Y",
+        "YYYY-MM-DD": "%Y-%m-%d",
+        "YYYY/MM/DD": "%Y/%m/%d",
+        "MMMM D, YYYY": "%B %d, %Y",
+        "DD MMMM, YYYY": "%d %B, %Y",
+        "MMM. D, YYYY": "%b. %d, %Y",
+        "D MMM. YYYY": "%d %b. %Y",
+        "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
+    }
+    if isinstance(date, datetime):
+        return date
+    elif isinstance(date, str):
+        for format_name, format_str in date_formats.items():
+            try:
+                return datetime.strptime(date, format_str)
+            except ValueError:
+                continue
+    return None
+
+
+def sort_activity_dicts(activity_dicts):
+
+    for activity in activity_dicts:
+        activity["Attendance Date"] = get_date(activity["Attendance Date"])
+
+    # Filter out any entries where the date could not be parsed
+    activity_dicts = [
+        activity
+        for activity in activity_dicts
+        if activity["Attendance Date"] is not None
+    ]
+    sorted_activity_dicts = sorted(activity_dicts, key=lambda x: x["Attendance Date"])
+    return sorted_activity_dicts

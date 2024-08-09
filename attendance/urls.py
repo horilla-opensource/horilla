@@ -116,6 +116,16 @@ urlpatterns = [
         name="attendance-activity-bulk-delete",
     ),
     path(
+        "attendance-activity-import",
+        views.attendance_activity_import,
+        name="attendance-activity-import",
+    ),
+    path(
+        "attendance-activity-import-excel",
+        views.attendance_activity_import_excel,
+        name="attendance-activity-import-excel",
+    ),
+    path(
         "attendance-activity-info-export",
         views.attendance_activity_export,
         name="attendance-activity-info-export",

@@ -1,191 +1,109 @@
 {% load i18n %} {% load basefilters %}
 <section class="oh-wrapper oh-main__topbar " x-data="{searchShow: false}">
-<div
-  class="oh-modal"
-  id="attendanceExport"
-  role="dialog"
-  aria-labelledby="attendanceExport"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="attendanceExportLavel">
-        {% trans "Export Attendances" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-      <div
-        class="oh-modal__dialog-body p-0 pt-2"
-        id="attendanceExportModalBody"
-      >
-        <form
-          action="{%url 'attendance-activity-info-export' %}"
-          method="get"
-          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-          id="attendanceExportForm"
-        >
-          {% csrf_token %} {% include 'attendance/attendance_activity/export_filter.html'%}
-          <div class="oh-dropdown__filter-footer">
-            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
-              {% trans "Export" %}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-  <div class="oh-main__titlebar oh-main__titlebar--left">
-    <h1 class="oh-main__titlebar-title fw-bold">
-        <a href="{% url 'attendance-activity-view' %}" class='text-dark'>
-            {% trans "Attendance Activity" %}
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">
+            <a href="{% url 'attendance-activity-view' %}" class='text-dark'>
+                {% trans "Attendance Activity" %}
+            </a>
+        </h1>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
         </a>
-      </h1>
-    <a
-      class="oh-main__titlebar-search-toggle"
-      role="button"
-      aria-label="Toggle Search"
-      @click="searchShow = !searchShow"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-main__titlebar-serach-icon"
-      ></ion-icon>
-    </a>
-  </div>
-  <form
-      hx-get='{% url "attendance-activity-search" %}'
-      id="filterForm"
-      hx-swap="innerHTML"
-      hx-target="#activity-table"
-      class="d-flex"
-      onsubmit="event.preventDefault()"
-    >
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-      <div
-        class="oh-input-group oh-input__search-group"
-        :class="searchShow ? 'oh-input__search-group--show' : ''"
-      >
-        <ion-icon
-          name="search-outline"
-          class="oh-input-group__icon oh-input-group__icon--left"
-        ></ion-icon>
-        <input
-          type="text"
-          class="oh-input oh-input__icon"
-          aria-label="Search Input"
-          id="attendance-search"
-          name='search'
-          placeholder="{% trans 'Search' %}"
-          onkeyup="$('.filterButton')[0].click()"
-        />
-      </div>
-
-      <div class="oh-main__titlebar-button-container">
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-            x-show="open"
-            @click.outside="open = false"
-            style="display: none;"
-          >
-            {% include 'attendance/attendance_activity/activity_filters.html' %}
-          </div>
-        </div>
-      </div>
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-          <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
-          <div id="filterCount"></div>
-        </button>
-        <div
-        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-        x-show="open"
-        @click.outside="open = false"
-        style="display: none"
-        >
-        <div class="oh-accordion">
-          <label for="id_field">{% trans "Group By" %}</label>
-            <div class="row">
-              <div class="col-sm-12 col-md-12 col-lg-6">
-                <div class="oh-input-group">
-                  <label class="oh-label" for="id_field">{% trans "Field" %}</label>
-                </div>
-              </div>
-              <div class="col-sm-12 col-md-12 col-lg-6">
-                <div class="oh-input-group">
-                  <select
-                    class="oh-select mt-1 w-100"
-                    id="id_field"
-                    name="field"
-                    class="select2-selection select2-selection--single"
-                  >
-                    {% for field in gp_fields %}
-                    <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% if perms.attendance.change_attendancelatecomeearlyout or request.user|is_reportingmanager or perms.attendance.delete_attendancelatecomeearlyout %}
-        <div class="oh-dropdown ml-2" x-data="{open: false}" onclick="event.stopPropagation();event.preventDefault();">
-          <button
-            class="oh-btn oh-btn--dropdown"
-            @click="open = !open"
-            @click.outside="open = false"
-          >
-            {% trans "Actions" %}
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right"
-            x-show="open"
-            style="display: none"
-          >
-            <ul class="oh-dropdown__items">
-              {% if perms.attendance.change_attendancelatecomeearlyout or request.user|is_reportingmanager %}
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link"
-                    id="attendance-info-export"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#attendanceExport"
-                    >{% trans "Export" %}</a
-                  >
-                </li>
-              {% endif %}
-              {% if perms.attendance.delete_attendancelatecomeearlyout %}
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    id="attendanceActivityDelete"
-                    class="oh-dropdown__link oh-dropdown__link--danger"
-                    >{% trans "Delete" %}</a
-                  >
-                </li>
-              {% endif %}
-            </ul>
-          </div>
-        </div>
-      {% endif %}
     </div>
-  </form>
-  <script>
-    $('#attendance-search').keydown(function (e) {
-      var val = $(this).val();
-      $('.pg').attr('hx-vals', `{"search":${val}}`);
-    });
-    $(document).ready(function(){
-      $('#id_field').on('change',function(){
-        $('.filterButton')[0].click();
-      })
-    })
-  </script>
+    <form hx-get="{% url 'attendance-activity-search' %}" id="filterForm" hx-swap="innerHTML"
+        hx-target="#activity-table" class="d-flex" onsubmit="event.preventDefault()">
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            <div class="oh-input-group oh-input__search-group"
+                :class="searchShow ? 'oh-input__search-group--show' : ''">
+                <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+                <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" id="attendance-search"
+                    name='search' placeholder="{% trans 'Search' %}" onkeyup="$('.filterButton')[0].click()" />
+            </div>
+
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                        @click.outside="open = false" style="display: none;">
+                        {% include 'attendance/attendance_activity/activity_filters.html' %}
+                    </div>
+                </div>
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                        <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+                        <div id="filterCount"></div>
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                        @click.outside="open = false" style="display: none">
+                        <div class="oh-accordion">
+                            <label for="id_field">{% trans "Group By" %}</label>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="oh-input-group">
+                                        <label class="oh-label" for="id_field">{% trans "Field" %}</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="oh-input-group">
+                                        <select class="oh-select mt-1 w-100" id="id_field" name="field"
+                                            class="select2-selection select2-selection--single">
+                                            {% for field in gp_fields %}
+                                                <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if perms.attendance.change_attendancelatecomeearlyout or request.user|is_reportingmanager or perms.attendance.delete_attendancelatecomeearlyout %}
+                    <div class="oh-dropdown ml-2" x-data="{open: false}" onclick="event.stopPropagation();event.preventDefault();">
+                        <button class="oh-btn oh-btn--dropdown" @click="open = !open" @click.outside="open = false">
+                            {% trans "Actions" %}
+                        </button>
+                        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
+                            <ul class="oh-dropdown__items">
+                                {% if perms.attendance.add_attendanceactivity or request.user|is_reportingmanager %}
+                                    <li class="oh-dropdown__item">
+                                        <a href="#" class="oh-dropdown__link" id="activityInfoImport"
+                                            data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                            hx-get="{% url 'attendance-activity-import' %}" hx-target="#objectCreateModalTarget"
+                                            >
+                                            {% trans "Import" %}
+                                        </a>
+                                    </li>
+                                    <li class="oh-dropdown__item">
+                                        <a href="#" class="oh-dropdown__link" id="activityInfoExport" data-toggle="oh-modal-toggle"
+                                            data-target="#objectUpdateModal" hx-get="{% url 'attendance-activity-info-export' %}"
+                                            hx-target="#objectUpdateModalTarget">{% trans "Export" %}</a>
+                                    </li>
+                                {% endif %}
+                                {% if perms.attendance.delete_attendanceactivity %}
+                                    <li class="oh-dropdown__item">
+                                        <a href="#" id="attendanceActivityDelete"
+                                            class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+    <script>
+        $('#attendance-search').keydown(function (e) {
+            var val = $(this).val();
+            $('.pg').attr('hx-vals', `{"search":${val}}`);
+        });
+        $(document).ready(function () {
+            $('#id_field').on('change', function () {
+                $('.filterButton')[0].click();
+            })
+        })
+    </script>
 </section>

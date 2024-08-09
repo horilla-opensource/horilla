@@ -11,6 +11,10 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 import calendar
 import contextlib
 import io
@@ -28,6 +32,7 @@ from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils import timezone as django_timezone
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
@@ -55,11 +60,15 @@ from attendance.forms import (
     LateComeEarlyOutExportForm,
 )
 from attendance.methods.utils import (
+    Request,
     attendance_day_checking,
     format_time,
     is_reportingmanger,
     monthly_leave_days,
     paginator_qry,
+    parse_date,
+    parse_time,
+    sort_activity_dicts,
     strtime_seconds,
 )
 from attendance.models import (
@@ -89,11 +98,8 @@ from base.methods import (
     get_key_instances,
 )
 from base.models import (
-    WEEK_DAYS,
     AttendanceAllowedIP,
-    CompanyLeaves,
     EmployeeShiftSchedule,
-    Holidays,
     TrackLateComeEarlyOut,
 )
 from employee.filters import EmployeeFilter
@@ -211,6 +217,8 @@ def attendance_create(request):
     return render(request, "attendance/attendance/form.html", {"form": form})
 
 
+@login_required
+@permission_required("attendance.add_attendance")
 def attendance_excel(_request):
     """
     Generate an empty Excel template for attendance data with predefined columns.
@@ -745,7 +753,6 @@ def attendance_activity_view(request):
     activity_ids = json.dumps(
         [instance.id for instance in paginator_qry(attendance_activities, None)]
     )
-    export_form = AttendanceActivityExportForm()
     if attendance_activities.exists():
         template = "attendance/attendance_activity/attendance_activity_view.html"
     else:
@@ -757,11 +764,7 @@ def attendance_activity_view(request):
             "data": paginator_qry(attendance_activities, request.GET.get("page")),
             "pd": previous_data,
             "f": filter_obj,
-            "export": AttendanceActivityFilter(
-                queryset=AttendanceActivity.objects.all()
-            ),
             "gp_fields": AttendanceActivityReGroup.fields,
-            "export_form": export_form,
             "activity_ids": activity_ids,
         },
     )
@@ -854,9 +857,121 @@ def attendance_activity_bulk_delete(request):
     return JsonResponse({"message": "Success"})
 
 
+def process_activity_dicts(activity_dicts):
+    from attendance.views.clock_in_out import clock_in, clock_out
+
+    if not activity_dicts:
+        return
+    sorted_activity_dicts = sort_activity_dicts(activity_dicts)
+    for activity in sorted_activity_dicts:
+        badge_id = activity.get("Badge ID")
+        if not badge_id:
+            activity["Error 1"] = "Please add the Badge ID column in the Excel sheet."
+            continue
+
+        employee = Employee.objects.filter(badge_id=badge_id).first()
+        if not employee:
+            activity["Error 2"] = "Invalid Badge ID"
+            continue
+
+        check_in_date = parse_date(activity["In Date"], "Error 4", activity)
+        check_out_date = parse_date(activity["Out Date"], "Error 5", activity)
+        check_in_time = (
+            parse_time(activity["Check In"])
+            if not pd.isna(activity["Check In"])
+            else None
+        )
+        check_out_time = (
+            parse_time(activity["Check Out"])
+            if not pd.isna(activity["Check Out"])
+            else None
+        )
+        if not any(key.startswith("Error") for key in activity.keys()):
+            if check_in_time:
+                try:
+                    clock_in(
+                        Request(
+                            user=employee.employee_user_id,
+                            date=check_in_date,
+                            time=check_in_time,
+                            datetime=django_timezone.make_aware(
+                                datetime.combine(check_in_date, check_in_time)
+                            ),
+                        )
+                    )
+                except Exception as e:
+                    logger.error(f"Got an error in import clock in {e}")
+
+            if check_out_time and check_out_date:
+                try:
+                    clock_out(
+                        Request(
+                            user=employee.employee_user_id,
+                            date=check_out_date,
+                            time=check_out_time,
+                            datetime=django_timezone.make_aware(
+                                datetime.combine(check_out_date, check_out_time)
+                            ),
+                        )
+                    )
+                except Exception as e:
+                    logger.error(f"Got an error in import clock out {e}")
+    return activity_dicts
+
+
+@login_required
+@permission_required("attendance.add_attendanceactivity")
+def attendance_activity_import(request):
+    if request.method == "POST":
+        file = request.FILES["activity_import"]
+        data_frame = pd.read_excel(file)
+        activity_dicts = data_frame.to_dict("records")
+        if activity_dicts:
+            activity_dicts = process_activity_dicts(activity_dicts)
+            messages.success(request, _("Attendance activity imported successfully"))
+            return redirect(attendance_activity_view)
+    return render(request, "attendance/attendance_activity/import_activity.html")
+
+
+@login_required
+@permission_required("attendance.add_attendanceactivity")
+def attendance_activity_import_excel(request):
+    if request.method == "GET":
+        data_frame = pd.DataFrame(
+            columns=[
+                "Badge ID",
+                "Employee",
+                "Attendance Date",
+                "In Date",
+                "Check In",
+                "Check Out",
+                "Out Date",
+            ]
+        )
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = 'attachment; filename="activity_excel.xlsx"'
+        data_frame.to_excel(response, index=False)
+        return response
+
+
 @login_required
 @permission_required("attendance.change_attendanceactivity")
 def attendance_activity_export(request):
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        export_form = AttendanceActivityExportForm()
+        context = {
+            "export_form": export_form,
+            "export": AttendanceActivityFilter(
+                queryset=AttendanceActivity.objects.all()
+            ),
+        }
+        return render(
+            request,
+            "attendance/attendance_activity/export_filter.html",
+            context=context,
+        )
     return export_data(
         request=request,
         model=AttendanceActivity,

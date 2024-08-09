@@ -4,6 +4,9 @@ clock_in_out.py
 This module is used register endpoints to the check-in check-out functionalities
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
 from datetime import date, datetime, timedelta
 
 from django.db.models import Q
@@ -145,15 +148,14 @@ def clock_in_attendance_and_activity(
         activity.clock_out_date = date_today
         activity.save()
 
-    AttendanceActivity(
+    new_activity = AttendanceActivity.objects.create(
         employee_id=employee,
         attendance_date=attendance_date,
         clock_in_date=date_today,
         shift_day=day,
         clock_in=in_datetime,
         in_datetime=in_datetime,
-    ).save()
-
+    )
     # create attendance if not exist
     attendance = Attendance.objects.filter(
         employee_id=employee, attendance_date=attendance_date
@@ -248,7 +250,7 @@ def clock_in(request):
                 )
                 attendance_date = date_yesterday
                 day = day_yesterday
-        clock_in_attendance_and_activity(
+        attendance = clock_in_attendance_and_activity(
             employee=employee,
             date_today=date_today,
             attendance_date=attendance_date,
@@ -324,6 +326,7 @@ def clock_out_attendance_and_activity(employee, date_today, now, out_datetime=No
     attendance_activities = AttendanceActivity.objects.filter(
         employee_id=employee,
     ).order_by("attendance_date", "id")
+    attendance_activity = None  # Initialize attendance_activity
 
     if attendance_activities.filter(clock_out__isnull=True).exists():
         attendance_activity = attendance_activities.filter(
@@ -334,34 +337,37 @@ def clock_out_attendance_and_activity(employee, date_today, now, out_datetime=No
         attendance_activity.out_datetime = out_datetime
         attendance_activity.save()
 
-    attendance_activities = attendance_activities.filter(
-        attendance_date=attendance_activity.attendance_date
-    )
-    # Here calculate the total durations between the attendance activities
+        attendance_activities = attendance_activities.filter(
+            attendance_date=attendance_activity.attendance_date
+        )
+        # Here calculate the total durations between the attendance activities
 
-    duration = 0
-    for attendance_activity in attendance_activities:
-        in_datetime, out_datetime = activity_datetime(attendance_activity)
-        difference = out_datetime - in_datetime
-        days_second = difference.days * 24 * 3600
-        seconds = difference.seconds
-        total_seconds = days_second + seconds
-        duration = duration + total_seconds
-    duration = format_time(duration)
-    # update clock out of attendance
-    attendance = Attendance.objects.filter(employee_id=employee).order_by(
-        "-attendance_date", "-id"
-    )[0]
-    attendance.attendance_clock_out = now + ":00"
-    attendance.attendance_clock_out_date = date_today
-    attendance.attendance_worked_hour = duration
-    # Overtime calculation
-    attendance.attendance_overtime = overtime_calculation(attendance)
+        duration = 0
+        for activity in attendance_activities:
+            in_datetime, out_datetime = activity_datetime(activity)
+            difference = out_datetime - in_datetime
+            days_second = difference.days * 24 * 3600
+            seconds = difference.seconds
+            total_seconds = days_second + seconds
+            duration = duration + total_seconds
+        duration = format_time(duration)
+        # update clock out of attendance
+        attendance = Attendance.objects.filter(employee_id=employee).order_by(
+            "-attendance_date", "-id"
+        )[0]
+        attendance.attendance_clock_out = now + ":00"
+        attendance.attendance_clock_out_date = date_today
+        attendance.attendance_worked_hour = duration
+        # Overtime calculation
+        attendance.attendance_overtime = overtime_calculation(attendance)
 
-    # Validate the attendance as per the condition
-    attendance.attendance_validated = attendance_validate(attendance)
-    attendance.save()
+        # Validate the attendance as per the condition
+        attendance.attendance_validated = attendance_validate(attendance)
+        attendance.save()
 
+        return attendance
+
+    logger.error("No attendance clock in activity found that needs clocking out.")
     return
 
 
@@ -396,7 +402,12 @@ def early_out(attendance, start_time, end_time, shift):
     """
     if not enable_late_come_early_out_tracking(None).get("tracking"):
         return
-    now_sec = strtime_seconds(attendance.attendance_clock_out.strftime("%H:%M"))
+
+    clock_out_time = attendance.attendance_clock_out
+    if isinstance(clock_out_time, str):
+        clock_out_time = datetime.strptime(clock_out_time, "%H:%M:%S")
+
+    now_sec = strtime_seconds(clock_out_time.strftime("%H:%M"))
     mid_day_sec = strtime_seconds("12:00")
     # Checking gracetime allowance before creating early out
     if shift and shift.grace_time_id:
@@ -458,23 +469,18 @@ def clock_out(request):
     minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
         day=day, shift=shift
     )
-
-    clock_out_attendance_and_activity(
+    attendance = clock_out_attendance_and_activity(
         employee=employee, date_today=date_today, now=now, out_datetime=datetime_now
     )
-    attendance = (
-        Attendance.objects.filter(employee_id=employee)
-        .order_by("id", "attendance_date")
-        .last()
-    )
-    early_out_instance = attendance.late_come_early_out.filter(type="early_out")
-    if not early_out_instance.exists():
-        early_out(
-            attendance=attendance,
-            start_time=start_time_sec,
-            end_time=end_time_sec,
-            shift=shift,
-        )
+    if attendance:
+        early_out_instance = attendance.late_come_early_out.filter(type="early_out")
+        if not early_out_instance.exists():
+            early_out(
+                attendance=attendance,
+                start_time=start_time_sec,
+                end_time=end_time_sec,
+                shift=shift,
+            )
 
     script = ""
     hidden_label = ""
