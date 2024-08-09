@@ -1,33 +1,37 @@
-{% extends 'settings.html' %} {% load i18n %} {% block settings %}
-
+{% extends 'settings.html' %}
+{% load i18n %}
+{% block settings %}
 <div class="oh-inner-sidebar-content mb-4">
-	<div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
         <h2 class="oh-inner-sidebar-content__title">{% trans "Biometric Attendance" %}</h2>
     </div>
-    <div class="oh-switch ms-3">{% trans "Activate Biometric Attendance" %}&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;
+
+    <div class="oh-switch ms-3">{% trans "Activate Biometric Attendance" %}&nbsp;&nbsp;&nbsp;&nbsp;:
+        &nbsp;&nbsp;&nbsp;&nbsp;
         <input type="checkbox" name="is_installed" data-widget="style-widget" class="style-widget oh-switch__checkbox"
-            {% if biometric.is_installed %} checked title="{% trans 'Activated' %}" {% else %} title="{% trans 'Activate' %}" {% endif %}
-            id="is_installed">
+            {% if biometric.is_installed %} checked title="{% trans 'Activated' %}" {% else %}
+            title="{% trans 'Activate' %}" {% endif %} id="is_installed">
     </div>
 </div>
+
 <script>
-    $(document).ready(function(){
-        $('#is_installed').on('change',function(){
-          var boolean = $(this).is(":checked")
-          $.ajax({
-            type: "GET",
-            url: "/settings/activate-biometric-attendance",
-            data: {
-              is_installed: boolean,
-            },
-            success: function (response, textStatus, jqXHR) {
-              if (jqXHR.status === 200) {
-                location.reload();
-              } else {
-              }
-            },
-          });
+    $(document).ready(function () {
+        $('#is_installed').on('change', function () {
+            var boolean = $(this).is(":checked")
+            $.ajax({
+                type: "GET",
+                url: "/settings/activate-biometric-attendance",
+                data: {
+                    is_installed: boolean,
+                },
+                success: function (response, textStatus, jqXHR) {
+                    if (jqXHR.status === 200) {
+                        location.reload();
+                    } else {
+                    }
+                },
+            });
         });
-      });
+    });
 </script>
 {% endblock settings %}

@@ -1,27 +1,22 @@
-{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+{% load i18n %}
 <div class="oh-wrapper">
-  {% include 'biometric/nav_employees_biometric.html' %}
-  <div id="section">
-      {% include 'biometric/list_employees_biometric.html' %}
-  </div>
-  <div class="oh-modal" id="BiometricDeviceModal" role="dialog" aria-labelledby="BiometricDeviceModal" aria-hidden="true">
-    <div class="oh-modal__dialog " style="max-width: 550px;" id="BiometricDeviceFormTarget"></div>
-  </div>
-  <div
-    class="oh-modal"
-    id="BiometricDeviceTestModal"
-    role="dialog"
-    aria-labelledby="BiometricDeviceTestModal"
-    aria-hidden="true"
-    >
-    <div
-      class="oh-modal__dialog"
-      style="max-width: 550px"
-      id="BiometricDeviceTestFormTarget"
-      >
-      {% include "animation.html" %}
+    {% include 'biometric/nav_employees_biometric.html' %}
+    <div id="section">
+        {% include 'biometric/list_employees_biometric.html' %}
     </div>
-  </div>
+    <div class="oh-modal" id="BiometricDeviceModal" role="dialog" aria-labelledby="BiometricDeviceModal"
+        aria-hidden="true">
+        <div class="oh-modal__dialog " style="max-width: 550px;" id="BiometricDeviceFormTarget"></div>
+    </div>
+    <div class="oh-modal" id="BiometricDeviceTestModal" role="dialog" aria-labelledby="BiometricDeviceTestModal"
+        aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 550px" id="BiometricDeviceTestFormTarget">
+            {% include "animation.html" %}
+        </div>
+    </div>
 </div>
 <script src="{% static 'actions.js' %}"></script>
 {% endblock %}

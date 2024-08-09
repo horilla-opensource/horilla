@@ -17,10 +17,12 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.utils import timezone as django_timezone
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from zk import ZK
 
+from attendance.methods.utils import Request
 from attendance.views.clock_in_out import clock_in, clock_out
 from base.methods import get_key_instances, get_pagination
 from employee.models import Employee, EmployeeWorkInformation
@@ -104,50 +106,6 @@ def biometric_set_time(conn):
     conn.set_time(new_time)
 
 
-class META:
-    """
-    Provides access to HTTP metadata keys.
-    """
-
-    @classmethod
-    def keys(cls):
-        """
-        Retrieve the list of available HTTP metadata keys.
-
-        Returns:
-            list: A list of HTTP metadata keys.
-        """
-        return ["HTTP_HX_REQUEST"]
-
-
-class Request:
-    """
-    Represents a request for clock-in or clock-out.
-
-    Attributes:
-    - user: The user associated with the request.
-    - date: The date of the request.
-    - time: The time of the request.
-    - path: The path associated with the request (default: "/").
-    - session: The session data associated with the request (default: {"title": None}).
-    """
-
-    def __init__(
-        self,
-        user,
-        date,
-        time,
-        datetime,
-    ) -> None:
-        self.user = user
-        self.path = "/"
-        self.session = {"title": None}
-        self.date = date
-        self.time = time
-        self.datetime = datetime
-        self.META = META()
-
-
 class ZKBioAttendance(Thread):
     """
     Represents a thread for capturing live attendance data from a ZKTeco biometric device.
@@ -193,7 +151,10 @@ class ZKBioAttendance(Thread):
                             if attendance:
                                 user_id = attendance.user_id
                                 punch_code = attendance.punch
-                                date_time = attendance.timestamp
+                                date_time = django_timezone.make_aware(
+                                    attendance.timestamp
+                                )
+                                # date_time = attendance.timestamp
                                 date = date_time.date()
                                 time = date_time.time()
                                 device.last_fetch_date = date
@@ -1043,42 +1004,40 @@ def biometric_device_employees(request, device_id, **kwargs):
     previous_data = request.GET.urlencode()
     device = BiometricDevices.find(device_id)
     if device:
-        try:
-            if device.machine_type == "zk":
-                employee_add_form = EmployeeBiometricAddForm()
-                employees = zk_employees_fetch(device)
-                employees = paginator_qry(employees, request.GET.get("page"))
-                context = {
-                    "employees": employees,
-                    "device_id": device_id,
-                    "form": employee_add_form,
-                    "pd": previous_data,
-                }
-                return render(
-                    request, "biometric/view_employees_biometric.html", context
-                )
-            if device.machine_type == "cosec":
-                employee_add_form = CosecUserAddForm()
-                employees = cosec_employee_fetch(device_id)
-                employees = biometric_paginator_qry(
-                    employees, int(request.GET.get("page", 1))
-                )
-                context = {
-                    "employees": employees,
-                    "device_id": device.id,
-                    "form": employee_add_form,
-                    "pd": previous_data,
-                }
-                return render(request, "biometric/view_cosec_employees.html", context)
-        except Exception as error:
-            print(f"An error occurred: {error}")
-            messages.info(
-                request,
-                _(
-                    "Failed to establish a connection. Please verify the accuracy of the IP\
-                    Address and Port No. of the device."
-                ),
+        # try:
+        if device.machine_type == "zk":
+            employee_add_form = EmployeeBiometricAddForm()
+            employees = zk_employees_fetch(device)
+            employees = paginator_qry(employees, request.GET.get("page"))
+            context = {
+                "employees": employees,
+                "device_id": device_id,
+                "form": employee_add_form,
+                "pd": previous_data,
+            }
+            return render(request, "biometric/view_employees_biometric.html", context)
+        if device.machine_type == "cosec":
+            employee_add_form = CosecUserAddForm()
+            employees = cosec_employee_fetch(device_id)
+            employees = biometric_paginator_qry(
+                employees, int(request.GET.get("page", 1))
             )
+            context = {
+                "employees": employees,
+                "device_id": device.id,
+                "form": employee_add_form,
+                "pd": previous_data,
+            }
+            return render(request, "biometric/view_cosec_employees.html", context)
+    # except Exception as error:
+    #     print(f"An error occurred: {error}")
+    #     messages.info(
+    #         request,
+    #         _(
+    #             "Failed to establish a connection. Please verify the accuracy of the IP\
+    #             Address and Port No. of the device."
+    #         ),
+    #     )
     else:
         messages.error(request, _("Biometric device not found"))
     return redirect(biometric_devices_view)
@@ -1732,7 +1691,7 @@ def zk_biometric_device_attendance(device_id):
             for attendance in filtered_attendances:
                 user_id = attendance.user_id
                 punch_code = attendance.punch
-                date_time = attendance.timestamp
+                date_time = django_timezone.make_aware(attendance.timestamp)
                 date = date_time.date()
                 time = date_time.time()
                 bio_id = BiometricEmployees.objects.filter(user_id=user_id).first()
@@ -1776,7 +1735,7 @@ def anviz_biometric_device_attendance(device_id):
             date_time_obj = datetime.strptime(
                 attendance["checktime"], "%Y-%m-%dT%H:%M:%S%z"
             )
-            target_timezone = pytz.timezone(settings.TIME_ZONE)
+            target_timezone = pytz.django_timezone(settings.TIME_ZONE)
             date_time_obj = date_time_obj.astimezone(target_timezone)
             employee = Employee.objects.filter(badge_id=badge_id).first()
             if employee:
@@ -1784,7 +1743,7 @@ def anviz_biometric_device_attendance(device_id):
                     user=employee.employee_user_id,
                     date=date_time_obj.date(),
                     time=date_time_obj.time(),
-                    datetime=date_time_obj,
+                    datetime=django_timezone.make_aware(date_time_obj),
                 )
                 if punch_code in {0, 128}:
                     try:
@@ -1853,7 +1812,7 @@ def cosec_biometric_device_attendance(device_id):
             user=employee.employee_id.employee_user_id,
             date=attendance_date,
             time=attendance_time,
-            datetime=attendance_datetime,
+            datetime=django_timezone.make_aware(attendance_datetime),
         )
 
         try:

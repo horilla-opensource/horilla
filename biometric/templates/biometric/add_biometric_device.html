@@ -1,133 +1,111 @@
-{% load static %} {% load i18n %} {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+{% load static %} {% load i18n %}
+{% if messages %}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+        <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+        <script>
+            setTimeout(function () {
+                $(".oh-modal__close").click();
+            }, 1000);
+        </script>
     </div>
-  </div>
-  {% endfor %}
-  <script>
-    setTimeout(function () {
-      $(".oh-modal__close").click();
-    }, 1000);
-  </script>
-</div>
 {% endif %}
 <div class="oh-modal__dialog-header pb-0">
-  <h2 class="oh-modal__dialog-title" id="biometricDeviceLavel">
-    {% trans "Add Biometric Device" %}
-  </h2>
-  <button
-    type="button"
-    class="oh-modal__close"
-    data-dismiss="oh-modal"
-    aria-label="Close"
-    {% if messages %}
-      hx-target="#biometricDeviceList"
-      hx-get="{% url 'search-devices' %}?{{pd}}&page=1&view=card"
-    {% endif %}
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <h2 class="oh-modal__dialog-title" id="biometricDeviceLavel">
+        {% trans "Add Biometric Device" %}
+    </h2>
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close" {% if messages %}
+        hx-target="#biometricDeviceList" hx-get="{% url 'search-devices' %}?{{pd}}&page=1&view=card" {% endif %}>
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 
 <div class="oh-modal__dialog-body" id="biometricDeviceModalBody">
-  <form
-    hx-post="{%url 'biometric-device-add' %}?{{pd}}"
-    hx-target="#BiometricDeviceFormTarget"
-    class="oh-profile-section"
-  >
-    {% csrf_token %}
-    <div class="col-sm-12 col-md-12 col-lg-12">
-      <div class="oh-input-group">
-        <label class="oh-label" for="{{biometric_form.name.id_for_label}}">{% trans "Name" %}</label>
-        {{biometric_form.name}}
-      </div>
-      <div class="oh-input-group">
-        <label class="oh-label" for="{{biometric_form.machine_type.id_for_label}}">{% trans "Device Type" %}</label>
-        {{biometric_form.machine_type}}
-      </div>
-      <div class="oh-input-group" id="machinIpInput" style="display: none">
-        {{biometric_form.machine_ip.errors}}
-        <label class="oh-label" for="{{biometric_form.machine_ip.id_for_label}}">{% trans "Machine IP" %}</label>
-        {{biometric_form.machine_ip}}
-      </div>
-      <div class="oh-input-group" id="machinPortInput" style="display: none">
-        {{biometric_form.port.errors}}
-        <label class="oh-label" for="{{biometric_form.port.id_for_label}}">{% trans "Port No" %}</label>
-        {{biometric_form.port}}
-      </div>
-      <div class="oh-input-group" id="machinUserName" style="display: none">
-        {{biometric_form.cosec_username.errors}}
-        <label class="oh-label" for="{{biometric_form.cosec_username.id_for_label}}">{% trans "Username" %}</label>
-        {{biometric_form.cosec_username}}
-      </div>
-      <div class="oh-input-group" id="machinPassword" style="display: none">
-        {{biometric_form.cosec_password.errors}}
-        <label class="oh-label" for="{{biometric_form.cosec_password.id_for_label}}">{% trans "Password" %}</label>
-        {{biometric_form.cosec_password}}
-        <button
-          type="button"
-          class="oh-btn oh-btn--transparent oh-password-input--toggle"
-          style="padding-top: 55px"
-        >
-          <ion-icon
-            class="oh-passowrd-input__show-icon"
-            title="Show Password"
-            name="eye-outline"
-          ></ion-icon>
-          <ion-icon
-            class="oh-passowrd-input__hide-icon d-none"
-            title="Hide Password"
-            name="eye-off-outline"
-          ></ion-icon>
-        </button>
-      </div>
-      <div class="oh-input-group" id="apiRequestIDInput" style="display: none">
-        {{biometric_form.anviz_request_id.errors}}
-        <label class="oh-label" for="{{biometric_form.anviz_request_id.id_for_label}}">{% trans "Request ID" %}</label>
-        {{biometric_form.anviz_request_id}}
-      </div>
-      <div class="oh-input-group" id="apiUrlInput" style="display: none">
-        {{biometric_form.api_url.errors}}
-        <label class="oh-label" for="{{biometric_form.api_url.id_for_label}}">{% trans "API Url" %}</label>
-        {{biometric_form.api_url}}
-      </div>
-      <div class="oh-input-group" id="apiKeyInput" style="display: none">
-        {{biometric_form.api_key.errors}}
-        <label class="oh-label" for="{{biometric_form.api_key.id_for_label}}">{% trans "API Key" %}</label>
-        {{biometric_form.api_key}}
-      </div>
-      <div class="oh-input-group" id="apiSecretInput" style="display: none">
-        {{biometric_form.api_secret.errors}}
-        <label class="oh-label" for="{{biometric_form.api_secret.id_for_label}}">{% trans "API Secret" %}</label>
-        {{biometric_form.api_secret}}
-      </div>
-    </div>
-    <div class="oh-modal__dialog-footer p-0 pt-3">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-        {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+    <form hx-post="{%url 'biometric-device-add' %}?{{pd}}" hx-target="#BiometricDeviceFormTarget"
+        class="oh-profile-section">
+        {% csrf_token %}
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="oh-input-group">
+                <label class="oh-label" for="{{biometric_form.name.id_for_label}}">{% trans "Name" %}</label>
+                {{biometric_form.name}}
+            </div>
+            <div class="oh-input-group">
+                <label class="oh-label" for="{{biometric_form.machine_type.id_for_label}}">{% trans "Device Type" %}</label>
+                {{biometric_form.machine_type}}
+            </div>
+            <div class="oh-input-group" id="machinIpInput" style="display: none">
+                {{biometric_form.machine_ip.errors}}
+                <label class="oh-label" for="{{biometric_form.machine_ip.id_for_label}}">{% trans "Machine IP" %}</label>
+                {{biometric_form.machine_ip}}
+            </div>
+            <div class="oh-input-group" id="machinPortInput" style="display: none">
+                {{biometric_form.port.errors}}
+                <label class="oh-label" for="{{biometric_form.port.id_for_label}}">{% trans "Port No" %}</label>
+                {{biometric_form.port}}
+            </div>
+            <div class="oh-input-group" id="machinUserName" style="display: none">
+                {{biometric_form.cosec_username.errors}}
+                <label class="oh-label" for="{{biometric_form.cosec_username.id_for_label}}">{% trans "Username" %}</label>
+                {{biometric_form.cosec_username}}
+            </div>
+            <div class="oh-input-group" id="machinPassword" style="display: none">
+                {{biometric_form.cosec_password.errors}}
+                <label class="oh-label" for="{{biometric_form.cosec_password.id_for_label}}">{% trans "Password" %}</label>
+                {{biometric_form.cosec_password}}
+                <button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle" style="padding-top: 55px">
+                    <ion-icon class="oh-passowrd-input__show-icon" title="Show Password" name="eye-outline"></ion-icon>
+                    <ion-icon class="oh-passowrd-input__hide-icon d-none" title="Hide Password" name="eye-off-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-input-group" id="apiRequestIDInput" style="display: none">
+                {{biometric_form.anviz_request_id.errors}}
+                <label class="oh-label" for="{{biometric_form.anviz_request_id.id_for_label}}">{% trans "Request ID" %}</label>
+                {{biometric_form.anviz_request_id}}
+            </div>
+            <div class="oh-input-group" id="apiUrlInput" style="display: none">
+                {{biometric_form.api_url.errors}}
+                <label class="oh-label" for="{{biometric_form.api_url.id_for_label}}">{% trans "API Url" %}</label>
+                {{biometric_form.api_url}}
+            </div>
+            <div class="oh-input-group" id="apiKeyInput" style="display: none">
+                {{biometric_form.api_key.errors}}
+                <label class="oh-label" for="{{biometric_form.api_key.id_for_label}}">{% trans "API Key" %}</label>
+                {{biometric_form.api_key}}
+            </div>
+            <div class="oh-input-group" id="apiSecretInput" style="display: none">
+                {{biometric_form.api_secret.errors}}
+                <label class="oh-label" for="{{biometric_form.api_secret.id_for_label}}">{% trans "API Secret" %}</label>
+                {{biometric_form.api_secret}}
+            </div>
+        </div>
+        <div class="oh-modal__dialog-footer p-0 pt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
 </div>
 <script>
-  $(document).ready(function (e) {
-    $('select[name="machine_type"]').change();
-    $(".oh-password-input--toggle").click(function () {
-      var passwordInput = $(this).prev('input[name="cosec_password"]');
-      var showIcon = $(this).find(".oh-passowrd-input__show-icon");
-      var hideIcon = $(this).find(".oh-passowrd-input__hide-icon");
-      if (passwordInput.attr("type") === "password") {
-        passwordInput.attr("type", "text");
-        showIcon.addClass("d-none");
-        hideIcon.removeClass("d-none");
-      } else {
-        passwordInput.attr("type", "password");
-        showIcon.removeClass("d-none");
-        hideIcon.addClass("d-none");
-      }
+    $(document).ready(function (e) {
+        $('select[name="machine_type"]').change();
+        $(".oh-password-input--toggle").click(function () {
+            var passwordInput = $(this).prev('input[name="cosec_password"]');
+            var showIcon = $(this).find(".oh-passowrd-input__show-icon");
+            var hideIcon = $(this).find(".oh-passowrd-input__hide-icon");
+            if (passwordInput.attr("type") === "password") {
+                passwordInput.attr("type", "text");
+                showIcon.addClass("d-none");
+                hideIcon.removeClass("d-none");
+            } else {
+                passwordInput.attr("type", "password");
+                showIcon.removeClass("d-none");
+                hideIcon.addClass("d-none");
+            }
+        });
     });
-  });
 </script>

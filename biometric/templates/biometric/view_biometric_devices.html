@@ -1,116 +1,83 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
 <div class="oh-wrapper">
-  {% include 'biometric/nav_biometric_devices.html' %}
-  <div
-    class="oh-checkpoint-badge mb-2"
-    id="selectedDevices"
-    data-ids="[]"
-    data-clicked=""
-    style="display: none"
-  ></div>
+    {% include 'biometric/nav_biometric_devices.html' %}
+    <div class="oh-checkpoint-badge mb-2" id="selectedDevices" data-ids="[]" data-clicked="" style="display: none">
+    </div>
 
-  <div class="d-flex flex-row-reverse">
-    <span
-      class="m-3"
-      onclick="$('[name=hired]').val('false'); $('[name=hired]').first().change(); $('.filterButton').click()"
-      style="cursor: pointer"
-      >
-      <span
-        class="oh-dot oh-dot--small me-1"
-        style="background-color: red"
-      ></span>
-      {% trans "Not-Connected" %}
-    </span>
-    <span
-      class="m-3"
-      onclick="$('[name=is_scheduler]').val('true');$('[name=is_scheduler]').first().change(); $('.filterButton').click()"
-      style="cursor: pointer"
-      >
-      <span
-        class="oh-dot oh-dot--small me-1"
-        style="background-color: rgb(103, 171, 238)"
-      ></span>
-      {% trans "Scheduled" %}
-    </span>
-    <span
-      class="m-3"
-      onclick="$('[name=is_live]').val('true');$('[name=is_live]').first().change(); $('.filterButton').click()"
-      style="cursor: pointer"
-      >
-      <span
-        class="oh-dot oh-dot--small me-1"
-        style="background-color: orange"
-      ></span>
-      {% trans "Live Capture" %}
-    </span>
-  </div>
-  <div id="biometricDeviceList">
-    {% if devices %}
-      {% comment %} {% if view_type == 'list' %}
-        {% include 'attendance/biometric/list_biometric_devices.html' %}
-      {% else %}  {% endcomment %}
-        {% include 'biometric/card_biometric_devices.html' %}
-      {% comment %} {% endif %} {% endcomment %}
-    {% else %}
-      {% include 'biometric/empty_view_biometric.html' %}
-    {% endif %}
-  </div>
-  <div
-    class="oh-modal"
-    id="BiometricDeviceModal"
-    role="dialog"
-    aria-labelledby="BiometricDeviceModal"
-    aria-hidden="true"
-    >
-    <div
-      class="oh-modal__dialog"
-      style="max-width: 550px"
-      id="BiometricDeviceFormTarget"
-    ></div>
-  </div>
+    <div class="d-flex flex-row-reverse">
+        <span class="m-3"
+            onclick="$('[name=hired]').val('false'); $('[name=hired]').first().change(); $('.filterButton').click()"
+            style="cursor: pointer">
+            <span class="oh-dot oh-dot--small me-1" style="background-color: red"></span>
+            {% trans "Not-Connected" %}
+        </span>
+        <span class="m-3"
+            onclick="$('[name=is_scheduler]').val('true');$('[name=is_scheduler]').first().change(); $('.filterButton').click()"
+            style="cursor: pointer">
+            <span class="oh-dot oh-dot--small me-1" style="background-color: rgb(103, 171, 238)"></span>
+            {% trans "Scheduled" %}
+        </span>
+        <span class="m-3"
+            onclick="$('[name=is_live]').val('true');$('[name=is_live]').first().change(); $('.filterButton').click()"
+            style="cursor: pointer">
+            <span class="oh-dot oh-dot--small me-1" style="background-color: orange"></span>
+            {% trans "Live Capture" %}
+        </span>
+    </div>
+    <div id="biometricDeviceList">
+        {% if devices %}
+            {% include 'biometric/card_biometric_devices.html' %}
+        {% else %}
+            {% include 'biometric/empty_view_biometric.html' %}
+        {% endif %}
+    </div>
+    <div class="oh-modal" id="BiometricDeviceModal" role="dialog" aria-labelledby="BiometricDeviceModal"
+        aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 550px" id="BiometricDeviceFormTarget"></div>
+    </div>
 </div>
 <script>
-  function machineTypeChange(selectElement) {
-    var machineType = selectElement.val();
-    if (machineType === "anviz") {
-      $("#machinIpInput").hide();
-      $("#machinPortInput").hide();
-      $("#machinUserName").hide();
-      $("#machinPassword").hide();
-      $("#apiRequestIDInput").show();
-      $("#apiUrlInput").show();
-      $("#apiKeyInput").show();
-      $("#apiSecretInput").show();
-    } else if (machineType === "zk") {
-      $("#machinIpInput").show();
-      $("#machinPortInput").show();
-      $("#machinUserName").hide();
-      $("#machinPassword").hide();
-      $("#apiRequestIDInput").hide();
-      $("#apiUrlInput").hide();
-      $("#apiKeyInput").hide();
-      $("#apiSecretInput").hide();
+    function machineTypeChange(selectElement) {
+        var machineType = selectElement.val();
+        if (machineType === "anviz") {
+            $("#machinIpInput").hide();
+            $("#machinPortInput").hide();
+            $("#machinUserName").hide();
+            $("#machinPassword").hide();
+            $("#apiRequestIDInput").show();
+            $("#apiUrlInput").show();
+            $("#apiKeyInput").show();
+            $("#apiSecretInput").show();
+        } else if (machineType === "zk") {
+            $("#machinIpInput").show();
+            $("#machinPortInput").show();
+            $("#machinUserName").hide();
+            $("#machinPassword").hide();
+            $("#apiRequestIDInput").hide();
+            $("#apiUrlInput").hide();
+            $("#apiKeyInput").hide();
+            $("#apiSecretInput").hide();
+        }
+        else if (machineType === "cosec") {
+            console.log()
+            $("#machinIpInput").show();
+            $("#machinPortInput").show();
+            $("#machinUserName").show();
+            $("#machinPassword").show();
+            $("#apiRequestIDInput").hide();
+            $("#apiUrlInput").hide();
+            $("#apiKeyInput").hide();
+            $("#apiSecretInput").hide();
+        }
+        else {
+            $("#machinIpInput").hide();
+            $("#machinPortInput").hide();
+            $("#machinUserName").hide();
+            $("#machinPassword").hide();
+            $("#apiUrlInput").hide();
+            $("#apiKeyInput").hide();
+            $("#apiSecretInput").hide();
+        }
     }
-    else if(machineType === "cosec"){
-      console.log()
-      $("#machinIpInput").show();
-      $("#machinPortInput").show();
-      $("#machinUserName").show();
-      $("#machinPassword").show();
-      $("#apiRequestIDInput").hide();
-      $("#apiUrlInput").hide();
-      $("#apiKeyInput").hide();
-      $("#apiSecretInput").hide();
-    }
-    else{
-      $("#machinIpInput").hide();
-      $("#machinPortInput").hide();
-      $("#machinUserName").hide();
-      $("#machinPassword").hide();
-      $("#apiUrlInput").hide();
-      $("#apiKeyInput").hide();
-      $("#apiSecretInput").hide();
-    }
-  }
 </script>
 {% endblock %}

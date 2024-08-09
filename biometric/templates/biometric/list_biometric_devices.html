@@ -1,185 +1,155 @@
 {% load i18n %}
 <div class="oh-sticky-table">
-  <div class="oh-sticky-table__table oh-table--sortable">
-    <div class="oh-sticky-table__thead">
-      <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th" style="width: 10px">
-          <div class="centered-div">
-            <input
-              type="checkbox"
-              class="oh-input oh-input__checkbox all-bio-device"
-              title="Select All"
-              id="allBioEmployee"
-            />
-          </div>
-        </div>
-        <div class="oh-sticky-table__th">{% trans "Device" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Machine IP" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Port No." %}</div>
-        <div class="oh-sticky-table__th oh-sticky-table__right">
-          {% trans "Actions" %}
-        </div>
-      </div>
-    </div>
-    {% for device in devices %}
-    <div class="oh-sticky-table__tbody ui-sortable">
-      <div class="oh-sticky-table__tr ui-sortable-handle">
-        <div class="oh-sticky-table__sd">
-          <div class="centered-div">
-            <input
-              type="checkbox"
-              id="{{device.id}}"
-              class="form-check-input all-bio-device-row"
-            />
-          </div>
-        </div>
-        <div class="oh-sticky-table__td">{{device.name}}</div>
-        <div class="oh-sticky-table__td">{{device.machine_ip}}</div>
-        <div class="oh-sticky-table__td">{{device.port}}</div>
-        <div class="oh-sticky-table__td oh-sticky-table__right">
-          {% comment %} <div class="oh-btn-group"> {% endcomment %}
-            {% comment %} <div class="oh-kanban-card__dots"> {% endcomment %}
-              <div class="oh-dropdown" x-data="{show: false}">
-                <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" title={% trans "Actions" %}>
-                  <ion-icon name="ellipsis-vertical-sharp" title="{% trans 'Options' %}" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
-                </button>
-                <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" @click.outside="show = false" style="display: none;">
-                  <ul class="oh-dropdown__items">
-                    {% if perms.biometric.change_biometricdevices %}
-                      <li class="oh-dropdown__item">
-                        <a
-                        hx-get="{% url 'biometric-device-test' device.id %}"
-                        class="oh-dropdown__link"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#BiometricDeviceTestModal"
-                        hx-target="#BiometricDeviceTestFormTarget"
-                        >
-                          {% trans "Test" %}
-                        </a>
-                      </li>
-                    {% endif %}
-                    {% if perms.biometric.change_biometricdevices %}
-                      <li class="oh-dropdown__item">
-                        <a
-                        href="{% url 'biometric-device-employees' device.id %}"
-                        class="oh-dropdown__link"
-                        >
-                          {% trans "Employees" %}
-                        </a>
-                      </li>
-                    {% endif %}
-                    {% if perms.biometric.change_biometricdevices %}
-                      <li class="oh-dropdown__item">
-                        <a
-                        class="oh-dropdown__link"
-                        data-toggle="oh-modal-toggle"
-                        hx-target="#ScheduleDevice"
-                        >
-                          {% trans "Schedule" %}
-                        </a>
-                      </li>
-                    {% endif %}
-                    {% if perms.biometric.change_biometricdevices %}
-                      <li class="oh-dropdown__item">
-                        <a
-                        hx-get="{% url 'biometric-device-edit' device.id %}"
-                        class="oh-dropdown__link"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#BiometricDeviceModal"
-                        hx-target="#BiometricDeviceFormTarget"
-                        >
-                          {% trans "Edit" %}
-                        </a>
-                      </li>
-                    {% endif %}
-                    {% if perms.biometric.change_biometricdevices %}
-                      {% if device.is_active  %}
-                      <li class="oh-dropdown__item">
-                        <a href="{% url 'biometric-device-archive' device.id %}" onclick="return confirm('{% trans "Do you want to archive this device?" %}')" class="oh-dropdown__link">{% trans "Archive" %}</a>
-                      </li>
-                      {% else %}
-                      <li class="oh-dropdown__item">
-                        <a href="{% url 'biometric-device-archive' device.id %}" onclick="return confirm('{% trans "Do you want to un-archive this device?" %}')" class="oh-dropdown__link">{% trans "Un-Archive" %}</a>
-                      </li>
-                      {% endif %}
-                    {% endif %}
-                    {% if perms.biometric.delete_biometricdevices %}
-                    <li class="oh-dropdown__item">
-                      <form action="{% url 'biometric-device-delete' device.id %}" onsubmit="return confirm('{% trans "Do you want to delete this device?" %}')" method="post">
-                        {% csrf_token %}
-                        <button  class="oh-dropdown__link oh-dropdown__link--danger  ">{% trans "Delete" %}</button>
-                      </form>
-                    </li>
-                    {% endif %}
-                  </ul>
+    <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th" style="width: 10px">
+                    <div class="centered-div">
+                        <input type="checkbox" class="oh-input oh-input__checkbox all-bio-device" title="{% trans 'Select All' %}" id="allBioEmployee" />
+                    </div>
                 </div>
-              </div>
-            {% comment %} </div> {% endcomment %}
-          {% comment %} </div> {% endcomment %}
+                <div class="oh-sticky-table__th">{% trans "Device" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Machine IP" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Port No." %}</div>
+                <div class="oh-sticky-table__th oh-sticky-table__right">
+                    {% trans "Actions" %}
+                </div>
+            </div>
         </div>
-      </div>
+        {% for device in devices %}
+            <div class="oh-sticky-table__tbody ui-sortable">
+                <div class="oh-sticky-table__tr ui-sortable-handle">
+                    <div class="oh-sticky-table__sd">
+                        <div class="centered-div">
+                            <input type="checkbox" id="{{device.id}}" class="form-check-input all-bio-device-row" />
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__td">{{device.name}}</div>
+                    <div class="oh-sticky-table__td">{{device.machine_ip}}</div>
+                    <div class="oh-sticky-table__td">{{device.port}}</div>
+                    <div class="oh-sticky-table__td oh-sticky-table__right">
+                        {% comment %} <div class="oh-btn-group"> {% endcomment %}
+                            {% comment %} <div class="oh-kanban-card__dots"> {% endcomment %}
+                                <div class="oh-dropdown" x-data="{show: false}">
+                                    <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" title={%
+                                        trans "Actions" %}>
+                                        <ion-icon name="ellipsis-vertical-sharp" title="{% trans 'Options' %}" role="img"
+                                            class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
+                                    </button>
+                                    <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right"
+                                        x-show="show" @click.outside="show = false" style="display: none;">
+                                        <ul class="oh-dropdown__items">
+                                            {% if perms.biometric.change_biometricdevices %}
+                                            <li class="oh-dropdown__item">
+                                                <a hx-get="{% url 'biometric-device-test' device.id %}"
+                                                    class="oh-dropdown__link" data-toggle="oh-modal-toggle"
+                                                    data-target="#BiometricDeviceTestModal"
+                                                    hx-target="#BiometricDeviceTestFormTarget">
+                                                    {% trans "Test" %}
+                                                </a>
+                                            </li>
+                                            {% endif %}
+                                            {% if perms.biometric.change_biometricdevices %}
+                                            <li class="oh-dropdown__item">
+                                                <a href="{% url 'biometric-device-employees' device.id %}"
+                                                    class="oh-dropdown__link">
+                                                    {% trans "Employees" %}
+                                                </a>
+                                            </li>
+                                            {% endif %}
+                                            {% if perms.biometric.change_biometricdevices %}
+                                            <li class="oh-dropdown__item">
+                                                <a class="oh-dropdown__link" data-toggle="oh-modal-toggle"
+                                                    hx-target="#ScheduleDevice">
+                                                    {% trans "Schedule" %}
+                                                </a>
+                                            </li>
+                                            {% endif %}
+                                            {% if perms.biometric.change_biometricdevices %}
+                                            <li class="oh-dropdown__item">
+                                                <a hx-get="{% url 'biometric-device-edit' device.id %}"
+                                                    class="oh-dropdown__link" data-toggle="oh-modal-toggle"
+                                                    data-target="#BiometricDeviceModal"
+                                                    hx-target="#BiometricDeviceFormTarget">
+                                                    {% trans "Edit" %}
+                                                </a>
+                                            </li>
+                                            {% endif %}
+                                            {% if perms.biometric.change_biometricdevices %}
+                                            {% if device.is_active %}
+                                            <li class="oh-dropdown__item">
+                                                <a href="{% url 'biometric-device-archive' device.id %}"
+                                                    onclick="return confirm('{% trans " Do you want to archive this device?"
+                                                    %}')" class="oh-dropdown__link">{% trans "Archive" %}</a>
+                                            </li>
+                                            {% else %}
+                                            <li class="oh-dropdown__item">
+                                                <a href="{% url 'biometric-device-archive' device.id %}"
+                                                    onclick="return confirm('{% trans " Do you want to un-archive this
+                                                    device?" %}')" class="oh-dropdown__link">{% trans "Un-Archive" %}</a>
+                                            </li>
+                                            {% endif %}
+                                            {% endif %}
+                                            {% if perms.biometric.delete_biometricdevices %}
+                                            <li class="oh-dropdown__item">
+                                                <form action="{% url 'biometric-device-delete' device.id %}"
+                                                    onsubmit="return confirm('{% trans " Do you want to delete this device?"
+                                                    %}')" method="post">
+                                                    {% csrf_token %}
+                                                    <button class="oh-dropdown__link oh-dropdown__link--danger  ">{% trans
+                                                        "Delete" %}</button>
+                                                </form>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                                {% comment %}
+                            </div> {% endcomment %}
+                            {% comment %} </div> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-  </div>
 </div>
-{% comment %}
+
 <div class="oh-pagination">
-  <span class="oh-pagination__page">
-    {% trans "Page" %} {{ employees.number }} {% trans "of" %} {{
-    employees.paginator.num_pages }}.
-  </span>
-  <nav class="oh-pagination__nav">
-    <div class="oh-pagination__input-container me-3">
-      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-      <input
-        type="number"
-        name="page"
-        class="oh-pagination__input"
-        value="{{employees.number}}"
-        hx-get="{% url 'search-device-in-device' %}?{{pd}}&view=list&device={{device_id}}"
-        hx-target="#section"
-        min="1"
-      />
-      <span class="oh-pagination__label"
-        >{% trans "of" %} {{employees.paginator.num_pages}}</span
-      >
-    </div>
-    <ul class="oh-pagination__items">
-      {% if employees.has_previous %}
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#section"
-          hx-get="{% url 'search-device-in-device' %}?{{pd}}&view=list&page=1&device={{device_id}}"
-          class="oh-pagination__link"
-          >{% trans "First" %}</a
-        >
-      </li>
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#section"
-          hx-get="{% url 'search-device-in-device' %}?{{pd}}&view=list&page={{ employees.previous_page_number }}&device={{device_id}}"
-          class="oh-pagination__link"
-          >{% trans "Previous" %}</a
-        >
-      </li>
-      {% endif %} {% if employees.has_next %}
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#section"
-          hx-get="{% url 'search-device-in-device' %}?{{pd}}&view=list&page={{ employees.next_page_number }}&device={{device_id}}"
-          class="oh-pagination__link"
-          >{% trans "Next" %}</a
-        >
-      </li>
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#section"
-          hx-get="{% url 'search-device-in-device' %}?{{pd}}&view=list&page={{ employees.paginator.num_pages }}&device={{device_id}}"
-          class="oh-pagination__link"
-          >{% trans "Last" %}</a
-        >
-      </li>
-      {% endif %}
-    </ul>
-  </nav>
-</div> {% endcomment %}
+    <span class="oh-pagination__page">
+        {% trans "Page" %} {{ employees.number }} {% trans "of" %} {{ employees.paginator.num_pages }}.
+    </span>
+    <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+            <input type="number" name="page" class="oh-pagination__input" value="{{employees.number}}"
+                hx-get="{% url 'search-device-in-device' %}?{{pd}}&view=list&device={{device_id}}" hx-target="#section"
+                min="1" />
+            <span class="oh-pagination__label">{% trans "of" %} {{employees.paginator.num_pages}}</span>
+        </div>
+        <ul class="oh-pagination__items">
+            {% if employees.has_previous %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target="#section"
+                    hx-get="{% url 'search-device-in-device' %}?{{pd}}&view=list&page=1&device={{device_id}}"
+                    class="oh-pagination__link">{% trans "First" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target="#section"
+                    hx-get="{% url 'search-device-in-device' %}?{{pd}}&view=list&page={{ employees.previous_page_number }}&device={{device_id}}"
+                    class="oh-pagination__link">{% trans "Previous" %}</a>
+            </li>
+            {% endif %} {% if employees.has_next %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target="#section"
+                    hx-get="{% url 'search-device-in-device' %}?{{pd}}&view=list&page={{ employees.next_page_number }}&device={{device_id}}"
+                    class="oh-pagination__link">{% trans "Next" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target="#section"
+                    hx-get="{% url 'search-device-in-device' %}?{{pd}}&view=list&page={{ employees.paginator.num_pages }}&device={{device_id}}"
+                    class="oh-pagination__link">{% trans "Last" %}</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
