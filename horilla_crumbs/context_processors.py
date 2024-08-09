@@ -1,3 +1,4 @@
+import uuid
 from urllib.parse import urlparse
 
 from django.apps import apps
@@ -6,6 +7,14 @@ from django.urls import Resolver404, path, resolve, reverse
 
 from employee.models import Employee
 from horilla.urls import urlpatterns
+
+
+def is_valid_uuid(uuid_string):
+    try:
+        uuid.UUID(uuid_string, version=4)
+        return True
+    except ValueError:
+        return False
 
 
 def _split_path(self, path=None):
@@ -228,7 +237,7 @@ def breadcrumbs(request):
 
             new_dict = {"url": path, "name": item, "found": found}
 
-            if item.isdigit():
+            if item.isdigit() or is_valid_uuid(item):
                 # Handle the case when item is a digit (e.g., an ID)
                 current_url = resolve(request.path_info)
                 url_kwargs = current_url.kwargs
