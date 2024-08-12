@@ -30,7 +30,7 @@
                 <div class="oh-dropdown" x-data="{open: false}">
                     {% if perms.recruitment.add_recruitment %}
                     <a href='#' data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
-                        hx-target="#objectCreateModalTarget" hx-get="{% url " recruitment-create" %}"
+                        hx-target="#objectCreateModalTarget" hx-get="{% url "recruitment-create" %}"
                         class="oh-btn oh-btn--secondary ml-2">
                         <ion-icon name="add" class="mr-1"></ion-icon>{% trans "Create" %}
                     </a>

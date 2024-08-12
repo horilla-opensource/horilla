@@ -2,15 +2,15 @@
 {% block content %}
 {% load i18n %}{% load static %}{% load basefilters %}
 
-{% include 'skill_zone/skill_zone_nav.html' %}
 <div class="oh-wrapper">
-        <div id="skill_zone_container">
-          {% if request.GET.get.view == 'card' %}
-            {% include "skill_zone/skill_zone_card.html" %}
-          {% else %}
-            {% include "skill_zone/skill_zone_list.html" %}
-            {% endif %}
-        </div>
+    {% include 'skill_zone/skill_zone_nav.html' %}
+    <div id="skill_zone_container">
+      {% if request.GET.get.view == 'card' %}
+        {% include "skill_zone/skill_zone_card.html" %}
+      {% else %}
+        {% include "skill_zone/skill_zone_list.html" %}
+        {% endif %}
+    </div>
 </div>
 
 <div class="oh-modal" id="editCandModal" role="dialog" aria-hidden="true">
@@ -21,6 +21,7 @@
         <div class="oh-modal__dialog-body" id="editCandTarget"></div>
     </div>
 </div>
+
 <div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
         <div class="oh-modal__dialog-header">

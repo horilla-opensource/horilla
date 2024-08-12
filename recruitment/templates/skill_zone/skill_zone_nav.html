@@ -1,159 +1,144 @@
 {% load i18n %}
-<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+<section class="oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
-      <h1 class="oh-main__titlebar-title fw-bold mb-0">
-        {% trans "Skill Zone" %}
-      </h1>
-      <a
-        class="oh-main__titlebar-search-toggle"
-        role="button"
-        aria-label="Toggle Search"
-        @click="searchShow = !searchShow"
-      >
-        <ion-icon
-          name="search-outline"
-          class="oh-main__titlebar-serach-icon"
-        ></ion-icon>
-      </a>
+        <h1 class="oh-main__titlebar-title fw-bold mb-0">
+            {% trans "Skill Zone" %}
+        </h1>
+
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+        </a>
     </div>
+
     <div class="oh-main__titlebar oh-main__titlebar--right">
         <form hx-get='{% url "skill-zone-filter" %}' id="filterForm" hx-target='#skill_zone_container' class="d-flex">
-        <div
-            class="oh-input-group oh-input__search-group"
-            :class="searchShow ? 'oh-input__search-group--show' : ''"
-        >
-            <ion-icon
-            name="search-outline"
-            class="oh-input-group__icon oh-input-group__icon--left"
-            ></ion-icon>
-            <input
-              type="text"
-              class="oh-input oh-input__icon"
-              aria-label="Search Input"
-              placeholder="{% trans 'Search' %}"
-              name="search"
-              hx-get="{% url 'skill-zone-filter' %}"
-              onkeyup="$('.filterButton').click()"
-
-            />
-        </div>
-        <div class="oh-main__titlebar-button-container">
-              <div class="oh-dropdown" x-data="{open: false}">
-                <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-                  <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-                </button>
-                <div
-                  class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-                  x-show="open"
-                  style="display: none"
-                  @click.outside="open = false"
-                >
-                  <div class="oh-dropdown__filter-body">
-                    <div class="oh-accordion">
-                      <div class="oh-accordion-header">{% trans "Candidate Filter" %}</div>
-                      <div class="oh-accordion-body">
-                        <div class="row">
-                          <div class="col-sm-12 col-md-12 col-lg-6">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Recruitment" %}</label>
-                              {{f.form.candidate_id__recruitment_id}}
-                            </div>
-                          </div>
-                          <div class="col-sm-12 col-md-12 col-lg-6">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Candidates" %}</label>
-                              {{f.form.candidate_id}}
-                            </div>
-                          </div>
-                          <div class="col-sm-12 col-md-12 col-lg-6">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Job Position" %}</label>
-                              {{f.form.candidate_id__job_position_id}}
-                            </div>
-                          </div>
-                          <div class="col-sm-12 col-md-12 col-lg-6">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Joining From" %}</label>
-                              {{f.form.scheduled_from}}
-                            </div>
-                          </div>
-                          <div class="col-sm-12 col-md-12 col-lg-6">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Joining Till" %}</label>
-                              {{f.form.scheduled_till}}
-                            </div>
-                          </div>
-                          <div class="col-sm-12 col-md-12 col-lg-6">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Probation From" %}</label>
-                              {{f.form.probation_end_from}}
-                            </div>
-                          </div>
-                          <div class="col-sm-12 col-md-12 col-lg-6">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Probation Till" %}</label>
-                              {{f.form.probation_end_till}}
-                            </div>
-                          </div>
-                          <div class="col-sm-12 col-md-12 col-lg-6">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Portal Sent" %}</label>
-                              {{f.form.portal_sent}}
-                            </div>
-                          </div>
-                          <div class="col-sm-12 col-md-12 col-lg-6">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Joining Set" %}</label>
-                              {{f.form.joining_set}}
-                            </div>
-                          </div>
-                          <div class="col-sm-12 col-md-12 col-lg-6 mb-2">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Reject Reason" %}</label>
-                              {{f.form.candidate_id__rejected_candidate__reject_reason_id}}
-                            </div>
-                          </div>
-                          <div class="col-sm-12 col-md-12 col-lg-6 mb-2">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Offer Status" %}</label>
-                              {{f.form.candidate_id__offer_letter_status}}
-                            </div>
-                          </div>
-                          <div class="col-sm-12 col-md-12 col-lg-6">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Is Active" %}</label>
-                              {{f.form.is_active}}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="oh-dropdown__filter-footer">
-                      <button
-                        class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-                        type="submit"
-                      >
-                        {% trans "Filter" %}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="oh-btn-group ml-2">
+            <div class="oh-input-group oh-input__search-group"
+                :class="searchShow ? 'oh-input__search-group--show' : ''">
+                <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+                <input type="text" class="oh-input oh-input__icon" aria-label="Search Input"
+                    placeholder="{% trans 'Search' %}" name="search" hx-get="{% url 'skill-zone-filter' %}"
+                    onkeyup="$('.filterButton').click()"
+                />
             </div>
-          </form>
+
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+                    </button>
+
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" style="display: none" @click.outside="open = false">
+                        <div class="oh-dropdown__filter-body">
+                            <div class="oh-accordion">
+                                <div class="oh-accordion-header">{% trans "Candidate Filter" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Recruitment" %}</label>
+                                                {{f.form.candidate_id__recruitment_id}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Candidates" %}</label>
+                                                {{f.form.candidate_id}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Job Position" %}</label>
+                                                {{f.form.candidate_id__job_position_id}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Joining From" %}</label>
+                                                {{f.form.scheduled_from}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Joining Till" %}</label>
+                                                {{f.form.scheduled_till}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Probation From" %}</label>
+                                                {{f.form.probation_end_from}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Probation Till" %}</label>
+                                                {{f.form.probation_end_till}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Portal Sent" %}</label>
+                                                {{f.form.portal_sent}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Joining Set" %}</label>
+                                                {{f.form.joining_set}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6 mb-2">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Reject Reason" %}</label>
+                                                {{f.form.candidate_id__rejected_candidate__reject_reason_id}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6 mb-2">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Offer Status" %}</label>
+                                                {{f.form.candidate_id__offer_letter_status}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Is Active" %}</label>
+                                                {{f.form.is_active}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="oh-dropdown__filter-footer">
+                                <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" type="submit">
+                                    {% trans "Filter" %}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="oh-btn-group ml-2"></div>
+            </div>
+        </form>
+
         <div class="oh-btn-group ml-2">
-          <a
-            class="oh-btn oh-btn--secondary oh-btn--shadow"
-            data-toggle="oh-modal-toggle"
-            data-target="#createModal"
-            hx-get="{% url 'skill-zone-create' %}"
-            hx-target="#createTarget"
-          >
-            <ion-icon name="add-outline" class="me-1"></ion-icon>
-            {% trans "Create" %}
-          </a>
+            <a class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle" data-target="#createModal"
+                hx-get="{% url 'skill-zone-create' %}" hx-target="#createTarget">
+                <ion-icon name="add-outline" class="me-1"></ion-icon>
+                {% trans "Create" %}
+            </a>
         </div>
-      </div>
     </div>
-  </section>
+</section>
