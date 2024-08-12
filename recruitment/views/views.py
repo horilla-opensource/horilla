@@ -264,7 +264,6 @@ def recruitment_view(request):
     """
     if not request.GET:
         request.GET.copy().update({"is_active": "on"})
-    form = RecruitmentCreationForm()
     queryset = Recruitment.objects.filter(is_active=True)
     if Recruitment.objects.all():
         template = "recruitment/recruitment_view.html"
@@ -289,7 +288,6 @@ def recruitment_view(request):
         {
             "data": paginator_qry(filter_obj.qs, request.GET.get("page")),
             "f": filter_obj,
-            "form": form,
             "filter_dict": filter_dict,
             "pd": request.GET.urlencode() + "&closed=false",
         },

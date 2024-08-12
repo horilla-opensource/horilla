@@ -9,6 +9,7 @@ import json
 import os
 import re
 from datetime import date
+from uuid import uuid4
 
 import django
 from django import forms
@@ -62,6 +63,12 @@ def validate_image(value):
     This method is used to validate the image
     """
     return value
+
+
+def candidate_photo_upload_path(instance, filename):
+    ext = filename.split(".")[-1]
+    filename = f"{instance.name.replace(' ', '_')}_{filename}_{uuid4()}.{ext}"
+    return os.path.join("recruitment/profile/", filename)
 
 
 class SurveyTemplate(HorillaModel):
@@ -310,7 +317,7 @@ class Candidate(HorillaModel):
         ("other", _("Other")),
     ]
     name = models.CharField(max_length=100, null=True, verbose_name=_("Name"))
-    profile = models.ImageField(upload_to="recruitment/profile", null=True)
+    profile = models.ImageField(upload_to=candidate_photo_upload_path, null=True)
     portfolio = models.URLField(max_length=200, blank=True)
     recruitment_id = models.ForeignKey(
         Recruitment,

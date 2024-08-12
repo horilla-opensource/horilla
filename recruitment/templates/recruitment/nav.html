@@ -1,106 +1,52 @@
 {% load i18n %}
-<section
-class="oh-main__topbar"
-x-data="{searchShow: false}"
->
-<div class="oh-main__titlebar oh-main__titlebar--left">
-  <div  class="oh-main__titlebar-title fw-bold mb-0 text-dark" style="cursor:pointer;">{% trans "Recruitment" %}</div>
-  <a
-    class="oh-main__titlebar-search-toggle "
-    role="button"
-    aria-label="Toggle Search"
-    @click="searchShow = !searchShow"
-  >
-    <ion-icon
-      name="search-outline"
-      class="oh-main__titlebar-serach-icon"
-    ></ion-icon>
-  </a>
-</div>
-<form hx-get='{% url "recruitment-search" %}' hx-target='#recruitment-container' id="filterForm">
-  <div class="oh-main__titlebar oh-main__titlebar--right">
+<section class="oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <div class="oh-main__titlebar-title fw-bold mb-0 text-dark" style="cursor:pointer;">{% trans "Recruitment" %}</div>
 
-    <div
-      class="oh-input-group oh-input__search-group"
-      :class="searchShow ? 'oh-input__search-group--show' : ''"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-input-group__icon oh-input-group__icon--left"
-      ></ion-icon>
-      <input
-        type="text"
-        placeholder="{% trans 'Search' %}"
-        name='search'
-        id="recruitmentSearch"
-        class="oh-input oh-input__icon"
-        aria-label="Search Input"
-        onkeyup="$('.filterButton')[0].click()"
-      />
-    </div>
-    <div class="oh-main__titlebar-button-container">
-
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open" type="button">
-          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-        </button>
-        <div
-        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-        x-show="open"
-        @click.outside="open = false"
-        style="display: none;"
-        >
-        {% include 'recruitment/filters.html' %}
-      </div>
-      </div>
-      <div class="oh-dropdown" x-data="{open: false}">
-        {% if perms.recruitment.add_recruitment %}
-        <a
-        href='#'
-        data-toggle="oh-modal-toggle"
-        data-target="#objectCreateModal"
-        hx-target="#objectCreateModalTarget"
-        hx-get="{% url "recruitment-create" %}"
-        class="oh-btn oh-btn--secondary ml-2"
-        >
-          <ion-icon name="add" class="mr-1"></ion-icon>{% trans "Create" %}
+        <a class="oh-main__titlebar-search-toggle " role="button" aria-label="Toggle Search" @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
         </a>
-        {% endif %}
-
-        </div>
-
     </div>
-  </div>
-</form>
 
+    <form hx-get='{% url "recruitment-search" %}' hx-target='#recruitment-container' id="filterForm">
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            <div class="oh-input-group oh-input__search-group"
+                :class="searchShow ? 'oh-input__search-group--show' : ''">
+                <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+                <input type="text" placeholder="{% trans 'Search' %}" name='search' id="recruitmentSearch"
+                    class="oh-input oh-input__icon" aria-label="Search Input" onkeyup="$('.filterButton')[0].click()" />
+            </div>
+
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn ml-2" @click="open = !open" type="button">
+                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                        @click.outside="open = false" style="display: none;">
+                        {% include 'recruitment/filters.html' %}
+                    </div>
+                </div>
+                <div class="oh-dropdown" x-data="{open: false}">
+                    {% if perms.recruitment.add_recruitment %}
+                    <a href='#' data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                        hx-target="#objectCreateModalTarget" hx-get="{% url " recruitment-create" %}"
+                        class="oh-btn oh-btn--secondary ml-2">
+                        <ion-icon name="add" class="mr-1"></ion-icon>{% trans "Create" %}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </form>
 </section>
+
 <div id="filterTagContainerSectionNav" class="oh-titlebar-container__filters mb-2 mt-0"></div>
 
 <div class="oh-modal" id="dynamicCreateModal" role="dialog" aria-hidden="true" style="z-index: 1022;">
-  <div class="oh-modal__dialog" style="max-width: 550px;" id="dynamicCreateModalBody"></div>
+    <div class="oh-modal__dialog" style="max-width: 550px;" id="dynamicCreateModalBody"></div>
 </div>
+
 <span name="" id="dynamicSkills" data-toggle="oh-modal-toggle" data-target="#dynamicCreateModal"
-  hx-get="{% url 'create-skills' %}?dynamic=True" hx-target="#dynamicCreateModalBody">
+    hx-get="{% url 'create-skills' %}?dynamic=True" hx-target="#dynamicCreateModalBody">
 </span>
-
-<div
-  class="oh-modal"
-  id="addRecruitmentModal"
-  role="dialog"
-  aria-labelledby="addRecruitmentModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h5 class="oh-modal__dialog-title" id="addRecruitmentModalLabel"
-        >{% trans "Add Recruitment" %}</span
-      >
-      <button class="oh-modal__close" aria-label="Close" >
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-
-    <div class="oh-modal__dialog-body" id="addRecruitmentModalBody">
-    </div>
-  </div>
-</div>

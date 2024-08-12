@@ -6,6 +6,7 @@ This module is used to write views related to the survey features
 
 import json
 from datetime import datetime
+from uuid import uuid4
 
 from django.contrib import messages
 from django.core import serializers
@@ -329,7 +330,7 @@ def application_form(request):
             candidate_obj.resume = resume_path
             try:
                 profile = request.FILES["profile"] if request.FILES["profile"] else None
-                profile_path = f"recruitment/profile/{profile.name}"
+                profile_path = f"recruitment/profile/{candidate_obj.name.replace(' ', '_')}_{profile.name}_{uuid4()}"
                 with default_storage.open(profile_path, "wb+") as destination:
                     for chunk in profile.chunks():
                         destination.write(chunk)
