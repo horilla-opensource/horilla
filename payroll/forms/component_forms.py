@@ -108,11 +108,16 @@ class AllowanceForm(forms.ModelForm):
 
         specific_employees = self.data.getlist("specific_employees")
         include_all = self.data.get("include_active_employees")
+        condition_based = self.data.get("is_condition_based")
 
         for field_name, field_instance in self.fields.items():
             if isinstance(field_instance, HorillaMultiSelectField):
                 self.errors.pop(field_name, None)
-                if not specific_employees and include_all is None:
+                if (
+                    not specific_employees
+                    and include_all is None
+                    and not condition_based
+                ):
                     raise forms.ValidationError({field_name: "This field is required"})
                 cleaned_data = super().clean()
                 data = self.fields[field_name].queryset.filter(
@@ -230,11 +235,16 @@ class DeductionForm(forms.ModelForm):
 
         specific_employees = self.data.getlist("specific_employees")
         include_all = self.data.get("include_active_employees")
+        condition_based = self.data.get("is_condition_based")
 
         for field_name, field_instance in self.fields.items():
             if isinstance(field_instance, HorillaMultiSelectField):
                 self.errors.pop(field_name, None)
-                if not specific_employees and include_all is None:
+                if (
+                    not specific_employees
+                    and include_all is None
+                    and not condition_based
+                ):
                     raise forms.ValidationError({field_name: "This field is required"})
                 cleaned_data = super().clean()
                 data = self.fields[field_name].queryset.filter(
