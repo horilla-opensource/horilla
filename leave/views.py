@@ -403,6 +403,8 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                 available_leave = AvailableLeave.objects.get(
                     leave_type_id=leave_type_id, employee_id=employee_id
                 )
+                leave_request.created_by = request.user.employee_get
+                leave_request.save()
                 if leave_request.requested_days > available_leave.available_days:
                     leave = (
                         leave_request.requested_days - available_leave.available_days
