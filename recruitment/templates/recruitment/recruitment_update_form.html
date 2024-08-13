@@ -49,7 +49,7 @@
     {% endfor %}
 </div>
 {% endif %}
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header pb-0">
     <h5 class="oh-modal__dialog-title" id="addRecruitmentModalLabel"
         >{% trans "Edit Recruitment" %}</span
     >
@@ -58,11 +58,7 @@
     </button>
 </div>
 <div class="oh-modal__dialog-body" id="addRecruitmentModalBody">
-    <form
-        hx-post="{% url 'recruitment-update' form.instance.id %}"
-        hx-target="#updateFormContainer"
-        class="oh-general__tab-target oh-profile-section"
-    >
+    <form hx-post="{% url 'recruitment-update' form.instance.id %}" hx-target="#objectUpdateModalTarget" class="oh-general__tab-target oh-profile-section">
         {% csrf_token %}
         <div>
             {% csrf_token %}

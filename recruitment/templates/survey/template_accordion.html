@@ -60,10 +60,10 @@
               {% for question in grouper.list %}
               <div
                 class="oh-sticky-table__tr oh-multiple-table-sort__movable"
-                data-target="#detailSurvey"
+                data-target="#objectDetailsModal"
                 data-toggle="oh-modal-toggle"
                 hx-get="{% url 'single-survey-view' question.id %}?instances_ids={{requests_ids}}"
-                hx-target="#detailSurveyModalBody"
+                hx-target="#objectDetailsModalTarget"
               >
                 <div class="oh-sticky-table__sd">
                   <div class="oh-profile oh-profile--md">

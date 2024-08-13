@@ -36,7 +36,7 @@
           <ul class="oh-dropdown__items">
             {% if perms.recruitment.change_recruitment or request.user|recruitment_manages:rec %}
             <li class="oh-dropdown__item">
-              <a hx-get="{% url 'recruitment-update-pipeline' rec.id %}" hx-target='#recruitmentUpdate' data-toggle='oh-modal-toggle' data-target="#recruitmentUpdateModal" class="oh-dropdown__link"
+              <a hx-get="{% url 'recruitment-update-pipeline' rec.id %}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target="#objectUpdateModal" class="oh-dropdown__link"
               >{% trans "Edit" %}</a
               >
             </li>

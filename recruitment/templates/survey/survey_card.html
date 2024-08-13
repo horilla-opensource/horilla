@@ -17,9 +17,9 @@
       <div
         class="oh-kanban-card"
         data-toggle="oh-modal-toggle"
-        data-target="#detailSurvey"
+        data-target="#objectDetailsModal"
         hx-get="{% url 'single-survey-view' question.id %}?instances_ids={{requests_ids}}"
-        hx-target="#detailSurveyModalBody"
+        hx-target="#objectDetailsModalTarget"
       >
         <div class="oh-kanban-card__details">
           <span class="oh-kanban-card__title">{{question}}</span>

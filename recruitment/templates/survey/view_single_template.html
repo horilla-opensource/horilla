@@ -1,29 +1,37 @@
 {% load i18n %}
-{% if request.GET.instances_ids %}
-<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button
-        hx-get="{% url 'single-survey-view' previous %}?instances_ids={{requests_ids}}" hx-target="#detailSurveyModalBody"
-        class="oh-modal__diaglog-nav oh-modal__nav-prev">
-        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
-        aria-label="chevron back outline"></ion-icon>
-    </button>
-
-    <button
-        hx-get="{% url 'single-survey-view' next %}?instances_ids={{requests_ids}}" hx-target="#detailSurveyModalBody"
-        class="oh-modal__diaglog-nav oh-modal__nav-next">
-        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
-        aria-label="chevron forward outline"></ion-icon>
+<div class="oh-modal__dialog-header pb-0">
+    <h2 class="oh-modal__dialog-title" id="objectDetailsModalLabel" style="font-size: 1.30rem;">
+        {% trans "Details" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
-{% endif %}
-<div class="oh-modal__dialog-header">
 
-        <span class="oh-timeoff-modal__stat-title">{% trans "Question" %}</span>
-        <span class="oh-timeoff-modal__stat-count">{{question|capfirst}}</span>
-        {% if question.options %}
-            <span class="oh-timeoff-modal__stat-title mt-3">{% trans "Options" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{question.options}}</span>
-        {% endif %}
+<div class="oh-modal__dialog-body oh-modal__dialog-relative" id="detailSurveyModalBody">
+    <div class="oh-profile-section">
+    {% if request.GET.instances_ids %}
+    <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+        <button hx-get="{% url 'single-survey-view' previous %}?instances_ids={{requests_ids}}"
+            hx-target="#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+            <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+                aria-label="chevron back outline"></ion-icon>
+        </button>
+
+        <button hx-get="{% url 'single-survey-view' next %}?instances_ids={{requests_ids}}"
+            hx-target="#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
+            <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+                aria-label="chevron forward outline"></ion-icon>
+        </button>
+    </div>
+    {% endif %}
+
+    <span class="oh-timeoff-modal__stat-title">{% trans "Question" %}</span>
+    <span class="oh-timeoff-modal__stat-count">{{question|capfirst}}</span>
+    {% if question.options %}
+        <span class="oh-timeoff-modal__stat-title mt-3">{% trans "Options" %}</span>
+        <span class="oh-timeoff-modal__stat-count">{{question.options}}</span>
+    {% endif %}
 
     <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
         <div class="oh-timeoff-modal__stat">
@@ -32,82 +40,62 @@
         </div>
         <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
             <span class="oh-timeoff-modal__stat-title">{% trans "Sequence" %}</span>
-            {% if  question.sequence %}
+            {% if question.sequence %}
                 <span class="oh-timeoff-modal__stat-count">{{question.sequence}}</span>
             {% else %}
                 <span class="oh-timeoff-modal__stat-count">-</span>
             {% endif %}
         </div>
     </div>
+
     <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Recruitment" %}</span>
-            {% if  question.recruitment_ids.all %}
+            {% if question.recruitment_ids.all %}
                 <span class="oh-timeoff-modal__stat-count">{% for rec in question.recruitment_ids.all %} {{rec}},&nbsp; {% endfor %}</span>
             {% else %}
                 <span class="oh-timeoff-modal__stat-count">-</span>
             {% endif %}
         </div>
     </div>
+
     <div class="oh-modal__button-container text-center">
         {% if perms.recruitment.change_recruitmentsurvey and perms.recruitment.delete_recruitmentsurvey %}
         <div class="oh-btn-group">
-            <a
-                    class="oh-btn oh-btn--info"
-                    hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#updateSurvey"
-                    hx-target="#updateSurveyModalBody"
-                    style="width: 50%;"
-                    >
-                    <ion-icon name="create-outline" role="img"
-                    class="md hydrated" aria-label="create outline">
-                    </ion-icon>{% trans "Edit" %}
-              </a>
-              <a
-                    href="{% url 'recruitment-survey-question-template-delete' question.id %}"
-                    onclick="return confirm('{% trans "Are you sure want to delete?" %}')"
-                    class="oh-btn oh-btn--danger"style="width: 50%;">
-                <ion-icon
-                name="trash-outline"
-                role="img"
-                class="md hydrated"
-                aria-label="create outline"
-                ></ion-icon>{% trans "Delete" %}
-               </a>
-            </div>
+            <a class="oh-btn oh-btn--info" hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
+                data-toggle="oh-modal-toggle" data-target="#updateSurvey" hx-target="#updateSurveyModalBody"
+                style="width: 50%;">
+                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline">
+                </ion-icon>{% trans "Edit" %}
+            </a>
+            <a href="{% url 'recruitment-survey-question-template-delete' question.id %}"
+                onclick="return confirm('{% trans " Are you sure want to delete?" %}')" class="oh-btn oh-btn--danger"
+                style="width: 50%;">
+                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                {% trans "Delete" %}
+            </a>
+        </div>
 
         {% else %}
         <div class="oh-btn-group">
             {% if perms.recruitment.change_recruitmentsurvey %}
-                <a
-                    class="oh-btn oh-btn--info"
-                    hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#updateSurvey"
-                    hx-target="#updateSurveyModalBody"
-                    style="width: 100%;"
-                    >
-                    <ion-icon name="create-outline" role="img"
-                    class="md hydrated" aria-label="create outline">
-                    </ion-icon>{% trans "Edit" %}
-                </a>
+            <a class="oh-btn oh-btn--info" hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
+                data-toggle="oh-modal-toggle" data-target="#updateSurvey" hx-target="#updateSurveyModalBody"
+                style="width: 100%;">
+                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline">
+                </ion-icon>{% trans "Edit" %}
+            </a>
             {% endif %}
             {% if perms.recruitment.delete_recruitmentsurvey %}
-                <a
-                    href="{% url 'recruitment-survey-question-template-delete' question.id %}"
-                    onclick="return confirm('{% trans "Are you sure want to delete?" %}')"
-                    class="oh-btn oh-btn--danger"style="width: 100%;"
-                >
-                    <ion-icon
-                    name="trash-outline"
-                    role="img"
-                    class="md hydrated"
-                    aria-label="create outline"
-                    ></ion-icon>{% trans "Delete" %}
-                </a>
+            <a href="{% url 'recruitment-survey-question-template-delete' question.id %}"
+                onclick="return confirm('{% trans " Are you sure want to delete?" %}')" class="oh-btn oh-btn--danger"
+                style="width: 100%;">
+                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                {% trans "Delete" %}
+            </a>
             {% endif %}
         </div>
         {% endif %}
     </div>
+</div>
 </div>
