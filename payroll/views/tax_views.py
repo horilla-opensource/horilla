@@ -14,7 +14,7 @@ import math
 from urllib.parse import parse_qs
 
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
@@ -166,12 +166,11 @@ def tax_bracket_list(request, filing_status_id):
         The rendered "tax_bracket_view.html" template with the tax brackets for the
         specified filing status.
     """
+    filing_status = FilingStatus.objects.get(id=filing_status_id)
     tax_brackets = TaxBracket.objects.filter(
         filing_status_id=filing_status_id
     ).order_by("max_income")
-    context = {
-        "tax_brackets": tax_brackets,
-    }
+    context = {"tax_brackets": tax_brackets, "filing_status": filing_status}
     return render(request, "payroll/tax/tax_bracket_view.html", context)
 
 
@@ -273,3 +272,17 @@ def delete_tax_bracket(request, tax_bracket_id):
         if filing_status_id
         else HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     )
+
+
+@login_required
+@permission_required("payroll.change_taxbracket")
+def update_py_code(request, pk):
+    """
+    Ajax method to update python code of filing status
+    """
+    code = request.POST["code"]
+    filing = FilingStatus.objects.get(pk=pk)
+    if not filing.python_code == code:
+        filing.python_code = code
+        filing.save()
+    return JsonResponse({"message": "success"})

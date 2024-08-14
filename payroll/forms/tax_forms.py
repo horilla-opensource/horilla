@@ -17,6 +17,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.methods import reload_queryset
 from horilla import horilla_middlewares
+from payroll.methods import federal_tax
 from payroll.models.models import FilingStatus
 from payroll.models.tax_models import TaxBracket
 
@@ -94,6 +95,25 @@ class FilingStatusForm(ModelForm):
         model = FilingStatus
         fields = "__all__"
         exclude = ["is_active"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        attrs: dict = self.fields["use_py"].widget.attrs
+        attrs[
+            "onchange"
+        ] = """
+        if($(this).is(':checked')){
+            $('#oc-editor').show();
+        }else{
+            $('#oc-editor').hide();
+        }
+        """
+
+        if self.instance.pk is None:
+            self.instance.python_code = federal_tax.CODE
+        else:
+            del self.fields["use_py"]
+            del self.fields["python_code"]
 
 
 class TaxBracketForm(ModelForm):

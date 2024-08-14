@@ -1,4 +1,5 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
   <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">

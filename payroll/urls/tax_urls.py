@@ -50,4 +50,5 @@ urlpatterns = [
         tax_views.delete_tax_bracket,
         name="tax-bracket-delete",
     ),
+    path("update-py-code/<int:pk>/", tax_views.update_py_code, name="update-py-code"),
 ]

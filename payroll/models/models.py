@@ -30,7 +30,6 @@ from base.models import (
 from employee.methods.duration_methods import strtime_seconds
 from employee.models import BonusPoint, Employee, EmployeeWorkInformation
 from horilla import horilla_middlewares
-from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
@@ -96,6 +95,8 @@ class FilingStatus(HorillaModel):
         default="taxable_gross_pay",
         verbose_name=_("Based on"),
     )
+    use_py = models.BooleanField(verbose_name="Python Code", default=False)
+    python_code = models.TextField(null=True)
     description = models.TextField(
         blank=True,
         verbose_name=_("Description"),
