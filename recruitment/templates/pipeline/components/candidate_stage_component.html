@@ -99,8 +99,13 @@
             {% for cand in candidates %}
             <div onclick="window.location.href = '{% url 'candidate-view-individual' cand.id %}'"
                 class="oh-sticky-table__tr oh-table-config__tr candidate ui-droppable ui-sortable-handle cand change-cand "
-                data-candidate-id="{{cand.id}}" data-drop="candidate" data-change-cand-id="{{cand.id}}"
-                data-sequence="{{cand.sequence}}" data-candidate="{{cand.name}}"
+                data-candidate-id="{{cand.id}}"
+                data-drop="candidate"
+                data-change-cand-id="{{cand.id}}"
+                data-sequence="{{cand.sequence}}"
+                data-candidate="{{cand.name}}"
+                data-pre_stage_id ="{{cand.stage_id.id}}"
+                data-stage_order = '{{cand.recruitment_id.ordered_stages|to_json|safe}}'
                 data-job-position="{{cand.job_position_id}}">
                 <div class="oh-sticky-table__sd" style="z-index: 11 !important;" onclick="event.stopPropagation()">
                     <div class="centered-div">

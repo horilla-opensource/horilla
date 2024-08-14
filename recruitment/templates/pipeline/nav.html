@@ -392,17 +392,16 @@
 
                         if (stageOrderJson) {
                             var parsedStageOrder = JSON.parse(stageOrderJson);
-                            var preStageId = row.attr("data-pre_stage_id");
-                            var preStage = parsedStageOrder.find(stage => stage.id == preStageId);
+                            var preStage = parsedStageOrder.find(stage => stage.id == currentStageId);
+                            var currentStage = parsedStageOrder.find(stage => stage.id == targetStageId);
                             var stageOrder = parsedStageOrder.map(stage => stage.id);
 
                             if (!isNextStage(currentStageId, targetStageId, parsedStageOrder)) {
                                 if (sessionStorage.getItem('showRecuitmentKanbanConfirmation') !== 'false') {
                                     Swal.fire({
                                         title: "Confirm Stage Change",
-                                        text: "The candidate is not being moved to the next stage. Do you want to proceed?",
                                         html: `
-                                            <p>The candidate is not being moved to the next stage. Do you want to proceed?</p>
+                                            <p>The candidate is being moved from ${preStage.stage} to the ${currentStage.stage} stage. Do you want to proceed?</p>
                                             <label><input type="checkbox" id="doNotShowAgain"> Don't show this again in this session</label>
                                         `,
                                         icon: "warning",
