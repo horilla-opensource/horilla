@@ -82,7 +82,6 @@ def calculate_taxable_amount(**kwargs):
                 filterd_brackets.append(bracket)
                 continue
             break
-        print(filterd_brackets)
         federal_tax = sum(bracket["calculated_rate"] for bracket in filterd_brackets)
 
     elif filing.use_py:
