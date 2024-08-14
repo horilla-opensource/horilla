@@ -153,4 +153,9 @@ urlpatterns = [
         component_views.get_contribution_report,
         name="get-contribution-report",
     ),
+    path(
+        "payslip-detailed-export",
+        component_views.payslip_detailed_export,
+        name="payslip-detailed-export",
+    ),
 ]
