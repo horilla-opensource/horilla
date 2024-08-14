@@ -2,6 +2,7 @@
 horilla/generic/views.py
 """
 
+import ast
 import json
 from typing import Any
 from urllib.parse import parse_qs
@@ -958,7 +959,10 @@ class HorillaProfileView(DetailView):
         ).first()
         if active_tab:
             context["active_target"] = active_tab.tab_target
-        instance_ids = eval(self.request.GET.get("instance_ids", "[]"))
+        instance_ids_str = self.request.GET.get("instance_ids")
+        if not instance_ids_str:
+            instance_ids_str = "[]"
+        instance_ids = eval(instance_ids_str)
         instances = self.model.objects.filter(id__in=instance_ids)
         context["instances"] = instances
         balance_count = instances.count() - 6
@@ -976,8 +980,8 @@ class HorillaProfileView(DetailView):
         url_name = url.url_name
         next_url = reverse(url_name, kwargs={key: next_id})
         previous_url = reverse(url_name, kwargs={key: previous_id})
+        context["instance_ids"] = str(instance_ids)
         if instance_ids:
-            context["instance_ids"] = str(instance_ids)
             context["next_url"] = next_url
             context["previous_url"] = previous_url
 
