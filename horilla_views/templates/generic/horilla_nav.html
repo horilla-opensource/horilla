@@ -14,6 +14,7 @@
       ></ion-icon>
     </a>
   </div>
+  {% if search_url %}
   <form autocomplete="off" id="filterForm" onsubmit="event.preventDefault()" hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}" hx-replace-url="true" hx-target="{{search_swap_target}}" class="oh-main__titlebar oh-main__titlebar--right">
     <div class="oh-input-group oh-input__search-group" id="searchGroup">
       <ion-icon
@@ -182,6 +183,8 @@
       <input type="hidden" id="pageInput">
       <input type="hidden" id="sortInput">
     </form>
+    {% endif %}
+
     {% if create_attrs %}
     <a
       class="oh-btn oh-btn--secondary ml-2"

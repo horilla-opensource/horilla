@@ -114,8 +114,8 @@ class HorillaListView(ListView):
 
     def get_queryset(self):
         if not self.queryset:
-            queryset = super().get_queryset()
-
+            self.queryset = super().get_queryset()
+            self._saved_filters = QueryDict("", mutable=True)
             if self.filter_class:
                 query_dict = self.request.GET
                 if "filter_applied" in query_dict.keys():
@@ -144,7 +144,7 @@ class HorillaListView(ListView):
                 self._saved_filters = query_dict
                 self.request.exclude_filter_form = True
                 self.queryset = self.filter_class(
-                    data=query_dict, queryset=queryset, request=self.request
+                    data=query_dict, queryset=self.queryset, request=self.request
                 ).qs
         return self.queryset
 
