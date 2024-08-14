@@ -17,6 +17,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.utils import timezone as django_timezone
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
@@ -1734,18 +1735,17 @@ def anviz_biometric_device_attendance(device_id):
         for attendance in attendance_records["payload"]["list"]:
             badge_id = attendance["employee"]["workno"]
             punch_code = attendance["checktype"]
-            date_time_obj = datetime.strptime(
+            date_time_utc = datetime.strptime(
                 attendance["checktime"], "%Y-%m-%dT%H:%M:%S%z"
             )
-            target_timezone = pytz.django_timezone(settings.TIME_ZONE)
-            date_time_obj = date_time_obj.astimezone(target_timezone)
+            date_time_obj = date_time_utc.astimezone(timezone.get_current_timezone())
             employee = Employee.objects.filter(badge_id=badge_id).first()
             if employee:
                 request_data = Request(
                     user=employee.employee_user_id,
                     date=date_time_obj.date(),
                     time=date_time_obj.time(),
-                    datetime=django_timezone.make_aware(date_time_obj),
+                    datetime=date_time_obj,
                 )
                 if punch_code in {0, 128}:
                     try:
