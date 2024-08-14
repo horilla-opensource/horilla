@@ -2900,7 +2900,7 @@ def get_employees_birthday(_):
         else:
             days_till_birthday = f"In {days_till_birthday} Days"
         try:
-            path = emp.employee_profile.url
+            path = emp.get_avatar()
         except:
             path = f"https://ui-avatars.com/api/?\
                 name={emp.employee_first_name}+{emp.employee_last_name}&background=random"

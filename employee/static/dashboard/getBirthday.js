@@ -4,7 +4,7 @@ function upcomingBirthdays(response) {
   birthdays = response.birthdays;
   for (let index = 0; index < birthdays.length; index++) {
     activeDotClass = "";
-    const element = birthdays[index];
+    let element = birthdays[index];
     if (index == 0) {
       activeDotClass = "oh-dashboard__events-nav-item--active";
     }
@@ -15,17 +15,17 @@ function upcomingBirthdays(response) {
 
     container.append(`
       <div class="oh-dashboard__event">
-      <div class="oh-dasboard__event-photo">
-      <img
-        onload="autoSlider()"
-        src="${element.profile}"
-        style="
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      "/>
-      </div>
-      <div class="oh-dasboard__event-details">
+        <div class="oh-dasboard__event-photo">
+          <img
+            onload="autoSlider()"
+            src="${element.profile}"
+            style="
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          "/>
+        </div>
+        <div class="oh-dasboard__event-details">
           <span class="oh-dashboard__event-title">Birthday</span>
           <span class="oh-dashboard__event-main">${element.name}</span>
           <span class="oh-dashboard__event-date">${element.dob}, ${element.daysUntilBirthday}</span>
