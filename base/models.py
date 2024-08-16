@@ -570,17 +570,36 @@ class EmployeeShiftSchedule(HorillaModel):
     """
 
     day = models.ForeignKey(
-        EmployeeShiftDay, on_delete=models.PROTECT, related_name="day_schedule"
+        EmployeeShiftDay,
+        on_delete=models.PROTECT,
+        related_name="day_schedule",
+        verbose_name=_("Shift Day"),
     )
     shift_id = models.ForeignKey(
         EmployeeShift, on_delete=models.PROTECT, verbose_name=_("Shift")
     )
     minimum_working_hour = models.CharField(
-        default="08:15", max_length=5, validators=[validate_time_format]
+        default="08:15",
+        max_length=5,
+        validators=[validate_time_format],
+        verbose_name=_("Minimum Working Hours"),
     )
-    start_time = models.TimeField(null=True)
-    end_time = models.TimeField(null=True)
-    is_night_shift = models.BooleanField(default=False)
+    start_time = models.TimeField(null=True, verbose_name=_("Start Time"))
+    end_time = models.TimeField(null=True, verbose_name=_("End Time"))
+    is_night_shift = models.BooleanField(default=False, verbose_name=_("Night Shift"))
+    is_auto_punch_out_enabled = models.BooleanField(
+        default=False,
+        verbose_name=_("Enable Automatic Check Out"),
+        help_text=_("Enable this to trigger automatic check out."),
+    )
+    auto_punch_out_time = models.TimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Automatic Check Out Time"),
+        help_text=_(
+            "Time at which the horilla will automatically check out the employee attendance if they forget."
+        ),
+    )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     objects = HorillaCompanyManager("shift_id__employee_shift__company_id")

@@ -1054,25 +1054,70 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
         """
 
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = ["is_active", "is_night_shift"]
         widgets = {
             "start_time": DateInput(attrs={"type": "time"}),
             "end_time": DateInput(attrs={"type": "time"}),
+            "auto_punch_out_time": DateInput(attrs={"type": "time"}),
         }
         model = EmployeeShiftSchedule
 
     def __init__(self, *args, **kwargs):
         if instance := kwargs.get("instance"):
-            # """
-            # django forms not showing value inside the date, time html element.
-            # so here overriding default forms instance method to set initial value
-            # """
             initial = {
-                "start_time": instance.start_time.strftime("%H:%M"),
-                "end_time": instance.end_time.strftime("%H:%M"),
+                "start_time": (
+                    instance.start_time.strftime("%H:%M")
+                    if instance.start_time
+                    else None
+                ),
+                "end_time": (
+                    instance.end_time.strftime("%H:%M") if instance.end_time else None
+                ),
+                "auto_punch_out_time": (
+                    instance.auto_punch_out_time.strftime("%H:%M")
+                    if instance.auto_punch_out_time
+                    else None
+                ),
             }
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
+        self.fields["is_auto_punch_out_enabled"].widget.attrs.update(
+            {"onchange": "toggleDivVisibility(this)"}
+        )
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+
+        context = {"form": self}
+        table_html = render_to_string("horilla_form.html", context)
+        return table_html
+
+    def clean(self):
+        cleaned_data = super().clean()
+        auto_punch_out_enabled = self.cleaned_data["is_auto_punch_out_enabled"]
+        auto_punch_out_time = self.cleaned_data["auto_punch_out_time"]
+        end_time = self.cleaned_data["end_time"]
+        if auto_punch_out_enabled:
+            if not auto_punch_out_time:
+                raise ValidationError(
+                    {
+                        "auto_punch_out_time": _(
+                            "Automatic punch out time is required when automatic punch out is enabled."
+                        )
+                    }
+                )
+        if auto_punch_out_enabled and auto_punch_out_time and end_time:
+            if auto_punch_out_time < end_time:
+                raise ValidationError(
+                    {
+                        "auto_punch_out_time": _(
+                            "Automatic punch out time cannot be earlier than the end time."
+                        )
+                    }
+                )
+        return cleaned_data
 
 
 class EmployeeShiftScheduleForm(ModelForm):
@@ -1095,6 +1140,7 @@ class EmployeeShiftScheduleForm(ModelForm):
         widgets = {
             "start_time": DateInput(attrs={"type": "time"}),
             "end_time": DateInput(attrs={"type": "time"}),
+            "auto_punch_out_time": DateInput(attrs={"type": "time"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -1104,13 +1150,61 @@ class EmployeeShiftScheduleForm(ModelForm):
             # so here overriding default forms instance method to set initial value
             # """
             initial = {
-                "start_time": instance.start_time.strftime("%H:%M"),
-                "end_time": instance.end_time.strftime("%H:%M"),
+                "start_time": (
+                    instance.start_time.strftime("%H:%M")
+                    if instance.start_time
+                    else None
+                ),
+                "end_time": (
+                    instance.end_time.strftime("%H:%M") if instance.end_time else None
+                ),
+                "auto_punch_out_time": (
+                    instance.auto_punch_out_time.strftime("%H:%M")
+                    if instance.auto_punch_out_time
+                    else None
+                ),
             }
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
         self.fields["day"].widget.attrs.update({"id": str(uuid.uuid4())})
         self.fields["shift_id"].widget.attrs.update({"id": str(uuid.uuid4())})
+        self.fields["is_auto_punch_out_enabled"].widget.attrs.update(
+            {"onchange": "toggleDivVisibility(this)"}
+        )
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+
+        context = {"form": self}
+        table_html = render_to_string("horilla_form.html", context)
+        return table_html
+
+    def clean(self):
+        cleaned_data = super().clean()
+        auto_punch_out_enabled = self.cleaned_data["is_auto_punch_out_enabled"]
+        auto_punch_out_time = self.cleaned_data["auto_punch_out_time"]
+        end_time = self.cleaned_data["end_time"]
+        if auto_punch_out_enabled:
+            if not auto_punch_out_time:
+                raise ValidationError(
+                    {
+                        "auto_punch_out_time": _(
+                            "Automatic punch out time is required when automatic punch out is enabled."
+                        )
+                    }
+                )
+        if auto_punch_out_enabled and auto_punch_out_time and end_time:
+            if auto_punch_out_time < end_time:
+                raise ValidationError(
+                    {
+                        "auto_punch_out_time": _(
+                            "Automatic punch out time cannot be earlier than the end time."
+                        )
+                    }
+                )
+        return cleaned_data
 
     def save(self, commit=True):
         instance = super().save(commit=False)
