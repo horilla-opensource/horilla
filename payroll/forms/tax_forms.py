@@ -104,9 +104,9 @@ class FilingStatusForm(ModelForm):
         ] = """
         if($(this).is(':checked')){
             $('#oc-editor').show();
-            $("#objectCreateModal #objectCreateModalTarget").css("max-width","90%")
+            //$("#objectCreateModal #objectCreateModalTarget").css("max-width","90%")
         }else{
-            $("#objectCreateModal #objectCreateModalTarget").css("max-width","650px")
+            //$("#objectCreateModal #objectCreateModalTarget").css("max-width","650px")
             $('#oc-editor').hide();
         }
         """

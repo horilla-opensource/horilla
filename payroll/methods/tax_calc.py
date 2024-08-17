@@ -41,6 +41,8 @@ def calculate_taxable_amount(**kwargs):
         employee_id=employee, contract_status="active"
     ).first()
     filing = contract.filing_status
+    if not filing:
+        return 0
     federal_tax_for_period = 0
     tax_brackets = TaxBracket.objects.filter(filing_status_id=filing).order_by(
         "min_income"
