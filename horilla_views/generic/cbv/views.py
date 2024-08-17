@@ -2,7 +2,6 @@
 horilla/generic/views.py
 """
 
-import ast
 import json
 from typing import Any
 from urllib.parse import parse_qs
@@ -13,7 +12,7 @@ from django.core.cache import cache as CACHE
 from django.core.paginator import Page
 from django.http import HttpRequest, HttpResponse, QueryDict
 from django.urls import resolve, reverse
-from django.views.generic import DetailView, FormView, ListView, TemplateView, View
+from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from base.methods import closest_numbers, get_key_instances
 from horilla.filters import FilterSet
@@ -443,6 +442,7 @@ class HorillaTabView(TemplateView):
     HorillaTabView
     """
 
+    view_id: str = get_short_uuid(3, "htv")
     template_name = "generic/horilla_tabs.html"
 
     tabs: list = []
@@ -462,6 +462,7 @@ class HorillaTabView(TemplateView):
             if active_tab:
                 context["active_target"] = active_tab.tab_target
         context["tabs"] = self.tabs
+        context["view_id"] = self.view_id
 
         CACHE.get(self.request.session.session_key + "cbv")[HorillaTabView] = context
 
@@ -963,6 +964,15 @@ class HorillaProfileView(DetailView):
         if not instance_ids_str:
             instance_ids_str = "[]"
         instance_ids = eval(instance_ids_str)
+        if instance_ids:
+            CACHE.set(
+                f"{self.request.session.session_key}hpv-instance-ids", instance_ids
+            )
+        else:
+            instance_ids = CACHE.get(
+                f"{self.request.session.session_key}hpv-instance-ids"
+            )
+            instance_ids = instance_ids if instance_ids else []
         instances = self.model.objects.filter(id__in=instance_ids)
         context["instances"] = instances
         balance_count = instances.count() - 6

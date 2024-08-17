@@ -264,10 +264,10 @@
     {% endif %}
   </script>
   <script>
-    document.querySelectorAll("ul li").forEach(function (link) {
+    document.querySelectorAll("ul.oh-general__tabs li").forEach(function (link) {
       link.addEventListener("click", function (event) {
         event.preventDefault();
-        document.querySelectorAll("ul li").forEach(function (link) {
+        document.querySelectorAll("ul.oh-general__tabs li").forEach(function (link) {
           link.classList.remove("active");
         });
         this.classList.add("active");
