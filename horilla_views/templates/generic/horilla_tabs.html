@@ -13,9 +13,9 @@
     {% for tab in tabs %}
     <li
       class="oh-tabs__tab d-flex {% if forloop.counter == 1 and not active_target %} oh-tabs__tab--active {% endif %}"
-      data-target="#htv{{forloop.counter}}"
+      data-target="#{{view_id}}{{forloop.counter}}"
       hx-get="{{tab.url}}?{{request.GET.urlencode}}"
-      hx-target="#htv{{forloop.counter}}"
+      hx-target="#{{view_id}}{{forloop.counter}}"
       hx-trigger="load"
       onclick="switchTab(event)"
     >
@@ -24,7 +24,7 @@
         <div class="oh-tabs__input-badge-container" onclick="event.stopPropagation()">
           <span
             class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
-            id="badge-htv{{forloop.counter}}"
+            id="badge-{{view_id}}{{forloop.counter}}"
             {% if tab.badge_label %}
             data-badge-label="{{tab.badge_label}}"
             title="0 {{tab.badge_label}}"
@@ -74,7 +74,7 @@
     {% for tab in tabs %}
     <div
       class="oh-tabs__content {% if forloop.counter == 1 and not active_target %} oh-tabs__content--active {% endif %}"
-      id="htv{{forloop.counter}}"
+      id="{{view_id}}{{forloop.counter}}"
     >
   <div class="animated-background"></div>
   </div>
