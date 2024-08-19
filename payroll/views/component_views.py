@@ -35,7 +35,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
-from horilla.methods import get_horilla_model_class
+from horilla.methods import dynamic_attr, get_horilla_model_class
 
 # from leave.models import AvailableLeave
 from notifications.signals import notify
@@ -225,6 +225,126 @@ def payroll_calculation(employee, start_date, end_date):
     payslip_data["json_data"] = json_data
     payslip_data["installments"] = installments
     return payslip_data
+
+
+@login_required
+@hx_request_required
+def allowances_deductions_tab(request, emp_id):
+    """
+    Retrieve and render the allowances and deductions applicable to an employee.
+
+    This view function retrieves the active contract, basic pay, allowances, and
+    deductions for a specified employee. It filters allowances and deductions
+    based on various conditions, including specific employee assignments and
+    condition-based rules. The results are then rendered in the allowance and
+    deduction tab template.
+    """
+    employee_deductions = []
+    employee_allowances = []
+    employee = Employee.objects.get(id=emp_id)
+    active_contracts = employee.contract_set.filter(contract_status="active").first()
+    basic_pay = active_contracts.wage if active_contracts else None
+    if basic_pay:
+        allowances = (
+            Allowance.objects.filter(specific_employees=employee)
+            | Allowance.objects.filter(is_condition_based=True).exclude(
+                exclude_employees=employee
+            )
+            | Allowance.objects.filter(include_active_employees=True).exclude(
+                exclude_employees=employee
+            )
+        )
+
+        for allowance in allowances:
+            applicable = True
+            if allowance.is_condition_based:
+                conditions = list(
+                    allowance.other_conditions.values_list(
+                        "field", "condition", "value"
+                    )
+                )
+                conditions.append(
+                    (
+                        allowance.field,
+                        allowance.condition,
+                        allowance.value.lower().replace(" ", "_"),
+                    )
+                )
+                for field, operator, value in conditions:
+                    val = dynamic_attr(employee, field)
+                    if val is None or not operator_mapping.get(operator)(
+                        val, type(val)(value)
+                    ):
+                        applicable = False
+                        break
+            if applicable:
+                employee_allowances.append(allowance)
+        employee_allowances = [
+            allowance
+            for allowance in employee_allowances
+            if operator_mapping.get(allowance.if_condition)(
+                basic_pay if allowance.if_choice == "basic_pay" else 0,
+                allowance.if_amount,
+            )
+        ]
+
+        # Find the applicable deductions for the employee
+        deductions = (
+            Deduction.objects.filter(
+                specific_employees=employee,
+            )
+            | Deduction.objects.filter(
+                is_condition_based=True,
+            ).exclude(exclude_employees=employee)
+            | Deduction.objects.filter(
+                include_active_employees=True,
+            ).exclude(exclude_employees=employee)
+        )
+        for deduction in deductions:
+            applicable = True
+            if deduction.is_condition_based:
+                conditions = list(
+                    deduction.other_conditions.values_list(
+                        "field", "condition", "value"
+                    )
+                )
+                conditions.append(
+                    (
+                        deduction.field,
+                        deduction.condition,
+                        deduction.value.lower().replace(" ", "_"),
+                    )
+                )
+                for field, operator, value in conditions:
+                    val = dynamic_attr(employee, field)
+                    if val is None or not operator_mapping.get(operator)(
+                        val, type(val)(value)
+                    ):
+                        applicable = False
+                        break
+            if applicable:
+                employee_deductions.append(deduction)
+
+    allowance_ids = (
+        json.dumps([instance.id for instance in employee_deductions])
+        if employee_deductions
+        else None
+    )
+    deduction_ids = (
+        json.dumps([instance.id for instance in employee_deductions])
+        if employee_deductions
+        else None
+    )
+    context = {
+        "active_contracts": active_contracts,
+        "basic_pay": basic_pay,
+        "allowances": employee_allowances if employee_allowances else None,
+        "allowance_ids": allowance_ids,
+        "deductions": employee_deductions if employee_deductions else None,
+        "deduction_ids": deduction_ids,
+        "employee": employee,
+    }
+    return render(request, "tabs/allowance_deduction-tab.html", context=context)
 
 
 @login_required
@@ -439,7 +559,7 @@ def view_single_deduction(request, deduction_id):
         try:
             employee_id = int(HTTP_REFERERS[-1])
             context["close_hx_url"] = (
-                f"/employee/allowances-deductions-tab/{employee_id}"
+                f"/payroll/allowances-deductions-tab/{employee_id}"
             )
             context["close_hx_target"] = "#allowance_deduction"
         except ValueError:
@@ -447,7 +567,7 @@ def view_single_deduction(request, deduction_id):
 
     elif HTTP_REFERER.endswith("employee-profile/"):
         context["close_hx_url"] = (
-            f"/employee/allowances-deductions-tab/{request.user.employee_get.id}"
+            f"/payroll/allowances-deductions-tab/{request.user.employee_get.id}"
         )
         context["close_hx_target"] = "#allowance_deduction"
 
@@ -530,7 +650,7 @@ def delete_deduction(request, deduction_id, emp_id=None):
 
     paths = {
         "payroll-deduction-container": f"/payroll/filter-deduction?{request.GET.urlencode()}",
-        "allowance_deduction": f"/employee/allowances-deductions-tab/{emp_id}",
+        "allowance_deduction": f"/payroll/allowances-deductions-tab/{emp_id}",
         "objectDetailsModalTarget": f"/payroll/single-deduction-view/{next_instance}?instances_ids={instances_list}",
     }
     http_hx_target = request.META.get("HTTP_HX_TARGET")

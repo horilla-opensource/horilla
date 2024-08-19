@@ -23,8 +23,6 @@ from horilla.methods import get_horilla_model_class
 from horilla_widgets.forms import HorillaForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-
-# from leave.models import AvailableLeave, LeaveType
 from notifications.signals import notify
 from payroll.models import tax_models as models
 from payroll.models.models import (
@@ -845,6 +843,9 @@ class ReimbursementForm(ModelForm):
                     {"leave_type_id": "This leave type is not encashable"}
                 )
             else:
+                AvailableLeave = get_horilla_model_class(
+                    app_label="leave", model="availableleave"
+                )
                 available_leave = AvailableLeave.objects.filter(
                     leave_type_id=leave_type_id, employee_id=employee_id
                 ).first()

@@ -10,6 +10,11 @@ from payroll.models.models import Allowance, Deduction
 from payroll.views import component_views
 
 urlpatterns = [
+    path(
+        "allowances-deductions-tab/<int:emp_id>",
+        component_views.allowances_deductions_tab,
+        name="allowances-deductions-tab",
+    ),
     path("create-allowance", component_views.create_allowance, name="create-allowance"),
     path("view-allowance/", component_views.view_allowance, name="view-allowance"),
     path(

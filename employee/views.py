@@ -97,7 +97,7 @@ from horilla.decorators import (
 )
 from horilla.filters import HorillaPaginator
 from horilla.group_by import group_by_queryset
-from horilla.methods import dynamic_attr, get_horilla_model_class
+from horilla.methods import get_horilla_model_class
 from horilla_audit.models import AccountBlockUnblock, HistoryTrackingFields
 from horilla_documents.forms import (
     DocumentForm,
@@ -323,112 +323,6 @@ def about_tab(request, obj_id, **kwargs):
             "contracts": contracts,
         },
     )
-
-
-@login_required
-@hx_request_required
-def allowances_deductions_tab(request, emp_id):
-    """
-    Retrieve and render the allowances and deductions applicable to an employee.
-
-    This view function retrieves the active contract, basic pay, allowances, and
-    deductions for a specified employee. It filters allowances and deductions
-    based on various conditions, including specific employee assignments and
-    condition-based rules. The results are then rendered in the allowance and
-    deduction tab template.
-    """
-    employee = Employee.objects.get(id=emp_id)
-    active_contracts = (
-        employee.contract_set.filter(contract_status="active").first()
-        if apps.is_installed("payroll")
-        else None
-    )
-    basic_pay = active_contracts.wage if active_contracts else None
-    employee_allowances = []
-    employee_deductions = []
-    if basic_pay:
-        # Find the applicable allowances for the employee
-        Allowance = get_horilla_model_class(app_label="payroll", model="allowance")
-        specific_allowances = Allowance.objects.filter(specific_employees=employee)
-        conditional_allowances = Allowance.objects.filter(
-            is_condition_based=True
-        ).exclude(exclude_employees=employee)
-        active_employees = Allowance.objects.filter(
-            include_active_employees=True
-        ).exclude(exclude_employees=employee)
-        allowances = specific_allowances | conditional_allowances | active_employees
-
-        for allowance in allowances:
-            if allowance.is_condition_based:
-                condition_field = allowance.field
-                condition_operator = allowance.condition
-                condition_value = allowance.value.lower().replace(" ", "_")
-                employee_value = dynamic_attr(employee, condition_field)
-                employee_value = 0
-                operator_func = operator_mapping.get(condition_operator)
-                if employee_value is not None:
-                    condition_value = type(employee_value)(condition_value)
-                    if operator_func(employee_value, condition_value):
-                        employee_allowances.append(allowance)
-            else:
-                employee_allowances.append(allowance)
-            for allowance in employee_allowances:
-                operator_func = operator_mapping.get(allowance.if_condition)
-                condition_value = basic_pay if allowance.if_choice == "basic_pay" else 0
-                if not operator_func(condition_value, allowance.if_amount):
-                    employee_allowances.remove(allowance)
-
-        # Find the applicable deductions for the employee
-        Deduction = get_horilla_model_class(app_label="payroll", model="deduction")
-        specific_deductions = Deduction.objects.filter(
-            specific_employees=employee, is_pretax=True, is_tax=False
-        )
-        conditional_deduction = Deduction.objects.filter(
-            is_condition_based=True, is_pretax=True, is_tax=False
-        ).exclude(exclude_employees=employee)
-        active_employee_deduction = Deduction.objects.filter(
-            include_active_employees=True, is_pretax=True, is_tax=False
-        ).exclude(exclude_employees=employee)
-        deductions = (
-            specific_deductions | conditional_deduction | active_employee_deduction
-        )
-        employee_deductions = list(deductions)
-        for deduction in deductions:
-            if deduction.is_condition_based:
-                condition_field = deduction.field
-                condition_operator = deduction.condition
-                condition_value = deduction.value.lower().replace(" ", "_")
-                employee_value = dynamic_attr(employee, condition_field)
-                employee_value = 0
-                operator_func = operator_mapping.get(condition_operator)
-
-                if (
-                    employee_value is not None
-                    and not operator_func(
-                        employee_value, type(employee_value)(condition_value)
-                    )
-                ) or employee_value is None:
-                    employee_deductions.remove(deduction)
-    allowance_ids = (
-        json.dumps([instance.id for instance in employee_allowances])
-        if employee_allowances
-        else None
-    )
-    deduction_ids = (
-        json.dumps([instance.id for instance in employee_deductions])
-        if employee_deductions
-        else None
-    )
-    context = {
-        "active_contracts": active_contracts,
-        "basic_pay": basic_pay,
-        "allowances": employee_allowances if employee_allowances else None,
-        "allowance_ids": allowance_ids,
-        "deductions": employee_deductions if employee_deductions else None,
-        "deduction_ids": deduction_ids,
-        "employee": employee,
-    }
-    return render(request, "tabs/allowance_deduction-tab.html", context=context)
 
 
 @login_required

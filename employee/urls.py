@@ -206,11 +206,6 @@ urlpatterns = [
         views.employee_note_delete,
         name="employee-note-delete",
     ),
-    path(
-        "allowances-deductions-tab/<int:emp_id>",
-        views.allowances_deductions_tab,
-        name="allowances-deductions-tab",
-    ),
     path("shift-tab/<int:emp_id>", views.shift_tab, name="shift-tab"),
     path(
         "about-tab/<int:obj_id>",
