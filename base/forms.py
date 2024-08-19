@@ -1053,37 +1053,42 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
         Meta class for additional options
         """
 
+        model = EmployeeShiftSchedule
         fields = "__all__"
         exclude = ["is_active", "is_night_shift"]
         widgets = {
-            "start_time": DateInput(attrs={"type": "time"}),
-            "end_time": DateInput(attrs={"type": "time"}),
-            "auto_punch_out_time": DateInput(attrs={"type": "time"}),
+            "start_time": forms.TimeInput(attrs={"type": "time"}),
+            "end_time": forms.TimeInput(attrs={"type": "time"}),
         }
-        model = EmployeeShiftSchedule
 
     def __init__(self, *args, **kwargs):
-        if instance := kwargs.get("instance"):
-            initial = {
-                "start_time": (
-                    instance.start_time.strftime("%H:%M")
-                    if instance.start_time
-                    else None
-                ),
-                "end_time": (
-                    instance.end_time.strftime("%H:%M") if instance.end_time else None
-                ),
-                "auto_punch_out_time": (
+        super().__init__(*args, **kwargs)
+        instance = kwargs.get("instance")
+
+        if instance:
+            self.fields["start_time"].initial = (
+                instance.start_time.strftime("%H:%M") if instance.start_time else None
+            )
+            self.fields["end_time"].initial = (
+                instance.end_time.strftime("%H:%M") if instance.end_time else None
+            )
+            if apps.is_installed("attendance"):
+                self.fields["auto_punch_out_time"].initial = (
                     instance.auto_punch_out_time.strftime("%H:%M")
                     if instance.auto_punch_out_time
                     else None
-                ),
-            }
-            kwargs["initial"] = initial
-        super().__init__(*args, **kwargs)
-        self.fields["is_auto_punch_out_enabled"].widget.attrs.update(
-            {"onchange": "toggleDivVisibility(this)"}
-        )
+                )
+
+        if not apps.is_installed("attendance"):
+            self.fields.pop("auto_punch_out_time", None)
+            self.fields.pop("is_auto_punch_out_enabled", None)
+        else:
+            self.fields["auto_punch_out_time"].widget = forms.TimeInput(
+                attrs={"type": "time", "class": "oh-input w-100 form-control"}
+            )
+            self.fields["is_auto_punch_out_enabled"].widget.attrs.update(
+                {"onchange": "toggleDivVisibility(this)"}
+            )
 
     def as_p(self):
         """
@@ -1096,27 +1101,29 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        auto_punch_out_enabled = self.cleaned_data["is_auto_punch_out_enabled"]
-        auto_punch_out_time = self.cleaned_data["auto_punch_out_time"]
-        end_time = self.cleaned_data["end_time"]
-        if auto_punch_out_enabled:
-            if not auto_punch_out_time:
-                raise ValidationError(
-                    {
-                        "auto_punch_out_time": _(
-                            "Automatic punch out time is required when automatic punch out is enabled."
-                        )
-                    }
-                )
-        if auto_punch_out_enabled and auto_punch_out_time and end_time:
-            if auto_punch_out_time < end_time:
-                raise ValidationError(
-                    {
-                        "auto_punch_out_time": _(
-                            "Automatic punch out time cannot be earlier than the end time."
-                        )
-                    }
-                )
+        if apps.is_installed("attendance"):
+            auto_punch_out_enabled = cleaned_data.get("is_auto_punch_out_enabled")
+            auto_punch_out_time = cleaned_data.get("auto_punch_out_time")
+            end_time = cleaned_data.get("end_time")
+
+            if auto_punch_out_enabled:
+                if not auto_punch_out_time:
+                    raise ValidationError(
+                        {
+                            "auto_punch_out_time": _(
+                                "Automatic punch out time is required when automatic punch out is enabled."
+                            )
+                        }
+                    )
+                elif auto_punch_out_time < end_time:
+                    raise ValidationError(
+                        {
+                            "auto_punch_out_time": _(
+                                "Automatic punch out time cannot be earlier than the end time."
+                            )
+                        }
+                    )
+
         return cleaned_data
 
 
@@ -1140,7 +1147,6 @@ class EmployeeShiftScheduleForm(ModelForm):
         widgets = {
             "start_time": DateInput(attrs={"type": "time"}),
             "end_time": DateInput(attrs={"type": "time"}),
-            "auto_punch_out_time": DateInput(attrs={"type": "time"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -1150,27 +1156,29 @@ class EmployeeShiftScheduleForm(ModelForm):
             # so here overriding default forms instance method to set initial value
             # """
             initial = {
-                "start_time": (
-                    instance.start_time.strftime("%H:%M")
-                    if instance.start_time
-                    else None
-                ),
-                "end_time": (
-                    instance.end_time.strftime("%H:%M") if instance.end_time else None
-                ),
-                "auto_punch_out_time": (
+                "start_time": instance.start_time.strftime("%H:%M"),
+                "end_time": instance.end_time.strftime("%H:%M"),
+            }
+            if apps.is_installed("attendance"):
+                initial["auto_punch_out_time"] = (
                     instance.auto_punch_out_time.strftime("%H:%M")
                     if instance.auto_punch_out_time
                     else None
-                ),
-            }
+                )
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
         self.fields["day"].widget.attrs.update({"id": str(uuid.uuid4())})
         self.fields["shift_id"].widget.attrs.update({"id": str(uuid.uuid4())})
-        self.fields["is_auto_punch_out_enabled"].widget.attrs.update(
-            {"onchange": "toggleDivVisibility(this)"}
-        )
+        if not apps.is_installed("attendance"):
+            self.fields.pop("auto_punch_out_time", None)
+            self.fields.pop("is_auto_punch_out_enabled", None)
+        else:
+            self.fields["auto_punch_out_time"].widget = forms.TimeInput(
+                attrs={"type": "time", "class": "oh-input w-100 form-control"}
+            )
+            self.fields["is_auto_punch_out_enabled"].widget.attrs.update(
+                {"onchange": "toggleDivVisibility(this)"}
+            )
 
     def as_p(self):
         """
@@ -1183,27 +1191,28 @@ class EmployeeShiftScheduleForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        auto_punch_out_enabled = self.cleaned_data["is_auto_punch_out_enabled"]
-        auto_punch_out_time = self.cleaned_data["auto_punch_out_time"]
-        end_time = self.cleaned_data["end_time"]
-        if auto_punch_out_enabled:
-            if not auto_punch_out_time:
-                raise ValidationError(
-                    {
-                        "auto_punch_out_time": _(
-                            "Automatic punch out time is required when automatic punch out is enabled."
-                        )
-                    }
-                )
-        if auto_punch_out_enabled and auto_punch_out_time and end_time:
-            if auto_punch_out_time < end_time:
-                raise ValidationError(
-                    {
-                        "auto_punch_out_time": _(
-                            "Automatic punch out time cannot be earlier than the end time."
-                        )
-                    }
-                )
+        if apps.is_installed("attendance"):
+            auto_punch_out_enabled = self.cleaned_data["is_auto_punch_out_enabled"]
+            auto_punch_out_time = self.cleaned_data["auto_punch_out_time"]
+            end_time = self.cleaned_data["end_time"]
+            if auto_punch_out_enabled:
+                if not auto_punch_out_time:
+                    raise ValidationError(
+                        {
+                            "auto_punch_out_time": _(
+                                "Automatic punch out time is required when automatic punch out is enabled."
+                            )
+                        }
+                    )
+            if auto_punch_out_enabled and auto_punch_out_time and end_time:
+                if auto_punch_out_time < end_time:
+                    raise ValidationError(
+                        {
+                            "auto_punch_out_time": _(
+                                "Automatic punch out time cannot be earlier than the end time."
+                            )
+                        }
+                    )
         return cleaned_data
 
     def save(self, commit=True):
