@@ -1,53 +1,118 @@
 {% load i18n %}
-<section class="oh-wrapper oh-main__topbar" style="padding-bottom: 1rem; padding-top: 40px;">
-  <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
-    <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Loan / Advanced Salary' %}</h1>
-  </div>
-
-  <form hx-get="{% url 'search-loan' %}" hx-target="#loanContainer" onsubmit="event.stopPropagation()">
-    <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
-      {% if records %}
-        <div class="oh-input-group oh-input__search-group mr-4">
-          <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
-          <input type="text" id="pipelineSearch" placeholder="Search" style="margin-right:10px" onkeyup="$('.filterButton').click()" name="search" class="oh-input oh-input__icon mr-3" aria-label="Search Input" />
-        </div>
-        <input type="hidden" name="view" value="{{request.GET.view}}" id="loanViewType">
-        <ul class="oh-view-types ml-2" style="margin-bottom: 0">
-          <li class="oh-view-type employee-view-type" data-view="list">
-            <a
-              id="list"
-              onclick="$('#loanViewType').val('list');setTimeout(() => {
-              $('.filterButton')[0].click();
-              }, 10);$('.oh-btn--view-active').removeClass('oh-btn--view-active'); $(this).addClass('oh-btn--view-active'); "
-              class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
-              title='{% trans "List" %}'
-              ><ion-icon name="list-outline"></ion-icon
-            ></a>
-          </li>
-          <li class="oh-view-type employee-view-type" data-view="card">
-            <a
-              id="card"
-              onclick="$('#loanViewType').val('card');setTimeout(() => {
-              $('.filterButton')[0].click();
-              }, 10);$('.oh-btn--view-active').removeClass('oh-btn--view-active'); $(this).addClass('oh-btn--view-active');"
-              class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
-              title='{% trans "Card" %}'
-              ><ion-icon name="grid-outline"></ion-icon
-            ></a>
-          </li>
-        </ul>
-      {% include 'payroll/loan/filter.html' %}
-      {% endif %}
-      {% if perms.payroll.add_loanaccount %}
-        <div class="oh-main__titlebar-button-container">
-          <div class="oh-main__titlebar-button-container">
-            <a hx-get="{% url 'create-loan' %}" hx-target="#loanModalBody" data-toggle="oh-modal-toggle" data-target="#loanModal" class="oh-btn oh-btn--secondary">
-              <ion-icon name="add-outline"></ion-icon>
-              {% trans 'Create' %}
-            </a>
-          </div>
-        </div>
-      {% endif %}
+<section
+    class="oh-wrapper oh-main__topbar"
+    style="padding-bottom: 1rem; padding-top: 40px"
+>
+    <div
+        class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small"
+    >
+        <h1 class="oh-main__titlebar-title fw-bold">
+            {% trans 'Loan / Advanced Salary' %}
+        </h1>
     </div>
-  </form>
+
+    <form
+        hx-get="{% url 'search-loan' %}"
+        hx-target="#loanContainer"
+        onsubmit="event.stopPropagation()"
+    >
+        <div
+            class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small"
+        >
+            {% if records %}
+            <div class="oh-input-group oh-input__search-group mr-4">
+                <ion-icon
+                    name="search-outline"
+                    class="oh-input-group__icon oh-input-group__icon--left md hydrated"
+                    role="img"
+                    aria-label="search outline"
+                ></ion-icon>
+                <input
+                    type="text"
+                    id="pipelineSearch"
+                    placeholder="Search"
+                    style="margin-right: 10px"
+                    onkeyup="$('.filterButton').click()"
+                    name="search"
+                    class="oh-input oh-input__icon mr-3"
+                    aria-label="Search Input"
+                />
+            </div>
+            <input
+                type="hidden"
+                name="view"
+                value="{{request.GET.view}}"
+                id="loanViewType"
+            />
+            <ul class="oh-view-types ml-2" style="margin-bottom: 0">
+                <li class="oh-view-type employee-view-type" data-view="list">
+                    <a
+                        id="list"
+                        onclick="$('#loanViewType').val('list');setTimeout(() => {
+                            $('.filterButton')[0].click();
+                            }, 10);$('.oh-btn--view-active').removeClass('oh-btn--view-active'); $(this).addClass('oh-btn--view-active'); "
+                        class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
+                        title='{% trans "List" %}'
+                        ><ion-icon name="list-outline"></ion-icon
+                    ></a>
+                </li>
+                <li class="oh-view-type employee-view-type" data-view="card">
+                    <a
+                        id="card"
+                        onclick="$('#loanViewType').val('card');setTimeout(() => {
+                            $('.filterButton')[0].click();
+                            }, 10);$('.oh-btn--view-active').removeClass('oh-btn--view-active'); $(this).addClass('oh-btn--view-active');"
+                        class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+                        title='{% trans "Card" %}'
+                        ><ion-icon name="grid-outline"></ion-icon
+                    ></a>
+                </li>
+            </ul>
+            {% include 'payroll/loan/filter.html' %} {% endif %}
+            {% if perms.payroll.add_loanaccount %}
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-main__titlebar-button-container">
+                    <a
+                        hx-get="{% url 'create-loan' %}"
+                        hx-target="#loanModalBody"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#loanModal"
+                        class="oh-btn oh-btn--secondary"
+                    >
+                        <ion-icon name="add-outline"></ion-icon>
+                        {% trans 'Create' %}
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </form>
 </section>
+
+<script>
+    $(document).ready(function () {
+        $("#loanModalBody").on("htmx:afterSwap", function () {
+            $("[name='installment_amount']").on("change", function () {
+                var loanAmount = $("[name='loan_amount']").val();
+                var installmentAmount = $(this).val();
+
+                var installments = loanAmount / installmentAmount;
+                $("[name='installments']").val(installments);
+                if (Math.round(installments) !== installments) {
+                    installments = Math.round(installments);
+                    $("[name='installments']").val(installments);
+                    $("[name='installments']").trigger("change");
+                }
+            });
+
+            $("[name='installments']").on("change keyup", function () {
+                var loanAmount = $("[name='loan_amount']").val();
+                var installments = $(this).val();
+
+                var installmentAmount = loanAmount / installments;
+
+                $("[name='installment_amount']").val(installmentAmount);
+            });
+        });
+    });
+</script>

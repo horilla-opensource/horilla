@@ -1337,7 +1337,7 @@ class Payslip(HorillaModel):
     group_name = models.CharField(
         max_length=50, null=True, blank=True, verbose_name=_("Batch name")
     )
-    reference = models.CharField(max_length=255, unique=False)
+    reference = models.CharField(max_length=255, unique=False, null=True, blank=True)
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
     )
@@ -1470,12 +1470,17 @@ class LoanAccount(HorillaModel):
     deduction_ids = models.ManyToManyField(Deduction, editable=False)
     is_fixed = models.BooleanField(default=True, editable=False)
     rate = models.FloatField(default=0, editable=False)
+    installment_amount = models.FloatField(
+        verbose_name=_("installment Amount"), blank=True, null=True
+    )
     installments = models.IntegerField(verbose_name=_("Total installments"))
     installment_start_date = models.DateField(
         help_text="From the start date deduction will apply"
     )
     apply_on = models.CharField(default="end_of_month", max_length=20, editable=False)
     settled = models.BooleanField(default=False)
+    settled_date = models.DateTimeField(null=True)
+
     if apps.is_installed("asset"):
         asset_id = models.ForeignKey(
             "asset.Asset",
@@ -1485,6 +1490,9 @@ class LoanAccount(HorillaModel):
             editable=False,
         )
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+
+    def __str__(self):
+        return f"{self.title} - {self.employee_id}"
 
     def get_installments(self):
         """
@@ -1543,16 +1551,43 @@ class LoanAccount(HorillaModel):
             return 0
         return (installment_paid / total_installments) * 100
 
+    def save(self, *args, **kwargs):
+
+        if self.settled:
+            self.settled_date = timezone.now()
+        else:
+            self.settled_date = None
+
+        super().save(*args, **kwargs)
+
+
+def _create_deductions(instance, amount, date):
+    installment = Deduction()
+    installment.title = instance.title
+    installment.include_active_employees = False
+    installment.amount = amount
+    installment.is_fixed = True
+    installment.one_time_date = date
+    installment.only_show_under_employee = True
+    installment.is_installment = True
+    installment.save()
+    installment.include_active_employees = False
+    installment.specific_employees.add(instance.employee_id)
+    installment.save()
+
+    return installment
+
 
 @receiver(post_save, sender=LoanAccount)
 def create_installments(sender, instance, created, **kwargs):
     """
-    Post save metod for loan account
+    Post save method for loan account
     """
     installments = []
     asset = True
     if apps.is_installed("asset"):
         asset = True if instance.asset_id is None else False
+
     if created and asset and instance.type != "fine":
         loan = Allowance()
         loan.amount = instance.loan_amount
@@ -1568,33 +1603,58 @@ def create_installments(sender, instance, created, **kwargs):
         loan.specific_employees.add(instance.employee_id)
         loan.save()
         instance.allowance_id = loan
-        # Here create the instance...
         super(LoanAccount, instance).save()
     else:
         deductions = instance.deduction_ids.values_list("id", flat=True)
-        # Re create deduction only when existing installment not exists in payslip
-        if not Payslip.objects.filter(installment_ids__in=deductions).exists():
-            Deduction.objects.filter(id__in=deductions).delete()
+        payslips_with_deductions = Payslip.objects.filter(
+            installment_ids__in=deductions
+        )
+        balance_deduction = [
+            deduction_id
+            for deduction_id in deductions
+            if not payslips_with_deductions.filter(
+                installment_ids=deduction_id
+            ).exists()
+        ]
+        installment_dict = instance.get_installments()
 
-            # Installment deductions
+        if not payslips_with_deductions and not instance.settled:
+            Deduction.objects.filter(id__in=deductions).delete()
             for (
                 installment_date,
                 installment_amount,
-            ) in instance.get_installments().items():
-                installment = Deduction()
-                installment.title = instance.title
-                installment.include_active_employees = False
-                installment.amount = installment_amount
-                installment.is_fixed = True
-                installment.one_time_date = installment_date
-                installment.only_show_under_employee = True
-                installment.is_installment = True
-                installment.save()
-                installment.include_active_employees = False
-                installment.specific_employees.add(instance.employee_id)
-                installment.save()
+            ) in installment_dict.items():
+                installment = _create_deductions(
+                    instance, installment_amount, installment_date
+                )
+
                 installments.append(installment)
-            instance.deduction_ids.set(installments)
+
+            instance.deduction_ids.add(*installments)
+            return
+
+        if instance.settled:
+            Deduction.objects.filter(id__in=balance_deduction).delete()
+
+        else:
+            if not balance_deduction:
+                for (
+                    installment_date,
+                    installment_amount,
+                ) in installment_dict.items():
+                    if not Deduction.objects.filter(
+                        one_time_date=installment_date,
+                        specific_employees=instance.employee_id,
+                        is_installment=True,
+                        title=instance.title,
+                    ).exists():
+                        installment = _create_deductions(
+                            instance, installment_amount, installment_date
+                        )
+
+                        installments.append(installment)
+
+                instance.deduction_ids.add(*installments)
 
 
 class ReimbursementMultipleAttachment(models.Model):

@@ -11,6 +11,7 @@ from typing import Any
 from django import forms
 from django.apps import apps
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import payroll.models.models
@@ -622,7 +623,7 @@ class LoanAccountForm(ModelForm):
     class Meta:
         model = LoanAccount
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = ["is_active", "settled_date"]
         widgets = {
             "provided_date": forms.DateTimeInput(attrs={"type": "date"}),
             "installment_start_date": forms.DateTimeInput(attrs={"type": "date"}),
@@ -647,7 +648,11 @@ class LoanAccountForm(ModelForm):
                     self.instance.deduction_ids.values_list("id", flat=True)
                 )
             ).exists():
-                fields_to_exclude = fields_to_exclude + ["loan_amount", "installments"]
+                fields_to_exclude = fields_to_exclude + [
+                    "loan_amount",
+                    "installments",
+                    "installment_amount",
+                ]
             self.initial["provided_date"] = str(self.instance.provided_date)
             for field in fields_to_exclude:
                 if field in self.fields:

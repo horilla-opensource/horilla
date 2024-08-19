@@ -1314,13 +1314,29 @@ def delete_loan(request):
     Delete loan
     """
     ids = request.GET.getlist("ids")
-    loans = LoanAccount.objects.filter(id__in=ids, settled=False)
+    loans = LoanAccount.objects.filter(id__in=ids)
     # This 👇 would'nt trigger the delete method in the model
     # loans.delete()
     for loan in loans:
-        loan.delete()
-    messages.success(request, "Loan account deleted")
+        if (
+            not loan.settled
+            and not Payslip.objects.filter(
+                installment_ids__in=list(
+                    loan.deduction_ids.values_list("id", flat=True)
+                )
+            ).exists()
+        ):
+            loan.delete()
+            messages.success(request, "Loan account deleted")
+        else:
+            messages.error(request, "Loan account cannot be deleted")
     return redirect(view_loans)
+
+
+@login_required
+@permission_required("payroll.view_loanaccount")
+def edit_installment_amount(request):
+    pass
 
 
 @login_required
