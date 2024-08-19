@@ -6172,7 +6172,6 @@ def holidays_excel_template(request):
             'attachment; filename="assign_leave_type_excel.xlsx"'
         )
         data_frame.to_excel(response, index=False)
-        print(response)
         return response
     except Exception as exception:
         return HttpResponse(exception)

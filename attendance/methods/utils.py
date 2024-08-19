@@ -18,6 +18,7 @@ from django.utils.translation import gettext_lazy as _
 from base.methods import get_pagination
 from base.models import WEEK_DAYS, CompanyLeaves, Holidays
 from employee.models import Employee
+from horilla.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
 
 MONTH_MAPPING = {
     "january": 1,
@@ -523,15 +524,11 @@ class META:
 
 
 def parse_time(time_str):
-    time_formats = {
-        "hh:mm A": "%I:%M %p",  # 12-hour format
-        "HH:mm": "%H:%M",  # 24-hour format
-    }
     if isinstance(time_str, time):  # Check if it's already a time object
         return time_str
 
     if isinstance(time_str, str):
-        for format_str in time_formats.values():
+        for format_str in HORILLA_TIME_FORMATS.values():
             try:
                 return datetime.strptime(time_str, format_str).time()
             except ValueError:
@@ -548,23 +545,10 @@ def parse_date(date_str, error_key, activity):
 
 
 def get_date(date):
-    date_formats = {
-        "DD-MM-YYYY": "%d-%m-%Y",
-        "DD.MM.YYYY": "%d.%m.%Y",
-        "DD/MM/YYYY": "%d/%m/%Y",
-        "MM/DD/YYYY": "%m/%d/%Y",
-        "YYYY-MM-DD": "%Y-%m-%d",
-        "YYYY/MM/DD": "%Y/%m/%d",
-        "MMMM D, YYYY": "%B %d, %Y",
-        "DD MMMM, YYYY": "%d %B, %Y",
-        "MMM. D, YYYY": "%b. %d, %Y",
-        "D MMM. YYYY": "%d %b. %Y",
-        "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
-    }
     if isinstance(date, datetime):
         return date
     elif isinstance(date, str):
-        for format_name, format_str in date_formats.items():
+        for format_name, format_str in HORILLA_DATE_FORMATS.items():
             try:
                 return datetime.strptime(date, format_str)
             except ValueError:

@@ -13,6 +13,8 @@ provide the main entry points for interacting with the application's functionali
 
 import logging
 
+from horilla.horilla_settings import HORILLA_DATE_FORMATS
+
 logger = logging.getLogger(__name__)
 
 import calendar
@@ -2108,22 +2110,7 @@ def work_record_export(request):
     else:
         date_format = "DD-MM-YYYY"
 
-    # Define date formats
-    date_formats = {
-        "DD-MM-YYYY": "%d-%m-%Y",
-        "DD.MM.YYYY": "%d.%m.%Y",
-        "DD/MM/YYYY": "%d/%m/%Y",
-        "MM/DD/YYYY": "%m/%d/%Y",
-        "YYYY-MM-DD": "%Y-%m-%d",
-        "YYYY/MM/DD": "%Y/%m/%d",
-        "MMMM D, YYYY": "%B %d, %Y",
-        "DD MMMM, YYYY": "%d %B, %Y",
-        "MMM. D, YYYY": "%b. %d, %Y",
-        "D MMM. YYYY": "%d %b. %Y",
-        "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
-    }
-
-    format_string = date_formats[date_format]
+    format_string = HORILLA_DATE_FORMATS.get(date_format)
 
     for employee in employees:
         row_data = {"Employee": employee}

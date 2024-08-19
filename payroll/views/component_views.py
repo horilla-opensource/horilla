@@ -35,6 +35,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
+from horilla.horilla_settings import HORILLA_DATE_FORMATS
 from horilla.methods import dynamic_attr, get_horilla_model_class
 
 # from leave.models import AvailableLeave
@@ -1025,26 +1026,12 @@ def payslip_export(request):
                     )
                 else:
                     date_format = "MMM. D, YYYY"
-                # Define date formats
-                date_formats = {
-                    "DD-MM-YYYY": "%d-%m-%Y",
-                    "DD.MM.YYYY": "%d.%m.%Y",
-                    "DD/MM/YYYY": "%d/%m/%Y",
-                    "MM/DD/YYYY": "%m/%d/%Y",
-                    "YYYY-MM-DD": "%Y-%m-%d",
-                    "YYYY/MM/DD": "%Y/%m/%d",
-                    "MMMM D, YYYY": "%B %d, %Y",
-                    "DD MMMM, YYYY": "%d %B, %Y",
-                    "MMM. D, YYYY": "%b. %d, %Y",
-                    "D MMM. YYYY": "%d %b. %Y",
-                    "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
-                }
 
                 # Convert the string to a datetime.date object
                 start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
                 # Print the formatted date for each format
-                for format_name, format_string in date_formats.items():
+                for format_name, format_string in HORILLA_DATE_FORMATS.items():
                     if format_name == date_format:
                         data = start_date.strftime(format_string)
             else:
@@ -1923,23 +1910,9 @@ def payslip_detailed_export_data(request):
                 else:
                     date_format = "MMM. D, YYYY"
 
-                date_formats = {
-                    "DD-MM-YYYY": "%d-%m-%Y",
-                    "DD.MM.YYYY": "%d.%m.%Y",
-                    "DD/MM/YYYY": "%d/%m/%Y",
-                    "MM/DD/YYYY": "%m/%d/%Y",
-                    "YYYY-MM-DD": "%Y-%m-%d",
-                    "YYYY/MM/DD": "%Y/%m/%d",
-                    "MMMM D, YYYY": "%B %d, %Y",
-                    "DD MMMM, YYYY": "%d %B, %Y",
-                    "MMM. D, YYYY": "%b. %d, %Y",
-                    "D MMM. YYYY": "%d %b. %Y",
-                    "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
-                }
-
                 start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
-                for format_name, format_string in date_formats.items():
+                for format_name, format_string in HORILLA_DATE_FORMATS.items():
                     if format_name == date_format:
                         data = start_date.strftime(format_string)
             else:

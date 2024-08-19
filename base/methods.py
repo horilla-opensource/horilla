@@ -22,6 +22,7 @@ from xhtml2pdf import pisa
 from base.models import Company, CompanyLeaves, DynamicPagination, Holidays
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required
+from horilla.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
 
 
 def filtersubordinates(request, queryset, perm=None, field=None):
@@ -413,7 +414,42 @@ def closest_numbers(numbers: list, input_number: int) -> tuple:
     return (previous_number, next_number)
 
 
-@login_required
+def format_export_value(value, employee):
+    work_info = EmployeeWorkInformation.objects.filter(employee_id=employee).first()
+    time_format = (
+        work_info.company_id.time_format
+        if work_info and work_info.company_id
+        else "HH:mm"
+    )
+    date_format = (
+        work_info.company_id.date_format
+        if work_info and work_info.company_id
+        else "MMM. D, YYYY"
+    )
+
+    if isinstance(value, time):
+        # Convert the string to a datetime.time object
+        check_in_time = datetime.strptime(str(value).split(".")[0], "%H:%M:%S").time()
+
+        # Print the formatted time for each format
+        for format_name, format_string in HORILLA_TIME_FORMATS.items():
+            if format_name == time_format:
+                value = check_in_time.strftime(format_string)
+
+    elif type(value) == date:
+        # Convert the string to a datetime.date object
+        start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
+        # Print the formatted date for each format
+        for format_name, format_string in HORILLA_DATE_FORMATS.items():
+            if format_name == date_format:
+                value = start_date.strftime(format_string)
+
+    elif isinstance(value, datetime):
+        value = str(value)
+
+    return value
+
+
 def export_data(request, model, form_class, filter_class, file_name):
     fields_mapping = {
         "male": _("Male"),
@@ -441,6 +477,7 @@ def export_data(request, model, form_class, filter_class, file_name):
         "late_come": _("Late Come"),
         "early_out": _("Early Out"),
     }
+    employee = request.user.employee_get
 
     selected_columns = []
     today_date = date.today().strftime("%Y-%m-%d")
@@ -486,82 +523,7 @@ def export_data(request, model, form_class, filter_class, file_name):
                     value = _(value.title())
 
                 # Check if the type of 'value' is time
-                if isinstance(value, time):
-                    user = request.user
-                    employee = user.employee_get
-
-                    # Taking the company_name of the user
-                    info = EmployeeWorkInformation.objects.filter(employee_id=employee)
-                    if info.exists():
-                        for data in info:
-                            employee_company = data.company_id
-                        company_name = Company.objects.filter(id=employee_company.id)
-                        emp_company = company_name.first()
-                        # Access the date_format attribute directly
-                        time_format = (
-                            emp_company.time_format if emp_company else "hh:mm A"
-                        )
-                    else:
-                        time_format = "hh:mm A"
-
-                    time_formats = {
-                        "hh:mm A": "%I:%M %p",  # 12-hour format
-                        "HH:mm": "%H:%M",  # 24-hour format
-                    }
-
-                    # Convert the string to a datetime.time object
-                    check_in_time = datetime.strptime(
-                        str(value).split(".")[0], "%H:%M:%S"
-                    ).time()
-
-                    # Print the formatted time for each format
-                    for format_name, format_string in time_formats.items():
-                        if format_name == time_format:
-                            value = check_in_time.strftime(format_string)
-
-                # Check if the type of 'value' is date
-                if type(value) == date:
-                    user = request.user
-                    employee = user.employee_get
-
-                    # Taking the company_name of the user
-                    info = EmployeeWorkInformation.objects.filter(employee_id=employee)
-                    if info.exists():
-                        for data in info:
-                            employee_company = data.company_id
-                        company_name = Company.objects.filter(company=employee_company)
-                        emp_company = company_name.first()
-
-                        # Access the date_format attribute directly
-                        date_format = (
-                            emp_company.date_format if emp_company else "MMM. D, YYYY"
-                        )
-                    else:
-                        date_format = "MMM. D, YYYY"
-                    # Define date formats
-                    date_formats = {
-                        "DD-MM-YYYY": "%d-%m-%Y",
-                        "DD.MM.YYYY": "%d.%m.%Y",
-                        "DD/MM/YYYY": "%d/%m/%Y",
-                        "MM/DD/YYYY": "%m/%d/%Y",
-                        "YYYY-MM-DD": "%Y-%m-%d",
-                        "YYYY/MM/DD": "%Y/%m/%d",
-                        "MMMM D, YYYY": "%B %d, %Y",
-                        "DD MMMM, YYYY": "%d %B, %Y",
-                        "MMM. D, YYYY": "%b. %d, %Y",
-                        "D MMM. YYYY": "%d %b. %Y",
-                        "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
-                    }
-
-                    # Convert the string to a datetime.date object
-                    start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
-
-                    # Print the formatted date for each format
-                    for format_name, format_string in date_formats.items():
-                        if format_name == date_format:
-                            value = start_date.strftime(format_string)
-                if isinstance(value, datetime):
-                    value = str(value)
+                value = format_export_value(value, employee)
                 data_export[verbose_name].append(value)
 
     data_frame = pd.DataFrame(data=data_export)
@@ -777,8 +739,7 @@ def get_date_range(start_date, end_date):
         start_date = date(2023, 1, 1)
         end_date = date(2023, 1, 10)
         date_range = get_date_range(start_date, end_date)
-        for date_obj in date_range:
-            print(date_obj)
+
     """
     date_list = []
     delta = end_date - start_date

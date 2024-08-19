@@ -59,8 +59,6 @@ def get_date_range(start_date, end_date):
         start_date = date(2023, 1, 1)
         end_date = date(2023, 1, 10)
         date_range = get_date_range(start_date, end_date)
-        for date_obj in date_range:
-            print(date_obj)
     """
     date_list = []
     delta = end_date - start_date

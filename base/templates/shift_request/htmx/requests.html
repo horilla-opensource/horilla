@@ -98,7 +98,7 @@
                     <div class="oh-sticky-table__td" data-cell-index="3">{{shift_request.previous_shift_id}}</div>
                     <div class="oh-sticky-table__td dateformat_changer" data-cell-index="4">{{shift_request.requested_date}}</div>
                     <div class="oh-sticky-table__td dateformat_changer" data-cell-index="5">{{shift_request.requested_till}}</div>
-                    <div class="oh-sticky-table__td" data-cell-index="6">{% if shift_request.approved %}{% trans "Approved" %}{% elif shift_request.canceled %}{% trans "Cancelled" %}{% else %}{% trans "Requested" %}{% endif %}</div>
+                    <div class="oh-sticky-table__td" data-cell-index="6">{% if shift_request.approved %}{% trans "Approved" %}{% elif shift_request.canceled %}{% trans "Rejected" %}{% else %}{% trans "Requested" %}{% endif %}</div>
                     <div class="oh-sticky-table__td" data-cell-index="7">{{shift_request.description|truncatechars:30}}</div>
 
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
