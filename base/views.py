@@ -3490,12 +3490,12 @@ def work_type_request_delete(request, obj_id):
     """
     try:
         work_type_request = WorkTypeRequest.objects.get(id=obj_id)
-        employee = work_type_request.employee_id.employee_user_id
+        employee = work_type_request.employee_id
         messages.success(request, _("Work type request deleted."))
         work_type_request.delete()
         notify.send(
             request.user.employee_get,
-            recipient=employee,
+            recipient=employee.employee_user_id,
             verb="Your work type request has been deleted.",
             verb_ar="تم حذف طلب نوع وظيفتك.",
             verb_de="Ihre Arbeitstypanfrage wurde gelöscht.",
