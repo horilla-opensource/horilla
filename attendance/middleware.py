@@ -1,6 +1,8 @@
-from django.utils.deprecation import MiddlewareMixin
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
+
 from django.utils import timezone
+from django.utils.deprecation import MiddlewareMixin
+
 from attendance.methods.utils import Request
 
 
@@ -9,9 +11,9 @@ class AttendanceMiddleware(MiddlewareMixin):
         self.trigger_function()
 
     def trigger_function(self):
-        from base.models import EmployeeShiftSchedule
-        from attendance.models import AttendanceActivity, Attendance
+        from attendance.models import Attendance, AttendanceActivity
         from attendance.views.clock_in_out import clock_out
+        from base.models import EmployeeShiftSchedule
 
         automatic_check_out_shifts = EmployeeShiftSchedule.objects.filter(
             is_auto_punch_out_enabled=True
@@ -39,7 +41,9 @@ class AttendanceMiddleware(MiddlewareMixin):
                     if shift_schedule.is_night_shift:
                         date += timedelta(days=1)
 
-                    combined_datetime = datetime.combine(date, shift_schedule.auto_punch_out_time)
+                    combined_datetime = timezone.make_aware(
+                        datetime.combine(date, shift_schedule.auto_punch_out_time)
+                    )
                     current_time = timezone.now()
 
                     if combined_datetime < current_time:

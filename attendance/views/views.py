@@ -2080,8 +2080,15 @@ def work_records_change_month(request):
 @login_required
 @permission_required("attendance.view_workrecords")
 def work_record_export(request):
-    month = int(request.GET.get("month", date.today().month))
-    year = int(request.GET.get("year", date.today().year))
+    month = (
+        int(request.GET.get("month"))
+        if request.GET.get("month")
+        else date.today().month
+    )
+    year = (
+        int(request.GET.get("year")) if request.GET.get("year") else date.today().year
+    )
+    employees = EmployeeFilter(request.GET).qs
     records = WorkRecords.objects.filter(date__month=month, date__year=year)
     num_days = calendar.monthrange(year, month)[1]
     all_date_objects = [date(year, month, day) for day in range(1, num_days + 1)]
@@ -2118,7 +2125,7 @@ def work_record_export(request):
 
     format_string = date_formats[date_format]
 
-    for employee in Employee.objects.all():
+    for employee in employees:
         row_data = {"Employee": employee}
         for date_item in all_date_objects:
             for record in records:
