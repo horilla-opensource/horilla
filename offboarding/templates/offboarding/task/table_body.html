@@ -116,7 +116,7 @@
                         <a
                             type="button"
                             title="{% trans 'Show managing records' %}"
-                            hx-get="{% url 'get-manager-in' %}?employee_id={{employee.employee_id.id}}"
+                            hx-get="{% url 'get-manager-in' %}?employee_id={{employee.employee_id.id}}&offboarding=True"
                             hx-target="#objectDetailsModalTarget"
                             data-toggle="oh-modal-toggle"
                             data-target="#objectDetailsModal"
