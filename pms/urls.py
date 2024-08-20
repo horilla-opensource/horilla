@@ -22,7 +22,7 @@ urlpatterns = [
         name="update-key-result",
     ),
     path(
-        "delete-key-result/<int:id>/",
+        "delete-key-result/<int:obj_id>/",
         object_delete,
         name="delete-key-result",
         kwargs={"model": models.KeyResult, "redirect_path": "/pms/filter-key-result/"},
@@ -354,7 +354,7 @@ urlpatterns = [
         name="create-meeting",
     ),
     path(
-        "meetings-delete/<int:id>/",
+        "meetings-delete/<int:obj_id>/",
         object_delete,
         name="meetings-delete",
         kwargs={"model": models.Meetings, "redirect": "/pms/view-meetings"},
