@@ -17,7 +17,7 @@
     </div>
     <h2 class="swal2-title" id="swal2-title">{{title}}</h2>
     <form
-      action="{% url 'replace-employee' employee.id %}"
+      action="{% url 'replace-employee' employee.id %}?title={{title}}"
       method="post"
       id="replaceEmployeeForm"
       data-id="{{employee.id}}"

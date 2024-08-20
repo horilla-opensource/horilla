@@ -304,7 +304,7 @@ urlpatterns = [
         name="document-request-update",
     ),
     path(
-        "document-request-delete/<int:id>/",
+        "document-request-delete/<int:obj_id>/",
         object_delete,
         name="document-request-delete",
         kwargs={
@@ -399,7 +399,7 @@ urlpatterns = [
         name="employee-tag-update",
     ),
     path(
-        "employee-tag-delete/<int:id>/",
+        "employee-tag-delete/<int:obj_id>/",
         object_delete,
         name="employee-tag-delete",
         kwargs={"model": EmployeeTag, "redirect": "/employee/employee-tag-view/"},

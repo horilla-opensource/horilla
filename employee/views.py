@@ -1909,6 +1909,7 @@ def employee_archive(request, obj_id):
 @login_required
 @permission_required("employee.change_employee")
 def replace_employee(request, emp_id):
+    title = request.GET.get("title")
     employee = Employee.objects.filter(id=emp_id).first()
     related_models = (
         employee.get_archive_condition().get("related_models", "") if employee else None
@@ -1989,7 +1990,10 @@ def replace_employee(request, emp_id):
                 else:
                     pass
     related_models = employee.get_archive_condition()
-    if related_models is False:
+    if title == "Change the Designations":
+        messages.success(request, _("Designation changed."))
+        return redirect("/offboarding/offboarding-pipeline")
+    if related_models is False and title != "Change the Designations":
         employee.is_active = False
         employee.save()
         messages.success(request, _("{} archived successfully").format(employee))
@@ -2004,6 +2008,11 @@ def get_manager_in(request):
     """
     employee_id = request.GET.get("employee_id")
     employee = Employee.objects.filter(id=employee_id).first()
+    offboarding = request.GET.get("offboarding")
+    if offboarding:
+        title = _("Change the Designations")
+    else:
+        title = _("Can't Archive")
     employee.is_active = not employee.is_active
     employee.employee_user_id.is_active = not employee.is_active
     save = True
@@ -2031,7 +2040,7 @@ def get_manager_in(request):
                 "related_models": result.get("related_models"),
                 "related_model_fields": result.get("related_model_fields"),
                 "employee_choices": result.get("employee_choices"),
-                "title": _("Can't Archive"),
+                "title": title,
             },
         )
 
