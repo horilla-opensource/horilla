@@ -6,6 +6,7 @@ This module is used to map url pattens with django views or methods
 
 import json
 from datetime import datetime, timedelta
+from email.mime.image import MIMEImage
 from os import path
 from urllib.parse import parse_qs, unquote, urlencode
 
@@ -17,15 +18,14 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.core.paginator import Paginator
-from django.core.validators import validate_ipv46_address
-from django.db.models import F, ProtectedError, Q
+from django.db.models import ProtectedError, Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
+from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -144,7 +144,6 @@ from horilla.decorators import (
     delete_permission,
     duplicate_permission,
     hx_request_required,
-    install_required,
     login_required,
     manager_can_enter,
     permission_required,
@@ -153,7 +152,6 @@ from horilla.group_by import group_by_queryset
 from horilla.methods import get_horilla_model_class
 from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
-from notifications.base.models import AbstractNotification
 from notifications.models import Notification
 from notifications.signals import notify
 
@@ -191,6 +189,16 @@ def paginator_qry(queryset, page_number):
 
 
 def initialize_database_condition():
+    """
+    Determines if the database initialization process should be triggered.
+
+    This function checks whether there are any users in the database. If there are no users,
+    or if there are superusers without associated employees, it indicates that the database
+    needs to be initialized.
+
+    Returns:
+        bool: True if the database needs to be initialized, False otherwise.
+    """
     initialize_database = not User.objects.exists()
     if not initialize_database:
         initialize_database = True
@@ -203,6 +211,15 @@ def initialize_database_condition():
 
 
 def initialize_database(request):
+    """
+    Handles the database initialization process via a user interface.
+
+    Parameters:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The rendered HTML template or a redirect response.
+    """
     if initialize_database_condition():
         if request.method == "POST":
             password = request._post.get("password")
@@ -223,6 +240,15 @@ def initialize_database(request):
 
 @hx_request_required
 def initialize_database_user(request):
+    """
+    Handles the user creation step during database initialization.
+
+    Parameters:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The rendered HTML template for company creation or user signup.
+    """
     if request.method == "POST":
         form_data = request.__dict__.get("_post")
         first_name = form_data.get("firstname")
@@ -256,6 +282,15 @@ def initialize_database_user(request):
 
 @hx_request_required
 def initialize_database_company(request):
+    """
+    Handles the company creation step during database initialization.
+
+    Parameters:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The rendered HTML template for department creation or company creation.
+    """
     form = CompanyForm()
     if request.method == "POST":
         form = CompanyForm(request.POST, request.FILES)
@@ -277,6 +312,15 @@ def initialize_database_company(request):
 
 @hx_request_required
 def initialize_database_department(request):
+    """
+    Handles the department creation step during database initialization.
+
+    Parameters:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The rendered HTML template for department creation.
+    """
     departments = Department.objects.all()
     form = DepartmentForm(initial={"company_id": Company.objects.first()})
     if request.method == "POST":
@@ -294,6 +338,16 @@ def initialize_database_department(request):
 
 @hx_request_required
 def initialize_department_edit(request, obj_id):
+    """
+    Handles editing of an existing department during database initialization.
+
+    Parameters:
+        request (HttpRequest): The request object.
+        obj_id (int): The ID of the department to be edited.
+
+    Returns:
+        HttpResponse: The rendered HTML template for department editing.
+    """
     department = Department.find(obj_id)
     form = DepartmentForm(instance=department)
     if request.method == "POST":
@@ -322,6 +376,16 @@ def initialize_department_edit(request, obj_id):
 
 @hx_request_required
 def initialize_department_delete(request, obj_id):
+    """
+    Handles the deletion of an existing department during database initialization.
+
+    Parameters:
+        request (HttpRequest): The request object.
+        obj_id (int): The ID of the department to be deleted.
+
+    Returns:
+        HttpResponse: A redirect response to the department creation page.
+    """
     department = Department.find(obj_id)
     department.delete() if department else None
     return redirect(initialize_database_department)
@@ -329,6 +393,15 @@ def initialize_department_delete(request, obj_id):
 
 @hx_request_required
 def initialize_database_job_position(request):
+    """
+    Handles the job position creation step during database initialization.
+
+    Parameters:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The rendered HTML template for job position creation.
+    """
     company = Company.objects.first()
     form = JobPositionMultiForm(initial={"company_id": company})
     if request.method == "POST":
@@ -354,6 +427,16 @@ def initialize_database_job_position(request):
 
 @hx_request_required
 def initialize_job_position_edit(request, obj_id):
+    """
+    Handles editing of an existing job position during database initialization.
+
+    Parameters:
+        request (HttpRequest): The request object.
+        obj_id (int): The ID of the job position to be edited.
+
+    Returns:
+        HttpResponse: The rendered HTML template for job position editing.
+    """
     company = Company.objects.first()
     job_position = JobPosition.find(obj_id)
     form = JobPositionForm(instance=job_position)
@@ -384,6 +467,16 @@ def initialize_job_position_edit(request, obj_id):
 
 @hx_request_required
 def initialize_job_position_delete(request, obj_id):
+    """
+    Handles the deletion of an existing job position during database initialization.
+
+    Parameters:
+        request (HttpRequest): The request object.
+        obj_id (int): The ID of the job position to be deleting.
+
+    Returns:
+        HttpResponse: The rendered HTML template for job position creating.
+    """
     company = Company.objects.first()
     job_position = JobPosition.find(obj_id)
     job_position.delete() if job_position else None
@@ -564,6 +657,18 @@ setattr(PasswordResetConfirmView, "success_url", "/")
 
 @login_required
 def change_password(request):
+    """
+    Handles the password change process for a logged-in user.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about
+                               the request and user.
+
+    Returns:
+        HttpResponse: Renders the password change form if the request method is GET or
+                      the form is invalid. If the form is valid and the password is changed
+                      successfully, the page reloads with a success message.
+    """
     user = request.user
     form = ChangePasswordForm(user=user)
     if request.method == "POST":
@@ -1023,11 +1128,11 @@ def group_remove_user(request, uid, gid):
 @login_required
 @delete_permission()
 @require_http_methods(["POST", "DELETE"])
-def object_delete(request, id, **kwargs):
+def object_delete(request, obj_id, **kwargs):
     model = kwargs.get("model")
     redirect_path = kwargs.get("redirect_path")
     try:
-        instance = model.objects.get(id=id)
+        instance = model.objects.get(id=obj_id)
         instance.delete()
         messages.success(
             request, _("The {} has been deleted successfully.").format(instance)
@@ -1167,13 +1272,6 @@ def mail_server_conf(request):
             "primary_mail_not_exist": primary_mail_not_exist,
         },
     )
-
-
-from email.mime.image import MIMEImage
-
-from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
-from django.utils.html import strip_tags
 
 
 @login_required
@@ -2066,7 +2164,8 @@ def rotating_work_type_assign_redirect(request, obj_id=None, employee_id=None):
         )
 
         return redirect(
-            f"/rwork-individual-view/{next_instance}/?{previous_data}&instances_ids={instances_list}"
+            f"/rwork-individual-view/{next_instance}/?{previous_data}\
+            &instances_ids={instances_list}"
         )
     elif hx_target and hx_target == "shift_target" and employee_id:
         return redirect(f"/employee/shift-tab/{employee_id}")
@@ -2723,7 +2822,8 @@ def rotating_shift_assign_redirect(request, obj_id, employee_id):
             json.loads(instances_ids), obj_id
         )
         return redirect(
-            f"/rshit-individual-view/{next_instance}/?{previous_data}&instances_ids={instances_list}"
+            f"/rshit-individual-view/{next_instance}/?{previous_data}\
+            &instances_ids={instances_list}"
         )
     elif hx_target and hx_target == "shift_target" and employee_id:
         return redirect(f"/employee/shift-tab/{employee_id}")
@@ -5808,8 +5908,6 @@ def action_type_create(request):
             if dynamic == "None":
                 return HttpResponse("<script>window.location.reload()</script>")
             else:
-                from django.urls import reverse
-
                 url = reverse("create-actions")
                 instance = Actiontype.objects.all().order_by("-id").first()
                 mutable_get = request.GET.copy()

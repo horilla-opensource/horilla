@@ -103,7 +103,7 @@ urlpatterns = [
         "settings/user-group-search/", views.user_group_search, name="user-group-search"
     ),
     path(
-        "user-group-delete/<int:id>/",
+        "user-group-delete/<int:obj_id>/",
         views.object_delete,
         name="user-group-delete",
         kwargs={"model": Group, "redirect": "user-group-view"},
@@ -201,7 +201,7 @@ urlpatterns = [
         kwargs={"model": Company},
     ),
     path(
-        "company-delete/<int:id>/",
+        "company-delete/<int:obj_id>/",
         views.object_delete,
         name="company-delete",
         kwargs={"model": Company, "redirect": "/settings/company-view"},
@@ -219,7 +219,7 @@ urlpatterns = [
         kwargs={"model": Department},
     ),
     path(
-        "department-delete/<int:id>/",
+        "department-delete/<int:obj_id>/",
         views.object_delete,
         name="department-delete",
         kwargs={"model": Department, "redirect": "/settings/department-view"},
@@ -241,7 +241,7 @@ urlpatterns = [
         kwargs={"model": JobPosition},
     ),
     path(
-        "job-position-delete/<int:id>/",
+        "job-position-delete/<int:obj_id>/",
         views.object_delete,
         name="job-position-delete",
         kwargs={"model": JobPosition, "redirect": "/settings/job-position-view"},
@@ -255,7 +255,7 @@ urlpatterns = [
         kwargs={"model": JobRole},
     ),
     path(
-        "job-role-delete/<int:id>/",
+        "job-role-delete/<int:obj_id>/",
         views.object_delete,
         name="job-role-delete",
         kwargs={"model": JobRole, "redirect": "/settings/job-role-view"},
@@ -269,7 +269,7 @@ urlpatterns = [
         kwargs={"model": WorkType},
     ),
     path(
-        "work-type-delete/<int:id>/",
+        "work-type-delete/<int:obj_id>/",
         views.object_delete,
         name="work-type-delete",
         kwargs={"model": WorkType, "redirect": "/settings/work-type-view"},
@@ -303,7 +303,7 @@ urlpatterns = [
         kwargs={"model": RotatingWorkType},
     ),
     path(
-        "rotating-work-type-delete/<int:id>/",
+        "rotating-work-type-delete/<int:obj_id>/",
         views.object_delete,
         name="rotating-work-type-delete",
         kwargs={
@@ -383,7 +383,7 @@ urlpatterns = [
         kwargs={"model": EmployeeType},
     ),
     path(
-        "employee-type-delete/<int:id>/",
+        "employee-type-delete/<int:obj_id>/",
         views.object_delete,
         name="employee-type-delete",
         kwargs={
@@ -408,7 +408,7 @@ urlpatterns = [
         kwargs={"model": EmployeeShift},
     ),
     path(
-        "employee-shift-delete/<int:id>/",
+        "employee-shift-delete/<int:obj_id>/",
         views.object_delete,
         name="employee-shift-delete",
         kwargs={
@@ -433,7 +433,7 @@ urlpatterns = [
         kwargs={"model": EmployeeShiftSchedule},
     ),
     path(
-        "employee-shift-schedule-delete/<int:id>/",
+        "employee-shift-schedule-delete/<int:obj_id>/",
         views.object_delete,
         name="employee-shift-schedule-delete",
         kwargs={
@@ -470,7 +470,7 @@ urlpatterns = [
         kwargs={"model": RotatingShift},
     ),
     path(
-        "rotating-shift-delete/<int:id>/",
+        "rotating-shift-delete/<int:obj_id>/",
         views.object_delete,
         name="rotating-shift-delete",
         kwargs={
@@ -778,7 +778,7 @@ urlpatterns = [
     path("tag-create", views.tag_create, name="tag-create"),
     path("tag-update/<int:tag_id>", views.tag_update, name="tag-update"),
     path(
-        "tag-delete/<int:id>",
+        "tag-delete/<int:obj_id>",
         views.object_delete,
         name="tag-delete",
         kwargs={"model": Tags, "redirect": "/settings/tag-view/"},
@@ -788,7 +788,7 @@ urlpatterns = [
         "audit-tag-update/<int:tag_id>", views.audit_tag_update, name="audit-tag-update"
     ),
     path(
-        "audit-tag-delete/<int:id>",
+        "audit-tag-delete/<int:obj_id>",
         views.object_delete,
         name="audit-tag-delete",
         kwargs={"model": AuditTag, "redirect": "/settings/tag-view/"},
