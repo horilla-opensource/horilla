@@ -22,6 +22,11 @@ from payroll.models.models import (
     MultipleCondition,
 )
 
+
+def return_none(a, b):
+    return None
+
+
 operator_mapping = {
     "equal": operator.eq,
     "notequal": operator.ne,
@@ -30,6 +35,7 @@ operator_mapping = {
     "le": operator.le,
     "ge": operator.ge,
     "icontains": operator.contains,
+    "range": return_none,
 }
 filter_mapping = {
     "work_type_id": {

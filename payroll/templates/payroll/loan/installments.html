@@ -70,7 +70,19 @@
     </a>
     <div class="oh-modal__dialog-header" style="padding-top: 5px">
         <h3 class="oh-faq-card__title">{{loan.title}}</h3>
-        <div class="oh-sticky-table__table mt-3">
+        {% comment %} <h3 class="oh-faq-card__title">{{loan.loan_amount}}</h3> {% endcomment %}
+        <div class="oh-sticky-table__table mt-3" id="deductionContainer">
+            {% if messages %}
+                <div class="oh-wrapper">
+                    {% for message in messages %}
+                    <div class="oh-alert-container">
+                        <div class="oh-alert oh-alert--animated {{message.tags}}">
+                        {{ message }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
                     <div
@@ -115,9 +127,19 @@
                     >
                         {{ deduction.one_time_date }}
                     </div>
-                    <div class="oh-sticky-table__td" align="center">
-                        {{ deduction.amount|floatformat:2 }}
-                    </div>
+                    <input
+                        name="amount"
+                        class="oh-card__title oh-card__title--sm ms-3 w-100 editable-input border-0"
+                        hx-post="{% url 'edit-installment-amount' %}?loan_id={{loan.id}}&ded_id={{deduction.id}}"
+                        hx-select="#deductionContainer"
+                        hx-target="#deductionContainer"
+                        hx-trigger="change"
+                        hx-swap = "outerHTML"
+                        onclick="event.stopPropagation();"
+                        align="center"
+                        value="{{ deduction.amount|floatformat:2 }}"
+                        readonly
+                    />
                     <div class="oh-sticky-table__td" align="center">
                         {% if deduction.installment_payslip %}
                         <span title="Installment paid, Click to view">
@@ -151,3 +173,17 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).on("htmx:afterSettle", function () {
+        editableInput = $(".editable-input");
+
+        editableInput.on("focus", function () {
+            $(this).prop("readonly", false);
+        });
+
+        editableInput.on("blur", function () {
+            $(this).prop("readonly", true);
+        });
+    });
+</script>

@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
+from base.methods import get_next_month_same_date
 from base.models import (
     Company,
     Department,
@@ -1508,19 +1509,10 @@ class LoanAccount(HorillaModel):
         installment_schedule = {}
 
         installment_date = installment_start_date
-        installment_date_copy = installment_start_date
         installment_schedule = {}
         for _ in range(total_installments):
             installment_schedule[str(installment_date)] = installment_amount
-            month = installment_date.month + 1
-            year = installment_date.year
-            if month > 12:
-                month = 1
-                year = year + 1
-            day = installment_date_copy.day
-            total_days_in_month = calendar.monthrange(year, month)[1]
-            day = min(day, total_days_in_month)
-            installment_date = date(day=day, month=month, year=year)
+            installment_date = get_next_month_same_date(installment_date)
 
         return installment_schedule
 
@@ -1561,7 +1553,7 @@ class LoanAccount(HorillaModel):
 
 def _create_deductions(instance, amount, date):
     installment = Deduction()
-    installment.title = instance.title
+    installment.title = f"{instance.title} - {date}"
     installment.include_active_employees = False
     installment.amount = amount
     installment.is_fixed = True

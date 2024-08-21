@@ -101,6 +101,11 @@ urlpatterns = [
         component_views.view_installments,
         name="view-installments",
     ),
+    path(
+        "edit-installment-amount/",
+        component_views.edit_installment_amount,
+        name="edit-installment-amount",
+    ),
     path("delete-loan/", component_views.delete_loan, name="delete-loan"),
     path("search-loan/", component_views.search_loan, name="search-loan"),
     path(
