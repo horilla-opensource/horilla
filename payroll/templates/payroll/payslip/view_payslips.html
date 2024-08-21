@@ -53,40 +53,6 @@
   </div>
 </div>
 
-<div
-  class="oh-modal"
-  id="payslipExport"
-  role="dialog"
-  aria-labelledby="payslipExport"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="employeeExportLavel">
-        {% trans "Export Payslips" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-      <div class="oh-modal__dialog-body p-0 pt-2" id="payslipExportModalBody">
-        <form
-          action="{%url 'payslip-info-export' %}"
-          method="get"
-          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-          id="payslipExportForm"
-        >
-          {% csrf_token %} {% include 'payroll/payslip/payslip_export_filter.html' %}
-          <div class="oh-dropdown__filter-footer">
-            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
-              {% trans "Export" %}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
   <div class="oh-main__titlebar oh-main__titlebar--left">
     <h1 class="oh-main__titlebar-title fw-bold">{% trans "Payslip" %}</h1>
@@ -229,6 +195,19 @@
               {% if perms.payroll.add_payslip and payslips %}
                 <li class="oh-dropdown__item">
                   <a
+                    hx-get="{%url 'payslip-detailed-export' %}"
+                    hx-target = "#objectDetailsModalTarget"
+                    class="oh-dropdown__link"
+                    id="employee-payslip-Report"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectDetailsModal"
+                    >{% trans "Payslip report" %}</a
+                  >
+                </li>
+              {% endif %}
+              {% if perms.payroll.add_payslip and payslips %}
+                <li class="oh-dropdown__item">
+                  <a
                     class="oh-dropdown__link"
                     data-toggle="oh-modal-toggle"
                     id="payslipBulkSend"
@@ -255,11 +234,12 @@
               {% if perms.payroll.add_payslip and payslips %}
                 <li class="oh-dropdown__item">
                   <a
-                    href="#"
+                    hx-get="{%url 'payslip-info-export' %}"
+                    hx-target = "#objectDetailsModalTarget"
                     class="oh-dropdown__link"
                     id="employee-payslip-export"
                     data-toggle="oh-modal-toggle"
-                    data-target="#payslipExport"
+                    data-target="#objectDetailsModal"
                     >{% trans "Export" %}</a
                   >
                 </li>

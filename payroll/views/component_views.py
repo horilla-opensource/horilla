@@ -25,7 +25,13 @@ from openpyxl.utils import get_column_letter
 
 import payroll.models.models
 from base.backends import ConfiguredEmailBackend
-from base.methods import closest_numbers, filter_own_records, get_key_instances, sortby
+from base.methods import (
+    closest_numbers,
+    filter_own_records,
+    get_key_instances,
+    get_next_month_same_date,
+    sortby,
+)
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
@@ -73,9 +79,15 @@ from payroll.models.models import (
     Payslip,
     Reimbursement,
     ReimbursementMultipleAttachment,
+    _create_deductions,
 )
 from payroll.threadings.mail import MailSendThread
 from payroll.views.views import view_created_payslip
+
+
+def return_none(a, b):
+    return None
+
 
 operator_mapping = {
     "equal": operator.eq,
@@ -85,6 +97,7 @@ operator_mapping = {
     "le": operator.le,
     "ge": operator.ge,
     "icontains": operator.contains,
+    "range": return_none,
 }
 
 
@@ -964,11 +977,22 @@ def filter_payslip(request):
 
 
 @login_required
+@permission_required("payroll.change_payslip")
 def payslip_export(request):
     """
     This view exports payslip data based on selected fields and filters,
     and generates an Excel file for download.
     """
+    if request.META.get("HTTP_HX_REQUEST"):
+        return render(
+            request,
+            "payroll/payslip/payslip_export_filter.html",
+            {
+                "export_column": forms.PayslipExportColumnForm(),
+                "export_filter": PayslipFilter(request.GET),
+            },
+        )
+
     choices_mapping = {
         "draft": _("Draft"),
         "review_ongoing": _("Review Ongoing"),
@@ -1320,10 +1344,56 @@ def delete_loan(request):
     return redirect(view_loans)
 
 
+from django.db.models import Sum
+
+
 @login_required
 @permission_required("payroll.view_loanaccount")
 def edit_installment_amount(request):
-    pass
+    loan_id = request.GET.get("loan_id")
+    ded_id = request.GET.get("ded_id")
+    value = float(request.POST.get("amount")) if request.POST.get("amount") else 0
+
+    loan = LoanAccount.objects.filter(id=loan_id).first()
+    deductions = loan.deduction_ids.all().order_by("one_time_date")
+    deduction = deductions.filter(id=ded_id).first()
+    deductions_before = deductions.filter(one_time_date__lt=deduction.one_time_date)
+    deductions_after = deductions.filter(one_time_date__gt=deduction.one_time_date)
+    total_sum = deductions_before.aggregate(Sum("amount"))["amount__sum"] or 0
+
+    balance_instalment = len(deductions_after) if len(deductions_after) != 0 else 1
+
+    new_installment = (loan.loan_amount - total_sum - value) / balance_instalment
+    new_installment = round(new_installment, 2)
+    if total_sum + value > loan.loan_amount:
+        value = loan.loan_amount - total_sum
+        new_installment = 0
+
+    if not deduction.installment_payslip():
+        deduction.amount = value
+        deduction.save()
+
+        for item in deductions.filter(one_time_date__gt=deduction.one_time_date):
+            item.amount = new_installment
+            item.save()
+
+        if len(deductions_after) == 0 and new_installment != 0:
+            date = get_next_month_same_date(deduction.one_time_date)
+            installment = _create_deductions(loan, new_installment, date)
+            loan.deduction_ids.add(installment)
+
+        messages.success(request, "Installment amount updated successfully")
+    else:
+        messages.error(request, "Cannot change paid installments ")
+
+    return render(
+        request,
+        "payroll/loan/installments.html",
+        {
+            "installments": loan.deduction_ids.all(),
+            "loan": loan,
+        },
+    )
 
 
 @login_required
@@ -1781,9 +1851,6 @@ def payslip_detailed_export_data(request):
 
     if not selected_fields:
         selected_fields = form.fields["selected_fields"].initial
-        ids = request.GET.get("ids")
-        id_list = json.loads(ids)
-        payslips = Payslip.objects.filter(id__in=id_list)
 
     for field in forms.excel_columns:
         value = field[0]
@@ -1993,7 +2060,20 @@ def payslip_detailed_export_data(request):
 
 
 @login_required
+@permission_required("payroll.change_payslip")
 def payslip_detailed_export(request):
+
+    if request.META.get("HTTP_HX_REQUEST"):
+        return render(
+            request,
+            "payroll/payslip/payslip_export_filter.html",
+            {
+                "export_column": forms.PayslipExportColumnForm(),
+                "export_filter": PayslipFilter(request.GET),
+                "report": True,
+            },
+        )
+
     export_data = payslip_detailed_export_data(request)
     payslips_data = export_data["payslips_data"]
     selected_columns = export_data["selected_columns"]
