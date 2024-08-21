@@ -17,6 +17,7 @@ django-cors-headers
 django-environ
 django-filter
 django-haystack
+django-import-export
 django-jsonfield
 django-mathfilters
 django-model-utils
