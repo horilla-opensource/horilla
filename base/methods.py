@@ -853,3 +853,16 @@ def get_working_days(start_date, end_date):
         # All the company/holiday leave dates between the range
         "company_leave_dates": company_leave_dates,
     }
+
+
+def get_next_month_same_date(date_obj):
+    date_copy = date_obj
+    month = date_obj.month + 1
+    year = date_obj.year
+    if month > 12:
+        month = 1
+        year = year + 1
+    day = date_copy.day
+    total_days_in_month = calendar.monthrange(year, month)[1]
+    day = min(day, total_days_in_month)
+    return date(day=day, month=month, year=year)

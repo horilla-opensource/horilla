@@ -1129,6 +1129,21 @@ def group_remove_user(request, uid, gid):
 @delete_permission()
 @require_http_methods(["POST", "DELETE"])
 def object_delete(request, obj_id, **kwargs):
+    """
+    Handles the deletion of an object instance from the database.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about
+                               the request and user.
+        obj_id (int): The ID of the object to be deleted.
+        **kwargs: Additional keyword arguments including:
+            - model (Model): The Django model class to which the object belongs.
+            - redirect_path (str): The URL path to redirect to after deletion.
+    Returns:
+        HttpResponse: Redirects to the specified `redirect_path` or reloads the
+                      previous page. In case of a ProtectedError, it shows an error
+                      message indicating that the object is in use.
+    """
     model = kwargs.get("model")
     redirect_path = kwargs.get("redirect_path")
     try:
@@ -1172,6 +1187,23 @@ def object_delete(request, obj_id, **kwargs):
 @hx_request_required
 @duplicate_permission()
 def object_duplicate(request, obj_id, **kwargs):
+    """
+    Handles the duplication of an object instance in the database.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about
+                               the request and user.
+        obj_id (int): The ID of the object to be duplicated.
+        **kwargs: Additional keyword arguments including:
+            - model (Model): The Django model class to which the object belongs.
+            - form (Form): The Django form class used to handle the object data.
+            - template (str): The template to render for the duplication process.
+            - form_name (str, optional): The name to use for the form in the template context.
+
+    Returns:
+        HttpResponse: Renders the duplication form on GET requests and, on successful
+                      POST, reloads the page after saving the duplicated object.
+    """
     model = kwargs["model"]
     form_class = kwargs["form"]
     template = kwargs["template"]
@@ -1209,6 +1241,25 @@ def object_duplicate(request, obj_id, **kwargs):
 @hx_request_required
 @duplicate_permission()
 def add_remove_dynamic_fields(request, **kwargs):
+    """
+    Handles the dynamic addition and removal of form fields in a Django form.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about
+                               the request and user.
+        **kwargs: Additional keyword arguments including:
+            - model (Model): The Django model class used for `ModelChoiceField`.
+            - form_class (Form): The Django form class to which dynamic fields will be added.
+            - template (str): The template used to render the newly added field.
+            - empty_label (str, optional): The label to show for empty choices in a `ModelChoiceField`.
+            - field_name_pre (str): The prefix for the dynamically generated field names.
+            - field_type (str, optional): The type of field to add, either "character" or "model_choice".
+
+    Returns:
+        HttpResponse: Returns the HTML for the newly added field, rendered in the context of the
+                      specified template. If the request is not POST or if no valid HTMX target
+                      is provided, it returns an empty HTTP response.
+    """
     if request.method == "POST":
         model = kwargs["model"]
         form_class = kwargs["form_class"]

@@ -614,8 +614,6 @@ def attendance_overtime_view(request):
     accounts = accounts.distinct()
     form = AttendanceOverTimeForm()
     form = choosesubordinates(request, form, "attendance.add_attendanceovertime")
-    export_obj = AttendanceOverTimeFilter()
-    export_fields = AttendanceOverTimeExportForm()
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceOverTime, data_dict)
     return render(
@@ -626,8 +624,6 @@ def attendance_overtime_view(request):
             "form": form,
             "pd": previous_data,
             "f": filter_obj,
-            "export_obj": export_obj,
-            "export_fields": export_fields,
             "gp_fields": AttendanceOvertimeReGroup.fields,
             "filter_dict": data_dict,
         },
@@ -635,6 +631,17 @@ def attendance_overtime_view(request):
 
 
 def attendance_account_export(request):
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        context = {
+            "export_obj": AttendanceOverTimeFilter(),
+            "export_fields": AttendanceOverTimeExportForm(),
+        }
+
+        return render(
+            request,
+            "attendance/attendance_account/attendance_account_export_filter.html",
+            context=context,
+        )
     return export_data(
         request=request,
         model=AttendanceOverTime,
@@ -1025,7 +1032,6 @@ def late_come_early_out_view(request):
         [instance.id for instance in paginator_qry(reports, None)]
     )
     previous_data = request.GET.urlencode()
-    export_form = LateComeEarlyOutExportForm()
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceLateComeEarlyOut, data_dict)
     return render(
@@ -1035,11 +1041,7 @@ def late_come_early_out_view(request):
             "data": paginator_qry(reports, request.GET.get("page")),
             "f": filter_obj,
             "gp_fields": LateComeEarlyOutReGroup.fields,
-            "export": LateComeEarlyOutFilter(
-                queryset=AttendanceLateComeEarlyOut.objects.all()
-            ),
             "filter_dict": data_dict,
-            "export_form": export_form,
             "late_in_early_out_ids": late_in_early_out_ids,
         },
     )
@@ -1134,6 +1136,19 @@ def late_come_early_out_export(request):
     This view function takes a GET request and exports attendance late come early out data into an Excel file.
     The exported Excel file will include the selected fields from the AttendanceLateComeEarlyOut model.
     """
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        context = {
+            "export": LateComeEarlyOutFilter(
+                queryset=AttendanceLateComeEarlyOut.objects.all()
+            ),
+            "export_form": LateComeEarlyOutExportForm(),
+        }
+
+        return render(
+            request,
+            "attendance/late_come_early_out/export_filter.html",
+            context=context,
+        )
     return export_data(
         request=request,
         model=AttendanceLateComeEarlyOut,
