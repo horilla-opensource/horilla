@@ -6,3 +6,11 @@
   >{% trans form.leave_type_id.label %}</label
 >
 {{form.leave_type_id}}
+<script>
+  $(document).ready(function () {
+
+      $("select").on("select2:select", function (e) {
+          $(this).closest("select")[0].dispatchEvent(new Event("change"));
+      });
+  });
+</script>

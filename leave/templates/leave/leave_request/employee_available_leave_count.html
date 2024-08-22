@@ -1,0 +1,53 @@
+{% load i18n %}
+{% load static %}
+<style>
+    ion-icon {
+        color: blue;
+    }
+</style>
+<div id="{{hx_target}}"
+    style="height: 40px; {% if not available_leave and not leave_type_id %}display:none;{% endif %}">
+    {% if not leave_type_id %}
+        <div id="messageDiv" style="display:none;"></div>
+    {% elif not available_leave %}
+        <div id="messageDiv" style="
+                background-color: rgba(229, 79, 56, 0.17);
+                border: 2px solid hsl(8, 77%, 56%);
+                border-radius: 18px;
+                padding: 10px;
+                font-weight: bold;
+                width: auto;
+                ">
+            {% trans "Leave type is not assigned for the selected employee." %}
+        </div>
+    {% elif total_leave_days == 0.0 %}
+        <div id="messageDiv" style="
+                        background-color: rgba(229, 79, 56, 0.17);
+                        border: 2px solid hsl(8, 77%, 56%);
+                        border-radius: 18px;
+                        padding: 10px;
+                        font-weight: bold;
+                        width: 35%;
+                    ">
+            {% trans "Available Leaves" %} : {{ total_leave_days }}
+        </div>
+    {% else %}
+        <div id="messageDiv" style="
+            background-color: #dff0d8;
+            border: 2px solid #3c763d;
+            border-radius: 18px;
+            padding: 10px;
+            font-weight: bold;
+            width: 35%;
+            display: flex;
+            ">
+            {% trans "Available Leaves" %} : {{ total_leave_days }}
+            {% if forcated_days and forcated_days > 0 %}
+                <img style="width: 20px; height: 20px; cursor: pointer;" src="{% static 'images/ui/info.png' %}" class="ml-2"
+                    title="{% trans 'Forecasted available days added to this Available Days (Carryforward Max. + Forcasted Days)' %}" />
+            {% endif %}
+
+
+        </div>
+    {% endif %}
+</div>

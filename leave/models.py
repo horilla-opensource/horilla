@@ -223,6 +223,51 @@ class LeaveType(HorillaModel):
                 url = self.icon.url
         return url
 
+    def leave_type_next_reset_date(self):
+        today = datetime.now().date()
+
+        if not self.reset:
+            return None
+
+        def get_reset_day(month, day):
+            return (
+                calendar.monthrange(today.year, month)[1]
+                if day == "last day"
+                else int(day)
+            )
+
+        if self.reset_based == "yearly":
+            month, day = int(self.reset_month), get_reset_day(
+                int(self.reset_month), self.reset_day
+            )
+            reset_date = datetime(
+                today.year + (datetime(today.year, month, day).date() < today),
+                month,
+                day,
+            ).date()
+
+        elif self.reset_based == "monthly":
+            month = today.month
+            reset_date = datetime(
+                today.year, month, get_reset_day(month, self.reset_day)
+            ).date()
+            if reset_date < today:
+                month = (month % 12) + 1
+                year = today.year + (month == 1)
+                reset_date = datetime(
+                    year, month, get_reset_day(month, self.reset_day)
+                ).date()
+
+        elif self.reset_based == "weekly":
+            target_weekday = WEEK_DAYS[self.reset_day]
+            days_until_reset = (target_weekday - today.weekday()) % 7 or 7
+            reset_date = today + timedelta(days=days_until_reset)
+
+        else:
+            reset_date = None
+
+        return reset_date
+
     def clean(self, *args, **kwargs):
         if self.is_compensatory_leave:
             if LeaveType.objects.filter(is_compensatory_leave=True).count() >= 1:
@@ -321,25 +366,14 @@ class AvailableLeave(HorillaModel):
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id}"
 
-    def forcasted_leaves(self):
-        forecasted_leave = {}
-        if self.leave_type_id.reset_based == "monthly":
-            today = datetime.now()
-            for i in range(1, 7):  # Calculate for the next 6 months
-                next_month = today + relativedelta(months=i)
-                if self.leave_type_id.carryforward_max:
-                    forecasted_leave[next_month.strftime("%Y-%m")] = (
-                        self.available_days
-                        + min(
-                            self.leave_type_id.carryforward_max,
-                            (self.leave_type_id.total_days * i),
-                        )
-                    )
-                else:
-                    forecasted_leave[next_month.strftime("%Y-%m")] = (
-                        self.available_days + (self.leave_type_id.total_days * i)
-                    )
-        return forecasted_leave
+    def forcasted_leaves(self, date):
+        if isinstance(date, str):
+            date = datetime.strptime(date, "%Y-%m-%d").date()
+        next_reset_date = self.leave_type_id.leave_type_next_reset_date()
+        if next_reset_date <= date:
+            return self.leave_type_id.total_days
+
+        return 0
 
     # Resetting carryforward days
 

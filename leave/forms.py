@@ -320,14 +320,19 @@ class LeaveRequestCreationForm(ModelForm):
         unique_dates = list(set(month_year))
         if f"{today.month}-{today.year}" in unique_dates:
             unique_dates.remove(f"{today.strftime('%m')}-{today.year}")
-        forcasted_leaves = available_leave.forcasted_leaves()
-        if leave_type_id.reset_based == "monthly":
-            if f"{today.year}-{today.strftime('%m')}" not in unique_dates:
-                for item in unique_dates:
-                    try:
-                        total_leave_days += forcasted_leaves[item]
-                    except:
-                        pass
+
+        forcated_days = available_leave.forcasted_leaves(start_date)
+        total_leave_days = (
+            available_leave.leave_type_id.carryforward_max
+            if available_leave.leave_type_id.carryforward_type
+            in ["carryforward", "carryforward expire"]
+            and available_leave.leave_type_id.carryforward_max < total_leave_days
+            else total_leave_days
+        )
+        if available_leave.leave_type_id.carryforward_type == "no carryforward":
+            total_leave_days = 0
+        total_leave_days += forcated_days
+
         if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
@@ -338,19 +343,27 @@ class LeaveRequestCreationForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["leave_type_id"].widget.attrs.update(
             {
-                "onchange": "empleavetypeChange($(this))",
+                "hx-include": "#id_employee_id, #id_start_date",
+                "hx-target": "#availableLeaveCount",
+                "hx-swap": "outerHTML",
+                "hx-trigger": "change",
+                "hx-get": "/leave/employee-available-leave-count",
             }
         )
         self.fields["employee_id"].widget.attrs.update(
             {
                 "hx-target": "#id_leave_type_id_parent_div",
                 "hx-trigger": "change",
-                "hx-get": "/leave/get-employee-leave-types",
+                "hx-get": "/leave/get-employee-leave-types?form=LeaveRequestCreationForm",
             }
         )
         self.fields["start_date"].widget.attrs.update(
             {
-                "onchange": "dateChange($(this))",
+                "hx-include": "#id_employee_id, #id_leave_type_id",
+                "hx-target": "#availableLeaveCount",
+                "hx-swap": "outerHTML",
+                "hx-trigger": "change",
+                "hx-get": "/leave/employee-available-leave-count",
             }
         )
 
@@ -431,14 +444,19 @@ class LeaveRequestUpdationForm(ModelForm):
         unique_dates = list(set(month_year))
         if f"{today.month}-{today.year}" in unique_dates:
             unique_dates.remove(f"{today.strftime('%m')}-{today.year}")
-        forcasted_leaves = available_leave.forcasted_leaves()
-        if leave_type_id.reset_based == "monthly":
-            if f"{today.year}-{today.strftime('%m')}" not in unique_dates:
-                for item in unique_dates:
-                    try:
-                        total_leave_days += forcasted_leaves[item]
-                    except:
-                        pass
+
+        forcated_days = available_leave.forcasted_leaves(start_date)
+        total_leave_days = (
+            available_leave.leave_type_id.carryforward_max
+            if available_leave.leave_type_id.carryforward_type
+            in ["carryforward", "carryforward expire"]
+            and available_leave.leave_type_id.carryforward_max < total_leave_days
+            else total_leave_days
+        )
+        if available_leave.leave_type_id.carryforward_type == "no carryforward":
+            total_leave_days = 0
+        total_leave_days += forcated_days
+
         if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
@@ -449,19 +467,30 @@ class LeaveRequestUpdationForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["leave_type_id"].widget.attrs.update(
             {
-                "onchange": "empleavetypeChange($(this))",
+                "id": "id_request_update_leave_type_id",
+                "hx-include": "#id_request_update_employee_id, #id_request_udpate_start_date",
+                "hx-target": "#assinedLeaveAvailableCount",
+                "hx-swap": "outerHTML",
+                "hx-trigger": "change",
+                "hx-get": "/leave/employee-available-leave-count",
             }
         )
         self.fields["employee_id"].widget.attrs.update(
             {
+                "id": "id_request_update_employee_id",
                 "hx-target": "#id_leave_type_id_parent_div",
                 "hx-trigger": "change",
-                "hx-get": "/leave/get-employee-leave-types",
+                "hx-get": "/leave/get-employee-leave-types?form=LeaveRequestUpdationForm",
             }
         )
         self.fields["start_date"].widget.attrs.update(
             {
-                "onchange": "dateChange($(this))",
+                "id": "id_request_udpate_start_date",
+                "hx-include": "#id_request_update_employee_id, #id_request_update_leave_type_id",
+                "hx-target": "#assinedLeaveAvailableCount",
+                "hx-swap": "outerHTML",
+                "hx-trigger": "change",
+                "hx-get": "/leave/employee-available-leave-count",
             }
         )
 

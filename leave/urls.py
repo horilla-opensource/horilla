@@ -267,9 +267,9 @@ urlpatterns = [
         name="user-request-select-filter",
     ),
     path(
-        "employee-leave-details",
-        views.employee_leave_details,
-        name="employee-leave-details",
+        "employee-available-leave-count",
+        views.employee_available_leave_count,
+        name="employee-available-leave-count",
     ),
     path(
         "leave-request-add-comment/<int:leave_id>/",

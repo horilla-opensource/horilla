@@ -26,31 +26,32 @@ class LeaveMailSendThread(Thread):
         if leave_request_id != "#":
             link = int(leave_request_id)
         for recipient in recipients:
-            html_message = render_to_string(
-                "base/mail_templates/leave_request_template.html",
-                {
-                    "link": link,
-                    "instance": recipient,
-                    "host": host,
-                    "protocol": protocol,
-                    "subject": subject,
-                    "content": content,
-                },
-            )
-
-            email = EmailMessage(
-                subject,
-                html_message,
-                email_backend.dynamic_from_email_with_display_name,
-                [recipient.email],
-            )
-            email.content_subtype = "html"
-            try:
-                email.send()
-            except:
-                messages.error(
-                    self.request, f"Mail not sent to {recipient.get_full_name()}"
+            if recipient:
+                html_message = render_to_string(
+                    "base/mail_templates/leave_request_template.html",
+                    {
+                        "link": link,
+                        "instance": recipient,
+                        "host": host,
+                        "protocol": protocol,
+                        "subject": subject,
+                        "content": content,
+                    },
                 )
+
+                email = EmailMessage(
+                    subject,
+                    html_message,
+                    email_backend.dynamic_from_email_with_display_name,
+                    [recipient.email],
+                )
+                email.content_subtype = "html"
+                try:
+                    email.send()
+                except:
+                    messages.error(
+                        self.request, f"Mail not sent to {recipient.get_full_name()}"
+                    )
 
     def run(self) -> None:
         super().run()

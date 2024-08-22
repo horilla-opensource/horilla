@@ -6,6 +6,7 @@
     <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
     </button>
+    <div id="assinedLeaveAvailableCount" style="height: 40px;display: none;"></div>
 </div>
 <div class="oh-modal__dialog-body">
     <form
@@ -20,7 +21,6 @@
 <script>
     $(document).ready(function () {
         $("select").on("select2:select", function (e) {
-            $(".leave-message").hide();
             $(this).closest("select")[0].dispatchEvent(new Event("change"));
         });
     });
