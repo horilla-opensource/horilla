@@ -286,17 +286,12 @@ def contract_view(request):
     else:
         template = "payroll/contract/contract_empty.html"
 
-    field = request.GET.get("field")
     contracts = paginator_qry(contracts, request.GET.get("page"))
     contract_ids_json = json.dumps([instance.id for instance in contracts.object_list])
     filter_form = ContractFilter(request.GET)
-    export_filter = ContractFilter(request.GET)
-    export_column = ContractExportFieldForm()
     context = {
         "contracts": contracts,
         "f": filter_form,
-        "export_filter": export_filter,
-        "export_column": export_column,
         "contract_ids": contract_ids_json,
         "gp_fields": ContractReGroup.fields,
     }
@@ -1267,6 +1262,19 @@ def slip_group_name_update(request):
 @login_required
 @permission_required("payroll.add_contract")
 def contract_export(request):
+    hx_request = request.META.get("HTTP_HX_REQUEST")
+    if hx_request:
+        export_filter = ContractFilter()
+        export_column = ContractExportFieldForm()
+        content = {
+            "export_filter": export_filter,
+            "export_column": export_column,
+        }
+        return render(
+            request,
+            "payroll/contract/contract_export_filter.html",
+            context=content,
+        )
     return export_data(
         request=request,
         model=Contract,

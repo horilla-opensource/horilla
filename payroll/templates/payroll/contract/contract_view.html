@@ -1,43 +1,4 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
-<div
-    class="oh-modal"
-    id="hxContractExport"
-    role="dialog"
-    aria-labelledby="hxContractExport"
-    aria-hidden="true"
->
-    <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header">
-            <h2 class="oh-modal__dialog-title" id="hxContractExportLavel">
-                {% trans "Export Contracts" %}
-            </h2>
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-            <div
-                class="oh-modal__dialog-body p-0 pt-2"
-                id="hxContractExportModalBody"
-            >
-                <form
-                    action="{%url 'contract-export' %}"
-                    method="get"
-                    onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-                    id="hxContractExportForm"
-                >
-                    {% csrf_token %}
-					{% include 'payroll/contract/contract_export_filter.html' %}
-                    <div class="oh-dropdown__filter-footer">
-                        <button
-                            class="oh-btn oh-btn--secondary oh-btn--small w-100"
-                        >
-                            {% trans "Export" %}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
     <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -174,7 +135,9 @@
                                     class="oh-dropdown__link"
                                     id="employee-contract-export"
                                     data-toggle="oh-modal-toggle"
-                                    data-target="#hxContractExport"
+                                    data-target="#objectCreateModal"
+                                    hx-target="#objectCreateModalTarget"
+                                    hx-get="{%url 'contract-export' %}"
                                     >{% trans "Export" %}</a
                                 >
                             </li>
