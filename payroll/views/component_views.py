@@ -15,6 +15,7 @@ import pandas as pd
 from django.apps import apps
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -1344,9 +1345,6 @@ def delete_loan(request):
     return redirect(view_loans)
 
 
-from django.db.models import Sum
-
-
 @login_required
 @permission_required("payroll.view_loanaccount")
 def edit_installment_amount(request):
@@ -1828,8 +1826,7 @@ def all_deductions(pay_head):
 @login_required
 def payslip_detailed_export_data(request):
     """
-    This view exports payslip data based on selected fields and filters,
-    and generates an Excel file for download.
+    This view create the data for exporting payslip data based on selected fields and filters,
     """
     choices_mapping = {
         "draft": _("Draft"),
@@ -2062,6 +2059,16 @@ def payslip_detailed_export_data(request):
 @login_required
 @permission_required("payroll.change_payslip")
 def payslip_detailed_export(request):
+    """
+    Generate an Excel file for download containing detailed payslip data based on
+    filters.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request object.
+
+    Returns:
+        HttpResponse: A response object with the Excel file as an attachment.
+    """
 
     if request.META.get("HTTP_HX_REQUEST"):
         return render(
