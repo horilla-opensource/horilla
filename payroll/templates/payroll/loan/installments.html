@@ -70,7 +70,21 @@
     </a>
     <div class="oh-modal__dialog-header" style="padding-top: 5px">
         <h3 class="oh-faq-card__title">{{loan.title}}</h3>
-        {% comment %} <h3 class="oh-faq-card__title">{{loan.loan_amount}}</h3> {% endcomment %}
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <b>{% trans "Total Amount" %} :</b> <div>{{loan.loan_amount}} </div>
+                </div>
+                <div class="col-md-4">
+                    <b>{% trans "Paid Amount" %} :</b><div> {{installments|paid_amount}}</div>
+                </div>
+                <div class="col-md-4">
+                    <b>{% trans "Balance Amount" %} :</b> <div>{{loan.loan_amount|balance_amount:installments}} </div>
+                </div>
+            </div>
+        </div>
+
         <div class="oh-sticky-table__table mt-3" id="deductionContainer">
             {% if messages %}
                 <div class="oh-wrapper">
