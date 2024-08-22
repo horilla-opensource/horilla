@@ -309,7 +309,12 @@ def leave_type_delete(request, obj_id):
 @manager_can_enter("leave.add_leaverequest")
 def get_employee_leave_types(request):
     employee_id = request.GET.get("employee_id")
-    form = LeaveRequestCreationForm()
+    form = (
+        LeaveRequestUpdationForm()
+        if request.GET.get("form")
+        and request.GET.get("form") == "LeaveRequestUpdationForm"
+        else LeaveRequestCreationForm()
+    )
 
     if employee_id:
         employee = get_object_or_404(Employee, id=employee_id)
@@ -516,8 +521,6 @@ def leave_request_view(request):
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     leave_request_filter = LeaveRequestFilter()
-    excel_column = LeaveRequestExportForm()
-    export_filter = LeaveRequestFilter()
 
     # Fetching leave requests
     leave_requests = queryset
@@ -560,8 +563,6 @@ def leave_request_view(request):
             "approved_requests": approved_requests,
             "rejected_requests": rejected_requests,
             "gp_fields": LeaveRequestReGroup.fields,
-            "excel_column": excel_column,
-            "export_filter": export_filter.form,
             "requests_ids": requests_ids,
             "current_date": date.today(),
             "filter_dict": data_dict,
@@ -573,6 +574,19 @@ def leave_request_view(request):
 @login_required
 @manager_can_enter("leave.view_leaverequest")
 def leave_requests_export(request):
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        excel_column = LeaveRequestExportForm()
+        export_filter = LeaveRequestFilter()
+        context = {
+            "excel_column": excel_column,
+            "export_filter": export_filter.form,
+        }
+
+        return render(
+            request,
+            "leave/leave_request/leave_requests_export_filter.html",
+            context=context,
+        )
     return export_data(
         request=request,
         model=LeaveRequest,
@@ -2962,7 +2976,6 @@ def leave_request_create(request):
                         return HttpResponse(
                             "<script>window.location.reload();</script>"
                         )
-
             return render(
                 request,
                 "leave/user_leave/request_form.html",
@@ -3647,28 +3660,52 @@ def user_request_select_filter(request):
 
 
 @login_required
-def employee_leave_details(request):
-    balance_count = ""
-    if request.POST["employee_id"]:
-        employee = request.POST["employee_id"]
-    else:
-        employee = ""
-    date = request.POST.get("date", "")
-    if request.POST["leave_type"] and request.POST["employee_id"]:
-        leave_type_id = request.POST["leave_type"]
-        leave_type = LeaveType.objects.filter(id=leave_type_id).first()
-        balance = AvailableLeave.objects.filter(
-            Q(leave_type_id=leave_type.id) & Q(employee_id=employee)
+@hx_request_required
+def employee_available_leave_count(request):
+    leave_type_id = request.GET.get("leave_type_id")
+    start_date = request.GET.get("start_date")
+    hx_target = request.META.get("HTTP_HX_TARGET", None)
+    employee_id = (
+        request.GET.getlist("employee_id")[0]
+        if request.GET.getlist("employee_id")
+        else None
+    )
+    available_leave = (
+        AvailableLeave.objects.filter(
+            leave_type_id=leave_type_id, employee_id=employee_id
+        ).first()
+        if leave_type_id and employee_id
+        else None
+    )
+    total_leave_days = available_leave.total_leave_days if available_leave else 0
+    forcated_days = 0
+    if (
+        available_leave
+        and datetime.strptime(start_date, "%Y-%m-%d").date()
+        >= available_leave.leave_type_id.leave_type_next_reset_date()
+    ):
+        forcated_days = available_leave.forcasted_leaves(start_date)
+        total_leave_days = (
+            available_leave.leave_type_id.carryforward_max
+            if available_leave.leave_type_id.carryforward_type
+            in ["carryforward", "carryforward expire"]
+            and available_leave.leave_type_id.carryforward_max < total_leave_days
+            else total_leave_days
         )
-        for i in balance:
-            balance_count = i.available_days
-        if date:
-            try:
-                balance_count += balance.first().forcasted_leaves()[date[:7]]
-            except:
-                pass
+        if available_leave.leave_type_id.carryforward_type == "no carryforward":
+            total_leave_days = 0
+        total_leave_days += forcated_days
 
-    return JsonResponse({"leave_count": balance_count, "employee": employee})
+    context = {
+        "hx_target": hx_target,
+        "leave_type_id": leave_type_id,
+        "available_leave": available_leave,
+        "total_leave_days": total_leave_days,
+        "forcated_days": forcated_days,
+    }
+    return render(
+        request, "leave/leave_request/employee_available_leave_count.html", context
+    )
 
 
 @login_required
