@@ -2383,31 +2383,47 @@ def validate_ip_address(self, value):
 @permission_required("attendance.add_attendance")
 def create_allowed_ips(request):
     """
-    This function is used to create the allowed ips
+    This function is used to create the allowed IPs.
     """
-    form = AttendanceAllowedIPForm()
     if request.method == "POST":
         form = AttendanceAllowedIPForm(request.POST)
         if form.is_valid():
-            values = [request.POST[key] for key in request.POST.keys()]
+            ip_addresses = form.cleaned_data.get("ip_addresses")
             allowed_ips = AttendanceAllowedIP.objects.first()
-            for value in values:
-                try:
-                    validate_ipv46_address(value)
-                    if value not in allowed_ips.additional_data["allowed_ips"]:
-                        allowed_ips.additional_data["allowed_ips"].append(value)
-                        messages.success(request, f"IP address saved successfully")
-                    else:
-                        messages.error(request, "IP address already exists")
+            if allowed_ips:
+                existing_ips = set(allowed_ips.additional_data.get("allowed_ips", []))
+                new_ips = set(ip_addresses)
+                duplicates = new_ips.intersection(existing_ips)
 
-                except ValidationError:
+                if duplicates:
                     messages.error(
-                        request, f"Enter a valid IPv4 or IPv6 address: {value}"
+                        request, f"IP addresses already exist: {', '.join(duplicates)}"
                     )
 
-            allowed_ips.save()
+                non_duplicates = new_ips - duplicates
+
+                if non_duplicates:
+                    allowed_ips.additional_data["allowed_ips"] = list(
+                        existing_ips.union(non_duplicates)
+                    )
+                    allowed_ips.save()
+                    messages.success(request, "IP addresses saved successfully")
+                else:
+                    messages.info(
+                        request,
+                        "All provided IP addresses are already in the allowed list.",
+                    )
+
+            else:
+                AttendanceAllowedIP.objects.create(
+                    is_enabled=True, additional_data={"allowed_ips": ip_addresses}
+                )
+                messages.success(request, "IP addresses saved successfully")
 
             return HttpResponse("<script>window.location.reload()</script>")
+    else:
+        form = AttendanceAllowedIPForm()
+
     return render(
         request, "attendance/ip_restriction/restrict_form.html", {"form": form}
     )
@@ -2439,32 +2455,47 @@ def delete_allowed_ips(request):
 @permission_required("attendance.change_attendance")
 def edit_allowed_ips(request):
     """
-    This function is used to edit the allowed ips
+    This function is used to edit the allowed IPs.
     """
+    allowed_ips = AttendanceAllowedIP.objects.first()
+    if not allowed_ips:
+        messages.error(request, "No allowed IPs found.")
+        return redirect("allowed-ips")
+
+    ips = allowed_ips.additional_data.get("allowed_ips", [])
+    id = request.GET.get("id")
+
     try:
+        id = int(id)
+        if id < 0 or id >= len(ips):
+            raise IndexError
 
-        allowed_ips = AttendanceAllowedIP.objects.first()
-        ips = allowed_ips.additional_data["allowed_ips"]
-        id = request.GET.get("id")
+        initial_ip = ips[id]
+        form = AttendanceAllowedIPForm(initial={"ip_addresses": initial_ip})
 
-        form = AttendanceAllowedIPUpdateForm(initial={"ip_address": ips[eval(id)]})
         if request.method == "POST":
-            form = AttendanceAllowedIPUpdateForm(request.POST)
+            form = AttendanceAllowedIPForm(request.POST)
             if form.is_valid():
-                new_ip = form.cleaned_data["ip_address"]
-                ips[eval(id)] = new_ip
-                if not new_ip in allowed_ips.additional_data["allowed_ips"]:
-                    allowed_ips.additional_data["allowed_ips"] = ips
+                new_ip = form.cleaned_data["ip_addresses"][0]
+
+                existing_ips = set(allowed_ips.additional_data.get("allowed_ips", []))
+
+                if new_ip in existing_ips:
+                    messages.error(request, "IP address already exists.")
+                else:
+                    existing_ips.discard(initial_ip)
+                    existing_ips.add(new_ip)
+
+                    allowed_ips.additional_data["allowed_ips"] = list(existing_ips)
                     allowed_ips.save()
                     messages.success(request, "IP address updated successfully")
-                else:
-                    messages.error(request, "IP address already exists")
-
                 return HttpResponse("<script>window.location.reload()</script>")
-    except:
-        messages.error(request, "Invalid id")
+
+    except (ValueError, IndexError):
+        messages.error(request, "Invalid ID provided.")
+
     return render(
         request,
-        "attendance/ip_restriction/restrict_update_form.html",
+        "attendance/ip_restriction/restrict_form.html",
         {"form": form, "id": id},
     )

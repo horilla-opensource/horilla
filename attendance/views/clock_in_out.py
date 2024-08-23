@@ -4,6 +4,7 @@ clock_in_out.py
 This module is used register endpoints to the check-in check-out functionalities
 """
 
+import ipaddress
 import logging
 
 logger = logging.getLogger(__name__)
@@ -197,8 +198,7 @@ def clock_in(request):
     """
     allowed_attendance_ips = AttendanceAllowedIP.objects.first()
 
-    # 'not request.__dict__.get("datetime")' used to check if the request is from biometric device
-
+    # 'not request.__dict__.get("datetime")' used to check if the request is from a biometric device
     if (
         not request.__dict__.get("datetime")
         and allowed_attendance_ips
@@ -210,7 +210,19 @@ def clock_in(request):
         if x_forwarded_for:
             ip = x_forwarded_for.split(",")[0]
 
-        if not (ip in allowed_attendance_ips.additional_data["allowed_ips"]):
+        allowed_ips = allowed_attendance_ips.additional_data.get("allowed_ips", [])
+        ip_allowed = False
+        for allowed_ip in allowed_ips:
+            try:
+                if ipaddress.ip_address(ip) in ipaddress.ip_network(
+                    allowed_ip, strict=False
+                ):
+                    ip_allowed = True
+                    break
+            except ValueError:
+                continue
+
+        if not ip_allowed:
             return HttpResponse(_("You cannot mark attendance from this network"))
 
     employee, work_info = employee_exists(request)

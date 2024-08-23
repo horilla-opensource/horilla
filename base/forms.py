@@ -6,6 +6,7 @@ This module is used to register forms for base module
 
 import calendar
 import datetime
+import ipaddress
 import os
 import uuid
 from datetime import date, timedelta
@@ -2412,47 +2413,56 @@ class PassWordResetForm(forms.Form):
             )
 
 
-class AttendanceAllowedIPForm(ModelForm):
-    ip_address = forms.CharField(max_length=30, label="IP Address")
+def validate_ip_or_cidr(value):
+    try:
+        ipaddress.ip_address(value)
+    except ValueError:
+        try:
+            ipaddress.ip_network(value, strict=False)
+        except ValueError:
+            raise ValidationError(
+                f"{value} is not a valid IP address or CIDR notation."
+            )
+
+
+class AttendanceAllowedIPForm(forms.ModelForm):
+    ip_addresses = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 3, "class": "form-control w-100"}),
+        label="Allowed IP Addresses or Network Prefixes",
+        help_text="Enter multiple IP addresses or network prefixes, separated by commas.",
+    )
 
     class Meta:
         model = AttendanceAllowedIP
-        fields = ["ip_address"]
+        fields = ["ip_addresses"]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def clean_ip_addresses(self):
+        ip_addresses = self.cleaned_data.get("ip_addresses", "").strip().split("\n")
+        cleaned_ips = []
+        for ip in ip_addresses:
+            ip = ip.strip().split(", ")
+            if ip:
+                for ip_addr in ip:
+                    validate_ip_or_cidr(ip_addr)
+                    cleaned_ips.append(ip_addr)
+        return cleaned_ips
 
-        ip_counts = 1
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if instance.pk:
+            existing_ips = set(instance.additional_data.get("allowed_ips", []))
+            new_ips = set(self.cleaned_data["ip_addresses"])
+            merged_ips = list(existing_ips.union(new_ips))
+            instance.additional_data["allowed_ips"] = merged_ips
+        else:
+            instance.additional_data = {
+                "allowed_ips": self.cleaned_data["ip_addresses"]
+            }
 
-        def create_ip_field(ip_key, initial=None):
-            self.fields[ip_key] = forms.ModelChoiceField(
-                widget=forms.TextInput(
-                    attrs={
-                        "class": "oh-input w-100 mb-3",
-                        "name": ip_key,
-                        "id": f"id_{ip_key}",
-                    }
-                ),
-                required=False,
-                initial=initial,
-            )
+        if commit:
+            instance.save()
 
-        additional_data = self.initial.get("additional_data")
-        additional_ips = (
-            additional_data.get("additional_ips") if additional_data else None
-        )
-        if additional_ips:
-            ip_counts = 1
-            for ip_id in additional_ips:
-                if ip_id:
-                    create_ip_field(f"ip{ip_counts}", initial=ip_id)
-                    ip_counts += 1
-
-        self.ip_counts = ip_counts
-
-    def as_p(self, *args, **kwargs):
-        context = {"form": self}
-        return render_to_string("attendance/ip_restriction/restrict_form.html", context)
+        return instance
 
 
 class AttendanceAllowedIPUpdateForm(ModelForm):

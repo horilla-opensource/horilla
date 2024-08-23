@@ -4,6 +4,7 @@ models.py
 This module is used to register django models
 """
 
+import ipaddress
 from datetime import date, datetime, timedelta
 from typing import Iterable
 
@@ -1582,6 +1583,17 @@ class AttendanceAllowedIP(models.Model):
     additional_data = models.JSONField(
         null=True, blank=True, default=default_additional_data
     )
+
+    def clean(self):
+        """
+        Validate that all entries in `allowed_ips` are either valid IP addresses or network prefixes.
+        """
+        allowed_ips = self.additional_data.get("allowed_ips", [])
+        for ip in allowed_ips:
+            try:
+                ipaddress.ip_network(ip)
+            except ValueError:
+                raise ValidationError(f"Invalid IP address or network prefix: {ip}")
 
     def __str__(self):
         return f"AttendanceAllowedIP - {self.is_enabled}"
