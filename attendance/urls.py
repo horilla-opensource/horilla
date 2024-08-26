@@ -302,9 +302,9 @@ urlpatterns = [
         name="attendance-widget-filter",
     ),
     path(
-        "update-shift-details",
-        views.form_shift_dynamic_data,
-        name="update-shift-details",
+        "update-fields-based-shift",
+        views.update_fields_based_shift,
+        name="update-fields-based-shift",
     ),
     path(
         "update-date-details",

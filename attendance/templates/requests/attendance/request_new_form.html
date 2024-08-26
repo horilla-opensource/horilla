@@ -1,72 +1,61 @@
-{% load i18n %}{% load widget_tweaks %} {% load attendancefilters %}
-<div class="oh-modal__dialog-header">
-  <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
-    {% trans "New Attendances Request" %}
-  </h2>
-  <button class="oh-modal__close" aria-label="Close">
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
-</div>
-<div class="oh-modal__dialog-body">
-  <div class="oh-general__tab-target oh-profile-section" id="personal">
-    <form hx-post="{% url 'request-new-attendance' %}?bulk={{bulk}}" hx-target="#objectCreateModalTarget">
-    {% csrf_token %}
-    <div class="oh-profile-section__card">
-      <div class="row">
-        <div class="col-12">{{form.non_field_errors}}</div>
-        {% for field in form.visible_fields %}
-        {% if field.field.widget|is_select_multiple or field.field.widget|is_text_area %}
-        <label
-        class="oh-label {% if field.field.required %} required-star{% endif %}"
-        for="id_{{ field.name }}"
-        title="{{ field.help_text|safe }}"
-        >{{ field.label }}</label
-        >
-        <div style="width: 100%; padding: 12px;">
-
-          {{ field|add_class:"form-control" }}
-        </div>
-
-        {% else %}
-        <div class="col-12 col-md-6" id="id_{{field.name}}_div">
-          <label
-            class="oh-label {% if field.field.required %} required-star{% endif %}"
-            for="id_{{ field.name }}"
-            title="{{ field.help_text|safe }}"
-            >{{ field.label }}</label
-            >
-            {% if field.field.widget.input_type == "checkbox" %}
-            <div class="oh-switch" style="width: 30px">
-              {{ field|add_class:"oh-switch__checkbox" }}
-
-            </div>
-            {% else %}
-            {{ field|add_class:"form-control" }}
-            {% endif %}
-            {{field.errors}}
-        </div>
-        {% endif %}
-        {% endfor %}
-
-      </div>
-
-      <div class="d-flex flex-row-reverse">
-        <button
-          type="submit"
-          class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
-        >
-          {% trans "Request" %}
+<div id="attendanceRequestDiv">
+    {% load i18n widget_tweaks attendancefilters %}
+    <div class="oh-modal__dialog-header">
+        <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+            {% trans "New Attendances Request" %}
+        </h2>
+        <button class="oh-modal__close" aria-label="Close">
+            <ion-icon name="close-outline"></ion-icon>
         </button>
-      </form>
-      </div>
     </div>
-  </div>
+    <div class="oh-modal__dialog-body">
+        <div class="oh-general__tab-target oh-profile-section" id="personal">
+            <form hx-post="{% url 'request-new-attendance' %}?bulk={{bulk}}" hx-target="#objectCreateModalTarget" id="attendanceRequestForm">
+                {% csrf_token %}
+                <div class="oh-profile-section__card">
+                    <div class="row">
+                        <div class="col-12">{{form.non_field_errors}}</div>
+                        {% for field in form.visible_fields %}
+                            {% if field.field.widget|is_select_multiple or field.field.widget|is_text_area %}
+                                <label class="oh-label {% if field.field.required %} required-star{% endif %}"
+                                    for="id_{{ field.name }}" title="{{ field.help_text|safe }}">{{ field.label }}</label>
+                                <div style="width: 100%; padding: 12px;">
+
+                                    {{ field|add_class:"form-control" }}
+                                </div>
+                            {% else %}
+                                <div class="col-12 col-md-6" id="id_{{field.name}}_div">
+                                    <label class="oh-label {% if field.field.required %} required-star{% endif %}"
+                                        for="id_{{ field.name }}" title="{{ field.help_text|safe }}">{{ field.label }}</label>
+                                    {% if field.field.widget.input_type == "checkbox" %}
+                                    <div class="oh-switch" style="width: 30px">
+                                        {{ field|add_class:"oh-switch__checkbox" }}
+
+                                    </div>
+                                    {% else %}
+                                    {{ field|add_class:"form-control" }}
+                                    {% endif %}
+                                    {{field.errors}}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex flex-row-reverse">
+                        <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
+                            {% trans "Request" %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("select").on("select2:select", function (e) {
+                $(".leave-message").hide()
+                $(this).closest("select")[0].dispatchEvent(new Event("change"));
+            });
+        });
+    </script>
 </div>
-<script>
-  $(document).ready(function () {
-    $("select").on("select2:select", function (e) {
-      $(".leave-message").hide()
-      $(this).closest("select")[0].dispatchEvent(new Event("change"));
-    });
-  });
-</script>

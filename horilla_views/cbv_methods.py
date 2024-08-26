@@ -139,7 +139,10 @@ def csrf_token(context):
     """
     to access csrf token inside the render_template method
     """
-    request = context["request"]
+    try:
+        request = context["request"]
+    except:
+        request = getattr(_thread_locals, "request")
     csrf_input_lazy = lazy(csrf_input, SafeString, str)
     return csrf_input_lazy(request)
 

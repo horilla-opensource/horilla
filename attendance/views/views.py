@@ -60,6 +60,7 @@ from attendance.forms import (
     AttendanceValidationConditionForm,
     GraceTimeForm,
     LateComeEarlyOutExportForm,
+    NewRequestForm,
 )
 from attendance.methods.utils import (
     Request,
@@ -103,6 +104,7 @@ from base.models import (
     AttendanceAllowedIP,
     EmployeeShiftSchedule,
     TrackLateComeEarlyOut,
+    WorkType,
 )
 from employee.filters import EmployeeFilter
 from employee.models import Employee, EmployeeWorkInformation
@@ -1407,62 +1409,90 @@ def approve_bulk_overtime(request):
     return JsonResponse({"message": "Success"})
 
 
-def form_shift_dynamic_data(request):
-    """
-    This method is used to update the shift details to the form
-    """
-    work_type = None
-    if "employee_id" in request.POST and request.POST["employee_id"]:
-        shift_id = request.POST["shift_id"]
-    # Check if 'employee_id' is present in POST request and not empty
-    if "employee_id" in request.POST and request.POST["employee_id"]:
-        employee_id = request.POST["employee_id"]
-        try:
-            employee = Employee.objects.get(id=employee_id)
-            # Use getattr to get the work type
-            work_type = employee.get_work_type()
-            if work_type:
-                work_type = work_type.id
-        except Employee.DoesNotExist:
-            pass
-    attendance_date_str = request.POST.get("attendance_date")
-    today = datetime.now()
-    attendance_date = date(day=today.day, month=today.month, year=today.year)
-    if attendance_date_str is not None and attendance_date_str != "":
-        attendance_date = datetime.strptime(attendance_date_str, "%Y-%m-%d").date()
+@login_required
+@hx_request_required
+def update_fields_based_shift(request):
+    shift_id = request.GET.get("shift_id")
+    hx_target = request.META.get("HTTP_HX_TARGET")
+
+    employee_ids = (
+        request.GET.get("employee_id")
+        if hx_target == "attendanceUpdateForm" or hx_target == "attendanceRequestDiv"
+        else request.GET.getlist("employee_id")
+    )
+    employee_queryset = (
+        (
+            Employee.objects.get(id=employee_ids)
+            if hx_target == "attendanceUpdateForm"
+            or hx_target == "attendanceRequestDiv"
+            else Employee.objects.filter(id__in=employee_ids)
+        )
+        if employee_ids
+        else None
+    )
+    attendance_date_str = request.GET.get("attendance_date")
+
+    attendance_date = (
+        datetime.strptime(attendance_date_str, "%Y-%m-%d").date()
+        if attendance_date_str
+        else datetime.today().date()
+    )
     day = attendance_date.strftime("%A").lower()
-    schedule_today = None
-    if shift_id:
-        schedule_today = EmployeeShiftSchedule.objects.filter(
-            shift_id__id=shift_id, day__day=day
-        ).first()
-    shift_start_time = ""
-    shift_end_time = ""
-    minimum_hour = "00:00"
-    attendance_clock_out_date = attendance_date
-    if schedule_today is not None:
-        shift_start_time = schedule_today.start_time
-        shift_end_time = schedule_today.end_time
-        minimum_hour = schedule_today.minimum_working_hour
-        if shift_end_time < shift_start_time:
-            attendance_clock_out_date = attendance_date + timedelta(days=1)
-    worked_hour = minimum_hour
-    if attendance_date == date(day=today.day, month=today.month, year=today.year):
-        shift_end_time = datetime.now().strftime("%H:%M")
+
+    schedule_today = (
+        EmployeeShiftSchedule.objects.filter(shift_id=shift_id, day__day=day).first()
+        if shift_id
+        else None
+    )
+
+    shift_start_time = schedule_today.start_time if schedule_today else ""
+    shift_end_time = schedule_today.end_time if schedule_today else ""
+    minimum_hour = schedule_today.minimum_working_hour if schedule_today else "00:00"
+
+    if schedule_today and shift_end_time < shift_start_time:
+        attendance_clock_out_date = (attendance_date + timedelta(days=1)).strftime(
+            "%Y-%m-%d"
+        )
+    else:
+        attendance_clock_out_date = attendance_date.strftime("%Y-%m-%d")
+
+    if attendance_date == datetime.today().date():
+        shift_end_time = datetime.now().time()
         worked_hour = "00:00"
+    else:
+        worked_hour = minimum_hour
 
     minimum_hour = attendance_day_checking(str(attendance_date), minimum_hour)
 
-    return JsonResponse(
-        {
-            "shift_start_time": shift_start_time,
-            "shift_end_time": shift_end_time,
-            "checkin_date": attendance_date.strftime("%Y-%m-%d"),
-            "minimum_hour": minimum_hour,
-            "worked_hour": worked_hour,
-            "checkout_date": attendance_clock_out_date.strftime("%Y-%m-%d"),
-            "work_type": str(work_type),
-        }
+    initial_data = {
+        "work_type_id": WorkType.find(request.GET.get("work_type_id")),
+        "shift_id": shift_id,
+        "employee_id": employee_queryset,
+        "minimum_hour": minimum_hour,
+        "attendance_date": attendance_date.strftime("%Y-%m-%d"),
+        "attendance_clock_in": (
+            shift_start_time.strftime("%H:%M") if shift_start_time else ""
+        ),
+        "attendance_clock_out": (
+            shift_end_time.strftime("%H:%M") if shift_end_time else ""
+        ),
+        "attendance_worked_hour": worked_hour,
+        "attendance_clock_in_date": attendance_date.strftime("%Y-%m-%d"),
+        "attendance_clock_out_date": attendance_clock_out_date,
+    }
+    form = (
+        AttendanceUpdateForm(initial=initial_data)
+        if hx_target == "attendanceUpdateForm"
+        else (
+            NewRequestForm(initial=initial_data)
+            if hx_target == "attendanceRequestDiv"
+            else AttendanceForm(initial=initial_data)
+        )
+    )
+    return render(
+        request,
+        "attendance/attendance/update_hx_form.html",
+        {"request": request, "form": form},
     )
 
 

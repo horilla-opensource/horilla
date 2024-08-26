@@ -1,11 +1,11 @@
 {% load i18n %}
-<form
-  hx-post="{% url 'attendance-update' form.instance.id %}?{{urlencode}}"
-  hx-swap="#updateAttendanceModalBody"
-  method="post"
-  id="updateForm"
->
-  {{form.as_p}}
-
-  <script></script>
+<form hx-post="{% url 'attendance-update' form.instance.id %}?{{urlencode}}" hx-swap="#updateAttendanceModalBody" id="attendanceUpdateForm">
+    {{form.as_p}}
+    <script>
+        $(document).ready(function () {
+            $("select").on("select2:select", function (e) {
+                $(this).closest("select")[0].dispatchEvent(new Event("change"));
+            });
+        });
+    </script>
 </form>
