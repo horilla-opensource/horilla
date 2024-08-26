@@ -60,7 +60,10 @@ from pms.forms import (
     QuestionForm,
     QuestionTemplateForm,
 )
-from pms.methods import pms_owner_and_manager_can_enter
+from pms.methods import (
+    check_permission_feedback_detailed_view,
+    pms_owner_and_manager_can_enter,
+)
 from pms.models import (
     AnonymousFeedback,
     Answer,
@@ -1771,7 +1774,6 @@ def feedback_list_view(request):
 
 
 @login_required
-@owner_can_enter("pms.view_Feedback", Feedback)
 def feedback_detailed_view(request, id, **kwargs):
     """
     This view is used to for detailed view of feedback,
@@ -1781,17 +1783,30 @@ def feedback_detailed_view(request, id, **kwargs):
         it will return the feedback object to feedback_detailed_view template .
     """
     feedback = Feedback.objects.get(id=id)
-    feedback_started = Answer.objects.filter(feedback_id=id)
-    current_date = datetime.datetime.now()
-    context = {
-        "feedback": feedback,
-        "feedback_started": feedback_started,
-        "feedback_status": Feedback.STATUS_CHOICES,
-        "current_date": current_date,
-    }
-    return render(request, "feedback/feedback_detailed_view.html", context)
+    is_have_perm = check_permission_feedback_detailed_view(
+        request, feedback, "pms.view_Feedback"
+    )
+    if is_have_perm:
+        feedback_started = Answer.objects.filter(feedback_id=id)
+        current_date = datetime.datetime.now()
+        context = {
+            "feedback": feedback,
+            "feedback_started": feedback_started,
+            "feedback_status": Feedback.STATUS_CHOICES,
+            "current_date": current_date,
+        }
+        return render(request, "feedback/feedback_detailed_view.html", context)
+    else:
+        messages.info(request, "You dont have permission.")
+        previous_url = request.META.get("HTTP_REFERER", "/")
+        script = f'<script>window.location.href = "{previous_url}"</script>'
+        key = "HTTP_HX_REQUEST"
+        if key in request.META.keys():
+            return render(request, "decorator_404.html")
+        return HttpResponse(script)
 
 
+@login_required
 def feedback_detailed_view_answer(request, id, emp_id):
     """
     This view is used show  answer ,
@@ -1803,11 +1818,23 @@ def feedback_detailed_view_answer(request, id, emp_id):
     """
     employee = Employee.objects.filter(id=emp_id).first()
     feedback = Feedback.objects.filter(id=id).first()
-    answers = Answer.objects.filter(employee_id=employee, feedback_id=feedback)
-    context = {
-        "answers": answers,
-    }
-    return render(request, "feedback/feedback_detailed_view_answer.html", context)
+    is_have_perm = check_permission_feedback_detailed_view(
+        request, feedback, "pms.view_Feedback"
+    )
+    if is_have_perm:
+        answers = Answer.objects.filter(employee_id=employee, feedback_id=feedback)
+        context = {
+            "answers": answers,
+        }
+        return render(request, "feedback/feedback_detailed_view_answer.html", context)
+    else:
+        messages.info(request, "You dont have permission.")
+        previous_url = request.META.get("HTTP_REFERER", "/")
+        script = f'<script>window.location.href = "{previous_url}"</script>'
+        key = "HTTP_HX_REQUEST"
+        if key in request.META.keys():
+            return render(request, "decorator_404.html")
+        return HttpResponse(script)
 
 
 @login_required

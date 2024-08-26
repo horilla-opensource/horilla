@@ -16,7 +16,7 @@ Filters:
 
 from django.template.defaultfilters import register
 
-from employee.models import Employee
+from employee.models import Employee, EmployeeWorkInformation
 from pms.models import EmployeeObjective, Feedback, Objective
 
 
@@ -93,6 +93,10 @@ def is_feedback_manager_or_owner(feedback, user):
     if Feedback.objects.filter(id=feedback.id, manager_id=employee).exists():
         return True
     elif Feedback.objects.filter(id=feedback.id, employee_id=employee).exists():
+        return True
+    elif EmployeeWorkInformation.objects.filter(
+        reporting_manager_id=employee, employee_id=feedback.employee_id
+    ).exists():
         return True
     return False
 
