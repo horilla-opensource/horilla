@@ -1070,7 +1070,7 @@ def payslip_export(request):
     response["Content-Disposition"] = f'attachment; filename="{file_name}"'
 
     writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    data_frame.style.map(lambda x: "text-align: center").to_excel(
+    data_frame.style.applymap(lambda x: "text-align: center").to_excel(
         writer, index=False, sheet_name="Sheet1"
     )
     worksheet = writer.sheets["Sheet1"]
