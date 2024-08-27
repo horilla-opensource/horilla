@@ -370,7 +370,7 @@ class AvailableLeave(HorillaModel):
         if isinstance(date, str):
             date = datetime.strptime(date, "%Y-%m-%d").date()
         next_reset_date = self.leave_type_id.leave_type_next_reset_date()
-        if next_reset_date <= date:
+        if next_reset_date and next_reset_date <= date:
             return self.leave_type_id.total_days
 
         return 0

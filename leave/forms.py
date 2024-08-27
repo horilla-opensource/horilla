@@ -329,8 +329,11 @@ class LeaveRequestCreationForm(ModelForm):
             and available_leave.leave_type_id.carryforward_max < total_leave_days
             else total_leave_days
         )
-        if available_leave.leave_type_id.carryforward_type == "no carryforward":
-            total_leave_days = 0
+        if (
+            available_leave.leave_type_id.carryforward_type == "no carryforward"
+            and available_leave.carryforward_days
+        ):
+            total_leave_days = total_leave_days - available_leave.carryforward_days
         total_leave_days += forcated_days
 
         if not effective_requested_days <= total_leave_days:
@@ -343,7 +346,7 @@ class LeaveRequestCreationForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["leave_type_id"].widget.attrs.update(
             {
-                "hx-include": "#id_employee_id, #id_start_date",
+                "hx-include": "#leaveRequestCreateForm",
                 "hx-target": "#availableLeaveCount",
                 "hx-swap": "outerHTML",
                 "hx-trigger": "change",
@@ -359,7 +362,7 @@ class LeaveRequestCreationForm(ModelForm):
         )
         self.fields["start_date"].widget.attrs.update(
             {
-                "hx-include": "#id_employee_id, #id_leave_type_id",
+                "hx-include": "#leaveRequestCreateForm",
                 "hx-target": "#availableLeaveCount",
                 "hx-swap": "outerHTML",
                 "hx-trigger": "change",
@@ -453,8 +456,11 @@ class LeaveRequestUpdationForm(ModelForm):
             and available_leave.leave_type_id.carryforward_max < total_leave_days
             else total_leave_days
         )
-        if available_leave.leave_type_id.carryforward_type == "no carryforward":
-            total_leave_days = 0
+        if (
+            available_leave.leave_type_id.carryforward_type == "no carryforward"
+            and available_leave.carryforward_days
+        ):
+            total_leave_days = total_leave_days - available_leave.carryforward_days
         total_leave_days += forcated_days
 
         if not effective_requested_days <= total_leave_days:
@@ -467,8 +473,7 @@ class LeaveRequestUpdationForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["leave_type_id"].widget.attrs.update(
             {
-                "id": "id_request_update_leave_type_id",
-                "hx-include": "#id_request_update_employee_id, #id_request_udpate_start_date",
+                "hx-include": "#leaveRequestUpdateForm",
                 "hx-target": "#assinedLeaveAvailableCount",
                 "hx-swap": "outerHTML",
                 "hx-trigger": "change",
@@ -477,7 +482,6 @@ class LeaveRequestUpdationForm(ModelForm):
         )
         self.fields["employee_id"].widget.attrs.update(
             {
-                "id": "id_request_update_employee_id",
                 "hx-target": "#id_leave_type_id_parent_div",
                 "hx-trigger": "change",
                 "hx-get": "/leave/get-employee-leave-types?form=LeaveRequestUpdationForm",
@@ -485,8 +489,7 @@ class LeaveRequestUpdationForm(ModelForm):
         )
         self.fields["start_date"].widget.attrs.update(
             {
-                "id": "id_request_udpate_start_date",
-                "hx-include": "#id_request_update_employee_id, #id_request_update_leave_type_id",
+                "hx-include": "#leaveRequestUpdateForm",
                 "hx-target": "#assinedLeaveAvailableCount",
                 "hx-swap": "outerHTML",
                 "hx-trigger": "change",
@@ -1205,6 +1208,14 @@ class RestrictLeaveForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(RestrictLeaveForm, self).__init__(*args, **kwargs)
         self.fields["title"].widget.attrs["autocomplete"] = "title"
+        self.fields["department"].widget.attrs.update(
+            {
+                "hx-include": "#leaveRestrictForm",
+                "hx-target": "#restrictLeaveJobPosition",
+                "hx-trigger": "change",
+                "hx-get": "/leave/get-job-positions",
+            }
+        )
 
 
 if apps.is_installed("attendance"):

@@ -56,7 +56,6 @@
 	<div class="oh-main__titlebar oh-main__titlebar--right">
 		{% if leave_requests %}
 		<form
-			method="post"
 			hx-get="{% url 'user-request-filter' %}"
 			hx-target="#userRequest"
 			id="filterForm"

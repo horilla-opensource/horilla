@@ -1617,16 +1617,16 @@ def assigned_leaves_export(request):
     )
 
 
+@login_required
+@hx_request_required
 def get_job_positions(request):
-    department_id = request.GET.get("department_id")
-    job_positions = (
-        JobPosition.objects.filter(department_id=department_id).values_list(
-            "id", "job_position"
-        )
-        if department_id
-        else []
+    department_id = request.GET.get("department")
+    form = RestrictLeaveForm()
+    form.fields["job_position"].queryset = JobPosition.objects.filter(
+        department_id=department_id
     )
-    return JsonResponse({"job_positions": dict(job_positions)})
+
+    return render(request, "leave/job_position_field.html", {"form": form})
 
 
 @login_required
@@ -3680,7 +3680,8 @@ def employee_available_leave_count(request):
     total_leave_days = available_leave.total_leave_days if available_leave else 0
     forcated_days = 0
     if (
-        available_leave
+        available_leave.leave_type_id.leave_type_next_reset_date()
+        and available_leave
         and datetime.strptime(start_date, "%Y-%m-%d").date()
         >= available_leave.leave_type_id.leave_type_next_reset_date()
     ):

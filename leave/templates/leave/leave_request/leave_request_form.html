@@ -35,7 +35,7 @@
         hx-post="{% url 'request-creation' %}?{{pd}}"
         hx-encoding="multipart/form-data"
         hx-target="#objectCreateModalTarget"
-        id="LeaveForm"
+        id="leaveRequestCreateForm"
     >
         {{form.as_p}}
     </form>
@@ -52,7 +52,7 @@
 
 {% if "recruitment"|app_installed %}
     <script>
-        $("#LeaveForm [type=submit]").hide();
+        $("#leaveRequestCreateForm [type=submit]").hide();
         var button = `
         <div class="oh-modal__dialog-footer p-0 mt-3">
         <button id="buttonID" class="oh-btn oh-btn--secondary oh-btn--shadow">
@@ -60,15 +60,15 @@
         </button>
         </div>
         `;
-        $("#LeaveForm .row").after(button);
+        $("#leaveRequestCreateForm .row").after(button);
 
         $(document).ready(function () {
             $("#buttonID").on("click", function () {
                 event.preventDefault();
                 event.stopPropagation();
-                var startDate = $("#LeaveForm [name = start_date]").val();
-                var endDate = $("#LeaveForm [name = end_date]").val();
-                var employee = $("#LeaveForm [name = employee_id]").val();
+                var startDate = $("#leaveRequestCreateForm [name = start_date]").val();
+                var endDate = $("#leaveRequestCreateForm [name = end_date]").val();
+                var employee = $("#leaveRequestCreateForm [name = employee_id]").val();
 
                 $.ajax({
                     type: "GET",
@@ -103,11 +103,11 @@
                                 confirmButtonText: "Confirm",
                             }).then(function (result) {
                                 if (result.isConfirmed) {
-                                    $("#LeaveForm [type=submit]").click();
+                                    $("#leaveRequestCreateForm [type=submit]").click();
                                 }
                             });
                         } else {
-                            $("#LeaveForm [type=submit]").click();
+                            $("#leaveRequestCreateForm [type=submit]").click();
                         }
                     },
                 });

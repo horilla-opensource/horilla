@@ -1,0 +1,9 @@
+{% load i18n %}
+<div class="oh-input__group">
+    <label class="oh-label d-flex" for="{{ form.job_position.id_for_label }}">{% trans "Job Position" %}
+        {% if form.job_position.help_text %}
+            <span class="oh-info ms-2" title="{{ form.job_position.help_text|safe }}"></span>
+        {% endif %}
+    </label>
+    {{form.job_position}} {{form.job_position.errors}}
+</div>

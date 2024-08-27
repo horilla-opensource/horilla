@@ -1,129 +1,69 @@
-{% load i18n %} {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{ message.tags }}">
-      {{ message }}
+{% load i18n %}
+{% if messages %}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+        <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated {{ message.tags }}">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
     </div>
-  </div>
-  {% endfor %}
-</div>
-<script>
-  setTimeout(() => {
-    $(".oh-modal__close").click();
-  }, 1000);
-</script>
+    <script>
+        setTimeout(() => {
+            $(".oh-modal__close").click();
+        }, 1000);
+    </script>
 {% endif %}
 <div class="oh-modal__dialog-header">
-  <span class="oh-modal__dialog-title" id="editDialogDialog"
-    >{% trans "Create Restricted Day" %}</span
-  >
-  <button
-    class="oh-modal__close"
-    aria-label="Close"
-    {% if messages %}
-      hx-get="{% url 'restrict-filter' %}?{{pd}}"
-      hx-target="#restrictday"
-    {% endif %}
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Restricted Day" %}</span>
+    <button class="oh-modal__close" aria-label="Close" {% if messages %} hx-get="{% url 'restrict-filter' %}?{{pd}}" hx-target="#restrictday" {% endif %}>
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    hx-post="{% url 'restrict-creation' %}?{{pd}}"
-    hx-target="#objectCreateModalTarget"
-    class="oh-profile-section"
-  >
-    <label class="oh-label d-block" for="{{ form.title.id_for_label }}"
-      >{% trans "Title" %}</label
-    >
-    {{form.title}} {{form.title.errors}}
-    <div class="row">
-      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-        <div class="oh-input__group">
-          <label
-            class="oh-label d-block"
-            for="{{ form.start_date.id_for_label }}"
-            >{% trans "Start Date" %}</label
-          >
-          {{form.start_date}} {{form.start_date.errors}}
+    <form hx-post="{% url 'restrict-creation' %}?{{pd}}" hx-target="#objectCreateModalTarget" class="oh-profile-section" id="leaveRestrictForm">
+        <label class="oh-label d-block" for="{{ form.title.id_for_label }}">{% trans "Title" %}</label>
+        {{form.title}} {{form.title.errors}}
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input__group">
+                    <label class="oh-label d-block" for="{{ form.start_date.id_for_label }}">{% trans "Start Date" %}</label>
+                    {{form.start_date}} {{form.start_date.errors}}
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input__group">
+                    <label class="oh-label d-block" for="{{ form.end_date.id_for_label }}">{% trans "End Date" %}</label>
+                    {{form.end_date}} {{form.end_date.errors}}
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-        <div class="oh-input__group">
-          <label class="oh-label d-block" for="{{ form.end_date.id_for_label }}"
-            >{% trans "End Date" %}</label
-          >
-          {{form.end_date}} {{form.end_date.errors}}
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input__group">
+                    <label class="oh-label d-block" for="{{ form.department.id_for_label }}">{% trans "Department" %}</label>
+                    {{form.department}} {{form.department.errors}}
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="restrictLeaveJobPosition">
+                {% include "leave/job_position_field.html" %}
+            </div>
         </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-        <div class="oh-input__group">
-          <label
-            class="oh-label d-block"
-            for="{{ form.department.id_for_label }}"
-            >{% trans "Department" %}</label
-          >
-          {{form.department}} {{form.department.errors}}
+        <label class="oh-label d-block" for="{{ form.description.id_for_label }}">{% trans "Description" %}</label>
+        {{form.description}} {{form.description.errors}}
+        <div class="oh-modal__dialog-footer p-0 pt-2">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
         </div>
-      </div>
-      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-        <div class="oh-input__group">
-          <label
-            class="oh-label d-flex"
-            for="{{ form.job_position.id_for_label }}"
-            >{% trans "Job Position" %}<span
-              class="oh-info ms-2"
-              title="{{ form.job_position.help_text|safe }}"
-            >
-            </span
-          ></label>
-          {{form.job_position}} {{form.job_position.errors}}
-        </div>
-      </div>
-    </div>
-    <label class="oh-label d-block" for="{{ form.description.id_for_label }}"
-      >{% trans "Description" %}</label
-    >
-    {{form.description}} {{form.description.errors}}
-    <div class="oh-modal__dialog-footer p-0 pt-2">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-        {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+    </form>
 </div>
 
 <script>
-  $(document).ready(function () {
-    $("#id_department").change(function () {
-      var departmentId = $(this).val();
-
-      if (departmentId) {
-        $.ajax({
-          url: '{% url "get_job_positions" %}',
-          method: "GET",
-          data: {
-            department_id: departmentId,
-          },
-          success: function (data) {
-            $("#id_job_position").empty();
-            $.each(data.job_positions, function (key, value) {
-              $("#id_job_position").append(
-                $("<option>", {
-                  value: key,
-                  text: value,
-                })
-              );
-            });
-          },
+    $(document).ready(function () {
+        $("select").on("select2:select", function (e) {
+            $(this).closest("select")[0].dispatchEvent(new Event("change"));
         });
-      } else {
-        $("#id_job_position").empty();
-      }
     });
-  });
 </script>

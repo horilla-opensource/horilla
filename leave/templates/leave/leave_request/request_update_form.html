@@ -13,7 +13,7 @@
         hx-post="{% url 'request-update' id %}"
         hx-encoding="multipart/form-data"
         hx-target="#objectUpdateModalTarget"
-        id="LeaveForm"
+        id="leaveRequestUpdateForm"
     >
         {% csrf_token %} {{form.as_p}}
     </form>
@@ -28,7 +28,7 @@
 
 {% if "recruitment"|app_installed %}
     <script>
-        $("#LeaveForm [type=submit]").hide();
+        $("#leaveRequestUpdateForm [type=submit]").hide();
         var button = `
         <div class="oh-modal__dialog-footer p-0 mt-3">
         <button id="buttonID" class="oh-btn oh-btn--secondary oh-btn--shadow">
@@ -36,15 +36,15 @@
         </button>
         </div>
         `;
-        $("#LeaveForm .row").after(button);
+        $("#leaveRequestUpdateForm .row").after(button);
 
         $(document).ready(function () {
             $("#buttonID").on("click", function () {
                 event.preventDefault();
                 event.stopPropagation();
-                var startDate = $("#LeaveForm [name = start_date]").val();
-                var endDate = $("#LeaveForm [name = end_date]").val();
-                var employee = $("#LeaveForm [name = employee_id]").val();
+                var startDate = $("#leaveRequestUpdateForm [name = start_date]").val();
+                var endDate = $("#leaveRequestUpdateForm [name = end_date]").val();
+                var employee = $("#leaveRequestUpdateForm [name = employee_id]").val();
 
                 $.ajax({
                     type: "GET",
@@ -79,11 +79,11 @@
                                 confirmButtonText: "Confirm",
                             }).then(function (result) {
                                 if (result.isConfirmed) {
-                                    $("#LeaveForm [type=submit]").click();
+                                    $("#leaveRequestUpdateForm [type=submit]").click();
                                 }
                             });
                         } else {
-                            $("#LeaveForm [type=submit]").click();
+                            $("#leaveRequestUpdateForm [type=submit]").click();
                         }
                     },
                 });
