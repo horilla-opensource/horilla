@@ -4,6 +4,7 @@ Used to register models
 """
 
 import calendar
+import logging
 from datetime import date, datetime, timedelta
 
 from django import forms
@@ -33,6 +34,9 @@ from employee.models import BonusPoint, Employee, EmployeeWorkInformation
 from horilla import horilla_middlewares
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+
+logger = logging.getLogger(__name__)
+
 
 # Create your models here.
 
@@ -351,8 +355,17 @@ class Contract(HorillaModel):
             raise forms.ValidationError(
                 _("A draft contract already exists for this employee.")
             )
-
         super().save(*args, **kwargs)
+        if self.contract_status == "active" and self.wage is not None:
+            try:
+                wage_int = int(self.wage)
+                work_info = self.employee_id.employee_work_info
+                work_info.basic_salary = wage_int
+                work_info.save()
+            except ValueError:
+                logger.error((f"Failed to convert wage '{self.wage}' to an integer."))
+            except Exception as e:
+                logger.error(f"An unexpected error occurred: {e}")
         return self
 
     class Meta:
