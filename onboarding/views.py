@@ -651,7 +651,7 @@ def email_send(request):
     template_attachment_ids = request.POST.getlist("template_attachment_ids")
     email_backend = ConfiguredEmailBackend()
     if not candidates:
-        messages.info(request, "Please choose chandidates")
+        messages.info(request, "Please choose candidates")
         return HttpResponse("<script>window.location.reload()</script>")
 
     bodys = list(
