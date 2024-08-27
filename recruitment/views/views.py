@@ -823,9 +823,6 @@ def candidate_stage_update(request, cand_id):
     Args:
         id : candidate_id
     """
-    print(
-        "heloooooooooooooooooooooooooooooooooooooooooooooooooo000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-    )
     stage_id = request.POST["stageId"]
     candidate_obj = Candidate.objects.get(id=cand_id)
     history_queryset = candidate_obj.history_set.all().first()
