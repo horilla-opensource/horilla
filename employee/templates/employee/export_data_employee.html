@@ -1,0 +1,166 @@
+{% load i18n %} {% load horillafilters %}
+
+<div class="oh-profile-section ">
+  {% if employee %}
+  <div class="oh-timeoff-modal__profile-content">
+    <div class="oh-profile mb-2">
+      <div class="oh-profile__avatar">
+        <img src="{{employee.get_avatar}}"
+          class="oh-profile__image me-2">
+      </div>
+      <div class="oh-timeoff-modal__profile-info">
+        <span class="oh-timeoff-modal__user fw-bold">{{employee.get_full_name}}</span>
+        <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: #4d4a4a">
+          {{employee.get_job_position}} /
+          {{employee.get_department}}</span>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+
+  {% if "attendance"|app_installed %}
+    {% comment %} -----ATTENDANCE RECORDS----- {% endcomment %}
+    <div id="ack-message-{{employee.id}}"></div>
+    <form action="{%url 'attendance-info-export' %}"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          id="attendanceExportForm"
+          class="pt-2">
+          {% csrf_token %}
+      <div class="modal-body">
+        
+        <h6 class="oh-timeoff-modal__user fw-bold">
+          <span class="material-symbols-outlined"style="font-size: 14px;">radio_button_checked</span>
+          {% trans "Attendance Records" %}</h6>
+          <div class="row d-none">
+            {% for field in attendance_excel_column.selected_fields %}
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label"> {{ field }} </label>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        <div class="oh-input-group">
+          <input type="text" name="employee_id" value="{{ employee.id }}" readonly hidden>
+        </div>
+        
+        <div class="form-group mt-2 d-flex">
+            <label for="start_date" class="me-2 mt-3">
+                <h6>{% trans "From" %}</h6>
+            </label>
+            <input type="date" class="oh-input w-25" name="attendance_date__gte" value="{{ attendance_export.form.attendance_date__gte.value }}" required>
+
+            <label for="end_date" class="me-2 mt-3 ms-4">
+                <h6>{% trans "To" %}</h6>
+            </label>
+            <input type="date" class="oh-input w-25" name="attendance_date__lte" value="{{ attendance_export.form.attendance_date__lte.value }}" required>
+
+            <div class="mt-1">
+              <button class="ms-4 d-flex" style="color:white; background-color:hsl(8,77%,56%);border:none;height:40px;">
+                <ion-icon name="download-outline" style="font-size:17px;" class='me-1 mt-2'></ion-icon>
+                <p style="margin-top:10px;">{% trans "Export Data" %}</p>
+              </button>
+            </div>
+        </div>
+    </form>
+  {% endif %}
+
+  {% if "leave"|app_installed %}
+    {% comment %} -----LEAVE RECORDS----- {% endcomment %}
+    <div id="ack-message-{{employee.id}}"></div>
+    <form action="{%url 'leave-requests-info-export' %}"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          class="mt-4">
+          {% csrf_token %}
+      <div class="modal-body">
+        
+        <h6 class="oh-timeoff-modal__user fw-bold">
+          <span class="material-symbols-outlined"style="font-size: 14px;">radio_button_checked</span>
+          {% trans "Leave Records" %}</h6>
+        <div class="row d-none">
+            {% for field in leave_excel_column.selected_fields %}
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    <div class="oh-input-group">
+                        <label class="oh-label"> {{ field|capfirst }} </label>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="oh-input-group">
+          <input type="text" name="employee_id" value="{{ employee.id }}" readonly hidden>
+        </div>
+        
+        <div class="form-group mt-2 d-flex">
+            <label for="start_date" class="me-2 mt-3">
+                <h6>{% trans "From" %}</h6>
+            </label>
+            <input type="date" class="oh-input w-25" name="from_date" value="{{ leave_export.form.from_date.value }}" required>
+
+            <label for="end_date" class="me-2 mt-3 ms-4">
+                <h6>{% trans "To" %}</h6>
+            </label>
+            <input type="date" class="oh-input w-25" name="to_date" value="{{ leave_export.form.to_date.value }}" required>
+
+            <div class="mt-1">
+              <button class="ms-4 d-flex" style="color:white; background-color:hsl(8,77%,56%);border:none;height:40px;">
+                <ion-icon name="download-outline" style="font-size:17px;" class='me-1 mt-2'></ion-icon>
+                <p style="margin-top:10px;">{% trans "Export Data" %}</p>
+              </button>
+            </div>
+
+        </div>
+    </form>
+  {% endif %}
+
+
+  {% if "payroll"|app_installed %}
+    {% comment %} -----PAYROLL RECORDS----- {% endcomment %}
+    <div id="ack-message-{{employee.id}}"></div>
+    <form action="{%url 'payslip-info-export' %}"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          class="mt-4">
+          {% csrf_token %}
+      <div class="modal-body">
+        
+        <h6 class="oh-timeoff-modal__user fw-bold">
+          <span class="material-symbols-outlined"style="font-size: 14px;">radio_button_checked</span>
+          {% trans "Payroll Records" %}</h6>
+        <div class="row d-none">
+            {% for field in payroll_export_column.selected_fields %}
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    <div class="oh-input-group">
+                        <label class="oh-label"> {{ field|capfirst }} </label>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="oh-input-group">
+          <input type="text" name="employee_id" value="{{ employee.id }}" readonly hidden>
+        </div>
+        
+        <div class="form-group mt-2 d-flex">
+            <label for="start_date" class="me-2 mt-3">
+                <h6>{% trans "From" %}</h6>
+            </label>
+            <input type="date" class="oh-input w-25" name="start_date_from" value="{{ payroll_export.form.start_date_from.value }}" required>
+
+            <label for="end_date" class="me-2 mt-3 ms-4">
+                <h6>{% trans "To" %}</h6>
+            </label>
+            <input type="date" class="oh-input w-25" name="end_date_till" value="{{ payroll_export.form.end_date_till.value }}" required>
+
+            <div class="mt-1">
+              <button class="ms-4 d-flex" style="color:white; background-color:hsl(8,77%,56%);border:none;height:40px;">
+                <ion-icon name="download-outline" style="font-size:17px;" class='me-1 mt-2'></ion-icon>
+                <p style="margin-top:10px;">{% trans "Export Data" %}</p>
+              </button>
+            </div>
+
+        </div>
+    </form>
+  {% endif %}
+</div>

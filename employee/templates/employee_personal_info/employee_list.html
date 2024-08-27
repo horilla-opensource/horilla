@@ -1,5 +1,5 @@
 {% include 'filter_tags.html' %}
-{% load basefilters %}
+{% load basefilters %} {% load horillafilters %}
 {% load static %} {% load i18n %} {% if messages %}
 <div class="oh-alert-container">
   {% for message in messages %}
@@ -224,6 +224,21 @@
         >
           <div class="oh-btn-group">
 
+            {% if "leave"|app_installed or "payroll"|app_installed or "attendance"|app_installed %}
+              <button
+                type="button"
+                hx-get="{% url 'export-data-employee' emp.id %}"
+                title="{% trans "Export Individual Data" %}"
+                hx-target="#export-content"
+                hx-swap="innerHTML"
+                class="oh-btn oh-btn--light-bkg w-100"
+                data-toggle="oh-modal-toggle"
+                data-target="#dataExport"
+              >
+                <ion-icon name="download-outline"></ion-icon>
+              </button>
+            {% endif %}
+
             <button
               type="button"
               hx-get="{% url 'send-mail-employee' emp.id %}"
@@ -375,6 +390,16 @@
       <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
     </div>
     <div class="oh-modal__dialog-body" id="mail-content"></div>
+  </div>
+</div>
+
+<div class="oh-modal" id="dataExport" role="dialog" aria-labelledby="dataExport" aria-hidden="true">
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <span class="oh-modal__dialog-title" id="dataExport"><h5>{% trans 'Export Data' %}</h5></span>
+      <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+    <div class="oh-modal__dialog-body" id="export-content"></div>
   </div>
 </div>
 

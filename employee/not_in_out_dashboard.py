@@ -8,6 +8,7 @@ import json
 from datetime import date
 
 from django import template
+from django.apps import apps
 from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
@@ -89,6 +90,168 @@ def send_mail(request, emp_id=None):
         "employee/send_mail.html",
         {"employee": employee, "templates": templates, "employees": employees},
     )
+
+
+from attendance.filters import AttendanceFilters
+from attendance.forms import AttendanceExportForm
+from attendance.models import Attendance
+from base.methods import export_data
+from leave.filters import LeaveRequestFilter
+from leave.forms import LeaveRequestExportForm
+from leave.models import LeaveRequest
+from payroll.filters import PayslipFilter
+from payroll.forms.component_forms import PayslipExportColumnForm
+
+
+@login_required
+@manager_can_enter("employee.change_employee")
+def employee_data_export(request, emp_id=None):
+    """
+    This method used send mail to the employees
+    """
+
+    resolver_match = request.resolver_match
+    if (
+        resolver_match
+        and resolver_match.url_name
+        and resolver_match.url_name == "export-data-employee"
+    ):
+        employee = None
+        if emp_id:
+            employee = Employee.objects.get(id=emp_id)
+
+        context = {"employee": employee}
+
+        # IF LEAVE IS INSTALLED
+        if apps.is_installed("leave"):
+            excel_column = LeaveRequestExportForm()
+            export_filter = LeaveRequestFilter()
+            context.update(
+                {
+                    "leave_excel_column": excel_column,
+                    "leave_export_filter": export_filter.form,
+                }
+            )
+
+        # IF ATTENDANCE IS INSTALLED
+        if apps.is_installed("attendance"):
+            excel_column = AttendanceExportForm()
+            export_filter = AttendanceFilters()
+            context.update(
+                {
+                    "attendance_excel_column": excel_column,
+                    "attendance_export_filter": export_filter.form,
+                }
+            )
+
+        # IF PAYROLL IS INSTALLED
+        if apps.is_installed("payroll"):
+            context.update(
+                {
+                    "payroll_export_column": PayslipExportColumnForm(),
+                    "payroll_export_filter": PayslipFilter(request.GET),
+                }
+            )
+
+        return render(request, "employee/export_data_employee.html", context=context)
+    return export_data(
+        request=request,
+        model=Attendance,
+        filter_class=AttendanceFilters,
+        form_class=AttendanceExportForm,
+        file_name="Attendance_export",
+    )
+
+
+# @login_required
+# def payslip_export(request):
+#     """
+#     This view exports payslip data based on selected fields and filters,
+#     and generates an Excel file for download.
+#     """
+#     choices_mapping = {
+#         "draft": _("Draft"),
+#         "review_ongoing": _("Review Ongoing"),
+#         "confirmed": _("Confirmed"),
+#         "paid": _("Paid"),
+#     }
+#     selected_columns = []
+#     payslips_data = {}
+#     payslips = PayslipFilter(request.GET).qs
+#     today_date = date.today().strftime("%Y-%m-%d")
+#     file_name = f"Payslip_excel_{today_date}.xlsx"
+#     selected_fields = request.GET.getlist("selected_fields")
+#     form = forms.PayslipExportColumnForm()
+
+#     if not selected_fields:
+#         selected_fields = form.fields["selected_fields"].initial
+#         ids = request.GET.get("ids")
+#         id_list = json.loads(ids)
+#         payslips = Payslip.objects.filter(id__in=id_list)
+
+#     for field in forms.excel_columns:
+#         value = field[0]
+#         key = field[1]
+#         if value in selected_fields:
+#             selected_columns.append((value, key))
+
+#     for column_value, column_name in selected_columns:
+#         nested_attributes = column_value.split("__")
+#         payslips_data[column_name] = []
+#         for payslip in payslips:
+#             value = payslip
+#             for attr in nested_attributes:
+#                 value = getattr(value, attr, None)
+#                 if value is None:
+#                     break
+#             data = str(value) if value is not None else ""
+#             if column_name == "Status":
+#                 data = choices_mapping.get(value, "")
+
+#             if type(value) == date:
+#                 user = request.user
+#                 employee = user.employee_get
+
+#                 # Taking the company_name of the user
+#                 info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+#                 if info.exists():
+#                     for i in info:
+#                         employee_company = i.company_id
+#                     company_name = Company.objects.filter(company=employee_company)
+#                     emp_company = company_name.first()
+
+#                     # Access the date_format attribute directly
+#                     date_format = (
+#                         emp_company.date_format if emp_company else "MMM. D, YYYY"
+#                     )
+#                 else:
+#                     date_format = "MMM. D, YYYY"
+
+#                 # Convert the string to a datetime.date object
+#                 start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
+
+#                 # Print the formatted date for each format
+#                 for format_name, format_string in HORILLA_DATE_FORMATS.items():
+#                     if format_name == date_format:
+#                         data = start_date.strftime(format_string)
+#             else:
+#                 data = str(value) if value is not None else ""
+#             payslips_data[column_name].append(data)
+
+#     data_frame = pd.DataFrame(data=payslips_data)
+#     response = HttpResponse(
+#         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+#     )
+#     response["Content-Disposition"] = f'attachment; filename="{file_name}"'
+
+#     writer = pd.ExcelWriter(response, engine="xlsxwriter")
+#     data_frame.style.map(lambda x: "text-align: center").to_excel(
+#         writer, index=False, sheet_name="Sheet1"
+#     )
+#     worksheet = writer.sheets["Sheet1"]
+#     worksheet.set_column("A:Z", 20)
+#     writer.close()
+#     return response
 
 
 @login_required

@@ -235,6 +235,11 @@ urlpatterns = [
         name="send-mail-employee",
     ),
     path(
+        "export-data-employee/<int:emp_id>/",
+        not_in_out_dashboard.employee_data_export,
+        name="export-data-employee",
+    ),
+    path(
         "employee-bulk-mail", not_in_out_dashboard.send_mail, name="employee-bulk-mail"
     ),
     path(
