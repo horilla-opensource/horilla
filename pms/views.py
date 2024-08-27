@@ -67,6 +67,7 @@ from pms.methods import (
 from pms.models import (
     AnonymousFeedback,
     Answer,
+    BonusPointSetting,
     Comment,
     EmployeeKeyResult,
     EmployeeObjective,
@@ -3575,3 +3576,18 @@ def dashboard_feedback_answer(request):
         "request_and_approve/feedback_answer.html",
         {"feedbacks": feedbacks, "current_date": datetime.date.today()},
     )
+
+
+@login_required
+@permission_required("pms.delete_bonuspointsetting")
+def delete_bonus_point_setting(request, pk):
+    """
+    Automation delete view
+    """
+    try:
+        BonusPointSetting.objects.get(id=pk).delete()
+        messages.success(request, "Bonus Point Setting deleted")
+    except Exception as e:
+        print(e)
+        messages.error(request, "Something went wrong")
+    return redirect(reverse("bonus-point-setting-list-view"))

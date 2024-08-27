@@ -1,6 +1,7 @@
 from django.urls import path
 
 from base.views import object_delete
+from pms import cbvs
 
 from . import models, views
 
@@ -414,5 +415,62 @@ urlpatterns = [
         "dashboard-feedback-answer",
         views.dashboard_feedback_answer,
         name="dashboard-feedback-answer",
+    ),
+    # ===========bonus point setting============
+    # path(
+    #     "view-bonus-setting",
+    #     views.view_bonus_setting,
+    #     name="view-bonus-setting",
+    # ),
+    path(
+        "bonus-point-setting",
+        cbvs.BonusPointSettingSectionView.as_view(),
+        name="bonus-point-setting",
+    ),
+    path(
+        "bonus-point-setting-nav",
+        cbvs.BonusPointSettingNavView.as_view(),
+        name="bonus-point-setting-nav",
+    ),
+    path(
+        "create-bonus-point-setting",
+        cbvs.BonusPointSettingFormView.as_view(),
+        name="create-bonus-point-setting",
+    ),
+    path(
+        "update-bonus-point-setting/<int:pk>/",
+        cbvs.BonusPointSettingFormView.as_view(),
+        name="update-bonus-point-setting",
+    ),
+    path(
+        "delete-bonus-point-setting/<int:pk>/",
+        views.delete_bonus_point_setting,
+        name="delete-bonus-point-setting",
+    ),
+    path(
+        "bonus-point-setting-list-view",
+        cbvs.BonusPointSettingListView.as_view(),
+        name="bonus-point-setting-list-view",
+    ),
+    # ===========Employee bonus point============
+    path(
+        "employee-bonus-point",
+        cbvs.EmployeeBonusPointSectionView.as_view(),
+        name="employee-bonus-point",
+    ),
+    path(
+        "employee-bonus-point-nav",
+        cbvs.EmployeeBonusPointNavView.as_view(),
+        name="employee-bonus-point-nav",
+    ),
+    path(
+        "create-employee-bonus-point",
+        cbvs.EmployeeBonusPointFormView.as_view(),
+        name="create-employee-bonus-point",
+    ),
+    path(
+        "employee-bonus-point-list-view",
+        cbvs.EmployeeBonusPointListView.as_view(),
+        name="employee-bonus-point-list-view",
     ),
 ]

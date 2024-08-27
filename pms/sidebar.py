@@ -34,6 +34,10 @@ SUBMENUS = [
         "accessibility": "pms.sidebar.key_result_accessibility",
     },
     {
+        "menu": trans("Employee Bonus Point"),
+        "redirect": reverse("employee-bonus-point"),
+    },
+    {
         "menu": trans("Period"),
         "redirect": reverse("period-view"),
         "accessibility": "pms.sidebar.key_result_accessibility",

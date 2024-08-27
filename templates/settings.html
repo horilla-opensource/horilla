@@ -445,6 +445,33 @@
 							</li>
 							<hr>
 						{% endif %}
+						{% if "pms"|app_installed %}
+							<li class="oh-inner-sidebar__item">
+								<div class="oh-accordion ms-2">
+									<div class="oh-accordion-header" style="font-size:16px;">
+										<ion-icon name="analytics-outline" class="me-2"></ion-icon>
+										{% trans "Performnce" %}
+									</div>
+										<div class="oh-accordion-body">
+											<div class="row">
+											<div class="col-sm-12 col-md-12 col-lg-12">
+												<div class="oh-input-group">
+												{% if perms.pms.view_payslipautogenerate %}
+														<a
+															id="autoGeneratePayslip"
+															href="{% url 'bonus-point-setting' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "Bonus Point Setting" %}</a
+														>
+													{% endif %}
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</li>
+							<hr>
+						{% endif %}
 						{% if "helpdesk"|app_installed %}
 							<li class="oh-inner-sidebar__item">
 								<div class="oh-accordion ms-2">

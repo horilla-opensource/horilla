@@ -1,8 +1,15 @@
+import operator
+from datetime import date
+from typing import Iterable
+
 from dateutil.relativedelta import relativedelta
 from django import forms
+from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models.signals import post_delete, post_save, pre_save
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
@@ -11,6 +18,8 @@ from employee.models import Employee
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from horilla_automations.methods.methods import get_model_class
+from horilla_views.cbv_methods import render_template
 
 """Objectives and key result section"""
 
@@ -721,6 +730,160 @@ class MeetingsAnswer(models.Model):
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.answer}"
+
+
+class EmployeeBonusPoint(models.Model):
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.DO_NOTHING,
+        related_name="employe_bonus_point",
+        null=True,
+        blank=True,
+        verbose_name="Employee",
+    )
+    bonus_point = models.IntegerField(default=0)
+    based_on = models.CharField(max_length=150)
+
+    def __str__(self):
+        return f"{self.employee_id.employee_first_name} - {self.bonus_point}"
+
+
+class BonusPointSetting(models.Model):
+    MODEL_CHOICES = [
+        ("pms.models.EmployeeObjective", "Objective"),
+        ("pms.models.EmployeeKeyResult", "Key Result"),
+    ]
+    if apps.is_installed("project"):
+        MODEL_CHOICES += [
+            ("project.models.Task", "Task"),
+            ("project.models.Project", "Project"),
+        ]
+    BONUS_FOR = [
+        ("completed", "Completing"),
+    ]
+    CONDITIONS = [
+        ("=", "="),
+        (">", ">"),
+        ("<", "<"),
+        ("<=", "<="),
+        (">=", ">="),
+    ]
+    FIELD_1 = [
+        ("complition_date", "Completion Date"),
+    ]
+    FIELD_2 = [
+        ("end_date", "End Date"),
+    ]
+    model = models.CharField(max_length=100, choices=MODEL_CHOICES, null=False)
+    bonus_for = models.CharField(max_length=25, choices=BONUS_FOR)
+    field_1 = models.CharField(max_length=25, choices=FIELD_1, null=True, blank=True)
+    conditions = models.CharField(
+        max_length=25, choices=CONDITIONS, null=True, blank=True
+    )
+    field_2 = models.CharField(max_length=25, choices=FIELD_2, null=True, blank=True)
+    points = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    is_active = models.BooleanField(default=True)
+
+    def get_model_display(self):
+        """
+        Display model
+        """
+        return dict(BonusPointSetting.MODEL_CHOICES).get(self.model)
+
+    def get_bonus_for_display(self):
+        """
+        Display bonus_for
+        """
+        return dict(BonusPointSetting.BONUS_FOR).get(self.bonus_for)
+
+    def get_field_1_display(self):
+        """
+        Display field_1
+        """
+        return dict(BonusPointSetting.FIELD_1).get(self.field_1)
+
+    def get_field_2_display(self):
+        """
+        Display field_2
+        """
+        return dict(BonusPointSetting.FIELD_2).get(self.field_2)
+
+    def get_condition(self):
+        """
+        Get the condition for bonus
+        """
+        return f" {dict(BonusPointSetting.FIELD_1).get(self.field_1)} {self.conditions} {dict(BonusPointSetting.FIELD_2).get(self.field_2)}"
+
+    def action_template(self):
+        """
+        This method for get custom column for managers.
+        """
+
+        return render_template(
+            path="bonus/bonus_seetting_action.html",
+            context={"instance": self},
+        )
+
+    def create_employee_bonus(self, employee, field_1, field_2):
+        """
+        For creating employee bonus
+        """
+        operator_mapping = {
+            "=": operator.eq,
+            "!=": operator.ne,
+            "<": operator.lt,
+            ">": operator.gt,
+            "<=": operator.le,
+            ">=": operator.ge,
+        }
+        if operator_mapping[self.conditions](field_1, field_2):
+            EmployeeBonusPoint(
+                employee_id=employee,
+                based_on=(f"{self.get_bonus_for_display} {self.model}"),
+                bonus_point=self.points,
+            ).save()
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        model_class = get_model_class(self.model)
+
+        def create_signal_handler(name, bonus_point_setting):
+            def signal_handler(sender, instance, created, **kwargs):
+                """
+                Signal handler for post-save events of the model instances.
+                """
+                # request = getattr(_thread_locals, "request", None)
+                # previous_record = getattr(_thread_locals, "previous_record", None)
+                # previous_instance = None
+                # if previous_record:
+                #     previous_instance = previous_record["instance"]
+
+                # if BonusPointSetting.objects.filter(model='Task').exists():
+                # bonus_point_settings = BonusPointSetting.objects.filter(model='Task')
+                # for bs in bonus_point_settings:
+
+                field_1 = date.today()
+                field_2 = instance.end_date
+                if bonus_point_setting.bonus_for == instance.status:
+
+                    for employee in instance.task_members.all():
+                        bonus_point_setting.create_employee_bonus(
+                            employee, field_1, field_2
+                        )
+
+            signal_handler.__name__ = name
+            signal_handler.model_class = model_class
+            signal_handler.bonus_point_setting = bonus_point_setting
+            return signal_handler
+
+        # Create and connect the signal handler
+        handler_name = f"{self.id}_signal_handler"
+        dynamic_signal_handler = create_signal_handler(handler_name, self)
+        # SIGNAL_HANDLERS.append(dynamic_signal_handler)
+        post_save.connect(
+            dynamic_signal_handler, sender=dynamic_signal_handler.model_class
+        )
 
 
 def manipulate_existing_data():

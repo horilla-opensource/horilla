@@ -10,7 +10,9 @@ from simple_history.admin import SimpleHistoryAdmin
 from .models import (
     AnonymousFeedback,
     Answer,
+    BonusPointSetting,
     Comment,
+    EmployeeBonusPoint,
     EmployeeKeyResult,
     EmployeeObjective,
     Feedback,
@@ -37,3 +39,5 @@ admin.site.register(Objective)
 admin.site.register(KeyResultFeedback)
 admin.site.register(Meetings)
 admin.site.register(Comment, SimpleHistoryAdmin)
+admin.site.register(BonusPointSetting)
+admin.site.register(EmployeeBonusPoint)

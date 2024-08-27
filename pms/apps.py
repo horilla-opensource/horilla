@@ -23,3 +23,11 @@ class PmsConfig(AppConfig):
             path("pms/", include("pms.urls")),
         )
         super().ready()
+        try:
+            from pms.signals import start_automation
+
+            start_automation()
+        except:
+            """
+            Migrations are not affected yet
+            """
