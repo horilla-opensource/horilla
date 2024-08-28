@@ -1222,16 +1222,19 @@ def edit_cosec_user(request, user_id, device_id):
         day = int(user["validity-date-dd"])
         date_object = datetime(year, month, day)
         formatted_date = date_object.strftime("%Y-%m-%d")
-        form = COSECUserForm(
-            initial={
-                "name": user["name"],
-                "user_active": bool(int(user["user-active"])),
-                "vip": bool(int(user["vip"])),
-                "validity_enable": bool(int(user["validity-enable"])),
-                "validity_end_date": formatted_date,
-                "by_pass_finger": bool(int(user["by-pass-finger"])),
-            }
-        )
+        initial_data = {
+            "name": user["name"],
+            "user_active": bool(int(user["user-active"])),
+            "vip": bool(int(user["vip"])),
+            "validity_enable": bool(int(user["validity-enable"])),
+            "validity_end_date": formatted_date,
+        }
+
+        if "by-pass-finger" in user:
+            initial_data["by_pass_finger"] = bool(int(user["by-pass-finger"]))
+
+        form = COSECUserForm(initial=initial_data)
+
         if request.method == "POST":
             form = COSECUserForm(request.POST)
             if form.is_valid():

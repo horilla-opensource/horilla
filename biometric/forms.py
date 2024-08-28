@@ -122,10 +122,10 @@ class CosecUserAddForm(Form):
         label=_("Employees"),
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, device_id=None, **kwargs):
         super().__init__(*args, **kwargs)
         cosec_employee_ids = BiometricEmployees.objects.filter(
-            device_id__machine_type="cosec"
+            device_id=device_id
         ).values_list("employee_id", flat=True)
         self.fields["employee_ids"].queryset = Employee.objects.filter(
             is_active=True
