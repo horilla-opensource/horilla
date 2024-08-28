@@ -66,6 +66,7 @@ from horilla.decorators import (
 )
 from horilla.group_by import group_by_queryset
 from horilla.horilla_settings import HORILLA_DATE_FORMATS
+from horilla.methods import horilla_users_with_perms
 from notifications.signals import notify
 
 
@@ -659,15 +660,40 @@ def asset_allocate_creation(request):
     return render(request, "request_allocation/asset_allocation_creation.html", context)
 
 
+@login_required
 def asset_allocate_return_request(request, asset_id):
     """
     Handle the initiation of a return request for an allocated asset.
     """
+    previous_data = request.GET.urlencode()
     asset_assign = AssetAssignment.objects.get(id=asset_id)
     asset_assign.return_request = True
     asset_assign.save()
     message = _("Return request for {} initiated.").format(asset_assign.asset_id)
-    messages.info(request, message)
+    messages.success(request, message)
+    permed_users = horilla_users_with_perms("asset.change_assetassignment")
+    notify.send(
+        request.user.employee_get,
+        recipient=permed_users,
+        verb=f"Return request for {asset_assign.asset_id} initiated from\
+            {asset_assign.assigned_to_employee_id}",
+        verb_ar=f"تم بدء طلب الإرجاع للمورد {asset_assign.asset_id}\
+            من الموظف {asset_assign.assigned_to_employee_id}",
+        verb_de=f"Rückgabewunsch für {asset_assign.asset_id} vom Mitarbeiter\
+            {asset_assign.assigned_to_employee_id} initiiert",
+        verb_es=f"Solicitud de devolución para {asset_assign.asset_id}\
+            iniciada por el empleado {asset_assign.assigned_to_employee_id}",
+        verb_fr=f"Demande de retour pour {asset_assign.asset_id}\
+            initiée par l'employé {asset_assign.assigned_to_employee_id}",
+        redirect=reverse("asset-request-allocation-view")
+        + f"?assigned_to_employee_id={asset_assign.assigned_to_employee_id}&\
+        asset_id={asset_assign.asset_id}&assigned_date={asset_assign.assigned_date}",
+        icon="bag-check",
+    )
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        url = reverse("asset-request-allocation-view-search-filter")
+        return redirect(f"{url}?{previous_data}")
+
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 

@@ -1,4 +1,15 @@
 {% load i18n %} {% load static %} {% include 'filter_tags.html' %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 
 <div class="oh-tabs__contents">
 	<div class="oh-tabs__content" id="tab_3">
@@ -7,17 +18,16 @@
 			<div class="oh-table_sticky--wrapper">
 				<div class="oh-sticky-dropdown--header">
 					<div class="oh-dropdown" x-data="{open: false}">
-						<button class="oh-sticky-dropdown_btn p-2 "  @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-						role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+						<button class="oh-sticky-dropdown_btn p-2 " @click="open = !open">
+							<ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
+						</button>
 						<div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-							<ul class="oh-dropdown__items" id="ownAssetCells">
-							</ul>
+							<ul class="oh-dropdown__items" id="ownAssetCells"></ul>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div id="ownAsset-table" data-table-name="ownAsset_tab">
-
 				<div class="oh-sticky-table">
 					<div class="oh-sticky-table__table">
 						<div class="oh-sticky-table__thead">
@@ -31,63 +41,52 @@
 						<div class="oh-sticky-table__tbody">
 							<div id="assetRequestAllocationTarget"></div>
 							{% for asset in assets %}
-							<!-- asset request looping -->
-							<div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-get="{% url 'own-asset-individual-view' asset.id %}?assets_ids={{asset_ids}}" hx-target="#objectDetailsModalTarget">
-								<div class="oh-sticky-table__sd">
-									<div class="oh-profile oh-profile--md">
-										<div class="oh-profile__avatar mr-1">
-											<img
-												src="https://ui-avatars.com/api/?name={{asset.asset_id.asset_name}}&background=random"
-												class="oh-profile__image"
-												alt=""
-											/>
-										</div>
-										<span class="oh-profile__name oh-text--dark"
-											>{{asset.asset_id.asset_name}}
-										</span>
-									</div>
-								</div>
-								<div class="oh-sticky-table__td" data-cell-index="1">
-									<span class=""> {{asset.asset_id.asset_category_id}} </span>
-								</div>
-								<div class="oh-sticky-table__td" data-cell-index="2">
-									<span class=""> {{asset.asset_id.expiry_date}} </span>
-								</div>
-								<div class="oh-sticky-table__td">
-									{% if perms.asset.change_assetassignment %}
-										<button
-											href="#"
-											class="oh-btn oh-btn--secondary"
-											role="button"
-											data-toggle="oh-modal-toggle"
-											data-target="#objectCreateModal"
-											hx-get="{%url 'asset-allocate-return'  asset_id=asset.asset_id.id %}"
-											hx-target="#objectCreateModalTarget"
-										>
-											<ion-icon name="return-down-back-sharp"></ion-icon>{% trans	"Return" %}
-										</button>
-									{% else %}
-										{% if asset.return_request %}
-											<div class="d-flex align-items-center">
-												<span
-													class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"
-												></span>
-												<span class="link-primary"> {% trans "Requested to return" %} </span>
+								<!-- Start of own assets -->
+								<div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle"
+									data-target="#objectDetailsModal"
+									hx-get="{% url 'own-asset-individual-view' asset.id %}?assets_ids={{asset_ids}}"
+									hx-target="#objectDetailsModalTarget">
+									<div class="oh-sticky-table__sd">
+										<div class="oh-profile oh-profile--md">
+											<div class="oh-profile__avatar mr-1">
+												<img src="https://ui-avatars.com/api/?name={{asset.asset_id.asset_name}}&background=random" class="oh-profile__image" alt="" />
 											</div>
+											<span class="oh-profile__name oh-text--dark">{{asset.asset_id.asset_name}} </span>
+										</div>
+									</div>
+									<div class="oh-sticky-table__td" data-cell-index="1">
+										<span class=""> {{asset.asset_id.asset_category_id}} </span>
+									</div>
+									<div class="oh-sticky-table__td" data-cell-index="2">
+										<span class=""> {{asset.asset_id.expiry_date}} </span>
+									</div>
+									<div class="oh-sticky-table__td">
+										{% if perms.asset.change_assetassignment %}
+											<button href="#" class="oh-btn oh-btn--secondary" role="button"
+												data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+												hx-get="{%url 'asset-allocate-return'  asset_id=asset.asset_id.id %}"
+												hx-target="#objectCreateModalTarget">
+												<ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}
+											</button>
 										{% else %}
-											<form action = "{% url 'asset-allocate-return-request' asset_id=asset.id %}"
-												onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');"
-												>
-												{% csrf_token %}
-												<button type="submit" class="oh-btn oh-btn--secondary" onclick="event.stopPropagation();">
+											{% if asset.return_request %}
+												<div class="d-flex align-items-center">
+													<span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"></span>
+													<span class="link-primary"> {% trans "Requested to return" %} </span>
+												</div>
+											{% else %}
+												<button hx-confirm="{% trans 'Are you sure you want to return this asset?' %}"
+													hx-get="{% url 'asset-allocate-return-request' asset_id=asset.id %}?{{pg}}"
+													hx-target="#asset_request_allocation_list" type="submit"
+													class="oh-btn oh-btn--secondary" onclick="event.stopPropagation()">
 													<ion-icon name="return-down-back-sharp"></ion-icon>
 													{% trans "Return Request" %}
 												</button>
-											</form>
+											{% endif %}
 										{% endif %}
-									{% endif %}
+									</div>
 								</div>
-							</div>
+								<!-- End of own assets -->
 							{% endfor %}
 						</div>
 					</div>
@@ -96,281 +95,35 @@
 
 				<!-- pagination start -->
 				<div class="oh-pagination">
-					<span
-						class="oh-pagination__page"
-						data-toggle="modal"
-						data-target="#addEmployeeModal"
-					></span>
+					<span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal"></span>
 					<nav class="oh-pagination__nav">
 						<div class="oh-pagination__input-container me-3">
 							<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-							<input
-								type="number"
-								name="page"
-								class="oh-pagination__input"
-								value="{{assets.number }}"
-								min="1"
+							<input type="number" name="page" class="oh-pagination__input" value="{{assets.number }}" min="1"
 								hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}"
-								hx-target="#asset_request_allocation_list"
-							/>
-							<span class="oh-pagination__label"
-								>{% trans "of" %} {{ assets.paginator.num_pages }}</span
-							>
+								hx-target="#asset_request_allocation_list" />
+							<span class="oh-pagination__label">{% trans "of" %} {{ assets.paginator.num_pages }}</span>
 						</div>
 						<ul class="oh-pagination__items">
 							{% if assets.has_previous %}
-							<li class="oh-pagination__item oh-pagination__item--wide">
-								<a
-									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page=1"
-									class="oh-pagination__link"
-									hx-target="#asset_request_allocation_list"
-									>{% trans "First" %}</a
-								>
-							</li>
-							<li class="oh-pagination__item oh-pagination__item--wide">
-								<a
-									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ assets.previous_page_number }}"
-									class="oh-pagination__link"
-									hx-target="#asset_request_allocation_list"
-									>{% trans "Previous" %}</a
-								>
-							</li>
+								<li class="oh-pagination__item oh-pagination__item--wide">
+									<a hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page=1"
+										class="oh-pagination__link" hx-target="#asset_request_allocation_list">{% trans "First" %}</a>
+								</li>
+								<li class="oh-pagination__item oh-pagination__item--wide">
+									<a hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ assets.previous_page_number }}"
+										class="oh-pagination__link" hx-target="#asset_request_allocation_list">{% trans "Previous" %}</a>
+								</li>
 							{%endif %}
 							{% if assets.has_next %}
-							<li class="oh-pagination__item oh-pagination__item--wide">
-								<a
-									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ assets.next_page_number }}"
-									class="btn btn-outline-secondary"
-									hx-target="#asset_request_allocation_list"
-									>{% trans "Next" %}</a
-								>
-							</li>
-							<li class="oh-pagination__item oh-pagination__item--wide">
-								<a
-									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ assets.paginator.num_pages }}"
-									hx-target="#asset_request_allocation_list"
-									class="oh-pagination__link"
-									>{% trans "Last" %}</a
-								>
-							</li>
-							{% endif %}
-						</ul>
-					</nav>
-				</div>
-			</div>
-			<!-- end of pagination -->
-		{% else %}
-		<div style="
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-items: center;
-			"
-		>
-			<img style="width: 190px; height: 190px;" src="{% static 'images/ui/asset.png' %}" class="oh-404__image" alt="Page not found. 404."/>
-			<h5 class="oh-404__subtitle">{% trans "No assets have been assigned to you." %}</h5>
-		</div>
-		{% endif %}
-	</div>
-
-	<div class="oh-tabs__content" id="tab_1">
-		{% if asset_requests %}
-			<div class="oh-table_sticky--wrapper">
-				<div class="oh-sticky-dropdown--header">
-					<div class="oh-dropdown" x-data="{open: false}">
-						<button class="oh-sticky-dropdown_btn p-2 "  @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-						role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
-						<div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-							<ul class="oh-dropdown__items" id="assetRequestCells">
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div id="assetRequest-table" data-table-name="assetRequest_tab">
-			<!-- Sticky Table  for own objective-->
-				<div class="oh-sticky-table">
-					<div class="oh-sticky-table__table">
-						<div class="oh-sticky-table__thead">
-							<div class="oh-sticky-table__tr">
-								<div class="oh-sticky-table__th {% if request.sort_option.order == '-requested_employee_id' %}arrow-up {% elif request.sort_option.order == 'requested_employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&request_sortby=requested_employee_id"
-								hx-target="#asset_request_allocation_list" >{% trans "Request User" %}</div>
-								<div class="oh-sticky-table__th {% if request.sort_option.order == '-asset_category_id__asset_category_name' %}arrow-up {% elif request.sort_option.order == 'asset_category_id__asset_category_name' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&request_sortby=asset_category_id__asset_category_name"
-								hx-target="#asset_request_allocation_list" data-cell-index="101" data-cell-title='{% trans "Asset Category" %}' >{% trans "Asset Category" %}</div>
-								<div class="oh-sticky-table__th {% if request.sort_option.order == '-asset_request_date' %}arrow-up {% elif request.sort_option.order == 'asset_request_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&request_sortby=asset_request_date"
-								hx-target="#asset_request_allocation_list" data-cell-index="102" data-cell-title='{% trans "Request Date" %}' >{% trans "Request Date" %}</div>
-								<div class="oh-sticky-table__th {% if request.sort_option.order == '-asset_request_status' %}arrow-up {% elif request.sort_option.order == 'asset_request_status' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&request_sortby=asset_request_status"
-								hx-target="#asset_request_allocation_list" data-cell-index="103" data-cell-title='{% trans "Status" %}' >{% trans "Status" %}</div>
-								{% if perms.asset.add_assetassignment %}
-									<div class="oh-sticky-table__th" style="width:120px">{% trans "Confirmation" %}</div>
-								{% endif %}
-							</div>
-						</div>
-						<div class="oh-sticky-table__tbody">
-							<div id="assetRequestAllocationTarget"></div>
-							{% for asset_request in asset_requests %}
-							<!-- asset request looping -->
-							<div
-								class="oh-sticky-table__tr"
-								draggable="true"
-								data-toggle="oh-modal-toggle"
-								data-target="#objectDetailsModalW25"
-								hx-get="{% url 'asset-request-individual-view' asset_request.id %}?requests_ids={{requests_ids}}"
-								hx-target="#objectDetailsModalW25Target"
-							>
-								<div class="oh-sticky-table__sd">
-									<div class="oh-profile oh-profile--md">
-										<div class="oh-profile__avatar mr-1">
-											<img
-												src="{{asset_request.requested_employee_id.get_avatar}}"
-												class="oh-profile__image"
-												alt="Mary Magdalene"
-											/>
-										</div>
-										<span class="oh-profile__name oh-text--dark"
-											>{{asset_request.requested_employee_id}}
-										</span>
-									</div>
-								</div>
-								<div class="oh-sticky-table__td" data-cell-index="101">
-									{{asset_request.asset_category_id}}
-								</div>
-								<div class="oh-sticky-table__td dateformat_changer"  data-cell-index="102">
-									{{ asset_request.asset_request_date }}
-								</div>
-								<div class="oh-sticky-table__td" data-cell-index="103">
-									<div class="d-flex align-items-center">
-										<span
-											class="oh-dot oh-dot--small me-1 oh-dot--color {% if asset_request.asset_request_status == 'Approved' %} oh-dot--success {% elif asset_request.asset_request_status == 'Rejected' %} oh-dot--danger {% elif asset_request.asset_request_status == 'Requested' %} oh-dot--info {% endif %}"
-										></span
-										><span
-											class="{% if asset_request.asset_request_status == 'Approved' %} link-success {% elif asset_request.asset_request_status == 'Rejected' %} link-danger {% elif asset_request.asset_request_status == 'Requested' %} link-info {% endif %}"
-											>{% trans asset_request.asset_request_status %}</span
-										>
-									</div>
-								</div>
-								{% if perms.asset.add_assetassignment %}
-									{% if asset_request.asset_request_status == 'Requested' %}
-										<div class="oh-sticky-table__td">
-											<div class="oh-btn-group">
-												<a
-													class="oh-btn oh-btn--success w-50"
-													role="button"
-													onclick="event.stopPropagation()"
-													data-toggle="oh-modal-toggle"
-													data-target="#objectCreateModal"
-													hx-get="{% url 'asset-request-approve' req_id=asset_request.id %}"
-													hx-target="#objectCreateModalTarget"
-													title="{% trans 'Approve' %}"
-												>
-													<ion-icon name="checkmark-outline"></ion-icon>
-
-												</a>
-												<form
-													action="{% url 'asset-request-reject' req_id=asset_request.id %}"
-													method="post"
-													onsubmit="return confirm('{% trans "Do you want to reject this request?" %}')"
-													title="{% trans 'Reject' %}"
-													class='w-50'
-												>
-													{% csrf_token %}
-													<button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation();">
-														<ion-icon name="close-outline"></ion-icon>
-													</button>
-												</form>
-											</div>
-										</div>
-									{% else %}
-										<div class="oh-sticky-table__td">
-											<div class="oh-btn-group">
-												<a
-													href="#"
-													class="oh-btn oh-btn--success oh-btn--disabled w-50"
-													role="button"
-													onclick="event.stopPropagation()"
-													title='{% trans "Approve" %}'
-												>
-													<ion-icon name="checkmark-outline"></ion-icon>
-												</a>
-												<a
-													href="#"
-													class="oh-btn oh-btn--danger oh-btn--disabled w-50"
-													role="button"
-													onclick="event.stopPropagation()"
-													title='{% trans "Reject" %}'
-												>
-													<ion-icon name="close-outline"></ion-icon>
-												</a>
-											</div>
-										</div>
-									{% endif %}
-								{% endif %}
-							</div>
-							{% endfor %}
-						</div>
-					</div>
-				</div>
-				<!-- End of Sticky Table -->
-
-				<!-- pagination start -->
-				<div class="oh-pagination">
-					<span
-						class="oh-pagination__page"
-						data-toggle="modal"
-						data-target="#addEmployeeModal"
-					></span>
-					<nav class="oh-pagination__nav">
-						<div class="oh-pagination__input-container me-3">
-							<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-							<input
-								type="number"
-								name="page"
-								class="oh-pagination__input"
-								value="{{asset_requests.number }}"
-								min="1"
-								hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}"
-								hx-target="#asset_request_allocation_list"
-							/>
-							<span class="oh-pagination__label"
-								>{% trans "of" %} {{ asset_requests.paginator.num_pages }}</span
-							>
-						</div>
-						<ul class="oh-pagination__items">
-							{% if asset_requests.has_previous %}
-							<li class="oh-pagination__item oh-pagination__item--wide">
-								<a
-									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page=1"
-									class="oh-pagination__link"
-									hx-target="#asset_request_allocation_list"
-									>{% trans "First" %}</a
-								>
-							</li>
-							<li class="oh-pagination__item oh-pagination__item--wide">
-								<a
-									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_requests.previous_page_number }}"
-									class="oh-pagination__link"
-									hx-target="#asset_request_allocation_list"
-									>{% trans "Previous" %}</a
-								>
-							</li>
-							{% endif %}
-							{% if asset_requests.has_next %}
-							<li class="oh-pagination__item oh-pagination__item--wide">
-								<a
-									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_requests.next_page_number }}"
-									class="btn btn-outline-secondary"
-									hx-target="#asset_request_allocation_list"
-									>{% trans "Next" %}</a
-								>
-							</li>
-							<li class="oh-pagination__item oh-pagination__item--wide">
-								<a
-									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_requests.paginator.num_pages }}"
-									hx-target="#asset_request_allocation_list"
-									class="oh-pagination__link"
-									>{% trans "Last" %}</a
-								>
-							</li>
+								<li class="oh-pagination__item oh-pagination__item--wide">
+									<a hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ assets.next_page_number }}"
+										class="btn btn-outline-secondary" hx-target="#asset_request_allocation_list">{% trans "Next" %}</a>
+								</li>
+								<li class="oh-pagination__item oh-pagination__item--wide">
+									<a hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ assets.paginator.num_pages }}"
+										hx-target="#asset_request_allocation_list" class="oh-pagination__link">{% trans "Last" %}</a>
+								</li>
 							{% endif %}
 						</ul>
 					</nav>
@@ -383,9 +136,186 @@
 				flex-direction: column;
 				justify-content: center;
 				align-items: center;
-				"
-			>
-				<img style="width: 190px;height: 190px;" src="{% static 'images/ui/asset.png' %}" class="oh-404__image" alt="Page not found. 404."/>
+				">
+				<img style="width: 190px; height: 190px;" src="{% static 'images/ui/asset.png' %}" class="oh-404__image"
+					alt="Page not found. 404." />
+				<h5 class="oh-404__subtitle">{% trans "No assets have been assigned to you." %}</h5>
+			</div>
+		{% endif %}
+	</div>
+
+	<div class="oh-tabs__content" id="tab_1">
+		{% if asset_requests %}
+			<div class="oh-table_sticky--wrapper">
+				<div class="oh-sticky-dropdown--header">
+					<div class="oh-dropdown" x-data="{open: false}">
+						<button class="oh-sticky-dropdown_btn p-2 " @click="open = !open"><ion-icon
+								name="ellipsis-vertical-sharp" role="img" class="md hydrated"
+								aria-label="ellipsis vertical sharp"></ion-icon></button>
+						<div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+							<ul class="oh-dropdown__items" id="assetRequestCells">
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="assetRequest-table" data-table-name="assetRequest_tab">
+				<!-- Sticky Table  for own objective-->
+				<div class="oh-sticky-table">
+					<div class="oh-sticky-table__table">
+						<div class="oh-sticky-table__thead">
+							<div class="oh-sticky-table__tr">
+								<div class="oh-sticky-table__th {% if request.sort_option.order == '-requested_employee_id' %}arrow-up {% elif request.sort_option.order == 'requested_employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
+									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&request_sortby=requested_employee_id"
+									hx-target="#asset_request_allocation_list">{% trans "Request User" %}</div>
+								<div class="oh-sticky-table__th {% if request.sort_option.order == '-asset_category_id__asset_category_name' %}arrow-up {% elif request.sort_option.order == 'asset_category_id__asset_category_name' %}arrow-down {% else %}arrow-up-down {% endif %}"
+									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&request_sortby=asset_category_id__asset_category_name"
+									hx-target="#asset_request_allocation_list" data-cell-index="101"
+									data-cell-title='{% trans "Asset Category" %}'>{% trans "Asset Category" %}</div>
+								<div class="oh-sticky-table__th {% if request.sort_option.order == '-asset_request_date' %}arrow-up {% elif request.sort_option.order == 'asset_request_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
+									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&request_sortby=asset_request_date"
+									hx-target="#asset_request_allocation_list" data-cell-index="102"
+									data-cell-title='{% trans "Request Date" %}'>{% trans "Request Date" %}</div>
+								<div class="oh-sticky-table__th {% if request.sort_option.order == '-asset_request_status' %}arrow-up {% elif request.sort_option.order == 'asset_request_status' %}arrow-down {% else %}arrow-up-down {% endif %}"
+									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&request_sortby=asset_request_status"
+									hx-target="#asset_request_allocation_list" data-cell-index="103"
+									data-cell-title='{% trans "Status" %}'>{% trans "Status" %}</div>
+								{% if perms.asset.add_assetassignment %}
+									<div class="oh-sticky-table__th" style="width:120px">{% trans "Confirmation" %}</div>
+								{% endif %}
+							</div>
+						</div>
+						<div class="oh-sticky-table__tbody">
+							<div id="assetRequestAllocationTarget"></div>
+							{% for asset_request in asset_requests %}
+								<!-- Start of asset requests  -->
+								<div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle"
+									data-target="#objectDetailsModalW25"
+									hx-get="{% url 'asset-request-individual-view' asset_request.id %}?requests_ids={{requests_ids}}"
+									hx-target="#objectDetailsModalW25Target">
+									<div class="oh-sticky-table__sd">
+										<div class="oh-profile oh-profile--md">
+											<div class="oh-profile__avatar mr-1">
+												<img src="{{asset_request.requested_employee_id.get_avatar}}"
+													class="oh-profile__image" alt="Mary Magdalene" />
+											</div>
+											<span class="oh-profile__name oh-text--dark">{{asset_request.requested_employee_id}}
+											</span>
+										</div>
+									</div>
+									<div class="oh-sticky-table__td" data-cell-index="101">
+										{{asset_request.asset_category_id}}
+									</div>
+									<div class="oh-sticky-table__td dateformat_changer" data-cell-index="102">
+										{{ asset_request.asset_request_date }}
+									</div>
+									<div class="oh-sticky-table__td" data-cell-index="103">
+										<div class="d-flex align-items-center">
+											<span class="oh-dot oh-dot--small me-1 oh-dot--color
+												{% if asset_request.asset_request_status == 'Approved' %} oh-dot--success
+												{% elif asset_request.asset_request_status == 'Rejected' %} oh-dot--danger
+												{% elif asset_request.asset_request_status == 'Requested' %} oh-dot--info {% endif %}">
+											</span>
+											<span class="{% if asset_request.asset_request_status == 'Approved' %} link-success
+												{% elif asset_request.asset_request_status == 'Rejected' %} link-danger
+												{% elif asset_request.asset_request_status == 'Requested' %} link-info
+												{% endif %}"
+												>
+												{% trans asset_request.asset_request_status %}
+											</span>
+										</div>
+									</div>
+									{% if perms.asset.add_assetassignment %}
+										{% if asset_request.asset_request_status == 'Requested' %}
+											<div class="oh-sticky-table__td">
+												<div class="oh-btn-group">
+													<a class="oh-btn oh-btn--success w-50" role="button"
+														onclick="event.stopPropagation()" data-toggle="oh-modal-toggle"
+														data-target="#objectCreateModal"
+														hx-get="{% url 'asset-request-approve' req_id=asset_request.id %}"
+														hx-target="#objectCreateModalTarget" title="{% trans 'Approve' %}">
+														<ion-icon name="checkmark-outline"></ion-icon>
+
+													</a>
+													<form onsubmit="return confirm('{% trans "Do you want to reject this asset request?" %}')"
+														action="{% url 'asset-request-reject' req_id=asset_request.id %}"
+														method="post" title="{% trans 'Reject' %}" class='w-50'>
+														{% csrf_token %}
+														<button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation();">
+															<ion-icon name="close-outline"></ion-icon>
+														</button>
+													</form>
+												</div>
+											</div>
+										{% else %}
+											<div class="oh-sticky-table__td">
+												<div class="oh-btn-group">
+													<a href="#" class="oh-btn oh-btn--success oh-btn--disabled w-50" role="button"
+														onclick="event.stopPropagation()" title='{% trans "Approve" %}'>
+														<ion-icon name="checkmark-outline"></ion-icon>
+													</a>
+													<a href="#" class="oh-btn oh-btn--danger oh-btn--disabled w-50" role="button"
+														onclick="event.stopPropagation()" title='{% trans "Reject" %}'>
+														<ion-icon name="close-outline"></ion-icon>
+													</a>
+												</div>
+											</div>
+										{% endif %}
+									{% endif %}
+								</div>
+								<!-- End of asset requests -->
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+				<!-- End of Sticky Table -->
+
+				<!-- pagination start -->
+				<div class="oh-pagination">
+					<span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal"></span>
+					<nav class="oh-pagination__nav">
+						<div class="oh-pagination__input-container me-3">
+							<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+							<input type="number" name="page" class="oh-pagination__input" value="{{asset_requests.number }}"
+								min="1" hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}"
+								hx-target="#asset_request_allocation_list" />
+							<span class="oh-pagination__label">{% trans "of" %} {{ asset_requests.paginator.num_pages }}</span>
+						</div>
+						<ul class="oh-pagination__items">
+							{% if asset_requests.has_previous %}
+								<li class="oh-pagination__item oh-pagination__item--wide">
+									<a hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page=1"
+										class="oh-pagination__link" hx-target="#asset_request_allocation_list">{% trans "First" %}</a>
+								</li>
+								<li class="oh-pagination__item oh-pagination__item--wide">
+									<a hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_requests.previous_page_number }}"
+										class="oh-pagination__link" hx-target="#asset_request_allocation_list">{% trans "Previous" %}</a>
+								</li>
+							{% endif %}
+							{% if asset_requests.has_next %}
+								<li class="oh-pagination__item oh-pagination__item--wide">
+									<a hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_requests.next_page_number }}"
+										class="btn btn-outline-secondary" hx-target="#asset_request_allocation_list">{% trans "Next" %}</a>
+								</li>
+								<li class="oh-pagination__item oh-pagination__item--wide">
+									<a hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_requests.paginator.num_pages }}"
+										hx-target="#asset_request_allocation_list" class="oh-pagination__link">{% trans "Last" %}</a>
+								</li>
+							{% endif %}
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<!-- end of pagination -->
+		{% else %}
+			<div style="
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					">
+				<img style="width: 190px;height: 190px;" src="{% static 'images/ui/asset.png' %}" class="oh-404__image"
+					alt="Page not found. 404." />
 				<h5 class="oh-404__subtitle">{% trans "There are no asset request." %}</h5>
 			</div>
 		{% endif %}
@@ -396,8 +326,9 @@
 			<div class="oh-table_sticky--wrapper">
 				<div class="oh-sticky-dropdown--header">
 					<div class="oh-dropdown" x-data="{open: false}">
-						<button class="oh-sticky-dropdown_btn p-2 "  @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-						role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+						<button class="oh-sticky-dropdown_btn p-2 " @click="open = !open"><ion-icon
+								name="ellipsis-vertical-sharp" role="img" class="md hydrated"
+								aria-label="ellipsis vertical sharp"></ion-icon></button>
 						<div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
 							<ul class="oh-dropdown__items" id="assetAllocationCells">
 							</ul>
@@ -406,96 +337,88 @@
 				</div>
 			</div>
 			<div id="assetAllocation-table" data-table-name="assetAllocation_tab">
-			<!-- sticky table for all objectives -->
+				<!-- sticky table for all objectives -->
 				<div class="oh-sticky-table">
 					<div class="oh-sticky-table__table">
 						<div class="oh-sticky-table__thead">
 							<div class="oh-sticky-table__tr">
-								<div class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_to_employee_id' %}arrow-up {% elif request.sort_option.order == 'assigned_to_employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&assign_sortby=assigned_to_employee_id" hx-target="#asset_request_allocation_list">{% trans "Allocated User" %}</div>
-								<div class="oh-sticky-table__th" data-cell-index="201" data-cell-title='{% trans "Asset" %}'>{% trans "Asset" %}</div>
-								<div class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_date' %}arrow-up {% elif request.sort_option.order == 'assigned_date' %}arrow-down {% else %}arrow-up-down {% endif %}" data-cell-index="202" data-cell-title='{% trans "Assigned Date" %}' hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&assign_sortby=assigned_date" hx-target="#asset_request_allocation_list">{% trans "Assigned Date" %}</div>
-								<div class="oh-sticky-table__th {% if request.sort_option.order == '-return_date' %}arrow-up {% elif request.sort_option.order == 'return_date' %}arrow-down {% else %}arrow-up-down {% endif %}" data-cell-index="203" data-cell-title='{% trans "Return Date" %}'hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&assign_sortby=return_date" hx-target="#asset_request_allocation_list">{% trans "Return Date" %}</div>
+								<div class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_to_employee_id' %}arrow-up {% elif request.sort_option.order == 'assigned_to_employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
+									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&assign_sortby=assigned_to_employee_id"
+									hx-target="#asset_request_allocation_list">{% trans "Allocated User" %}</div>
+								<div class="oh-sticky-table__th" data-cell-index="201"
+									data-cell-title='{% trans "Asset" %}'>{% trans "Asset" %}</div>
+								<div class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_date' %}arrow-up {% elif request.sort_option.order == 'assigned_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
+									data-cell-index="202" data-cell-title='{% trans "Assigned Date" %}'
+									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&assign_sortby=assigned_date"
+									hx-target="#asset_request_allocation_list">{% trans "Assigned Date" %}</div>
+								<div class="oh-sticky-table__th {% if request.sort_option.order == '-return_date' %}arrow-up {% elif request.sort_option.order == 'return_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
+									data-cell-index="203" data-cell-title='{% trans "Return Date" %}'
+									hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&assign_sortby=return_date"
+									hx-target="#asset_request_allocation_list">{% trans "Return Date" %}</div>
 								<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 							</div>
 						</div>
 						<div class="oh-sticky-table__tbody">
 							{% for asset_allocation in asset_allocations %}
-							<div class="oh-sticky-table__tr" draggable="true"
-								data-toggle="oh-modal-toggle"
-								data-target="#objectDetailsModalW25"
-								hx-get="{% url 'asset-allocation-individual-view' asset_allocation.id %}?allocations_ids={{allocations_ids}}"
-								hx-target="#objectDetailsModalW25Target"
-							>
-								<div
-									class="oh-sticky-table__td"
-								>
-									<div class="oh-profile oh-profile--md">
-										<div class="oh-profile__avatar mr-1">
-											<img
-												src="{{asset_allocation.assigned_to_employee_id.get_avatar}}"
-												class="oh-profile__image"
-												alt=""
-											/>
-										</div>
-										<span class="oh-profile__name oh-text--dark"
-											>{{asset_allocation.assigned_to_employee_id}}</span
-										>
-									</div>
-								</div>
-								<div
-									class="oh-sticky-table__td" data-cell-index="201"
-								>
-									{{asset_allocation.asset_id}}
-								</div>
-								<div
-									class="oh-sticky-table__td dateformat_changer" data-cell-index="202"
-								>
-									{{asset_allocation.assigned_date}}
-								</div>
-								{% if asset_allocation.return_date %}
-									<div class="oh-sticky-table__td dateformat_changer" data-cell-index="203">
-										{{asset_allocation.return_date}}
-									</div>
-								{% else %}
-									{% if asset_allocation.return_request %}
-										<div class="oh-sticky-table__td" data-cell-index="203">
-											<div class="d-flex align-items-center">
-												<span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"></span>
-												<span class="link-primary"> {% trans "Requested to return" %} </span>
+								<!-- Start of asset allocations -->
+								<div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle"
+									data-target="#objectDetailsModalW25"
+									hx-get="{% url 'asset-allocation-individual-view' asset_allocation.id %}?allocations_ids={{allocations_ids}}"
+									hx-target="#objectDetailsModalW25Target">
+									<div class="oh-sticky-table__td">
+										<div class="oh-profile oh-profile--md">
+											<div class="oh-profile__avatar mr-1">
+												<img src="{{asset_allocation.assigned_to_employee_id.get_avatar}}"
+													class="oh-profile__image" alt="" />
 											</div>
+											<span
+												class="oh-profile__name oh-text--dark">{{asset_allocation.assigned_to_employee_id}}</span>
+										</div>
+									</div>
+									<div class="oh-sticky-table__td" data-cell-index="201">
+										{{asset_allocation.asset_id}}
+									</div>
+									<div class="oh-sticky-table__td dateformat_changer" data-cell-index="202">
+										{{asset_allocation.assigned_date}}
+									</div>
+									{% if asset_allocation.return_date %}
+										<div class="oh-sticky-table__td dateformat_changer" data-cell-index="203">
+											{{asset_allocation.return_date}}
 										</div>
 									{% else %}
-										<div class="oh-sticky-table__td" data-cell-index="203">
-											<span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--warning" ></span>
-											<span class="link-warning"> {% trans "Allocated" %} </span>
+										{% if asset_allocation.return_request %}
+											<div class="oh-sticky-table__td" data-cell-index="203">
+												<div class="d-flex align-items-center">
+													<span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"></span>
+													<span class="link-primary"> {% trans "Requested to return" %} </span>
+												</div>
+											</div>
+										{% else %}
+											<div class="oh-sticky-table__td" data-cell-index="203">
+												<span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--warning"></span>
+												<span class="link-warning"> {% trans "Allocated" %} </span>
+											</div>
+										{% endif %}
+									{% endif %}
+									{% if not asset_allocation.return_status %}
+										<div class="oh-sticky-table__td">
+											<button href="#" class="oh-btn oh-btn--secondary" role="button"
+												data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+												hx-get="{% url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}"
+												hx-target="#objectCreateModalTarget">
+												<ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}
+											</button>
+										</div>
+									{% else %}
+										<div class="oh-sticky-table__td">
+											<div class="d-flex align-items-center">
+												<span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"></span>
+												<span class="link-primary"> {% trans "Returned" %} </span>
+											</div>
 										</div>
 									{% endif %}
-								{% endif %}
-								{% if not asset_allocation.return_status %}
-								<div class="oh-sticky-table__td">
-									<button
-										href="#"
-										class="oh-btn oh-btn--secondary"
-										role="button"
-										data-toggle="oh-modal-toggle"
-										data-target="#objectCreateModal"
-										hx-get="{% url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}"
-										hx-target="#objectCreateModalTarget"
-									>
-										<ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}
-									</button>
 								</div>
-								{% else %}
-								<div class="oh-sticky-table__td">
-									<div class="d-flex align-items-center">
-										<span
-											class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"
-										></span>
-										<span class="link-primary"> {% trans "Returned" %} </span>
-									</div>
-								</div>
-								{% endif %}
-							</div>
+								<!-- End of asset allocations -->
 							{% endfor %}
 						</div>
 					</div>
@@ -504,62 +427,35 @@
 
 				<!-- pagination start -->
 				<div class="oh-pagination">
-					<span
-						class="oh-pagination__page"
-						data-toggle="modal"
-						data-target="#addEmployeeModal"
-					></span>
+					<span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal"></span>
 					<nav class="oh-pagination__nav">
 						<div class="oh-pagination__input-container me-3">
 							<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-							<input
-								type="number"
-								name="page"
-								class="oh-pagination__input"
-								value="{{asset_allocations.number }}"
-								min="1"
+							<input type="number" name="page" class="oh-pagination__input"
+								value="{{asset_allocations.number }}" min="1"
 								hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}"
-								hx-target="#asset_request_allocation_list"
-							/>
-							<span class="oh-pagination__label"
-								>{% trans "of" %} {{ asset_allocations.paginator.num_pages}}</span
-							>
+								hx-target="#asset_request_allocation_list" />
+							<span class="oh-pagination__label">{% trans "of" %} {{ asset_allocations.paginator.num_pages}}</span>
 						</div>
 						<ul class="oh-pagination__items">
 							{% if asset_allocations.has_previous %}
 								<li class="oh-pagination__item oh-pagination__item--wide">
-									<a
-										hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page=1"
-										class="oh-pagination__link"
-										hx-target="#asset_request_allocation_list"
-										>{% trans "First" %}</a
-									>
+									<a hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page=1"
+										class="oh-pagination__link" hx-target="#asset_request_allocation_list">{% trans "First" %}</a>
 								</li>
 								<li class="oh-pagination__item oh-pagination__item--wide">
-									<a
-										hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_allocations.previous_page_number }}"
-										class="oh-pagination__link"
-										hx-target="#asset_request_allocation_list"
-										>{% trans "Previous" %}</a
-									>
+									<a hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_allocations.previous_page_number }}"
+										class="oh-pagination__link" hx-target="#asset_request_allocation_list">{% trans "Previous" %}</a>
 								</li>
 							{%endif %}
 							{% if asset_allocations.has_next %}
 								<li class="oh-pagination__item oh-pagination__item--wide">
-									<a
-										hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_allocations.next_page_number }}"
-										class="btn btn-outline-secondary"
-										hx-target="#asset_request_allocation_list"
-										>{% trans "Next" %}</a
-									>
+									<a hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_allocations.next_page_number }}"
+										class="btn btn-outline-secondary" hx-target="#asset_request_allocation_list">{% trans "Next" %}</a>
 								</li>
 								<li class="oh-pagination__item oh-pagination__item--wide">
-									<a
-										hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_allocations.paginator.num_pages }}"
-										hx-target="#asset_request_allocation_list"
-										class="oh-pagination__link"
-										>{% trans "Last" %}</a
-									>
+									<a hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_allocations.paginator.num_pages }}"
+										hx-target="#asset_request_allocation_list" class="oh-pagination__link">{% trans "Last" %}</a>
 								</li>
 							{% endif %}
 						</ul>
@@ -569,13 +465,13 @@
 			</div>
 		{% else %}
 			<div style="
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-				align-items: center;
-				"
-			>
-				<img style="    width: 190px;height: 190px;" src="{% static 'images/ui/asset.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					">
+				<img style="    width: 190px;height: 190px;" src="{% static 'images/ui/asset.png' %}"
+					class="oh-404__image mb-4" alt="Page not found. 404." />
 				<h5 class="oh-404__subtitle">{% trans "There is no asset allocation has been created." %}</h5>
 			</div>
 		{% endif %}
@@ -604,20 +500,20 @@
 				localStorage.setItem("activeTabAsset", activeTab);
 			});
 		});
-		toggleColumns("ownAsset-table","ownAssetCells")
-		toggleColumns("assetRequest-table","assetRequestCells")
-		toggleColumns("assetAllocation-table","assetAllocationCells")
+		toggleColumns("ownAsset-table", "ownAssetCells")
+		toggleColumns("assetRequest-table", "assetRequestCells")
+		toggleColumns("assetAllocation-table", "assetAllocationCells")
 		localStorageownAssetCells = localStorage.getItem("ownAssets_tab")
 		localStorageassetrequestCells = localStorage.getItem("assetrequests_tab")
 		localStorageassetallocationCells = localStorage.getItem("assetallocations_tab")
 		if (!localStorageownAssetCells) {
-		$("#ownAssetCells").find("[type=checkbox]").prop("checked",true).change()
-    	}
+			$("#ownAssetCells").find("[type=checkbox]").prop("checked", true).change()
+		}
 		if (!localStorageassetrequestCells) {
-		$("#assetRequestCells").find("[type=checkbox]").prop("checked",true).change()
+			$("#assetRequestCells").find("[type=checkbox]").prop("checked", true).change()
 		}
 		if (!localStorageassetallocationCells) {
-		$("#assetallocationCells").find("[type=checkbox]").prop("checked",true).change()
+			$("#assetallocationCells").find("[type=checkbox]").prop("checked", true).change()
 		}
 		$("[type=checkbox]").change()
 	</script>
