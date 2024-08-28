@@ -867,7 +867,11 @@ class UserLeaveRequestCreationForm(ModelForm):
             self.fields["leave_type_id"].queryset = assigned_leave_types
         self.fields["leave_type_id"].widget.attrs.update(
             {
-                "onchange": "typeChange($(this))",
+                "hx-include": "#userLeaveForm",
+                "hx-target": "#availableLeaveCount",
+                "hx-swap": "outerHTML",
+                "hx-trigger": "change",
+                "hx-get": f"/leave/employee-available-leave-count",
             }
         )
         self.fields["employee_id"].initial = employee
