@@ -68,7 +68,7 @@
             >{% trans "Total Days" %}</span
           >
           <span class="oh-timeoff-modal__stat-title"
-            >{{leave_type.count}}</span
+            >{% if leave_type.limit_leave %}{{leave_type.count}}{% else %}{% trans "No Limit" %}{% endif %}</span
           >
         </div>
       </div>
@@ -133,7 +133,7 @@
 </div>
 <div class="oh-pagination">
   <span class="oh-pagination__page">
-    {% trans "Page" %} {{ leave_types.number }}
+    {% trans "Page" %} {{ leave_types.number }} 
     {% trans "of" %} {{ leave_types.paginator.num_pages }}.
   </span>
   <nav class="oh-pagination__nav">

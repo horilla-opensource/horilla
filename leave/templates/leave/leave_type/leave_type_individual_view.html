@@ -18,7 +18,7 @@
   hx-get="{% url 'type-filter' %}"
   hx-target="#leaveTypes"
 ></span>
-{% endif %}
+{% endif %} 
 {% if leave_type and request.GET.instances_ids and not compensatory %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
   <button
@@ -88,7 +88,7 @@
           >{% trans "Total Days" %}</span
         >
         <span class="oh-timeoff-modal__stat-count"
-          >{{leave_type.count}}</span
+          >{% if leave_type.limit_leave %}{{leave_type.count}}{% else %}{% trans "No Limit" %}{% endif %}</span
         >
       </div>
       <div class="oh-timeoff-modal__stat">
