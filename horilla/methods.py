@@ -1,5 +1,6 @@
 import contextlib
 
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
 
@@ -44,3 +45,29 @@ def dynamic_attr(obj, attribute_path):
         if obj is None:
             break
     return obj
+
+
+def horilla_users_with_perms(permissions):
+    """
+    Filters users who have any of the specified permissions or are superusers.
+
+    :param permissions: A list of permission strings in the format 'app_label.codename'
+                        or a single permission string.
+    :return: A queryset of users who have any of the specified permissions or are superusers.
+    """
+    # Ensure permissions is a list even if a single permission string is provided
+    if isinstance(permissions, str):
+        permissions = [permissions]
+
+    # Start with a queryset that includes all superusers
+    users_with_permissions = User.objects.filter(is_superuser=True)
+
+    # Filter users based on the permissions list
+    for perm in permissions:
+        app_label, codename = perm.split(".")
+        users_with_permissions |= User.objects.filter(
+            user_permissions__codename=codename,
+            user_permissions__content_type__app_label=app_label,
+        )
+
+    return users_with_permissions.distinct()

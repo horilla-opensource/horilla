@@ -68,7 +68,7 @@
         {% endfor %}
     </div>
     {% endif %}
-    <button id="reloadMessagesButton" hx-get="{% url 'reload-messages' %}" hidden hx-target="#reloadMessages"></button>
+    <button id="reloadMessagesButton" hx-get="{% url 'reload-messages' %}" hx-swap="afterend" hidden hx-target="#reloadMessages"></button>
 
     <div class="oh-wrapper-main" :class="!sidebarOpen ? 'oh-wrapper-main--closed' : ''" x-data="{sidebarOpen: true}"
     @load.window="
@@ -148,7 +148,6 @@
             </a>
               <!-- <span class="oh-navbar__page-title">Attendances</span> -->
               {% if breadcrumbs %}
-              {% comment %} {{breadcrumbs}} {% endcomment %}
                 <ul class="oh-navbar__breadcrumb">
                   {% for breadcrumb in breadcrumbs %}
                     {% if forloop.last %}
@@ -593,12 +592,12 @@
       if (count) {
         targetElement.html(count)
         targetElement.parent().removeClass("d-none");
-        $(`#unselect_${id}, #export_${id}`).removeClass("d-none");
+        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).removeClass("d-none");
 
 
       }else{
         targetElement.parent().addClass("d-none")
-        $(`#unselect_${id}, #export_${id}`).addClass("d-none")
+        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).addClass("d-none")
 
       }
     }

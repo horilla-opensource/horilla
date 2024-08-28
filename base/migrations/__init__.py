@@ -18,6 +18,7 @@ try:
             horilla_mail.save()
 
     horilla_mail_templates = HorillaMailTemplate.objects.all()
+    RecruitmentMailTemplate.objects.all().delete()
 except Exception as e:
     pass
 
@@ -41,6 +42,7 @@ try:
             horilla.save()
 
     base_leaves = BaseHoliday.objects.all()
+    LeaveHoliday.objects.all().delete()
 except Exception as e:
     pass
 
@@ -85,6 +87,7 @@ try:
                 horilla.deduct_from_carry_forward = penalty.deduct_from_carry_forward
             horilla.save()
     penalty_accounts = PenaltyAccounts.objects.all()
+    PenaltyAccount.objects.all().delete()
 except Exception as e:
     pass
 
@@ -106,6 +109,7 @@ try:
             horilla.save()
 
     base_leaves = BaseCompanyLeave.objects.all()
+    CompanyLeave.objects.all().delete()
 except Exception as e:
     pass
 
@@ -140,5 +144,6 @@ try:
             new_work_record.save()
 
     new_work_records = WorkRecords.objects.all()
+    WorkRecord.objects.all().delete()
 except Exception as e:
     pass
