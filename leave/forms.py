@@ -253,10 +253,6 @@ class UpdateLeaveTypeForm(ConditionForm):
     def save(self, *args, **kwargs):
         leave_type = super().save(*args, **kwargs)
 
-        AvailableLeave.objects.filter(leave_type_id=leave_type).update(
-            total_leave_days=leave_type.count
-        )
-
 
 def cal_effective_requested_days(start_date, end_date, leave_type_id, requested_days):
     requested_dates = leave_requested_dates(start_date, end_date)
