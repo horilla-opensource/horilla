@@ -1914,7 +1914,7 @@ def user_leave_request(request, id):
             form.add_error(
                 None, _("There is already a leave request for this date range..")
             )
-        elif requested_days <= available_total_leave:
+        elif not leave_type.limit_leave or requested_days <= available_total_leave:
             if form.is_valid():
                 leave_request = form.save(commit=False)
                 save = True

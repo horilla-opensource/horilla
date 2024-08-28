@@ -55,7 +55,19 @@
                             {{form.payment.errors}}
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="col-sm-12 col-md-6">
+                        <div class="oh-input-group oh-label__info justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <label for="id_reset" class="oh-label">{% trans "Limit Leave Days" %}</label>
+                                <span class=" oh-info me-3" title="{% trans "Do you want to limit leave days for this leave type?" %}"></span>
+                            </div>
+                            <div class="oh-switch p-3 ">
+                                {{form.limit_leave}}
+                                {{form.limit_leave.errors}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-12 totalDaysContainer">
                         <div class="oh-input-group">
                             <label for="" class="oh-label">{% trans "Total Days" %}</label>
                             {{form.count}}
@@ -76,7 +88,7 @@
                             {{form.total_days.errors}}
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-6">
+                    <div class="col-sm-12 col-md-6 resetContainer">
                         <div class="oh-input-group oh-label__info justify-content-between">
                             <div class="d-flex align-items-center">
                                 <label for="id_reset" class="oh-label">{% trans "Reset" %}</label>
@@ -94,8 +106,8 @@
                                 <label for="id_reset_based" class="oh-label">{% trans "Reset Period" %}</label>
                                 <span id="reset_based_id" class=" oh-info me-3"title="{% trans "The time period for the leave to reset." %}"></span>
                             </div>
-                                    {{ form.reset_based }}
-                                    {{ form.reset_based.errors }}
+                            {{ form.reset_based }}
+                            {{ form.reset_based.errors }}
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-12 ">
@@ -219,6 +231,14 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-sm-12 col-md-12">
+                            <div class="oh-input-group oh-label__info">
+                                <label for="id_employee_id" class="oh-label">{% trans "Assign to Employees" %}</label>
+                                <span class=" oh-info me-3" title="{% trans 'Choose employees to assign this leave type' %}"></span>
+                            </div>
+                            {{form.employee_id}}
+                            {{form.employee_id.errors}}
+                    </div>
                     <div hidden>{{form.require_approval}}</div>
                     <div hidden>{{form.require_attachment}}</div>
                     <div hidden>{{form.exclude_company_leave}}</div>
@@ -256,8 +276,10 @@
         var carryforward_expire_in = $("#id_carryforward_expire_in");
         var carryforward_expire_period_label = $("label[for='id_carryforward_expire_period']");
         var carryforward_expire_period = $("#id_carryforward_expire_period");
-
-
+        var totalDaysContainer = $(".totalDaysContainer");
+        var resetContainer = $(".resetContainer");
+        var totalDays = $("#id_total_days");
+        var limitLeave = $("#id_limit_leave");
 
         //Making all fields which are not needed first was hidden and not required
         reset_based_label.hide();
@@ -276,12 +298,15 @@
         carryforward_expire_period_label.hide();
         carryforward_expire_period.hide().prop('required', false);
 
-
         // Check value of reset change field and trigger action
         reset.change(function () {
             (this.checked) ? (reset_based.show().prop('required', true), reset_based_label.show()) : (reset_based_label.hide(), reset_based.hide().prop('required', false), reset_based.val('')),reset_based_span.show()
             reset_based.is(':hidden') ? (reset_month_label.hide(), reset_month.hide().prop('required', false), reset_month.val(''), reset_day_label.hide(), reset_day.val(''), reset_day.hide().prop('required', false), reset_weekend_label.hide(),reset_based_span.hide(), reset_weekend.hide().prop('required', false), reset_weekend.val('')) : ""
         });
+
+        limitLeave.change(function (){
+            (this.checked) ? (totalDaysContainer.show(), resetContainer.show()) : (totalDaysContainer.hide(), resetContainer.hide())
+        })
 
         // Check value of boolean change field and trigger action
         reset_based.change(function (e) {
@@ -324,8 +349,6 @@
                 reset_day_label.hide()
                 reset_day.val('')
             }
-
-
         });
 
         carryforward_type.change(function () {
@@ -344,23 +367,18 @@
                 else if ($("#id_carryforward_type").val() == "carryforward expire") {
                     $("#id_carryforward_max,#id_carryforward_expire_in,#id_carryforward_expire_period").parent().show();
                 }
-
             }else{
-
                 $("#id_carryforward_type,#id_carryforward_max").parent().hide();
                 $("#id_carryforward_max,#id_carryforward_expire_in,#id_carryforward_expire_period").parent().hide();
-
-
             }
         }
 
        $("select,input[type=checkbox]").change(function (e) {
         toggleFields()
         //check the yes or no fields
+        });
 
-    });
-    toggleFields()
-
+        toggleFields()
 
         // leave total days calculation
         $('#id_period_in, #id_count').change(function () {
@@ -382,6 +400,7 @@
         });
 
     });
+
     function checkYesOrNoFields(){
 
         if ($('#id_approval').is(":checked")) {

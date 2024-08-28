@@ -3,6 +3,7 @@ This module provides Horilla ModelForms for creating and managing leave-related 
 including leave type, leave request, leave allocation request, holidays and company leaves.
 """
 
+import math
 import re
 import uuid
 from datetime import date, datetime
@@ -160,6 +161,18 @@ class ConditionForm(forms.ModelForm):
 
 class LeaveTypeForm(ConditionForm):
 
+    employee_id = HorillaMultiSelectField(
+        queryset=Employee.objects.all(),
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_contex_name="f",
+            filter_template_path="employee_filters.html",
+            required=False,
+        ),
+        label="Employee",
+    )
+
     class Meta:
         model = LeaveType
         fields = "__all__"
@@ -179,7 +192,21 @@ class LeaveTypeForm(ConditionForm):
             del self.errors["employee_id"]
         if "exceed_days" in self.errors:
             del self.errors["exceed_days"]
+        cleaned_data["total_days"] = round(cleaned_data["total_days"] * 2) / 2
+        if not cleaned_data["limit_leave"]:
+            cleaned_data["total_days"] = math.inf
         return cleaned_data
+
+    def save(self, *args, **kwargs):
+        leave_type = super().save(*args, **kwargs)
+        if employees := self.data.getlist("employee_id"):
+            for employee_id in employees:
+                employee = Employee.objects.get(id=employee_id)
+                AvailableLeave(
+                    leave_type_id=leave_type,
+                    employee_id=employee,
+                    available_days=leave_type.total_days,
+                ).save()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -217,7 +244,18 @@ class UpdateLeaveTypeForm(ConditionForm):
         cleaned_data = super().clean()
         if "exceed_days" in self.errors:
             del self.errors["exceed_days"]
+        cleaned_data["count"] = round(cleaned_data["count"] * 2) / 2
+        if not cleaned_data["limit_leave"]:
+            cleaned_data["count"] = math.inf
+
         return cleaned_data
+
+    def save(self, *args, **kwargs):
+        leave_type = super().save(*args, **kwargs)
+
+        AvailableLeave.objects.filter(leave_type_id=leave_type).update(
+            total_leave_days=leave_type.count
+        )
 
 
 def cal_effective_requested_days(start_date, end_date, leave_type_id, requested_days):
