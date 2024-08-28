@@ -158,6 +158,12 @@ class Recruitment(HorillaModel):
     skills = models.ManyToManyField(Skill, blank=True)
     objects = HorillaCompanyManager()
     default = models.manager.Manager()
+    optional_profile_image = models.BooleanField(
+        default=False, help_text=_("Profile image not mandatory for candidate creation")
+    )
+    optional_resume = models.BooleanField(
+        default=False, help_text=_("Resume not mandatory for candidate creation")
+    )
 
     class Meta:
         """

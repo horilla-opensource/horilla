@@ -132,7 +132,7 @@
                     >
                     {{form.skills}}
                 </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-4">
                     <label
                         class="oh-label"
                         for="id_is_published"
@@ -141,6 +141,22 @@
                     >
                     <div class="w-100 d-flex" style="align-items: center">
                         <div class="oh-switch">{{form.is_published}}</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-4">
+                    <label class="oh-label" for="id_optional_profile_image" title="{{form.optional_profile_image.help_text|safe}}">
+                        {% trans "Optional Profile Image?" %}
+                    </label>
+                    <div class="w-100 d-flex" style="align-items: center">
+                        <div class="oh-switch">{{form.optional_profile_image}}</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-4">
+                    <label class="oh-label" for="id_optional_resume" title="{{form.optional_resume.help_text|safe}}">
+                        {% trans "Optional Resume?" %}
+                    </label>
+                    <div class="w-100 d-flex" style="align-items: center">
+                        <div class="oh-switch">{{form.optional_resume}}</div>
                     </div>
                 </div>
             </div>
