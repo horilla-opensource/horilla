@@ -131,10 +131,11 @@
             >
             <ul class="oh-dropdown__items">
               {% for action in actions %}
+              {% if action.accessibility|accessibility:instance %}
               <li class="oh-dropdown__item">
                 <a href="#" class="oh-profile-dropdown-link" {{action.attrs|safe}}>
                   <img
-                  src="{{action.icon}}"
+                  src="{{action.src}}"
                     style="width: 20px; height: auto"
                     title="{{action.title}}"
                     />
@@ -145,6 +146,7 @@
                   </button>
                 </a>
               </li>
+              {% endif %}
               {% endfor %}
             </ul>
           </div>

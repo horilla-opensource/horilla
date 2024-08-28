@@ -1,0 +1,4 @@
+<form hx-post="/{{post_bulk_path}}?{{request.GET.urlencode}}" method="post" hx-swap="outerHTML" hx-encoding="multipart/form-data">
+    {% csrf_token %}
+    {% include "generic/form.html" %}
+</form>

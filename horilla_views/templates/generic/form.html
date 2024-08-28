@@ -37,7 +37,7 @@
     </button>
   </div>
   {% endif %}
-  <div class="oh-general__tab-target oh-profile-section" id="personal">
+  <div class="oh-general__tab-target oh-profile-section" id="{{form.container_id}}">
     <div class="oh-profile-section__card row">
       <div class="row" style="padding-right: 0;">
         <div class="col-12" style="padding-right: 0;">{{ form.non_field_errors }}</div>
@@ -83,3 +83,11 @@
     </div>
   </div>
 </div>
+<script>
+  $(document).ready(function () {
+      $("select").on("select2:select", function (e) {
+         $(".leave-message").hide();
+          $(this).closest("select")[0].dispatchEvent(new Event("change"));
+      });
+  });
+</script>

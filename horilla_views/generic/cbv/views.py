@@ -8,10 +8,14 @@ from urllib.parse import parse_qs
 
 from bs4 import BeautifulSoup
 from django import forms
+from django.contrib import messages
 from django.core.cache import cache as CACHE
 from django.core.paginator import Page
 from django.http import HttpRequest, HttpResponse, QueryDict
+from django.shortcuts import render
 from django.urls import resolve, reverse
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _trans
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from base.methods import closest_numbers, get_key_instances
@@ -21,16 +25,18 @@ from horilla.horilla_middlewares import _thread_locals
 from horilla_views import models
 from horilla_views.cbv_methods import (
     get_short_uuid,
+    hx_request_required,
     paginator_qry,
     sortby,
     structured,
     update_initial_cache,
     update_saved_filter_cache,
 )
-from horilla_views.forms import ToggleColumnForm
+from horilla_views.forms import DynamicBulkUpdateForm, ToggleColumnForm
 from horilla_views.templatetags.generic_template_filters import getattribute
 
 
+@method_decorator(hx_request_required, name="dispatch")
 class HorillaListView(ListView):
     """
     HorillaListView
@@ -87,6 +93,9 @@ class HorillaListView(ListView):
     export_fields: list = []
     verbose_name: str = ""
 
+    bulk_update_fields: list = []
+    bulk_template: str = "generic/bulk_form.html"
+
     def __init__(self, **kwargs: Any) -> None:
         if not self.view_id:
             self.view_id = get_short_uuid(4)
@@ -111,6 +120,78 @@ class HorillaListView(ListView):
         for column in self.columns:
             if column[1] in hidden_fields:
                 self.visible_column.remove(column)
+
+    def bulk_update_accessibility(self) -> bool:
+        """
+        Accessibility method for bulk update
+        """
+        return self.request.user.has_perm(
+            f"{self.model._meta.app_label}.change_{self.model.__name__.lower()}"
+        )
+
+    def serve_bulk_form(self, request: HttpRequest) -> HttpResponse:
+        """
+        Bulk form serve method
+        """
+
+        if not self.bulk_update_accessibility():
+            return HttpResponse("You dont have permission")
+        form = self.get_bulk_form()
+        form.verbose_name = (
+            form.verbose_name
+            + f" ({len((eval(request.GET.get('instance_ids','[]'))))} {_trans('Records')})"
+        )
+        return render(
+            request,
+            self.bulk_template,
+            {"form": form, "post_bulk_path": self.post_bulk_path},
+        )
+
+    def handle_bulk_submission(self, request: HttpRequest) -> HttpRequest:
+        """
+        This method to handle bulk update form submission
+        """
+        if not self.bulk_update_accessibility():
+            return HttpResponse("You dont have permission")
+
+        instance_ids = request.GET.get("instance_ids", "[]")
+        instance_ids = eval(instance_ids)
+        form = DynamicBulkUpdateForm(
+            request.POST,
+            request.FILES,
+            root_model=self.model,
+            bulk_update_fields=self.bulk_update_fields,
+            ids=instance_ids,
+        )
+        if instance_ids and form.is_valid():
+            form.save()
+
+            script_id = get_short_uuid(length=3, prefix="bulk")
+            return HttpResponse(
+                f"""
+                <script id="{script_id}">
+                    $("#{script_id}").closest(".oh-modal--show").removeClass("oh-modal--show");
+                    $(".reload-record").click()
+                    $("#reloadMessagesButton").click()
+                </script>
+                """
+            )
+        if not instance_ids:
+            messages.info(request, _trans("No records selected"))
+        return render(
+            request,
+            self.bulk_template,
+            {"form": form, "post_bulk_path": self.post_bulk_path},
+        )
+
+    def get_bulk_form(self):
+        """
+        Bulk from generating method
+        """
+        # Bulk update feature
+        return DynamicBulkUpdateForm(
+            root_model=self.model, bulk_update_fields=self.bulk_update_fields
+        )
 
     def get_queryset(self):
         if not self.queryset:
@@ -270,6 +351,29 @@ class HorillaListView(ListView):
         urlpatterns.append(path(self.export_path, self.export_data))
         context["export_path"] = self.export_path
 
+        if self.bulk_update_fields and self.bulk_update_accessibility():
+            get_bulk_path = (
+                f"get-bulk-update-{self.view_id}-{self.request.session.session_key}/"
+            )
+            post_bulk_path = (
+                f"post-bulk-update-{self.view_id}-{self.request.session.session_key}/"
+            )
+            self.post_bulk_path = post_bulk_path
+            urlpatterns.append(
+                path(
+                    get_bulk_path,
+                    self.serve_bulk_form,
+                )
+            )
+            urlpatterns.append(
+                path(
+                    post_bulk_path,
+                    self.handle_bulk_submission,
+                )
+            )
+            context["bulk_update_fields"] = self.bulk_update_fields
+            context["bulk_path"] = get_bulk_path
+
         return context
 
     def select_all(self, *args, **kwargs):
@@ -380,6 +484,7 @@ class HorillaSectionView(TemplateView):
         return context
 
 
+@method_decorator(hx_request_required, name="dispatch")
 class HorillaDetailedView(DetailView):
     """
     HorillDetailedView
@@ -437,6 +542,7 @@ class HorillaDetailedView(DetailView):
         return context
 
 
+@method_decorator(hx_request_required, name="dispatch")
 class HorillaTabView(TemplateView):
     """
     HorillaTabView
@@ -469,6 +575,7 @@ class HorillaTabView(TemplateView):
         return context
 
 
+@method_decorator(hx_request_required, name="dispatch")
 class HorillaCardView(ListView):
     """
     HorillaCardView
@@ -609,7 +716,12 @@ class HorillaCardView(ListView):
         return context
 
 
+@method_decorator(hx_request_required, name="dispatch")
 class ReloadMessages(TemplateView):
+    """
+    Reload messages
+    """
+
     template_name = "generic/messages.html"
 
     def get_context_data(self, **kwargs):
@@ -639,6 +751,7 @@ def save(self: forms.ModelForm, commit=True, *args, **kwargs):
     return response
 
 
+@method_decorator(hx_request_required, name="dispatch")
 class HorillaFormView(FormView):
     """
     HorillaFormView
@@ -811,6 +924,7 @@ class HorillaFormView(FormView):
         return form
 
 
+@method_decorator(hx_request_required, name="dispatch")
 class HorillaNavView(TemplateView):
     """
     HorillaNavView
@@ -862,6 +976,7 @@ class HorillaNavView(TemplateView):
         return context
 
 
+@method_decorator(hx_request_required, name="dispatch")
 class HorillaProfileView(DetailView):
     """
     GenericHorillaProfileView

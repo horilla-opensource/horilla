@@ -171,6 +171,16 @@
   </script>
   {% endif %}
   {% else %}
+  {% if card_status_indications %}
+  <div class="d-flex flex-row-reverse">
+    {% for indication in card_status_indications %}
+    <span class="m-1" style="cursor: pointer;margin-left: 7px;" {{indication.2|safe}}>
+      <span class="oh-dot oh-dot--small me-1 {{indication.0}}"></span>
+      {{indication.1}}
+    </span>
+    {% endfor %}
+  </div>
+  {% endif %}
   <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
     <div align="center">
       <img src="{% static "images/ui/search.svg" %}" class="oh-404__image" alt="Page not found. 404.">

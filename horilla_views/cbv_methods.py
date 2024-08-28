@@ -4,13 +4,15 @@ horilla/cbv_methods.py
 
 import types
 import uuid
+from typing import Any
 from urllib.parse import urlencode
 from venv import logger
 
-from django import template
+from django import forms, template
 from django.contrib import messages
 from django.core.cache import cache as CACHE
 from django.core.paginator import Paginator
+from django.db import models
 from django.db.models.fields.related import ForeignKey
 from django.db.models.fields.related_descriptors import (
     ForwardManyToOneDescriptor,
@@ -30,6 +32,67 @@ from django.utils.safestring import SafeString
 from horilla import settings
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views.templatetags.generic_template_filters import getattribute
+
+FIELD_WIDGET_MAP = {
+    models.CharField: forms.TextInput(attrs={"class": "oh-input w-100"}),
+    models.ImageField: forms.FileInput(
+        attrs={"type": "file", "class": "oh-input w-100"}
+    ),
+    models.FileField: forms.FileInput(
+        attrs={"type": "file", "class": "oh-input w-100"}
+    ),
+    models.TextField: forms.Textarea(
+        {
+            "class": "oh-input w-100",
+            "rows": 2,
+            "cols": 40,
+        }
+    ),
+    models.IntegerField: forms.NumberInput(attrs={"class": "oh-input w-100"}),
+    models.FloatField: forms.NumberInput(attrs={"class": "oh-input w-100"}),
+    models.DecimalField: forms.NumberInput(attrs={"class": "oh-input w-100"}),
+    models.EmailField: forms.EmailInput(attrs={"class": "oh-input w-100"}),
+    models.DateField: forms.DateInput(
+        attrs={"type": "date", "class": "oh-input w-100"}
+    ),
+    models.DateTimeField: forms.DateTimeInput(
+        attrs={"type": "date", "class": "oh-input w-100"}
+    ),
+    models.TimeField: forms.TimeInput(
+        attrs={"type": "time", "class": "oh-input w-100"}
+    ),
+    models.BooleanField: forms.Select({"class": "oh-select oh-select-2 w-100"}),
+    models.ForeignKey: forms.Select({"class": "oh-select oh-select-2 w-100"}),
+    models.ManyToManyField: forms.SelectMultiple(
+        attrs={"class": "oh-select oh-select-2 select2-hidden-accessible"}
+    ),
+    models.OneToOneField: forms.Select({"class": "oh-select oh-select-2 w-100"}),
+}
+
+MODEL_FORM_FIELD_MAP = {
+    models.CharField: forms.CharField,
+    models.TextField: forms.CharField,  # Textarea can be specified as a widget
+    models.IntegerField: forms.IntegerField,
+    models.FloatField: forms.FloatField,
+    models.DecimalField: forms.DecimalField,
+    models.ImageField: forms.FileField,
+    models.FileField: forms.FileField,
+    models.EmailField: forms.EmailField,
+    models.DateField: forms.DateField,
+    models.DateTimeField: forms.DateTimeField,
+    models.TimeField: forms.TimeField,
+    models.BooleanField: forms.BooleanField,
+    models.ForeignKey: forms.ModelChoiceField,
+    models.ManyToManyField: forms.ModelMultipleChoiceField,
+    models.OneToOneField: forms.ModelChoiceField,
+}
+
+
+BOOLEAN_CHOICES = (
+    ("", "----------"),
+    (True, "Yes"),
+    (False, "No"),
+)
 
 
 def decorator_with_arguments(decorator):
@@ -76,6 +139,10 @@ def decorator_with_arguments(decorator):
 
 
 def login_required(view_func):
+    """
+    Decorator to check authenticity of users
+    """
+
     def wrapped_view(self, *args, **kwargs):
         request = getattr(_thread_locals, "request")
         if not getattr(self, "request", None):
@@ -108,6 +175,10 @@ def login_required(view_func):
 
 @decorator_with_arguments
 def permission_required(function, perm):
+    """
+    Decorator to validate user permissions
+    """
+
     def _function(self, *args, **kwargs):
         request = getattr(_thread_locals, "request")
         if not getattr(self, "request", None):
@@ -123,6 +194,20 @@ def permission_required(function, perm):
                 return render(request, "decorator_404.html")
             script = f'<script>window.location.href = "{previous_url}"</script>'
             return HttpResponse(script)
+
+    return _function
+
+
+def hx_request_required(function):
+    """
+    Decorator method that only allow HTMX metod to enter
+    """
+
+    def _function(request, *args, **kwargs):
+        key = "HTTP_HX_REQUEST"
+        if key not in request.META.keys():
+            return render(request, "405.html")
+        return function(request, *args, **kwargs)
 
     return _function
 
@@ -209,19 +294,6 @@ def update_initial_cache(request: object, cache: dict, view: object):
         return
     cache.set(request.session.session_key + "cbv", {view: {}})
     return
-
-
-def structured(self):
-    """
-    Render the form fields as HTML table rows with Bootstrap styling.
-    """
-    request = getattr(_thread_locals, "request", None)
-    context = {
-        "form": self,
-        "request": request,
-    }
-    table_html = render_to_string("generic/form.html", context)
-    return table_html
 
 
 class Reverse:
@@ -331,3 +403,66 @@ def update_saved_filter_cache(request, cache):
         },
     )
     return cache
+
+
+def get_nested_field(model_class: models.Model, field_name: str) -> object:
+    """
+    Recursion function to execute nested field logic
+    """
+    if "__" in field_name:
+        splits = field_name.split("__", 1)
+        related_model_class = getmodelattribute(
+            model_class,
+            splits[0],
+        ).related.related_model
+        return get_nested_field(related_model_class, splits[1])
+    field = getattribute(model_class, field_name)
+    return field
+
+
+def get_field_class_map(model_class: models.Model, bulk_update_fields: list) -> dict:
+    """
+    Returns a dictionary mapping field names to their corresponding field classes
+    for a given model class, including related fields(one-to-one).
+    """
+    field_class_map = {}
+    for field_name in bulk_update_fields:
+        field = get_nested_field(model_class, field_name)
+        field_class_map[field_name] = field.field
+    return field_class_map
+
+
+def structured(self):
+    """
+    Render the form fields as HTML table rows with Bootstrap styling.
+    """
+    request = getattr(_thread_locals, "request", None)
+    context = {
+        "form": self,
+        "request": request,
+    }
+    table_html = render_to_string("generic/form.html", context)
+    return table_html
+
+
+def value_to_field(field: object, value: list) -> Any:
+    """
+    return value according to the format of the field
+    """
+    if isinstance(field, models.ManyToManyField):
+        return [int(val) for val in value]
+    elif isinstance(
+        field,
+        (
+            models.DateField,
+            models.DateTimeField,
+            models.CharField,
+            models.EmailField,
+            models.TextField,
+            models.TimeField,
+        ),
+    ):
+        value = value[0]
+        return value
+    value = eval(str(value[0]))
+    return value
