@@ -290,8 +290,15 @@
     else{
       reset_based_span.hide()
     }
-    (limitLeave.checked) ? (totalDaysContainer.show(), resetContainer.show()) : (totalDaysContainer.hide(), resetContainer.hide(), $("#id_count").val(0))
-    console.log($("#id_count").val())
+
+    if ($(limitLeave).is(':checked')){
+        totalDaysContainer.show();
+        resetContainer.show();
+    } else {
+        totalDaysContainer.hide();
+        resetContainer.hide();
+        $("#id_count").val(0);
+    }
 
     limitLeave.change(function (){
       (this.checked) ? (totalDaysContainer.show(), resetContainer.show()) : (totalDaysContainer.hide(), resetContainer.hide(), $("#id_count").val(0))
