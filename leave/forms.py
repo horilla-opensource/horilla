@@ -1251,7 +1251,7 @@ class RestrictLeaveForm(ModelForm):
                 "hx-include": "#leaveRestrictForm",
                 "hx-target": "#restrictLeaveJobPosition",
                 "hx-trigger": "change",
-                "hx-get": "/leave/get-job-positions",
+                "hx-get": "/leave/get-restrict-job-positions",
             }
         )
 

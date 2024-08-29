@@ -102,7 +102,11 @@ urlpatterns = [
         name="assigned-leaves-info-export",
     ),
     path("assign-filter", views.leave_assign_filter, name="assign-filter"),
-    path("get-job-positions", views.get_job_positions, name="get-job-positions"),
+    path(
+        "get-restrict-job-positions",
+        views.get_job_positions,
+        name="get-restrict-job-positions",
+    ),
     path("restrict-view", views.restrict_view, name="restrict-view"),
     path("restrict-filter", views.restrict_filter, name="restrict-filter"),
     path("restrict-creation", views.restrict_creation, name="restrict-creation"),
