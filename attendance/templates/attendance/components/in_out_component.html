@@ -1,0 +1,31 @@
+{% load horillafilters i18n %}
+{% if request.user.employee_get %}
+    {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
+    <!-- "CHEKING WETHER ITS IS THE CURRENT EMPLOYEES COMPANY OR ALL COMPANY, THEN ONLY SHOWS THE CHECK-IN, CHECK-OUT BUTTON" -->
+    {% if request.user|is_clocked_in  %}
+    <button class="oh-btn oh-btn--warning-outline mr-2" {% if enabled_timerunner %} onmouseenter="$(this).find('span').show();$(this).find('.time-runner').hide();" onmouseleave="$(this).find('span').hide();$(this).find('.time-runner').show();" {% endif %} hx-get="{% url 'clock-out' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2 text-warning" name="exit-outline"></ion-icon>
+        <span class="hr-Check-In-out-text" {% if enabled_timerunner %} style="display: none;" {% endif %}>{% trans "Check-Out" %}</span>
+        <div class="time-runner"></div>
+    </button>
+    <script>
+        run = 1
+    </script>
+    {% else %}
+    <button {% if enabled_timerunner %} onmouseenter="$(this).find('span').show();$(this).find('.at-work-seconds').hide();" onmouseleave="$(this).find('span').hide();$(this).find('.at-work-seconds').show();" {% endif %}
+        class="oh-btn oh-btn--success-outline mr-2" hx-get="{% url 'clock-in' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'
+        >
+            <ion-icon class="oh-navbar__clock-icon mr-2 text-success" name="enter-outline"></ion-icon>
+        <span class="hr-Check-In-out-text" {% if enabled_timerunner %} style="display: none;" {% endif %}>{% trans "Check-In" %}</span>
+        <div class="at-work-seconds"></div>
+    </button>
+    {% if enabled_timerunner %}
+    <script>
+        $(document).ready(function () {
+        $('.at-work-seconds').html(secondsToDuration({{request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds}}))
+        });
+        run = 0
+    </script>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+{% endif %}
