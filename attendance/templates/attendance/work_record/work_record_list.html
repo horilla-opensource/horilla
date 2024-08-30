@@ -97,7 +97,7 @@
                     {% if work_record == 'EW' and date <= current_date and not date in leave_dates %}
                         EW
                     {% elif work_record %}
-                    <div title="{{work_record.message}}" role="button" class="fw-bold"
+                    <div title="{{work_record.title_message}}" role="button" class="fw-bold"
                         onclick="{% if work_record.work_record_type == 'ABS' %}
                             window.location.href=`{% url 'request-view' %}?employee_id={{work_record.employee_id.id}}&from_date={{work_record.date|date:'Y-m-d'}}&to_date={{work_record.date|date:'Y-m-d'}}`;
                         {% else %}

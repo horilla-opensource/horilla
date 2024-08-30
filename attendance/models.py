@@ -991,6 +991,27 @@ class WorkRecords(models.Model):
     last_update = models.DateTimeField(null=True, blank=True)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
+    def title_message(self):
+        title_message = self.message
+        if title_message == "Absent":
+            if apps.is_installed("leave"):
+                LeaveRequest = get_horilla_model_class(
+                    app_label="leave", model="leaverequest"
+                )
+                leave_type = (
+                    LeaveRequest.objects.filter(
+                        employee_id=self.employee_id,
+                        end_date__gte=self.date,
+                        start_date__lte=self.date,
+                    )
+                    .first()
+                    .leave_type_id
+                    if LeaveRequest.objects.exists()
+                    else None
+                )
+                title_message += f" | {leave_type}"
+        return title_message
+
     def save(self, *args, **kwargs):
         self.last_update = timezone.now()
 
