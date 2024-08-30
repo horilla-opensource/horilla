@@ -5,6 +5,8 @@ employee/methods.py
 import re
 from itertools import groupby
 
+from django.db import models
+
 from base.context_processors import get_initial_prefix
 from employee.models import Employee
 
@@ -60,3 +62,17 @@ def get_ordered_badge_ids():
     if pure_numbers:
         result.insert(0, [pure_numbers[0], pure_numbers[-1]])
     return result
+
+
+def check_relationship_with_employee_model(model):
+    related_fields = []
+    for field in model._meta.get_fields():
+        # Check if the field is a ForeignKey or ManyToManyField and related to Employee
+        if isinstance(field, models.ForeignKey) and field.related_model == Employee:
+            related_fields.append((field.name, "ForeignKey"))
+        elif (
+            isinstance(field, models.ManyToManyField)
+            and field.related_model == Employee
+        ):
+            related_fields.append((field.name, "ManyToManyField"))
+    return related_fields
