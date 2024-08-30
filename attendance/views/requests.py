@@ -757,11 +757,13 @@ def get_employee_shift(request):
     if request.GET.get("bulk") and eval(request.GET.get("bulk")):
         form = BulkAttendanceRequestForm()
     form.fields["shift_id"].queryset = EmployeeShift.objects.all()
+    form.fields["shift_id"].widget.attrs["hx-trigger"] = "load,change"
     form.fields["shift_id"].initial = shift
     shift_id = render_to_string(
         "requests/attendance/form_field.html",
         {
             "field": form["shift_id"],
+            "shift": shift,
         },
     )
     return HttpResponse(f"{shift_id}")

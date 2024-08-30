@@ -206,7 +206,6 @@ class AttendanceUpdateForm(ModelForm):
                 "id": str(uuid.uuid4()),
                 "hx-include": "#attendanceUpdateForm",
                 "hx-target": "#attendanceUpdateForm",
-                "hx-trigger": "change",
                 "hx-get": "/attendance/update-fields-based-shift",
             }
         )
@@ -325,7 +324,6 @@ class AttendanceForm(ModelForm):
                 "id": str(uuid.uuid4()),
                 "hx-include": "#attendanceCreateForm",
                 "hx-target": "#attendanceCreateForm",
-                "hx-trigger": "change",
                 "hx-get": "/attendance/update-fields-based-shift",
             }
         )
@@ -580,7 +578,6 @@ class AttendanceRequestForm(ModelForm):
                 "id": str(uuid.uuid4()),
                 "hx-include": "#attendanceRequestForm",
                 "hx-target": "#attendanceRequestDiv",
-                "hx-trigger": "change",
                 "hx-swap": "outerHTML",
                 "hx-get": "/attendance/update-fields-based-shift",
             }
@@ -644,7 +641,6 @@ class NewRequestForm(AttendanceRequestForm):
                         "class": "oh-select oh-select-2 w-100",
                         "hx-target": "#id_shift_id_div",
                         "hx-get": "/attendance/get-employee-shift?bulk=False",
-                        "hx-trigger": "change",
                     }
                 ),
                 initial=view_initial.get("employee_id"),
@@ -657,7 +653,6 @@ class NewRequestForm(AttendanceRequestForm):
                         "class": "oh-checkbox",
                         "hx-target": "#objectCreateModalTarget",
                         "hx-get": "/attendance/request-new-attendance?bulk=True",
-                        "hx-trigger": "change",
                     }
                 ),
             ),
@@ -945,7 +940,6 @@ class BulkAttendanceRequestForm(ModelForm):
             attrs={
                 "hx-target": "#id_shift_id_div",
                 "hx-get": "/attendance/get-employee-shift?bulk=True",
-                "hx-trigger": "change",
             }
         ),
         label=_("Employee"),
@@ -959,7 +953,6 @@ class BulkAttendanceRequestForm(ModelForm):
                 "class": "oh-checkbox",
                 "hx-target": "#objectCreateModalTarget",
                 "hx-get": "/attendance/request-new-attendance?bulk=False",
-                "hx-trigger": "change",
             }
         ),
     )
