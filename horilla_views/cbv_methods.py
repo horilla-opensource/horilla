@@ -28,6 +28,7 @@ from django.urls import reverse
 from django.utils.functional import lazy
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from django.utils.translation import gettext_lazy as _trans
 
 from horilla import settings
 from horilla.horilla_middlewares import _thread_locals
@@ -194,6 +195,28 @@ def permission_required(function, perm):
                 return render(request, "decorator_404.html")
             script = f'<script>window.location.href = "{previous_url}"</script>'
             return HttpResponse(script)
+
+    return _function
+
+
+@decorator_with_arguments
+def check_feature_enabled(function, feature_name, model_class: models.Model):
+    """
+    Decorator for check feature enabled in singlton model
+    """
+
+    def _function(self, request, *args, **kwargs):
+        general_setting = model_class.objects.first()
+        enabled = getattr(general_setting, feature_name, False)
+        if enabled:
+            return function(self, request, *args, **kwargs)
+        messages.info(request, _trans("Feature is not enabled on the settings"))
+        previous_url = request.META.get("HTTP_REFERER", "/")
+        key = "HTTP_HX_REQUEST"
+        if key in request.META.keys():
+            return render(request, "decorator_404.html")
+        script = f'<script>window.location.href = "{previous_url}"</script>'
+        return HttpResponse(script)
 
     return _function
 
