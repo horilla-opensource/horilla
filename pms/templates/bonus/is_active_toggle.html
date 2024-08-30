@@ -1,0 +1,14 @@
+
+<div class="oh-switch p-3">
+    {% if perms.pms.change_bonuspointsetting %}
+        <input type="checkbox" name="is_active" id="BPSIsActivate"
+        {% comment %} hx-post="{% url 'update-isactive-gracetime' instance.id %}" {% endcomment %}
+        {% comment %} hx-trigger="change" hx-target="#graceTimeContainer"   {% endcomment %}
+        class="oh-switch__checkbox"
+        {% if instance.is_active %} checked {% endif %}>
+    {% else %}
+        <input type="checkbox" id="BPSIsActivate" class="oh-switch__checkbox" 
+        {% if instance.is_active %} checked {% endif %} disabled >
+    {% endif %}
+</div>
+

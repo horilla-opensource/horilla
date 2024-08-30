@@ -1079,6 +1079,14 @@ class BonusPointSettingForm(MF):
     BonusPointSetting form
     """
 
+    model = forms.ChoiceField(
+        choices=BonusPointSetting.MODEL_CHOICES,
+        widget=forms.Select(
+            attrs={
+                "onchange": "ModelChange($(this))",
+            }
+        ),
+    )
     # condition_html = forms.CharField(widget=forms.HiddenInput())
     # condition_querystring = forms.CharField(widget=forms.HiddenInput())
 
@@ -1103,7 +1111,6 @@ class BonusPointSettingForm(MF):
     #     attrs = self.fields["mail_to"].widget.attrs
     #     attrs["class"] = "oh-select oh-select-2 w-100"
     # attrs = self.fields["model"].widget.attrs
-
     # attrs["onchange"] = "getToMail($(this))"
     # self.fields["mail_template"].empty_label = None
     # attrs = attrs.copy()
@@ -1127,6 +1134,34 @@ class BonusPointSettingForm(MF):
     #     context = {"form": self}
     #     table_html = render_to_string("horilla_form.html", context)
     #     return table_html
+
+    def clean(self):
+        cleaned_data = super().clean()
+        model = cleaned_data.get("model")
+
+        if model in ["pms.models.EmployeeObjective", "pms.models.EmployeeKeyResult"]:
+            if not cleaned_data.get("applicable_for") == "owner":
+                raise ValidationError(
+                    _(
+                        f"Model Doesn't have this {cleaned_data.get('applicable_for')} field"
+                    )
+                )
+            if not cleaned_data["bonus_for"] == "Closed":
+                raise ValidationError(
+                    _(f"This 'Bonus for' is not in the Model's status")
+                )
+        if model in ["project.models.Task", "project.models.Project"]:
+            if cleaned_data.get("applicable_for") == "owner":
+                raise ValidationError(
+                    _(
+                        f"Model Doesn't have this {cleaned_data.get('applicable_for')} field"
+                    )
+                )
+        if cleaned_data["points"] <= 0:
+            raise ValidationError(_("Bonus point must be greater than zero"))
+
+        return cleaned_data
+
     # def save(self, commit: bool = ...) -> Any:
     #     self.instance: MailAutomation = self.instance
     #     condition_querystring = self.cleaned_data["condition_querystring"]

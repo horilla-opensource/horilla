@@ -1,6 +1,6 @@
 {% load i18n %}
 <div onclick="event.stopPropagation();" class="oh-btn-group">
-    {% if perms.leave.change_holiday %}
+    {% if perms.pms.change_bonuspointsetting %}
     <button
       class="oh-btn oh-btn--light-bkg w-100"
       title="{% trans 'Edit' %}"
@@ -12,7 +12,7 @@
       <ion-icon name="create-outline"></ion-icon>
     </button>
     {% endif %}
-    {% if perms.leave.delete_holiday %}
+    {% if perms.pms.delete_bonuspointsetting %}
     <a
       class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
       id="delete-link"

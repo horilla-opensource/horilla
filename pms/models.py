@@ -742,24 +742,35 @@ class EmployeeBonusPoint(models.Model):
         verbose_name="Employee",
     )
     bonus_point = models.IntegerField(default=0)
+    instance = models.CharField(max_length=150, null=True, blank=True)
     based_on = models.CharField(max_length=150)
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.bonus_point}"
 
+    def action_template(self):
+        """
+        This method for get custom column for managers.
+        """
+        return render_template(
+            path="bonus/bonus_point_action.html",
+            context={"instance": self},
+        )
+
 
 class BonusPointSetting(models.Model):
     MODEL_CHOICES = [
-        ("pms.models.EmployeeObjective", "Objective"),
-        ("pms.models.EmployeeKeyResult", "Key Result"),
+        ("pms.models.EmployeeObjective", _("Objective")),
+        ("pms.models.EmployeeKeyResult", _("Key Result")),
     ]
     if apps.is_installed("project"):
         MODEL_CHOICES += [
-            ("project.models.Task", "Task"),
-            ("project.models.Project", "Project"),
+            ("project.models.Task", _("Task")),
+            ("project.models.Project", _("Project")),
         ]
     BONUS_FOR = [
-        ("completed", "Completing"),
+        ("completed", _("Completing")),
+        ("Closed", _("Closing")),
     ]
     CONDITIONS = [
         ("=", "="),
@@ -769,12 +780,20 @@ class BonusPointSetting(models.Model):
         (">=", ">="),
     ]
     FIELD_1 = [
-        ("complition_date", "Completion Date"),
+        ("complition_date", _("Completion Date")),
     ]
     FIELD_2 = [
-        ("end_date", "End Date"),
+        ("end_date", _("End Date")),
+    ]
+    APPLECABLE_FOR = [
+        ("owner", _("Owner")),
+        ("members", _("Members")),
+        ("managers", _("Managers")),
     ]
     model = models.CharField(max_length=100, choices=MODEL_CHOICES, null=False)
+    applicable_for = models.CharField(
+        max_length=50, choices=APPLECABLE_FOR, null=True, blank=True
+    )
     bonus_for = models.CharField(max_length=25, choices=BONUS_FOR)
     field_1 = models.CharField(max_length=25, choices=FIELD_1, null=True, blank=True)
     conditions = models.CharField(
@@ -808,6 +827,12 @@ class BonusPointSetting(models.Model):
         """
         return dict(BonusPointSetting.FIELD_2).get(self.field_2)
 
+    def get_applicable_for_display(self):
+        """
+        Display applicable_for
+        """
+        return dict(BonusPointSetting.APPLECABLE_FOR).get(self.applicable_for)
+
     def get_condition(self):
         """
         Get the condition for bonus
@@ -824,7 +849,16 @@ class BonusPointSetting(models.Model):
             context={"instance": self},
         )
 
-    def create_employee_bonus(self, employee, field_1, field_2):
+    def is_active_toggle(self):
+        """
+        For toggle is_active field
+        """
+        return render_template(
+            path="bonus/is_active_toggle.html",
+            context={"instance": self},
+        )
+
+    def create_employee_bonus(self, employee, field_1, field_2, instance):
         """
         For creating employee bonus
         """
@@ -836,54 +870,22 @@ class BonusPointSetting(models.Model):
             "<=": operator.le,
             ">=": operator.ge,
         }
-        if operator_mapping[self.conditions](field_1, field_2):
+        if (
+            operator_mapping[self.conditions](field_1, field_2)
+        ) and not EmployeeBonusPoint.objects.filter(
+            employee_id=employee,
+            instance=instance,
+            based_on=(f"{self.get_bonus_for_display()} {instance}"),
+        ).exists():
             EmployeeBonusPoint(
                 employee_id=employee,
-                based_on=(f"{self.get_bonus_for_display} {self.model}"),
+                based_on=(f"{self.get_bonus_for_display()} {instance}"),
                 bonus_point=self.points,
+                instance=instance,
             ).save()
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
-        model_class = get_model_class(self.model)
-
-        def create_signal_handler(name, bonus_point_setting):
-            def signal_handler(sender, instance, created, **kwargs):
-                """
-                Signal handler for post-save events of the model instances.
-                """
-                # request = getattr(_thread_locals, "request", None)
-                # previous_record = getattr(_thread_locals, "previous_record", None)
-                # previous_instance = None
-                # if previous_record:
-                #     previous_instance = previous_record["instance"]
-
-                # if BonusPointSetting.objects.filter(model='Task').exists():
-                # bonus_point_settings = BonusPointSetting.objects.filter(model='Task')
-                # for bs in bonus_point_settings:
-
-                field_1 = date.today()
-                field_2 = instance.end_date
-                if bonus_point_setting.bonus_for == instance.status:
-
-                    for employee in instance.task_members.all():
-                        bonus_point_setting.create_employee_bonus(
-                            employee, field_1, field_2
-                        )
-
-            signal_handler.__name__ = name
-            signal_handler.model_class = model_class
-            signal_handler.bonus_point_setting = bonus_point_setting
-            return signal_handler
-
-        # Create and connect the signal handler
-        handler_name = f"{self.id}_signal_handler"
-        dynamic_signal_handler = create_signal_handler(handler_name, self)
-        # SIGNAL_HANDLERS.append(dynamic_signal_handler)
-        post_save.connect(
-            dynamic_signal_handler, sender=dynamic_signal_handler.model_class
-        )
 
 
 def manipulate_existing_data():

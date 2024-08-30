@@ -10,6 +10,7 @@ import json
 from itertools import tee
 from urllib.parse import parse_qs
 
+from django import forms
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
@@ -33,6 +34,8 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
+from horilla_automations.methods.methods import generate_choices
+from horilla_automations.methods.serialize import serialize_form
 from notifications.signals import notify
 from pms.filters import (
     ActualKeyResultFilter,
@@ -69,6 +72,7 @@ from pms.models import (
     Answer,
     BonusPointSetting,
     Comment,
+    EmployeeBonusPoint,
     EmployeeKeyResult,
     EmployeeObjective,
     Feedback,
@@ -3582,7 +3586,7 @@ def dashboard_feedback_answer(request):
 @permission_required("pms.delete_bonuspointsetting")
 def delete_bonus_point_setting(request, pk):
     """
-    Automation delete view
+    Delete bonus point setting
     """
     try:
         BonusPointSetting.objects.get(id=pk).delete()
@@ -3591,3 +3595,48 @@ def delete_bonus_point_setting(request, pk):
         print(e)
         messages.error(request, "Something went wrong")
     return redirect(reverse("bonus-point-setting-list-view"))
+
+
+@login_required
+@permission_required("pms.delete_employeebonuspoint")
+def delete_employee_bonus_point(request, pk):
+    """
+    Automation delete view
+    """
+    try:
+        bonus = EmployeeBonusPoint.objects.get(id=pk)
+        bonus.delete()
+        messages.success(request, _(f"{bonus} deleted"))
+    except Exception as e:
+        print(e)
+        messages.error(request, _("Something went wrong"))
+    return redirect(reverse("employee-bonus-point-list-view"))
+
+
+@login_required
+def bonus_setting_form_values(request):
+    model = request.GET["model"]
+    """
+    This method is to render `mail to` fields
+    """
+    model_path = request.GET["model"]
+    to_fields, mail_details_choice, model_class = generate_choices(model_path)
+
+    class InstantModelForm(forms.ModelForm):
+        """
+        InstantModelForm
+        """
+
+        class Meta:
+            model = model_class
+            fields = "__all__"
+
+    serialized_form = serialize_form(InstantModelForm(), "automation_multiple_")
+
+    return JsonResponse(
+        {
+            "choices": to_fields,
+            "mail_details_choice": mail_details_choice,
+            "serialized_form": serialized_form,
+        }
+    )

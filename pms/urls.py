@@ -452,6 +452,11 @@ urlpatterns = [
         cbvs.BonusPointSettingListView.as_view(),
         name="bonus-point-setting-list-view",
     ),
+    path(
+        "bonus-setting-form-values",
+        views.bonus_setting_form_values,
+        name="bonus-setting-form-values",
+    ),
     # ===========Employee bonus point============
     path(
         "employee-bonus-point",
@@ -472,5 +477,15 @@ urlpatterns = [
         "employee-bonus-point-list-view",
         cbvs.EmployeeBonusPointListView.as_view(),
         name="employee-bonus-point-list-view",
+    ),
+    path(
+        "update-employee-bonus-point/<int:pk>/",
+        cbvs.EmployeeBonusPointFormView.as_view(),
+        name="update-employee-bonus-point",
+    ),
+    path(
+        "delete-employee-bonus-point/<int:pk>/",
+        views.delete_employee_bonus_point,
+        name="delete-employee-bonus-point",
     ),
 ]

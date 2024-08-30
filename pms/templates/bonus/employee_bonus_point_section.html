@@ -1,5 +1,5 @@
-{% extends 'index.html' %} 
-{% block content %} 
+{% extends 'index.html' %}
+{% block content %}
 {% load i18n %} {% load static %}
 
 
@@ -22,24 +22,24 @@
 >
 </div>
 
-<div 
+<div
   hx-get="{{nav_url}}?{{request.GET.urlencode}}"
   hx-trigger="load"
 >
-   <div 
-     class="mt-5 oh-wrapper animated-background" 
+   <div
+     class="mt-5 oh-wrapper animated-background"
      style="height:80px;"
    >
    </div>
 </div>
 
-<div 
-  class="oh-wrapper" 
-  hx-get="{{view_url}}?{{request.GET.urlencode}}" 
-  hx-trigger="load" 
+<div
+  class="oh-wrapper"
+  hx-get="{{view_url}}?{{request.GET.urlencode}}"
+  hx-trigger="load"
   id="{{view_container_id}}"
 >
-   <div 
+   <div
      class="mt-4 animated-background"
      style="height:600px;"
    >
