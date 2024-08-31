@@ -53,12 +53,12 @@ def process_attendance_data(attendance_dicts):
                     attendance_date=attendance_data["Attendance date"],
                 ).first()
                 if existing_attendance:
-                    attendance_data["Error6"] = (
+                    attendance_data["Attendance Error"] = (
                         "Attendance for this date already exists"
                     )
                     save = False
             except Exception as exception:
-                attendance_data["Error14"] = (
+                attendance_data["Attendance Date Error"] = (
                     "The attendance date format is invalid. Please use the format YYYY-MM-DD"
                 )
                 save = False
@@ -66,7 +66,7 @@ def process_attendance_data(attendance_dicts):
             try:
                 check_in_date = pd.to_datetime(attendance_data["Check-in date"]).date()
             except Exception as exception:
-                attendance_data["Error15"] = (
+                attendance_data["Check-in Date Error"] = (
                     "The Check-in date format is invalid. Please use the format YYYY-MM-DD"
                 )
                 save = False
@@ -76,7 +76,7 @@ def process_attendance_data(attendance_dicts):
                     attendance_data["Check-out date"]
                 ).date()
             except Exception as exception:
-                attendance_data["Error16"] = (
+                attendance_data["Check-out Date Error"] = (
                     "The Check-out date format is invalid. Please use the format YYYY-MM-DD"
                 )
                 save = False
@@ -86,7 +86,7 @@ def process_attendance_data(attendance_dicts):
                     attendance_data["Check-in"], format="%H:%M:%S"
                 ).time()
             except Exception as exception:
-                attendance_data["Error10"] = f"{exception} of check-in time"
+                attendance_data["Check-in Error"] = f"{exception} of check-in time"
                 save = False
 
             try:
@@ -94,7 +94,7 @@ def process_attendance_data(attendance_dicts):
                     attendance_data["Check-out"], format="%H:%M:%S"
                 ).time()
             except Exception as exception:
-                attendance_data["Error11"] = f"{exception} of check-out time"
+                attendance_data["Check-out Error"] = f"{exception} of check-out time"
                 save = False
 
             try:
@@ -102,7 +102,7 @@ def process_attendance_data(attendance_dicts):
                     attendance_data["Worked hour"], format="%H:%M:%S"
                 ).time()
             except Exception as exception:
-                attendance_data["Error12"] = f"{exception} of worked hours"
+                attendance_data["Worked Hours Error"] = f"{exception} of worked hours"
                 save = False
 
             try:
@@ -110,48 +110,56 @@ def process_attendance_data(attendance_dicts):
                     attendance_data["Minimum hour"], format="%H:%M:%S"
                 ).time()
             except Exception as exception:
-                attendance_data["Error13"] = f"{exception} of minimum hours"
+                attendance_data["Minimum Hour Error"] = f"{exception} of minimum hours"
                 save = False
 
             if employee is None or not employee.is_active:
-                attendance_data["Error1"] = f"Invalid Badge ID given {badge_id}"
+                attendance_data["Badge ID Error"] = f"Invalid Badge ID given {badge_id}"
                 save = False
 
             if shift is None:
-                attendance_data["Error2"] = f"Invalid shift '{shift_id}'"
+                attendance_data["Shift Error"] = f"Invalid shift '{shift_id}'"
                 save = False
 
             if work_type is None:
-                attendance_data["Error3"] = f"Invalid work type '{work_type_id}'"
+                attendance_data["Work Type Error"] = (
+                    f"Invalid work type '{work_type_id}'"
+                )
                 save = False
 
             if check_in_date is not None and attendance_date is not None:
                 if check_in_date < attendance_date:
-                    attendance_data["Error4"] = (
+                    attendance_data["Check-in Validation Error"] = (
                         "Attendance check-in date cannot be smaller than attendance date"
                     )
                     save = False
 
             if check_in_date is not None and check_out_date is not None:
                 if check_out_date < check_in_date:
-                    attendance_data["Error5"] = (
+                    attendance_data["Check-out Validation Error"] = (
                         "Attendance check-out date never smaller than attendance check-in date"
                     )
                     save = False
 
             if attendance_date is not None:
                 if attendance_date >= today:
-                    attendance_data["Error7"] = "Attendance date in future"
+                    attendance_data["Attendance Date Validation Error"] = (
+                        "Attendance date in future"
+                    )
                     save = False
 
             if check_in_date is not None:
                 if check_in_date >= today:
-                    attendance_data["Error8"] = "Attendance check in date in future"
+                    attendance_data["Check-in Validation Error"] = (
+                        "Attendance check in date in future"
+                    )
                     save = False
 
             if check_out_date is not None:
                 if check_out_date >= today:
-                    attendance_data["Error9"] = "Attendance check out date in future"
+                    attendance_data["Check-out Validation Error"] = (
+                        "Attendance check out date in future"
+                    )
                     save = False
 
             if save:
@@ -172,7 +180,7 @@ def process_attendance_data(attendance_dicts):
                 error_list.append(attendance_data)
 
         except Exception as exception:
-            attendance_data["Error17"] = f"{str(exception)}"
+            attendance_data["Other Errors"] = f"{str(exception)}"
             error_list.append(attendance_data)
 
     return error_list
