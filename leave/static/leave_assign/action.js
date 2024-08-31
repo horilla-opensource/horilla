@@ -333,7 +333,7 @@ $("#assign-leave-type-info-import").click(function (e) {
       if (result.isConfirmed) {
         $.ajax({
           type: "GET",
-          url: "assign-leave-type-excel",
+          url: "/leave/assign-leave-type-excel",
           dataType: "binary",
           xhrFields: {
             responseType: "blob",

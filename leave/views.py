@@ -1541,10 +1541,10 @@ def assign_leave_type_import(request):
     error_data = {
         "Employee Badge ID": [],
         "Leave Type": [],
-        "Error1": [],
-        "Error2": [],
-        "Error3": [],
-        "Error4": [],
+        "Badge ID Error": [],
+        "Leave Type Error": [],
+        "Assigned Error": [],
+        "Other Errors": [],
     }
     error_list = []
     file_name = "AssignLeaveError.xlsx"
@@ -1563,16 +1563,18 @@ def assign_leave_type_import(request):
                 ).first()
                 if employee is None:
                     save = False
-                    assign_leave["Error1"] = _("This badge id does not exist.")
+                    assign_leave["Badge ID Error"] = _("This badge id does not exist.")
 
                 if leave_type is None:
                     save = False
-                    assign_leave["Error2"] = _("This leave type does not exist.")
+                    assign_leave["Leave Type Error"] = _(
+                        "This leave type does not exist."
+                    )
                 if AvailableLeave.objects.filter(
                     leave_type_id=leave_type, employee_id=employee
                 ).exists():
                     save = False
-                    assign_leave["Error3"] = _(
+                    assign_leave["Assigned Error"] = _(
                         "Leave type has already been assigned to the employee."
                     )
                 if save:
@@ -1584,7 +1586,7 @@ def assign_leave_type_import(request):
                 else:
                     error_list.append(assign_leave)
             except Exception as exception:
-                assign_leave["Error4"] = f"{str(exception)}"
+                assign_leave["Other Errors"] = f"{str(exception)}"
                 error_list.append(assign_leave)
         if error_list:
             response = generate_error_report(error_list, error_data, file_name)
