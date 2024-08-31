@@ -307,7 +307,9 @@ class EmployeeObjectiveCreateForm(BaseForm):
         ),
     )
     objective_id = forms.ModelChoiceField(
-        queryset=Objective.objects.all().exclude(archive=True), required=True
+        queryset=Objective.objects.all().exclude(archive=True),
+        required=True,
+        label=_("Objective"),
     )
 
     class Meta:
