@@ -48,9 +48,7 @@
 
 <script>
   function ModelChange (element) {
-    console.log(element)
     var model = element.val()
-    console.log(model)
     $.ajax({
       url: "bonus-setting-form-values",
       data: { model: model},
@@ -64,5 +62,9 @@
       },
     });
   };
+  $(".oh-inner-sidebar__item .oh-accordion").click(function (e) {
+		e.stopPropagation();
+		$(this).toggleClass('oh-accordion--show')
+	});
 </script>
 {% endblock settings %}
