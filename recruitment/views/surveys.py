@@ -22,7 +22,6 @@ from horilla.decorators import (
     hx_request_required,
     is_recruitment_manager,
     login_required,
-    manager_can_enter,
     permission_required,
 )
 from recruitment.filters import SurveyFilter
