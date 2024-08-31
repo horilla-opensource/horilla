@@ -1623,7 +1623,11 @@ class Holidays(HorillaModel):
     end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
     recurring = models.BooleanField(default=False, verbose_name=_("Recurring"))
     company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
+        Company,
+        null=True,
+        editable=False,
+        on_delete=models.PROTECT,
+        verbose_name=_("Company"),
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
 

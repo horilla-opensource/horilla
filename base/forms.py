@@ -2569,7 +2569,7 @@ class HolidaysColumnExportForm(forms.Form):
 
     model_fields = Holidays._meta.get_fields()
     field_choices = [
-        (field.name, field.verbose_name)
+        (field.name, field.verbose_name.capitalize())
         for field in model_fields
         if hasattr(field, "verbose_name") and field.name not in excluded_fields
     ]

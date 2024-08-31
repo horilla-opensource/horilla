@@ -80,7 +80,11 @@ class SurveyTemplate(HorillaModel):
     description = models.TextField(null=True, blank=True)
     is_general_template = models.BooleanField(default=False, editable=False)
     company_id = models.ForeignKey(
-        Company, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Company"
+        Company,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Company"),
     )
 
     def __str__(self) -> str:
