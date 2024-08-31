@@ -6336,10 +6336,10 @@ def holidays_info_import(request):
         "Start Date": [],
         "End Date": [],
         "Recurring": [],
-        "Error1": [],
-        "Error2": [],
-        "Error3": [],
-        "Error4": [],
+        "Start Date Error": [],
+        "End Date Error": [],
+        "Reccuring Field Error": [],
+        "Other errors": [],
     }
 
     if request.method == "POST":
@@ -6354,23 +6354,23 @@ def holidays_info_import(request):
                     start_date = pd.to_datetime(holiday["Start Date"]).date()
                 except Exception as e:
                     save = False
-                    holiday["Error1"] = _("Invalid start date format {}").format(
-                        holiday["Start Date"]
-                    )
+                    holiday["Start Date Error"] = _(
+                        "Invalid start date format {}"
+                    ).format(holiday["Start Date"])
                 try:
                     end_date = pd.to_datetime(holiday["End Date"]).date()
                 except Exception as e:
                     save = False
-                    holiday["Error2"] = _("Invalid end date format {}").format(
+                    holiday["End Date Error"] = _("Invalid end date format {}").format(
                         holiday["End Date"]
                     )
                 if holiday["Recurring"].lower() in ["yes", "no"]:
                     recurring = True if holiday["Recurring"].lower() == "yes" else False
                 else:
                     save = False
-                    holiday["Error3"] = _("Recurring must be {} or {}").format(
-                        "yes", "no"
-                    )
+                    holiday["Reccuring Field Error"] = _(
+                        "Recurring must be {} or {}"
+                    ).format("yes", "no")
                 if save:
                     holiday = Holidays(
                         name=name,
@@ -6382,7 +6382,7 @@ def holidays_info_import(request):
                 else:
                     error_list.append(holiday)
             except Exception as e:
-                holiday["Error4"] = f"{str(e)}"
+                holiday["Other errors"] = f"{str(e)}"
                 error_list.append(holiday)
 
         if error_list:
