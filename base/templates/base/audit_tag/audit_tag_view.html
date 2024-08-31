@@ -39,7 +39,7 @@
 							<form
 								action="{% url 'audit-tag-delete' tag.id %}"
 								class="w-50"
-								onsubmit="return confirm('{% trans "Are you sure you want to delete this audit tag ?" %}');"
+								onsubmit="return confirm('{% trans "Are you sure you want to delete this history tag ?" %}');"
 								method='post'>
 								{% csrf_token %}
 								<button

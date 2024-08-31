@@ -1,14 +1,14 @@
 {% extends 'settings.html' %} {% load i18n %} {% block settings %}
 {% load static %}
 
-<!-- ******************* AUDIT TAGS ******************* -->
+<!-- ******************* HISTORY TAGS ******************* -->
 
 <div class="oh-inner-sidebar-content">
   {% if perms.horilla_audit.view_audittag %}
   <div
     class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
   >
-    <h2 class="oh-inner-sidebar-content__title">{% trans "Audit Tags" %}</h2>
+    <h2 class="oh-inner-sidebar-content__title">{% trans "History Tags" %}</h2>
     {% if perms.horilla_audit.add_audittag %}
     	<button
     	  class="oh-btn oh-btn--secondary oh-btn--shadow"
@@ -46,7 +46,7 @@
       alt="Page not found. 404."
     />
     <h5 class="oh-404__subtitle">
-      {% trans "There is no audit tags at this moment." %}
+      {% trans "There is no history tags at this moment." %}
     </h5>
   </div>
   {% endif %} {% endif %}
