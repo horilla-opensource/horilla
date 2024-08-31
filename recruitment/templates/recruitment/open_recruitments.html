@@ -17,6 +17,25 @@
 
     <body>
         <div id="main">
+            <div class="oh-wrapper mt-4 ">
+                {% if request.user.is_authenticated %}
+                <div class="oh-wrapper">
+                    <div class="oh-wrapper">
+                        <div class="oh-wrapper" style="font-size: xx-large; cursor: pointer;">
+                            {% if request.path not in request.META.HTTP_REFERER %}
+                            <a href="{{ request.META.HTTP_REFERER }}">
+                                <ion-icon name="arrow-back-outline"></ion-icon>
+                            </a>
+                            {% else %}
+                            <a href="/">
+                                <ion-icon name="arrow-back-outline"></ion-icon>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
             <main class="oh-onboarding">
                 <div class=" oh-job__page-container">
                     <div class="oh-joblisting__title-container">

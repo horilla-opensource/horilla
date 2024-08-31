@@ -214,7 +214,7 @@ def recruitment(request):
     """
     form = RecruitmentCreationForm()
     if request.GET:
-        form = RecruitmentCreationForm(request.GET)
+        form = RecruitmentCreationForm(initial=request.GET.dict())
     dynamic = (
         request.GET.get("dynamic") if request.GET.get("dynamic") != "None" else None
     )
@@ -251,6 +251,7 @@ def recruitment(request):
                     redirect=reverse("pipeline"),
                 )
             return HttpResponse("<script>location.reload();</script>")
+    print(dynamic)
     return render(
         request, "recruitment/recruitment_form.html", {"form": form, "dynamic": dynamic}
     )

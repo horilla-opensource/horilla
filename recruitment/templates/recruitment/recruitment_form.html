@@ -28,9 +28,9 @@
                 return option.text;
             }
             var $option = $('<span></span>').text(option.text);
-            if (option.id === 'create') {
+            {% comment %} if (option.id === 'create') {
                 $option.addClass('text-info');
-            }
+            } {% endcomment %}
             return $option;
         }
         $('[name = "skills"]').select2({
