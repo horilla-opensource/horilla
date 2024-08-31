@@ -412,7 +412,7 @@ class EmployeeCreationForm(ModelForm):
     zip = forms.CharField(required=True, label=_("Zip"))
     qualification = forms.CharField(required=True, label=_("Qualification"))
     experience = forms.IntegerField(required=True, label=_("Experience"))
-    children = forms.IntegerField(required=True, label=_("Childrens"))
+    children = forms.IntegerField(required=True, label=_("Children"))
     emergency_contact = forms.CharField(
         required=True, label=_("Emergency Contact Number")
     )
