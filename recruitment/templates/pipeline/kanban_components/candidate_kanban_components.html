@@ -221,29 +221,31 @@
         $("#stageCount{{stage.id}}").attr("title",'{{candidates.paginator.count}} {% trans "Candidates" %}')
     </script>
     {% endfor %}
-    {% if candidates.number %}
-    <div class="oh-pagination" ondrag="event.stopPropagation();" onmousedown="event.stopPropagation()">
-        <nav class="oh-pagination__nav">
-            <ul class="oh-pagination__items">
-                {% if candidates.has_previous %}
-                <li class="oh-pagination__item oh-pagination__item--wide">
-                    <a hx-target="#kanbanCandidates{{candidates.0.stage_id.id}}" hx-get="{% url 'candidate-stage-component' %}?{{pd}}&candidate_page=1&stage_id={{candidates.0.stage_id.id}}" class="oh-pagination__link">{% trans "First" %}</a>
-                </li>
-                <li class="oh-pagination__item oh-pagination__item--wide">
-                    <a hx-target="#kanbanCandidates{{candidates.0.stage_id.id}}" hx-get="{% url 'candidate-stage-component' %}?{{pd}}&candidate_page={{ candidates.previous_page_number }}&stage_id={{candidates.0.stage_id.id}}"
-                        class="oh-pagination__link">{% trans "Previous" %}</a>
-                </li>
-                {% endif %} {% if candidates.has_next %}
-                <li class="oh-pagination__item oh-pagination__item--wide">
-                    <a hx-target="#kanbanCandidates{{candidates.0.stage_id.id}}" hx-get="{% url 'candidate-stage-component' %}?{{pd}}&candidate_page={{ candidates.next_page_number }}&stage_id={{candidates.0.stage_id.id}}"
-                        class="oh-pagination__link">{% trans "Next" %}</a>
-                </li>
-                <li class="oh-pagination__item oh-pagination__item--wide">
-                    <a hx-target="#kanbanCandidates{{candidates.0.stage_id.id}}" hx-get="{% url 'candidate-stage-component' %}?{{pd}}&candidate_page={{ candidates.paginator.num_pages }}&stage_id={{candidates.0.stage_id.id}}"
-                        class="oh-pagination__link">{% trans "Last" %}</a>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
-    </div>
+    {% if candidates.has_previous or candidates.has_next %}
+        {% if candidates.number %}
+            <div class="oh-pagination" ondrag="event.stopPropagation();" onmousedown="event.stopPropagation()">
+                <nav class="oh-pagination__nav">
+                    <ul class="oh-pagination__items">
+                        {% if candidates.has_previous %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a hx-target="#kanbanCandidates{{candidates.0.stage_id.id}}" hx-get="{% url 'candidate-stage-component' %}?{{pd}}&candidate_page=1&stage_id={{candidates.0.stage_id.id}}" class="oh-pagination__link">{% trans "First" %}</a>
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a hx-target="#kanbanCandidates{{candidates.0.stage_id.id}}" hx-get="{% url 'candidate-stage-component' %}?{{pd}}&candidate_page={{ candidates.previous_page_number }}&stage_id={{candidates.0.stage_id.id}}"
+                                class="oh-pagination__link">{% trans "Previous" %}</a>
+                        </li>
+                        {% endif %} {% if candidates.has_next %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a hx-target="#kanbanCandidates{{candidates.0.stage_id.id}}" hx-get="{% url 'candidate-stage-component' %}?{{pd}}&candidate_page={{ candidates.next_page_number }}&stage_id={{candidates.0.stage_id.id}}"
+                                class="oh-pagination__link">{% trans "Next" %}</a>
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a hx-target="#kanbanCandidates{{candidates.0.stage_id.id}}" hx-get="{% url 'candidate-stage-component' %}?{{pd}}&candidate_page={{ candidates.paginator.num_pages }}&stage_id={{candidates.0.stage_id.id}}"
+                                class="oh-pagination__link">{% trans "Last" %}</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
     {% endif %}
