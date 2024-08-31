@@ -729,6 +729,7 @@ class ReimbursementForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         exclude_fields = []
         if not self.instance.pk:
             self.initial["allowance_on"] = str(datetime.date.today())
@@ -766,6 +767,7 @@ class ReimbursementForm(ModelForm):
             attrs={"type": "date", "class": "oh-input w-100"}
         )
         self.fields["attachment"] = MultipleFileField(label="Attachements")
+        self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
         # deleting fields based on type
         type = None

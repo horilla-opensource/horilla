@@ -60,9 +60,9 @@
                         <div class="oh-faq-card" id="requestCard{{ req.id }}">
                             <div class="d-flex justify-content-between">
                                 <div style="margin-bottom: 10px">
-                                    <div class="loan-type" style="display: inline; background:hsl(58.85deg 100% 80.93%);">
+                                    {% comment %} <div class="loan-type" style="display: inline; background:hsl(58.85deg 100% 80.93%);">
                                         {{ req.get_type_display }}
-                                    </div>
+                                    </div> {% endcomment %}
                                     <div class="loan-type"
                                         style="display: inline;
                                         {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
@@ -347,9 +347,9 @@
                         <div class="oh-faq-card" id="requestCard{{ req.id }}">
                             <div class="d-flex justify-content-between">
                                 <div style="margin-bottom: 10px">
-                                    <div class="loan-type" style="display: inline; background:hsl(58.85deg 100% 80.93%);">
+                                    {% comment %} <div class="loan-type" style="display: inline; background:hsl(58.85deg 100% 80.93%);">
                                         {{ req.get_type_display }}
-                                    </div>
+                                    </div> {% endcomment %}
                                     <div class="loan-type"
                                         style="display: inline;
                                         {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
@@ -630,9 +630,9 @@
                         <div class="oh-faq-card" id="requestCard{{ req.id }}">
                             <div class="d-flex justify-content-between">
                                 <div style="margin-bottom: 10px">
-                                    <div class="loan-type" style="display: inline; background:hsl(58.85deg 100% 80.93%);">
+                                    {% comment %} <div class="loan-type" style="display: inline; background:hsl(58.85deg 100% 80.93%);">
                                         {{ req.get_type_display }}
-                                    </div>
+                                    </div> {% endcomment %}
                                     <div class="loan-type"
                                         style="display: inline;
                                         {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}

@@ -141,6 +141,9 @@ class ContractForm(ModelForm):
         first = PayrollGeneralSetting.objects.first()
         if first and self.instance.pk is None:
             self.initial["notice_period_in_days"] = first.notice_period
+        self.fields["contract_document"].widget.attrs[
+            "accept"
+        ] = ".jpg, .jpeg, .png, .pdf"
 
     def as_p(self):
         """
@@ -183,6 +186,7 @@ class reimbursementCommentForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["files"] = MultipleFileField(label="files")
         self.fields["files"].required = False
+        self.fields["files"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
     def as_p(self):
         """
