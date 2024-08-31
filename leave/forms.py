@@ -27,15 +27,14 @@ from horilla import horilla_middlewares
 from horilla_widgets.forms import HorillaForm, HorillaModelForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-
-from .methods import (
+from leave.methods import (
     calculate_requested_days,
     company_leave_dates_list,
     get_leave_day_attendance,
     holiday_dates_list,
     leave_requested_dates,
 )
-from .models import (
+from leave.models import (
     AvailableLeave,
     LeaveAllocationRequest,
     LeaveallocationrequestComment,
@@ -378,6 +377,7 @@ class LeaveRequestCreationForm(ModelForm):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
+        self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
         self.fields["leave_type_id"].widget.attrs.update(
             {
                 "hx-include": "#leaveRequestCreateForm",
@@ -521,6 +521,8 @@ class LeaveRequestUpdationForm(ModelForm):
                 "hx-get": "/leave/get-employee-leave-types?form=LeaveRequestUpdationForm",
             }
         )
+        self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
+
         self.fields["start_date"].widget.attrs.update(
             {
                 "hx-include": "#leaveRequestUpdateForm",
@@ -732,7 +734,7 @@ class UserLeaveRequestForm(ModelForm):
         leave_type = kwargs.pop("initial", None)
         employee = kwargs.pop("employee", None)
         super(UserLeaveRequestForm, self).__init__(*args, **kwargs)
-
+        self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
         if employee:
             available_leaves = employee.available_leave.all()
             assigned_leave_types = LeaveType.objects.filter(
@@ -859,6 +861,7 @@ class UserLeaveRequestCreationForm(ModelForm):
     def __init__(self, *args, **kwargs):
         employee = kwargs.pop("employee", None)
         super().__init__(*args, **kwargs)
+        self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
         if employee:
             available_leaves = employee.available_leave.all()
             assigned_leave_types = LeaveType.objects.filter(
@@ -1128,6 +1131,8 @@ class LeaveCommentForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["files"] = MultipleFileField(label="files")
+        self.fields["files"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
+
         self.fields["files"].required = False
 
     def as_p(self):

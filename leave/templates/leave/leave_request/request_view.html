@@ -75,7 +75,7 @@
                     </ion-icon>
                     <input type="text" class="oh-input oh-input__icon" id="leave-request-search" aria-label="Search Input"
                         placeholder="{% trans 'Search' %}" name="search" />
-                    <div id="searchFieldDiv" style="display:none;">
+                    {% comment %} <div id="searchFieldDiv" style="display:none;">
                         <select name="search_field" class='oh-input__icon'
                             style="border: none; display: flex; position: absolute; z-index: 40px; margin-left:8%;" size="3"
                             onclick="$('.filterButton')[0].click();">
@@ -88,7 +88,7 @@
                             </option>
                             <option style="margin-left: -10px;" value="company">{% trans "Search in : Company" %}</option>
                         </select>
-                    </div>
+                    </div> {% endcomment %}
                 </div>
                 <div class="oh-main__titlebar-button-container">
                     <div class="oh-dropdown" x-data="{open: false}">
