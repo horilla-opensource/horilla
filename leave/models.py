@@ -1,8 +1,7 @@
 import calendar
 import math
 import operator
-import sys
-from collections.abc import Iterable
+import threading
 from datetime import date, datetime, timedelta
 
 from dateutil.relativedelta import relativedelta
@@ -13,7 +12,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db import models
 from django.db.models import Q
-from django.db.models.signals import pre_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -35,9 +34,8 @@ from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from leave.methods import calculate_requested_days
 from leave.threading import LeaveClashThread
-
-from .methods import attendance_days, calculate_requested_days
 
 operator_mapping = {
     "equal": operator.eq,
@@ -1201,3 +1199,22 @@ if apps.is_installed("attendance"):
                         date=date,
                         employee_id=instance.employee_id,
                     ).delete()
+
+
+@receiver(post_save, sender=LeaveRequest)
+def update_available(sender, instance, **kwargs):
+    """
+    post save method to update the available leaves
+    """
+
+    _sender = sender
+
+    def update_leaves():
+        available_leaves = instance.employee_id.available_leave.filter(
+            leave_type_id=instance.leave_type_id
+        )
+        for assigned in available_leaves:
+            assigned.save()
+
+    thread = threading.Thread(target=update_leaves)
+    thread.start()
