@@ -55,7 +55,7 @@ class AssetForm(ModelForm):
 
         model = Asset
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = ["is_active,owner"]
         widgets = {
             "asset_name": forms.TextInput(
                 attrs={"placeholder": "Macbook Pro.", "class": "oh-input w-100"}
@@ -159,6 +159,7 @@ class DocumentForm(forms.ModelForm):
                 "type": "File",
                 "class": "form-control",
                 "multiple": "True",
+                "accept": ".jpeg, .jpg, .png, .pdf",
             }
         )
     )

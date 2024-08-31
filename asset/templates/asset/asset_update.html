@@ -96,13 +96,16 @@
                     {{asset_form.asset_name.errors}}
                   </div>
                 </div>
-                <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                  <div class="oh-input__group">
-                    <label class="oh-input__label" for="{{asset_form.owner.id_for_label}}" >{% trans "Owner" %}</label>
-                    {{asset_form.owner }}
-                    {{asset_form.owner.errors }}
+                {% if instance.asset_status == "In use" and instance.assetassignment_set.last %}
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                    <div class="oh-input__group">
+                      <label class="oh-input__label" for="{{asset_form.owner.id_for_label}}">{% trans "Current User" %}</label>
+                      {% with assigned=instance.assetassignment_set.last %}
+                        <input type="text" class="oh-input w-100" value="{{ assigned.assigned_to_employee_id }}" readonly>
+                      {% endwith %}
+                    </div>
                   </div>
-                </div>
+                {% endif %}
               </div>
               <div class="oh-input__group ">
                 <label class="oh-input__label" for="{{asset_form.asset_description.id_for_label}}" >{% trans "Asset Description" %}</label>

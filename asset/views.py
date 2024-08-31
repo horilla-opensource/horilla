@@ -196,6 +196,7 @@ def asset_update(request, asset_id):
             asset_form.save()
             messages.success(request, _("Asset Updated"))
     context = {
+        "instance": instance,
         "asset_form": asset_form,
         "asset_under": asset_under,
         "pg": previous_data,
