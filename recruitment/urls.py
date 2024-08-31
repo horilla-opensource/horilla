@@ -581,4 +581,9 @@ urlpatterns = [
         views.hired_candidate_chart,
         name="hired-candidate-chart",
     ),
+    path(
+        "self-tracking-feature",
+        views.self_tracking_feature,
+        name="self-tracking-feature",
+    ),
 ]

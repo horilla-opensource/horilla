@@ -183,6 +183,16 @@
 										<div class="row">
 										<div class="col-sm-12 col-md-12 col-lg-12">
 											<div class="oh-input-group">
+												{% if perms.recruitment.view_recruitment %}
+												<div class="oh-input-group">
+													<a
+														id="skills"
+														href="{% url 'self-tracking-feature' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+													>{% trans "Candidate Self Tracking" %}</a
+													>
+												</div>
+												{% endif %}
 												{% if perms.recruitment.view_rejectreason %}
 													<a
 														id="candidateRejectReasons"
@@ -450,7 +460,7 @@
 								<div class="oh-accordion ms-2">
 									<div class="oh-accordion-header" style="font-size:16px;">
 										<ion-icon name="analytics-outline" class="me-2"></ion-icon>
-										{% trans "Performnce" %}
+										{% trans "Performance" %}
 									</div>
 										<div class="oh-accordion-body">
 											<div class="row">

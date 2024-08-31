@@ -2638,6 +2638,15 @@ def create_reject_reason(request):
 
 
 @login_required
+@permission_required("recruitment.view_recruitment")
+def self_tracking_feature(request):
+    """
+    Recruitment optional feature for candidate self tracking
+    """
+    return render(request, "recruitment/settings/settings.html")
+
+
+@login_required
 @permission_required("recruitment.delete_rejectreason")
 def delete_reject_reason(request):
     """

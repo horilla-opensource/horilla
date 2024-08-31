@@ -1,3 +1,5 @@
+{% extends "settings.html" %}
+{% block settings %}
 {% load i18n %}
 {% csrf_token %}
 <div class="oh-inner-sidebar-content__header mt-4">
@@ -28,3 +30,5 @@
     </form>
 </div>
 <div class="oh-inner-sidebar-content__footer"></div>
+
+{% endblock settings %}
