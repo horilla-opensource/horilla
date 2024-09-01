@@ -887,6 +887,9 @@ class BonusPointSetting(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
+    def __str__(self) -> str:
+        return f"Bonus point {self.get_model_display()}"
+
 
 def manipulate_existing_data():
     from dateutil.relativedelta import relativedelta
