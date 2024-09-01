@@ -763,6 +763,10 @@ class RotatingWorkTypeAssignForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        for field_name, field in self.fields.items():
+            if field.required:
+                self.fields[field_name].label_suffix = " *"
+
         self.fields["rotate_every_weekend"].widget.attrs.update(
             {
                 "class": "w-100",
@@ -928,6 +932,9 @@ class RotatingWorkTypeAssignUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        for field_name, field in self.fields.items():
+            if field.required:
+                self.fields[field_name].label_suffix = " *"
 
         self.fields["rotate_every_weekend"].widget.attrs.update(
             {
@@ -1399,6 +1406,10 @@ class RotatingShiftAssignForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        for field_name, field in self.fields.items():
+            if field.required:
+                self.fields[field_name].label_suffix = " *"
+
         self.fields["rotate_every_weekend"].widget.attrs.update(
             {
                 "class": "w-100 ",
@@ -1562,6 +1573,10 @@ class RotatingShiftAssignUpdateForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        for field_name, field in self.fields.items():
+            if field.required:
+                self.fields[field_name].label_suffix = " *"
+
         self.fields["rotate_every_weekend"].widget.attrs.update(
             {
                 "class": "w-100 ",
