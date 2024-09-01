@@ -100,7 +100,7 @@
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-12 ">
                                 <div class="oh-input-group">
-                                  <label for="" class="oh-label">{% trans "Country" %}</label>
+                                  <label for="" class="oh-label">{% trans "Country *" %}</label>
                                   <select name="country" id="id_country" class="oh-select oh-select-2">
 
                                   </select>
@@ -109,7 +109,7 @@
                               </div>
                               <div class="col-sm-12 col-md-12 col-lg-12 ">
                                 <div class="oh-input-group">
-                                  <label for="" class="oh-label">{% trans "State" %}</label>
+                                  <label for="" class="oh-label">{% trans "State *" %}</label>
                                   <select name="state" id="id_state" class="oh-select oh-select-2">
 
                                   </select>
@@ -153,11 +153,23 @@
     </div>
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <script src="{% static 'build/js/web.frontend.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <script>
         {% include 'onboarding/static/country.js' %}
-      </script>
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('input[required], select[required], textarea[required]').each(function() {
+                var label = $(this).closest("div").find("label")
+
+                if (label.length) {
+                    label.append('<span> *</span>');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

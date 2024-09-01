@@ -86,7 +86,7 @@
               </div>
               <div class="col-sm-12 col-md-12 col-lg-12 ">
                 <div class="oh-input-group">
-                  <label for="" class="oh-label">{% trans "Country" %}</label>
+                  <label for="" class="oh-label">{% trans "Country *" %}</label>
                   <input type="hidden" name="country" id="" value="{{request.user.employee_get.country}}">
                   <select name="country" id="id_country" class="oh-select oh-select-2">
                     <option value="{{request.user.employee_get.country}}" selected>{{form.initial.country}}</option>
@@ -95,7 +95,7 @@
               </div>
               <div class="col-sm-12 col-md-12 col-lg-12 ">
                 <div class="oh-input-group">
-                  <label for="" class="oh-label">{% trans "State" %}</label>
+                  <label for="" class="oh-label">{% trans "State *" %}</label>
                   <input type="hidden" name="state" id="" value="{{request.user.employee_get.state}}">
                   <select name="state" id="id_state" data-selected="{{form.initial.country}}" class="oh-select oh-select-2">
                   </select>
@@ -186,12 +186,23 @@
     </main>
   </div>
   <script src="{% static 'build/js/web.frontend.min.js' %}"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
   <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
   <script>
     {% include 'onboarding/static/country.js' %}
   </script>
+  <script>
+    $(document).ready(function() {
+        $('input[required], select[required], textarea[required]').each(function() {
+            var label = $(this).closest("div").find("label")
 
+            if (label.length) {
+                label.append('<span> *</span>');
+            }
+        });
+    });
+</script>
 </body>
 </html>
