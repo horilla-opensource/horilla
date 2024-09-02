@@ -1976,7 +1976,7 @@ class PayslipAutoGenerate(models.Model):
     )
     auto_generate = models.BooleanField(default=False)
     company_id = models.OneToOneField(
-        Company, on_delete=models.CASCADE, null=True, blank=True
+        Company, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Company"
     )
 
     def clean(self):
