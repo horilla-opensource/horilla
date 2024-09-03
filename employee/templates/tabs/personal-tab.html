@@ -360,11 +360,11 @@
 						</div>
 					</div>
 					{% if perms.employee.view_employee or perms.payroll.view_contract or request.user == employee.employee_user_id %}
-						<div class="oh-tabs__content" id="tab_2">
-							{% if "payroll"|app_installed and perms.payroll.view_contract %}
+						{% if "payroll"|app_installed %}
+							<div class="oh-tabs__content" id="tab_2">
 								{% include "tabs/contract-tab.html" %}
-							{% endif %}
-						</div>
+							</div>
+						{% endif %}
 					{% endif %}
 				</div>
 			</div>
