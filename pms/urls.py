@@ -1,6 +1,7 @@
 from django.urls import path
 
 from base.views import object_delete
+from horilla_audit.methods import history_tracking
 from pms import cbvs
 
 from . import models, views
@@ -417,11 +418,6 @@ urlpatterns = [
         name="dashboard-feedback-answer",
     ),
     # ===========bonus point setting============
-    # path(
-    #     "view-bonus-setting",
-    #     views.view_bonus_setting,
-    #     name="view-bonus-setting",
-    # ),
     path(
         "bonus-point-setting/",
         cbvs.BonusPointSettingSectionView.as_view(),
@@ -457,6 +453,11 @@ urlpatterns = [
         views.bonus_setting_form_values,
         name="bonus-setting-form-values",
     ),
+    path(
+        "update-isactive-bonuspoint-setting/<int:obj_id>",
+        views.update_isactive_bonuspoint_setting,
+        name="update-isactive-bonuspoint-setting",
+    ),
     # ===========Employee bonus point============
     path(
         "employee-bonus-point",
@@ -487,5 +488,11 @@ urlpatterns = [
         "delete-employee-bonus-point/<int:pk>/",
         views.delete_employee_bonus_point,
         name="delete-employee-bonus-point",
+    ),
+    path(
+        "history-tracking/<int:obj_id>/",
+        history_tracking,
+        name="history-tracking",
+        kwargs={"model": models.Meetings, "decorators": ["login_required"]},
     ),
 ]

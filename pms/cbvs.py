@@ -4,8 +4,12 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _trans
 
+from base.methods import filter_own_and_subordinate_recordes, is_reportingmanager
+from horilla import horilla_middlewares
+from horilla.decorators import login_required, permission_required
 from horilla_views.generic.cbv import views
 from pms import models
 from pms.filters import BonusPointSettingFilter, EmployeeBonusPointFilter
@@ -13,6 +17,8 @@ from pms.forms import BonusPointSettingForm, EmployeeBonusPointForm
 
 
 # ================Models for BonusPointSetting==============
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("pms.view_bonuspointsetting"), name="dispatch")
 class BonusPointSettingSectionView(views.HorillaSectionView):
     """
     BonusPointSetting SectionView
@@ -29,6 +35,8 @@ class BonusPointSettingSectionView(views.HorillaSectionView):
     template_name = "bonus/bonus_point_setting_section.html"
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("pms.view_bonuspointsetting"), name="dispatch")
 class BonusPointSettingNavView(views.HorillaNavView):
     """
     BonusPointSetting nav view
@@ -48,6 +56,8 @@ class BonusPointSettingNavView(views.HorillaNavView):
     search_swap_target = "#listContainer"
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("pms.change_bonuspointsetting"), name="dispatch")
 class BonusPointSettingFormView(views.HorillaFormView):
     """
     BonusPointSettingForm View
@@ -90,6 +100,8 @@ class BonusPointSettingFormView(views.HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("pms.view_bonuspointsetting"), name="dispatch")
 class BonusPointSettingListView(views.HorillaListView):
     """
     BnusPointSetting list view
@@ -99,30 +111,6 @@ class BonusPointSettingListView(views.HorillaListView):
     search_url = reverse_lazy("bonus-point-setting-list-view")
     filter_class = BonusPointSettingFilter
     action_method = "action_template"
-    # actions = [
-    #     {
-    #         "action": "Edit",
-    #         "icon": "create-outline",
-    #         "attrs": """
-    #             class="oh-btn oh-btn--light-bkg w-100"
-    #             hx-get="{edit_url}?instance_ids={ordered_ids}"
-    #             hx-target="#genericModalBody"
-    #             data-target="#genericModal"
-    #             data-toggle="oh-modal-toggle"
-    #         """,
-    #     },
-    #     {
-    #         "action": "Delete",
-    #         "icon": "trash-outline",
-    #         "attrs": """
-    #         class="oh-btn oh-btn--light-bkg w-100 tex-danger"
-    #         onclick="
-    #             event.stopPropagation();
-    #             confirm('Do you want to delete the bonus point setting?','{delete_url}')
-    #         "
-    #         """,
-    #     },
-    # ]
 
     columns = [
         ("Model", "get_model_display"),
@@ -228,42 +216,31 @@ class EmployeeBonusPointListView(views.HorillaListView):
     BnusPoint list view
     """
 
+    request = getattr(horilla_middlewares._thread_locals, "request", None)
+
     model = models.EmployeeBonusPoint
     search_url = reverse_lazy("employee-bonus-point-list-view")
     filter_class = EmployeeBonusPointFilter
-    action_method = "action_template"
+    if is_reportingmanager(request):
+        action_method = "action_template"
     bulk_update_fields = [
         "employee_id",
         "bonus_point",
         "based_on",
     ]
-    # actions = [
-    #     {
-    #         "action": "Edit",
-    #         "icon": "create-outline",
-    #         "attrs": """
-    #             class="oh-btn oh-btn--light-bkg w-100"
-    #             hx-get="{edit_url}?instance_ids={ordered_ids}"
-    #             hx-target="#genericModalBody"
-    #             data-target="#genericModal"
-    #             data-toggle="oh-modal-toggle"
-    #         """,
-    #     },
-    #     {
-    #         "action": "Delete",
-    #         "icon": "trash-outline",
-    #         "attrs": """
-    #         class="oh-btn oh-btn--light-bkg w-100 tex-danger"
-    #         onclick="
-    #             event.stopPropagation();
-    #             confirm('Do you want to delete the automation?','{delete_url}')
-    #         "
-    #         """,
-    #     },
-    # ]
 
     columns = [
         ("Employee", "employee_id"),
         ("Bonus Point", "bonus_point"),
         ("Based On", "based_on"),
     ]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        if is_reportingmanager(request):
+            return filter_own_and_subordinate_recordes(
+                request, queryset, perm="pms.view_employeebonuspoint"
+            )
+        else:
+            return queryset.filter(employee_id=request.user.employee_get)

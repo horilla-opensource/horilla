@@ -1048,6 +1048,16 @@ class MeetingsForm(BaseForm):
             ids = self.data.getlist("employee_id")
             if ids:
                 self.errors.pop("employee_id", None)
+
+        if cleaned_data["answer_employees"] and not cleaned_data["question_template"]:
+            raise ValidationError(
+                {
+                    "question_template": _(
+                        "Question template is required when answer employees are choosed"
+                    )
+                }
+            )
+
         return cleaned_data
 
     def __init__(self, *args, **kwargs):
@@ -1063,6 +1073,7 @@ class MeetingsForm(BaseForm):
                     filter_class=EmployeeFilter,
                     filter_instance_contex_name="f",
                     filter_template_path="employee_filters.html",
+                    form=self,
                 ),
                 label=_("Employees"),
             )

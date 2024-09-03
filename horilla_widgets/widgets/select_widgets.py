@@ -35,6 +35,7 @@ class HorillaMultiSelectWidget(forms.Widget):
         filter_template_path=None,
         instance=None,
         required=False,
+        form=None,
         **kwargs
     ) -> None:
         self.filter_route_name = filter_route_name
@@ -43,6 +44,7 @@ class HorillaMultiSelectWidget(forms.Widget):
         self.filter_instance_contex_name = filter_instance_contex_name
         self.filter_template_path = filter_template_path
         self.instance = instance
+        self.form = form
         super().__init__()
 
     template_name = "horilla_widgets/horilla_multiselect_widget.html"
@@ -55,9 +57,17 @@ class HorillaMultiSelectWidget(forms.Widget):
         field = self.choices.field
         context["queryset"] = queryset
         context["field_name"] = name
-        if self.instance and self.instance.pk:
+        if self.form and name in self.form.data:
+            initial = self.form.data.getlist(name)
+            context["initial"] = initial
+        elif value:
+            context["initial"] = value
+
+        elif self.instance and self.instance.pk:
             initial = list(getattr(self.instance, name).values_list("id", flat=True))
             context["initial"] = initial
+        else:
+            context["initial"] = []
         context["field"] = field
         context["self"] = self
         context["filter_template_path"] = self.filter_template_path
