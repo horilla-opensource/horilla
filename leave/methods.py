@@ -143,24 +143,25 @@ def attendance_days(employee, attendances):
     """
     This function returns count of workrecord from the attendance
     """
-    from payroll.models.models import WorkRecord
-
     attendance_days = 0
-    for attendance in attendances:
-        if WorkRecord.objects.filter(
-            employee_id=employee, date=attendance.attendance_date
-        ).exists():
-            work_record_type = (
-                WorkRecord.objects.filter(
-                    employee_id=employee, date=attendance.attendance_date
+    if apps.is_installed("attendance"):
+        from attendance.models import WorkRecords
+
+        for attendance in attendances:
+            if WorkRecords.objects.filter(
+                employee_id=employee, date=attendance.attendance_date
+            ).exists():
+                work_record_type = (
+                    WorkRecords.objects.filter(
+                        employee_id=employee, date=attendance.attendance_date
+                    )
+                    .first()
+                    .work_record_type
                 )
-                .first()
-                .work_record_type
-            )
-            if work_record_type == "HDP":
-                attendance_days += 0.5
-            elif work_record_type == "FDP":
-                attendance_days += 1
+                if work_record_type == "HDP":
+                    attendance_days += 0.5
+                elif work_record_type == "FDP":
+                    attendance_days += 1
     return attendance_days
 
 

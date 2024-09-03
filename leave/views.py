@@ -48,6 +48,7 @@ from leave.decorators import *
 from leave.filters import *
 from leave.forms import *
 from leave.methods import (
+    attendance_days,
     calculate_requested_days,
     company_leave_dates_list,
     filter_conditional_leave_request,
@@ -3666,6 +3667,10 @@ def user_request_select_filter(request):
 def employee_available_leave_count(request):
     leave_type_id = request.GET.get("leave_type_id")
     start_date = request.GET.get("start_date")
+    try:
+        start_date_format = datetime.strptime(start_date, "%Y-%m-%d").date()
+    except:
+        leave_type_id = None
     hx_target = request.META.get("HTTP_HX_TARGET", None)
     employee_id = (
         request.GET.getlist("employee_id")[0]
@@ -3681,10 +3686,12 @@ def employee_available_leave_count(request):
     )
     total_leave_days = available_leave.total_leave_days if available_leave else 0
     forcated_days = 0
+
     if (
-        available_leave.leave_type_id.leave_type_next_reset_date()
+        available_leave
+        and available_leave.leave_type_id.leave_type_next_reset_date()
         and available_leave
-        and datetime.strptime(start_date, "%Y-%m-%d").date()
+        and start_date_format
         >= available_leave.leave_type_id.leave_type_next_reset_date()
     ):
         forcated_days = available_leave.forcasted_leaves(start_date)
