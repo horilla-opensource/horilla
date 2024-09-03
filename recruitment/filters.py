@@ -34,7 +34,12 @@ class CandidateFilter(FilterSet):
     """
 
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
-    # for pipeline use
+
+    candidate = django_filters.ModelMultipleChoiceFilter(
+        queryset=Candidate.objects.all(),
+        field_name="name",
+    )
+
     candidate_name = django_filters.CharFilter(
         method="pipeline_search", lookup_expr="icontains"
     )
