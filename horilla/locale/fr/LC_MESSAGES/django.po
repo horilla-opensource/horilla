@@ -276,7 +276,7 @@ msgstr "Groupe Numéro"
 #: asset/templates/request_allocation/asset_request_creation.html:35
 #: attendance/templates/attendance/attendance_account/form.html:7
 #: attendance/templates/attendance/attendance_account/update_form.html:11
-#: attendance/templates/attendance_form.html:52
+#: attendance/templates/horilla_form.html:52
 #: horilla_audit/templates/horilla_audit/horilla_audit_log.html:45
 #: payroll/templates/common_form.html:43
 #: payroll/templates/contract_form.html:42

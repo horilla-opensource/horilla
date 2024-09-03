@@ -518,7 +518,7 @@ msgstr "Benachrichtigen Sie im Voraus (Tage)"
 #: .\asset\templates\request_allocation\asset_request_creation.html:45
 #: .\attendance\templates\attendance\break_point\condition_form.html:28
 #: .\attendance\templates\attendance\penalty\form.html:116
-#: .\attendance\templates\attendance_form.html:52
+#: .\attendance\templates\horilla_form.html:52
 #: .\attendance\templates\requests\attendance\attendance_request_comment_form.html:51
 #: .\base\templates\announcement\announcement_form.html:26
 #: .\base\templates\announcement\announcement_update_form.html:26
@@ -4540,8 +4540,7 @@ msgid ""
 "<span title='Do not Auto Validate Attendance if an Employee Works More Than "
 "this Amount of Duration'>{}</span>"
 msgstr ""
-"Anwesenheit nicht automatisch validieren, wenn ein Mitarbeiter mehr arbeitet als „
-„Dieser Betrag an Dauer"
+"Anwesenheit nicht automatisch validieren, wenn ein Mitarbeiter mehr arbeitet als Dieser Betrag an Dauer"
 
 #: .\attendance\forms.py:522
 msgid "Maximum Allowed working hours"
@@ -10703,172 +10702,120 @@ msgid "Next shift"
 msgstr "Nächste Schicht"
 
 #: .\base\translator.py:140
-#, fuzzy
-#| msgid "Current Work Type"
 msgid "Current work type"
 msgstr "Aktuelle Arbeitsweise"
 
 #: .\base\translator.py:141
-#, fuzzy
-#| msgid "Next Work Type"
 msgid "Next work type"
 msgstr "Nächste Arbeitsweise"
 
 #: .\base\translator.py:142
-#, fuzzy
-#| msgid "Start Date From"
 msgid "Start date from"
 msgstr "Startdatum Von"
 
 #: .\base\translator.py:143
-#, fuzzy
-#| msgid "Start Date Till"
 msgid "Start date till"
 msgstr "Startdatum bis"
 
 #: .\base\translator.py:144
-#, fuzzy
-#| msgid "End Date From"
 msgid "End date from"
 msgstr "Enddatum von"
 
 #: .\base\translator.py:145
-#, fuzzy
-#| msgid "End Date Till"
 msgid "End date till"
 msgstr "Enddatum bis"
 
 #: .\base\translator.py:146
-#, fuzzy
-#| msgid "Work Location"
 msgid "Location"
-msgstr "Arbeitsplatz"
+msgstr "Standort"
 
 #: .\base\translator.py:147
-#, fuzzy
-#| msgid "Attendance Break Point"
 msgid "Attendance clock in"
-msgstr "Anwesenheitspausenpunkt"
+msgstr "einchecken Anwesenheiten"
 
 #: .\base\translator.py:148
-#, fuzzy
-#| msgid "Attendance Break Point"
 msgid "Attendance clock out"
-msgstr "Anwesenheitspausenpunkt"
+msgstr "Ausstempeln Anwesenheiten"
 
 #: .\base\translator.py:149
-#, fuzzy
-#| msgid "Overtime approved"
 msgid "Attendance overtime approve"
-msgstr "Überstunden genehmigt"
+msgstr "Überstunden genehmigen"
 
 #: .\base\translator.py:150
-#, fuzzy
-#| msgid "Hour Account"
 msgid "Hour account"
 msgstr "Arbeitszeitkonto"
 
 #: .\base\translator.py:151
-#, fuzzy
-#| msgid "Check-out date"
 msgid "Clock out date"
 msgstr "Check-Aus Datum"
 
 #: .\base\translator.py:152
-#, fuzzy
-#| msgid "Check-in date"
 msgid "Clock in date"
 msgstr "Check-In Datum"
 
 #: .\base\translator.py:153
-#, fuzzy
-#| msgid "Shift Day"
 msgid "Shift day"
 msgstr "Schicht Tag"
 
 #: .\base\translator.py:154
-#, fuzzy
-#| msgid "Attendance date"
 msgid "Attendance date from"
-msgstr "Anwesenheitsdatum"
+msgstr "Anwesenheitsdatum von"
 
 #: .\base\translator.py:155
-#, fuzzy
-#| msgid "from"
 msgid "In from"
-msgstr "aus"
+msgstr "In von"
 
 #: .\base\translator.py:156 .\base\translator.py:158
-#, fuzzy
-#| msgid "Out From"
 msgid "Out from"
 msgstr "Gegagnen aus"
 
 #: .\base\translator.py:157
-#, fuzzy
-#| msgid "Attendance date"
 msgid "Attendance date till"
-msgstr "Anwesenheitsdatum"
+msgstr "Anwesenheitstermin bis"
 
 #: .\base\translator.py:159
-#, fuzzy
-#| msgid "Out Till"
 msgid "Out till"
 msgstr "Gegangen bis"
 
 #: .\base\translator.py:160
 msgid "In till"
-msgstr ""
+msgstr "in bis"
 
 #: .\base\translator.py:161 .\leave\models.py:287
 #: .\payroll\templates\payroll\reimbursement\reimbursement_list.html:427
 #: .\payroll\templates\payroll\reimbursement\reimbursenent_individual.html:112
-#, fuzzy
-#| msgid "Leave types"
 msgid "Leave type"
-msgstr "Abwesenheitstypen"
+msgstr "Abwesenheitsart"
 
 #: .\base\translator.py:162
-#, fuzzy
-#| msgid "From Date"
 msgid "From date"
 msgstr "Ab Datum"
 
 #: .\base\translator.py:163
-#, fuzzy
-#| msgid "End Date"
 msgid "To date"
-msgstr "End Datum"
+msgstr "zu datum"
 
 #: .\base\translator.py:164
-#, fuzzy
-#| msgid "Assigned Date"
 msgid "Assigned date"
 msgstr "Zugewweisedatum"
 
 #: .\base\translator.py:165
-#, fuzzy
-#| msgid "Based On week"
 msgid "Based on week"
 msgstr "Basierend auf Woche"
 
 #: .\base\translator.py:166
-#, fuzzy
-#| msgid "Based On Weekday"
 msgid "Based on week day"
 msgstr "Basierend auf Wochentag"
 
 #: .\base\translator.py:167
 msgid "Emp obj"
-msgstr ""
+msgstr "Zielsetzung der Mitarbeiter"
 
 #: .\base\translator.py:168
 msgid "Updated at"
 msgstr "Aktualisiert am"
 
 #: .\base\translator.py:169
-#, fuzzy
-#| msgid "Created Date"
 msgid "Created at"
 msgstr "Erstellungsdatum"
 
