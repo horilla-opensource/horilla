@@ -85,7 +85,6 @@
 						class="add-files-form"
 						hx-encoding="multipart/form-data"
 						data-target="#leaveactivitySidebar" hx-swap="innerHTML" hx-target="#commentContainer"
-
 					>
 						{% csrf_token %}
 						<label for="addFile_{{comment.id}}" title="Add Files"
@@ -102,6 +101,7 @@
 							name="files"
 							class="d-none"
 							multiple="true"
+							accept=".jpg, .jpeg, .png, .pdf"
 							id="addFile_{{comment.id}}"
 							onchange="submitForm(this)"
 						/>
