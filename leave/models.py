@@ -1000,7 +1000,7 @@ class LeaveRequestConditionApproval(models.Model):
 
 
 class RestrictLeave(HorillaModel):
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=200)
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(verbose_name=_("End Date"))
     department = models.ForeignKey(
