@@ -423,7 +423,7 @@ urlpatterns = [
     #     name="view-bonus-setting",
     # ),
     path(
-        "bonus-point-setting",
+        "bonus-point-setting/",
         cbvs.BonusPointSettingSectionView.as_view(),
         name="bonus-point-setting",
     ),

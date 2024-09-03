@@ -142,7 +142,7 @@
               onclick="event.stopPropagation()"
             >
               <div class="oh-btn-group">
-                  <a class="oh-btn w-100" style="height:10px" href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><img width="80%" src="{% static 'images/ui/writing.png' %}"></a>
+                  <a class="oh-btn w-100" style="height:10px" href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><img width="25px" height="25px" src="{% static 'images/ui/writing.png' %}"></a>
                   <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
                   <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
                     {% if feedback.archive == True %}
@@ -285,7 +285,7 @@
             <div class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</div>
             <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
               <div class="oh-btn-group">
-                <a class="oh-btn w-100" style="height:10px" href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><img width="80%" src="{% static 'images/ui/writing.png' %}"></a>
+                <a class="oh-btn w-100" style="height:10px" href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><img width="25px" height="25px" src="{% static 'images/ui/writing.png' %}"></a>
                 <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
                 <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
                   {% if feedback.archive == True %}
@@ -430,9 +430,9 @@
             <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
               <div class="oh-btn-group">
                 {% if feedback|is_feedback_answer:request.user %}
-                  <a class="oh-btn w-100" style="height:10px" href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><img width="80%" src="{% static 'images/ui/writing.png' %}"></a>
+                  <a class="oh-btn w-100" style="height:10px" href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><img width="25px" height="25px" src="{% static 'images/ui/writing.png' %}"></a>
                 {% else %}
-                  <a class="oh-btn w-100" style="height:10px;background-color: #cccccc;" disabled  title="{% trans 'Answer' %}"><img width="80%" src="{% static 'images/ui/writing.png' %}"></a>
+                  <a class="oh-btn w-100" style="height:10px;background-color: #cccccc;" disabled  title="{% trans 'Answer' %}"><img width="25px" height="25px" src="{% static 'images/ui/writing.png' %}"></a>
                 {% endif %}
                 <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
                 <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
