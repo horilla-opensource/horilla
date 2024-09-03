@@ -17,6 +17,7 @@ from base.forms import TagsForm
 from base.methods import filtersubordinates, get_key_instances, get_pagination, sortby
 from base.models import Department, JobPosition, Tags
 from employee.models import Employee
+from helpdesk.decorators import ticket_owner_can_enter
 from helpdesk.filter import FAQCategoryFilter, FAQFilter, TicketFilter, TicketReGroup
 from helpdesk.forms import (
     AttachmentForm,
@@ -45,7 +46,6 @@ from horilla.decorators import (
     hx_request_required,
     login_required,
     manager_can_enter,
-    owner_can_enter,
     permission_required,
 )
 from horilla.group_by import group_by_queryset
@@ -484,7 +484,7 @@ def ticket_create(request):
 
 @login_required
 @hx_request_required
-@owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
+@ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def ticket_update(request, ticket_id):
     """
     This function is responsible for updating the Ticket.
@@ -543,7 +543,7 @@ def ticket_archive(request, ticket_id):
 
 
 @login_required
-@owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
+@ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def change_ticket_status(request, ticket_id):
     """
     This function is responsible for changing the Ticket status.
@@ -615,7 +615,7 @@ def change_ticket_status(request, ticket_id):
 
 
 @login_required
-@owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
+@ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def ticket_delete(request, ticket_id):
     """
     This function is responsible for deleting the Ticket.
@@ -790,7 +790,7 @@ def ticket_filter(request):
 
 
 @login_required
-@owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
+@ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def ticket_detail(request, ticket_id, **kwargs):
     today = datetime.now().date()
     ticket = Ticket.objects.get(id=ticket_id)
@@ -851,7 +851,7 @@ def ticket_detail(request, ticket_id, **kwargs):
 
 
 @login_required
-# @owner_can_enter("perms.helpdesk.helpdesk_changeticket", Ticket)
+# @ticket_owner_can_enter("perms.helpdesk.helpdesk_changeticket", Ticket)
 def ticket_update_tag(request):
     """
     method to update the tags of ticket
@@ -872,7 +872,7 @@ def ticket_update_tag(request):
 
 @login_required
 @hx_request_required
-@owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
+@ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def ticket_change_raised_on(request, ticket_id):
     ticket = Ticket.objects.get(id=ticket_id)
     form = TicketRaisedOnForm(instance=ticket)
@@ -1137,7 +1137,7 @@ def tickets_bulk_archive(request):
 
 
 @login_required
-# @owner_can_enter("perms.helpdesk.helpdesk_changeticket", Ticket)
+# @ticket_owner_can_enter("perms.helpdesk.helpdesk_changeticket", Ticket)
 @permission_required("helpdesk.delete_ticket")
 def tickets_bulk_delete(request):
     """
