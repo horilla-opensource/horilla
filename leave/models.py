@@ -730,7 +730,7 @@ class LeaveRequest(HorillaModel):
 
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         if not request.user.is_superuser:
-            if EmployeePastLeaveRestrict.objects.first().enabled:
+            if EmployeePastLeaveRestrict.objects.first():
                 if self.start_date < date.today():
                     raise ValidationError(_("Requests cannot be made for past dates."))
         if not request.user.is_superuser:
