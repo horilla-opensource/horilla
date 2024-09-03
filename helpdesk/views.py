@@ -14,7 +14,13 @@ from django.views.decorators.http import require_http_methods
 from haystack.query import SearchQuerySet
 
 from base.forms import TagsForm
-from base.methods import filtersubordinates, get_key_instances, get_pagination, sortby
+from base.methods import (
+    filtersubordinates,
+    get_key_instances,
+    get_pagination,
+    is_reportingmanager,
+    sortby,
+)
 from base.models import Department, JobPosition, Tags
 from employee.models import Employee
 from helpdesk.decorators import ticket_owner_can_enter
@@ -371,8 +377,8 @@ def ticket_view(request):
     Parameters:
         request (HttpRequest): The HTTP request object.
     """
-    tickets = Ticket.objects.filter(is_active=True)
-
+    tickets = Ticket.objects.filter(is_active=True).order_by("-created_date")
+    employee = request.user.employee_get
     previous_data = request.GET.urlencode()
     if request.method == "GET":
         tickets = TicketFilter(request.GET).qs
@@ -380,13 +386,12 @@ def ticket_view(request):
     all_page_number = request.GET.get("all_page")
     allocated_page_number = request.GET.get("allocated_page")
 
-    my_tickets = tickets.filter(
-        is_active=True, employee_id=request.user.employee_get
-    ).order_by("-created_date")
-
-    all_tickets = tickets.filter(is_active=True).order_by("-created_date")
-    all_tickets = filtersubordinates(request, all_tickets, "helpdesk.add_tickets")
-
+    my_tickets = tickets.filter(employee_id=employee) | tickets.filter(
+        created_by=request.user
+    )
+    all_tickets = []
+    if is_reportingmanager(request):
+        all_tickets = filtersubordinates(request, tickets, "helpdesk.add_tickets")
     allocated_tickets = []
     ticket_list = tickets.filter(is_active=True)
     user = request.user.employee_get
