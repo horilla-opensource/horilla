@@ -1676,7 +1676,6 @@ def feedback_list_search(request):
     self_feedback = Feedback.objects.filter(employee_id=employee_id).filter(
         review_cycle__icontains=feedback
     )
-
     requested_feedback_ids = []
     requested_feedback_ids.extend(
         [i.id for i in Feedback.objects.filter(manager_id=employee_id)]
@@ -1687,11 +1686,16 @@ def feedback_list_search(request):
     requested_feedback_ids.extend(
         [i.id for i in Feedback.objects.filter(subordinate_id=employee_id)]
     )
-
     requested_feedback = Feedback.objects.filter(pk__in=requested_feedback_ids).filter(
         review_cycle__icontains=feedback
     )
-    all_feedback = Feedback.objects.all().filter(review_cycle__icontains=feedback)
+    all_feedback = Feedback.objects.filter(
+        Q(
+            manager_id=employee_id,
+            manager_id__is_active=True,
+            archive=False,
+        )
+    ).filter(review_cycle__icontains=feedback)
     anonymous_feedback = (
         AnonymousFeedback.objects.filter(employee_id=employee_id)
         if not request.user.has_perm("pms.view_feedback")
@@ -1742,7 +1746,11 @@ def feedback_list_view(request):
         archive=False, employee_id__is_active=True
     )
     feedback_all = Feedback.objects.all().filter(
-        archive=False, employee_id__is_active=True
+        Q(
+            manager_id=employee,
+            manager_id__is_active=True,
+            archive=False,
+        )
     )
     anonymous_feedback = (
         AnonymousFeedback.objects.filter(employee_id=employee, archive=False)
@@ -3640,3 +3648,25 @@ def bonus_setting_form_values(request):
             "serialized_form": serialized_form,
         }
     )
+
+
+@login_required
+@permission_required("pms.update_bonuspointsetting")
+def update_isactive_bonuspoint_setting(request, obj_id):
+    """
+    htmx function to update is active field in BonusPointSetting.
+    Args:
+    - is_active: Boolean value representing the state of BonusPointSetting,
+    - obj_id: Id of BonusPointSetting object.
+    """
+    is_active = request.POST.get("is_active")
+    bonus_point_setting = BonusPointSetting.objects.get(id=obj_id)
+    if is_active == "on":
+        bonus_point_setting.is_active = True
+        messages.success(request, _("Bonus point setting activated successfully."))
+    else:
+        bonus_point_setting.is_active = False
+        messages.success(request, _("Bonus point setting deactivated successfully."))
+    bonus_point_setting.save()
+
+    return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")

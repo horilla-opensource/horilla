@@ -60,7 +60,7 @@
   <!-- normal user can't view all objective  -->
   {% if perms.pms.view_feedback or request.user|filtersubordinates %}
   <li class="oh-tabs__tab" data-target="#tab_3">
-    {% trans "All Feedback" %}
+    {% trans "Feedbacks to review" %}
     <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{all_feedbacks|length}} feedback" onclick="event.stopPropagation()">{{all_feedbacks|length}}</span>
   </li>
   {% endif %}
@@ -429,12 +429,12 @@
             <div class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</div>
             <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
               <div class="oh-btn-group">
-                {% if feedback|is_feedback_answer:request.user %}
+                {% comment %} {% if feedback|is_feedback_answer:request.user %}
                   <a class="oh-btn w-100" style="height:10px" href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><img width="25px" height="25px" src="{% static 'images/ui/writing.png' %}"></a>
                 {% else %}
                   <a class="oh-btn w-100" style="height:10px;background-color: #cccccc;" disabled  title="{% trans 'Answer' %}"><img width="25px" height="25px" src="{% static 'images/ui/writing.png' %}"></a>
-                {% endif %}
-                <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
+                {% endif %} {% endcomment %}
+                {% comment %} <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a> {% endcomment %}
                 <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
                   {% if feedback.archive == True %}
                     <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
