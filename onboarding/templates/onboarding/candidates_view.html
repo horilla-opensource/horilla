@@ -1,222 +1,503 @@
 {% extends 'index.html' %} {% load i18n %} {% load static %} {% block content %}
 
 <div class="oh-wrapper">
-  <div class="oh-alert-container" id="message"></div>
+    <div class="oh-alert-container" id="message"></div>
 </div>
 <div id="selectedInstances" data-ids="[]" data-clicked=""></div>
 <script>
-  function checkRow(element) {
-    if (element.checked) {
-      $(".checkboxAll").each(function () {
-        $(".checkboxAll").prop("checked", true);
-      });
-    } else {
-      $(".checkboxAll").each(function () {
-        $(".checkboxAll").prop("checked", false);
-      });
+    function checkRow(element) {
+        if (element.checked) {
+            $(".checkboxAll").each(function () {
+                $(".checkboxAll").prop("checked", true);
+            });
+        } else {
+            $(".checkboxAll").each(function () {
+                $(".checkboxAll").prop("checked", false);
+            });
+        }
     }
-  }
 </script>
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-  <div class="oh-main__titlebar oh-main__titlebar--left">
-    <h1 class="oh-main__titlebar-title fw-bold mb-0">
-      {% trans "Hired Candidates" %}
-    </h1>
-    <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
-      @click="searchShow = !searchShow">
-      <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
-    </a>
-  </div>
-  <form hx-get="{% url 'candidate-filter' %}" onsubmit="event.preventDefault()" hx-target="#candidates" id="filterForm">
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-      {% if candidates %}
-      <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
-        <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-        <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}"
-          name="name" onkeyup="$('.filterButton').click()"/>
-      </div>
-      <div class="oh-main__titlebar-button-container">
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button type="button" class="oh-btn ml-2" @click="open = !open">
-            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-          </button>
-          {% include 'onboarding/candidate_filter.html' %}
-        </div>
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-            <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
-            <div id="filterCount"></div>
-          </button>
-          <div
-          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-          x-show="open"
-          @click.outside="open = false"
-          style="display: none"
-          >
-          <div class="oh-accordion">
-            <label>{% trans "Group By" %}</label>
-              <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-6">
-                  <div class="oh-input-group">
-                    <label class="oh-label">{% trans "Field" %}</label>
-                  </div>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-6">
-                  <div class="oh-input-group">
-                    <select
-                      class="oh-select mt-1 w-100"
-                      id="id_field"
-                      name="field"
-                      onchange="$(this).closest('form').find('.filterButton').click()"
-                      class="select2-selection select2-selection--single"
-                    >
-                      {% for field in gp_fields %}
-                      <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-        <div class="oh-btn-group ml-2">
-          <button type="button" class="oh-btn oh-btn--info oh-btn--shadow" data-target="#addAttachments" data-toggle="oh-modal-toggle">
-            {% trans "Send Portal" %}
-          </button>
-        </div>
-        {% endif %}
-        <div class="oh-btn-group ml-2">
-          <a href="{% url 'candidate-create' %}?onboarding=True" class="oh-btn oh-btn--secondary oh-btn--shadow"
-            method="get">
-            <ion-icon name="add-outline" class="me-1"></ion-icon>
-            {% trans "Create" %}
-          </a>
-        </div>
-      </div>
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold mb-0">
+            {% trans "Hired Candidates" %}
+        </h1>
+        <a
+            class="oh-main__titlebar-search-toggle"
+            role="button"
+            aria-label="Toggle Search"
+            @click="searchShow = !searchShow"
+        >
+            <ion-icon
+                name="search-outline"
+                class="oh-main__titlebar-serach-icon"
+            ></ion-icon>
+        </a>
     </div>
-  </form>
+    <form
+        hx-get="{% url 'candidate-filter' %}"
+        onsubmit="event.preventDefault()"
+        hx-target="#candidates"
+        id="filterForm"
+    >
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            <div class="oh-main__titlebar-button-container">
+                {% if candidates %}
+                    <div
+                        class="oh-input-group oh-input__search-group"
+                        :class="searchShow ? 'oh-input__search-group--show' : ''"
+                    >
+                        <ion-icon
+                            name="search-outline"
+                            class="oh-input-group__icon oh-input-group__icon--left"
+                        ></ion-icon>
+                        <input
+                            type="text"
+                            class="oh-input oh-input__icon"
+                            aria-label="Search Input"
+                            placeholder="{% trans 'Search' %}"
+                            name="name"
+                            onkeyup="$('.filterButton').click()"
+                        />
+                    </div>
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button
+                            type="button"
+                            class="oh-btn ml-2"
+                            @click="open = !open"
+                        >
+                            <ion-icon name="filter" class="mr-1"></ion-icon>
+                            {% trans "Filter" %}
+                            <div id="filterCount"></div>
+                        </button>
+                        {% include 'onboarding/candidate_filter.html' %}
+                    </div>
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button
+                            class="oh-btn ml-2"
+                            @click="open = !open"
+                            onclick="event.preventDefault()"
+                        >
+                            <ion-icon name="library-outline" class="mr-1"></ion-icon
+                            >{% trans "Group By" %}
+                            <div id="filterCount"></div>
+                        </button>
+                        <div
+                            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                            x-show="open"
+                            @click.outside="open = false"
+                            style="display: none"
+                        >
+                            <div class="oh-accordion">
+                                <label>{% trans "Group By" %}</label>
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label"
+                                                >{% trans "Field" %}</label
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group">
+                                            <select
+                                                class="oh-select mt-1 w-100"
+                                                id="id_field"
+                                                name="field"
+                                                onchange="$(this).closest('form').find('.filterButton').click()"
+                                                class="select2-selection select2-selection--single"
+                                            >
+                                                {% for field in gp_fields %}
+                                                <option value="{{ field.0 }}">
+                                                    {% trans field.1 %}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="oh-btn-group ml-2">
+                        <div class="oh-dropdown" x-data="{open: false}">
+                            <button
+                                type="button"
+                                class="oh-btn oh-btn--dropdown oh-btn"
+                                @click="open = !open"
+                                @click.outside="open = false"
+                            >
+                                {% trans "Actions" %}
+                            </button>
+                            <div
+                                class="oh-dropdown__menu oh-dropdown__menu--right"
+                                x-show="open"
+                                style="display: none"
+                            >
+                                <ul class="oh-dropdown__items">
+                                    <li class="oh-dropdown__item">
+                                        {% if perms.recruitment.change_candidates %}
+                                        <a
+                                            href="#"
+                                            class="oh-dropdown__link"
+                                            id="candidate-info-export"
+                                            data-toggle="oh-modal-toggle"
+                                            data-target="#objectDetailsModal"
+                                            hx-get="{% url 'candidate-info-export' %}"
+                                            hx-target="#objectDetailsModalTarget"
+                                            >{% trans "Export" %}</a
+                                        >
+                                        {% endif %}
+                                    </li>
+                                    <li class="oh-dropdown__item">
+                                        <a
+                                            href="#"
+                                            onclick="event.preventDefault(); event.stopPropagation()"
+                                            class="oh-dropdown__link"
+                                            >{% trans "Offer letter status :" %}
+                                        </a>
+                                        <select name="status"
+                                            onclick="event.preventDefault(); event.stopPropagation()"
+                                            class="w-100 "
+                                            id="candidateOfferLetterUpdate"
+                                            style="
+                                                height: 30px;
+                                                border:solid 1px rgba(128, 128, 128, 0.32);
+                                                "
+                                            >
+                                                <option value="">{% trans "Select" %}</option>
+                                                {% for status in candidates.0.offer_letter_statuses %}
+                                                <option value="{{status.0}}">{{status.1}}</option>
+                                                {% endfor %}
+                                        </select>
+                                    </li>
+                                    {% if perms.recruitment.delete_candidates %}
+                                    <li class="oh-dropdown__item">
+                                        <a
+                                            href="#"
+                                            class="oh-dropdown__link oh-dropdown__link--danger"
+                                            id="deleteCandidates"
+                                            >{% trans "Delete" %}</a
+                                        >
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="oh-btn-group ml-2">
+                        <button
+                            type="button"
+                            class="oh-btn oh-btn--info oh-btn--shadow"
+                            data-target="#addAttachments"
+                            data-toggle="oh-modal-toggle"
+                        >
+                            {% trans "Send Portal" %}
+                        </button>
+                    </div>
+                {% endif %}
+                <div class="oh-btn-group ml-2">
+                    <a
+                        href="{% url 'candidate-create' %}?onboarding=True"
+                        class="oh-btn oh-btn--secondary oh-btn--shadow"
+                        method="get"
+                    >
+                        <ion-icon name="add-outline" class="me-1"></ion-icon>
+                        {% trans "Create" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
 </section>
 {% if candidates %}
-<div class="d-flex flex-row-reverse oh-wrapper">
-  <span class="m-1"
-    onclick="$('[name=joining_set]').val('true'); $('[name=portal_sent]').val('');$('[name=joining_set]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer;margin-left: 15px;">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:yellow"></span>
-    {% trans "Joining Set" %}
-  </span>
-  <span class="m-1"
-    onclick="$('[name=joining_set]').val('false'); $('[name=portal_sent]').val(''); $('[name=joining_set]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer;margin-left: 15px;">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:burlywood"></span>
-    {% trans "Joining Not-Set" %}
-  </span>
-  <span class="m-1"
-    onclick="$('[name=portal_sent]').val('false');$('[name=joining_set]').val(''); $('[name=portal_sent]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer;margin-left: 15px;">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
-    {% trans "Portal Not-Sent" %}
-  </span>
-  <span class="m-1"
-    onclick="$('[name=portal_sent]').val('true');$('[name=joining_set]').val('');  $('[name=portal_sent]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer;margin-left: 15px;">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
-    {% trans "Portal Sent" %}
-  </span>
-</div>
-<div id="messages" class="oh-alert-container">
-
-</div>
-<div class="oh-wrapper" id="candidates">
-
-  {% include 'onboarding/candidates.html' %}
-  {% else %}
-  <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
-    <div style="" class="">
-      <img style="width: 190px;height: 190px; margin:0 auto;" src="{% static 'images/ui/candidate.png' %}"
-        class="oh-404__image d-block mb-4" alt="Page not found. 404." />
-      <h5 class="oh-404__subtitle">{% trans "At present, There are no Candidates onboarding." %}</h5>
+    <div class="d-flex flex-row-reverse oh-wrapper">
+        <span
+            class="m-1"
+            onclick="$('[name=joining_set]').val('true'); $('[name=portal_sent]').val('');$('[name=joining_set]').first().change(); $('.filterButton').click()"
+            style="cursor: pointer; margin-left: 15px"
+        >
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: yellow"
+            ></span>
+            {% trans "Joining Set" %}
+        </span>
+        <span
+            class="m-1"
+            onclick="$('[name=joining_set]').val('false'); $('[name=portal_sent]').val(''); $('[name=joining_set]').first().change(); $('.filterButton').click()"
+            style="cursor: pointer; margin-left: 15px"
+        >
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: burlywood"
+            ></span>
+            {% trans "Joining Not-Set" %}
+        </span>
+        <span
+            class="m-1"
+            onclick="$('[name=portal_sent]').val('false');$('[name=joining_set]').val(''); $('[name=portal_sent]').first().change(); $('.filterButton').click()"
+            style="cursor: pointer; margin-left: 15px"
+        >
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: rgba(128, 128, 128, 0.482)"
+            ></span>
+            {% trans "Portal Not-Sent" %}
+        </span>
+        <span
+            class="m-1"
+            onclick="$('[name=portal_sent]').val('true');$('[name=joining_set]').val('');  $('[name=portal_sent]').first().change(); $('.filterButton').click()"
+            style="cursor: pointer; margin-left: 15px"
+        >
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: yellowgreen"
+            ></span>
+            {% trans "Portal Sent" %}
+        </span>
     </div>
-  </div>
-  {% endif %}
-</div>
-<div class="oh-modal" id="addAttachments" role="dialog" aria-labelledby="addAttachments" aria-hidden="true">
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <span class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Attachments" %} <span
-          style="color: #80808080;font-size: 14px;">({% trans "Optional" %})</span></span>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
+    <div id="messages" class="oh-alert-container"></div>
+    <div class="oh-wrapper" id="candidates">
+        {% include 'onboarding/candidates.html' %}
     </div>
-    <form hx-post="{% url 'email-send' %}"
-    hx-target="#addAttachmentsBody"
-    hx-encoding="multipart/form-data">
-      <div class="oh-modal__dialog-body" id="addAttachmentsBody">
-        <section>
-          <div id="keyResultsContainer">
-            <div class="my-3" id="keyResultCard">
-              <div class="oh-card oh-card--no-shadow oh-card__body">
-
-                <div class="oh-input__group">
-                  <select name="ids" id="hired_candidates" multiple class="w-100" hidden>
-                    {% for candidate in hired_candidates %}
-                    <option value="{{candidate.id}}">{{candidate.name}}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="oh-input__group">
-                  <label class="oh-input__label mt-0" for="keyTitle">{% trans "Template as Attachments" %}</label>
-                  <select name="template_attachment_ids" id="template_attachment_ids" multiple
-                    class="oh-select oh-select-2 w-100">
-                    {% for template in mail_templates %}
-                    <option value="{{template.id}}">{{template.title}}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="oh-input__group">
-                  <label class="oh-input__label" for="keyDesc">{% trans "Other Attachments" %}</label>
-                  <input type="file" multiple name="other_attachments" id="other_attachments">
-                </div>
-              </div>
+{% else %}
+    <div
+        style="
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        "
+        class=""
+    >
+        <div style="" class="">
+            <img
+                style="width: 190px; height: 190px; margin: 0 auto"
+                src="{% static 'images/ui/candidate.png' %}"
+                class="oh-404__image d-block mb-4"
+                alt="Page not found. 404."
+            />
+            <h5 class="oh-404__subtitle">
+                {% trans "At present, There are no Candidates onboarding." %}
+            </h5>
+        </div>
+    </div>
+{% endif %}
+<div
+    class="oh-modal"
+    id="addAttachments"
+    role="dialog"
+    aria-labelledby="addAttachments"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="addEmployeeModalLabel"
+                >{% trans "Attachments" %}
+                <span style="color: #80808080; font-size: 14px"
+                    >({% trans "Optional" %})</span
+                ></span
+            >
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <form
+            hx-post="{% url 'email-send' %}"
+            hx-target="#addAttachmentsBody"
+            hx-encoding="multipart/form-data"
+        >
+            <div class="oh-modal__dialog-body" id="addAttachmentsBody">
+                <section>
+                    <div id="keyResultsContainer">
+                        <div class="my-3" id="keyResultCard">
+                            <div
+                                class="oh-card oh-card--no-shadow oh-card__body"
+                            >
+                                <div class="oh-input__group">
+                                    <select
+                                        name="ids"
+                                        id="hired_candidates"
+                                        multiple
+                                        class="w-100"
+                                        hidden
+                                    >
+                                        {% for candidate in hired_candidates %}
+                                        <option value="{{candidate.id}}">
+                                            {{candidate.name}}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="oh-input__group">
+                                    <label
+                                        class="oh-input__label mt-0"
+                                        for="keyTitle"
+                                        >{% trans "Template as Attachments"
+                                        %}</label
+                                    >
+                                    <select
+                                        name="template_attachment_ids"
+                                        id="template_attachment_ids"
+                                        multiple
+                                        class="oh-select oh-select-2 w-100"
+                                    >
+                                        {% for template in mail_templates %}
+                                        <option value="{{template.id}}">
+                                            {{template.title}}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="oh-input__group">
+                                    <label class="oh-input__label" for="keyDesc"
+                                        >{% trans "Other Attachments" %}</label
+                                    >
+                                    <input
+                                        type="file"
+                                        multiple
+                                        name="other_attachments"
+                                        id="other_attachments"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
-          </div>
-        </section>
-      </div>
-      <div class="oh-modal__dialog-footer">
-        <button onclick="$('.oh-modal#addAttachments').removeClass('oh-modal--show');$(`#messages`).html(
-          $(`
-          <div class='oh-alert oh-alert--animated oh-alert--info'>
-            Processing...
-          </div>
-          `)
-        )"
-          class="oh-btn oh-btn--secondary oh-btn--shadow" id="trigger-onboarding" title="Send portal link / Trigger Onboarding">
-          {% trans "Send Portal Link" %}
-        </button>
-      </div>
-    </form>
-  </div>
+            <div class="oh-modal__dialog-footer">
+                <button
+                    onclick="$('.oh-modal#addAttachments').removeClass('oh-modal--show');$(`#messages`).html(
+                                $(`
+                                <div class='oh-alert oh-alert--animated oh-alert--info'>
+                                    Processing...
+                                </div>
+                                `)
+                            )"
+                    class="oh-btn oh-btn--secondary oh-btn--shadow"
+                    id="trigger-onboarding"
+                    title="Send portal link / Trigger Onboarding"
+                >
+                    {% trans "Send Portal Link" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div
+  class="oh-modal"
+  id="candidateExport"
+  role="dialog"
+  aria-labelledby="candidateExport"
+  aria-hidden="true"
+ >
+  <div class="oh-modal__dialog" id="candidateExportModalBody"></div>
 </div>
 <script>
-  $("#selectAll").click("click", function () {
-    checkRow(this)
-    var checkedIds = $("#selectedInstances").attr("data-ids");
-    $("#hired_candidates[name=ids]").val(checkedIds);
-    $("select[name=ids]").change()
-  });
 
-  $("#delete-link").on("click", function (event) {
-    event.preventDefault(); // prevent the default behavior of the link
+    var noRowMessages = {
+        ar: "لم يتم تحديد أي صفوف.",
+        de: "Es wurden keine Zeilen ausgewählt.",
+        es: "No se han seleccionado filas.",
+        en: "No rows have been selected.",
+        fr: "Aucune ligne n'a été sélectionnée.",
+    };
 
-    const link = $(this);
-    const confirmation = confirm("{% trans 'Are you sure you want to delete?' %}");
+    var deleteMessages = {
+        ar: "هل ترغب حقًا في حذف جميع الموظفين المحددين؟",
+        de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter löschen?",
+        es: "¿Realmente quieres eliminar a todos los empleados seleccionados?",
+        en: "Do you really want to delete all the selected employees?",
+        fr: "Voulez-vous vraiment supprimer tous les employés sélectionnés ?",
+    };
 
-    if (confirmation) {
-      window.location.href = link.attr("href"); // execute the href if confirmed
-    }
-  });
+    $("#selectAll").click("click", function () {
+        checkRow(this);
+        var checkedIds = $("#selectedInstances").attr("data-ids");
+        $("#hired_candidates[name=ids]").val(checkedIds);
+        $("select[name=ids]").change();
+    });
+
+    $("#delete-link").on("click", function (event) {
+        event.preventDefault(); // prevent the default behavior of the link
+
+        const link = $(this);
+        const confirmation = confirm(
+            "{% trans 'Are you sure you want to delete?' %}"
+        );
+
+        if (confirmation) {
+            window.location.href = link.attr("href"); // execute the href if confirmed
+        }
+    });
+
+    $("#candidateOfferLetterUpdate").on("change", function() {
+        ids = $("#selectedInstances").data("ids");
+        var textMessage = noRowMessages[languageCode] || ((languageCode = "en"), noRowMessages[languageCode]);
+
+        if (!ids.length) {
+            Swal.fire({
+                text: textMessage,
+                icon: "warning",
+                confirmButtonText: "Close",
+              })
+        }else {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'offer-letter-bulk-status-update' %}",
+                data: {
+                    ids: JSON.stringify(ids),
+                    status: $(this).val(),
+                },
+                success: function (response) {
+                    window.location.reload()
+                },
+                error: function () {
+                console.error("An error occured...");
+                },
+            });
+        }
+    })
+
+    $("#deleteCandidates").on("click", function() {
+        ids = $("#selectedInstances").data("ids");
+        var textMessage = noRowMessages[languageCode] || ((languageCode = "en"), noRowMessages[languageCode]);
+        var confirmMessage = deleteMessages[languageCode] || ((languageCode = "en"), deleteMessages[languageCode]);
+
+        if (!ids.length) {
+            Swal.fire({
+                text: textMessage,
+                icon: "warning",
+                confirmButtonText: "Close",
+              })
+        }else {
+            Swal.fire({
+                text: confirmMessage,
+                icon: "info",
+                showCancelButton: true,
+                confirmButtonColor: "#008000",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Confirm",
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "GET",
+                        url: "{% url 'onboarding-candidate-bulk-delete' %}",
+                        data: {
+                            ids: JSON.stringify(ids),
+                        },
+                        success: function (response) {
+                            window.location.reload()
+                        },
+                        error: function () {
+                            console.error("An error occured...");
+                        },
+                    });
+                }
+            })
+        }
+    })
 </script>
 {% endblock content %}

@@ -1779,3 +1779,42 @@ def candidate_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+
+
+def offer_letter_bulk_status_update(request):
+    """
+    This function is used to bulk update the offerletter status
+    """
+    ids = json.loads(request.GET.get("ids", []))
+    status = request.GET.get("status")
+    for id in ids:
+        try:
+            candidate = Candidate.objects.filter(id=int(id)).first()
+            if candidate.offer_letter_status != status:
+                candidate.offer_letter_status = status
+                candidate.save()
+                messages.success(request, "offer letter status updated successfully")
+            else:
+                messages.error(request, "Status already in {} status".format(status))
+        except:
+            messages.error(request, "Candidate doesnot exist")
+
+    return JsonResponse("success", safe=False)
+
+
+def onboarding_candidate_bulk_delete(request):
+    """
+    This function is used to bulk delete onboarding candidates
+    """
+
+    ids = json.loads(request.GET.get("ids", []))
+    status = request.GET.get("status")
+    for id in ids:
+        try:
+            candidate = Candidate.objects.filter(id=int(id)).first()
+            candidate.delete()
+            messages.success(request, "candidate deleted successfully")
+        except:
+            messages.error(request, "Candidate doesnot exist")
+
+    return JsonResponse("success", safe=False)
