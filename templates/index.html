@@ -378,7 +378,7 @@
 
       }
     }
-    {% if "leave"|app_installed %}
+    {% if "leave"|app_installed and "payroll"|app_installed %}
       function getAssignedLeave(employeeElement) {
         var employeeId=employeeElement.val()
         $.ajax({

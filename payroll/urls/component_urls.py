@@ -114,7 +114,7 @@ urlpatterns = [
         name="asset-fine",
     ),
     path(
-        "view-reimbursement",
+        "view-reimbursement/",
         component_views.view_reimbursement,
         name="view-reimbursement",
     ),

@@ -319,7 +319,7 @@ urlpatterns = [
         "view-clashes/<int:leave_request_id>/", views.view_clashes, name="view-clashes"
     ),
     path(
-        "compensatory-leave-settings-view",
+        "compensatory-leave-settings-view/",
         views.compensatory_leave_settings_view,
         name="compensatory-leave-settings-view",
     ),
@@ -329,7 +329,7 @@ urlpatterns = [
         name="enable-compensatory-leave",
     ),
     path(
-        "employee-past-leave-restriction",
+        "employee-past-leave-restriction/",
         views.employee_past_leave_restriction,
         name="employee-past-leave-restriction",
     ),

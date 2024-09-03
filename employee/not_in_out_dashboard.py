@@ -16,7 +16,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 from base.backends import ConfiguredEmailBackend
-from base.methods import generate_pdf
+from base.methods import export_data, generate_pdf
 from base.models import HorillaMailTemplate
 from employee.filters import EmployeeFilter
 from employee.models import Employee
@@ -92,17 +92,6 @@ def send_mail(request, emp_id=None):
     )
 
 
-from attendance.filters import AttendanceFilters
-from attendance.forms import AttendanceExportForm
-from attendance.models import Attendance
-from base.methods import export_data
-from leave.filters import LeaveRequestFilter
-from leave.forms import LeaveRequestExportForm
-from leave.models import LeaveRequest
-from payroll.filters import PayslipFilter
-from payroll.forms.component_forms import PayslipExportColumnForm
-
-
 @login_required
 @manager_can_enter("employee.change_employee")
 def employee_data_export(request, emp_id=None):
@@ -124,6 +113,9 @@ def employee_data_export(request, emp_id=None):
 
         # IF LEAVE IS INSTALLED
         if apps.is_installed("leave"):
+            from leave.filters import LeaveRequestFilter
+            from leave.forms import LeaveRequestExportForm
+
             excel_column = LeaveRequestExportForm()
             export_filter = LeaveRequestFilter()
             context.update(
@@ -135,6 +127,10 @@ def employee_data_export(request, emp_id=None):
 
         # IF ATTENDANCE IS INSTALLED
         if apps.is_installed("attendance"):
+            from attendance.filters import AttendanceFilters
+            from attendance.forms import AttendanceExportForm
+            from attendance.models import Attendance
+
             excel_column = AttendanceExportForm()
             export_filter = AttendanceFilters()
             context.update(
@@ -146,6 +142,9 @@ def employee_data_export(request, emp_id=None):
 
         # IF PAYROLL IS INSTALLED
         if apps.is_installed("payroll"):
+            from payroll.filters import PayslipFilter
+            from payroll.forms.component_forms import PayslipExportColumnForm
+
             context.update(
                 {
                     "payroll_export_column": PayslipExportColumnForm(),

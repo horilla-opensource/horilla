@@ -532,7 +532,7 @@ urlpatterns = [
         name="check-vaccancy",
     ),
     path(
-        "settings/skills-view/",
+        "skills-view/",
         views.skills_view,
         name="skills-view",
     ),
@@ -572,7 +572,7 @@ urlpatterns = [
         name="matching-resume-completion",
     ),
     path(
-        "settings/candidate-reject-reasons/",
+        "candidate-reject-reasons/",
         views.candidate_reject_reasons,
         name="candidate-reject-reasons",
     ),
@@ -582,7 +582,7 @@ urlpatterns = [
         name="hired-candidate-chart",
     ),
     path(
-        "self-tracking-feature",
+        "self-tracking-feature/",
         views.self_tracking_feature,
         name="self-tracking-feature",
     ),

@@ -168,7 +168,7 @@ urlpatterns = [
     ),
     # ===========================Auto payslip generate================================
     path(
-        "auto-payslip-settings-view",
+        "auto-payslip-settings-view/",
         views.auto_payslip_settings_view,
         name="auto-payslip-settings-view",
     ),

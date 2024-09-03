@@ -135,6 +135,17 @@ sidebar_urls = [
     "objective-detailed-view",
     "mail-automations",
     "faq-view",
+    "auto-payslip-settings-view",
+    "bonus-point-setting",
+    "employee-past-leave-restriction",
+    "track-late-come-early-out",
+    "enable-biometric-attendance",
+    "allowed-ips",
+    "self-tracking-feature",
+    "candidate-reject-reasons",
+    "skills-view",
+    "employee-bonus-point",
+    "mail-automations",
 ]
 remove_urls = [
     "feedback-detailed-view",
