@@ -1,12 +1,5 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-    <h2 class="oh-modal__dialog-title" id="createTitle">
-        {% if form.instance.id %}
-		 	{% trans "Update Encashment" %}
-		{% else %}
-			{% trans "Create Encashment" %}
-		{% endif %}
-    </h2>
     <button type="button" class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
     </button>
