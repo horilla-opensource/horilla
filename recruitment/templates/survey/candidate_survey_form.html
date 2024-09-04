@@ -10,12 +10,16 @@
         {% endfor %}
     </div>
 {% endif %}
-<div class="oh-wrapper p-5">
-    <form action="" method="post" enctype="multipart/form-data" class="p-5">
+<div class="oh-survey_page">
+    <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <h1 class="oh-main__titlebar-title fw-bold">
-            {{candidate.name}}'s {% trans "Survey" %}
-          </h1>
+        <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+            <div class="oh-main__titlebar oh-main__titlebar--left">
+                <h1 class="oh-main__titlebar-title fw-bold">
+                    {{candidate.name}}'s {% trans "Survey" %}
+                </h1>
+            </div>
+        </section>
         {{form}}
     </form>
 </div>
