@@ -7,6 +7,7 @@ registered on biometric devices.
 """
 
 import json
+import logging
 from datetime import datetime
 from threading import Event, Thread
 from urllib.parse import parse_qs, unquote
@@ -46,6 +47,8 @@ from .forms import (
     EmployeeBiometricAddForm,
 )
 from .models import BiometricDevices, BiometricEmployees, COSECAttendanceArguments
+
+logger = logging.getLogger(__name__)
 
 
 def str_time_seconds(time):
@@ -176,7 +179,9 @@ class ZKBioAttendance(Thread):
                                                 )
                                             )
                                         except Exception as error:
-                                            print(f"Got an error in clock_in {error}")
+                                            logger.error(
+                                                f"Got an error in clock_in {error}"
+                                            )
                                             continue
                                     else:
                                         try:
@@ -189,7 +194,9 @@ class ZKBioAttendance(Thread):
                                                 )
                                             )
                                         except Exception as error:
-                                            print(f"Got an error in clock_out {error}")
+                                            logger.error(
+                                                f"Got an error in clock_out {error}"
+                                            )
                                             continue
                             else:
                                 continue
@@ -229,24 +236,13 @@ class COSECBioAttendanceThread(Thread):
                 device.cosec_password,
                 timeout=10,
             )
-
             while not self._stop_event.is_set():
-                print(
-                    "_____________________________________________________________________________"
-                )
-                print(BIO_DEVICE_THREADS)
-                print(
-                    "_____________________________________________________________________________"
-                )
                 attendances = cosec.get_attendance_events(
-                    last_fetch_roll_ovr_count, last_fetch_seq_number
+                    last_fetch_roll_ovr_count, int(last_fetch_seq_number) + 1
                 )
-
                 if not isinstance(attendances, list):
-                    break
-
-                if device_args and attendances:
-                    attendances.pop(0)
+                    self._stop_event.wait(5)
+                    continue
 
                 for attendance in attendances:
                     ref_user_id = attendance["detail-1"]
@@ -272,12 +268,12 @@ class COSECBioAttendanceThread(Thread):
                         datetime=django_timezone.make_aware(attendance_datetime),
                     )
                     try:
-                        if punch_code in ["1", "3", "5", "7", "9"]:
+                        if punch_code in ["1", "3", "5", "7", "9", "0"]:
                             clock_in(request_data)
-                        elif punch_code in ["2", "4", "6", "8", "10", "0"]:
+                        elif punch_code in ["2", "4", "6", "8", "10"]:
                             clock_out(request_data)
                     except Exception as error:
-                        print(f"Error processing attendance: {error}")
+                        logger.error(f"Error processing attendance: {error}")
 
                 if attendances:
                     last_attendance = attendances[-1]
@@ -291,10 +287,13 @@ class COSECBioAttendanceThread(Thread):
                         },
                     )
                 # Sleep to prevent overwhelming the device with requests
-                self._stop_event.wait(1)
+                self._stop_event.wait(2)
 
         except Exception as error:
-            print(f"Error in COSECBioAttendanceThread: {error}")
+            device = BiometricDevices.objects.get(id=self.device_id)
+            device.is_live = False
+            device.save()
+            logger.error(f"Error in COSECBioAttendanceThread: {error}")
 
     def stop(self):
         """Set the stop event to signal the thread to stop gracefully."""
@@ -514,7 +513,7 @@ def biometric_device_schedule(request, device_id):
                     scheduler.start()
                     return HttpResponse("<script>window.location.reload()</script>")
                 except Exception as error:
-                    print(f"An error comes in biometric_device_schedule {error}")
+                    logger.error(f"An error comes in biometric_device_schedule {error}")
                     script = """
                     <script>
                         Swal.fire({
@@ -551,11 +550,6 @@ def biometric_device_schedule(request, device_id):
                 device.scheduler_duration = duration
                 device.save()
                 scheduler = BackgroundScheduler()
-                print(
-                    "____________________________1231321321321231__________________________________"
-                )
-                print(BIO_DEVICE_THREADS.get(device.id))
-                print("______________________________________________________________")
                 existing_thread = BIO_DEVICE_THREADS.get(device.id)
                 if existing_thread:
                     existing_thread.stop()
@@ -781,7 +775,7 @@ def biometric_device_test(request, device_id):
                     </script>
                 """
         except Exception as error:
-            print(f"An error comes in biometric_device_test {error}")
+            logger.error(f"An error comes in biometric_device_test {error}")
             script = """
            <script>
                 Swal.fire({
@@ -1144,7 +1138,7 @@ def biometric_device_employees(request, device_id, **kwargs):
                 }
                 return render(request, "biometric/view_cosec_employees.html", context)
         except Exception as error:
-            print(f"An error occurred: {error}")
+            logger.error(f"An error occurred: {error}")
             messages.info(
                 request,
                 _(
@@ -1492,7 +1486,7 @@ def bio_users_bulk_delete(request):
                 ),
             )
     except Exception as error:
-        print(f"An error occurred: {error}")
+        logger.error(f"An error occurred: {error}")
     return JsonResponse({"messages": "Success"})
 
 
@@ -1534,7 +1528,7 @@ def cosec_users_bulk_delete(request):
             )
 
     except Exception as error:
-        print(f"An error occurred: {error}")
+        logger.error(f"An error occurred: {error}")
     return JsonResponse({"messages": "Success"})
 
 
@@ -1668,7 +1662,7 @@ def add_biometric_user(request, device_id):
         except Exception as error:
             if device.machine_type == "zk":
                 conn.disable_device()
-                print(f"An error occurred: {str(error)}")
+                logger.error(f"An error occurred: {str(error)}")
         return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
@@ -1752,7 +1746,7 @@ def biometric_device_live(request):
         except TimeoutError as error:
             device.is_live = False
             device.save()
-            print(f"An error comes in biometric_device_live {error}")
+            logger.error(f"An error comes in biometric_device_live {error}")
             script = """
            <script>
                 Swal.fire({
@@ -1851,14 +1845,14 @@ def zk_biometric_device_attendance(device_id):
                         try:
                             clock_in(request_data)
                         except Exception as error:
-                            print(f"Got an error : {error}")
+                            logger.error(f"Got an error : {error}")
                     else:
                         try:
                             clock_out(request_data)
                         except Exception as error:
-                            print(f"Got an error : {error}")
+                            logger.error(f"Got an error : {error}")
         except Exception as error:
-            print(f"Process terminate : {error}")
+            logger.error(f"Process terminate : {error}")
         finally:
             if conn:
                 conn.disconnect()
@@ -1893,13 +1887,13 @@ def anviz_biometric_device_attendance(device_id):
                     try:
                         clock_in(request_data)
                     except Exception as error:
-                        print(f"Error in clock in {error}")
+                        logger.error(f"Error in clock in {error}")
                 else:
                     try:
                         # // 1 , 129 check type check out and door close
                         clock_out(request_data)
                     except Exception as error:
-                        print(f"Error in clock out {error}")
+                        logger.error(f"Error in clock out {error}")
 
 
 def cosec_biometric_device_attendance(device_id):
@@ -1967,7 +1961,7 @@ def cosec_biometric_device_attendance(device_id):
             else:
                 pass
         except Exception as error:
-            print(f"Error processing attendance: {error}")
+            logger.error(f"Error processing attendance: {error}")
 
     if attendances:
         last_attendance = attendances[-1]
