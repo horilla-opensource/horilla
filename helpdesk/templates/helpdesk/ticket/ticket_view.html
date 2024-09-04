@@ -133,7 +133,7 @@
 				<li class="oh-tabs__tab" data-target="#tab_2">
 					{% trans "Suggested Tickets" %}
 				</li>
-				{% if request.user|is_reportingmanager %}
+				{% if request.user|is_reportingmanager or perms.helpdesk.view_ticket %}
 					<li class="oh-tabs__tab" data-target="#tab_3">
 						{% trans "All Tickets" %}
 					</li>

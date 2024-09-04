@@ -103,15 +103,28 @@
                                   {% for attachment in item.comment.comment_attachment.all %}
                                   <div class="oh-helpdesk_attached-items">
                                     <div class="oh-helpdesk_attached--content">
-                                      <a href="{{attachment.file.url}}" target="_blank" >
-                                        <div class="oh-helpdesk__icon">
-                                          <span class="oh-file-icon {% if attachment.format == 'file' %} oh-file-icon--pdf
-                                          {% elif attachment.format == 'image' %} oh-file-icon--image
-                                          {% elif attachment.format == 'audio' %} oh-file-icon--audio
-                                          {% endif %}"
-                                          ></span>
-                                        </div>
-                                      </a>
+                                      {% with extension=attachment.file.name|lower|slice:"-4:" %}
+                                        <li class="oh-helpdesk__document">
+                                          <a href="{{ attachment.file.url }}" target="_blank">
+                                            <div class="oh-helpdesk__icon">
+                                              <span class="oh-file-icon
+                                                {% if extension == '.pdf' %} oh-file-icon--pdf
+                                                {% elif extension in '.jpg .jpeg .png .gif .svg' %} oh-file-icon--image
+                                                {% elif extension in '.mp3 .wav .ogg' %} oh-file-icon--audio
+                                                {% elif extension in '.doc .docx' %} oh-file-icon--word
+                                                {% elif extension in '.xls .xlsx' %} oh-file-icon--excel
+                                                {% elif extension in '.ppt .pptx' %} oh-file-icon--powerpoint
+                                                {% elif extension in '.html' %} oh-file-icon--html
+                                                {% else %} oh-file-icon--default
+                                                {% endif %}">
+                                              </span>
+                                            </div>
+                                          </a>
+                                          <a href="{{ attachment.file.url }}" target="_blank">
+                                            <span class="oh-helpdesk__filename">{{ attachment }}</span>
+                                          </a>
+                                        </li>
+                                      {% endwith %}
                                     </div>
                                     <a href="{{attachment.file.url}}" target="_blank" >
                                       <span class="oh-helpdesk__filename" >{{attachment}}</span>
@@ -169,22 +182,28 @@
                             </div>
                               {% if item.comment.comment_attachment.all %}
                                 {% for attachment in item.comment.comment_attachment.all %}
-                                  <li class="oh-helpdesk__document">
-                                    <a href="{{attachment.file.url}}" target="_blank" >
-                                      <div class="oh-helpdesk__icon">
-                                        <span class="oh-file-icon {% if attachment.format == 'file' %} oh-file-icon--pdf
-                                        {% elif attachment.format == 'image' %} oh-file-icon--image
-                                        {% elif attachment.format == 'audio' %} oh-file-icon--audio
-                                        {% endif %}"
-                                        ></span>
-                                      </div>
-                                    </a>
-                                    <a href="{{attachment.file.url}}" target="_blank" >
-                                      <span class="oh-helpdesk__filename"
-                                        >{{attachment}}</span
-                                      >
-                                    </a>
-                                  </li>
+                                    {% with extension=attachment.file.name|lower|slice:"-4:" %}
+                                        <li class="oh-helpdesk__document">
+                                          <a href="{{ attachment.file.url }}" target="_blank">
+                                            <div class="oh-helpdesk__icon">
+                                              <span class="oh-file-icon
+                                                {% if extension == '.pdf' %} oh-file-icon--pdf
+                                                {% elif extension in '.jpg .jpeg .png .gif .svg' %} oh-file-icon--image
+                                                {% elif extension in '.mp3 .wav .ogg' %} oh-file-icon--audio
+                                                {% elif extension in '.doc .docx' %} oh-file-icon--word
+                                                {% elif extension in '.xls .xlsx' %} oh-file-icon--excel
+                                                {% elif extension in '.ppt .pptx' %} oh-file-icon--powerpoint
+                                                {% elif extension in '.html' %} oh-file-icon--html
+                                                {% else %} oh-file-icon--default
+                                                {% endif %}">
+                                              </span>
+                                            </div>
+                                          </a>
+                                          <a href="{{ attachment.file.url }}" target="_blank">
+                                            <span class="oh-helpdesk__filename">{{ attachment }}</span>
+                                          </a>
+                                        </li>
+                                      {% endwith %}
                                 {% endfor %}
                               {% endif %}
                           </div>
@@ -391,25 +410,30 @@
                     <ul class="oh-helpdesk__documents">
                       {% if attachments %}
                         {% for attachment in attachments %}
+                          {% with extension=attachment.file.name|lower|slice:"-4:" %}
                           <li class="oh-helpdesk__document">
-                            <a href="{{attachment.file.url}}" target="_blank" >
+                            <a href="{{ attachment.file.url }}" target="_blank">
                               <div class="oh-helpdesk__icon">
-                                <span class="oh-file-icon {% if attachment.format == 'file' %} oh-file-icon--pdf
-                                {% elif attachment.format == 'image' %} oh-file-icon--image
-                                {% elif attachment.format == 'audio' %} oh-file-icon--audio
-                                {% endif %}"
-                                ></span>
+                                <span class="oh-file-icon
+                                  {% if extension == '.pdf' %} oh-file-icon--pdf
+                                  {% elif extension in '.jpg .jpeg .png .gif .svg' %} oh-file-icon--image
+                                  {% elif extension in '.mp3 .wav .ogg' %} oh-file-icon--audio
+                                  {% elif extension in '.doc .docx' %} oh-file-icon--word
+                                  {% elif extension in '.xls .xlsx' %} oh-file-icon--excel
+                                  {% elif extension in '.ppt .pptx' %} oh-file-icon--powerpoint
+                                  {% elif extension in '.html' %} oh-file-icon--html
+                                  {% else %} oh-file-icon--default
+                                  {% endif %}">
+                                </span>
                               </div>
                             </a>
-                            <a href="{{attachment.file.url}}" target="_blank" >
-                              <span class="oh-helpdesk__filename"
-                                >{{attachment}}</span
-                              >
+                            <a href="{{ attachment.file.url }}" target="_blank">
+                              <span class="oh-helpdesk__filename">{{ attachment }}</span>
                             </a>
                           </li>
+                          {% endwith %}
                         {% endfor %}
                       {% endif %}
-
                     </ul>
                   </div>
                 </div>
