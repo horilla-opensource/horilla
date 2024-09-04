@@ -32,7 +32,7 @@
                     {% endif %}
                     <table>
                         <tr>
-                            {% if device.machine_type == "zk" %}
+                            {% if device.machine_type == "zk" or  device.machine_type == "cosec" %}
                                 <td>
                                     <span class="oh-kanban-card__subtitle d-block">{% trans "Activate live capture mode" %}</span>
                                 </td>

@@ -27,3 +27,5 @@ HORILLA_TIME_FORMATS = {
     "hh:mm A": "%I:%M %p",  # 12-hour format
     "HH:mm": "%H:%M",  # 24-hour format
 }
+
+BIO_DEVICE_THREADS = {}

@@ -27,7 +27,6 @@ from attendance.methods.utils import Request
 from attendance.views.clock_in_out import clock_in, clock_out
 from base.methods import get_key_instances, get_pagination
 from employee.models import Employee, EmployeeWorkInformation
-from horilla import settings
 from horilla.decorators import (
     hx_request_required,
     install_required,
@@ -35,6 +34,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.filters import HorillaPaginator
+from horilla.horilla_settings import BIO_DEVICE_THREADS
 
 from .cosec import COSECBiometric
 from .filters import BiometricDeviceFilter
@@ -198,6 +198,107 @@ class ZKBioAttendance(Thread):
 
     def stop(self):
         self.conn.end_live_capture = True
+
+
+class COSECBioAttendanceThread(Thread):
+    def __init__(self, device_id):
+        super().__init__()
+        self.device_id = device_id
+        self._stop_event = Event()
+
+    def run(self):
+        try:
+            device = BiometricDevices.objects.get(id=self.device_id)
+            if not device.is_live:
+                return
+
+            device_args = COSECAttendanceArguments.objects.filter(
+                device_id=device
+            ).first()
+            last_fetch_roll_ovr_count = (
+                int(device_args.last_fetch_roll_ovr_count) if device_args else 0
+            )
+            last_fetch_seq_number = (
+                int(device_args.last_fetch_seq_number) if device_args else 1
+            )
+
+            cosec = COSECBiometric(
+                device.machine_ip,
+                device.port,
+                device.cosec_username,
+                device.cosec_password,
+                timeout=10,
+            )
+
+            while not self._stop_event.is_set():
+                print(
+                    "_____________________________________________________________________________"
+                )
+                print(BIO_DEVICE_THREADS)
+                print(
+                    "_____________________________________________________________________________"
+                )
+                attendances = cosec.get_attendance_events(
+                    last_fetch_roll_ovr_count, last_fetch_seq_number
+                )
+
+                if not isinstance(attendances, list):
+                    break
+
+                if device_args and attendances:
+                    attendances.pop(0)
+
+                for attendance in attendances:
+                    ref_user_id = attendance["detail-1"]
+                    employee = BiometricEmployees.objects.filter(
+                        ref_user_id=ref_user_id
+                    ).first()
+                    if not employee:
+                        continue
+
+                    date_str = attendance["date"]
+                    time_str = attendance["time"]
+                    attendance_date = datetime.strptime(date_str, "%d/%m/%Y").date()
+                    attendance_time = datetime.strptime(time_str, "%H:%M:%S").time()
+                    attendance_datetime = datetime.combine(
+                        attendance_date, attendance_time
+                    )
+                    punch_code = attendance["detail-2"]
+
+                    request_data = Request(
+                        user=employee.employee_id.employee_user_id,
+                        date=attendance_date,
+                        time=attendance_time,
+                        datetime=django_timezone.make_aware(attendance_datetime),
+                    )
+                    try:
+                        if punch_code in ["1", "3", "5", "7", "9"]:
+                            clock_in(request_data)
+                        elif punch_code in ["2", "4", "6", "8", "10", "0"]:
+                            clock_out(request_data)
+                    except Exception as error:
+                        print(f"Error processing attendance: {error}")
+
+                if attendances:
+                    last_attendance = attendances[-1]
+                    last_fetch_seq_number = last_attendance["seq-No"]
+                    last_fetch_roll_ovr_count = last_attendance["roll-over-count"]
+                    COSECAttendanceArguments.objects.update_or_create(
+                        device_id=device,
+                        defaults={
+                            "last_fetch_roll_ovr_count": last_fetch_roll_ovr_count,
+                            "last_fetch_seq_number": last_fetch_seq_number,
+                        },
+                    )
+                # Sleep to prevent overwhelming the device with requests
+                self._stop_event.wait(1)
+
+        except Exception as error:
+            print(f"Error in COSECBioAttendanceThread: {error}")
+
+    def stop(self):
+        """Set the stop event to signal the thread to stop gracefully."""
+        self._stop_event.set()
 
 
 class AnvizBiometricDeviceManager:
@@ -446,9 +547,19 @@ def biometric_device_schedule(request, device_id):
             else:
                 duration = request.POST.get("scheduler_duration")
                 device.is_scheduler = True
+                device.is_live = False
                 device.scheduler_duration = duration
                 device.save()
                 scheduler = BackgroundScheduler()
+                print(
+                    "____________________________1231321321321231__________________________________"
+                )
+                print(BIO_DEVICE_THREADS.get(device.id))
+                print("______________________________________________________________")
+                existing_thread = BIO_DEVICE_THREADS.get(device.id)
+                if existing_thread:
+                    existing_thread.stop()
+                    del BIO_DEVICE_THREADS[device.id]
                 scheduler.add_job(
                     lambda: cosec_biometric_device_attendance(device.id),
                     "interval",
@@ -1586,23 +1697,45 @@ def biometric_device_live(request):
         machine_ip = device.machine_ip
         conn = None
         # create ZK instance
-        zk_device = ZK(
-            machine_ip,
-            port=port_no,
-            timeout=5,
-            password=0,
-            force_udp=False,
-            ommit_ping=False,
-        )
         try:
-            conn = zk_device.connect()
-            instance = ZKBioAttendance(machine_ip, port_no)
-            conn.test_voice(index=14)
-            if conn:
-                device.is_live = True
-                device.is_scheduler = False
-                device.save()
-                instance.start()
+            if device.machine_type == "zk":
+                zk_device = ZK(
+                    machine_ip,
+                    port=port_no,
+                    timeout=5,
+                    password=0,
+                    force_udp=False,
+                    ommit_ping=False,
+                )
+                conn = zk_device.connect()
+                instance = ZKBioAttendance(machine_ip, port_no)
+                conn.test_voice(index=14)
+                if conn:
+                    device.is_live = True
+                    device.is_scheduler = False
+                    device.save()
+                    instance.start()
+            elif device.machine_type == "cosec":
+                cosec = COSECBiometric(
+                    device.machine_ip,
+                    device.port,
+                    device.cosec_username,
+                    device.cosec_password,
+                    timeout=10,
+                )
+                response = cosec.basic_config()
+                if response.get("app"):
+                    thread = COSECBioAttendanceThread(device.id)
+                    thread.start()
+                    BIO_DEVICE_THREADS[device.id] = thread
+                    device.is_live = True
+                    device.is_scheduler = False
+                    device.save()
+                else:
+                    raise TimeoutError
+            else:
+                pass
+
             script = """<script>
                     Swal.fire({
                       text: "The live capture mode has been activated successfully.",
@@ -1641,6 +1774,12 @@ def biometric_device_live(request):
     else:
         device.is_live = False
         device.save()
+        if device.machine_type == "cosec":
+            existing_thread = BIO_DEVICE_THREADS.get(device.id)
+            if existing_thread:
+                existing_thread.stop()
+                del BIO_DEVICE_THREADS[device.id]
+
         script = """
            <script>
                 Swal.fire({
