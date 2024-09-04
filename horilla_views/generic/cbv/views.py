@@ -676,10 +676,6 @@ class HorillaCardView(ListView):
         context["card_status_class"] = self.card_status_class
         context["card_status_indications"] = self.card_status_indications
 
-        context["queryset"] = paginator_qry(
-            queryset, self.request.GET.get("page"), self.records_per_page
-        )
-
         if self.show_filter_tags:
             data_dict = parse_qs(self._saved_filters.urlencode())
             data_dict = get_key_instances(self.model, data_dict)
@@ -713,6 +709,9 @@ class HorillaCardView(ListView):
                 referrer=referrer, created_by=self.request.user
             )
         ).distinct()
+        context["queryset"] = paginator_qry(
+            queryset, self.request.GET.get("page"), self.records_per_page
+        )
         return context
 
 
@@ -769,7 +768,7 @@ class HorillaFormView(FormView):
             __new__ method
             """
             targets_to_reload = list(set(targets_to_reload))
-            # targets_to_reload.append("#reloadMessagesButton")
+            targets_to_reload.append("#reloadMessagesButton")
             script_id = get_short_uuid(4)
             script = (
                 f"<script id='scriptTarget{script_id}'>"
