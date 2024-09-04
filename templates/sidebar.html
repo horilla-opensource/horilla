@@ -229,7 +229,7 @@ function initializeSummernote(candId,searchWords,) {
           style="display: none"
           >
           <ul class="oh-sidebar__submenu-items">
-            {% if "leave"|app_installed and perms.Leave.view_leaverequest %}
+            <!-- {% if "leave"|app_installed and perms.Leave.view_leaverequest %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'multiple-approval-condition' %}"
@@ -237,7 +237,7 @@ function initializeSummernote(candId,searchWords,) {
                 >{% trans "Multiple Approvals " %}</a
               >
             </li>
-            {% endif %}
+            {% endif %} -->
             {% if perms.base.view_horillamailtemplate %}
             <li class="oh-sidebar__submenu-item">
               <a
@@ -258,7 +258,7 @@ function initializeSummernote(candId,searchWords,) {
               >
             </li>
             {% endif %}
-            {% if perms.base.add_holiday %}
+            <!-- {% if perms.base.add_holiday %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'holiday-view' %}"
@@ -266,8 +266,8 @@ function initializeSummernote(candId,searchWords,) {
                 >{% trans "Holidays" %}</a
               >
             </li>
-            {% endif %}
-            {% if perms.base.view_companyleave %}
+            {% endif %} -->
+            <!-- {% if perms.base.view_companyleave %}
             <li class="oh-sidebar__submenu-item">
               <a
               href="{% url 'company-leave-view' %}"
@@ -275,8 +275,8 @@ function initializeSummernote(candId,searchWords,) {
               >{% trans "Company Leaves" %}</a
               >
             </li>
-            {% endif %}
-            {% if "leave"|app_installed %}
+            {% endif %} -->
+            <!-- {% if "leave"|app_installed %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'restrict-view' %}"
@@ -284,7 +284,7 @@ function initializeSummernote(candId,searchWords,) {
                 >{% trans "Restrict Leaves" %}</a
               >
             </li>
-            {% endif %}
+            {% endif %} -->
           </ul>
         </div>
       </li>

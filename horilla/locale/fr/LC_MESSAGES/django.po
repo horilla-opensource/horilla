@@ -13,7 +13,7 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fr\n"  
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,44 +21,38 @@ msgstr ""
 
 #: asset/forms.py:51
 msgid "A powerful laptop for business use."
-msgstr "Un ordinateur portable puissant pour une utilisation professionnelle."
+msgstr "Un ordinateur portable puissant conçu pour un usage professionnel."
 
 #: asset/forms.py:131
 msgid "Computers."
-msgstr "Des ordinateurs."
+msgstr "Ordinateurs"
 
 #: asset/forms.py:136
 msgid "A category for all types of laptops."
-msgstr "Une catégorie pour tous les types d'ordinateurs portables."
+msgstr "Une catégorie regroupant tous les types d'ordinateurs portables."
 
 #: asset/forms.py:179
 msgid "Requesting a laptop for software development purposes."
-msgstr ""
-"Demande d'un ordinateur portable à des fins de développement de logiciels."
+msgstr "Demande d'un ordinateur portable pour le développement de logiciels."
 
 #: asset/forms.py:273
 msgid "on returns the laptop. However, it has suffered minor damage."
-msgstr ""
-"On ramène l'ordinateur portable. Cependant, il a subi des dommages mineurs."
+msgstr "Lors du retour de l'ordinateur portable, celui-ci présente des dommages mineurs."
 
 #: asset/forms.py:285
 msgid "Return date cannot be in the future."
-msgstr "La date de retour ne peut pas être futur."
+msgstr "La date de retour ne peut pas être ultérieure à la date du jour."
 
 #: asset/forms.py:316
-msgid ""
-"A batch of 50 laptops, consisting of Lenovo ThinkPad "
-"T480s                              and Dell XPS 13."
-msgstr ""
-"Un lot de 50 ordinateurs portables, composé de Lenovo ThinkPad T480 et de "
-"Dell XPS 13."
+msgid "A batch of 50 laptops, consisting of Lenovo ThinkPad T480s               and Dell XPS 13."
+msgstr "Un lot de 50 ordinateurs portables, composé de Lenovo ThinkPad T480s et de Dell XPS 13."
 
 #: asset/models.py:45
 #: asset/templates/request_allocation/asset_request_allocation_list.html:78
 #: asset/templates/request_allocation/asset_request_allocation_list.html:385
 #: asset/templates/request_allocation/group_by.html:33
 msgid "In use"
-msgstr "En usage"
+msgstr "En utilisation"
 
 #: asset/models.py:46
 msgid "Available"
@@ -66,23 +60,23 @@ msgstr "Disponible"
 
 #: asset/models.py:47
 msgid "Not-Available"
-msgstr "Pas Disponible"
+msgstr "Indisponible"
 
 #: asset/models.py:76
 msgid "An asset with this tracking ID already exists."
-msgstr "Un actif avec cet ID de suivi existe déjà."
+msgstr "Un actif portant déjà cet identifiant de suivi existe."
 
 #: asset/models.py:89
 msgid "Minor damage"
-msgstr "Mineurs Dommages"
+msgstr "Dégâts mineurs"
 
 #: asset/models.py:90
 msgid "Major damage"
-msgstr "Majeurs Dommages"
+msgstr "Dégâts majeurs"
 
 #: asset/models.py:91
 msgid "Healthy"
-msgstr "Bonne Santé"
+msgstr "En bon état"
 
 #: asset/models.py:117
 #: attendance/templates/attendance/own_attendance/attendances.html:45
@@ -176,14 +170,14 @@ msgstr "Description"
 #: asset/templates/category/asset_category_view.html:118
 #: asset/templates/category/asset_category_view.html:193
 msgid "Tracking Id"
-msgstr "De Suivi Identifiant"
+msgstr "Identifiant de suivi"
 
 #: asset/templates/asset/asset_creation.html:61
 #: asset/templates/asset/asset_information.html:28
 #: asset/templates/asset/asset_update.html:100
 #: asset/templates/category/asset_category_view.html:200
 msgid "Purchase Date"
-msgstr "Achat Date"
+msgstr "Date d'achat"
 
 #: asset/templates/asset/asset_creation.html:68
 #: asset/templates/asset/asset_information.html:35
@@ -262,7 +256,7 @@ msgstr "Statut"
 #: asset/templates/category/asset_category_view.html:63
 #: asset/templates/category/asset_empty.html:44
 msgid "Batch No"
-msgstr "Groupe Numéro"
+msgstr "Numéro de lot"
 
 #: asset/templates/asset/asset_creation.html:93
 #: asset/templates/asset/asset_return_form.html:22
@@ -314,7 +308,7 @@ msgstr "Sauvegarder"
 
 #: asset/templates/asset/asset_import.html:7
 msgid "Import Excel file"
-msgstr "Importer  Excel Fichier"
+msgstr "Importer le fichier Excel"
 
 #: asset/templates/asset/asset_information.html:2
 msgid "Asset Information"
@@ -823,7 +817,7 @@ msgstr "de"
 #: recruitment/templates/stage/stage_component.html:176
 #: recruitment/templates/survey/survey_card.html:117
 msgid "First"
-msgstr "D'abord"
+msgstr "Premier"
 
 #: asset/templates/asset/asset_list.html:115
 #: asset/templates/batch/asset_batch_number_list.html:62
@@ -1062,7 +1056,7 @@ msgstr "Dernier"
 
 #: asset/templates/asset/asset_return_form.html:2
 msgid "Asset Return Form"
-msgstr "D'actifs Retour Formulaire"
+msgstr "Formulaire de retour d'actif"
 
 #: asset/templates/asset/asset_return_form.html:7
 msgid "Return Status"
@@ -1074,11 +1068,11 @@ msgstr "Statut de Retour"
 #: asset/templates/request_allocation/group_by.html:461
 #: asset/templates/request_allocation/group_by.html:614
 msgid "Return Date"
-msgstr "Retour de Date"
+msgstr "Date de retour"
 
 #: asset/templates/asset/asset_return_form.html:16
 msgid "Return Condition"
-msgstr "Retour Condition"
+msgstr "Condition de retour"
 
 #: asset/templates/asset/asset_update.html:58
 msgid "Asset Update"
@@ -1086,7 +1080,7 @@ msgstr "Actifs Mise à jour"
 
 #: asset/templates/asset/asset_update.html:77
 msgid "Asset Description"
-msgstr "l'actif Description"
+msgstr "Description de l'actif "
 
 #: asset/templates/batch/asset_batch_empty.html:24
 #: asset/templates/batch/asset_batch_number_view.html:24
@@ -1278,7 +1272,8 @@ msgstr "Voulez-vous supprimer cette catégorie ?"
 
 #: asset/templates/category/asset_category_creation.html:14
 msgid "Asset Category Creation"
-msgstr "Actifs Création Catégorie"
+msgstr "Création de catégorie d'actifs"
+
 
 #: asset/templates/category/asset_category_creation.html:21
 #: asset/templates/category/asset_category_update.html:36 leave/forms.py:119
@@ -1309,7 +1304,7 @@ msgstr "Actifs Catégorie  Mise à jour"
 #: asset/templates/request_allocation/group_by.html:258
 #: employee/templates/tabs/asset-request-tab.html:13
 msgid "Asset Category"
-msgstr "Actifs Catégorie"
+msgstr "Catégorie D'Actifs"
 
 #: asset/templates/category/asset_category_view.html:55
 msgid "Search in :Asset"
@@ -1482,7 +1477,7 @@ msgstr "Catégorie Nom"
 
 #: asset/templates/category/asset_category_view.html:204
 msgid "Purchase Cost"
-msgstr "Achat Coût"
+msgstr "Coût d'Achat "
 
 #: asset/templates/category/asset_empty.html:119
 msgid "There is no Asset category and no Assets has been created."
@@ -1536,7 +1531,7 @@ msgstr "Demander Utilisateur"
 #: asset/templates/request_allocation/group_by.html:259
 #: employee/templates/tabs/asset-request-tab.html:14
 msgid "Request Date"
-msgstr "Demander Date"
+msgstr "Date de Demande "
 
 #: asset/templates/request_allocation/asset_request_allocation_list.html:236
 #: asset/templates/request_allocation/group_by.html:166
@@ -1613,7 +1608,7 @@ msgstr "Rejeter"
 #: asset/templates/request_allocation/group_by.html:687
 #: asset/templates/request_allocation/individual allocation.html:65
 msgid "Allocated User"
-msgstr "Alloué Utilisateur "
+msgstr "Utilisateur Alloué "
 
 #: asset/templates/request_allocation/asset_request_allocation_list.html:333
 #: asset/templates/request_allocation/group_by.html:460
@@ -1626,13 +1621,13 @@ msgstr "Alloué Utilisateur "
 #: leave/templates/leave/leave_assign/group_by.html:34
 #: payroll/templates/payroll/contribution/contribution_deduction_employees.html:25
 msgid "Assigned Date"
-msgstr "Attribué Date"
+msgstr "Date Attribué "
 
 #: asset/templates/request_allocation/asset_request_allocation_list.html:408
 #: asset/templates/request_allocation/group_by.html:498
 #: asset/templates/request_allocation/group_by.html:651
 msgid "Returned"
-msgstr "ReRetournered"
+msgstr "Retour"
 
 #: asset/templates/request_allocation/asset_request_allocation_list.html:432
 #: asset/templates/request_allocation/group_by.html:591
@@ -2168,7 +2163,7 @@ msgstr "Heure Minimale"
 #: employee/templates/tabs/profile-attendance-tab.html:18
 #: payroll/models/models.py:621
 msgid "Overtime"
-msgstr "Au fildutemps"
+msgstr "Au fil du temps"
 
 #: attendance/forms.py:423
 msgid ""
@@ -2483,17 +2478,17 @@ msgstr "Vérifier-Dehors Date"
 #: employee/templates/tabs/profile-attendance-tab.html:12
 #: templates/index.html:369
 msgid "Check-Out"
-msgstr "Vérifier-Dehors"
+msgstr "Enregistrement de sortie"
 
 #: attendance/models.py:157
 #, fuzzy
 #| msgid "Last Check-out Time"
 msgid "Last Check-Out Time"
-msgstr "Dernier Vérifier-Dehors Temps"
+msgstr "Dernière heure de sortie"
 
 #: attendance/models.py:170
 msgid "Minimum hour"
-msgstr "Minimale Heure"
+msgstr "Heure minimale"
 
 #: attendance/models.py:179 attendance/views/views.py:1116
 msgid "Overtime approved"
@@ -2501,17 +2496,17 @@ msgstr "Heures supplémentaires approuvées"
 
 #: attendance/models.py:182 base/translator.py:100
 msgid "Attendance validated"
-msgstr "Présence validée."
+msgstr "Présence validée"
 
 #: attendance/models.py:186
 #, fuzzy
 #| msgid "Overtime approved"
 msgid "Overtime In Second"
-msgstr "Heures supplémentaires approuvées"
+msgstr "Heures supplémentaires en secondes"
 
 #: attendance/models.py:190 base/translator.py:101
 msgid "Is validate request"
-msgstr "Est-ce valider la demande"
+msgstr "Valider la demande"
 
 #: attendance/models.py:193 base/translator.py:102
 msgid "Is validate request approved"
@@ -2522,23 +2517,23 @@ msgstr "La demande de validation est-elle approuvée"
 #, fuzzy
 #| msgid "Overtime"
 msgid "Overtime Hours"
-msgstr "Au fildutemps"
+msgstr "Heures supplémentaires"
 
 #: attendance/models.py:478
 #, fuzzy
 #| msgid "Work Records"
 msgid "Worked Seconds"
-msgstr "détails du poste"
+msgstr "Secondes travaillées"
 
 #: attendance/models.py:483
 msgid "Pending Seconds"
-msgstr "temps d'attente en secondes"
+msgstr "Secondes en attente"
 
 #: attendance/models.py:488
 #, fuzzy
 #| msgid "Overtime approved"
 msgid "Overtime Seconds"
-msgstr "Heures supplémentaires approuvées"
+msgstr "Secondes supplémentaires"
 
 #: attendance/models.py:543
 #: attendance/templates/attendance/late_come_early_out/group_by.html:69
@@ -2639,7 +2634,7 @@ msgstr "Il n'y a aucun actif à exporter."
 #: employee/templates/employee_filters.html:41
 #: employee/templates/employee_personal_info/employee_work_info.html:7
 msgid "Work Info"
-msgstr "Travail Info"
+msgstr "Info Travail "
 
 #: attendance/templates/attendance/attendance/attendance_filters.html:13
 #: attendance/templates/attendance/attendance/export_filter.html:36
@@ -2702,7 +2697,7 @@ msgstr "Département"
 #: employee/templates/employee_personal_info/group_by.html:46
 #: employee/templates/tabs/personal-tab.html:190
 msgid "Reporting Manager"
-msgstr "Rapports Responsable"
+msgstr "Responsable du reporting"
 
 #: attendance/templates/attendance/attendance/attendance_filters.html:27
 #: attendance/templates/attendance/attendance/export_filter.html:50
@@ -2807,7 +2802,7 @@ msgstr "Poste"
 #: employee/templates/employee/update_form/work_details.html:68
 #: employee/templates/tabs/personal-tab.html:200
 msgid "Work Location"
-msgstr "Travail Lieu"
+msgstr "Lieu de travail"
 
 #: attendance/templates/attendance/attendance/attendance_filters.html:58
 #: attendance/templates/attendance/attendance/export_filter.html:79
@@ -2862,7 +2857,8 @@ msgstr "Heure Minimale"
 #: attendance/templates/attendance/own_attendance/filters.html:47
 #: attendance/templates/requests/attendance/filter.html:74
 msgid "Out Time"
-msgstr "Out Time"
+msgstr "Heure de sortie"
+
 
 #: attendance/templates/attendance/attendance/attendance_filters.html:76
 #: attendance/templates/attendance/attendance/export_filter.html:97
@@ -2918,7 +2914,7 @@ msgstr "Avancé"
 #: attendance/templates/attendance/own_attendance/filters.html:68
 #: attendance/templates/requests/attendance/filter.html:91
 msgid "Attendance From"
-msgstr "Fréquentation Depuis"
+msgstr "Présence depuis"
 
 #: attendance/templates/attendance/attendance/attendance_filters.html:93
 #: attendance/templates/attendance/attendance/export_filter.html:114
@@ -4572,7 +4568,7 @@ msgstr "Icône"
 
 #: base/templates/base/company/company_view.html:7
 msgid "Is Hq"
-msgstr "Est Hq"
+msgstr "Est le siège social"
 
 #: base/templates/base/company/company_view.html:53
 msgid "Are you sure you want to delete this company?"
@@ -5260,13 +5256,15 @@ msgstr "Annuler les demandes"
 #, fuzzy
 #| msgid "Shift Requests"
 msgid "Export Shift Requests"
-msgstr "Quart Demandes"
+msgstr "Exporter les demandes de quart"
+
 
 #: base/templates/work_type_request/htmx/empty_request.html:12
 #, fuzzy
 #| msgid "Your work type request has been deleted."
 msgid "No work type requests have been created yet."
-msgstr "Votre demande de type de travail a été supprimée."
+msgstr "Aucune demande de type de travail n'a encore été créée."
+
 
 #: base/templates/work_type_request/htmx/group_by.html:40
 #: base/templates/work_type_request/htmx/requests.html:45
@@ -5274,13 +5272,15 @@ msgstr "Votre demande de type de travail a été supprimée."
 #: base/templates/work_type_request/work_type_request_nav.html:131
 #: employee/templates/tabs/shift-tab.html:131
 msgid "Requested Work Type"
-msgstr "demandé Travail Type"
+msgstr "Type de travail demandé"
+
 
 #: base/templates/work_type_request/htmx/group_by.html:41
 #: base/templates/work_type_request/htmx/requests.html:46
 #: employee/templates/tabs/shift-tab.html:134
 msgid "Previous/Current Work Type"
-msgstr "Précédent/Actuel Travail Type"
+msgstr "Type de travail précédent/actuel"
+
 
 #: base/templates/work_type_request/htmx/group_by.html:91
 #: base/templates/work_type_request/htmx/requests.html:98
@@ -5343,15 +5343,17 @@ msgstr "mensuel"
 
 #: base/translator.py:13
 msgid "Employee First Name"
-msgstr "Employé Prénom"
+msgstr "Prénom de l'employé"
+
 
 #: base/translator.py:14
 msgid "Employee Last Name"
-msgstr "Employé Famille Nom"
+msgstr "Nom de famille de l'employé"
 
 #: base/translator.py:15 payroll/forms/component_forms.py:257
 msgid "Bank Code #1"
-msgstr "Bancaire Code #1"
+msgstr "Code bancaire #1"
+
 
 #: base/translator.py:16 payroll/forms/component_forms.py:258
 msgid "Bank Code #2"
@@ -5363,7 +5365,8 @@ msgstr "RECRUTEMENT"
 
 #: base/translator.py:18
 msgid "ONBOARDING"
-msgstr "-SUREMBARQUEMENT"
+msgstr "INTÉGRATION"
+
 
 #: base/translator.py:19
 msgid "EMPLOYEE"
@@ -5375,11 +5378,13 @@ msgstr "PAIE"
 
 #: base/translator.py:21 base/translator.py:91
 msgid "ATTENDANCE"
-msgstr "FRÉQUENTATION"
+msgstr "PRÉSENCE"
+
 
 #: base/translator.py:22
 msgid "LEAVE"
-msgstr "PARTIR"
+msgstr "CONGÉ"
+
 
 #: base/translator.py:23 base/translator.py:92
 msgid "ASSET"
@@ -5387,7 +5392,7 @@ msgstr "ACTIF"
 
 #: base/translator.py:24
 msgid "Your asset request approved!."
-msgstr "Votre demande d'actif approuvée !."
+msgstr "Votre demande d'actif est approuvée !."
 
 #: base/translator.py:25
 msgid "Your asset request rejected!."
@@ -5916,55 +5921,56 @@ msgstr "Partir de Date"
 msgid "To date"
 msgstr "Date de fin"
 
+
 #: base/translator.py:164
 #, fuzzy
 #| msgid "Assigned Date"
 msgid "Assigned date"
-msgstr "Attribué Date"
+msgstr "Date attribuée"
 
 #: base/translator.py:165
 #, fuzzy
 #| msgid "Based On week"
 msgid "Based on week"
-msgstr "Basé Sur Semaine"
+msgstr "Basé sur la semaine"
 
 #: base/translator.py:166
 #, fuzzy
 #| msgid "Based On Weekday"
 msgid "Based on week day"
-msgstr "Basé Sur Semainejour"
+msgstr "Basé sur le jour de la semaine"
 
 #: base/translator.py:167
 msgid "Emp obj"
-msgstr "objet employé"
+msgstr "Objet employé"
 
 #: base/translator.py:168
 msgid "Updated at"
-msgstr "Mis à jour à"
+msgstr "Mis à jour le"
 
 #: base/translator.py:169
 #, fuzzy
 #| msgid "Created Date"
 msgid "Created at"
-msgstr "Date de création"
+msgstr "Créé le"
 
 #: base/translator.py:170
 #, fuzzy
 #| msgid "Created Date"
 msgid "Created at date range"
-msgstr "Date de création"
+msgstr "Créé à la plage de dates"
 
 #: base/translator.py:171
 #, fuzzy
 #| msgid "Review Cycle"
 msgid "Review cycle"
-msgstr "Révision Cycle"
+msgstr "Cycle de révision"
 
 #: base/translator.py:172
 #, fuzzy
 #| msgid "Assets"
 msgid "Asset list"
-msgstr "Actifs"
+msgstr "Liste des actifs"
 
 #: base/translator.py:173
 msgid "Query"
@@ -5974,107 +5980,102 @@ msgstr "Requête"
 #, fuzzy
 #| msgid "Asset Category Update"
 msgid "Asset category name"
-msgstr "Actifs Catégorie  Mise à jour"
+msgstr "Nom de la catégorie d'actifs"
 
 #: base/translator.py:175
 #, fuzzy
 #| msgid "Asset Category Creation"
 msgid "Asset category description"
-msgstr "Actifs Création Catégorie"
+msgstr "Description de la catégorie d'actifs"
 
 #: base/translator.py:176
 #, fuzzy
 #| msgid "Asset Name"
 msgid "Asset name"
-msgstr "Actif Nom"
+msgstr "Nom de l'actif"
 
 #: base/translator.py:177
 #, fuzzy
 #| msgid "Asset Creation"
 msgid "Asset tracking"
-msgstr "Actif Création"
+msgstr "Suivi des actifs"
 
 #: base/translator.py:178
 #, fuzzy
 #| msgid "Asset Update"
 msgid "Asset purchase date"
-msgstr "Actifs Mise à jour"
+msgstr "Date d'achat de l'actif"
 
 #: base/translator.py:179
 #, fuzzy
 #| msgid "Purchase Cost"
 msgid "Asset purchase cost"
-msgstr "Achat Coût"
+msgstr "Coût d'achat de l'actif"
 
 #: base/translator.py:180
 #, fuzzy
 #| msgid "Asset Lot Number"
 msgid "Asset lot number"
-msgstr "Numéro  Lot  l'actif"
+msgstr "Numéro de lot de l'actif"
 
 #: base/translator.py:181
 #, fuzzy
 #| msgid "Asset Category"
 msgid "Asset category"
-msgstr "Actifs Catégorie"
+msgstr "Catégorie d'actifs"
 
 #: base/translator.py:182
 #, fuzzy
 #| msgid "Asset Update"
 msgid "Asset status"
-msgstr "Actifs Mise à jour"
+msgstr "État de l'actif"
 
 #: base/translator.py:183
 msgid "True"
 msgstr "Vrai"
 
-#: base/translator.py:185
-#, fuzzy
-#| msgid "Onboarding Portal Stage"
-msgid "Onboarding Portal S…"
-msgstr "Étape du portail d'intégration"
 
 #: base/translator.py:186
 #, fuzzy
 #| msgid "Employee work information updated."
 msgid "Employee work information"
-msgstr "Les informations sur le travail des employés ont été mises à jour."
+msgstr "Informations de travail de l'employé"
 
 #: base/translator.py:187
 #, fuzzy
 #| msgid "Rotating work type assigned."
 msgid "Rotating work type assign"
-msgstr "Type de travail rotatif attribué."
+msgstr "Type de travail rotatif attribué"
 
 #: base/translator.py:188
 #, fuzzy
 #| msgid "Employee Shift Schedule"
 msgid "Employee shift schedule"
-msgstr "Horaire de travail des employés"
+msgstr "Horaire de travail de l'employé"
 
 #: base/translator.py:189
 #, fuzzy
 #| msgid "Rotating shift assigned."
 msgid "Rotating shift assign"
-msgstr "shift rotatif attribué."
+msgstr "Shift rotatif attribué"
 
 #: base/translator.py:190
 #, fuzzy
 #| msgid "Onboarding Portal Stage"
 msgid "Onboarding portal"
-msgstr "Étape du portail d'intégration"
+msgstr "Portail d'intégration"
 
 #: base/translator.py:191
 #, fuzzy
 #| msgid "Start Date Breakdown"
 msgid "Start date breakdown"
-msgstr "Répartition de la Date de Début"
+msgstr "Répartition de la date de début"
 
 #: base/translator.py:192
 #, fuzzy
 #| msgid "End Date Breakdown"
 msgid "End date breakdown"
-msgstr "Répartition de Fin Date"
+msgstr "Répartition de la date de fin"
 
 #: base/translator.py:193
 msgid "Payment"
@@ -6084,11 +6085,11 @@ msgstr "Paiement"
 #, fuzzy
 #| msgid "Dashboard"
 msgid "dashboard"
-msgstr "Tableaubord"
+msgstr "Tableau de bord"
 
 #: base/translator.py:195
 msgid "pipeline"
-msgstr "pipeline"
+msgstr "Pipeline"
 
 #: base/translator.py:196
 msgid "recruitment-survey-question-template-view"
@@ -6098,13 +6099,14 @@ msgstr ""
 #, fuzzy
 #| msgid "Candidate View"
 msgid "candidate-view"
-msgstr "Candidat Voir"
+msgstr "Vue du candidat"
 
 #: base/translator.py:198
 #, fuzzy
 #| msgid "Recruitment"
 msgid "recruitment-view"
-msgstr "Recrutement"
+msgstr "Vue du recrutement"
+
 
 #: base/translator.py:199
 #, fuzzy
@@ -6330,7 +6332,7 @@ msgstr "Nom d'utilisateur ou mot de passe invalide."
 
 #: base/views.py:144
 msgid "Login Success"
-msgstr "Réussie Connexion "
+msgstr "Connexion Réussie  "
 
 #: base/views.py:181
 msgid "No email found."
@@ -6483,7 +6485,7 @@ msgstr "Vous ne pouvez pas supprimer {rwork_type_assign}"
 
 #: base/views.py:1042
 msgid "Rotating work type assign deleted."
-msgstr "type de travail tournante supprimée."
+msgstr "type de travail rotatif supprimée."
 
 #: base/views.py:1044
 #, fuzzy
@@ -6695,7 +6697,8 @@ msgstr "Nom d'utilisateur"
 #: employee/templates/employee_filters.html:10 onboarding/forms.py:264
 #: onboarding/templates/onboarding/employee_creation.html:58
 msgid "First Name"
-msgstr "D'abord Nom"
+msgstr "Prénom"
+
 
 #: employee/models.py:65
 #: employee/templates/employee/create_form/personal_info.html:73
@@ -6705,11 +6708,13 @@ msgstr "D'abord Nom"
 #: employee/templates/employee_filters.html:25 onboarding/forms.py:265
 #: onboarding/templates/onboarding/employee_creation.html:65
 msgid "Last Name"
-msgstr "Dernier Nom"
+msgstr "Nom de famille"
+
 
 #: employee/templates/employee/create_form/form_view.html:8
 msgid "New People"
-msgstr "De nouvelles personnes"
+msgstr "Nouvelles personnes"
+
 
 #: employee/templates/employee/create_form/form_view.html:13
 #: employee/templates/employee/profile/profile.html:22
@@ -6722,8 +6727,10 @@ msgstr "Info personnelles"
 #: employee/templates/employee/profile/profile_modal.html:12
 #: employee/templates/employee/update_form/personal_info.html:188
 #: recruitment/templates/candidate/candidate_create_form.html:212
+
 msgid "Upload Photo"
-msgstr "Envoyer la photo"
+msgstr "Télécharger la photo"
+
 
 #: employee/templates/employee/create_form/personal_info.html:61
 #: employee/templates/employee/update_form/personal_info.html:42
@@ -6818,7 +6825,8 @@ msgstr "D'urgence Contact"
 #: employee/templates/employee/profile/personal_info.html:105
 #: employee/templates/employee/update_form/personal_info.html:128
 msgid "Contact Name"
-msgstr "Contact Nom"
+msgstr "Nom du contact"
+
 
 #: employee/templates/employee/create_form/personal_info.html:156
 #: employee/templates/employee/profile/personal_info.html:112
@@ -6826,7 +6834,8 @@ msgstr "Contact Nom"
 #: employee/templates/tabs/personal-tab.html:112 onboarding/forms.py:281
 #: onboarding/templates/onboarding/employee_creation.html:167
 msgid "Emergency Contact Relation"
-msgstr "D'urgence Contact Relation"
+msgstr "Relation de contact d'urgence"
+
 
 #: employee/templates/employee/create_form/personal_info.html:161
 #: employee/templates/employee/profile/personal_info.html:117
@@ -6842,7 +6851,7 @@ msgstr "Expérience"
 #: employee/templates/employee/update_form/personal_info.html:148
 #: employee/templates/tabs/personal-tab.html:78
 msgid "Maritial Status"
-msgstr "Matrimonial État"
+msgstr "État Matrimonial "
 
 #: employee/templates/employee/create_form/personal_info.html:174
 #: employee/templates/employee/profile/personal_info.html:130
@@ -6851,20 +6860,19 @@ msgstr "Matrimonial État"
 msgid "Children"
 msgstr "Enfants"
 
+
 #: employee/templates/employee/profile/bank_info.html:10
 #: employee/templates/employee/update_form/bank_details.html:11
 #: employee/templates/tabs/personal-tab.html:305
 #: onboarding/templates/onboarding/employee_bank_details.html:72
 #: payroll/forms/component_forms.py:254
-msgid "Bank Name"
-msgstr "Banque Nom"
-
 #: employee/templates/employee/profile/bank_info.html:17
 #: employee/templates/employee/update_form/bank_details.html:17
 #: employee/templates/tabs/personal-tab.html:345
 #: payroll/forms/component_forms.py:256
-msgid "Account Number"
-msgstr "Compte Numéro"
+msgid "Bank Name"
+msgstr "Nom de la banque"
+
 
 #: employee/templates/employee/profile/bank_info.html:26
 #: employee/templates/employee/update_form/bank_details.html:25
@@ -6872,7 +6880,7 @@ msgstr "Compte Numéro"
 #: onboarding/templates/onboarding/employee_bank_details.html:86
 #: payroll/forms/component_forms.py:255
 msgid "Branch"
-msgstr "Bifurquer"
+msgstr "Agence"
 
 #: employee/templates/employee/profile/bank_info.html:33
 #: employee/templates/employee/profile/bank_info.html:74
@@ -6883,20 +6891,20 @@ msgstr "Bifurquer"
 #: onboarding/templates/onboarding/employee_bank_details.html:125
 #: onboarding/templates/onboarding/employee_bank_details.html:132
 msgid "Bank Code"
-msgstr "Bancaire Code"
+msgstr "Code Bancaire"
 
 #: employee/templates/employee/profile/bank_info.html:42
 #: employee/templates/employee/update_form/bank_details.html:39
 #: employee/templates/tabs/personal-tab.html:323
 msgid "Bank Address"
-msgstr "Banque Adresse"
+msgstr "Adresse Banque"
 
 #: employee/templates/employee/profile/personal_info.html:186
 #: employee/templates/employee/profile/profile_modal.html:31
 #: employee/templates/employee/update_form/personal_info.html:207
 #: recruitment/templates/candidate/candidate_create_form.html:241
 msgid "Delete Image"
-msgstr "Supprimer Image"
+msgstr "Supprimer l'Image"
 
 #: employee/templates/employee/profile/personal_info.html:191
 #: employee/templates/employee/profile/profile_modal.html:36
@@ -6922,12 +6930,12 @@ msgstr "Banque Info"
 #: employee/templates/employee_personal_info/employee_list.html:74
 #: employee/templates/employee_personal_info/group_by.html:48
 msgid "Work Email"
-msgstr "Travail Email"
+msgstr "Email professionnel"
 
 #: employee/templates/employee/profile/profile_view.html:100
 #: employee/templates/employee/view/individual.html:115
 msgid "Work Phone"
-msgstr "Travail Téléphone"
+msgstr "Téléphone professionnel"
 
 #: employee/templates/employee/profile/profile_view.html:128
 #: employee/templates/employee/view/individual.html:142
@@ -6946,7 +6954,7 @@ msgstr "Type de travail"
 #: employee/templates/employee/view/individual.html:173
 #: templates/sidebar.html:463
 msgid "Leave"
-msgstr "Partir"
+msgstr "Congé"
 
 #: employee/templates/employee/profile/profile_view.html:169
 #: employee/templates/employee/view/individual.html:182
@@ -6969,7 +6977,8 @@ msgstr "Performance"
 #: employee/templates/employee/profile/work_info.html:7
 #: employee/templates/employee/update_form/work_details.html:12
 msgid "Job Title"
-msgstr "Emploi Titre"
+msgstr "Titre du poste"
+
 
 #: employee/templates/employee/profile/work_info.html:21
 #: employee/templates/employee/update_form/work_details.html:26
@@ -6988,18 +6997,17 @@ msgstr "Quarts Informations"
 msgid "Joining Date"
 msgstr "Date d'inscription"
 
-#: employee/templates/employee/profile/work_info.html:83
-#: employee/templates/employee/update_form/work_details.html:88
-msgid "Contract End Date"
-msgstr "Contracter Date Fin"
+
+
 
 #: employee/templates/employee/profile/work_info.html:91
 #: employee/templates/employee/update_form/work_details.html:96
 #: employee/templates/tabs/contract-tab.html:18 payroll/models/models.py:146
 #: payroll/templates/payroll/contract/contract_list.html:24
 #: payroll/templates/payroll/contract/group_by.html:40
-msgid "Basic Salary"
-msgstr "Basique Salaire"
+msgid "Contract End Date"
+msgstr "Date de fin du contrat"
+
 
 #: employee/templates/employee/profile/work_info.html:97
 #: employee/templates/employee/update_form/work_details.html:102
@@ -7009,18 +7017,19 @@ msgstr "Salaire par heure"
 #: employee/templates/employee/view/individual.html:201
 #: recruitment/templates/candidate/individual.html:125
 msgid "History"
-msgstr "Histoire"
+msgstr "Historique"
 
 #: employee/templates/employee_nav.html:40
 msgid "Import Employee"
-msgstr "Importer Employé"
+msgstr "Importer un employé"
+
 
 #: employee/templates/employee_nav.html:111
 #: employee/templates/employee_personal_info/employee_list.html:28
 #, fuzzy
 #| msgid "Import Employee"
 msgid "Export Employees"
-msgstr "Importer Employé"
+msgstr "Exporter les employés"
 
 #: employee/templates/employee_nav.html:196
 #: onboarding/templates/onboarding/kanban/kanban.html:37
@@ -7096,7 +7105,7 @@ msgstr "Exclure les employés"
 #: employee/templates/employee_personal_info/employee_list.html:80
 #: employee/templates/employee_personal_info/group_by.html:49
 msgid "Date of Joining"
-msgstr "Date de Joindre"
+msgstr "Date d'adhésion"
 
 #: employee/templates/employee_personal_info/employee_list.html:220
 #: employee/templates/employee_personal_info/group_by.html:197
@@ -7113,7 +7122,7 @@ msgstr "Info"
 #, fuzzy
 #| msgid "Requested Employee"
 msgid "Selected Employees"
-msgstr "Demandé Employé"
+msgstr "Employés sélectionnés"
 
 #: employee/templates/tabs/asset-request-tab.html:5
 #, fuzzy
@@ -7158,7 +7167,7 @@ msgstr "Le compte Hour est actuellement vide."
 #: payroll/templates/payroll/contract/group_by.html:35
 #: templates/sidebar.html:327
 msgid "Contract"
-msgstr "Contracter"
+msgstr "Contrat"
 
 #: employee/templates/tabs/contract-tab.html:16
 #: employee/templates/tabs/leave-tab.html:184
@@ -7409,7 +7418,7 @@ msgstr "Total des fiches de paie générées :"
 #: pms/templates/okr/objective_list.html:62
 #: pms/templates/okr/objective_list.html:279
 msgid "Due In"
-msgstr "Dû En"
+msgstr "Dû dans"
 
 #: employee/templates/tabs/performance-tab.html:35
 #: pms/templates/feedback/feedback_list.html:121
@@ -7442,12 +7451,13 @@ msgstr "Qualification"
 #: employee/templates/tabs/personal-tab.html:103 onboarding/forms.py:278
 #: onboarding/templates/onboarding/employee_creation.html:160
 msgid "Emergency Contact Name"
-msgstr "D'urgence Contacter Nom "
+msgstr "Nom du contact d'urgence"
 
 #: employee/templates/tabs/personal-tab.html:133
 #: employee/templates/tabs/personal-tab.html:151
 msgid "Work Information"
-msgstr "Travail Informations"
+msgstr "Informations professionnelles"
+
 
 #: employee/templates/tabs/personal-tab.html:143
 #, fuzzy
@@ -7461,13 +7471,14 @@ msgstr "Salaire"
 
 #: employee/templates/tabs/personal-tab.html:295
 msgid "Bank Information"
-msgstr "Banque Informations"
+msgstr "Informations de la Banque "
 
 #: employee/templates/tabs/profile-asset-tab.html:13
 #, fuzzy
 #| msgid "Create Request"
 msgid "Create asset request"
-msgstr "Créer Demande"
+msgstr "Créer une demande d'actif"
+
 
 #: employee/templates/tabs/shift-tab.html:14
 #, fuzzy
@@ -9110,7 +9121,8 @@ msgstr "Poste"
 #: recruitment/templates/dashboard/dashboard.html:52
 #: templates/dashboard.html:170
 msgid "Hired Candidates"
-msgstr "Embauché Candidats"
+msgstr "Candidats embauchés"
+
 
 #: onboarding/templates/onboarding/candidates_view.html:68
 msgid "Trigger Onboarding"
@@ -9217,6 +9229,7 @@ msgstr "Date d'adhésion"
 msgid "Onboarding Portal Stage"
 msgstr "Étape du portail d'intégration"
 
+
 #: onboarding/templates/onboarding/kanban/kanban.html:86
 #: onboarding/templates/onboarding/onboarding_view.html:126
 msgid "Join Date From"
@@ -9256,7 +9269,7 @@ msgstr "Voulez-vous supprimer cette étape ?"
 
 #: onboarding/templates/onboarding/kanban/kanban.html:177
 msgid "Add task"
-msgstr "Ajouter tâche"
+msgstr "Ajouter une tâche"
 
 #: onboarding/templates/onboarding/kanban/kanban.html:205
 #: onboarding/templates/onboarding/kanban/kanban.html:295
@@ -9267,7 +9280,7 @@ msgstr "Ajouter tâche"
 #: recruitment/templates/pipeline/pipeline_components/kanban_tabs.html:132
 #: recruitment/templates/pipeline/pipeline_components/send_mail.html:20
 msgid "Send Mail"
-msgstr "Envoyer Mail"
+msgstr "Envoyer un Email"
 
 #: onboarding/templates/onboarding/kanban/kanban.html:216
 #: onboarding/templates/onboarding/single_view.html:88
@@ -9279,12 +9292,13 @@ msgstr "Tâches"
 #: recruitment/templates/stage/nav.html:90
 #: recruitment/templates/stage/stage_empty.html:46
 msgid "Add Stage"
-msgstr "Ajouter Étape"
+msgstr "Ajouter une Étape"
 
 #: onboarding/templates/onboarding/kanban/kanban.html:254
 #: onboarding/templates/onboarding/onboarding_view.html:238
 msgid "Update Stage"
-msgstr "Étape de mise à jour"
+msgstr "Mettre à jour l'étape"
+
 
 #: onboarding/templates/onboarding/kanban/kanban.html:255
 #: onboarding/templates/onboarding/kanban/kanban.html:268
@@ -9307,12 +9321,12 @@ msgstr "Fermé"
 #: onboarding/templates/onboarding/kanban/kanban.html:267
 #: onboarding/templates/onboarding/onboarding_view.html:219
 msgid "Create Stage"
-msgstr "Créer Étape"
+msgstr "Créer une Étape"
 
 #: onboarding/templates/onboarding/kanban/kanban.html:281
 #: onboarding/templates/onboarding/onboarding_view.html:255
 msgid "Create Task"
-msgstr "Créer Tâche"
+msgstr "Créer une Tâche"
 
 #: onboarding/templates/onboarding/onboarding_table.html:25
 #, fuzzy
@@ -9330,11 +9344,11 @@ msgstr "Créer Étape"
 #, fuzzy
 #| msgid "Marital Status"
 msgid "Portal Status"
-msgstr "Matrimonial État"
+msgstr "État Matrimonial "
 
 #: onboarding/templates/onboarding/onboarding_table.html:121
 msgid "Bulk Change Task"
-msgstr "Tâche de changement en vrac"
+msgstr "Changement en masse des tâches"
 
 #: onboarding/templates/onboarding/onboarding_table.html:153
 #: onboarding/templates/onboarding/task_view.html:9
@@ -9372,7 +9386,8 @@ msgstr "Mettre à jour la tâche"
 #: onboarding/templates/onboarding/onboardings.html:10
 #: recruitment/templates/candidate/candidate_create_form.html:58
 msgid "Candidate Name"
-msgstr "Candidat Nom"
+msgstr "Nom du candidat"
+
 
 #: onboarding/templates/onboarding/send_mail_form.html:13
 msgid "Send"
@@ -9407,7 +9422,7 @@ msgstr "Portail"
 
 #: onboarding/templates/onboarding/task_view.html:11
 msgid "Task Manager"
-msgstr "Gestionnaire  Tâche"
+msgstr "Gestionnaire de Tâche"
 
 #: onboarding/templates/onboarding/user_creation.html:82
 msgid "Authentication"
@@ -11738,9 +11753,18 @@ msgstr "Séparez les choix par ', '"
 msgid "Please select profile image"
 msgstr "Veuillez sélectionner une photo de profil"
 
+#: recruitment/templates/recruitment/open_recruitment.html:80
+msgid "Applied"
+msgstr "Postulant"
+
+#: recruitment/templates/recruitment/open_recruitment.html:80
+msgid "Capacity"
+msgstr "poste vacant"
+
+
 #: recruitment/templates/candidate/application_form.html:117
 msgid "Open Recruitment"
-msgstr "Ouvert Recrutement"
+msgstr "Recrutement Ouvert"
 
 #: recruitment/templates/candidate/application_form.html:125
 msgid "Choose Open Position"
@@ -11977,7 +12001,7 @@ msgstr "Pas de postes vacants spécifiques au département actuellement."
 
 #: recruitment/templates/dashboard/dashboard.html:133
 msgid "Candidate on Onboard"
-msgstr "candidat commencé l'intégration"
+msgstr "Candidat à bord"
 
 #: recruitment/templates/dashboard/dashboard.html:134
 msgid "View all"
@@ -12034,18 +12058,18 @@ msgstr "Profil"
 
 #: recruitment/templates/pipeline/form/candidate_drop_down_form.html:76
 msgid "Add Candidate"
-msgstr "Ajouter Candidat"
+msgstr "Ajouter un Candidat"
 
 #: recruitment/templates/pipeline/form/recruitment_drop_down_form.html:20
 #: recruitment/templates/pipeline/form/recruitment_update.html:29
 #: recruitment/templates/recruitment/recruitment_form.html:16
 #: recruitment/templates/recruitment/recruitment_update_form.html:23
 msgid "Is Event Based?"
-msgstr "Est-ce que l'événement est basé ?"
+msgstr "Est-il basé sur des événements ?"
 
 #: recruitment/templates/pipeline/form/recruitment_drop_down_form.html:24
 msgid "Open Job Positions"
-msgstr "Ouvrir Job postes"
+msgstr "Postes à pourvoir"
 
 #: recruitment/templates/pipeline/form/recruitment_drop_down_form.html:35
 msgid "Description is required."
@@ -12065,7 +12089,7 @@ msgstr "Est fermé ?"
 #: recruitment/templates/recruitment/recruitment_form.html:37
 #: recruitment/templates/recruitment/recruitment_update_form.html:43
 msgid "Is Active?"
-msgstr "C'est actif?"
+msgstr "Est-il actif ?"
 
 #: recruitment/templates/pipeline/form/recruitment_update.html:55
 #: recruitment/templates/recruitment/filters.html:10
@@ -12131,7 +12155,7 @@ msgstr "Sujet"
 
 #: recruitment/templates/pipeline/pipeline_components/send_mail.html:15
 msgid "Message Body"
-msgstr "Corps Message"
+msgstr "Corps du message"
 
 #: recruitment/templates/pipeline/pipeline_components/update_note.html:4
 #: recruitment/templates/pipeline/pipeline_components/update_note_individual.html:4
@@ -12154,7 +12178,7 @@ msgstr "Êtes-vous sûr de vouloir supprimer ce recrutement ?"
 
 #: recruitment/templates/recruitment/filters.html:53
 msgid "Till End Date"
-msgstr "Jusqu'à date de fin"
+msgstr "Jusqu'à la date de fin"
 
 #: recruitment/templates/recruitment/recruitment_component.html:64
 msgid "Open Jobs"
@@ -12184,7 +12208,7 @@ msgstr "Voir Recrutements"
 
 #: recruitment/templates/stage/stage_create.html:8
 msgid "View Stages"
-msgstr "Voir Étapes"
+msgstr "Voir les étapes"
 
 #: recruitment/templates/survey/filter.html:5
 msgid "Survey Filter"
@@ -12276,7 +12300,7 @@ msgstr "Stage supprimé avec succès."
 #, fuzzy
 #| msgid "You cannot delete this stage"
 msgid "You cannot delete this stage while it's in use for {}"
-msgstr "Vous ne pouvez pas supprimer cette stage"
+msgstr "Vous ne pouvez pas supprimer cette etapes"
 
 #: recruitment/views/actions.py:192
 msgid "Candidate deleted successfully."
@@ -12345,7 +12369,7 @@ msgstr "Question supprimée avec succès !"
 #, fuzzy
 #| msgid "You cannot delete this stage"
 msgid "You cannot delete this question"
-msgstr "Vous ne pouvez pas supprimer cette stage"
+msgstr "Vous ne pouvez pas supprimer cette etape"
 
 #: recruitment/views/surveys.py:237
 msgid "Application saved."
@@ -12365,7 +12389,7 @@ msgstr "Candidat ajouté."
 
 #: recruitment/views/views.py:308 recruitment/views/views.py:679
 msgid "Stage added."
-msgstr "Stage ajoutée."
+msgstr "Étape ajoutée."
 
 #: recruitment/views/views.py:332
 msgid "You dont have access"
@@ -12373,7 +12397,7 @@ msgstr "Vous n'avez pas accès"
 
 #: recruitment/views/views.py:376 recruitment/views/views.py:748
 msgid "Stage updated."
-msgstr "Stage mis à jour."
+msgstr "Étape mis à jour."
 
 #: recruitment/views/views.py:414
 msgid "Recruitment updated."
@@ -12407,11 +12431,11 @@ msgstr "Candidat mis à jour avec succès."
 
 #: templates/dashboard.html:50
 msgid "New Joining Today"
-msgstr "Nouveaux joindre aujourd'hui"
+msgstr "Nouvelle adhésion aujourd'hui"
 
 #: templates/dashboard.html:82
 msgid "New Joining This Week"
-msgstr "Nouveaux joindre cette semaine"
+msgstr "Nouvelle adhésion cette semaine"
 
 #: templates/dashboard.html:106
 msgid "Total Strength"
@@ -12427,7 +12451,7 @@ msgstr "Cette année"
 
 #: templates/dashboard.html:189
 msgid "Candidate Started Onboarding"
-msgstr "candidat commencé l'intégration"
+msgstr "Onboarding du candidat démarré"
 
 #: templates/dashboard.html:212
 msgid "Recruitment Analytic"
@@ -12591,7 +12615,7 @@ msgstr "Tableaubord"
 
 #: templates/sidebar.html:104
 msgid "Recruitment Pipeline"
-msgstr "Recrutement Pipeline "
+msgstr "Pipeline de Recrutement  "
 
 #: templates/sidebar.html:113
 msgid "Recruitment Survey"
@@ -12599,11 +12623,12 @@ msgstr "Enquête de recrutement"
 
 #: templates/sidebar.html:191
 msgid "Onboarding View"
-msgstr "L'intégration Voir"
+msgstr "Vue de l'intégration"
+
 
 #: templates/sidebar.html:199
 msgid "Candidate View"
-msgstr "Candidat Voir"
+msgstr "Vue Candidat"
 
 #: templates/sidebar.html:335
 msgid "Allowance view"

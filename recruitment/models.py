@@ -108,7 +108,7 @@ class Recruitment(HorillaModel):
     Recruitment model
     """
 
-    title = models.CharField(max_length=30, null=True, blank=True)
+    title = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True)
     is_event_based = models.BooleanField(
         default=False,

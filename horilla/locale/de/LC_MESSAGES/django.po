@@ -4536,12 +4536,9 @@ msgid "Overtime"
 msgstr "Überstunden"
 
 #: .\attendance\forms.py:520
-msgid ""
-"<span title='Do not Auto Validate Attendance if an Employee Works More Than "
+msgid "<span title='Do not Auto Validate Attendance if an Employee Works More Than "
 "this Amount of Duration'>{}</span>"
-msgstr ""
-"Anwesenheit nicht automatisch validieren, wenn ein Mitarbeiter mehr arbeitet als „
-„Dieser Betrag an Dauer"
+msgstr "Anwesenheit nicht automatisch validieren, wenn ein Mitarbeiter mehr arbeitet als Dieser Betrag an Dauer"
 
 #: .\attendance\forms.py:522
 msgid "Maximum Allowed working hours"
