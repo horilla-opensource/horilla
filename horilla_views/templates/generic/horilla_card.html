@@ -36,7 +36,10 @@
       </span>
       {% endfor %}
     </div>
+    {% endif %}
+    {% if queryset %}
   </div>
+
   <button class="reload-record" hidden hx-get="{{request.path}}?{{request.GET.urlencode}}" hx-target="#{{view_id|safe}}" hx-swap="outerHTML">
   </button>
     {% if show_filter_tags %}
