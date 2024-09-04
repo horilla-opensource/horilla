@@ -133,7 +133,7 @@
               {% for action in actions %}
               {% if action.accessibility|accessibility:instance %}
               <li class="oh-dropdown__item">
-                <a href="#" class="oh-profile-dropdown-link" {{action.attrs|safe}}>
+                <a href="#" class="oh-profile-dropdown-link" {{action.attrs|format:instance|safe}}>
                   <img
                   src="{{action.src}}"
                     style="width: 20px; height: auto"
