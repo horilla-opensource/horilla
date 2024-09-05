@@ -306,7 +306,7 @@ def install_required(function):
     def _function(request, *args, **kwargs):
         if request.path_info.endswith("late-come-early-out-view/"):
             object, created = TrackLateComeEarlyOut.objects.get_or_create()
-            if object.is_enable:
+            if not object or object.is_enable:
                 return function(request, *args, **kwargs)
             else:
                 messages.info(
@@ -315,7 +315,7 @@ def install_required(function):
                 )
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         object = BiometricAttendance.objects.all().first()
-        if object.is_installed:
+        if not object or object.is_installed:
             return function(request, *args, **kwargs)
         else:
             messages.info(
