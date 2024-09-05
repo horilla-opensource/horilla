@@ -55,7 +55,7 @@ class AssetForm(ModelForm):
 
         model = Asset
         fields = "__all__"
-        exclude = ["is_active,owner"]
+        exclude = ["is_active", "owner"]
         widgets = {
             "asset_name": forms.TextInput(
                 attrs={"placeholder": "Macbook Pro.", "class": "oh-input w-100"}
