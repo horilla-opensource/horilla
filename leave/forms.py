@@ -46,6 +46,7 @@ from leave.models import (
 )
 
 CHOICES = [("yes", _("Yes")), ("no", _("No"))]
+LEAVE_MAX_LIMIT = 1e5
 
 
 class ModelForm(forms.ModelForm):
@@ -193,7 +194,12 @@ class LeaveTypeForm(ConditionForm):
             del self.errors["exceed_days"]
         cleaned_data["total_days"] = round(cleaned_data["total_days"] * 2) / 2
         if not cleaned_data["limit_leave"]:
-            cleaned_data["total_days"] = math.inf
+            cleaned_data["total_days"] = LEAVE_MAX_LIMIT
+            cleaned_data["reset"] = True
+            cleaned_data["reset_based"] = "yearly"
+            cleaned_data["reset_month"] = "1"
+            cleaned_data["reset_day"] = "1"
+
         return cleaned_data
 
     def save(self, *args, **kwargs):
@@ -245,7 +251,12 @@ class UpdateLeaveTypeForm(ConditionForm):
             del self.errors["exceed_days"]
         cleaned_data["count"] = round(cleaned_data["count"] * 2) / 2
         if not cleaned_data["limit_leave"]:
-            cleaned_data["count"] = math.inf
+            print(LEAVE_MAX_LIMIT)
+            cleaned_data["total_days"] = LEAVE_MAX_LIMIT
+            cleaned_data["reset"] = True
+            cleaned_data["reset_based"] = "yearly"
+            cleaned_data["reset_month"] = "1"
+            cleaned_data["reset_day"] = "1"
 
         return cleaned_data
 
