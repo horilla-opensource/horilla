@@ -342,7 +342,15 @@ def application_form(request):
             if RecruitmentSurvey.objects.filter(
                 recruitment_ids=recruitment_id
             ).exists():
-                if not request.user.has_perm("perms.recruitment.add_candidate"):
+                try:
+                    employee = request.user.employee_get
+                    if (
+                        not request.user.has_perm("perms.recruitment.add_candidate")
+                        or employee not in recruitment.recruitment_managers.all()
+                        or not employee.stage_set.filter(recruitment_id=recruitment)
+                    ):
+                        return redirect(candidate_survey)
+                except:
                     return redirect(candidate_survey)
             candidate_obj.save()
 
