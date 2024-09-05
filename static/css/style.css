@@ -438,16 +438,6 @@ form label {
     color: #000000;
 }
 
-.oh-badge--small {
-    margin-top: 0px !important;
-    width: 20px !important;
-    height: 20px !important;
-    display: flex !important;
-    font-size: 0.7rem !important;
-    align-items: center !important;
-    /* line-height: 0; */
-    justify-content: center !important;
-}
 
 .oh-navbar {
     z-index: 15 !important;
