@@ -12670,6 +12670,14 @@ msgstr "l'actif Vue"
 msgid "Request and Allocation"
 msgstr "Demande et Allocation"
 
+#: recrutement/template/candidate/success.html:49
+msgid "Registration Success"
+msgstr "Candidature enregistrée avec succès"
+
+#: recrutement/template/candidate/success.html:51
+msgid "Your details have been registered successfully.Feel free to close this window."
+msgstr "Vos informations ont été enregistrées avec succès.Vous pouvez fermer cette fenêtre."
+
 #~ msgid "Check-in"
 #~ msgstr "Vérifier-dans"
 

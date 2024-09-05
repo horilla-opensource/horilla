@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %} {% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -46,10 +46,9 @@
                 <path d="m16.5 8.25-6.3 7.5-2.7-3"></path>
               </svg>
               <div class="oh-onboarding__title-container">
-                <h1 class="oh-onboarding__title">Registration Success</h1>
+                <h1 class="oh-onboarding__title">{% trans "Registration Success" %}</h1>
                 <p class="oh-onboarding__content">
-                  Your details have been registered successfully. Feel
-                  free to close this window.
+                  {% trans "Your details have been registered successfully.Feel free to close this window." %}
                 </p>
                 <!-- <a href="#" class="oh-btn oh-btn--secondary">Return home</a> -->
               </div>
