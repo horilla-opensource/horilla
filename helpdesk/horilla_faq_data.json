@@ -1,0 +1,56 @@
+{
+    "FAQ_CATEGORY": [
+        {
+            "title": "Leave",
+            "description": "FAQs related to leave are shown here"
+        },
+        {
+            "title": "Attendance",
+            "description": "FAQs related to attendance are shown here"
+        },
+        {
+            "title": "Employee",
+            "description": "FAQs related to employee are shown here"
+        },
+        {
+            "title": "Base",
+            "description": "FAQs related to base are shown here"
+        },
+        {
+            "title": "Recruitment",
+            "description": "FAQs related to recruitment are shown here"
+        }
+    ],
+    "FAQS": [
+        {
+            "category": "Leave",
+            "question": "How to create a leave request?",
+            "answer": "Click on My Leave Request > Select Leave Type > Fill out the form"
+        },
+        {
+            "category": "Attendance",
+            "question": "How to export work records?",
+            "answer": "Click on Work Records inside Attendance, filter the data and click on Export button"
+        },
+        {
+            "category": "Base",
+            "question": "How to create a shift request?",
+            "answer": "go to employee --> shift request --> create --> Fill out the form"
+        },
+        {
+            "category": "Recruitment",
+            "question": "How to add stage managers to an existing stage?",
+            "answer": "recruitment --> stage 3 dot --> edit --> managers"
+        },
+        {
+            "category": "Recruitment",
+            "question": "What is recruitment pipeline?",
+            "answer": "All the details about the recruitment, stage, and candidate can be controlled from here."
+        },
+        {
+            "category": "Employee",
+            "question": "How to create an Employee?",
+            "answer": "employee --> create --> Fill out the form"
+        }
+    ]
+}
