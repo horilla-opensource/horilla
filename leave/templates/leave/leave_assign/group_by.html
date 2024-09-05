@@ -117,13 +117,21 @@
                     {{available_leave.leave_type_id}}
                   </div>
                   <div class="oh-sticky-table__td">
-                    {{available_leave.available_days}}
+                    {% if available_leave.leave_type_id.limit_leave %}
+                      {{available_leave.available_days}}
+                    {% else %}
+                      {% trans "No Limit" %}
+                    {% endif %}
                   </div>
                   <div class="oh-sticky-table__td">
                     {{available_leave.carryforward_days}}
                   </div>
                   <div class="oh-sticky-table__td">
-                    {{available_leave.total_leave_days}}
+                    {% if available_leave.leave_type_id.limit_leave %}
+                      {{available_leave.total_leave_days}}
+                    {% else %}
+                      {% trans "No Limit" %}
+                    {% endif %}
                   </div>
                   <div class="oh-sticky-table__td">
                     {{available_leave.leave_taken}}
@@ -184,7 +192,7 @@
                 class="oh-pagination__input"
                 value="{{assigned_leaves.list.number}}"
                 hx-get="{% url 'assign-filter' %}?{{pd}}"
-                hx-target="#ot-table"
+                hx-target="#assignedLeaves"
                 min="1"
               />
               <span class="oh-pagination__label"
@@ -196,7 +204,7 @@
               {% if assigned_leaves.list.has_previous %}
               <li class="oh-pagination__item oh-pagination__item--wide">
                 <a
-                  hx-target="#ot-table"
+                  hx-target="#assignedLeaves"
                   hx-get="{% url 'assign-filter' %}?{{pd}}&{{assigned_leaves.dynamic_name}}=1"
                   class="oh-pagination__link"
                   >{% trans "First" %}</a
@@ -204,7 +212,7 @@
               </li>
               <li class="oh-pagination__item oh-pagination__item--wide">
                 <a
-                  hx-target="#ot-table"
+                  hx-target="#assignedLeaves"
                   hx-get="{% url 'assign-filter' %}?{{pd}}&{{assigned_leaves.dynamic_name}}={{ assigned_leaves.list.previous_page_number }}"
                   class="oh-pagination__link"
                   >{% trans "Previous" %}</a
@@ -213,7 +221,7 @@
               {% endif %} {% if assigned_leaves.list.has_next %}
               <li class="oh-pagination__item oh-pagination__item--wide">
                 <a
-                  hx-target="#ot-table"
+                  hx-target="#assignedLeaves"
                   hx-get="{% url 'assign-filter' %}?{{pd}}&{{assigned_leaves.dynamic_name}}={{ assigned_leaves.list.next_page_number }}"
                   class="oh-pagination__link"
                   >{% trans "Next" %}</a
@@ -221,7 +229,7 @@
               </li>
               <li class="oh-pagination__item oh-pagination__item--wide">
                 <a
-                  hx-target="#ot-table"
+                  hx-target="#assignedLeaves"
                   hx-get="{% url 'assign-filter' %}?{{pd}}&{{assigned_leaves.dynamic_name}}={{ assigned_leaves.list.paginator.num_pages }}"
                   class="oh-pagination__link"
                   >{% trans "Last" %}</a
