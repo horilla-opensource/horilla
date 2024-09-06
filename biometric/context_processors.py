@@ -11,7 +11,7 @@ Functions:
 from base.models import BiometricAttendance
 
 
-def biometric_is_installed(request):
+def biometric_is_installed(_request):
     """
     Check if the biometric system is installed.
 

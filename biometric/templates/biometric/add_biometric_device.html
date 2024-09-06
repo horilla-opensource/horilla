@@ -2,25 +2,21 @@
 {% if messages %}
     <div class="oh-wrapper">
         {% for message in messages %}
-        <div class="oh-alert-container">
-            <div class="oh-alert oh-alert--animated {{message.tags}}">
-                {{ message }}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
             </div>
-        </div>
         {% endfor %}
-        <script>
-            setTimeout(function () {
-                $(".oh-modal__close").click();
-            }, 1000);
-        </script>
+        <span hx-trigger="load" hx-target="#biometricDeviceList"
+            hx-get="{% url 'search-devices' %}?{{pd}}&page=1&view=card"></span>
     </div>
 {% endif %}
 <div class="oh-modal__dialog-header pb-0">
     <h2 class="oh-modal__dialog-title" id="biometricDeviceLavel">
         {% trans "Add Biometric Device" %}
     </h2>
-    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close" {% if messages %}
-        hx-target="#biometricDeviceList" hx-get="{% url 'search-devices' %}?{{pd}}&page=1&view=card" {% endif %}>
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
@@ -57,9 +53,11 @@
                 {{biometric_form.cosec_password.errors}}
                 <label class="oh-label" for="{{biometric_form.cosec_password.id_for_label}}">{% trans "Password" %}</label>
                 {{biometric_form.cosec_password}}
-                <button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle" style="padding-top: 55px">
+                <button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle"
+                    style="padding-top: 55px">
                     <ion-icon class="oh-passowrd-input__show-icon" title="Show Password" name="eye-outline"></ion-icon>
-                    <ion-icon class="oh-passowrd-input__hide-icon d-none" title="Hide Password" name="eye-off-outline"></ion-icon>
+                    <ion-icon class="oh-passowrd-input__hide-icon d-none" title="Hide Password"
+                        name="eye-off-outline"></ion-icon>
                 </button>
             </div>
             <div class="oh-input-group" id="apiRequestIDInput" style="display: none">

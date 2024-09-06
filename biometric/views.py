@@ -12,13 +12,11 @@ from datetime import datetime
 from threading import Event, Thread
 from urllib.parse import parse_qs, unquote
 
-import pytz
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
-from django.utils import timezone
 from django.utils import timezone as django_timezone
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
@@ -180,8 +178,9 @@ class ZKBioAttendance(Thread):
                                             )
                                         except Exception as error:
                                             logger.error(
-                                                f"Got an error in clock_in {error}"
+                                                "Got an error in clock_in %s", error
                                             )
+
                                             continue
                                     else:
                                         try:
@@ -195,7 +194,7 @@ class ZKBioAttendance(Thread):
                                             )
                                         except Exception as error:
                                             logger.error(
-                                                f"Got an error in clock_out {error}"
+                                                "Got an error in clock_out", error
                                             )
                                             continue
                             else:
@@ -204,10 +203,28 @@ class ZKBioAttendance(Thread):
             ZKBioAttendance(self.machine_ip, self.port_no).start()
 
     def stop(self):
+        """To stop the ZK live capture mode"""
         self.conn.end_live_capture = True
 
 
 class COSECBioAttendanceThread(Thread):
+    """
+    A thread class that handles the real-time retrieval and processing of
+    biometric attendance data from a COSEC biometric device.
+
+    Attributes:
+        device_id (int): The ID of the biometric device to interact with.
+        _stop_event (threading.Event): An event to signal when to stop the thread.
+
+    Methods:
+        run():
+            Continuously fetches attendance data from the COSEC device, processes
+            it, and updates the last fetched sequence and rollover count.
+
+        stop():
+            Signals the thread to stop by setting the _stop_event.
+    """
+
     def __init__(self, device_id):
         super().__init__()
         self.device_id = device_id
@@ -273,7 +290,7 @@ class COSECBioAttendanceThread(Thread):
                         elif punch_code in ["2", "4", "6", "8", "10"]:
                             clock_out(request_data)
                     except Exception as error:
-                        logger.error(f"Error processing attendance: {error}")
+                        logger.error("Error processing attendance: ", error)
 
                 if attendances:
                     last_attendance = attendances[-1]
@@ -293,7 +310,7 @@ class COSECBioAttendanceThread(Thread):
             device = BiometricDevices.objects.get(id=self.device_id)
             device.is_live = False
             device.save()
-            logger.error(f"Error in COSECBioAttendanceThread: {error}")
+            logger.error("Error in COSECBioAttendanceThread: ", error)
 
     def stop(self):
         """Set the stop event to signal the thread to stop gracefully."""
@@ -513,7 +530,7 @@ def biometric_device_schedule(request, device_id):
                     scheduler.start()
                     return HttpResponse("<script>window.location.reload()</script>")
                 except Exception as error:
-                    logger.error(f"An error comes in biometric_device_schedule {error}")
+                    logger.error("An error comes in biometric_device_schedule ", error)
                     script = """
                     <script>
                         Swal.fire({
@@ -731,7 +748,7 @@ def search_devices(request):
 @install_required
 @hx_request_required
 @permission_required("biometric.add_biometricdevices")
-def biometric_device_test(request, device_id):
+def biometric_device_test(_request, device_id):
     """
     Test the connection with the specified biometric device.
 
@@ -775,7 +792,7 @@ def biometric_device_test(request, device_id):
                     </script>
                 """
         except Exception as error:
-            logger.error(f"An error comes in biometric_device_test {error}")
+            logger.error("An error comes in biometric_device_test ", error)
             script = """
            <script>
                 Swal.fire({
@@ -854,6 +871,9 @@ def biometric_device_test(request, device_id):
                     </script>
                 """
         except Exception as error:
+            logger.error(
+                "Got an error in test connection of Anviz Biometric Device", error
+            )
             pass
     elif device.machine_type == "cosec":
         cosec = COSECBiometric(
@@ -1138,7 +1158,7 @@ def biometric_device_employees(request, device_id, **kwargs):
                 }
                 return render(request, "biometric/view_cosec_employees.html", context)
         except Exception as error:
-            logger.error(f"An error occurred: {error}")
+            logger.error("An error occurred: ", error)
             messages.info(
                 request,
                 _(
@@ -1249,10 +1269,8 @@ def delete_biometric_user(request, uid, device_id):
     employee_bio.delete()
     messages.success(
         request,
-        _(
-            "{} successfully removed from the biometric device.".format(
-                employee_bio.employee_id
-            ),
+        _("{} successfully removed from the biometric device.").format(
+            employee_bio.employee_id
         ),
     )
     redirect_url = f"/biometric/biometric-device-employees/{device_id}/"
@@ -1424,10 +1442,8 @@ def delete_horilla_cosec_user(request, user_id, device_id):
             employee_bio.delete()
             messages.success(
                 request,
-                _(
-                    "{} successfully removed from the biometric device.".format(
-                        employee_bio.employee_id
-                    ),
+                _("{} successfully removed from the biometric device.").format(
+                    employee_bio.employee_id
                 ),
             )
         else:
@@ -1479,14 +1495,12 @@ def bio_users_bulk_delete(request):
             conn.refresh_data()
             messages.success(
                 request,
-                _(
-                    "{} successfully removed from the biometric device.".format(
-                        employee_bio.employee_id
-                    ),
+                _("{} successfully removed from the biometric device.").format(
+                    employee_bio.employee_id
                 ),
             )
     except Exception as error:
-        logger.error(f"An error occurred: {error}")
+        logger.error("An error occurred: ", error)
     return JsonResponse({"messages": "Success"})
 
 
@@ -1528,7 +1542,7 @@ def cosec_users_bulk_delete(request):
             )
 
     except Exception as error:
-        logger.error(f"An error occurred: {error}")
+        logger.error("An error occurred: ", error)
     return JsonResponse({"messages": "Success"})
 
 
@@ -1597,7 +1611,8 @@ def add_biometric_user(request, device_id):
                             user_id=str(user_id),
                             card=0,
                         )
-                        # The ZK Biometric user ID must be a character value that can be converted to an integer.
+                        # The ZK Biometric user ID must be a character value
+                        # that can be converted to an integer.
                         BiometricEmployees.objects.create(
                             uid=uid,
                             user_id=str(user_id),
@@ -1606,18 +1621,14 @@ def add_biometric_user(request, device_id):
                         )
                         messages.success(
                             request,
-                            _(
-                                "{} added to biometric device successfully".format(
-                                    employee
-                                ),
+                            _("{} added to biometric device successfully").format(
+                                employee
                             ),
                         )
                     else:
                         messages.info(
                             request,
-                            _(
-                                "{} already added to biometric device".format(employee),
-                            ),
+                            _("{} already added to biometric device").format(employee),
                         )
             else:
                 cosec = COSECBiometric(
@@ -1662,7 +1673,7 @@ def add_biometric_user(request, device_id):
         except Exception as error:
             if device.machine_type == "zk":
                 conn.disable_device()
-                logger.error(f"An error occurred: {str(error)}")
+                logger.error("An error occurred: ", str(error))
         return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
@@ -1746,7 +1757,7 @@ def biometric_device_live(request):
         except TimeoutError as error:
             device.is_live = False
             device.save()
-            logger.error(f"An error comes in biometric_device_live {error}")
+            logger.error("An error comes in biometric_device_live", error)
             script = """
            <script>
                 Swal.fire({
@@ -1845,14 +1856,14 @@ def zk_biometric_device_attendance(device_id):
                         try:
                             clock_in(request_data)
                         except Exception as error:
-                            logger.error(f"Got an error : {error}")
+                            logger.error("Got an error : ", error)
                     else:
                         try:
                             clock_out(request_data)
                         except Exception as error:
-                            logger.error(f"Got an error : {error}")
+                            logger.error("Got an error : ", error)
         except Exception as error:
-            logger.error(f"Process terminate : {error}")
+            logger.error("Process terminate : ", error)
         finally:
             if conn:
                 conn.disconnect()
@@ -1874,7 +1885,9 @@ def anviz_biometric_device_attendance(device_id):
             date_time_utc = datetime.strptime(
                 attendance["checktime"], "%Y-%m-%dT%H:%M:%S%z"
             )
-            date_time_obj = date_time_utc.astimezone(timezone.get_current_timezone())
+            date_time_obj = date_time_utc.astimezone(
+                django_timezone.get_current_timezone()
+            )
             employee = Employee.objects.filter(badge_id=badge_id).first()
             if employee:
                 request_data = Request(
@@ -1887,13 +1900,13 @@ def anviz_biometric_device_attendance(device_id):
                     try:
                         clock_in(request_data)
                     except Exception as error:
-                        logger.error(f"Error in clock in {error}")
+                        logger.error("Error in clock in ", error)
                 else:
                     try:
                         # // 1 , 129 check type check out and door close
                         clock_out(request_data)
                     except Exception as error:
-                        logger.error(f"Error in clock out {error}")
+                        logger.error("Error in clock out ", error)
 
 
 def cosec_biometric_device_attendance(device_id):
@@ -1924,14 +1937,11 @@ def cosec_biometric_device_attendance(device_id):
         timeout=10,
     )
     attendances = cosec.get_attendance_events(
-        last_fetch_roll_ovr_count, last_fetch_seq_number
+        last_fetch_roll_ovr_count, int(last_fetch_seq_number) + 1
     )
 
     if not isinstance(attendances, list):
         return
-
-    if device_args and attendances:
-        attendances.pop(0)
 
     for attendance in attendances:
         ref_user_id = attendance["detail-1"]
@@ -1954,14 +1964,14 @@ def cosec_biometric_device_attendance(device_id):
         )
 
         try:
-            if punch_code in ["1", "3", "5", "7", "9"]:
+            if punch_code in ["1", "3", "5", "7", "9", "0"]:
                 clock_in(request_data)
             elif punch_code in ["2", "4", "6", "8", "10"]:
                 clock_out(request_data)
             else:
                 pass
         except Exception as error:
-            logger.error(f"Error processing attendance: {error}")
+            logger.error("Error processing attendance: ", error)
 
     if attendances:
         last_attendance = attendances[-1]

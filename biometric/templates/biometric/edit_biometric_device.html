@@ -8,19 +8,15 @@
                 </div>
             </div>
         {% endfor %}
-        <script>
-            setTimeout(function () {
-                $(".oh-modal__close").click();
-            }, 1000);
-        </script>
+        <span hx-trigger="load" hx-target="#biometricDeviceList"
+            hx-get="{% url 'search-devices' %}?{{pd}}&page=1&view=card"></span>
     </div>
 {% endif %}
 <div class="oh-modal__dialog-header pb-0">
     <h2 class="oh-modal__dialog-title" id="biometricDeviceEditLavel">
         {% trans "Edit Biometric Devices" %}
     </h2>
-    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close" {% if messages %}
-        hx-target="#biometricDeviceList" hx-get="{% url 'search-devices' %}?page=1&view=card" {% endif %}>
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
