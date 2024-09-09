@@ -55,7 +55,7 @@ var norowMessages = {
   ar: "لم يتم تحديد أي صفوف.",
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
-  en: "No rows have been selected.",
+  en: "No rows have been selected for deleting",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
 var rowMessages = {
