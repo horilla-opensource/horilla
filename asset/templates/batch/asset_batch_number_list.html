@@ -1,146 +1,104 @@
-{% load i18n %} {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+{% load i18n %}
+{% if messages %}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
     </div>
-  </div>
-  {% endfor %}
-</div>
 {% endif %}
 <div class="oh-wrapper">
-  <div class="oh-sticky-table">
-    <div class="oh-sticky-table__table oh-table--sortable">
-      <div class="oh-sticky-table__thead">
-        <div class="oh-sticky-table__tr">
-          <div class="oh-sticky-table__th">{% trans "Batch Number" %}</div>
-          <div class="oh-sticky-table__th">{% trans " Description" %}</div>
-          {% if perms.asset.change_assetlot or perms.asset.delete_assetlot %}
-            <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-          {% endif %}
-        </div>
-      </div>
-      <div class="oh-sticky-table__tbody">
-        {% for batch_number in batch_numbers %}
-          <div class="oh-sticky-table__tr" draggable="true">
-            <div class="oh-sticky-table__td">{{batch_number.lot_number}}</div>
-            <div class="oh-sticky-table__td">
-              {{batch_number.lot_description}}
-            </div>
-            {% if perms.asset.change_assetlot or perms.asset.delete_assetlot %}
-              <div class="oh-sticky-table__td">
-                <div class="oh-btn-group">
-                  {% if perms.asset.change_assetlot %}
-                    <a
-                      class="oh-btn oh-btn--light-bkg w-100"
-                      title="{% trans 'Update' %}"
-                      data-toggle="oh-modal-toggle"
-                      data-target="#objectUpdateModal"
-                      hx-put="{% url 'asset-batch-update' batch_id=batch_number.id %}"
-                      hx-target="#objectUpdateModalTarget"
-                      >
-                      <ion-icon
-                        name="create-outline"
-                        role="img"
-                        class="md hydrated"
-                        aria-label="create outline"
-                      ></ion-icon>
-                    </a>
-                  {% endif %}
-                  {% if perms.asset.delete_assetlot %}
-                    <form
-                      hx-confirm="{% trans 'Do you want to delete this batch number ?' %}"
-                      hx-post="{% url 'asset-batch-number-delete' batch_id=batch_number.id %}?{{pg}}"
-                      hx-target="#AssetBatchList"
-                      style="display: contents"
-                    >
-                      {% csrf_token %}
-                      <button
-                        class="oh-btn oh-btn--danger-outline w-100"
-                        title="{% trans 'Delete' %}"
-                      >
-                        <ion-icon
-                          name="trash-outline"
-                          role="img"
-                          class="md hydrated"
-                          aria-label="trash outline"
-                        ></ion-icon>
-                      </button>
-                    </form>
-                  {% endif %}
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">{% trans "Batch Number" %}</div>
+                    <div class="oh-sticky-table__th">{% trans " Description" %}</div>
+                    {% if perms.asset.change_assetlot or perms.asset.delete_assetlot %}
+                        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    {% endif %}
                 </div>
-              </div>
-            {% endif %}
-          </div>
-        {% endfor %}
-      </div>
+            </div>
+            <div class="oh-sticky-table__tbody">
+                {% for batch_number in batch_numbers %}
+                    <div class="oh-sticky-table__tr" draggable="true">
+                        <div class="oh-sticky-table__td">{{batch_number.lot_number}}</div>
+                        <div class="oh-sticky-table__td">
+                            {{batch_number.lot_description}}
+                        </div>
+                        {% if perms.asset.change_assetlot or perms.asset.delete_assetlot %}
+                            <div class="oh-sticky-table__td">
+                                <div class="oh-btn-group">
+                                    {% if perms.asset.change_assetlot %}
+                                    <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Update' %}"
+                                        data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+                                        hx-put="{% url 'asset-batch-update' batch_id=batch_number.id %}"
+                                        hx-target="#objectUpdateModalTarget">
+                                        <ion-icon name="create-outline" role="img" class="md hydrated"
+                                            aria-label="create outline"></ion-icon>
+                                    </a>
+                                    {% endif %}
+                                    {% if perms.asset.delete_assetlot %}
+                                        <form hx-confirm="{% trans 'Do you want to delete this batch number ?' %}"
+                                            hx-post="{% url 'asset-batch-number-delete' batch_id=batch_number.id %}?{{pg}}"
+                                            hx-target="#AssetBatchList" style="display: contents">
+                                            {% csrf_token %}
+                                            <button class="oh-btn oh-btn--danger-outline w-100" title="{% trans 'Delete' %}">
+                                                <ion-icon name="trash-outline" role="img" class="md hydrated"
+                                                    aria-label="trash outline"></ion-icon>
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-  </div>
-  <!-- pagination start -->
-  <div class="oh-pagination">
-    <span
-      class="oh-pagination__page"
-      data-toggle="modal"
-      data-target="#addEmployeeModal"
-    ></span>
-    <nav class="oh-pagination__nav">
-      <div class="oh-pagination__input-container me-3">
-        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-        <input
-          type="number"
-          name="page"
-          class="oh-pagination__input"
-          value="{{batch_numbers.number }}"
-          min="1"
-          hx-get="{% url 'asset-batch-number-search' %}?{{pg}}"
-          hx-target="#AssetBatchList"
-        />
-        <span class="oh-pagination__label"
-          >{% trans "of" %} {{ batch_numbers.paginator.num_pages }}</span
-        >
-      </div>
-      <ul class="oh-pagination__items">
-        {% if batch_numbers.has_previous %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-get="{% url 'asset-batch-number-search' %}?{{pg}}&page=1"
-            class="oh-pagination__link"
-            hx-target="#AssetBatchList"
-            >{% trans "First" %}</a
-          >
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-get="{% url 'asset-batch-number-search' %}?{{pg}}&page={{ batch_numbers.previous_page_number }}"
-            class="oh-pagination__link"
-            hx-target="#AssetBatchList"
-          >
-            {% trans "Previous" %}
-          </a>
-        </li>
-        {% endif %} {% if batch_numbers.has_next %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-get="{% url 'asset-batch-number-search' %}?{{pg}}&page={{ batch_numbers.next_page_number }}"
-            class="btn btn-outline-secondary"
-            hx-target="#AssetBatchList"
-          >
-            {% trans "Next" %}
-          </a>
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-get="{% url 'asset-batch-number-search' %}?{{pg}}&page={{ batch_numbers.paginator.num_pages }}"
-            hx-target="#AssetBatchList"
-            class="oh-pagination__link"
-          >
-            {% trans "Last" %}
-          </a>
-        </li>
-        {% endif %}
-      </ul>
-    </nav>
-  </div>
-  <!-- end of pagination -->
+    <!-- pagination start -->
+    <div class="oh-pagination">
+        <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal"></span>
+        <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                <input type="number" name="page" class="oh-pagination__input" value="{{batch_numbers.number }}" min="1"
+                    hx-get="{% url 'asset-batch-number-search' %}?{{pg}}" hx-target="#AssetBatchList" />
+                <span class="oh-pagination__label">{% trans "of" %} {{ batch_numbers.paginator.num_pages }}</span>
+            </div>
+            <ul class="oh-pagination__items">
+                {% if batch_numbers.has_previous %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-get="{% url 'asset-batch-number-search' %}?{{pg}}&page=1" class="oh-pagination__link"
+                            hx-target="#AssetBatchList">{% trans "First" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-get="{% url 'asset-batch-number-search' %}?{{pg}}&page={{ batch_numbers.previous_page_number }}"
+                            class="oh-pagination__link" hx-target="#AssetBatchList">
+                            {% trans "Previous" %}
+                        </a>
+                    </li>
+                {% endif %}
+                {% if batch_numbers.has_next %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-get="{% url 'asset-batch-number-search' %}?{{pg}}&page={{ batch_numbers.next_page_number }}"
+                            class="btn btn-outline-secondary" hx-target="#AssetBatchList">
+                            {% trans "Next" %}
+                        </a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-get="{% url 'asset-batch-number-search' %}?{{pg}}&page={{ batch_numbers.paginator.num_pages }}"
+                            hx-target="#AssetBatchList" class="oh-pagination__link">
+                            {% trans "Last" %}
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    <!-- end of pagination -->
 </div>

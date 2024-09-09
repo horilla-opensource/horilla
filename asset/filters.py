@@ -82,7 +82,7 @@ class AssetExportFilter(CustomFilterSet):
         fields = "__all__"
 
     def __init__(self, *args, **kwargs):
-        super(AssetExportFilter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.form.fields["asset_purchase_date"].widget.attrs.update({"type": "date"})
 
 
@@ -103,7 +103,7 @@ class AssetFilter(CustomFilterSet):
         fields = "__all__"
 
     def __init__(self, *args, **kwargs):
-        super(AssetFilter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for visible in self.form.visible_fields():
             visible.field.widget.attrs["id"] = str(uuid.uuid4())
 
@@ -132,7 +132,7 @@ class CustomAssetFilter(CustomFilterSet):
         ]
 
     def __init__(self, *args, **kwargs):
-        super(CustomAssetFilter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for visible in self.form.visible_fields():
             visible.field.widget.attrs["id"] = str(uuid.uuid4())
 
@@ -174,7 +174,7 @@ class AssetRequestFilter(CustomFilterSet):
         fields = "__all__"
 
     def __init__(self, *args, **kwargs):
-        super(AssetRequestFilter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for visible in self.form.visible_fields():
             visible.field.widget.attrs["id"] = str(uuid.uuid4())
 
@@ -217,7 +217,7 @@ class AssetAllocationFilter(CustomFilterSet):
         fields = "__all__"
 
     def __init__(self, *args, **kwargs):
-        super(AssetAllocationFilter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for visible in self.form.visible_fields():
             visible.field.widget.attrs["id"] = str(uuid.uuid4())
 
@@ -241,7 +241,7 @@ class AssetCategoryFilter(CustomFilterSet):
         fields = "__all__"
 
     def __init__(self, *args, **kwargs):
-        super(AssetCategoryFilter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for visible in self.form.visible_fields():
             visible.field.widget.attrs["id"] = str(uuid.uuid4())
 

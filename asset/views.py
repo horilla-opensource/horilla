@@ -270,7 +270,7 @@ def asset_delete(request, asset_id):
         previous_data = request.GET.urlencode()
         asset_filtered = AssetFilter(request.GET, queryset=assets)
         asset_list = asset_filtered.qs
-        paginator = Paginator(asset_list, 20)
+        paginator = Paginator(asset_list, get_pagination())
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
         context = {
@@ -313,9 +313,11 @@ def asset_list(request, cat_id):
     Raises:
         None
     """
-    asset_list_filter = request.GET.get("asset_list")
-    asset_info = request.GET.get("asset_info")
     context = {}
+    asset_under = ""
+    assets_in_category = Asset.objects.none()
+    asset_info = request.GET.get("asset_info")
+    asset_list_filter = request.GET.get("asset_list")
     if asset_list_filter:
         # if the data is present means that it is for asset filtered list
         query = request.GET.get("query")
@@ -335,10 +337,11 @@ def asset_list(request, cat_id):
     previous_data = request.GET.urlencode()
     asset_filtered = AssetFilter(request.GET, queryset=assets_in_category)
     asset_list = asset_filtered.qs
-    # Change 20 to the desired number of items per page
-    paginator = Paginator(asset_list, 20)
+
+    paginator = Paginator(asset_list, get_pagination())
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
+
     requests_ids = json.dumps([instance.id for instance in page_obj.object_list])
     data_dict = parse_qs(previous_data)
     get_key_instances(Asset, data_dict)
@@ -1038,7 +1041,6 @@ def asset_import(request):
     Returns:
         HttpResponseRedirect: A redirect to the asset category view after processing the import.
     """
-
     try:
         if request.method == "POST":
             file = request.FILES.get("asset_import")
@@ -1079,12 +1081,16 @@ def asset_import(request):
                     )
 
                 messages.success(request, _("Successfully imported Assets"))
-                return redirect(asset_category_view)
-            messages.error(request, _("File Error"))
+            else:
+                messages.error(request, _("File Error"))
+
             return redirect(asset_category_view)
+
     except Exception as exception:
         messages.error(request, f"{exception}")
         return redirect(asset_category_view)
+
+    return redirect(asset_category_view)
 
 
 @login_required
@@ -1260,7 +1266,7 @@ def asset_batch_view(request):
 
     asset_batches = AssetLot.objects.all()
     previous_data = request.GET.urlencode()
-    asset_batch_numbers_search_paginator = Paginator(asset_batches, 20)
+    asset_batch_numbers_search_paginator = Paginator(asset_batches, get_pagination())
     page_number = request.GET.get("page")
     asset_batch_numbers = asset_batch_numbers_search_paginator.get_page(page_number)
     asset_batch_form = AssetBatchForm()
@@ -1361,7 +1367,7 @@ def asset_batch_number_search(request):
 
     asset_batches = AssetLot.objects.all().filter(lot_number__icontains=search_query)
     previous_data = request.GET.urlencode()
-    asset_batch_numbers_search_paginator = Paginator(asset_batches, 20)
+    asset_batch_numbers_search_paginator = Paginator(asset_batches, get_pagination())
     page_number = request.GET.get("page")
     asset_batch_numbers = asset_batch_numbers_search_paginator.get_page(page_number)
 
@@ -1418,7 +1424,7 @@ def asset_dashboard(request):
 
 @login_required
 @permission_required(perm="asset.view_assetcategory")
-def asset_available_chart(request):
+def asset_available_chart(_request):
     """
     This function returns the response for the available asset chart in the asset dashboard.
     """
@@ -1445,7 +1451,7 @@ def asset_available_chart(request):
 
 @login_required
 @permission_required(perm="asset.view_assetcategory")
-def asset_category_chart(request):
+def asset_category_chart(_request):
     """
     This function returns the response for the asset category chart in the asset dashboard.
     """
@@ -1658,6 +1664,17 @@ def asset_request_tab(request, emp_id):
 
 @login_required
 def dashboard_asset_request_approve(request):
+    """
+    Handles the asset request approval dashboard view.
+
+    This view fetches and filters asset requests that are currently in the
+    "Requested" status and belong to employees who are active. It further filters
+    the asset requests based on the subordinates of the logged-in user and the
+    specific permission 'asset.change_assetrequest'.
+
+    The filtered asset requests are then passed to the template for rendering,
+    along with a JSON-encoded list of the request IDs.
+    """
 
     asset_requests = AssetRequest.objects.filter(
         asset_request_status="Requested", requested_employee_id__is_active=True
