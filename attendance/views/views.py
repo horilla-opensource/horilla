@@ -99,6 +99,7 @@ from base.methods import (
     export_data,
     filtersubordinates,
     get_key_instances,
+    get_pagination,
 )
 from base.models import (
     AttendanceAllowedIP,
@@ -2108,7 +2109,7 @@ def work_records_change_month(request):
 
     leave_dates = monthly_leave_days(month, year)
     page_number = request.GET.get("page")
-    paginator = Paginator(data, 20)
+    paginator = Paginator(data, get_pagination())
     data = paginator.get_page(page_number)
 
     context = {

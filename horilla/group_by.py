@@ -60,6 +60,11 @@ def group_by_queryset(
     """
     This method is used to make group-by and split groups by nested pagination
     """
+    from base.methods import get_pagination
+
+    if get_pagination() != 50:
+        records_per_page = get_pagination()
+
     fields_split = group_field.split("__")
     splitted = len(fields_split) > 1
     model = queryset.model
