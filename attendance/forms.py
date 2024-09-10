@@ -45,7 +45,6 @@ from attendance.models import (
     AttendanceLateComeEarlyOut,
     AttendanceOverTime,
     AttendanceRequestComment,
-    AttendanceRequestFile,
     AttendanceValidationCondition,
     GraceTime,
     WorkRecords,
@@ -53,9 +52,8 @@ from attendance.models import (
     strtime_seconds,
     validate_time_format,
 )
-from base.forms import MultipleFileField
 from base.methods import get_working_days, reload_queryset
-from base.models import Company, EmployeeShift
+from base.models import Company
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla import horilla_middlewares
@@ -129,14 +127,14 @@ class ModelForm(forms.ModelForm):
 
             try:
                 self.fields["employee_id"].initial = request.user.employee_get
-            except:
+            except Exception:
                 pass
 
             try:
                 self.fields["company_id"].initial = (
                     request.user.employee_get.get_company
                 )
-            except:
+            except Exception:
                 pass
 
 
@@ -371,7 +369,7 @@ class AttendanceForm(ModelForm):
         if existing_attendance.exists():
             raise ValidationError(
                 {
-                    "employee_id": f"""Already attendance exists for {list(existing_attendance.values_list("employee_id__employee_first_name",flat=True))} employees"""
+                    "employee_id": f"""Already attendance exists for{list(existing_attendance.values_list("employee_id__employee_first_name",flat=True))} employees"""
                 }
             )
 
@@ -387,8 +385,9 @@ class AttendanceForm(ModelForm):
             if attendance is not None:
                 raise ValidationError(
                     _(
-                        "Attendance for the date is already exist for %(emp)s"
-                        % {"emp": emp}
+                        ("Attendance for the date already exists for {emp}").format(
+                            emp=emp
+                        )
                     )
                 )
         if employee.first() is None:
@@ -752,6 +751,12 @@ excluded_fields = [
 
 
 class AttendanceExportForm(forms.Form):
+    """
+    This form allows users to choose which fields of the `Attendance` model
+    they want to include in the export excel file as column. The fields are
+    presented as a list of checkboxes, and the user can select multiple fields.
+    """
+
     model_fields = Attendance._meta.get_fields()
     field_choices = [
         (field.name, field.verbose_name)
@@ -778,6 +783,12 @@ class AttendanceExportForm(forms.Form):
 
 
 class LateComeEarlyOutExportForm(forms.Form):
+    """
+    This form allows users to choose fields from both the `AttendanceLateComeEarlyOut`
+    model and the related `Attendance` model to include in the export excel file.
+    The fields are presented as checkboxes, and users can select multiple fields.
+    """
+
     model_fields = AttendanceLateComeEarlyOut._meta.get_fields()
     field_choices_1 = [
         (field.name, field.verbose_name)
@@ -808,6 +819,12 @@ class LateComeEarlyOutExportForm(forms.Form):
 
 
 class AttendanceActivityExportForm(forms.Form):
+    """
+    This form allows users to choose specific fields from the `AttendanceActivity`
+    model to include in the export excel file. The fields are presented as checkboxes,
+    enabling users to select multiple fields.
+    """
+
     model_fields = AttendanceActivity._meta.get_fields()
     field_choices = [
         (field.name, field.verbose_name)
@@ -829,6 +846,12 @@ class AttendanceActivityExportForm(forms.Form):
 
 
 class AttendanceOverTimeExportForm(forms.Form):
+    """
+    This form allows users to choose specific fields from the `AttendanceOverTime`
+    model to include in the export. The fields are presented as checkboxes,
+    enabling users to select multiple fields.
+    """
+
     model_fields = AttendanceOverTime._meta.get_fields()
     field_choices = [
         (field.name, field.verbose_name)
@@ -855,6 +878,10 @@ class GraceTimeForm(ModelForm):
     """
 
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = GraceTime
         fields = "__all__"
         widgets = {
@@ -1063,7 +1090,6 @@ class BulkAttendanceRequestForm(ModelForm):
                     "attendance_date": date,
                     "attendance_clock_in_date": date,
                     "attendance_clock_out_date": date,
-                    "attendance_clock_in_date": date,
                 }
             )
             form = NewRequestForm(data=initial_data)

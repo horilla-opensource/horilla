@@ -1,3 +1,7 @@
+"""
+Middleware to automatically trigger employee clock-out based on shift schedules
+"""
+
 from datetime import datetime, timedelta
 
 from django.utils import timezone
@@ -7,10 +11,25 @@ from attendance.methods.utils import Request
 
 
 class AttendanceMiddleware(MiddlewareMixin):
+    """
+    This middleware checks for employees who haven't clocked out by the end of their
+    scheduled shift and automatically performs the clock-out action if the auto punch-out
+    is enabled for their shift. It processes this during each request.
+    """
+
     def process_request(self, request):
+        """
+        Triggers the `trigger_function` on each request.
+        """
         self.trigger_function()
 
     def trigger_function(self):
+        """
+        Retrieves shift schedules with auto punch-out enabled and checks if there are
+        any attendance activities that haven't been clocked out. If the scheduled
+        auto punch-out time has passed, the function attempts to clock out the employee
+        automatically by invoking the `clock_out` function.
+        """
         from attendance.models import Attendance, AttendanceActivity
         from attendance.views.clock_in_out import clock_out
         from base.models import EmployeeShiftSchedule

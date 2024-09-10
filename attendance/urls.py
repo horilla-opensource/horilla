@@ -5,7 +5,6 @@ This page is used to map request or url path with function
 
 """
 
-from django.apps import apps
 from django.urls import path
 
 import attendance.views.clock_in_out

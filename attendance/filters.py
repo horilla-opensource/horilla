@@ -9,8 +9,6 @@ import uuid
 
 import django_filters
 from django import forms
-from django.apps import apps
-from django.db.models import OuterRef, Subquery
 from django.forms import DateTimeInput
 from django.utils.translation import gettext_lazy as _
 
@@ -416,6 +414,11 @@ class AttendanceFilters(FilterSet):
     )
 
     def filter_pending_hour(self, queryset, name, value):
+        """
+        This method calculates the pending hours for each attendance record in the
+        queryset and filters the records based on whether the pending hours are less
+        than or equal to (`pending_hour__lte`) or greater than the specified value.
+        """
         if value is not None:
             value = strtime_seconds(value)
             filtered_attendance = []
@@ -484,12 +487,18 @@ class AttendanceFilters(FilterSet):
 
     def filter_by_name(self, queryset, name, value):
         # Call the imported function
+        """
+        This method allows filtering by the employee's first and/or last name or by other
+        fields such as day, shift, work type, department, job position, or company, depending
+        on the value of `search_field` provided in the request data.
+        """
         filter_method = {
             "day": "attendance_day__day__icontains",
             "shift": "shift_id__employee_shift__icontains",
             "work_type": "work_type_id__work_type__icontains",
             "department": "employee_id__employee_work_info__department_id__department__icontains",
-            "job_position": "employee_id__employee_work_info__job_position_id__job_position__icontains",
+            "job_position": "employee_id__employee_work_info__\
+                job_position_id__job_position__icontains",
             "company": "employee_id__employee_work_info__company_id__company__icontains",
         }
         search_field = self.data.get("search_field")

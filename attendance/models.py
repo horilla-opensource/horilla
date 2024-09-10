@@ -8,15 +8,13 @@ This module is used to register models for recruitment app
 import contextlib
 import datetime as dt
 import json
-from collections.abc import Iterable
 from datetime import date, datetime, timedelta
 
-import pandas as pd
 from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
-from django.db.models.signals import post_save, pre_delete, pre_save
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -29,7 +27,6 @@ from attendance.methods.utils import (
     strtime_seconds,
     validate_hh_mm_ss_format,
     validate_time_format,
-    validate_time_in_minutes,
 )
 from base.horilla_company_manager import HorillaCompanyManager
 from base.methods import is_company_leave, is_holiday
@@ -264,9 +261,8 @@ class Attendance(HorillaModel):
         pending_seconds = minimum_hours - worked_hour
         if pending_seconds < 0:
             return "00:00"
-        else:
-            pending_hours = format_time(pending_seconds)
-            return pending_hours
+        pending_hours = format_time(pending_seconds)
+        return pending_hours
 
     def save(self, *args, **kwargs):
         minimum_hour = self.minimum_hour
@@ -300,12 +296,14 @@ class Attendance(HorillaModel):
                 leaves.append(current_date.strftime("%Y-%m-%d"))
                 current_date += timedelta(days=1)
 
-        # Checking attendance date is in holiday list, if found making the minimum hour to 00:00
+        # Checking attendance date is in holiday list,
+        # if found making the minimum hour to 00:00
         if is_holiday(self.attendance_date):
             self.minimum_hour = "00:00"
             self.is_holiday = True
 
-        # Checking attendance date is in company leave list, if found making the minimum hour to 00:00
+        # Checking attendance date is in company leave list,
+        # if found making the minimum hour to 00:00
         if is_company_leave(self.attendance_date):
             self.minimum_hour = "00:00"
             self.is_holiday = True
