@@ -390,7 +390,7 @@ def ticket_view(request):
         created_by=request.user
     )
     all_tickets = []
-    if is_reportingmanager(request):
+    if is_reportingmanager(request) or request.user.has_perm("helpdesk.view_ticket"):
         all_tickets = filtersubordinates(request, tickets, "helpdesk.add_tickets")
     allocated_tickets = []
     ticket_list = tickets.filter(is_active=True)
