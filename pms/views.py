@@ -19,6 +19,7 @@ from django.db.utils import IntegrityError
 from django.forms import modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -1733,25 +1734,20 @@ def feedback_list_view(request):
         it will return the filtered and searched object.
     """
     user = request.user
-    employee = Employee.objects.filter(employee_user_id=user).first()
-    feedback_requested_ids = Feedback.objects.filter(
-        Q(manager_id=employee, manager_id__is_active=True)
-        | Q(colleague_id=employee, colleague_id__is_active=True)
-        | Q(subordinate_id=employee, subordinate_id__is_active=True)
-    ).values_list("id", flat=True)
-    feedback_own = Feedback.objects.filter(employee_id=employee).filter(
-        archive=False, employee_id__is_active=True
+    employee = user.employee_get
+    # filter own feedbacks (self feedbacks)
+    feedback_own = Feedback.objects.filter(
+        employee_id=employee,
+        archive=False,
     )
-    feedback_requested = Feedback.objects.filter(pk__in=feedback_requested_ids).filter(
-        archive=False, employee_id__is_active=True
-    )
-    feedback_all = Feedback.objects.all().filter(
-        Q(
-            manager_id=employee,
-            manager_id__is_active=True,
-            archive=False,
-        )
-    )
+    # feedbacks to answer
+    feedback_requested = Feedback.objects.filter(
+        Q(manager_id=employee) | Q(colleague_id=employee) | Q(subordinate_id=employee)
+    ).distinct()
+
+    # feedbacks to review if employee is a manager
+    feedback_all = Feedback.objects.all().filter(Q(manager_id=employee, archive=False))
+    # Anonymous feedbacks
     anonymous_feedback = (
         AnonymousFeedback.objects.filter(employee_id=employee, archive=False)
         if not request.user.has_perm("pms.view_feedback")
@@ -1760,26 +1756,11 @@ def feedback_list_view(request):
     anonymous_feedback = anonymous_feedback | AnonymousFeedback.objects.filter(
         anonymous_feedback_id=request.user.id, archive=False
     )
-    employees = Employee.objects.filter(
-        employee_work_info__reporting_manager_id=employee, is_active=True
-    )  # checking the user is reporting manager or not
-    feedback_available = Feedback.objects.all()
-    if request.user.has_perm("pms.view_feedback"):
-        context = filter_pagination_feedback(
-            request, feedback_own, feedback_requested, feedback_all, anonymous_feedback
-        )
-    elif employees:
-        # based on the reporting manager
-        feedback_all = Feedback.objects.filter(employee_id__in=employees)
-        context = filter_pagination_feedback(
-            request, feedback_own, feedback_requested, feedback_all, anonymous_feedback
-        )
-    else:
-        feedback_all = Feedback.objects.none()
-        context = filter_pagination_feedback(
-            request, feedback_own, feedback_requested, feedback_all, anonymous_feedback
-        )
-    if feedback_available.exists():
+    context = filter_pagination_feedback(
+        request, feedback_own, feedback_requested, feedback_all, anonymous_feedback
+    )
+    # checking condition for empty page
+    if Feedback.objects.all().exists():
         template = "feedback/feedback_list_view.html"
     else:
         template = "feedback/feedback_empty.html"
@@ -2063,6 +2044,48 @@ def feedback_archive(request, id):
         feedback.save()
         messages.info(request, _("Feedback archived successfully!."))
     return redirect(feedback_list_view)
+
+
+@login_required
+def get_collegues(request):
+    """
+    Get collegues and subordinates for the manager.
+    """
+    try:
+        employee_id = request.GET.get("employee_id")
+        employee = Employee.objects.get(id=int(employee_id)) if employee_id else None
+
+        if employee:
+            if request.GET.get("data") == "colleagues":
+                department = employee.get_department()
+                # Get employees in the same department as the employee
+                employees_queryset = Employee.objects.filter(
+                    is_active=True, employee_work_info__department_id=department
+                ).values_list("id", "employee_first_name")
+            elif request.GET.get("data") == "manager":
+                reporting_manager = (
+                    employee.employee_work_info.reporting_manager_id
+                    if employee.employee_work_info
+                    else None
+                )
+                employees_queryset = Employee.objects.filter(
+                    id=reporting_manager.id
+                ).values_list("id", "employee_first_name")
+            elif request.GET.get("data") == "subordinates":
+                employees_queryset = Employee.objects.filter(
+                    is_active=True, employee_work_info__reporting_manager_id=employee
+                ).values_list("id", "employee_first_name")
+            # Convert QuerySets to a list
+            employees = list(employees_queryset)
+            context = {"employees": employees}
+            employee_html = render_to_string("feedback/employees_select.html", context)
+            return HttpResponse(employee_html)
+        else:
+            return JsonResponse({"error": "Employee not found"}, status=404)
+    except Employee.DoesNotExist:
+        return JsonResponse({"error": "Invalid Employee ID"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 @login_required

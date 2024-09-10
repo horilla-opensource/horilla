@@ -133,6 +133,7 @@ urlpatterns = [
     path("feedback-update/<int:id>", views.feedback_update, name="feedback-update"),
     path("feedback-delete/<int:id>", views.feedback_delete, name="feedback-delete"),
     path("feedback-archive/<int:id>", views.feedback_archive, name="feedback-archive"),
+    path("get-collegues", views.get_collegues, name="get-collegues"),
     path(
         "feedback-answer-get/<int:id>",
         views.feedback_answer_get,

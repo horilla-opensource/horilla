@@ -185,7 +185,26 @@
       <!-- end of period modal -->
 
 </main>
+<button id="colleguesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_colleague_id" hidden > </button>
+<button id="managerButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_manager_id" hidden > </button>
+<button id="subordinatesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_subordinate_id" hidden > </button>
+<script>
+    function get_collegues(element) {
+        var employee_id = $(element).val();
 
+        // Check if the employee_id is valid
+        if (employee_id) {
+            // Dynamically set the hx-vals attribute for the manager button
+            $('#managerButton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'manager' })).click();
+            // Dynamically set the hx-vals attribute for the colleagues button
+            $('#colleguesButton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'colleagues' })).click();
+            // Dynamically set the hx-vals attribute for the subordinates button
+            $('#subordinatesButton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'subordinates' })).click();
+        } else {
+            console.error('Invalid employee_id');
+        }
+    }
+</script>
 <script src="{% static 'src/feedback/feedback_creation.js' %}"></script>
 <script src="{% static 'src/period/period.js' %}"></script>
 

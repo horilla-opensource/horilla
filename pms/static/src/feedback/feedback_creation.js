@@ -61,20 +61,6 @@ $(document).ready(function () {
                         .trigger("change");
                 });
 
-                if (reporting_manager) {
-                    //  assigning the reporting manager of the employee
-                    var options = $(
-                        `<option value=" ${reporting_manager.id}" selected="selected">`
-                    ).text(
-                        `${reporting_manager.employee_first_name}${reporting_manager.employee_last_name}`
-                    );
-                    $("#id_manager_id").append(options).trigger("change");
-                } else {
-                    var options = $(
-                        `<option value=" " selected="selected">`
-                    ).text(`---------`);
-                    $("#id_manager_id").append(options).trigger("change");
-                }
             },
             error: (error) => {
                 console.log(error);

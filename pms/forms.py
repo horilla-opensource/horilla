@@ -19,9 +19,13 @@ from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm as BaseForm
 from base.forms import ModelForm as MF
-from base.methods import reload_queryset
+from base.methods import (
+    filtersubordinatesemployeemodel,
+    is_reportingmanager,
+    reload_queryset,
+)
 from employee.filters import EmployeeFilter
-from employee.models import Department, JobPosition
+from horilla import horilla_middlewares
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from pms.models import (
@@ -734,11 +738,10 @@ class FeedbackForm(ModelForm):
         Initializes the feedback form instance.
         If an instance is provided, sets the initial value for the form's date fields.
         """
-
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         instance = kwargs.get("instance")
-        employee = kwargs.pop(
-            "employee", None
-        )  # access the logged-in user's information
+        employee = kwargs.pop("employee", None)
+
         if instance:
             kwargs["initial"] = set_date_field_initial(instance)
         super().__init__(*args, **kwargs)
@@ -757,23 +760,19 @@ class FeedbackForm(ModelForm):
         self.fields["period"].choices = list(self.fields["period"].choices)
         self.fields["period"].choices.append(("create_new_period", "Create new period"))
 
-        if instance:
-            self.fields["employee_id"].widget.attrs.update(
-                {"class": "oh-select oh-select-2"}
-            )
-        employees = Employee.objects.filter(
-            is_active=True, employee_work_info__reporting_manager_id=employee
+        self.fields["employee_id"].widget.attrs.update(
+            {"onchange": "get_collegues($(this))"}
         )
-        if employee and employees:
-            department = employee.employee_work_info.department_id
-            employees = Employee.objects.filter(
-                is_active=True, employee_work_info__department_id=department
-            )
-            # manager level access
-            self.fields["employee_id"].queryset = employees
-            self.fields["manager_id"].queryset = employees
-            self.fields["colleague_id"].queryset = employees
-            self.fields["subordinate_id"].queryset = employees
+        if request.user.has_perm("pms.add_period"):
+            employees = Employee.objects.all()
+        elif is_reportingmanager(request):
+            # Queryset of subordinate employees
+            employees = filtersubordinatesemployeemodel(request, Employee.objects.all())
+            # managers queryset
+            managers = Employee.objects.filter(id=employee.id)
+            self.fields["manager_id"].queryset = managers
+
+        self.fields["employee_id"].queryset = employees
 
     def clean(self):
         """
