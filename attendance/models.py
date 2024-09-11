@@ -27,6 +27,7 @@ from attendance.methods.utils import (
     strtime_seconds,
     validate_hh_mm_ss_format,
     validate_time_format,
+    validate_time_in_minutes,
 )
 from base.horilla_company_manager import HorillaCompanyManager
 from base.methods import is_company_leave, is_holiday
@@ -35,6 +36,10 @@ from employee.models import Employee
 from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+
+# to skip the migration issue with the old migrations
+_validate_time_in_minutes = validate_time_in_minutes
+
 
 # Create your models here.
 
