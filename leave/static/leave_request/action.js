@@ -38,11 +38,11 @@ var rejectLeaveRequests = {
   fr: "Vous souhaitez rejeter les demandes de congés sélectionnées ?",
 };
 
-var noRowMessages = {
+var noRowLeaveMessages = {
   ar: "لم يتم تحديد أي صفوف.",
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
-  en: "No rows have been selected.",
+  en: "No rows have been selected to delete",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
 
@@ -304,7 +304,7 @@ $("#leaveRequestsBulkApprove").click(function (e) {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = approveLeaveRequests[languageCode];
-    var textMessage = noRowMessages[languageCode];
+    var textMessage = noRowLeaveMessages[languageCode];
     ids = JSON.parse($("#selectedLeaverequests").attr("data-ids"));
     if (ids.length === 0) {
       Swal.fire({
@@ -338,7 +338,7 @@ $("#idBulkRejectReason").click(function (e) {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = rejectLeaveRequests[languageCode];
-    var textMessage = noRowMessages[languageCode];
+    var textMessage = noRowLeaveMessages[languageCode];
     ids = JSON.parse($("#selectedLeaverequests").attr("data-ids"));
     var rejectReason = $("#id_reject_reason").val();
     if (ids.length === 0) {
@@ -366,13 +366,13 @@ $("#idBulkRejectReason").click(function (e) {
   });
 });
 
-$("#leaverequestbulkDelete").click(function (e) {
+$("#leaveRequestBulkDelete").click(function (e) {
   e.preventDefault();
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = deleteLeaveRequestMessages[languageCode];
-    var textMessage = noRowMessages[languageCode];
+    var textMessage = noRowLeaveMessages[languageCode];
     ids = [];
     ids.push($("#selectedLeaverequests").attr("data-ids"));
     ids = JSON.parse($("#selectedLeaverequests").attr("data-ids"));
@@ -576,7 +576,7 @@ $("#userrequestbulkDelete").click(function (e) {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = deleteLeaveRequestMessages[languageCode];
-    var textMessage = noRowMessages[languageCode];
+    var textMessage = noRowLeaveMessages[languageCode];
     ids = [];
     ids.push($("#selectedUserrequests").attr("data-ids"));
     ids = JSON.parse($("#selectedUserrequests").attr("data-ids"));

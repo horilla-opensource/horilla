@@ -152,7 +152,7 @@
                         </li>
                         {% if perms.leave.delete_leaverequest or request.user|is_reportingmanager %}
                             <li class="oh-dropdown__item">
-                                <a href="#" id="leaverequestbulkDelete" class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</a>
+                                <a href="#" id="leaveRequestBulkDelete" data-action="delete" class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</a>
                             </li>
                         {% endif %}
                     </ul>

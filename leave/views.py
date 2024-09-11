@@ -1658,6 +1658,7 @@ def restrict_creation(request):
         form = RestrictLeaveForm(request.POST)
         if form.is_valid():
             form.save()
+            form = RestrictLeaveForm()
             messages.success(request, _("Restricted day created successfully.."))
             if RestrictLeave.objects.filter().count() == 1:
                 return HttpResponse("<script>window.location.reload();</script>")
