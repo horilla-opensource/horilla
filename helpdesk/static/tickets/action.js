@@ -22,11 +22,11 @@ var ticketDeleteMessages = {
   fr: "",
 };
 
-var noRowMessages = {
+var noRowHelpdeskMessages = {
   ar: "لم يتم تحديد أي صفوف.",
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
-  en: "No rows have been selected.",
+  en: "No rows have been selected to delete.",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
 
@@ -388,7 +388,7 @@ function ticketBulkArchive(e) {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = TicketArchiveMessages[languageCode];
-    var textMessage = noRowMessages[languageCode];
+    var textMessage = noRowHelpdeskMessages[languageCode];
     ids = [];
     ids.push($("#selectedTickets").attr("data-ids"));
     ids = JSON.parse($("#selectedTickets").attr("data-ids"));
@@ -440,7 +440,7 @@ function ticketBulkUnArchive(e) {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = ticketUnarchiveMessages[languageCode];
-    var textMessage = noRowMessages[languageCode];
+    var textMessage = noRowHelpdeskMessages[languageCode];
     ids = [];
     ids.push($("#selectedTickets").attr("data-ids"));
     ids = JSON.parse($("#selectedTickets").attr("data-ids"));
@@ -492,7 +492,7 @@ function ticketsBulkDelete(e) {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = ticketDeleteMessages[languageCode];
-    var textMessage = noRowMessages[languageCode];
+    var textMessage = noRowHelpdeskMessages[languageCode];
     ids = [];
     ids.push($("#selectedTickets").attr("data-ids"));
     ids = JSON.parse($("#selectedTickets").attr("data-ids"));
