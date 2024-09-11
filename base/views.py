@@ -2214,10 +2214,9 @@ def rotating_work_type_assign_redirect(request, obj_id=None, employee_id=None):
             json.loads(instances_ids), obj_id
         )
 
-        return redirect(
-            f"/rwork-individual-view/{next_instance}/?{previous_data}\
-            &instances_ids={instances_list}"
-        )
+        url = f"/rwork-individual-view/{next_instance}/"
+        params = f"?{previous_data}&instances_ids={instances_list}"
+        return redirect(url + params)
     elif hx_target and hx_target == "shift_target" and employee_id:
         return redirect(f"/employee/shift-tab/{employee_id}")
     elif hx_target:
@@ -2872,10 +2871,9 @@ def rotating_shift_assign_redirect(request, obj_id, employee_id):
         previous_instance, next_instance = closest_numbers(
             json.loads(instances_ids), obj_id
         )
-        return redirect(
-            f"/rshit-individual-view/{next_instance}/?{previous_data}\
-            &instances_ids={instances_list}"
-        )
+        url = f"/rshit-individual-view/{next_instance}/"
+        params = f"?{previous_data}&instances_ids={instances_list}"
+        return redirect(url + params)
     elif hx_target and hx_target == "shift_target" and employee_id:
         return redirect(f"/employee/shift-tab/{employee_id}")
     elif hx_target:

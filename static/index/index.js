@@ -127,8 +127,28 @@ function attendanceDateChange(selectElement) {
 }
 
 $(document).on('keydown', function (event) {
+    // Check if the cursor is not focused on an input field
+    var isInputFocused = $(document.activeElement).is('input, textarea, select');
+
     if (event.keyCode === 46) {
         // Click the delete option from navbar of current page
         $('[data-action="delete"]').click();
+    } else if (event.keyCode === 107) { // Key code for the + key on the numeric keypad
+        if (!isInputFocused) {
+            // Click the create option from navbar of current page
+            $('[data-action="create"]').click();
+        }
+    }
+    else if (event.keyCode === 39) { // Key code for the right arrow key
+        if (!isInputFocused) {
+            // Click on the next button in detail view modal
+            $('[data-action="next"]').click();
+        }
+    }
+    else if (event.keyCode === 37) { // Key code for the left arrow key
+        if (!isInputFocused) {
+            // Click on the previous button in detail view modal
+            $('[data-action="previous"]').click();
+        }
     }
 });
