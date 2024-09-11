@@ -13,7 +13,7 @@ from django.core import serializers
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import ProtectedError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
@@ -30,6 +30,7 @@ from recruitment.forms import (
     ApplicationForm,
     QuestionForm,
     SurveyForm,
+    SurveyPreviewForm,
     TemplateForm,
 )
 from recruitment.models import (
@@ -54,6 +55,56 @@ def survey_form(request):
     recruitment = Recruitment.objects.get(id=recruitment_id)
     form = SurveyForm(recruitment=recruitment).form
     return render(request, "survey/form.html", {"form": form})
+
+
+def survey_preview(request, title):
+    """
+    Used to render survey form to the candidate
+    """
+    # title = request.GET.get("title")
+    template = SurveyTemplate.objects.get(title=str(title))
+
+    form = SurveyPreviewForm(template=template).form
+    return render(
+        request,
+        "survey/survey_preview.html",
+        {"form": form, "template": template},
+    )
+
+
+from django.views.decorators.csrf import csrf_exempt
+
+
+@csrf_exempt
+def question_order_update(request):
+    if request.method == "POST":
+        # Extract data from the request
+        question_id = request.POST.get("question_id")
+        new_position = int(request.POST.get("new_position"))
+        qs = RecruitmentSurvey.objects.get(id=question_id)
+
+        print("____OLD POSITION______")
+        print(qs.sequence)
+        print("____NEW POSITION______")
+        print(new_position)
+
+        if qs.sequence > new_position:
+            new_position = new_position
+        if qs.sequence <= new_position:
+            new_position = new_position - 1
+
+        old_qs = RecruitmentSurvey.objects.filter(sequence=new_position)
+        for i in old_qs:
+
+            i.sequence = new_position + 1
+            i.save()
+        qs.sequence = int(new_position)
+        qs.save()
+        return JsonResponse(
+            {"success": True, "message": "Question order updated successfully"}
+        )
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
 def candidate_survey(request):

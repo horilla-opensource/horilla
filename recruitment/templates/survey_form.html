@@ -28,25 +28,26 @@
         ></textarea>
       </div>
       {% elif question.type == "options" %}
-      <div class="d-block oh-card">
-        {% if question.is_mandatory %}
-          <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
-        {% else %}
-          <span class="oh-label oh-label--question">{{ question.question }}</span>
-        {% endif %}
-        <select
-          name="{{question.question}}"
-          class="oh-select oh-select-2--large oh-select-2 w-100 select2-hidden-accessible"
-          id="id_{{question.id}}"
-          data-select2-id="select2-data-id_employee_id1"
-          aria-hidden="true"
-          {% if question.is_mandatory %}required{% endif %}
-        >
-          <option value="">-------------------------</option>
-          {% for choice in question.choices %}
-          <option value="{{choice}}">{{choice}}</option>
-          {% endfor %}
-        </select>
+        <div class="d-block oh-card">
+          {% if question.is_mandatory %}
+            <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
+          {% else %}
+            <span class="oh-label oh-label--question">{{ question.question }}</span>
+          {% endif %}
+          <select
+            name="{{question.question}}"
+            class="oh-select oh-select-2--large oh-select-2 w-100 select2-hidden-accessible"
+            id="id_{{question.id}}"
+            data-select2-id="select2-data-id_employee_id1"
+            aria-hidden="true"
+            {% if question.is_mandatory %}required{% endif %}
+          >
+            <option value="">-------------------------</option>
+            {% for choice in question.choices %}
+            <option value="{{choice}}">{{choice}}</option>
+            {% endfor %}
+          </select>
+        </div>
         {% elif question.type == "multiple" %}
             <div class="d-block oh-card">
               {% if question.is_mandatory %}
@@ -125,12 +126,14 @@
                 />
               </div>
             {% elif question.type == "rating" %}
-              {% if question.is_mandatory %}
-                <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
-              {% else %}
-                <span class="oh-label oh-label--question">{{ question.question }}</span>
-              {% endif %}
-              {% include "rating_input.html" %}
+              <div class="d-block oh-card">
+                {% if question.is_mandatory %}
+                  <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
+                {% else %}
+                  <span class="oh-label oh-label--question">{{ question.question }}</span>
+                {% endif %}
+                {% include "rating_input.html" %}
+              </div>
             {% elif question.type == "checkbox" %}
               <div class="d-block oh-card">
                 {% if question.is_mandatory %}

@@ -23,12 +23,15 @@
             </button>
             <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
               <ul class="oh-dropdown__items">
-                {% if perms.recruitment.chane_surveytemplate %}
+                <li class="oh-dropdown__item">
+                  <a href="{% url 'survey-template-preview' grouper.grouper %}"  class="oh-dropdown__link">{% trans "Preview" %}</a>
+                </li>
+                {% if perms.recruitment.change_surveytemplate %}
                 <li class="oh-dropdown__item">
                   <a hx-get="{% url 'survey-template-question-add' %}?title={{grouper.grouper}}" hx-target="#templateModalBody" data-toggle="oh-modal-toggle" data-target="#templateModal" class="oh-dropdown__link">{% trans "Add Questions" %}</a>
                 </li>
                 {% endif %}
-                {% if perms.recruitment.chane_surveytemplate %}
+                {% if perms.recruitment.change_surveytemplate %}
                 <li class="oh-dropdown__item">
                   <a hx-get="{% url 'survey-template-create' %}?title={{grouper.grouper}}" hx-target="#templateModalBody" data-toggle="oh-modal-toggle" data-target="#templateModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
                 </li>

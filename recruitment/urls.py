@@ -324,6 +324,16 @@ urlpatterns = [
         name="stage-sequence-update",
     ),
     path(
+        "survey-template-preview/<str:title>/",
+        recruitment.views.surveys.survey_preview,
+        name="survey-template-preview",
+    ),
+    path(
+        "update-question-order",
+        recruitment.views.surveys.question_order_update,
+        name="update-question-order",
+    ),
+    path(
         "recruitment-application-survey",
         recruitment.views.surveys.survey_form,
         name="recruitment-application-survey",

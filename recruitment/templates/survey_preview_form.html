@@ -1,0 +1,298 @@
+{% load i18n %}{% load widget_tweaks %} {% load attendancefilters %}
+{% load static %}
+<style>
+  .question-container {
+    padding: 0px;
+  }
+</style>
+<div class="oh-general__tab-target" id="personal">
+    <div class="oh-alert-container">
+    </div>  
+    <div class="oh-wrapper oh-survey-ques">
+    <div class="row pb-5">
+      <div class="col-12">{{form.non_field_errors}}</div>
+
+      {% for question in questions %}
+
+      {% if question.type == "textarea" %}
+      <div class="d-flex oh-card mt-2" data-question-id="{{question.id}}">
+        <div class="drag-handle">
+            <img src="/static/images/ui/drag.svg" alt="">
+        </div>
+        <div class="d-block w-100">
+            {% if question.is_mandatory %}
+            <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
+            {% else %}
+            <span class="oh-label oh-label--question">{{ question.question }}</span>
+            {% endif %}
+            <textarea
+            type="text"
+            name="{{question.question}}"
+            class="oh-input w-100"
+            id="id_{{qgvuestion.id}}"
+            {% if question.is_mandatory %}required{% endif %}
+            ></textarea>
+        </div>
+      </div>
+      {% elif question.type == "options" %}
+        <div class="d-flex oh-card" data-question-id="{{question.id}}">
+            <div class="drag-handle">
+                <img src="/static/images/ui/drag.svg" alt="">
+            </div>
+            <div class="d-block w-100">
+                {% if question.is_mandatory %}
+                    <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
+                {% else %}
+                    <span class="oh-label oh-label--question">{{ question.question }}</span>
+                {% endif %}
+                <select
+                    name="{{question.question}}"
+                    class="oh-select oh-select-2--large oh-select-2 w-100 select2-hidden-accessible"
+                    id="id_{{question.id}}"
+                    data-select2-id="select2-data-id_employee_id1"
+                    aria-hidden="true"
+                    {% if question.is_mandatory %}required{% endif %}
+                >
+                    <option value="">-------------------------</option>
+                    {% for choice in question.choices %}
+                    <option value="{{choice}}">{{choice}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        {% elif question.type == "multiple" %}
+            <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                <div class="drag-handle">
+                    <img src="/static/images/ui/drag.svg" alt="">
+                </div>
+                <div class="d-block w-100">
+                    {% if question.is_mandatory %}
+                        <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
+                    {% else %}
+                        <span class="oh-label oh-label--question">{{ question.question }}</span>
+                    {% endif %}
+                    <select
+                        name="multiple_choices_{{ question.question }}"
+                        class="oh-select oh-select-2--large oh-select-2 w-100 select2-hidden-accessible"
+                        style="height: 55px"
+                        id="id_{{ question.id }}"
+                        {% if question.is_mandatory %}required{% endif %}
+                        multiple>
+                        {% for choice in question.choices %}
+                        <option value="{{ choice }}">{{ choice }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            {% elif question.type == "percentage" %}
+                <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                    <div class="drag-handle">
+                        <img src="/static/images/ui/drag.svg" alt="">
+                    </div>
+                    <div class="d-block w-100">
+                        {% if question.is_mandatory %}
+                            <span class="oh-label oh-label--question">
+                                {{ question.question }}
+                                <span class='text-danger'>* {% trans "Mandatory Question" %}</span>
+                            </span>
+                        {% else %}
+                            <span class="oh-label oh-label--question">{{ question.question }}</span>
+                        {% endif %}
+                        <div class="oh-container oh-container--outline my-2 w-25">
+                            <input
+                                type="number"
+                                class="oh-input oh-input--small oh-input--block px-0"
+                                style="width: 70px; text-align: center;"
+                                min="0"
+                                value="0"
+                                max="100"
+                                name="percentage_{{ question.question }}"
+                                id="id_{{ question.id }}"
+                                {% if question.is_mandatory %}required{% endif %}
+                            />
+                            <input
+                                type="text"
+                                class="oh-input w-25 oh-input--small oh-input--block px-0"
+                                value="%"
+                                readonly
+                            />
+                        </div>
+                    </div>
+                </div>
+            {% elif question.type == "file" %}
+              <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                <div class="drag-handle">
+                    <img src="/static/images/ui/drag.svg" alt="">
+                </div>
+                <div class="d-block w-100">
+                    {% if question.is_mandatory %}
+                        <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
+                    {% else %}
+                        <span class="oh-label oh-label--question">{{ question.question }}</span>
+                    {% endif %}
+                    <input
+                        type="file"
+                        class="oh-input w-25"
+                        name="file_{{question.question}}"
+                        id="id_{{question.id}}"
+                        {% if question.is_mandatory %}required{% endif %}
+                    />
+                </div>
+              </div>
+            {% elif question.type == "date" %}
+              <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                <div class="drag-handle">
+                    <img src="/static/images/ui/drag.svg" alt="">
+                </div>
+                <div class="d-block w-100">
+                    {% if question.is_mandatory %}
+                    <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
+                    {% else %}
+                    <span class="oh-label oh-label--question">{{ question.question }}</span>
+                    {% endif %}
+                    <input
+                    type="date"
+                    class="oh-input w-25"
+                    name="date_{{question.question}}"
+                    id="id_{{question.id}}"
+                    {% if question.is_mandatory %}required{% endif %}
+                    />
+                </div>
+              </div>
+            {% elif question.type == "rating" %}
+              <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                <div class="drag-handle">
+                    <img src="/static/images/ui/drag.svg" alt="">
+                </div>
+                <div class="d-block w-100">
+                    {% if question.is_mandatory %}
+                    <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
+                    {% else %}
+                    <span class="oh-label oh-label--question">{{ question.question }}</span>
+                    {% endif %}
+                    <div class="oh-rate">
+                        <input type="radio" id="star5" name="rate" value="5" />
+                        <label for="star5" title="5 Stars">5 stars</label>
+                        <input type="radio" id="star4" name="rate" value="4" />
+                        <label for="star4" title="4 Stars">4 stars</label>
+                        <input type="radio" id="star3" name="rate" value="3" />
+                        <label for="star3" title="3 Stars">3 stars</label>
+                        <input type="radio" id="star2" name="rate" value="2" />
+                        <label for="star2" title="2 Stars">2 stars</label>
+                        <input type="radio" id="star1" name="rate" value="1" />
+                        <label for="star1" title="1 Star">1 star</label>
+                    </div>
+                </div>
+              </div>
+            {% elif question.type == "checkbox" %}
+              <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                <div class="drag-handle">
+                    <img src="/static/images/ui/drag.svg" alt="">
+                </div>
+                <div class="oh-input__group">
+                    {% if question.is_mandatory %}
+                    <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
+                    {% else %}
+                    <span class="oh-label oh-label--question">{{ question.question }}</span>
+                    {% endif %}
+                    <div class="oh-input-picker-group">
+                        <div class="oh-input-picker oh-input-picker--sm oh-input-picker--selected" style="width: 80px;">
+                            <span>
+                            <ion-icon name="checkmark-circle-outline"></ion-icon>
+                            Yes
+                            </span>
+                            <input type="radio" name="{{ question.question }}" value="Yes" selected>
+                        </div>
+                        <div class="oh-input-picker oh-input-picker--sm" style="width: 80px;">
+                            <span>
+                            <ion-icon name="close-circle-outline"></ion-icon>
+                            No
+                            </span>
+                            <input type="radio" name="{{ question.question }}" value="No">
+                        </div>
+                    </div>
+                </div>
+              </div>
+            {% else %}
+              <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                <div class="drag-handle">
+                    <img src="/static/images/ui/drag.svg" alt="">
+                </div>
+                <div class="d-block w-100">
+                    {% if question.is_mandatory %}
+                    <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
+                    {% else %}
+                    <span class="oh-label oh-label--question">{{ question.question }}</span>
+                    {% endif %}
+                    <input
+                    type="{{question.type}}"
+                    class="oh-input w-100"
+                    name="{{question.question}}"
+                    id="id_{{question.id}}"
+                    {% if question.is_mandatory %}required{% endif %}
+                    />
+                </div>
+              </div>
+            {% endif %} {% endfor %}
+          </div>
+          {% comment %} <div class="d-flex justify-content-end align-items-center w-100 mt-4">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
+              {% trans "Save" %}
+            </button>
+          </div> {% endcomment %}
+          <div class="col-sm-12 col-md-12 col-lg-12">
+            <p class="small text-muted text-center">
+              &copy; {% now 'Y' %} {{white_label_company_name}}. All rights resevered.
+            </p>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    $(function () {
+        $('.pb-5').sortable({
+            start: function (event, ui) {
+                ui.item.css({
+                    "border": "1px solid hsl(8, 77%, 56%)",
+                    "transform": "scale(1.01)",
+                    "cursor": "grabbing"
+                });
+            },
+            stop: function (event, ui) {
+                ui.item.css({
+                    "background-color": "",
+                    "cursor": "grab",
+                    "border": "",
+                    "transform": ""
+                });
+
+                // Gather the necessary question data (e.g., question ID and new order)
+                var questionId = ui.item.data('question-id');
+                var newPosition = ui.item.index();  // Get the new position of the item in the list
+
+                // Make an AJAX request to send the updated order of the questions
+                $.ajax({
+                    url: '{% url "update-question-order" %}',  // Replace with your actual endpoint URL
+                    method: 'POST',
+                    data: {
+                        'question_id': questionId,  // Send the question ID
+                        'new_position': newPosition,  // Send the new position
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // CSRF token for security if using Django
+                    },
+                    success: function(response) {
+                        // Check if the server response indicates success
+                        if (response.success) {
+                            // Display the success message
+                            $('.oh-alert-container').html('<div class="oh-alert oh-alert--animated oh-alert--success">' + response.message + '</div>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error response
+                        $('.oh-alert-container').html('<div class="oh-alert oh-alert--animated oh-alert--danger">' + 'Failed to update question order.' + '</div>');
+                    }
+                });
+            }
+        });
+    });
+</script>

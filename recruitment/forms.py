@@ -851,8 +851,28 @@ class SurveyForm(forms.Form):
     def __init__(self, recruitment, *args, **kwargs) -> None:
         super().__init__(recruitment, *args, **kwargs)
         questions = recruitment.recruitmentsurvey_set.all()
-        context = {"form": self, "questions": questions}
+        all_questions = RecruitmentSurvey.objects.none() | questions
+        for template in recruitment.survey_templates.all():
+            questions = template.recruitmentsurvey_set.all()
+            all_questions = all_questions | questions
+        context = {"form": self, "questions": all_questions.distinct()}
         form = render_to_string("survey_form.html", context)
+        self.form = form
+        return
+        # for question in questions:
+        # self
+
+
+class SurveyPreviewForm(forms.Form):
+    """
+    SurveyTemplateForm
+    """
+
+    def __init__(self, template, *args, **kwargs) -> None:
+        super().__init__(template, *args, **kwargs)
+        all_questions = RecruitmentSurvey.objects.filter(template_id__in=[template])
+        context = {"form": self, "questions": all_questions.distinct()}
+        form = render_to_string("survey_preview_form.html", context)
         self.form = form
         return
         # for question in questions:

@@ -1,0 +1,24 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load i18n %}
+{% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+{% endif %}
+<div class="oh-survey_page">
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+            <h1 class="oh-main__titlebar-title fw-bold">
+                {{template}} {% trans "Survey" %}
+            </h1>
+        </section>
+        {{form}}
+    </form>
+</div>
+{% endblock content %}
