@@ -1,0 +1,144 @@
+{% load i18n %}
+<div class="d-flex justify-content-between mb-2">
+    <div style="
+        display: flex;
+        gap: 0.2rem;
+        padding: .1rem 0;
+    "
+    onmouseleave="
+    {% comment %} $(this).find('.label').hide('slow'); {% endcomment %}
+    "
+    >
+      <div class="oh-checkpoint-badge text-success quick-bulk-action"
+        onclick="
+        addToSelectedId({{select_all_ids|safe}},'{{selected_instances_key_id}}');
+        selectSelected('#{{view_id|safe}}','{{selected_instances_key_id}}');
+        reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+        reloadSelectedCount($('.count_{{view_id|safe}}'));
+        "
+        style="cursor: pointer;">
+        <span class="label" 
+        {% comment %} style="display:none;" {% endcomment %}
+        >
+        {% trans "Select" %} 
+        </span>
+        {% comment %} <ion-icon style="font;font-size: 1rem;" name="checkmark-done-circle" style="font"></ion-icon> {% endcomment %}
+        ({{queryset.paginator.count}})
+      </div>
+      <div 
+      id="unselect_{{view_id}}" 
+      class="oh-checkpoint-badge text-secondary d-none quick-bulk-action"
+      style="cursor: pointer;"
+      onclick="
+        $('#{{selected_instances_key_id}}').attr('data-ids',JSON.stringify([]));
+        selectSelected('#{{view_id|safe}}','{{selected_instances_key_id}}');
+        reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+        reloadSelectedCount($('.count_{{view_id|safe}}'));
+        $('#{{view_id}} .list-table-row').prop('checked',false);
+        $('#{{view_id}} .highlight-selected').removeClass('highlight-selected');
+        $('#{{view_id}} .bulk-list-table-row').prop('checked',false);
+      "
+      >
+        <span class="label" 
+        {% comment %} style="display:none;" {% endcomment %}
+        >
+          {% trans "Unselect" %}
+        </span>
+        {% comment %} <ion-icon style="font-size: 1rem; margin-right:0;" name="close-circle"></ion-icon> {% endcomment %}
+        (<span id="count_{{view_id}}">
+          0
+        </span>)
+      </div>
+      <div 
+        id="export_{{view_id}}" 
+        class="oh-checkpoint-badge text-info d-none quick-bulk-action"
+        style="cursor: pointer;"
+        data-toggle="oh-modal-toggle"
+        data-target="#exportFields{{view_id|safe}}"
+      >
+      {% comment %} <ion-icon style="font;font-size: 1rem; margin-right:0;" name="download"></ion-icon> {% endcomment %}
+      <span class="label" 
+      {% comment %} style="display: none;" {% endcomment %}
+      >
+        {% trans "Export" %}
+      </span>
+      (<span class="count_{{view_id}}">
+        0
+      </span>)
+      </div>
+      {% if bulk_path %}
+      <div 
+        id="bulk_udate_{{view_id}}" 
+        class="oh-checkpoint-badge text-warning d-none quick-bulk-action"
+        style="cursor: pointer;"
+        data-toggle="oh-modal-toggle"
+        data-target="#bulkUpdateModal{{view_id|safe}}"
+        onclick="
+        ids = $('#{{selected_instances_key_id}}').attr('data-ids')
+        $('#bulk_update_get_form{{view_id}}').closest('form').find('[name=instance_ids]').val(ids);
+        $('#bulk_update_get_form{{view_id}}').click()
+        "
+        >
+        <ion-icon style="font-size: 1rem; margin-right:0;" name="create"></ion-icon>
+        <span class="label" 
+        {% comment %} style="display: none;" {% endcomment %}
+        >
+          {% trans "Update" %}
+        </span>
+        (<span class="count_{{view_id}}">
+          0
+        </span>)
+      </div>
+      <form 
+        hx-get="/{{bulk_path}}"
+        hx-target="#bulkUpdateModalBody{{view_id|safe}}">
+        <input type="hidden" name="instance_ids">
+        <button type="submit" id="bulk_update_get_form{{view_id}}" hidden>
+        </button>
+      </form>
+      {% endif %}
+      {% for filter in stored_filters %}
+      <div class="oh-hover-btn-container"
+        hx-get="{{request.path}}?{{filter.urlencode}}"
+        hx-target="#{{view_id|safe}}" hx-swap="outerHTML"
+        >
+        <button class="oh-hover-btn" style="
+        cursor: pointer;
+        border: solid 2px {{filter.color}};
+        color: {{filter.color}} !important;
+        border-radius:30px;
+        ">
+          {{filter.title}}
+        </button>
+        <div class="oh-hover-btn-drawer" onclick="event.stopPropagation()">
+          <button class="oh-hover-btn__small" onclick="$('#savedFilterModal').addClass('oh-modal--show')" hx-get="{% url "saved-filter-update" filter.id %}" hx-target="#SavedFilterFormTarget" hx-swap="innerHTML"><ion-icon name="create-outline"></ion-icon></button>
+          <button class="oh-hover-btn__small" onclick="$(this).parent().find('button:hidden').click();$(this).closest('.oh-hover-btn-container').remove()" ><ion-icon name="trash-outline"></ion-icon></button>
+          <button hidden hx-get="{% url "delete-saved-filter" filter.id %}" hx-swap="none"></button>
+        </div>
+      </div>
+      {% endfor %}
+      
+    </div>
+    {% if row_status_indications %}
+    <div class="d-flex flex-row-reverse">
+      {% for indication in row_status_indications %}
+      <span class="m-1" style="cursor: pointer;margin-left: 7px;" {{indication.2|safe}}>
+        <span class="oh-dot oh-dot--small me-1 {{indication.0}}"></span>
+        {{indication.1}}
+      </span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  <script>
+    {% comment %} $(document).ready(function () {
+      $(".quick-bulk-action").hover(function () {
+          // over
+          $(this).find('.label').show('slow');          
+        }, function () {
+          // out
+        }
+      );
+    }); {% endcomment %}
+  </script>
+  
