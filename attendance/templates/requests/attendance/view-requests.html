@@ -65,6 +65,41 @@
 
 <script>
 
+  $(document).ready(function () {
+    // Function to handle tab switching
+    $('.oh-tabs__tab').on('click', function (e) {
+        e.preventDefault();
+
+        // Remove active class from all tabs
+        $('.oh-tabs__tab').removeClass('oh-tabs__tab--active');
+        // Add active class to the clicked tab
+        $(this).addClass('oh-tabs__tab--active');
+
+        // Hide all tab content first
+        $('#tab_1, #tab_2').removeClass('oh-tabs__content--active');
+
+        // Show the target content
+        var target = $(this).data('target');
+        $(target).addClass('oh-tabs__content--active');
+
+        // Check which tab is active and toggle buttons
+        if (target === '#tab_1') {
+
+            $('#selectAllInstances').show();
+        } else {
+
+            $('#selectAllInstances').hide();
+        }
+    });
+
+      // By default, check if tab 1 is active on page load
+      if ($('#tab_1').hasClass('oh-tabs__content--active')) {
+          $('#selectAllInstances').show();
+      } else {
+          $('#selectAllInstances').hide();
+      }
+  });
+
   function enlargeImage(src,$element) {
       $(".enlargeImageContainer").empty()
       var enlargeImageContainer = $element.parents().closest("li").find(".enlargeImageContainer")
