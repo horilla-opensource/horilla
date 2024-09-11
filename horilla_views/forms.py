@@ -130,6 +130,16 @@ class DynamicBulkUpdateForm(forms.Form):
                     )
                     continue
                 elif not getattribute(val, "related_model"):
+                    if isinstance(val, models.models.CharField) and val.choices:
+                        self.fields[key] = forms.ChoiceField(
+                            choices=val.choices,
+                            widget=forms.Select(
+                                attrs={"class": "oh-select oh-select-2 w-100"}
+                            ),
+                            label=val.verbose_name.capitalize(),
+                            required=False,
+                        )
+                        continue
                     self.fields[key] = field(
                         widget=widget,
                         label=val.verbose_name.capitalize(),

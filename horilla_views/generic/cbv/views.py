@@ -827,11 +827,16 @@ class HorillaFormView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        self.form_class_path = (
+            self.get_form().__class__.__module__ + "." + self.form.__class__.__name__
+        )
 
         context["dynamic_create_fields"] = self.dynamic_create_fields
         context["form_class_path"] = self.form_class_path
         context["view_id"] = self.view_id
-        pk = self.form.instance.pk
+        pk = None
+        if self.form.instance:
+            pk = self.form.instance.pk
         # next/previous option in the forms
         if pk and self.request.GET.get(self.ids_key):
             instance_ids = eval(str(self.request.GET.get(self.ids_key)))
@@ -852,75 +857,75 @@ class HorillaFormView(FormView):
         return context
 
     def get_form(self, form_class=None):
-        pk = self.kwargs.get("pk")
-        instance = self.model.objects.filter(pk=pk).first()
-        data = None
-        files = None
-        if self.request.method == "POST":
-            data = self.request.POST
-            files = self.request.FILES
-        form = self.form_class(data, files, instance=instance)
+        if not hasattr(self, "form"):
+            pk = self.kwargs.get("pk")
+            instance = self.model.objects.filter(pk=pk).first()
+            data = None
+            files = None
+            if self.request.method == "POST":
+                data = self.request.POST
+                files = self.request.FILES
+            form = self.form_class(data, files, instance=instance)
 
-        if self.is_dynamic_create_view:
-            setattr(type(form), "save", save)
+            if self.is_dynamic_create_view:
+                setattr(type(form), "save", save)
 
-        self.form_class_path = form.__class__.__module__ + "." + form.__class__.__name__
-        if self.request.method == "GET":
-            [
-                (
-                    "employee_id",
-                    FormView,
-                )
-            ]
-            for dynamic_tuple in self.dynamic_create_fields:
-                view = dynamic_tuple[1]
-                view.display_title = "Dynamic create"
-                field = dynamic_tuple[0]
-                key = self.request.session.session_key + "cbv" + field
-                CACHE.set(
-                    key,
-                    {
-                        "dynamic_field": field,
-                        "value": getattribute(form.instance, field),
-                        "model": form._meta.model,
-                    },
-                )
-
-                from django.urls import path
-
-                from horilla.urls import urlpatterns
-
-                urlpatterns.append(
-                    path(
-                        f"dynamic-path-{field}-{self.request.session.session_key}",
-                        view.as_view(),
-                        name=f"dynamic-path-{field}-{self.request.session.session_key}",
+            if self.request.method == "GET":
+                [
+                    (
+                        "employee_id",
+                        FormView,
                     )
-                )
-                queryset = form.fields[field].queryset
-                choices = [(instance.id, instance) for instance in queryset]
-                choices.insert(0, ("", "Select option"))
-                choices.append(("dynamic_create", "Dynamic create"))
-                form.fields[field] = forms.ChoiceField(
-                    choices=choices,
-                    label=form.fields[field].label,
-                    required=form.fields[field].required,
-                    widget=forms.Select(attrs=form.fields[field].widget.attrs),
-                )
-        if pk:
-            form.instance = instance
-            title = str(instance)
-            if self.form_disaply_attr:
-                title = getattribute(instance, self.form_disaply_attr)
-            if instance:
-                self.form_class.verbose_name = title
-        else:
-            self.form_class.verbose_name = self.new_display_title
-        form.close_button_attrs = self.close_button_attrs
-        form.submit_button_attrs = self.submit_button_attrs
-        CACHE.get(self.request.session.session_key + "cbv")[HorillaFormView] = form
-        self.form = form
-        return form
+                ]
+                for dynamic_tuple in self.dynamic_create_fields:
+                    view = dynamic_tuple[1]
+                    view.display_title = "Dynamic create"
+                    field = dynamic_tuple[0]
+                    key = self.request.session.session_key + "cbv" + field
+                    CACHE.set(
+                        key,
+                        {
+                            "dynamic_field": field,
+                            "value": getattribute(form.instance, field),
+                            "model": form._meta.model,
+                        },
+                    )
+
+                    from django.urls import path
+
+                    from horilla.urls import urlpatterns
+
+                    urlpatterns.append(
+                        path(
+                            f"dynamic-path-{field}-{self.request.session.session_key}",
+                            view.as_view(),
+                            name=f"dynamic-path-{field}-{self.request.session.session_key}",
+                        )
+                    )
+                    queryset = form.fields[field].queryset
+                    choices = [(instance.id, instance) for instance in queryset]
+                    choices.insert(0, ("", "Select option"))
+                    choices.append(("dynamic_create", "Dynamic create"))
+                    form.fields[field] = forms.ChoiceField(
+                        choices=choices,
+                        label=form.fields[field].label,
+                        required=form.fields[field].required,
+                        widget=forms.Select(attrs=form.fields[field].widget.attrs),
+                    )
+            if pk:
+                form.instance = instance
+                title = str(instance)
+                if self.form_disaply_attr:
+                    title = getattribute(instance, self.form_disaply_attr)
+                if instance:
+                    self.form_class.verbose_name = title
+            else:
+                self.form_class.verbose_name = self.new_display_title
+            form.close_button_attrs = self.close_button_attrs
+            form.submit_button_attrs = self.submit_button_attrs
+            CACHE.get(self.request.session.session_key + "cbv")[HorillaFormView] = form
+            self.form = form
+        return self.form
 
 
 @method_decorator(hx_request_required, name="dispatch")
