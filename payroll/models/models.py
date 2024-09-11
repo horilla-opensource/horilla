@@ -113,6 +113,9 @@ class FilingStatus(HorillaModel):
     def __str__(self) -> str:
         return str(self.filing_status)
 
+    class Meta:
+        ordering = ["-id"]
+
 
 class Contract(HorillaModel):
     """

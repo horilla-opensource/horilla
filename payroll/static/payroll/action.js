@@ -22,11 +22,11 @@ var deleteContractMessages = {
   fr: "Voulez-vous vraiment supprimer tous les contrats sélectionnés?",
 };
 
-var noRowMessages = {
+var noRowPayrollMessages = {
   ar: "لم يتم تحديد أي صفوف.",
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
-  en: "No rows have been selected.",
+  en: "No rows have been selected to delete.",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
 
@@ -291,7 +291,7 @@ function exportPayslips() {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = excelMessages[languageCode];
-    var textMessage = noRowMessages[languageCode];
+    var textMessage = noRowPayrollMessages[languageCode];
     if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
@@ -346,7 +346,7 @@ $("#deletePayslipBulk").click(function (e) {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = deletePayslipMessages[languageCode];
-    var textMessage = noRowMessages[languageCode];
+    var textMessage = noRowPayrollMessages[languageCode];
     var checkedRows = $(".payslip-checkbox").filter(":checked");
     ids = [];
     ids.push($("#selectedPayslip").attr("data-ids"));
@@ -590,7 +590,7 @@ function exportContractRequest() {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = excelMessages[languageCode];
-    var textMessage = noRowMessages[languageCode];
+    var textMessage = noRowPayrollMessages[languageCode];
     if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
@@ -645,7 +645,7 @@ $("#DeleteContractBulk").click(function (e) {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = deleteContractMessages[languageCode];
-    var textMessage = noRowMessages[languageCode];
+    var textMessage = noRowPayrollMessages[languageCode];
     ids = [];
     ids.push($("#selectedInstances").attr("data-ids"));
     ids = JSON.parse($("#selectedInstances").attr("data-ids"));
