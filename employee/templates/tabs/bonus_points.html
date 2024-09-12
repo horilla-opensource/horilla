@@ -1,4 +1,4 @@
-{% load i18n %} {% load basefilters %}
+{% load i18n %} {% load basefilters %} {% load horillafilters %}
 <div class="oh-wrapper d-flex justify-content-between mt-4">
     <div class="oh-faq-card">
         <div class="d-flex justify-content-between align-items-center">
@@ -10,7 +10,11 @@
                     title="Add points"
                     data-toggle="oh-modal-toggle"
                     data-target="#objectDetailsModal"
-                    hx-get="{% url 'add-bonus-points' employee.id %}"
+                    {% if "pms"|app_installed %}
+                        hx-get="{% url 'create-employee-bonus-point'%}?employee_id={{employee.id}} "
+                    {% else %}
+                        hx-get="{% url 'add-bonus-points' employee.id %}"
+                    {% endif %}
                     hx-target="#objectDetailsModalTarget"
                 >
                     <ion-icon

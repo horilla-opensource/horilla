@@ -3273,9 +3273,15 @@ def redeem_points(request, emp_id):
 
     Returns: returns redeem_points_form form
     """
-    user = Employee.objects.get(id=emp_id)
-    form = BonusPointRedeemForm()
-    form.instance.employee_id = user
+    employee = Employee.objects.get(id=emp_id)
+    avialable_points = 0
+    if BonusPoint.objects.filter(employee_id=employee).exists():
+        avialable_points = (
+            BonusPoint.objects.filter(employee_id=employee).first().points
+        )
+    form = BonusPointRedeemForm(initial={"points": avialable_points})
+    form.instance.employee_id = employee
+
     amount_for_bonus_point = 0
     if apps.is_installed("payroll"):
         EncashmentGeneralSettings = get_horilla_model_class(
@@ -3288,7 +3294,7 @@ def redeem_points(request, emp_id):
         )
     if request.method == "POST":
         form = BonusPointRedeemForm(request.POST)
-        form.instance.employee_id = user
+        form.instance.employee_id = employee
         if form.is_valid():
             form.save(commit=False)
             points = form.cleaned_data["points"]
@@ -3298,12 +3304,12 @@ def redeem_points(request, emp_id):
                     app_label="payroll", model="reimbursement"
                 )
                 Reimbursement.objects.create(
-                    title=f"Bonus point Redeem for {user}",
+                    title=f"Bonus point Redeem for {employee}",
                     type="bonus_encashment",
-                    employee_id=user,
+                    employee_id=employee,
                     bonus_to_encash=points,
                     amount=amount,
-                    description=f"{user} want to redeem {points} points",
+                    description=f"{employee} want to redeem {points} points",
                     allowance_on=date.today(),
                 )
             return HttpResponse("<script>window.location.reload();</script>")
@@ -3312,7 +3318,7 @@ def redeem_points(request, emp_id):
         "tabs/forms/redeem_points_form.html",
         {
             "form": form,
-            "employee": user,
+            "employee": employee,
         },
     )
 

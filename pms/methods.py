@@ -4,7 +4,7 @@ from django.shortcuts import render
 from pyexpat.errors import messages
 
 from employee.models import EmployeeWorkInformation
-from pms.models import EmployeeObjective, Feedback, Objective
+from pms.models import EmployeeObjective, Objective
 
 decorator_with_arguments = (
     lambda decorator: lambda *args, **kwargs: lambda func: decorator(

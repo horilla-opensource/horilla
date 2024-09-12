@@ -206,7 +206,13 @@ class EmployeeBonusPointFormView(views.HorillaFormView):
                 message = "Bonus Point updated"
             form.save()
             messages.success(self.request, _trans(message))
-            return self.HttpResponse()
+            return self.HttpResponse(
+                """
+                    <script>
+                        $('#bonus-tab-button').click()
+                    </script>
+                """
+            )
 
         return super().form_valid(form)
 

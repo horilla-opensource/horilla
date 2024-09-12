@@ -14,7 +14,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, Department, JobPosition
-from employee.models import Employee
+from employee.models import BonusPoint, Employee
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
@@ -732,7 +732,7 @@ class MeetingsAnswer(models.Model):
         return f"{self.employee_id.employee_first_name} - {self.answer}"
 
 
-class EmployeeBonusPoint(models.Model):
+class EmployeeBonusPoint(HorillaModel):
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.DO_NOTHING,
@@ -744,6 +744,13 @@ class EmployeeBonusPoint(models.Model):
     bonus_point = models.IntegerField(default=0)
     instance = models.CharField(max_length=150, null=True, blank=True)
     based_on = models.CharField(max_length=150)
+    bonus_point_id = models.ForeignKey(
+        BonusPoint,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="employeebonuspoint_set",
+    )
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.bonus_point}"
@@ -756,6 +763,20 @@ class EmployeeBonusPoint(models.Model):
             path="bonus/bonus_point_action.html",
             context={"instance": self},
         )
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if not BonusPoint.objects.filter(employee_id=self.employee_id).exists():
+            bonus_point = BonusPoint.objects.create(
+                employee_id=self.employee_id,
+                points=self.bonus_point,
+                reason=self.based_on,
+            )
+        else:
+            bonus_point = BonusPoint.objects.get(employee_id=self.employee_id)
+        bonus_point.points += self.bonus_point
+        bonus_point.reason = self.based_on
+        bonus_point.save()
 
 
 class BonusPointSetting(models.Model):

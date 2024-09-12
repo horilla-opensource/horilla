@@ -453,6 +453,9 @@
 								{% endif %}
 							{% endif %}
 						</ul>
+						<button
+							hx-get={% url 'bonus-points-tab' employee.id %} hx-target="#bonus_points_target" id="bonus-tab-button" hidden>
+						</button>
 
 						<div class="oh-general__tab-target oh-profile__info-tab mb-4" id="personal_target"> </div>
 
