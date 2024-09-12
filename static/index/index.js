@@ -131,9 +131,20 @@ $(document).on('keydown', function (event) {
     var isInputFocused = $(document.activeElement).is('input, textarea, select');
 
     if (event.keyCode === 46) {
-        // Click the delete option from navbar of current page
-        $('[data-action="delete"]').click();
-    } else if (event.keyCode === 107) { // Key code for the + key on the numeric keypad
+        // Key code 46 for delete in keypad
+        // If there have any objectDetailsModal with oh-modal--show
+        // take delete button inside that else take the delete button from navbar Actions
+        if (!isInputFocused) {
+            var $modal = $('.oh-modal--show');
+            var $deleteButton = $modal.length ? $modal.find('[data-action="delete"]') : $('.oh-dropdown').find('[data-action="delete"]');
+            if ($deleteButton.length) {
+                $deleteButton.click();
+                $deleteButton.trigger('click');
+                console.log('clicked')
+            }
+        }
+    }
+    else if (event.keyCode === 107) { // Key code for the + key on the numeric keypad
         if (!isInputFocused) {
             // Click the create option from navbar of current page
             $('[data-action="create"]').click();
