@@ -1,205 +1,132 @@
-{% load static %} {% load i18n %} {% load basefilters %} {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+{% load static %} {% load i18n %} {% load basefilters %}
+{% if messages %}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+        <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
     </div>
-  </div>
-  {% endfor %}
-</div>
-<script>
-  setTimeout(function () {
-    $(".oh-span__class").click();
-  }, 1000);
-</script>
-<span
-  class="oh-span__class"
-  hx-get="{% url 'attendance-activity-search' %}?{{pd}}"
-  hx-target="#activity-table"
-></span>
-{% endif %} {% if activity %}
-<div class="oh-modal__dialog-header">
-  <h2 class="oh-modal__dialog-title m-0" id="addEmployeeModalLabel">
-    {% trans "Details" %}
-  </h2>
-  <button class="oh-modal__close" aria-label="Close">
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
-</div>
-<div class="oh-modal__dialog-body oh-modal__dialog-relative">
-  <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button
-      hx-get="{% url 'attendance-activity-single-view' previous_instance %}?{{pd}}&instances_ids={{instance_ids_json}}"
-      hx-target="#objectDetailsModalW25Target"
-      class="oh-modal__diaglog-nav oh-modal__nav-prev"
-    >
-      <ion-icon
-        name="chevron-back-outline"
-        class="md hydrated"
-        role="img"
-        aria-label="chevron back outline"
-      ></ion-icon>
-    </button>
+    <span class="oh-span__class" hx-trigger="load" hx-get="{% url 'attendance-activity-search' %}?{{pd}}"
+        hx-target="#activity-table"></span>
+{% endif %}
+{% if activity %}
+    <div class="oh-modal__dialog-header">
+        <h2 class="oh-modal__dialog-title m-0" id="addEmployeeModalLabel">
+            {% trans "Details" %}
+        </h2>
+        <button class="oh-modal__close" aria-label="Close">
+            <ion-icon name="close-outline"></ion-icon>
+        </button>
+    </div>
+    <div class="oh-modal__dialog-body oh-modal__dialog-relative">
+        <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+            <button
+                hx-get="{% url 'attendance-activity-single-view' previous_instance %}?{{pd}}&instances_ids={{instance_ids_json}}"
+                hx-target="#objectDetailsModalW25Target" class="oh-modal__diaglog-nav oh-modal__nav-prev" data-action="previous">
+                <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+                    aria-label="chevron back outline"></ion-icon>
+            </button>
 
-    <button
-      hx-get="{% url 'attendance-activity-single-view' next_instance %}?{{pd}}&instances_ids={{instance_ids_json}}"
-      hx-target="#objectDetailsModalW25Target"
-      class="oh-modal__diaglog-nav oh-modal__nav-next"
-    >
-      <ion-icon
-        name="chevron-forward-outline"
-        class="md hydrated"
-        role="img"
-        aria-label="chevron forward outline"
-      ></ion-icon>
-    </button>
-  </div>
-  <a
-    class="oh-timeoff-modal__profile-content"
-    style="text-decoration: none"
-    href="{% url 'employee-view-individual' activity.employee_id.id %}"
-  >
-    <div class="oh-profile mb-2">
-      <div class="oh-profile__avatar">
-        <img
-          src="{{activity.employee_id.get_avatar}}"
-          class="oh-profile__image me-2"
-          alt="Mary Magdalene"
-        />
-      </div>
-      <div class="oh-timeoff-modal__profile-info">
-        <span class="oh-timeoff-modal__user fw-bold"
-          >{{activity.employee_id}}</span
-        >
-        <span
-          class="oh-timeoff-modal__user m-0"
-          style="font-size: 18px; color: #4d4a4a"
-        >
-          {{activity.employee_id.employee_work_info.department_id}} /
-          {{activity.employee_id.employee_work_info.job_position_id}}</span
-        >
-      </div>
-    </div>
-  </a>
+            <button
+                hx-get="{% url 'attendance-activity-single-view' next_instance %}?{{pd}}&instances_ids={{instance_ids_json}}"
+                hx-target="#objectDetailsModalW25Target" class="oh-modal__diaglog-nav oh-modal__nav-next" data-action="next">
+                <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+                    aria-label="chevron forward outline"></ion-icon>
+            </button>
+        </div>
+        <a class="oh-timeoff-modal__profile-content" style="text-decoration: none"
+            href="{% url 'employee-view-individual' activity.employee_id.id %}">
+            <div class="oh-profile mb-2">
+                <div class="oh-profile__avatar">
+                    <img src="{{activity.employee_id.get_avatar}}" class="oh-profile__image me-2" alt="Mary Magdalene" />
+                </div>
+                <div class="oh-timeoff-modal__profile-info">
+                    <span class="oh-timeoff-modal__user fw-bold">{{activity.employee_id}}</span>
+                    <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: #4d4a4a">
+                        {{activity.employee_id.employee_work_info.department_id}} /
+                        {{activity.employee_id.employee_work_info.job_position_id}}</span>
+                </div>
+            </div>
+        </a>
 
-  <div class="oh-modal__dialog-header pt-0">
-    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
-      <div class="oh-timeoff-modal__stat">
-        <span class="oh-timeoff-modal__stat-title"
-          >{% trans "Attendance Date" %}</span
-        >
-        <span class="oh-timeoff-modal__stat-count dateformat_changer"
-          >{{activity.attendance_date}}</span
-        >
-      </div>
-      <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
-        <span class="oh-timeoff-modal__stat-title">{% trans "Day" %}</span>
-        <span class="oh-timeoff-modal__stat-count">{{activity.shift_day}}</span>
-      </div>
-    </div>
+        <div class="oh-modal__dialog-header pt-0">
+            <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+                <div class="oh-timeoff-modal__stat">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Attendance Date" %}</span>
+                    <span class="oh-timeoff-modal__stat-count dateformat_changer">{{activity.attendance_date}}</span>
+                </div>
+                <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Day" %}</span>
+                    <span class="oh-timeoff-modal__stat-count">{{activity.shift_day}}</span>
+                </div>
+            </div>
 
-    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
-      <div class="oh-timeoff-modal__stat">
-        <span class="oh-timeoff-modal__stat-title">{% trans "Check In" %}</span>
-        <span class="oh-timeoff-modal__stat-count timeformat_changer"
-          >{{activity.clock_in}}</span
-        >
-      </div>
-      <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
-        <span class="oh-timeoff-modal__stat-title"
-          >{% trans "Check In Date" %}</span
-        >
-        <span class="oh-timeoff-modal__stat-count dateformat_changer"
-          >{{activity.clock_in_date}}</span
-        >
-      </div>
-    </div>
+            <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+                <div class="oh-timeoff-modal__stat">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Check In" %}</span>
+                    <span class="oh-timeoff-modal__stat-count timeformat_changer">{{activity.clock_in}}</span>
+                </div>
+                <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Check In Date" %}</span>
+                    <span class="oh-timeoff-modal__stat-count dateformat_changer">{{activity.clock_in_date}}</span>
+                </div>
+            </div>
 
-    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
-      <div class="oh-timeoff-modal__stat">
-        <span class="oh-timeoff-modal__stat-title"
-          >{% trans "Check Out" %}</span
-        >
-        <span class="oh-timeoff-modal__stat-count timeformat_changer"
-          >{{activity.clock_out}}</span
-        >
-      </div>
-      <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
-        <span class="oh-timeoff-modal__stat-title"
-          >{% trans "Check Out Date" %}</span
-        >
-        <span class="oh-timeoff-modal__stat-count dateformat_changer"
-          >{{activity.clock_out_date}}</span
-        >
-      </div>
-    </div>
+            <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+                <div class="oh-timeoff-modal__stat">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Check Out" %}</span>
+                    <span class="oh-timeoff-modal__stat-count timeformat_changer">{{activity.clock_out}}</span>
+                </div>
+                <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Check Out Date" %}</span>
+                    <span class="oh-timeoff-modal__stat-count dateformat_changer">{{activity.clock_out_date}}</span>
+                </div>
+            </div>
 
-    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
-      <div class="oh-timeoff-modal__stat">
-        <span class="oh-timeoff-modal__stat-title">{% trans "Shift" %}</span>
-        <span class="oh-timeoff-modal__stat-count"
-          >{{attendance.shift_id}}</span
-        >
-      </div>
-      <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
-        <span class="oh-timeoff-modal__stat-title"
-          >{% trans "Work Type" %}</span
-        >
-        <span class="oh-timeoff-modal__stat-count"
-          >{{attendance.work_type_id}}</span
-        >
-      </div>
+            <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+                <div class="oh-timeoff-modal__stat">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Shift" %}</span>
+                    <span class="oh-timeoff-modal__stat-count">{{attendance.shift_id}}</span>
+                </div>
+                <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Work Type" %}</span>
+                    <span class="oh-timeoff-modal__stat-count">{{attendance.work_type_id}}</span>
+                </div>
+            </div>
+            {% if perms.attendance.delete_attendanceactivity %}
+            <div class="oh-modal__button-container text-center w-100">
+                <div class="oh-btn-group">
+                    {% if perms.attendance.delete_attendancelatecomeearlyout %}
+                    <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
+                        hx-post="{% url 'attendance-activity-delete' activity.id  %}?{{pd}}&instances_ids={{instance_ids_json}}"
+                        hx-target="#objectDetailsModalW25Target" onclick="event.stopPropagation()" class="w-100">
+                        {% csrf_token %}
+                        <button type="submit" class="oh-btn oh-btn--danger w-100" data-action="delete">
+                            <ion-icon name="trash-outline" role="img" class="md hydrated"
+                                aria-label="create outline"></ion-icon>{% trans "Delete" %}
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
     </div>
-    {% if perms.attendance.delete_attendanceactivity %}
-    <div class="oh-modal__button-container text-center w-100">
-      <div class="oh-btn-group">
-        {% if perms.attendance.delete_attendancelatecomeearlyout %}
-        <form
-          hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
-          hx-post="{% url 'attendance-activity-delete' activity.id  %}?{{pd}}&instances_ids={{instance_ids_json}}"
-          hx-target="#objectDetailsModalW25Target"
-          onclick="event.stopPropagation()"
-          class="w-100"
-        >
-          {% csrf_token %}
-          <button type="submit" class="oh-btn oh-btn--danger w-100">
-            <ion-icon
-              name="trash-outline"
-              role="img"
-              class="md hydrated"
-              aria-label="create outline"
-            ></ion-icon
-            >{% trans "Delete" %}
-          </button>
-        </form>
-        {% endif %}
-      </div>
-    </div>
-    {% endif %}
-  </div>
-</div>
 {% else %}
-<div class="oh-modal__dialog-header">
-  <span class="oh-modal__dialog-title" style="margin-left: 30px"></span>
-  <button
-    class="oh-modal__close"
-    aria-label="Close"
-    hx-get="{% url 'attendance-activity-search' %}?{{pd}}"
-    hx-target="#activity-table"
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
-</div>
-<div class="oh-modal__dialog-body oh-modal__dialog-relative">
-  <img
-    style="margin-left: 33%; width: 150px; height: 150px"
-    src="{% static 'images/ui/present.png' %}"
-    class="oh-404__image mb-2"
-    alt="Page not found. 404."
-  />
-  <h5 class="oh-404__subtitle">
-    {% trans "There are no attendance records to display." %}
-  </h5>
-</div>
+    <div class="oh-modal__dialog-header">
+        <span class="oh-modal__dialog-title" style="margin-left: 30px"></span>
+        <button class="oh-modal__close" aria-label="Close">
+            <ion-icon name="close-outline"></ion-icon>
+        </button>
+    </div>
+    <div class="oh-modal__dialog-body oh-modal__dialog-relative">
+        <img style="margin-left: 33%; width: 150px; height: 150px" src="{% static 'images/ui/present.png' %}"
+            class="oh-404__image mb-2" alt="Page not found. 404." />
+        <h5 class="oh-404__subtitle">
+            {% trans "There are no attendance records to display." %}
+        </h5>
+    </div>
 {% endif %}
