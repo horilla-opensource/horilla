@@ -8,16 +8,7 @@
   </div>
   {% endfor %}
 </div>
-<script>
-  setTimeout(function () {
-    $(".oh-span__class").click();
-  }, 1000);
-</script>
-<span
-  class="oh-span__class"
-  hx-get="{% url 'type-filter' %}"
-  hx-target="#leaveTypes"
-></span>
+<span class="oh-span__class" hx-trigger="load" hx-get="{% url 'type-filter' %}" hx-target="#leaveTypes"></span>
 {% endif %}
 {% if leave_type and request.GET.instances_ids and not compensatory %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
@@ -25,6 +16,7 @@
     hx-get="{% url 'leave-type-individual-view' previous %}?instances_ids={{requests_ids}}"
     hx-target="#objectDetailsModalTarget"
     class="oh-modal__diaglog-nav oh-modal__nav-prev"
+    data-action="previous"
   >
     <ion-icon
       name="chevron-back-outline"
@@ -38,6 +30,7 @@
     hx-get="{% url 'leave-type-individual-view' next %}?instances_ids={{requests_ids}}"
     hx-target="#objectDetailsModalTarget"
     class="oh-modal__diaglog-nav oh-modal__nav-next"
+    data-action="next"
   >
     <ion-icon
       name="chevron-forward-outline"
@@ -273,15 +266,14 @@
           {% trans "Assign" %}
         </a>
         {% endif %}
-        <a
-          hx-confirm="{% trans 'Do you really want to delete this leave type?' %}"
-          hx-post="{% url 'type-delete' leave_type.id %}?instances_ids={{requests_ids}}"
-          hx-target="#objectDetailsModalTarget"
-          class="oh-btn oh-btn--danger w-50"
-        >
-          <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-          {% trans "Delete" %}
-        </a>
+          <button class="oh-btn oh-btn--danger w-50" data-action="delete"
+            hx-confirm="{% trans 'Do you really want to delete this leave type?' %}"
+            hx-post="{% url 'type-delete' leave_type.id %}?instances_ids={{requests_ids}}"
+            hx-target="#objectDetailsModalTarget"
+            >
+            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+            {% trans "Delete" %}
+          </button>
         {% endif %}
       </div>
       {% endif %}

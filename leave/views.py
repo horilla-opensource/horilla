@@ -1219,7 +1219,7 @@ def leave_assign_one(request, id):
 @manager_can_enter("leave.view_availableleave")
 def leave_assign_view(request):
     """
-    function used to view assigned employee leaves.
+    Function to view assigned employee leaves.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
@@ -1227,38 +1227,33 @@ def leave_assign_view(request):
     Returns:
     GET : return leave assigned view template
     """
-    queryset = AvailableLeave.objects.all()
-    queryset = filtersubordinates(request, queryset, "leave.view_availableleave")
-    previous_data = request.GET.urlencode()
+    queryset = filtersubordinates(
+        request, AvailableLeave.objects.all(), "leave.view_availableleave"
+    )
+    previous_data = request.GET.urlencode() or "field=leave_type_id"
+    field = request.GET.get("field", "leave_type_id")
     page_number = request.GET.get("page")
-    page_obj = paginator_qry(queryset.order_by("-id"), page_number)
-    assigned_leave_filter = AssignedLeaveFilter()
-    assign_form = AssignLeaveForm()
 
-    # default group by configuration
-    data_dict = {"field": ["leave_type_id"]}
+    # Paginate and group queryset by field
+    page_obj = group_by_queryset(queryset.order_by("-id"), field, page_number)
+    available_leave_ids = json.dumps(
+        [instance.id for entry in page_obj for instance in entry["list"].object_list]
+    )
 
-    # to check condition on the template
-    setattr(request.GET, "field", True)
-
-    page_obj = group_by_queryset(queryset.order_by("-id"), "leave_type_id", page_number)
-    list_values = [entry["list"] for entry in page_obj]
-    id_list = []
-    for value in list_values:
-        for instance in value.object_list:
-            id_list.append(instance.id)
-    available_leave_ids = json.dumps(list(id_list))
+    # Setting a condition for the template
+    request.GET = request.GET.copy()
+    request.GET["field"] = True
 
     return render(
         request,
         "leave/leave_assign/assign_view.html",
         {
             "available_leaves": page_obj,
-            "f": assigned_leave_filter,
+            "f": AssignedLeaveFilter(),
             "pd": previous_data,
-            "filter_dict": data_dict,
+            "filter_dict": parse_qs(previous_data),
             "gp_fields": LeaveAssignReGroup.fields,
-            "assign_form": assign_form,
+            "assign_form": AssignLeaveForm(),
             "available_leave_ids": available_leave_ids,
         },
     )
@@ -1268,16 +1263,21 @@ def leave_assign_view(request):
 @hx_request_required
 @manager_can_enter("leave.view_availableleave")
 def available_leave_single_view(request, obj_id):
-    previous_data = request.GET.urlencode()
+    get_data = request.GET.copy()
+    get_data.pop("instances_ids", None)
+    previous_data = get_data.urlencode()
+
     available_leave = AvailableLeave.objects.filter(id=obj_id).first()
-    instance_ids_json = request.GET["instances_ids"]
-    instance_ids = json.loads(instance_ids_json) if instance_ids_json else []
-    previous_instance, next_instance = closest_numbers(instance_ids, obj_id)
+    instance_ids = json.loads(request.GET.get("instances_ids", "[]"))
+    previous_instance, next_instance = (
+        closest_numbers(instance_ids, obj_id) if instance_ids else (None, None)
+    )
+
     content = {
         "available_leave": available_leave,
         "previous_instance": previous_instance,
         "next_instance": next_instance,
-        "instance_ids_json": instance_ids_json,
+        "instance_ids_json": json.dumps(instance_ids),
         "pd": previous_data,
     }
     return render(
@@ -1451,38 +1451,37 @@ def available_leave_update(request, id):
 @manager_can_enter("leave.delete_availableleave")
 def leave_assign_delete(request, obj_id):
     """
-    function used to delete assign leave type of an employee.
+    Function to delete an assigned leave type of an employee.
 
     Parameters:
-    request (HttpRequest): The HTTP request object.
-    id : available leave id
+    - request (HttpRequest): The HTTP request object.
+    - obj_id (int): Available leave ID.
 
     Returns:
-    GET : return leave type assigned view template
+    - Redirects to the assigned leave type view or refreshes the page.
     """
     pd = request.GET.urlencode()
+
     try:
         AvailableLeave.objects.get(id=obj_id).delete()
-        messages.success(request, _("Assigned leave is successfully deleted."))
+        messages.success(request, _("Assigned leave successfully deleted."))
     except AvailableLeave.DoesNotExist:
         messages.error(request, _("Assigned leave not found."))
     except ProtectedError:
-        messages.error(request, _("Related entries exists"))
-    if not request.GET.get("instances_ids"):
-        if not AvailableLeave.objects.filter():
-            return HttpResponse("<script>window.location.reload()</script>")
-        return redirect(f"/leave/assign-filter?{pd}")
-    else:
-        instances_ids = request.GET.get("instances_ids")
+        messages.error(request, _("Related entries exist."))
+
+    if instances_ids := request.GET.get("instances_ids"):
         instances_list = json.loads(instances_ids)
+        previous_instance, next_instance = closest_numbers(instances_list, obj_id)
         if obj_id in instances_list:
             instances_list.remove(obj_id)
-        previous_instance, next_instance = closest_numbers(
-            json.loads(instances_ids), obj_id
-        )
         return redirect(
-            f"/leave/available-leave-single-view/{next_instance}/?instances_ids={instances_list}"
+            f"/leave/available-leave-single-view/{next_instance}/?{pd}&instances_ids={json.dumps(instances_list)}"
         )
+
+    if not AvailableLeave.objects.exists():
+        return HttpResponse("<script>window.location.reload()</script>")
+    return redirect(f"/leave/assign-filter?{pd}")
 
 
 @require_http_methods(["POST"])
@@ -3082,7 +3081,7 @@ def leave_allocation_request_single_view(request, req_id):
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
         previous_id, next_id = closest_numbers(requests_ids, req_id)
-    leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
+    leave_allocation_request = LeaveAllocationRequest.find(req_id)
     context = {
         "leave_allocation_request": leave_allocation_request,
         "my_request": my_request,
@@ -3457,13 +3456,25 @@ def leave_allocation_request_delete(request, req_id):
     except ProtectedError:
         messages.error(request, _("Related entries exist"))
     hx_target = request.META.get("HTTP_HX_TARGET")
+    previous_data = request.GET.urlencode()
     if hx_target and hx_target == "view-container":
-        previous_data = request.GET.urlencode()
         leave_allocations = LeaveAllocationRequest.objects.all()
         if leave_allocations.exists():
             return redirect(f"/leave/leave-allocation-request-filter?{previous_data}")
         else:
             return HttpResponse("<script>location.reload();</script>")
+    elif hx_target and hx_target == "objectDetailsModalW25Target":
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if req_id in instances_list:
+            instances_list.remove(req_id)
+        previous_instance, next_instance = closest_numbers(
+            json.loads(instances_ids), req_id
+        )
+        return redirect(
+            f"/leave/leave-allocation-request-single-view/{next_instance}?{previous_data}"
+        )
+
     return redirect(leave_allocation_request_view)
 
 

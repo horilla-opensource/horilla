@@ -1,33 +1,47 @@
 {% load i18n static %}
 {% load basefilters %}
-{% if instances_ids %}
+{% if messages %}
+    <div class="oh-wrapper">
+    {% for message in messages %}
+        <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+            {{ message }}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    <span hx-trigger="load" hx-get="{% url 'leave-allocation-request-filter' %}" hx-target="#view-container"></span>
+{% endif %}
+{% if instances_ids and leave_allocation_request %}
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
         <button
             hx-get="{% url 'leave-allocation-request-single-view' previous %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"
             hx-target="#objectDetailsModalW25Target"
-            class="oh-modal__diaglog-nav oh-modal__nav-prev">
+            class="oh-modal__diaglog-nav oh-modal__nav-prev"
+            data-action="previous">
             <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
             aria-label="chevron back outline"></ion-icon>
         </button>
         <button
             hx-get="{% url 'leave-allocation-request-single-view' next %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"
             hx-target="#objectDetailsModalW25Target"
-            class="oh-modal__diaglog-nav oh-modal__nav-next">
+            class="oh-modal__diaglog-nav oh-modal__nav-next"
+            data-action="next">
             <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
             aria-label="chevron forward outline"></ion-icon>
         </button>
     </div>
 {% endif %}
 </div>
-
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title" id="objectDetailsModalLabel">
-      {% trans "Details" %}
+        {% trans "Details" %}
     </h2>
     <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
     </button>
 </div>
+{% if leave_allocation_request %}
 <div class="oh-modal__dialog-body">
     <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;"
         href ="{% url 'employee-view-individual' leave_allocation_request.employee_id.id %}">
@@ -138,9 +152,9 @@
                     </button></td>
                 {% endif %}
                 {% if leave_allocation_request.status !=  'approved' %}
-                    <a class="oh-btn oh-btn--danger w-100" id="delete-link"
-                        href="{% url 'leave-allocation-request-delete' leave_allocation_request.id %}"
-                        onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');"
+                    <a class="oh-btn oh-btn--danger w-100" id="delete-link" hx-target="#objectDetailsModalW25Target"
+                        hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+                        hx-post="{% url 'leave-allocation-request-delete' leave_allocation_request.id %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"
                         title="{% trans 'Delete' %}">
                         <ion-icon
                             name="trash-outline"
@@ -198,3 +212,16 @@
         </div>
     </div>
 </div>
+{% else %}
+    <div class="oh-modal__dialog-body oh-modal__dialog-relative pt-2">
+        <img
+        style="margin-left: 29%; width: 150px; height: 150px"
+        src="{% static 'images/ui/attendance.png' %}"
+        class="oh-404__image mb-2"
+        alt="Page not found. 404."
+        />
+        <h5 class="oh-404__subtitle">
+            {% trans "There are no leave allocation requests at the moment." %}
+        </h5>
+    </div>
+{% endif %}

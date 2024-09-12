@@ -16,6 +16,7 @@
             <button
                 hx-get="{% url 'user-request-one' previous %}?instances_ids={{instances_ids}}"
                 hx-target="#objectDetailsModalW25Target"
+                data-action="previous"
                 class="oh-modal__diaglog-nav oh-modal__nav-prev">
                 <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
                 aria-label="chevron back outline"></ion-icon>
@@ -23,7 +24,9 @@
             <button
                 hx-get="{% url 'user-request-one' next %}?instances_ids={{instances_ids}}"
                 hx-target="#objectDetailsModalW25Target"
-                class="oh-modal__diaglog-nav oh-modal__nav-next">
+                class="oh-modal__diaglog-nav oh-modal__nav-next"
+                data-action="next"
+                >
                 <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
                 aria-label="chevron forward outline"></ion-icon>
             </button>
