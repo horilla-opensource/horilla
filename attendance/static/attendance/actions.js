@@ -682,7 +682,7 @@ function unselectAllActivity() {
   });
 }
 
-$("#attendance-info-import").click(function (e) {
+$(".attendance-info-import").click(function (e) {
   e.preventDefault();
   var languageCode = null;
   getCurrentLanguageCode(function (code) {

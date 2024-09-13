@@ -212,7 +212,7 @@ form.addEventListener("submit", function (event) {
   });
 });
 
-$("#work-info-import").click(function (e) {
+function template_download(e) {
   e.preventDefault();
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
@@ -266,7 +266,17 @@ $("#work-info-import").click(function (e) {
       }
     });
   });
+}
+
+
+$("#work-info-import-download").click(function (e) {
+  template_download(e);  // Pass the event to the function
 });
+
+$("#work-info-import").click(function (e) {
+  template_download(e);  // Pass the event to the function
+});
+
 
 $(document).ajaxStart(function () {
   $("#loading").show();

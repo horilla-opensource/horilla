@@ -71,7 +71,7 @@
             </div>
             <div class="oh-main__titlebar-button-container">
                 {% if perms.asset.view_assetlot %}
-                    <a href="{% url 'asset-batch-view'%}">
+                    <a href="{% url 'asset-batch-view'%}" style="text-decoration:none;">
                         <button class="oh-btn ml-2"> <ion-icon name="list-outline" class="me-1"></ion-icon>{% trans "Batch No" %}</button>
                     </a>
                 {% endif %}
@@ -191,14 +191,15 @@
                           <li class="oh-dropdown__item" id="import-button">
                             <a
                               href="#"
-                              class="oh-dropdown__link"
-                              id="asset-info-import" data-toggle="oh-modal-toggle" data-target="#assetImport" class="button-link" onclick="return confirm('{% trans "Do you want to download template ?" %}')"
+                              class="oh-dropdown__link asset-info-import"
+                              data-toggle="oh-modal-toggle" data-target="#assetImport" class="button-link" onclick="return confirm('{% trans "Do you want to download template ?" %}')"
                               >{% trans "Import" %}</a
                             >
                           </li>
                           <li class="oh-dropdown__item">
                             <a
                               href="#"
+                              class="oh-dropdown__link"
                               data-toggle="oh-modal-toggle"
                               data-target="#objectCreateModal"
                               hx-get="{% url 'asset-export-excel' %}"
@@ -248,6 +249,18 @@
                         <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
                     </label>
                     <input type="file" name="asset_import" id="uploadFile" />
+                    <div class="d-inline float-end">
+                        <a
+                          href="#"
+                          style="text-decoration:none; display: inline-block;"
+                          class="oh-dropdown__link asset-info-import"
+                          data-toggle="oh-modal-toggle"
+                          data-target="#assetImport"
+                        >
+                          <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;"></ion-icon>
+                          <span>{% trans "Download Template" %}</span>
+                        </a>
+                    </div>
                 </div>
                 <button type="submit"
                     class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3">{% trans "Upload" %}</button>

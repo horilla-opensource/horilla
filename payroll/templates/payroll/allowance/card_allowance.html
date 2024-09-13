@@ -15,7 +15,7 @@
   <div class="oh-layout--grid-3">
     {% for allowance in allowances %}
     <div class="oh-kanban-card {% if allowance.is_fixed == True %} row-status--orange {% elif allowance.is_fixed == False %} row-status--yellow {% endif %}"
-        data-toggle="oh-modal-toggle" data-target = "#objectDetailsModal" hx-get="{% url 'single-allowance-view' allowance.id %}?instances_ids={{allowance_ids}}" hx-target = "#objectDetailsModalTarget">
+        data-toggle="oh-modal-toggle" data-target = "#objectDetailsModal" hx-get="{% url 'single-allowance-view' allowance.id %}?{{pd}}&view=card&instances_ids={{allowance_ids}}" hx-target = "#objectDetailsModalTarget">
         <div class="oh-kanban-card__avatar">
         <div class="oh-kanban-card__profile-container">
             <img
@@ -150,7 +150,7 @@
 <!-- start of empty page -->
 <div class="oh-404">
   <img
-    style="width: 150px; height: 150px"
+    style="width: 150px; height: 150px;"
     src="{% static 'images/ui/no-results.png' %}"
     class="oh-404__image mb-4"
   />

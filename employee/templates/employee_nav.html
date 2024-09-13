@@ -83,6 +83,19 @@
                 >
               </label>
               <input type="file" name="file" id="workInfoImportFile" />
+              <div class="d-inline float-end">
+                <a
+                  href="#"
+                  style="text-decoration:none; display: inline-block;"
+                  class="oh-dropdown__link"
+                  id="work-info-import-download"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#workInfoImport"
+                >
+                  <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;"></ion-icon>
+                  <span>{% trans "Download Template" %}</span>
+                </a>
+              </div>
             </div>
           </div>
           <div class="modal-footer d-flex flex-row-reverse">

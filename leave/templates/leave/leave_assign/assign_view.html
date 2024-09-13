@@ -55,6 +55,18 @@
               id="assignedLeaveFile"
               required
             />
+            <div class="d-inline float-end">
+              <a
+                href="#"
+                style="text-decoration:none; display: inline-block;"
+                class="oh-dropdown__link assign-leave-type-info-import"
+                data-toggle="oh-modal-toggle"
+                data-target="#assignLeaveTypeImport"
+              >
+                <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;"></ion-icon>
+                <span>{% trans "Download Template" %}</span>
+              </a>
+            </div>
           </div>
           <button
             onclick="validateFile($(this),'assignedLeaveFile');"
@@ -197,8 +209,7 @@
               <li class="oh-dropdown__item">
                 <a
                   href="#"
-                  class="oh-dropdown__link"
-                  id="assign-leave-type-info-import"
+                  class="oh-dropdown__link assign-leave-type-info-import"
                   data-toggle="oh-modal-toggle"
                   data-target="#assignLeaveTypeImport"
                   >{% trans "Import" %}</a

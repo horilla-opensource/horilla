@@ -263,6 +263,19 @@ def contract_delete(request, contract_id):
         messages.success(request, _("Contract deleted"))
         request_path = request.path.split("/")
         if "delete-contract-modal" in request_path:
+            if instances_ids := request.GET.get("instances_ids"):
+                get_data = request.GET.copy()
+                get_data.pop("instances_ids", None)
+                previous_data = get_data.urlencode()
+                instances_list = json.loads(instances_ids)
+                previous_instance, next_instance = closest_numbers(
+                    instances_list, contract_id
+                )
+                if contract_id in instances_list:
+                    instances_list.remove(contract_id)
+                urls = f"/payroll/single-contract-view/{next_instance}/"
+                params = f"?{previous_data}&instances_ids={instances_list}"
+                return redirect(urls + params)
             return HttpResponse("<script>window.location.reload();</script>")
         else:
             return redirect(f"/payroll/contract-filter?{request.GET.urlencode()}")
@@ -305,41 +318,39 @@ def contract_view(request):
 def view_single_contract(request, contract_id):
     """
     Renders a single contract view page.
-
-    Parameters:
-    - request (HttpRequest): The HTTP request object.
-    - contract_id (int): The ID of the contract to view.
-
-    Returns:
-        The rendered contract single view page.
-
     """
-    HTTP_REFERERS = [
-        part for part in request.META.get("HTTP_REFERER").split("/") if part
-    ]
+    get_data = request.GET.copy()
+    get_data.pop("instances_ids", None)
+    previous_data = get_data.urlencode()
+    dashboard = request.GET.get("dashboard", "")
+
+    HTTP_REFERERS = request.META.get("HTTP_REFERER", "").split("/")
     delete_hx_target = (
         "#personal_target"
-        if HTTP_REFERERS[:-2]
-        and HTTP_REFERERS[-2] == "employee-view"
-        or HTTP_REFERERS[-1] == "employee-profile"
-        else "#payroll-contract-container"
+        if "employee-view" in HTTP_REFERERS or "employee-profile" in HTTP_REFERERS
+        else "#objectDetailsModalTarget"
     )
-    dashboard = ""
-    if request.GET.get("dashboard"):
-        dashboard = request.GET.get("dashboard")
-    contract = Contract.objects.get(id=contract_id)
+
+    contract = Contract.find(contract_id)
+
     context = {
         "contract": contract,
         "dashboard": dashboard,
         "delete_hx_target": delete_hx_target,
+        "pd": previous_data,
     }
+
     contract_ids_json = request.GET.get("instances_ids")
     if contract_ids_json:
         contract_ids = json.loads(contract_ids_json)
         previous_id, next_id = closest_numbers(contract_ids, contract_id)
-        context["next"] = next_id
-        context["previous"] = previous_id
-        context["contract_ids"] = contract_ids_json
+        context.update(
+            {
+                "previous": previous_id,
+                "next": next_id,
+                "contract_ids": contract_ids_json,
+            }
+        )
     return render(request, "payroll/contract/contract_single_view.html", context)
 
 

@@ -5,6 +5,7 @@
       hx-get="{% url 'asset-request-individual-view' previous %}?requests_ids={{requests_ids}}"
       hx-target="#objectDetailsModalW25Target"
       class="oh-modal__diaglog-nav oh-modal__nav-prev"
+      data-action="previous"
     >
         <ion-icon
             name="chevron-back-outline"
@@ -18,6 +19,7 @@
       hx-get="{% url 'asset-request-individual-view' next %}?requests_ids={{requests_ids}}"
       hx-target="#objectDetailsModalW25Target"
       class="oh-modal__diaglog-nav oh-modal__nav-next"
+      data-action="next"
     >
         <ion-icon
             name="chevron-forward-outline"

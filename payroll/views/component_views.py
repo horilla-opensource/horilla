@@ -43,7 +43,7 @@ from horilla.decorators import (
 )
 from horilla.group_by import group_by_queryset
 from horilla.horilla_settings import HORILLA_DATE_FORMATS
-from horilla.methods import dynamic_attr, get_horilla_model_class
+from horilla.methods import dynamic_attr, get_horilla_model_class, get_urlencode
 
 # from leave.models import AvailableLeave
 from notifications.signals import notify
@@ -408,7 +408,8 @@ def view_single_allowance(request, allowance_id):
     """
     This method is used render template to view the selected allowance instances
     """
-    allowance = payroll.models.models.Allowance.objects.get(id=allowance_id)
+    previous_data = get_urlencode(request)
+    allowance = payroll.models.models.Allowance.find(allowance_id)
     allowance_ids_json = request.GET.get("instances_ids")
     context = {
         "allowance": allowance,
@@ -419,6 +420,7 @@ def view_single_allowance(request, allowance_id):
         context["next"] = next_id
         context["previous"] = previous_id
         context["allowance_ids"] = allowance_ids
+    context["pd"] = previous_data
     return render(
         request,
         "payroll/allowance/view_single_allowance.html",
@@ -483,6 +485,7 @@ def delete_allowance(request, allowance_id):
     """
     This method is used to delete the allowance instance
     """
+    previous_data = get_urlencode(request)
     try:
         allowance = payroll.models.models.Allowance.objects.filter(
             id=allowance_id
@@ -492,20 +495,27 @@ def delete_allowance(request, allowance_id):
             messages.success(request, _("Allowance deleted successfully"))
         else:
             messages.error(request, _("Allowance not found"))
-    except ValidationError as validation_error:
-        messages.error(
-            request, _("Validation error occurred while deleting the allowance")
-        )
-        messages.error(request, str(validation_error))
-    except Exception as exception:
+    except Exception as e:
         messages.error(request, _("An error occurred while deleting the allowance"))
-        messages.error(request, str(exception))
+        messages.error(request, str(e))
+
     if (
         request.path.split("/")[2] == "delete-employee-allowance"
-        or not payroll.models.models.Allowance.objects.filter()
+        or not payroll.models.models.Allowance.objects.exists()
     ):
         return HttpResponse("<script>window.location.reload();</script>")
-    return redirect(filter_allowance)
+
+    instances_ids = request.GET.get("instances_ids")
+    if instances_ids:
+        instances_list = json.loads(instances_ids)
+        previous_instance, next_instance = closest_numbers(instances_list, allowance_id)
+        if allowance_id in instances_list:
+            instances_list.remove(allowance_id)
+            url = f"/payroll/single-allowance-view/{next_instance}"
+            params = f"?{previous_data}&instances_ids={instances_list}"
+            return redirect(url + params)
+
+    return redirect(f"/payroll/filter-allowance?{previous_data}")
 
 
 @login_required
@@ -552,49 +562,53 @@ def view_deduction(request):
 @hx_request_required
 def view_single_deduction(request, deduction_id):
     """
-    This method is used render template to view all the deduction instances
+    Render template to view a single deduction instance with navigation.
     """
+    previous_data = get_urlencode(request)
     deduction = payroll.models.models.Deduction.objects.filter(id=deduction_id).first()
-    context = {"deduction": deduction}
+    context = {"deduction": deduction, "pd": previous_data}
+
+    # Handle deduction IDs and navigation
     deduction_ids_json = request.GET.get("instances_ids")
     if deduction_ids_json:
         deduction_ids = json.loads(deduction_ids_json)
-        previous_id, next_id = closest_numbers(deduction_ids, deduction_id)
-        context["next"] = next_id
-        context["previous"] = previous_id
+        context["previous"], context["next"] = closest_numbers(
+            deduction_ids, deduction_id
+        )
         context["deduction_ids"] = deduction_ids
 
-    HTTP_REFERER = request.META.get("HTTP_REFERER")
-    HTTP_REFERERS = [part for part in HTTP_REFERER.split("/") if part]
-    if "view-deduction" in HTTP_REFERERS:
-        context["close_hx_url"] = "/payroll/filter-deduction"
-        context["close_hx_target"] = "#payroll-deduction-container"
+    # Determine htmx load URL and target
+    HTTP_REFERER = request.META.get("HTTP_REFERER", "")
+    referer_parts = HTTP_REFERER.rstrip("/").split("/")
 
-    elif len(HTTP_REFERERS) >= 2 and HTTP_REFERERS[-2] == "employee-view":
+    if "view-deduction" in referer_parts:
+        context.update(
+            {
+                "load_hx_url": f"/payroll/filter-deduction?{previous_data}",
+                "load_hx_target": "#payroll-deduction-container",
+            }
+        )
+    elif referer_parts[-2:] == ["employee-view", str(referer_parts[-1])]:
         try:
-            employee_id = int(HTTP_REFERERS[-1])
-            context["close_hx_url"] = (
-                f"/payroll/allowances-deductions-tab/{employee_id}"
+            context.update(
+                {
+                    "load_hx_url": f"/payroll/allowances-deductions-tab/{int(referer_parts[-1])}",
+                    "load_hx_target": "#allowance_deduction",
+                }
             )
-            context["close_hx_target"] = "#allowance_deduction"
         except ValueError:
             pass
-
     elif HTTP_REFERER.endswith("employee-profile/"):
-        context["close_hx_url"] = (
-            f"/payroll/allowances-deductions-tab/{request.user.employee_get.id}"
+        context.update(
+            {
+                "load_hx_url": f"/payroll/allowances-deductions-tab/{request.user.employee_get.id}",
+                "load_hx_target": "#allowance_deduction",
+            }
         )
-        context["close_hx_target"] = "#allowance_deduction"
-
     else:
-        context["close_hx_url"] = None
-        context["close_hx_target"] = None
+        context.update({"load_hx_url": None, "load_hx_target": None})
 
-    return render(
-        request,
-        "payroll/deduction/view_single_deduction.html",
-        context,
-    )
+    return render(request, "payroll/deduction/view_single_deduction.html", context)
 
 
 @login_required
@@ -652,7 +666,9 @@ def delete_deduction(request, deduction_id, emp_id=None):
     instances_ids = request.GET.get("instances_ids")
     next_instance = None
     instances_list = None
+    previous_data = ""
     if instances_ids:
+        previous_data = get_urlencode(request)
         instances_list = json.loads(instances_ids)
         previous_instance, next_instance = closest_numbers(instances_list, deduction_id)
         instances_list.remove(deduction_id)
@@ -666,7 +682,7 @@ def delete_deduction(request, deduction_id, emp_id=None):
     paths = {
         "payroll-deduction-container": f"/payroll/filter-deduction?{request.GET.urlencode()}",
         "allowance_deduction": f"/payroll/allowances-deductions-tab/{emp_id}",
-        "objectDetailsModalTarget": f"/payroll/single-deduction-view/{next_instance}?instances_ids={instances_list}",
+        "objectDetailsModalTarget": f"/payroll/single-deduction-view/{next_instance}?{previous_data}&instances_ids={instances_list}",
     }
     http_hx_target = request.META.get("HTTP_HX_TARGET")
     redirected_path = paths.get(http_hx_target)
@@ -1055,7 +1071,7 @@ def payslip_export(request):
                 # Convert the string to a datetime.date object
                 start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
-                # Print the formatted date for each format
+                # The formatted date for each format
                 for format_name, format_string in HORILLA_DATE_FORMATS.items():
                     if format_name == date_format:
                         data = start_date.strftime(format_string)

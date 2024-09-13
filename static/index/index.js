@@ -30,6 +30,271 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function addToSelectedId(newIds) {
+    ids = JSON.parse(
+        $("#selectedInstances").attr("data-ids") || "[]"
+    );
+
+    ids = [...ids, ...newIds.map(String)]
+    ids = Array.from(new Set(ids));
+    $("#selectedInstances").attr("data-ids", JSON.stringify(ids))
+}
+
+function attendanceDateChange(selectElement) {
+    var selectedDate = selectElement.val()
+    let parentForm = selectElement.parents().closest("form")
+    var shiftId = parentForm.find("[name=shift_id]").val()
+
+    $.ajax({
+        type: "post",
+        url: "/attendance/update-date-details",
+        data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            "attendance_date": selectedDate,
+            "shift_id": shiftId
+        },
+        success: function (response) {
+            parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
+
+        }
+    });
+}
+
+function getAssignedLeave(employeeElement) {
+    var employeeId = employeeElement.val()
+    $.ajax({
+        type: "get",
+        url: "/payroll/get-assigned-leaves",
+        data: { "employeeId": employeeId },
+        dataType: "json",
+        success: function (response) {
+            let rows = ""
+            for (let index = 0; index < response.length; index++) {
+                const element = response[index];
+                rows = rows + `<tr class="toggle-highlight"><td>${element.leave_type_id__name
+                    }</td><td>${element.available_days}</td><td>${element.carryforward_days}</td></tr>`
+            }
+            $("#availableTableBody").html($(rows))
+            let newLeaves = ""
+            for (let index = 0; index < response.length; index++) {
+                const leave = response[index];
+                newLeaves = newLeaves + `<option value="${leave.leave_type_id__id
+                    }">${leave.leave_type_id__name}</option>`
+            }
+            $('#id_leave_type_id').html(newLeaves)
+            removeHighlight()
+        }
+    });
+}
+
+function selectSelected(viewId) {
+    ids = JSON.parse(
+        $("#selectedInstances").attr("data-ids") || "[]"
+    );
+    $.each(ids, function (indexInArray, valueOfElement) {
+        $(`${viewId} .oh-sticky-table__tbody .list-table-row[value=${valueOfElement}]`).prop("checked", true).change()
+    });
+    $(`${viewId} .oh-sticky-table__tbody .list-table-row`).change(function (
+        e
+    ) {
+        id = $(this).val()
+        ids = JSON.parse(
+            $("#selectedInstances").attr("data-ids") || "[]"
+        );
+        ids = Array.from(new Set(ids));
+        let index = ids.indexOf(id);
+        if (!ids.includes(id)) {
+            ids.push(id);
+        } else {
+            if (!$(this).is(":checked")) {
+                ids.splice(index, 1);
+            }
+        }
+        $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+    }
+    );
+    reloadSelectedCount($('#count_{{view_id|safe}}'));
+
+}
+
+// Switch General Tab
+function switchGeneralTab(e) {
+    // DO NOT USE GENERAL TABS TWICE ON A SINGLE PAGE.
+    e.preventDefault();
+    e.stopPropagation();
+    let clickedEl = e.target.closest(".oh-general__tab-link");
+    let targetSelector = clickedEl.dataset.target;
+
+    // Remove active class from all the tabs
+    $(".oh-general__tab-link").removeClass("oh-general__tab-link--active");
+    // Remove active class to the clicked tab
+    clickedEl.classList.add("oh-general__tab-link--active");
+
+    // Hide all the general tabs
+    $(".oh-general__tab-target").addClass("d-none");
+    // Show the tab with the chosen target
+    $(`.oh-general__tab-target${targetSelector}`).removeClass("d-none");
+}
+
+function toggleReimbursmentType(element) {
+    if (element.val() == 'reimbursement') {
+        $('#objectCreateModalTarget [name=attachment]').parent().show()
+        $('#objectCreateModalTarget [name=attachment]').attr("required", true)
+        $('#objectCreateModalTarget [name=leave_type_id]').parent().hide().attr("required", false)
+        $('#objectCreateModalTarget [name=cfd_to_encash]').parent().hide().attr("required", false)
+        $('#objectCreateModalTarget [name=ad_to_encash]').parent().hide().attr("required", false)
+        $('#objectCreateModalTarget [name=amount]').parent().show().attr("required", true)
+        $('#objectCreateModalTarget #availableTable').hide().attr("required", false)
+        $('#objectCreateModalTarget [name=bonus_to_encash]').parent().hide().attr("required", false)
+
+    } else if (element.val() == 'leave_encashment') {
+        $('#objectCreateModalTarget [name=attachment]').parent().hide()
+        $('#objectCreateModalTarget [name=attachment]').attr("required", false)
+        $('#objectCreateModalTarget [name=leave_type_id]').parent().show().attr("required", true)
+        $('#objectCreateModalTarget [name=cfd_to_encash]').parent().show().attr("required", true)
+        $('#objectCreateModalTarget [name=ad_to_encash]').parent().show().attr("required", true)
+        $('#objectCreateModalTarget [name=amount]').parent().hide().attr("required", false)
+        $('#objectCreateModalTarget #availableTable').show().attr("required", true)
+        $('#objectCreateModalTarget [name=bonus_to_encash]').parent().hide().attr("required", false)
+
+    } else if (element.val() == 'bonus_encashment') {
+        $('#objectCreateModalTarget [name=attachment]').parent().hide()
+        $('#objectCreateModalTarget [name=attachment]').attr("required", false)
+        $('#objectCreateModalTarget [name=leave_type_id]').parent().hide().attr("required", false)
+        $('#objectCreateModalTarget [name=cfd_to_encash]').parent().hide().attr("required", false)
+        $('#objectCreateModalTarget [name=ad_to_encash]').parent().hide().attr("required", false)
+        $('#objectCreateModalTarget [name=amount]').parent().hide().attr("required", false)
+        $('#objectCreateModalTarget #availableTable').hide().attr("required", false)
+        $('#objectCreateModalTarget [name=bonus_to_encash]').parent().show().attr("required", true)
+
+
+    }
+}
+
+function reloadSelectedCount(targetElement) {
+    count = JSON.parse($("#selectedInstances").attr("data-ids") || "[]").length
+    id = targetElement.attr("id")
+    if (id) {
+        id = id.split("count_")[1]
+    }
+    if (count) {
+        targetElement.html(count)
+        targetElement.parent().removeClass("d-none");
+        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).removeClass("d-none");
+
+
+    } else {
+        targetElement.parent().addClass("d-none")
+        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).addClass("d-none")
+
+    }
+}
+
+
+
+function removeHighlight() {
+    setTimeout(function () {
+        $(".toggle-highlight").removeClass("toggle-highlight")
+    }, 200);
+}
+
+function removeId(element) {
+    id = element.val();
+    viewId = element.attr("data-view-id")
+    ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]")
+    let elementToRemove = 5;
+    if (ids[ids.length - 1] === id) {
+        ids.pop();
+    }
+    ids = JSON.stringify(ids)
+    $("#selectedInstances").attr("data-ids", ids);
+
+}
+
+function bulkStageUpdate(canIds, stageId, preStageId) {
+    $.ajax({
+        type: "POST",
+        url: "/recruitment/candidate-stage-change?bulk=True",
+        data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            canIds: JSON.stringify(canIds),
+            stageId: stageId,
+        },
+        success: function (response, textStatus, jqXHR) {
+            if (jqXHR.status === 200) {
+                $(`#stageLoad` + preStageId).click();
+                $(`#stageLoad` + stageId).click();
+            }
+            if (response.message) {
+                Swal.fire({
+                    title: response.message,
+                    text: `Total vacancy is ${response.vacancy}.`, // Using template literals
+                    icon: 'info',
+                    confirmButtonText: 'Ok',
+                });
+            }
+        },
+    });
+}
+
+function updateCandStage(canIds, stageId, preStageId) {
+    $.ajax({
+        type: "POST",
+        url: "/recruitment/candidate-stage-change?bulk=false",
+        data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            canIds: canIds,
+            stageId: stageId,
+        },
+        success: function (response, textStatus, jqXHR) {
+            if (jqXHR.status === 200) {
+                $(`#stageLoad` + preStageId).click();
+                $(`#stageLoad` + stageId).click();
+            }
+            if (response.message) {
+                Swal.fire({
+                    title: response.message,
+                    text: `Total vacancy is ${response.vacancy}.`, // Using template literals
+                    icon: 'info',
+                    confirmButtonText: 'Ok',
+                });
+            }
+        },
+    });
+}
+
+function checkSequence(element) {
+    var preStageId = $(element).data("stage_id")
+    var canIds = $(element).data("cand_id")
+    var stageOrderJson = $(element).attr("data-stage_order")
+    var stageId = $(element).val()
+
+    var parsedStageOrder = JSON.parse(stageOrderJson);
+
+    var stage = parsedStageOrder.find(stage => stage.id == stageId);
+    var preStage = parsedStageOrder.find(stage => stage.id == preStageId);
+    var stageOrder = parsedStageOrder.map(stage => stage.id);
+
+    if (stageOrder.indexOf(parseInt(stageId)) != stageOrder.indexOf(parseInt(preStageId)) + 1 && stage.type != "cancelled") {
+        Swal.fire({
+            title: "Confirm",
+            text: `Are you sure to change the candidate from ${preStage.stage} stage to ${stage.stage} stage`,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Confirm",
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                updateCandStage(canIds, stageId, preStageId)
+            }
+        });
+    }
+    else {
+        updateCandStage(canIds, stageId, preStageId)
+    }
+}
+
 var originalConfirm = window.confirm;
 // Override the default confirm function with SweetAlert
 window.confirm = function (message) {
@@ -97,6 +362,19 @@ window.confirm = function (message) {
         }
     });
 };
+
+setTimeout(() => { $("[name='search']").focus() }, 100);
+
+$("#close").attr(
+    "class",
+    "oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"
+);
+
+$('body').on('click', '.select2-search__field', function (e) {
+    //When click on Select2 fields in filter form,Auto close issue
+    e.stopPropagation();
+});
+
 var nav = $("section.oh-wrapper.oh-main__topbar");
 nav.after(
     $(
@@ -106,29 +384,24 @@ nav.after(
     )
 );
 
-function attendanceDateChange(selectElement) {
-    var selectedDate = selectElement.val()
-    let parentForm = selectElement.parents().closest("form")
-    var shiftId = parentForm.find("[name=shift_id]").val()
-
-    $.ajax({
-        type: "post",
-        url: "/attendance/update-date-details",
-        data: {
-            csrfmiddlewaretoken: getCookie("csrftoken"),
-            "attendance_date": selectedDate,
-            "shift_id": shiftId
-        },
-        success: function (response) {
-            parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
-
-        }
-    });
-}
+$(document).on("htmx:beforeRequest", function (event, data) {
+    var response = event.detail.xhr.response;
+    var target = $(event.detail.elt.getAttribute("hx-target"));
+    var avoid_target = ["BiometricDeviceTestFormTarget", "reloadMessages", "infinite"];
+    if (!target.closest("form").length && avoid_target.indexOf(target.attr("id")) === -1) {
+        target.html(`<div class="animated-background"></div>`);
+    }
+});
 
 $(document).on('keydown', function (event) {
     // Check if the cursor is not focused on an input field
     var isInputFocused = $(document.activeElement).is('input, textarea, select');
+
+    if (event.keyCode === 27) {
+        // Key code 27 for Esc in keypad
+        $('.oh-modal--show').removeClass('oh-modal--show');
+        $('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show')
+    }
 
     if (event.keyCode === 46) {
         // Key code 46 for delete in keypad
@@ -139,8 +412,7 @@ $(document).on('keydown', function (event) {
             var $deleteButton = $modal.length ? $modal.find('[data-action="delete"]') : $('.oh-dropdown').find('[data-action="delete"]');
             if ($deleteButton.length) {
                 $deleteButton.click();
-                $deleteButton.trigger('click');
-                console.log('clicked')
+                $deleteButton[0].click();
             }
         }
     }

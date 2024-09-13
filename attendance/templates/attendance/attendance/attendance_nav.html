@@ -116,6 +116,18 @@
               >
             </label>
             <input type="file" name="attendance_import" id="" required />
+            <div class="d-inline float-end">
+              <a
+                href="#"
+                style="text-decoration:none; display: inline-block;"
+                class="oh-dropdown__link attendance-info-import"
+                data-toggle="oh-modal-toggle"
+                data-target="#attendanceImport"
+              >
+                <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;"></ion-icon>
+                <span>{% trans "Download Template" %}</span>
+              </a>
+            </div>
           </div>
           <button
             type="submit"
@@ -283,8 +295,7 @@
               <li class="oh-dropdown__item">
                 <a
                   href="#"
-                  class="oh-dropdown__link"
-                  id="attendance-info-import"
+                  class="oh-dropdown__link attendance-info-import"
                   data-toggle="oh-modal-toggle"
                   data-target="#attendanceImport"
                   >{% trans "Import" %}</a

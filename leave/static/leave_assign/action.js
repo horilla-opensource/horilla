@@ -316,7 +316,7 @@ $("#bulkAssignedLeavesDelete").click(function (e) {
   });
 });
 
-$("#assign-leave-type-info-import").click(function (e) {
+$(".assign-leave-type-info-import").click(function (e) {
   e.preventDefault();
   var languageCode = null;
   getCurrentLanguageCode(function (code) {

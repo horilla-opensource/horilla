@@ -1,4 +1,22 @@
 {% load i18n %}
+
+<!-- start of messages -->
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+
+  <span class="oh-span__class" hx-trigger="load"     hx-get="{%url 'asset-list' cat_id=asset.asset_category_id.id %}?{{pd}}"
+  hx-target="#assetCategory{{asset.asset_category_id.id}}"></span>
+</div>
+{% endif %}
+<!-- end of messages -->
+
 <div class="oh-modal__dialog-header">
   <span class="oh-modal__dialog-title" id="assetModalLabel">{{asset.asset_name}}</span>
   <button class="oh-modal__close" aria-label="Close" style="top:17px" >
@@ -8,12 +26,12 @@
 <div class="oh-modal__dialog-body oh-modal__dialog-relative">
 {% if request.GET.requests_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button hx-get="{% url 'asset-information' previous %}?requests_ids={{requests_ids}}&asset_info=true" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+    <button hx-get="{% url 'asset-information' previous %}?requests_ids={{requests_ids}}&asset_info=true" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev" data-action="previous">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
         aria-label="chevron back outline"></ion-icon>
     </button>
 
-    <button hx-get="{% url 'asset-information' next %}?requests_ids={{requests_ids}}&asset_info=true" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
+    <button hx-get="{% url 'asset-information' next %}?requests_ids={{requests_ids}}&asset_info=true" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next" data-action="next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
         aria-label="chevron forward outline"></ion-icon>
     </button>
@@ -111,9 +129,13 @@
       >
         <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>{% trans "Edit" %}
       </a>
-      <a href="{% url 'asset-delete' asset.id %}?asset_list=asset_filter&{{pg}}" onclick="event.preventDefault();event.stopPropagation(); confirm(`Do you want to delete this asset?`)" class="oh-btn oh-btn--danger" style="width: 50%;">
-        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>{% trans "Delete" %}
-        </a>
+      <form hx-confirm="{% trans 'Do you want to delete this asset?' %}"
+        hx-post="{% url 'asset-delete' asset.id %}?{{pg}}&requests_ids={{requests_ids}}"
+        hx-target="#objectDetailsModalTarget" onclick="event.stopPropagation()" class="w-50">
+        {% csrf_token %}
+        <button type='submit' class="oh-btn oh-btn--danger w-100" data-action="delete"><ion-icon name="trash-outline" role="img"
+                class="md hydrated" aria-label="create outline"></ion-icon>{% trans "Delete" %}</button>
+      </form>
     </div>
   </div>
 </div>

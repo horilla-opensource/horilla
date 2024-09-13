@@ -254,6 +254,10 @@ def asset_delete(request, asset_id):
         Otherwise, redirect to the asset list view for the asset
         category of the deleted asset.
     """
+
+    request_copy = request.GET.copy()
+    request_copy.pop("requests_ids", None)
+    previous_data = request_copy.urlencode()
     try:
         asset = Asset.objects.get(id=asset_id)
     except Asset.DoesNotExist:
@@ -287,13 +291,36 @@ def asset_delete(request, asset_id):
             asset_del(request, asset)
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
+    instances_ids = request.GET.get("requests_ids")
+    instances_list = json.loads(instances_ids)
     if status == "In use":
         messages.info(request, _("Asset is in use"))
+        return redirect(
+            f"/asset/asset-information/{asset.id}/?{previous_data}&requests_ids={instances_list}&asset_info=true"
+        )
     elif asset_allocation:
         messages.error(request, _("Asset is used in allocation!."))
+        return redirect(
+            f"/asset/asset-information/{asset.id}/?{previous_data}&requests_ids={instances_list}&asset_info=true"
+        )
     else:
         asset_del(request, asset)
-    return redirect(f"/asset/asset-list/{asset_cat_id}")
+
+        if Asset.find(asset.id):
+            return redirect(
+                f"/asset/asset-information/{asset.id}/?{previous_data}&requests_ids={instances_list}&asset_info=true"
+            )
+        else:
+            instances_ids = request.GET.get("requests_ids")
+            instances_list = json.loads(instances_ids)
+            if asset_id in instances_list:
+                instances_list.remove(asset_id)
+    previous_instance, next_instance = closest_numbers(
+        json.loads(instances_ids), asset_id
+    )
+    return redirect(
+        f"/asset/asset-information/{next_instance}/?{previous_data}&requests_ids={instances_list}&asset_info=true"
+    )
 
 
 @login_required

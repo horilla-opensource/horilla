@@ -274,10 +274,14 @@ def owner_can_enter(function, perm: str, model: object, manager_access=False):
     def _function(request, *args, **kwargs):
         instance_id = kwargs[list(kwargs.keys())[0]]
         if model == Employee:
-            employee = Employee.objects.get(id=instance_id)
+            employee = Employee.objects.filter(id=instance_id).first()
         else:
             try:
-                employee = model.objects.get(id=instance_id).employee_id
+                employee = (
+                    model.objects.filter(id=instance_id).first().employee_id
+                    if model.objects.filter(id=instance_id).first()
+                    else None
+                )
             except:
                 messages.error(request, ("Sorry, something went wrong!"))
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -293,7 +297,7 @@ def owner_can_enter(function, perm: str, model: object, manager_access=False):
                 else False
             )
         )
-        if can_enter:
+        if can_enter or not employee:
             return function(request, *args, **kwargs)
         return render(request, "no_perm.html")
 

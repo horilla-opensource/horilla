@@ -76,8 +76,7 @@
             <li class="oh-dropdown__item">
               <a
                 href="#"
-                class="oh-dropdown__link"
-                id="holidaysInfoImport"
+                class="oh-dropdown__link holidaysInfoImport"
                 data-toggle="oh-modal-toggle"
                 data-target="#holidayImport"
                 >{% trans "Import" %}</a
@@ -233,6 +232,18 @@
               id="importHoliday"
               required
             />
+            <div class="d-inline float-end">
+              <a
+                href="#"
+                style="text-decoration:none; display: inline-block;"
+                class="oh-dropdown__link holidaysInfoImport"
+                data-toggle="oh-modal-toggle"
+                data-target="#holidayImport"
+              >
+                <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;"></ion-icon>
+                <span>{% trans "Download Template" %}</span>
+              </a>
+            </div>
           </div>
           <button
             onclick="
