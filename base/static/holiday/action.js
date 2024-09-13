@@ -341,7 +341,7 @@ $("#bulkHolidaysDelete").click(function (e) {
   });
 });
 
-$("#holidaysInfoImport").click(function (e) {
+$(".holidaysInfoImport").click(function (e) {
   e.preventDefault();
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
