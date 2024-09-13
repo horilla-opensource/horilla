@@ -71,3 +71,10 @@ def horilla_users_with_perms(permissions):
         )
 
     return users_with_permissions.distinct()
+
+
+def get_urlencode(request):
+    get_data = request.GET.copy()
+    get_data.pop("instances_ids", None)
+    previous_data = get_data.urlencode()
+    return previous_data

@@ -68,7 +68,7 @@
         </div>
         <div class="oh-sticky-table__tbody">
           {% for contract in contracts %}
-          <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target = "#objectDetailsModal" hx-get="{% url 'single-contract-view' contract.id %}?instances_ids={{contract_ids}}" hx-target = "#objectDetailsModalTarget">
+          <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target = "#objectDetailsModal" hx-get="{% url 'single-contract-view' contract.id %}?{{pd}}&instances_ids={{contract_ids}}" hx-target = "#objectDetailsModalTarget">
             <div class="oh-sticky-table__sd  {% if contract.contract_status == "active" %} row-status--yellow
                 {% elif contract.contract_status == 'draft' %} row-status--purple
                 {% elif contract.contract_status == 'expired' %} row-status--red

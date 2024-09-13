@@ -15,7 +15,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
         <button
             hx-get="{% url 'reimbursement-individual-view' previous %}?instances_ids={{instances_ids}}"
-            hx-target="#objectDetailsModalTarget"
+            hx-target="#objectDetailsModalTarget" data-action="previous"
             class="oh-modal__diaglog-nav oh-modal__nav-prev">
             <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
             aria-label="chevron back outline"></ion-icon>
@@ -23,7 +23,7 @@
 
         <button
             hx-get="{% url 'reimbursement-individual-view' next %}?instances_ids={{instances_ids}}"
-            hx-target="#objectDetailsModalTarget"
+            hx-target="#objectDetailsModalTarget" data-action="next"
             class="oh-modal__diaglog-nav oh-modal__nav-next">
             <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
             aria-label="chevron forward outline"></ion-icon>

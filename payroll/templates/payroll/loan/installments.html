@@ -18,7 +18,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
         <button
             hx-get="{% url 'view-installments' %}?loan_id={{ previous }}&instances_ids={{instances_ids}}"
-            hx-target="#objectDetailsModalTarget"
+            hx-target="#objectDetailsModalTarget" data-action="previous"
             class="oh-modal__diaglog-nav oh-modal__nav-prev"
         >
             <ion-icon
@@ -30,7 +30,7 @@
         </button>
         <button
             hx-get="{% url 'view-installments' %}?loan_id={{ next }}&instances_ids={{instances_ids}}"
-            hx-target="#objectDetailsModalTarget"
+            hx-target="#objectDetailsModalTarget" data-action="next"
             class="oh-modal__diaglog-nav oh-modal__nav-next"
         >
             <ion-icon

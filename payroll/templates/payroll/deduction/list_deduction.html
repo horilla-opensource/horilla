@@ -56,7 +56,7 @@
           </div>
         </div>
         {% for deduction in deductions %}
-        <div class="oh-sticky-table__tbody ui-sortable" draggable="true" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-get="{% url 'single-deduction-view' deduction.id %}?instances_ids={{deduction_ids}}" hx-target = "#objectDetailsModalTarget">
+        <div class="oh-sticky-table__tbody ui-sortable" draggable="true" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-get="{% url 'single-deduction-view' deduction.id %}?{{pd}}&instances_ids={{deduction_ids}}" hx-target = "#objectDetailsModalTarget">
           <div class="oh-sticky-table__tr ui-sortable-handle">
             <div class="oh-sticky-table__sd">{{deduction.title}}</div>
             <div data-cell-index="1" class="oh-sticky-table__td">
