@@ -10,12 +10,12 @@
 <div class="oh-modal__dialog-body oh-modal__dialog-relative p-0 pt-2">
     {% if request.GET.requests_ids %}
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-        <button hx-get="{% url "asset-history-single-view" previous %}?requests_ids={{requests_ids}}" hx-target = "#objectDetailsModalTarget" style="left:-90px" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+        <button hx-get="{% url "asset-history-single-view" previous %}?requests_ids={{requests_ids}}" hx-target = "#objectDetailsModalTarget" style="left:-90px" class="oh-modal__diaglog-nav oh-modal__nav-prev" data-action="previous">
             <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
             aria-label="chevron back outline"></ion-icon>
         </button>
 
-        <button hx-get="{% url "asset-history-single-view" next %}?requests_ids={{requests_ids}}" hx-target = "#objectDetailsModalTarget" style="right:-60px" class="oh-modal__diaglog-nav oh-modal__nav-next">
+        <button hx-get="{% url "asset-history-single-view" next %}?requests_ids={{requests_ids}}" hx-target = "#objectDetailsModalTarget" style="right:-60px" class="oh-modal__diaglog-nav oh-modal__nav-next" data-action="next">
             <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
             aria-label="chevron forward outline"></ion-icon>
         </button>

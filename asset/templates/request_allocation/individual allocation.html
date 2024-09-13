@@ -4,6 +4,7 @@
       hx-get="{% url 'asset-allocation-individual-view' previous %}?allocations_ids={{allocations_ids}}"
       hx-target="#objectDetailsModalW25Target"
       class="oh-modal__diaglog-nav oh-modal__nav-prev"
+	  data-action="previous"
     >
         <ion-icon
             name="chevron-back-outline"
@@ -17,6 +18,7 @@
       hx-get="{% url 'asset-allocation-individual-view' next %}?allocations_ids={{allocations_ids}}"
       hx-target="#objectDetailsModalW25Target"
       class="oh-modal__diaglog-nav oh-modal__nav-next"
+	  data-action="next"
     >
         <ion-icon
             name="chevron-forward-outline"
