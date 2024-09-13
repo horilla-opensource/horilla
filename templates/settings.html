@@ -110,6 +110,16 @@
 													>
 												{% endif %}
 											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_dynamicemailconfiguration %}
+													<a
+														id="date"
+														href="{% url 'gdrive' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Gdrive Backup" %}</a
+													>
+												{% endif %}
+											</div>
 										</div>
 									</div>
 								</div>
