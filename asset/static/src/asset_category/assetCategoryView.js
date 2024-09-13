@@ -102,7 +102,7 @@ $(document).ready(function () {
 	});
 });
 
-$("#asset-info-import").click(function (e) {
+$(".asset-info-import").click(function (e) {
 	e.preventDefault();
 	var languageCode = null;
 	getCurrentLanguageCode(function (code) {
