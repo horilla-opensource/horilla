@@ -2056,6 +2056,7 @@ def get_collegues(request):
         employee = Employee.objects.get(id=int(employee_id)) if employee_id else None
 
         if employee:
+            employees_queryset = []
             if request.GET.get("data") == "colleagues":
                 department = employee.get_department()
                 # Get employees in the same department as the employee
@@ -2068,9 +2069,10 @@ def get_collegues(request):
                     if employee.employee_work_info
                     else None
                 )
-                employees_queryset = Employee.objects.filter(
-                    id=reporting_manager.id
-                ).values_list("id", "employee_first_name")
+                if reporting_manager:
+                    employees_queryset = Employee.objects.filter(
+                        id=reporting_manager.id
+                    ).values_list("id", "employee_first_name")
             elif request.GET.get("data") == "subordinates":
                 employees_queryset = Employee.objects.filter(
                     is_active=True, employee_work_info__reporting_manager_id=employee

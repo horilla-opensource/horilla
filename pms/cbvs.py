@@ -150,12 +150,17 @@ class EmployeeBonusPointNavView(views.HorillaNavView):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.create_attrs = f"""
-            hx-get="{reverse_lazy("create-employee-bonus-point")}"
-            hx-target="#genericModalBody"
-            data-toggle="oh-modal-toggle"
-            data-target="#genericModal"
-        """
+        request = self.request
+        if request:
+            if is_reportingmanager(request) or request.user.has_perm(
+                "pms.add_employeebonuspoint"
+            ):
+                self.create_attrs = f"""
+                    hx-get="{reverse_lazy("create-employee-bonus-point")}"
+                    hx-target="#genericModalBody"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    """
 
     nav_title = _trans("Employee Bonus Point ")
     search_url = reverse_lazy("employee-bonus-point-list-view")
@@ -176,6 +181,8 @@ class EmployeeBonusPointNavView(views.HorillaNavView):
     ]
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("pms.change_employeebonuspoint"), name="dispatch")
 class EmployeeBonusPointFormView(views.HorillaFormView):
     """
     BonusPointForm View
@@ -222,13 +229,18 @@ class EmployeeBonusPointListView(views.HorillaListView):
     BnusPoint list view
     """
 
-    request = getattr(horilla_middlewares._thread_locals, "request", None)
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        request = self.request
+        if request:
+            if is_reportingmanager(request) or request.user.has_perm(
+                "pms.change_employeebonuspoint"
+            ):
+                self.action_method = "action_template"
 
     model = models.EmployeeBonusPoint
     search_url = reverse_lazy("employee-bonus-point-list-view")
     filter_class = EmployeeBonusPointFilter
-    if is_reportingmanager(request):
-        action_method = "action_template"
     bulk_update_fields = [
         "employee_id",
         "bonus_point",
@@ -244,7 +256,9 @@ class EmployeeBonusPointListView(views.HorillaListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         request = getattr(horilla_middlewares._thread_locals, "request", None)
-        if is_reportingmanager(request):
+        if is_reportingmanager(request) or request.user.has_perm(
+            "pms.view_employeebonuspoint"
+        ):
             return filter_own_and_subordinate_recordes(
                 request, queryset, perm="pms.view_employeebonuspoint"
             )
