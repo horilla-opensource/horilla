@@ -1,4 +1,5 @@
 import calendar
+import logging
 import math
 import operator
 import threading
@@ -36,6 +37,8 @@ from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.methods import calculate_requested_days
 from leave.threading import LeaveClashThread
+
+logger = logging.getLogger(__name__)
 
 operator_mapping = {
     "equal": operator.eq,
@@ -1210,11 +1213,15 @@ def update_available(sender, instance, **kwargs):
     _sender = sender
 
     def update_leaves():
-        available_leaves = instance.employee_id.available_leave.filter(
-            leave_type_id=instance.leave_type_id
-        )
-        for assigned in available_leaves:
-            assigned.save()
+        try:
+            if instance.leave_type_id:
+                available_leaves = instance.employee_id.available_leave.filter(
+                    leave_type_id=instance.leave_type_id
+                )
+                for assigned in available_leaves:
+                    assigned.save()
+        except Exception as e:
+            pass
 
     thread = threading.Thread(target=update_leaves)
     thread.start()
