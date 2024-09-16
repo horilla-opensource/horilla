@@ -2512,7 +2512,7 @@ class TrackLateComeEarlyOutForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["is_enable"].widget.attrs.update(
             {
-                "hx-post": "enable-disable-tracking-late-come-early-out",
+                "hx-post": "/attendance/enable-disable-tracking-late-come-early-out",
                 "hx-target": "this",
                 "hx-trigger": "change",
             }
