@@ -1278,6 +1278,7 @@ def validate_this_attendance(request, obj_id):
             request,
             (
                 f"{attendance.employee_id} {attendance.attendance_date.strftime('%d %b %Y') }"
+                + " "
                 + _("Attendance validated.")
             ),
         )
