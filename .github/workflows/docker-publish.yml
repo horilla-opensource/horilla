@@ -34,8 +34,8 @@ jobs:
         file: ./Dockerfile  # Specify the Dockerfile location
         push: true  # Push the image after building
         tags: |
-          ghcr.io/${{ github.repository_owner }}/horilla:latest  # Tag with latest
-          ghcr.io/${{ github.repository_owner }}/horilla:${{ github.sha }}  # Tag with the commit SHA
+          ghcr.io/${{ github.repository_owner }}/horilla:latest
+          ghcr.io/${{ github.repository_owner }}/horilla:${{ github.sha }}
 
     # Log out from Docker (optional)
     - name: Log out from Docker
