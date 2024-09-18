@@ -2,7 +2,6 @@
 employee/methods.py
 """
 
-import re
 from itertools import groupby
 
 from django.db import models

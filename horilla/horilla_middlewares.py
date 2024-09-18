@@ -14,6 +14,7 @@ from horilla.settings import MIDDLEWARE
 MIDDLEWARE.append("base.middleware.CompanyMiddleware")
 MIDDLEWARE.append("horilla.horilla_middlewares.MethodNotAllowedMiddleware")
 MIDDLEWARE.append("horilla.horilla_middlewares.ThreadLocalMiddleware")
+MIDDLEWARE.append("accessibility.middlewares.AccessibilityMiddleware")
 _thread_locals = threading.local()
 
 

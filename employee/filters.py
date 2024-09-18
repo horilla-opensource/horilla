@@ -11,13 +11,10 @@ import uuid
 import django
 import django_filters
 from django import forms
-from django.contrib.auth.models import Group, Permission
 from django.utils.translation import gettext as _
-from django_filters import CharFilter, DateFilter
+from django_filters import CharFilter
 
 # from attendance.models import Attendance
-from base.methods import reload_queryset
-from base.models import WorkType
 from employee.models import DisciplinaryAction, Employee, Policy
 from horilla.filters import FilterSet, filter_by_name
 from horilla_documents.models import Document

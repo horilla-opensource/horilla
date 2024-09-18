@@ -1,5 +1,4 @@
 import calendar
-import io
 import json
 import os
 import random
@@ -11,17 +10,17 @@ from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import F, ForeignKey, ManyToManyField, OneToOneField, Q
+from django.db.models import ForeignKey, ManyToManyField, OneToOneField, Q
 from django.db.models.functions import Lower
 from django.forms.models import ModelChoiceField
 from django.http import HttpResponse
-from django.template.loader import get_template, render_to_string
+from django.template.loader import get_template
 from django.utils.translation import gettext as _
 from xhtml2pdf import pisa
 
 from base.models import Company, CompanyLeaves, DynamicPagination, Holidays
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.decorators import login_required
+from horilla.horilla_middlewares import _thread_locals
 from horilla.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
 
 

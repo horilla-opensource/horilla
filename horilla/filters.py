@@ -106,8 +106,13 @@ class HorillaFilterSet(FilterSet):
     HorillaFilterSet
     """
 
+    verbose_name: dict = {}
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        for key, value in self.verbose_name.items():
+            self.form.fields[key].label = value
+
         request = getattr(_thread_locals, "request", None)
         if request:
             setattr(request, "is_filtering", True)

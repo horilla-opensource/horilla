@@ -71,6 +71,16 @@
 												{% endif %}
 											</div>
 											<div class="oh-input-group">
+												{% if perms.auth.view_permission %}
+													<a
+														id="defaultAccessibility"
+														href="{% url 'user-accessibility' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Accessibility Restriction" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
 												{% if perms.auth.view_group %}
 													<a
 														id="userGroup"
@@ -107,6 +117,16 @@
 														href="{% url 'mail-server-conf' %}"
 														class="oh-inner-sidebar__link oh-dropdown__link"
 														>{% trans "Mail Server" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_dynamicemailconfiguration %}
+													<a
+														id="date"
+														{% comment %} href="{% url 'gdrive' %}" {% endcomment %}
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Gdrive Backup" %}</a
 													>
 												{% endif %}
 											</div>

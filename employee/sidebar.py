@@ -7,6 +7,7 @@ To set Horilla sidebar for employee
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as trans
 
+from accessibility.methods import check_is_accessibile
 from base.templatetags.basefilters import is_reportingmanager
 
 MENU = trans("Employee")
@@ -21,6 +22,7 @@ SUBMENUS = [
     {
         "menu": trans("Employees"),
         "redirect": reverse("employee-view"),
+        "accessibility": "employee.sidebar.employee_accessibility",
     },
     {
         "menu": trans("Document Requests"),
@@ -86,3 +88,16 @@ def rotating_work_type_accessibility(request, submenu, user_perms, *args, **kwar
     return request.user.has_perm(
         "base.view_rotatingworktypeassign"
     ) or is_reportingmanager(request.user)
+
+
+def employee_accessibility(request, submenu, user_perms, *args, **kwargs):
+    """
+    Employee accessibility method
+    """
+    cache_key = request.session.session_key + "accessibility_filter"
+    employee = getattr(request.user, "employee_get")
+    return (
+        is_reportingmanager(request.user)
+        or request.user.has_perm("employee.view_employee")
+        or check_is_accessibile("employee_view", cache_key, employee)
+    )
