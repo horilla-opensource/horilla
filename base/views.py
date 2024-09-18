@@ -19,6 +19,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.core.mail import EmailMultiAlternatives
+from django.core.management import call_command
 from django.core.paginator import Paginator
 from django.db.models import ProtectedError, Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
@@ -210,6 +211,36 @@ def initialize_database_condition():
     return initialize_database
 
 
+def load_demo_database(request):
+    # Core data files
+    data_files = [
+        "user_data.json",
+        "employee_info_data.json",
+        "base_data.json",
+        "work_info_data.json",
+    ]
+    optional_apps = {
+        "attendance": "attendance_data.json",
+        "leave": "leave_data.json",
+        "asset_data": "asset_data.json",
+        "recruitment": "recruitment_data.json",
+        "pms": "pms_data.json",
+    }
+
+    # Add data files for installed apps
+    data_files += [
+        file for app, file in optional_apps.items() if apps.is_installed(app)
+    ]
+
+    # Load all data files
+    for file in data_files:
+        file_path = path.join(settings.BASE_DIR, "load_data", file)
+        call_command("loaddata", file_path)
+
+    messages.success(request, _("Database loaded successfully."))
+    return redirect(home)
+
+
 def initialize_database(request):
     """
     Handles the database initialization process via a user interface.
@@ -251,10 +282,14 @@ def initialize_database_user(request):
     """
     if request.method == "POST":
         form_data = request.__dict__.get("_post")
-        first_name = form_data.get("firstname")
-        last_name = form_data.get("lastname")
         username = form_data.get("username")
         password = form_data.get("password")
+        confirm_password = form_data.get("confirm_password")
+        if password != confirm_password:
+            return render(request, "initialize_database/horilla_user_signup.html")
+        first_name = form_data.get("firstname")
+        last_name = form_data.get("lastname")
+        badge_id = form_data.get("badge_id")
         email = form_data.get("email")
         phone = form_data.get("phone")
         user = User.objects.filter(username=username).first()
@@ -265,6 +300,7 @@ def initialize_database_user(request):
         )
         employee = Employee()
         employee.employee_user_id = user
+        employee.badge_id = badge_id
         employee.employee_first_name = first_name
         employee.employee_last_name = last_name
         employee.email = email

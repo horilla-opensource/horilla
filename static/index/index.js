@@ -424,14 +424,22 @@ $(document).on('keydown', function (event) {
     }
     else if (event.keyCode === 39) { // Key code for the right arrow key
         if (!isInputFocused) {
-            // Click on the next button in detail view modal
-            $('[data-action="next"]').click();
+            var $modal = $('.oh-modal--show');
+            var $nextButton = $modal.length ? $modal.find('[data-action="next"]') : $('[data-action="next"]');  // Click on the next button in detail view modal
+            if ($nextButton.length) {
+                $nextButton[0].click()
+            }
         }
     }
     else if (event.keyCode === 37) { // Key code for the left arrow key
         if (!isInputFocused) {
             // Click on the previous button in detail view modal
-            $('[data-action="previous"]').click();
+            var $modal = $('.oh-modal--show');
+            var $previousButton = $modal.length ? $modal.find('[data-action="previous"]') : $('[data-action="previous"]');
+            if ($previousButton.length) {
+                $previousButton[0].click();
+
+            }
         }
     }
 });
