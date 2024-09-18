@@ -179,7 +179,7 @@
                     <form hx-swap="none" hx-post='{% url "update-candidate-rating" cand.id %}' method="post">
                         {% csrf_token %}
                         <div class="d-block mb-0">
-                            <div class="oh-rate d-flex" onclick="$(this).parents().closest('form').find('button').click()">
+                            <div class="oh-rate" onclick="$(this).parents().closest('form').find('button').click()">
                                 {% for i in "54321" %}
                                 <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio"
                                     value="{{i}}" {% if candidate_ratings|rating:cand == i %} checked {% endif %} />
@@ -194,12 +194,11 @@
                     <form hx-swap="none" hx-post='{% url "create-candidate-rating" cand.id %}' method="post">
                         {% csrf_token %}
                         <div class="d-block mb-0">
-                            <div class="oh-rate d-flex" onclick="$(this).parents().closest('form').find('button').click()">
+                            <div class="oh-rate" onclick="$(this).parents().closest('form').find('button').click()">
                                 {% for i in "54321" %}
                                 <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio"
                                     value="{{i}}" />
-                                <label for="star{{i}}{{cand.id}}" title="{{i}} Stars">5 {% trans "Stars"
-                                    %}</label>
+                                <label for="star{{i}}{{cand.id}}" title="{{i}} Stars"></label>
                                 {% endfor %}
                             </div>
                             <button type="submit" hidden="true"></button>
