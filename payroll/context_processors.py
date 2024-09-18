@@ -18,7 +18,11 @@ def default_currency(request):
         settings.currency_symbol = "$"
         settings.save()
     symbol = models.PayrollSettings.objects.first().currency_symbol
-    return {"currency": request.session.get("currency", symbol)}
+    position = models.PayrollSettings.objects.first().position
+    return {
+        "currency": request.session.get("currency", symbol),
+        "position": request.session.get("position", position),
+    }
 
 
 def host(request):

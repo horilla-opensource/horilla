@@ -26,12 +26,24 @@
       <div class="oh-sticky-table__td">
         {{ tax_bracket.tax_rate|stringformat:".2f" }}%
       </div>
-      <div class="oh-sticky-table__td">
-        {{currency}}{{ tax_bracket.min_income|stringformat:".2f" }}
-      </div>
-      <div class="oh-sticky-table__td">
-        {{currency}}{{ tax_bracket.get_display_max_income|stringformat:".2f" }}
-      </div>
+      {% if position == "prefix" %}
+        <div class="oh-sticky-table__td">
+          {{currency}} {{ tax_bracket.min_income|stringformat:".2f" }}
+        </div>
+      {% else %}
+        <div class="oh-sticky-table__td">
+          {{ tax_bracket.min_income|stringformat:".2f" }} {{currency}}
+        </div>
+      {% endif %}
+      {% if position == "prefix" %}
+        <div class="oh-sticky-table__td">
+          {{currency}} {{ tax_bracket.get_display_max_income|stringformat:".2f" }}
+        </div>
+      {% else %}
+        <div class="oh-sticky-table__td">
+          {{ tax_bracket.get_display_max_income|stringformat:".2f" }} {{currency}}
+        </div>
+      {% endif %}
       {% if perms.payroll.change_taxbracket %}
       <div class="oh-sticky-table__td">
         <div class="oh-btn-group">

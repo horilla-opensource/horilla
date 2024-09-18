@@ -102,15 +102,27 @@
           <div class="oh-sticky-table__td">
             {{payslip.group_name}}
           </div>
-          <div class="oh-sticky-table__td">
-            {{currency}} {{payslip.gross_pay|floatformat:2}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {{currency}} {{payslip.deduction|floatformat:2}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {{currency}} {{payslip.net_pay|floatformat:2}}
-          </div>
+          {% if position == "prefix" %}{% endif %}
+            <div class="oh-sticky-table__td">
+              {{currency}} {{payslip.gross_pay|floatformat:2}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{currency}} {{payslip.deduction|floatformat:2}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{currency}} {{payslip.net_pay|floatformat:2}}
+            </div>
+          {% else %}
+            <div class="oh-sticky-table__td">
+              {{payslip.gross_pay|floatformat:2}} {{currency}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{payslip.deduction|floatformat:2}} {{currency}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{payslip.net_pay|floatformat:2}} {{currency}}
+            </div>
+          {% endif %}
           <div class="oh-sticky-table__td">
             <div class="oh-btn-group" >
               <form action="{% url 'create-payslip' %}" style="display: inline;" method="post">
