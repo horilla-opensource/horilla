@@ -661,9 +661,9 @@ class LoanAccountForm(ModelForm):
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
 
-        if cleaned_data.get("installment_start_date") < cleaned_data.get(
-            "provided_date"
-        ):
+        if not self.instance.pk and cleaned_data.get(
+            "installment_start_date"
+        ) < cleaned_data.get("provided_date"):
             raise forms.ValidationError(
                 "Installment start date should be greater than or equal to provided date"
             )
