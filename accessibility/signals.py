@@ -3,14 +3,14 @@ accessibility/signals.py
 """
 
 import threading
-from django.db.models.signals import post_save
+
 from django.core.cache import cache
+from django.db.models.signals import post_save
 from django.dispatch import receiver
-from employee.models import EmployeeWorkInformation
+
+from accessibility.middlewares import ACCESSIBILITY_CACHE_USER_KEYS
 from accessibility.models import DefaultAccessibility
-from accessibility.middlewares import (
-    ACCESSIBILITY_CACHE_USER_KEYS,
-)
+from employee.models import EmployeeWorkInformation
 from horilla.signals import post_bulk_update
 
 

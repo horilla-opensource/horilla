@@ -6,8 +6,8 @@ class AccessibilityConfig(AppConfig):
     name = "accessibility"
 
     def ready(self) -> None:
-        from horilla.urls import urlpatterns, include, path
         from accessibility import signals
+        from horilla.urls import include, path, urlpatterns
 
         urlpatterns.append(
             path("", include("accessibility.urls")),
