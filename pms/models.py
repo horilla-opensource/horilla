@@ -546,6 +546,26 @@ class Feedback(HorillaModel):
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.review_cycle}"
 
+    def requested_employees(self):
+        manager = self.manager_id
+        colleagues = self.colleague_id.all()
+        subordinates = self.subordinate_id.all()
+        owner = self.employee_id
+
+        employees = [employee for employee in subordinates]
+
+        for employee in colleagues:
+            if employee not in employees:
+                employees.append(employee)
+
+        if manager not in employees:
+            employees.append(manager)
+
+        if owner not in employees:
+            employees.append(owner)
+
+        return employees
+
 
 class AnonymousFeedback(models.Model):
     """feedback model for creating feedback"""

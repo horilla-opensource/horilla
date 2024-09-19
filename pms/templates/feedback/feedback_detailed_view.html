@@ -3,314 +3,432 @@
 {% load static i18n %}
 {% load i18n %}
 {% load basefilters %}
+{% load mathfilters %}
 
+<style>
+  .oh-profile__avatar-limit-height {
+    height: 30px !important;
+  }
+  .oh-profile_name_custom {
+    font-size: 13px;
+    padding-left: 4px;
+  }
+  .oh-profile__image_custm {
+    width: 26px;
+    height: 26px;
+  }
+  .avatars {
+    display: flex;
+    padding: 8px 10px 8px 10px;
+  }
+
+  .avatars__item {
+    background-color: #596376;
+    border: 2px solid white;
+    border-radius: 100%;
+    color: #ffffff;
+    display: block;
+    font-family: sans-serif;
+    font-size: 12px;
+    font-weight: 100;
+    height: 26px;
+    width: 26px;
+    line-height: 17px;
+    text-align: center;
+    transition: margin 0.1s ease-in-out;
+    overflow: hidden;
+    margin-left: -10px;
+  }
+
+  .avatars__item:first-child {
+    z-index: 5;
+  }
+
+  .avatars__item:nth-child(2) {
+    z-index: 4;
+  }
+
+  .avatars__item:nth-child(3) {
+    z-index: 3;
+  }
+
+  .avatars__item:nth-child(4) {
+    z-index: 2;
+  }
+
+  .avatars__item:nth-child(5) {
+    z-index: 1;
+  }
+
+  .avatars__item:last-child {
+    z-index: 0;
+  }
+
+  .avatars__item img {
+    width: 100%;
+  }
+
+  .avatars:hover .avatars__item {
+    margin-right: 10px;
+  }
+</style>
 <div id="message"></div>
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-  <section class="oh-wrapper oh-main__topbar">
-    <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
-      <h1 class="oh-main__titlebar-title fw-bold">{% trans "Feedback" %}: {{feedback.review_cycle}}</h1>
-      <div class="d-flex align-items-center mt-3">
-        <div class="oh-profile oh-profile--md" title="Owner">
-          <div class="oh-profile__avatar mr-1">
-            <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"
-              alt="." />
-          </div>
-          <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
 
-        </div>
-        <select id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="Status"
-          hx-post="{%url 'feedback-detailed-view-status'  id=feedback.id %}"
-          hx-trigger="change" hx-target="#message">
-            <option value="{{feedback.status}}" selected>
-                {% trans feedback.get_status_display %}
-            </option>
-          {%for value,label in feedback_status %}
-            {% if feedback.status != label %}
-              <option value="{{label}}">{% trans label %}</option>
-            {% endif%}
-          {% endfor %}
-        </select>
+  <div class="oh-wrapper mb-2">
+    <div class="oh-card">
+      <div class="oh-main__titlebar oh-d-flex-column--resp oh-mb-3--small">
+        <h1 class="oh-main__titlebar-title fw-bold">{% trans "Feedback" %}: {{feedback}}</h1>
       </div>
-    </div>
-    <!-- checking userlevel   -->
-    {% if perms.pms.delete_feedback or request.user|filtersubordinates %}
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-      <div class="oh-btn-group m-2">
-        <div class="oh-btn-group" >
-          <form action="{% url 'feedback-archive' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want archive this Feedback ?" %}')" >
-          <button class="oh-btn  w-100 "  title="{% trans 'Archive' %}" style="background-color: white;!important">
-             {% csrf_token %}
-            <ion-icon name="archive-sharp" type="submit"></ion-icon>
-          </button>
-          </form>
-          {% if perms.pms.delete_feedback  %}
-            <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')">
-              {% csrf_token %}
-              <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" style="background-color: white;!important">
-                  <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-              </button>
-            </form>
+
+        <div class="align-items-center d-flex justify-content-between">
+          <div class="oh-profile oh-profile--md" title="Owner">
+          <span class="mr-2" style="font-size:15px;">{% trans "Owner: " %}</span>
+
+            <div class="oh-profile__avatar mr-1">
+              <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"
+                alt="." />
+            </div>
+            <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
+          </div>
+          {% if perms.pms.delete_feedback or request.user|filtersubordinates %}
+            <div class="oh-main__titlebar oh-main__titlebar--right justify-content-end">
+              <select id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="Status"
+                  hx-post="{%url 'feedback-detailed-view-status'  id=feedback.id %}"
+                  hx-trigger="change" hx-target="#message">
+                    <option value="{{feedback.status}}" selected>
+                        {% trans feedback.get_status_display %}
+                    </option>
+                  {%for value,label in feedback_status %}
+                    {% if feedback.status != label %}
+                      <option value="{{label}}">{% trans label %}</option>
+                    {% endif%}
+                  {% endfor %}
+              </select>
+              <div class="oh-btn-group m-2">
+                  <form action="{% url 'feedback-archive' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want archive this Feedback ?" %}')" >
+                  <button class="oh-btn  w-100 "  title="{% trans 'Archive' %}" style="background-color: white;!important">
+                    {% csrf_token %}
+                    <ion-icon name="archive-sharp" type="submit"></ion-icon>
+                  </button>
+                  </form>
+                  {% if perms.pms.delete_feedback  %}
+                    <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')">
+                      {% csrf_token %}
+                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" style="background-color: white;!important">
+                          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                      </button>
+                    </form>
+                  {% endif %}
+              </div>
+            </div>
           {% endif %}
         </div>
+      <div >
+        <div class="align-items-center d-flex">
+          <span class="mr-2" style="font-size:15px;">{% trans "Due on: " %}</span>
+          <span class="d-flex justify-content-between">{{feedback.end_date}}</span>
+          <span class='d-flex justify-content-between align-items-center ml-2'
+          >
+              <span title = 'due  {% if feedback.end_date == today %} today {% else %}in {{feedback.end_date|sub:today}}{% endif %}'>
+                  <ion-icon
+                      class="text-{% if feedback.end_date < today %}danger {% elif feedback.end_date == today %}warning {% else %}success{% endif %}"
+                      name="time-sharp"
+                  >
+                  </ion-icon>
+              </span>
+          </span>
+        </div>
+        <div class="align-items-center d-flex">
+          <span class="mr-2" style="font-size:15px;">{% trans "Answered employees: " %}</span>
+          <div class="d-flex justify-content-between custom-scroll">
+            <div class="avatars" id="avatarsContainer">
+              {% for employee in employee_statics.yes %}
+              <a
+                href="{% url 'employee-view-individual' employee.id %}"
+                class="avatars__item"
+                title="{{employee}}"
+                ><img class="avatar" src="{{employee.get_avatar}}" alt=""
+              /></a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="align-items-center d-flex">
+          <span class="mr-2" style="font-size:15px;" >{% trans "Employees not answerd yet: " %}</span>
+          <div class="d-flex justify-content-between custom-scroll">
+            <div class="avatars" id="avatarsContainer">
+              {% for employee in employee_statics.no %}
+              <a
+                href="{% url 'employee-view-individual' employee.id %}"
+                class="avatars__item"
+                title="{{employee}}"
+                ><img class="avatar" src="{{employee.get_avatar}}" alt=""
+              /></a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
       </div>
+      <!-- checking userlevel   -->
+
     </div>
-    {% endif %}
-  </section>
+  </div>
+
   <div class="oh-wrapper mb-2">
-    <div class="oh-card p-4">
-      {% if perms.pms.change_feedback and not feedback_started %}
-        <div class="d-flex flex-row-reverse">
-          <button
-            class="oh-btn oh-btn--x-small d-flex align-items-center ms-2 "
-            data-toggle="oh-modal-toggle"
-            data-target="#feedbackModalPopup"
-            hx-get="{%url 'feedback-update' id=feedback.id %}"
-            hx-target="#feedbackModalTarget">
-            <ion-icon name="create-outline" class="me-1" ></ion-icon>
-            {% trans "Edit" %}
+    <div class="oh-tabs" >
+      <ul class="oh-tabs__tablist" >
+        <li class="oh-tabs__tab oh-tabs__tab--active" onclick="switchTab(event);" data-target="#feedback-answers">
+          {% trans "Feedback Answers" %}
+        </li>
+        <li class="oh-tabs__tab" onclick="switchTab(event);$('#feedback-overview-button').click()" data-target="#feedback-overview">
+          {% trans "Feedback Overview" %}
+        </li>
+      </ul>
+      <div class="oh-tabs__contents">
+        <!-- feddback answers -->
+        <div class="oh-tabs__content oh-tabs__content--active" id="feedback-answers">
+          <div class="oh-card p-4">
+            {% if perms.pms.change_feedback and not feedback_started %}
+              <div class="d-flex flex-row-reverse">
+                <button
+                  class="oh-btn oh-btn--x-small d-flex align-items-center ms-2 "
+                  data-toggle="oh-modal-toggle"
+                  data-target="#feedbackModalPopup"
+                  hx-get="{%url 'feedback-update' id=feedback.id %}"
+                  hx-target="#feedbackModalTarget">
+                  <ion-icon name="create-outline" class="me-1" ></ion-icon>
+                  {% trans "Edit" %}
+                </button>
+              </div>
+            {% endif %}
+          <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="m-2">
+                <div class="oh-card__body">
+                  <div class="oh-sticky-table">
+                    <div class="oh-sticky-table__table">
+                      <div class="oh-sticky-table__thead">
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                          <div class="oh-sticky-table__th"></div>
+                        </div>
+                      </div>
+                      <div class="oh-sticky-table__tbody">
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__sd">
+                            <ul class="oh-sticky-table___profile-list">
+                              <li class="oh-sticky-table__profile-item">
+                                <div class="oh-profile oh-profile--md">
+                                  <div class="oh-profile__avatar mr-1">
+                                    <img src="{{feedback.employee_id.get_avatar}}"
+                                      class="oh-profile__image" alt="{{feedback.employee_id}}" />
+                                  </div>
+                                  <span class="oh-profile__name oh-text--dark"> {{feedback.employee_id}}</span>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            <div class="d-flex align-items-center">
+                              <span class=""></span><span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{feedback.employee_id.id}}"> </span>
+                            </div>
+                          </div>
+                          <div class="oh-sticky-table__td"><button
+                            class="oh-btn  oh-btn--secondary oh-activity-sidebar__open"
+                            data-target="#answerViewAccordion" hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=feedback.employee_id.id %}" hx-target="#answerView">{% trans "Answer View" %}
+                            </button>
+                          </div>
+                      </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- manager section -->
+
+          <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="m-2">
+                <div class="oh-card__body">
+                  <div class="oh-sticky-table">
+                    <div class="oh-sticky-table__table">
+                      <div class="oh-sticky-table__thead">
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__th">{% trans "Manager" %}</div>
+                          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                          <div class="oh-sticky-table__th"></div>
+                        </div>
+                      </div>
+                      <div class="oh-sticky-table__tbody">
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__sd">
+                            <ul class="oh-sticky-table___profile-list">
+                              <li class="oh-sticky-table__profile-item">
+                                <div class="oh-profile oh-profile--md">
+                                  <div class="oh-profile__avatar mr-1">
+                                    <img src="{{feedback.manager_id.get_avatar}}"
+                                      class="oh-profile__image" alt="{{feedback.employee_id}}" />
+                                  </div>
+                                  <span class="oh-profile__name oh-text--dark"> {{feedback.manager_id}}</span>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            <div class="d-flex align-items-center">
+                              <span class=""></span><span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{feedback.manager_id.id}}"></span>
+                            </div>
+                          </div>
+                          <div class="oh-sticky-table__td"><button
+                            class="oh-btn  oh-btn--secondary oh-activity-sidebar__open"
+                            data-target="#answerViewAccordion" hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=feedback.manager_id.id %}" hx-target="#answerView">{% trans "Answer View" %}
+                            </button></div>
+                      </div>
+                      <!-- manager answer off canvas -->
+                      <div class="oh-activity-sidebar" id="managerAnswer">
+                        <div class="oh-activity-sidebar__header">
+                          <ion-icon name="chevron-back-outline"
+                            class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+                            data-target="#managerAnswer"></ion-icon>
+                          <span class="oh-activity-sidebar__title"> {% trans "Answers" %}</span>
+                        </div>
+                        <div class="oh-activity-sidebar__body">
+                          <ol class="oh-activity-sidebar__qa-list" role="list">
+                            {% for answer in manager_answers %}
+                            {% include 'feedback/feedback_detailed_view_answer.html' %}
+                            {%endfor %}
+                          </ol>
+                        </div>
+                      </div>
+                        <!-- endof  manager answer off canvas -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- subordinate section -->
+
+          <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="m-2">
+                <div class="oh-card__body">
+                  <div class="oh-sticky-table">
+                    <div class="oh-sticky-table__table">
+                      <div class="oh-sticky-table__thead">
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__th">{% trans "Subordinates" %}</div>
+                          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                          <div class="oh-sticky-table__th"></div>
+                        </div>
+                      </div>
+                      <div class="oh-sticky-table__tbody">
+                        {% for employee in feedback.subordinate_id.all %}
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__sd">
+                            <ul class="oh-sticky-table___profile-list">
+                              <li class="oh-sticky-table__profile-item">
+                                <div class="oh-profile oh-profile--md">
+                                  <div class="oh-profile__avatar mr-1">
+                                    <img src="{{employee.get_avatar}}"
+                                      class="oh-profile__image" alt="" />
+                                  </div>
+                                  <span class="oh-profile__name oh-text--dark"> {{employee}}</span>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            <div class="d-flex align-items-center">
+                              <span class=""></span ><span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{employee.id}}"></span>
+                            </div>
+                          </div>
+                          <div class="oh-sticky-table__td"><button
+                              class="oh-btn  oh-btn--secondary oh-activity-sidebar__open"
+                              data-target="#answerViewAccordion" hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=employee.id %}" hx-target="#answerView">{% trans "Answer View" %}
+                              </button></div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <!-- end of subordinate section -->
+
+          <!-- Colleague section -->
+
+          <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="m-2">
+                <div class="oh-card__body">
+                  <div class="oh-sticky-table">
+                    <div class="oh-sticky-table__table">
+                      <div class="oh-sticky-table__thead">
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__th">{% trans "Colleague" %}</div>
+                          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                          <div class="oh-sticky-table__th"></div>
+                        </div>
+                      </div>
+                      <div class="oh-sticky-table__tbody">
+                        {% for employee in feedback.colleague_id.all %}
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__sd">
+                            <ul class="oh-sticky-table___profile-list">
+                              <li class="oh-sticky-table__profile-item">
+                                <div class="oh-profile oh-profile--md">
+                                  <div class="oh-profile__avatar mr-1">
+                                    <img src="{{employee.get_avatar}}"
+                                      class="oh-profile__image" alt="" />
+                                  </div>
+                                  <span class="oh-profile__name oh-text--dark"> {{employee}}</span>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            <div class="d-flex align-items-center">
+                              <span class=""></span><span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{employee.id}}"></span>
+                            </div>
+                          </div>
+                          <div class="oh-sticky-table__td"><button
+                              class="oh-btn  oh-btn--secondary oh-activity-sidebar__open"
+                              data-target="#answerViewAccordion" hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=employee.id %}" hx-target="#answerView">{% trans "Answer View" %}
+                              </button></div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <!-- endof colleague section -->
+      </div>
+      <div class="oh-tabs__content" id="feedback-overview">
+        <div id="feedback_overview_div">
+          <button hx-get="{% url 'get-feedback-overview' feedback.id %}"
+              hx-target="#feedback-overview" id="feedback-overview-button" hidden>
           </button>
-        </div>
-      {% endif %}
-    <div class="row">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-        <div class="p-2 m-2">
-          <div class="oh-card__body">
-            <div class="oh-sticky-table">
-              <div class="oh-sticky-table__table">
-                <div class="oh-sticky-table__thead">
-                  <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Due" %}</div>
-                    <div class="oh-sticky-table__th"></div>
-                  </div>
-                </div>
-                <div class="oh-sticky-table__tbody">
-                  <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__sd">
-                      <ul class="oh-sticky-table___profile-list">
-                        <li class="oh-sticky-table__profile-item">
-                          <div class="oh-profile oh-profile--md">
-                            <div class="oh-profile__avatar mr-1">
-                              <img src="{{feedback.employee_id.get_avatar}}"
-                                class="oh-profile__image" alt="{{feedback.employee_id}}" />
-                            </div>
-                            <span class="oh-profile__name oh-text--dark"> {{feedback.employee_id}}</span>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="oh-sticky-table__td">
-                      <div class="d-flex align-items-center">
-                        <span class=""></span><span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{feedback.employee_id.id}}"> </span>
-                      </div>
-                    </div>
-                    <div class="oh-sticky-table__td">
-                      <div class="d-flex align-items-center">
-                        {{ current_date|timesince:feedback.end_date }}
-                      </div>
-                    </div>
-                    <div class="oh-sticky-table__td"><button
-                      class="oh-btn  oh-btn--secondary oh-activity-sidebar__open"
-                      data-target="#answerViewAccordion" hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=feedback.employee_id.id %}" hx-target="#answerView">{% trans "Answer View" %}
-                      </button>
-                    </div>
-                </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
+      </div>
       </div>
     </div>
-
-    <!-- manager section -->
-
-    <div class="row">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-        <div class="p-2 m-2">
-          <div class="oh-card__body">
-            <div class="oh-sticky-table">
-              <div class="oh-sticky-table__table">
-                <div class="oh-sticky-table__thead">
-                  <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__th">{% trans "Manager" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Due" %}</div>
-                    <div class="oh-sticky-table__th"></div>
-                  </div>
-                </div>
-                <div class="oh-sticky-table__tbody">
-                  <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__sd">
-                      <ul class="oh-sticky-table___profile-list">
-                        <li class="oh-sticky-table__profile-item">
-                          <div class="oh-profile oh-profile--md">
-                            <div class="oh-profile__avatar mr-1">
-                              <img src="{{feedback.manager_id.get_avatar}}"
-                                class="oh-profile__image" alt="{{feedback.employee_id}}" />
-                            </div>
-                            <span class="oh-profile__name oh-text--dark"> {{feedback.manager_id}}</span>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="oh-sticky-table__td">
-                      <div class="d-flex align-items-center">
-                        <span class=""></span><span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{feedback.manager_id.id}}"></span>
-                      </div>
-                    </div>
-                    <div class="oh-sticky-table__td">
-                      <div class="d-flex align-items-center">
-                        {{ current_date|timesince:feedback.end_date }}
-                      </div>
-                    </div>
-                    <div class="oh-sticky-table__td"><button
-                      class="oh-btn  oh-btn--secondary oh-activity-sidebar__open"
-                      data-target="#answerViewAccordion" hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=feedback.manager_id.id %}" hx-target="#answerView">{% trans "Answer View" %}
-                      </button></div>
-                </div>
-                <!-- manager answer off canvas -->
-                <div class="oh-activity-sidebar" id="managerAnswer">
-                  <div class="oh-activity-sidebar__header">
-                    <ion-icon name="chevron-back-outline"
-                      class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
-                      data-target="#managerAnswer"></ion-icon>
-                    <span class="oh-activity-sidebar__title"> {% trans "Answers" %}</span>
-                  </div>
-                  <div class="oh-activity-sidebar__body">
-                    <ol class="oh-activity-sidebar__qa-list" role="list">
-                      {% for answer in manager_answers %}
-                      {% include 'feedback/feedback_detailed_view_answer.html' %}
-                      {%endfor %}
-                    </ol>
-                  </div>
-                </div>
-                  <!-- endof  manager answer off canvas -->
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- subordinate section -->
-
-    <div class="row">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-        <div class="p-2 m-2">
-          <div class="oh-card__body">
-            <div class="oh-sticky-table">
-              <div class="oh-sticky-table__table">
-                <div class="oh-sticky-table__thead">
-                  <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__th">{% trans "Subordinates" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Due" %}</div>
-                    <div class="oh-sticky-table__th"></div>
-                  </div>
-                </div>
-                <div class="oh-sticky-table__tbody">
-                  {% for employee in feedback.subordinate_id.all %}
-                  <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__sd">
-                      <ul class="oh-sticky-table___profile-list">
-                        <li class="oh-sticky-table__profile-item">
-                          <div class="oh-profile oh-profile--md">
-                            <div class="oh-profile__avatar mr-1">
-                              <img src="{{employee.get_avatar}}"
-                                class="oh-profile__image" alt="" />
-                            </div>
-                            <span class="oh-profile__name oh-text--dark"> {{employee}}</span>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="oh-sticky-table__td">
-                      <div class="d-flex align-items-center">
-                        <span class=""></span ><span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{employee.id}}"></span>
-                      </div>
-                    </div>
-                    <div class="oh-sticky-table__td">
-                      <div class="d-flex align-items-center">
-                        {{ current_date|timesince:feedback.end_date }}
-                      </div>
-                    </div>
-                    <div class="oh-sticky-table__td"><button
-                        class="oh-btn  oh-btn--secondary oh-activity-sidebar__open"
-                        data-target="#answerViewAccordion" hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=employee.id %}" hx-target="#answerView">{% trans "Answer View" %}
-                        </button></div>
-                  </div>
-                  {% endfor %}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  <!-- end of subordinate section -->
-
-    <!-- Colleague section -->
-
-    <div class="row">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-        <div class="p-2 m-2">
-          <div class="oh-card__body">
-            <div class="oh-sticky-table">
-              <div class="oh-sticky-table__table">
-                <div class="oh-sticky-table__thead">
-                  <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__th">{% trans "Colleague" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Due" %}</div>
-                    <div class="oh-sticky-table__th"></div>
-                  </div>
-                </div>
-                <div class="oh-sticky-table__tbody">
-                  {% for employee in feedback.colleague_id.all %}
-                  <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__sd">
-                      <ul class="oh-sticky-table___profile-list">
-                        <li class="oh-sticky-table__profile-item">
-                          <div class="oh-profile oh-profile--md">
-                            <div class="oh-profile__avatar mr-1">
-                              <img src="{{employee.get_avatar}}"
-                                class="oh-profile__image" alt="" />
-                            </div>
-                            <span class="oh-profile__name oh-text--dark"> {{employee}}</span>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="oh-sticky-table__td">
-                      <div class="d-flex align-items-center">
-                        <span class=""></span><span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{employee.id}}"></span>
-                      </div>
-                    </div>
-                    <div class="oh-sticky-table__td">
-                      <div class="d-flex align-items-center">
-                        {{feedback.end_date|timeuntil}}
-                      </div>
-                    </div>
-                    <div class="oh-sticky-table__td"><button
-                        class="oh-btn  oh-btn--secondary oh-activity-sidebar__open"
-                        data-target="#answerViewAccordion" hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=employee.id %}" hx-target="#answerView">{% trans "Answer View" %}
-                        </button></div>
-                  </div>
-                  {% endfor %}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  </div>
-  <!-- endof colleague section -->
+</div>
 </main>
 
   <!-- answer off canvas -->

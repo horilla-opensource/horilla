@@ -1782,12 +1782,23 @@ def feedback_detailed_view(request, id, **kwargs):
     )
     if is_have_perm:
         feedback_started = Answer.objects.filter(feedback_id=id)
-        current_date = datetime.datetime.now()
+        employees = feedback.requested_employees()
+        yes = []
+        no = []
+        for employee in employees:
+            if Answer.objects.filter(
+                feedback_id=feedback, employee_id=employee
+            ).exists():
+                yes.append(employee)
+            else:
+                no.append(employee)
+        employee_statics = {"yes": yes, "no": no}
         context = {
             "feedback": feedback,
             "feedback_started": feedback_started,
             "feedback_status": Feedback.STATUS_CHOICES,
-            "current_date": current_date,
+            "employee_statics": employee_statics,
+            "today": datetime.datetime.today().date(),
         }
         return render(request, "feedback/feedback_detailed_view.html", context)
     else:
@@ -2024,6 +2035,39 @@ def feedback_detailed_view_status(request, id):
         _("Error occurred during status update to %(status)s") % {"status": _(status)},
     )
     return render(request, "message.html")
+
+
+@login_required
+def get_feedback_overview(request, obj_id):
+    """
+    overview of feedback
+    """
+    feedback = Feedback.objects.filter(id=obj_id).first() if obj_id else None
+    if feedback and check_permission_feedback_detailed_view(
+        request, feedback, perm="pms.view_feedback"
+    ):
+        question_template = feedback.question_template_id
+        questions = question_template.question.all()
+        feedback_answers = feedback.feedback_answer.all()
+        feedback_overview = {}
+        for question in questions:
+            answer_list = []
+            for answer in feedback_answers:
+                if answer.question_id == question:
+                    answer_list.append(
+                        {
+                            answer.employee_id: [
+                                answer.answer,
+                                {"type": answer.question_id.question_type},
+                            ]
+                        }
+                    )
+            feedback_overview[question] = answer_list
+        return render(
+            request,
+            "feedback/feedback_overview.html",
+            context={"feedback_overview": feedback_overview},
+        )
 
 
 @login_required
