@@ -3,13 +3,15 @@ accessibility/filters.py
 """
 
 from functools import reduce
-from django.utils.translation import gettext as _
+
+import django_filters
 from django.db.models import Q
 from django.template.loader import render_to_string
-import django_filters
+from django.utils.translation import gettext as _
+
+from employee.models import Employee
 from horilla.filters import HorillaFilterSet
 from horilla.horilla_middlewares import _thread_locals
-from employee.models import Employee
 
 
 def _filter_form_structured(self):
@@ -94,7 +96,6 @@ class AccessibilityFilter(HorillaFilterSet):
                         or_conditions.append(Q(**{f"{field}__in": field_value}))
                     else:
                         or_conditions.append(Q(**{f"{field}__in": [field_value]}))
-
 
         if or_conditions:
             queryset = queryset.filter(reduce(lambda x, y: x | y, or_conditions))

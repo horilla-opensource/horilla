@@ -3,8 +3,9 @@ accessibility/models.py
 """
 
 from django.db import models
-from horilla.models import HorillaModel
+
 from accessibility.accessibility import ACCESSBILITY_FEATURE
+from horilla.models import HorillaModel
 
 
 class DefaultAccessibility(HorillaModel):

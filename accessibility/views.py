@@ -4,14 +4,15 @@ employee/accessibility.py
 Employee accessibility related methods and functionalites
 """
 
-from django.shortcuts import render
 from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
 from django.http import HttpResponse, JsonResponse
-from horilla.decorators import login_required, permission_required
+from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
+
+from accessibility.accessibility import ACCESSBILITY_FEATURE
 from accessibility.filters import AccessibilityFilter
 from accessibility.models import DefaultAccessibility
-from accessibility.accessibility import ACCESSBILITY_FEATURE
+from horilla.decorators import login_required, permission_required
 
 
 @login_required

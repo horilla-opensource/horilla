@@ -3,8 +3,8 @@ accessibility/urls.py
 """
 
 from django.urls import path
-from accessibility import views as accessibility
 
+from accessibility import views as accessibility
 
 urlpatterns = [
     path(

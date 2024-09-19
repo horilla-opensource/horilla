@@ -11,7 +11,7 @@
     <span class="oh-info mr-2 mb-2" title="{% trans "Limit default view access to horilla feature" %}">
     </span>
   </h2>
-  
+
 </div>
 <div class="oh-card" id="accessibilityContainer">
     <div class="oh-accordion-meta">
@@ -89,7 +89,7 @@
                                     if (response.hasOwnProperty(key)) {
                                         let values = response[key];
                                         let field = document.querySelector(`#{{accessibility}}_body [name="${key}"]`);
-                                      
+
                                         if (field) {
                                             // Handle select fields
                                             if (field.tagName === 'SELECT') {
@@ -110,7 +110,7 @@
                                     select = $("#accessibilityContainer #{{accessibility}}_body").find("select")
                                     select.parent().find('span').remove()
                                     select.select2()
-           
+
                             }
                         });
 
@@ -124,7 +124,7 @@
   </div>
   <script>
     // Save the filter form while change the filter form
-    $("#accessibilityContainer select").change(function (e) { 
+    $("#accessibilityContainer select").change(function (e) {
         $(this).parent().closest("form").find("input[type=submit]").click();
     });
     $(document).mouseup(function(e) {
