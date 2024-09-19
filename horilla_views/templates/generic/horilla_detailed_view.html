@@ -15,6 +15,7 @@
   {% if instance_ids %}
   <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button
+      data-action = "previous"
       hx-get="{{previous_url}}?{{ids_key}}={{instance_id}}&{{request.GET.urlencode}}"
       hx-target="#genericModalBody"
       class="oh-modal__diaglog-nav oh-modal__nav-prev"
@@ -23,6 +24,7 @@
     </button>
 
     <button
+      data-action = "next"
       hx-get="{{next_url}}?{{ids_key}}={{instance_id}}&{{request.GET.urlencode}}"
       hx-target="#genericModalBody"
       class="oh-modal__diaglog-nav oh-modal__nav-next"
