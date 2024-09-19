@@ -16,83 +16,83 @@ from .zip import *
 from django.db import connection
 
 
-@login_required
-@permission_required("backup.add_localbackup")
-def local_setup(request):
-    """ 
-    function used to setup local backup.
+# @login_required
+# @permission_required("backup.add_localbackup")
+# def local_setup(request):
+#     """ 
+#     function used to setup local backup.
 
-    Parameters:
-    request (HttpRequest): The HTTP request object.
+#     Parameters:
+#     request (HttpRequest): The HTTP request object.
 
-    Returns:
-    GET : return local backup setup template
-    POST : return settings
-    """
-    form = LocalBackupSetupForm()
-    show = False
-    active = False
-    if LocalBackup.objects.exists():
-        form = LocalBackupSetupForm(instance=LocalBackup.objects.first())
-        show = True
-        active = LocalBackup.objects.first().active
-    if request.method == "POST":
-        form = LocalBackupSetupForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save() 
-            stop_backup_job()   
-            messages.success(request, _("Local backup automation setup updated."))
-            return redirect("local")    
-    return render(request, "backup/local_setup_form.html", {"form": form, "show":show, "active":active})
+#     Returns:
+#     GET : return local backup setup template
+#     POST : return settings
+#     """
+#     form = LocalBackupSetupForm()
+#     show = False
+#     active = False
+#     if LocalBackup.objects.exists():
+#         form = LocalBackupSetupForm(instance=LocalBackup.objects.first())
+#         show = True
+#         active = LocalBackup.objects.first().active
+#     if request.method == "POST":
+#         form = LocalBackupSetupForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             form.save() 
+#             stop_backup_job()   
+#             messages.success(request, _("Local backup automation setup updated."))
+#             return redirect("local")    
+#     return render(request, "backup/local_setup_form.html", {"form": form, "show":show, "active":active})
 
     
-@login_required
-@permission_required("backup.change_localbackup")
-def local_Backup_stop_or_start(request):
-    """
-    function used to stop or start local backup.
+# @login_required
+# @permission_required("backup.change_localbackup")
+# def local_Backup_stop_or_start(request):
+#     """
+#     function used to stop or start local backup.
 
-    Parameters:
-    request (HttpRequest): The HTTP request object.
+#     Parameters:
+#     request (HttpRequest): The HTTP request object.
 
-    Returns:  
-    GET : return local backup setup template
-    POST : return settings
-    """
-    if LocalBackup.objects.exists():
-        local_backup = LocalBackup.objects.first()
-        if local_backup.active == True:
-            local_backup.active = False
-            stop_backup_job()
-            message = "Local Backup Automation Stopped Successfully."
-        else:
-            local_backup.active = True
-            start_backup_job()
-            message = "Local Backup Automation Started Successfully."
-        local_backup.save()
-        messages.success(request, _(message))
-    return redirect("local")
+#     Returns:  
+#     GET : return local backup setup template
+#     POST : return settings
+#     """
+#     if LocalBackup.objects.exists():
+#         local_backup = LocalBackup.objects.first()
+#         if local_backup.active == True:
+#             local_backup.active = False
+#             stop_backup_job()
+#             message = "Local Backup Automation Stopped Successfully."
+#         else:
+#             local_backup.active = True
+#             start_backup_job()
+#             message = "Local Backup Automation Started Successfully."
+#         local_backup.save()
+#         messages.success(request, _(message))
+#     return redirect("local")
 
 
-@login_required
-@permission_required("backup.delete_localbackup")
-def local_Backup_delete(request):
-    """
-    function used to delete local backup.
+# @login_required
+# @permission_required("backup.delete_localbackup")
+# def local_Backup_delete(request):
+#     """
+#     function used to delete local backup.
 
-    Parameters:
-    request (HttpRequest): The HTTP request object.
+#     Parameters:
+#     request (HttpRequest): The HTTP request object.
 
-    Returns:
-    GET : return local backup setup template
-    POST : return settings
-    """
-    if LocalBackup.objects.exists():
-        local_backup = LocalBackup.objects.first()
-        local_backup.delete()
-        stop_backup_job()
-        messages.success(request, _("Local Backup Automation Removed Successfully."))
-    return redirect("local")
+#     Returns:
+#     GET : return local backup setup template
+#     POST : return settings
+#     """
+#     if LocalBackup.objects.exists():
+#         local_backup = LocalBackup.objects.first()
+#         local_backup.delete()
+#         stop_backup_job()
+#         messages.success(request, _("Local Backup Automation Removed Successfully."))
+#     return redirect("local")
 
 
 @login_required
@@ -152,10 +152,10 @@ def gdrive_Backup_stop_or_start(request):
     GET : return gdrive backup setup template
     POST : return gdrive backup update template
     """
-    if GoogleDriveBackup.objects.exists():
+    if GoogleDriveBackup.objects.exists():  
         gdive_backup = GoogleDriveBackup.objects.first()
-        if gdive_backup.active == True:
-            gdive_backup.active = False
+        if gdive_backup.active == True: 
+            gdive_backup.active = False 
             stop_gdrive_backup_job()
             message = "Gdrive Backup Automation Stopped Successfully."
         else:
@@ -173,7 +173,7 @@ def gdrive_Backup_delete(request):
     """
     function used to delete gdrive backup.
 
-    Parameters:
+        Parameters:
     request (HttpRequest): The HTTP request object.
 
     Returns:
@@ -184,4 +184,4 @@ def gdrive_Backup_delete(request):
         gdrive_backup.delete()
         stop_gdrive_backup_job()
         messages.success(request, _("Gdrive Backup Automation Removed Successfully."))
-    return redirect("gdrive")
+    return redirect("gdrive")       

@@ -2,7 +2,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from django.core.management import call_command
 import os
 # from horilla.settings import DBBACKUP_STORAGE_OPTIONS
-from backup.models import *
+from .models import *
 from .gdrive import *
 from .pgdump import *
 from horilla import settings
@@ -33,40 +33,40 @@ scheduler = BackgroundScheduler()
 #                         pass
 
                         
-def start_backup_job():
-    """
-    Start the backup job based on the LocalBackup configuration.
-    """
-    # Check if any LocalBackup object exists
-    if LocalBackup.objects.exists():
-        local_backup = LocalBackup.objects.first()
+# def start_backup_job():
+#     """
+#     Start the backup job based on the LocalBackup configuration.
+#     """
+#     # Check if any LocalBackup object exists
+#     if LocalBackup.objects.exists():
+#         local_backup = LocalBackup.objects.first()
 
-            # Remove existing job if it exists
-        try:
-            scheduler.remove_job('backup_job')
-        except:
-            pass 
+#             # Remove existing job if it exists
+#         try:
+#             scheduler.remove_job('backup_job')
+#         except:
+#             pass 
                  
-        # Add new job based on LocalBackup configuration
-        if local_backup.interval:
-            scheduler.add_job(backup_database, 'interval', seconds=local_backup.seconds, id='backup_job')
-        else:   
-            scheduler.add_job(backup_database, trigger='cron', hour=local_backup.hour, minute=local_backup.minute, id='backup_job')
-        # Start the scheduler if it's not already running
-        if not scheduler.running:   
-            scheduler.start()    
-    else:   
-        stop_backup_job()
+#         # Add new job based on LocalBackup configuration
+#         if local_backup.interval:
+#             scheduler.add_job(backup_database, 'interval', seconds=local_backup.seconds, id='backup_job')
+#         else:   
+#             scheduler.add_job(backup_database, trigger='cron', hour=local_backup.hour, minute=local_backup.minute, id='backup_job')
+#         # Start the scheduler if it's not already running
+#         if not scheduler.running:   
+#             scheduler.start()    
+#     else:   
+#         stop_backup_job()
 
 
-def stop_backup_job():
-    """ 
-    Stop the backup job if it exists.
-    """     
-    try:    
-        scheduler.remove_job('backup_job')
-    except:
-        pass
+# def stop_backup_job():
+#     """ 
+#     Stop the backup job if it exists.
+#     """     
+#     try:    
+#         scheduler.remove_job('backup_job')
+#     except:
+#         pass
 
 
 # def restart_backup_job():

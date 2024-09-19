@@ -2,7 +2,7 @@ import atexit
 
 
 def shutdown_function():
-    from backup.models import GoogleDriveBackup, LocalBackup
+    from horilla_backup.models import GoogleDriveBackup, LocalBackup
     if GoogleDriveBackup.objects.exists():
         google_drive_backup = GoogleDriveBackup.objects.first()
         google_drive_backup.active  = False

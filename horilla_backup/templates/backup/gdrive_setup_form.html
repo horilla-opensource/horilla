@@ -39,13 +39,13 @@
         if (!$('#id_fixed').is(':checked')) {
             $('#id_hour').parent().hide();``
             $('#id_minute').parent().hide();
-        }     
-        $('#id_interval').change(function() {
+        }               
+        $('#id_interval'    ).change(function() {
             if ($(this).is(':checked')) { 
-                $('#id_fixed').prop('checked', false);
-                $('#id_hour').parent().hide();
-                $('#id_minute').parent().hide();
-                $('#id_seconds').parent().show();
+                $('#id_fixed4   ').prop('checked', false);
+                $('#id_hour').pa    rent().hide();
+                $('#id_minute').pare    nt().hide();
+                $('#id_seconds').parent(    ).show();
             } else {
                 $('#id_seconds').parent().hide();
             }
