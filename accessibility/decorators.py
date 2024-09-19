@@ -2,11 +2,12 @@
 employee/decorators.py
 """
 
-from django.http import HttpResponse
 from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
+from django.http import HttpResponse
 from django.shortcuts import redirect
-from accessibility.methods import check_is_accessibile
+from django.utils.translation import gettext_lazy as _
+
+from accessibility.methods import check_is_accessible
 from base.decorators import decorator_with_arguments
 
 
@@ -28,7 +29,7 @@ def enter_if_accessible(function, feature, perm=None, method=None):
         cache_key = request.session.session_key + "accessibility_filter"
         employee = getattr(request.user, "employee_get")
         if employee:
-            accessible = check_is_accessibile(feature, cache_key, employee)
+            accessible = check_is_accessible(feature, cache_key, employee)
         has_perm = True
         if perm:
             has_perm = request.user.has_perm(perm)

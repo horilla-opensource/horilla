@@ -3,8 +3,9 @@ accessibility/middlewares.py
 """
 
 from django.core.cache import cache
+
+from accessibility.methods import check_is_accessible
 from accessibility.models import ACCESSBILITY_FEATURE
-from accessibility.methods import check_is_accessibile
 
 ACCESSIBILITY_CACHE_USER_KEYS = {}
 
@@ -15,7 +16,7 @@ def update_accessibility_cache(cache_key, request):
     """
     feature_accessible = {}
     for accessibility, _display in ACCESSBILITY_FEATURE:
-        feature_accessible[accessibility] = check_is_accessibile(
+        feature_accessible[accessibility] = check_is_accessible(
             accessibility, cache_key, getattr(request.user, "employee_get")
         )
     cache.set(cache_key, feature_accessible)

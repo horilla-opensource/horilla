@@ -3,12 +3,13 @@ accessibility/methods.py
 """
 
 from django.core.cache import cache
-from horilla.horilla_middlewares import _thread_locals
-from accessibility.models import DefaultAccessibility
+
 from accessibility.filters import AccessibilityFilter
+from accessibility.models import DefaultAccessibility
+from horilla.horilla_middlewares import _thread_locals
 
 
-def check_is_accessibile(feature, cache_key, employee):
+def check_is_accessible(feature, cache_key, employee):
     """
     Method to check the employee is accessible for the feature or not
     """
@@ -26,5 +27,5 @@ def check_is_accessibile(feature, cache_key, employee):
 
     filter = accessibility.filter
     employees = AccessibilityFilter(data=filter).qs
-    accessibile = employee in employees
-    return accessibile
+    accessible = employee in employees
+    return accessible
