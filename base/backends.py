@@ -5,12 +5,16 @@ This module is used to write email backends
 """
 
 import importlib
+import logging
 
+from django.core.mail import EmailMessage
 from django.core.mail.backends.smtp import EmailBackend
 
 from base.models import DynamicEmailConfiguration, EmailLog
 from horilla import settings
 from horilla.horilla_middlewares import _thread_locals
+
+logger = logging.getLogger(__name__)
 
 
 class DefaultHorillaMailBackend(EmailBackend):
@@ -192,3 +196,53 @@ if EMAIL_BACKEND != default:
 
 
 __all__ = ["ConfiguredEmailBackend"]
+
+
+message_init = EmailMessage.__init__
+
+
+def my_init(
+    self,
+    subject="",
+    body="",
+    from_email=None,
+    to=None,
+    bcc=None,
+    connection=None,
+    attachments=None,
+    headers=None,
+    cc=None,
+    reply_to=None,
+):
+    """
+    custom __init_method to override
+    """
+    request = getattr(_thread_locals, "request", None)
+
+    if request:
+        try:
+            display_email_name = f"{request.user.employee_get.get_full_name()} <{request.user.employee_get.email}>"
+            from_email = display_email_name if not from_email else from_email
+            reply_to = [display_email_name] if not reply_to else reply_to
+
+        except Exception as e:
+            logger.error(e)
+
+    message_init(
+        self,
+        subject=subject,
+        body=body,
+        from_email=from_email,
+        to=to,
+        bcc=bcc,
+        connection=connection,
+        attachments=attachments,
+        headers=headers,
+        cc=cc,
+        reply_to=reply_to,
+    )
+
+    print(self.__dict__)
+
+
+EmailMessage.__init__ = my_init
