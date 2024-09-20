@@ -8,7 +8,7 @@ from horilla_automations.views import cbvs, views
 
 urlpatterns = [
     path(
-        "mail-automations",
+        "configuration/mail-automations",
         cbvs.AutomationSectionView.as_view(),
         name="mail-automations",
     ),
