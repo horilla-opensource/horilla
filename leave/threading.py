@@ -1,3 +1,4 @@
+import logging
 from threading import Thread
 
 from django.contrib import messages
@@ -7,6 +8,8 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 
 from base.backends import ConfiguredEmailBackend
+
+logger = logging.getLogger(__name__)
 
 
 class LeaveMailSendThread(Thread):
@@ -20,9 +23,16 @@ class LeaveMailSendThread(Thread):
         self.protocol = "https" if request.is_secure() else "http"
 
     def send_email(self, subject, content, recipients, leave_request_id="#"):
+        email_backend = ConfiguredEmailBackend()
+        display_email_name = email_backend.dynamic_from_email_with_display_name
+        if self.request:
+            try:
+                display_email_name = f"{self.request.user.employee_get.get_full_name()} <{self.request.user.employee_get.email}>"
+            except:
+                logger.error(Exception)
+
         host = self.host
         protocol = self.protocol
-        email_backend = ConfiguredEmailBackend()
         if leave_request_id != "#":
             link = int(leave_request_id)
         for recipient in recipients:
@@ -40,10 +50,11 @@ class LeaveMailSendThread(Thread):
                 )
 
                 email = EmailMessage(
-                    subject,
-                    html_message,
-                    email_backend.dynamic_from_email_with_display_name,
-                    [recipient.email],
+                    subject=subject,
+                    body=html_message,
+                    from_email=display_email_name,
+                    to=[recipient.email],
+                    reply_to=[display_email_name],
                 )
                 email.content_subtype = "html"
                 try:
