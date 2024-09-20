@@ -1923,8 +1923,6 @@ def send_acknowledgement(request):
     attachments = [
         (file.name, file.read(), file.content_type) for file in other_attachments
     ]
-    email_backend = ConfiguredEmailBackend()
-    host = email_backend.dynamic_from_email_with_display_name
     if candidate_id:
         candidate_obj = Candidate.objects.filter(id=candidate_id)
     else:
@@ -1960,10 +1958,9 @@ def send_acknowledgement(request):
         render_bdy = template_bdy.render(context)
         to = candidate.email
         email = EmailMessage(
-            subject,
-            render_bdy,
-            host,
-            [to],
+            subject=subject,
+            body=render_bdy,
+            to=[to],
         )
         email.content_subtype = "html"
 
