@@ -13,6 +13,7 @@ provide the main entry points for interacting with the application's functionali
 
 import contextlib
 import json
+import logging
 import random
 import secrets
 from urllib.parse import parse_qs
@@ -77,6 +78,8 @@ from recruitment.filters import CandidateFilter, CandidateReGroup, RecruitmentFi
 from recruitment.forms import RejectedCandidateForm
 from recruitment.models import Candidate, Recruitment, RejectedCandidate
 from recruitment.pipeline_grouper import group_by_queryset
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -707,10 +710,9 @@ def email_send(request):
             },
         )
         email = EmailMessage(
-            f"Hello {candidate.name}, Congratulations on your selection!",
-            html_message,
-            email_backend.dynamic_from_email_with_display_name,
-            [candidate.email],
+            subject=f"Hello {candidate.name}, Congratulations on your selection!",
+            body=html_message,
+            to=[candidate.email],
         )
         email.content_subtype = "html"
         email.attachments = attachments
@@ -1589,6 +1591,13 @@ def onboarding_send_mail(request, candidate_id):
         request, "onboarding/send_mail_form.html", {"candidate": candidate}
     )
     email_backend = ConfiguredEmailBackend()
+    display_email_name = email_backend.dynamic_from_email_with_display_name
+    if request:
+        try:
+            display_email_name = f"{request.user.employee_get.get_full_name()} <{request.user.employee_get.email}>"
+        except:
+            logger.error(Exception)
+
     if request.method == "POST":
         subject = request.POST["subject"]
         body = request.POST["body"]
@@ -1596,7 +1605,7 @@ def onboarding_send_mail(request, candidate_id):
             res = send_mail(
                 subject,
                 body,
-                email_backend.dynamic_from_email_with_display_name,
+                display_email_name,
                 [candidate_mail],
                 fail_silently=False,
             )
