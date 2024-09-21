@@ -2438,6 +2438,7 @@ def user_request_one(request, id):
 
 
 @login_required
+@manager_can_enter("leave.view_leaverequest")
 def employee_leave(request):
     """
     function used to view employees are leave today.

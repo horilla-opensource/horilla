@@ -859,3 +859,10 @@ class EmployeeGeneralSetting(HorillaModel):
     badge_id_prefix = models.CharField(max_length=5, default="PEP")
     objects = models.Manager()
     company_id = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)
+
+
+from accessibility.accessibility import ACCESSBILITY_FEATURE
+
+ACCESSBILITY_FEATURE.append(("gender_chart", "Can view Gender Chart"))
+ACCESSBILITY_FEATURE.append(("department_chart", "Can view Department Chart"))
+ACCESSBILITY_FEATURE.append(("employees_chart", "Can view Employees Chart"))

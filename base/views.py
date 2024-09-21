@@ -102,6 +102,7 @@ from base.methods import (
     closest_numbers,
     export_data,
     filtersubordinates,
+    filtersubordinatesemployeemodel,
     get_key_instances,
     get_pagination,
     sortby,
@@ -838,6 +839,7 @@ def home(request):
 
 
 @login_required
+@manager_can_enter("employee.view_employeeworkinformation")
 def employee_workinfo_complete(request):
 
     employees_with_pending = []
@@ -861,9 +863,15 @@ def employee_workinfo_complete(request):
         "salary_hour",
     ]
     search = request.GET.get("search", "")
-    for employee in EmployeeWorkInformation.objects.filter(
-        employee_id__employee_first_name__icontains=search, employee_id__is_active=True
-    ):
+    employees_workinfos = filtersubordinates(
+        request,
+        queryset=EmployeeWorkInformation.objects.filter(
+            employee_id__employee_first_name__icontains=search,
+            employee_id__is_active=True,
+        ),
+        perm="employee.view_employeeworkinformation",
+    )
+    for employee in employees_workinfos:
         completed_field_count = sum(
             1
             for field_name in fields_to_focus
@@ -880,7 +888,11 @@ def employee_workinfo_complete(request):
         else:
             pass
 
-    emps = Employee.objects.filter(employee_work_info__isnull=True)
+    emps = filtersubordinatesemployeemodel(
+        request,
+        Employee.objects.filter(employee_work_info__isnull=True),
+        perm="employee.view_employeeworkinformation",
+    )
     for emp in emps:
         employees_with_pending.insert(
             0,
@@ -2512,7 +2524,7 @@ def employee_shift_create(request):
 
 @login_required
 @hx_request_required
-@permission_required("base.change_employeeshiftupdate")
+@permission_required("base.change_employeeshift")
 def employee_shift_update(request, id, **kwargs):
     """
     This method is used to update employee shift instance
