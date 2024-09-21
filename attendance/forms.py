@@ -53,7 +53,7 @@ from attendance.models import (
     validate_time_format,
 )
 from base.methods import get_working_days, reload_queryset
-from base.models import Company
+from base.models import Company, EmployeeShift
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla import horilla_middlewares
@@ -877,6 +877,12 @@ class GraceTimeForm(ModelForm):
     Form for create or update Grace time
     """
 
+    shifts = forms.ModelMultipleChoiceField(
+        queryset=EmployeeShift.objects.all(),
+        required=False,
+        help_text=_("Allcocate this grace time for Check-In Attendance"),
+    )
+
     class Meta:
         """
         Meta class for additional options
@@ -890,6 +896,29 @@ class GraceTimeForm(ModelForm):
         }
 
         exclude = ["objects", "allowed_time_in_secs", "is_active"]
+
+
+class GraceTimeAssignForm(forms.Form):
+    """
+    Form for create or update Grace time
+    """
+
+    shifts = forms.ModelMultipleChoiceField(
+        queryset=EmployeeShift.objects.all(),
+    )
+    verbose_name = _("Assign Shifts")
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        form_html = render_to_string("common_form.html", context)
+        return form_html
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["shifts"].widget.attrs["class"] = "oh-select w-100 oh-select-2"
 
 
 class AttendanceRequestCommentForm(ModelForm):

@@ -1,4 +1,5 @@
 {% load static %}{% load i18n %}
+<div id="ohMessages"></div>
 {% if messages %}
 <div class="oh-wrapper">
     {% for message in messages %}
@@ -27,11 +28,17 @@
             <div class="oh-sticky-table__table oh-table--sortable">
                 <div class="oh-sticky-table__thead">
                     <div class="oh-sticky-table__tr">
-                        <div class="oh-sticky-table__th">
+                        <div class="oh-sticky-table__sd">
                             {% trans 'Allowed time' %}
                         </div>
                         <div class="oh-sticky-table__th">
                             {% trans 'Is active' %}
+                        </div>
+                        <div class="oh-sticky-table__th">
+                            {% trans 'Applicable on clock-in' %}
+                        </div>
+                        <div class="oh-sticky-table__th">
+                            {% trans 'Applicable on clock-out' %}
                         </div>
                         {% if perms.attendance.change_gracetime %}
                         <div class="oh-sticky-table__th">{% trans 'Actions' %}</div>
@@ -40,18 +47,36 @@
                 </div>
                 <div class="oh-sticky-table__tbody">
                     <div class="oh-sticky-table__tr" draggable="true">
-                        <div class="oh-sticky-table__td">{{ default_grace_time.allowed_time }} {% trans 'Hours' %}</div>
+                        <div class="oh-sticky-table__sd">{{ default_grace_time.allowed_time }} {% trans 'Hours' %}</div>
                         <div class="oh-sticky-table__td">
                             <div class="d-flex">
                                 <div class="oh-switch">
-                                    {% if perms.attendance.change_gracetime%}
-                                    <input type="checkbox" name="is_active" id="GTIsActivate"
-                                        hx-post="{% url 'update-isactive-gracetime' default_grace_time.id %}"
-                                        hx-trigger="change" hx-target="#graceTimeContainer" class="oh-switch__checkbox"
-                                        {% if default_grace_time.is_active %} checked {% endif %}>
+                                    {% if perms.attendance.change_gracetime %}
+                                        <input type="checkbox" id="isActive" data-id ="{{default_grace_time.id}}" class="oh-switch__checkbox" {% if default_grace_time.is_active %} checked {% endif %} onchange="updateGracetimeIsActivate(this)">
                                     {% else %}
-                                    <input type="checkbox" id="GTIsActivate" class="oh-switch__checkbox"
-                                        {% if default_grace_time.is_active %} checked {% endif %} disabled >
+                                        <input type="checkbox" id="isActive" class="oh-switch__checkbox" {% if default_grace_time.is_active %} checked {% endif %} disabled>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            <div class="d-flex">
+                                <div class="oh-switch">
+                                    {% if perms.attendance.change_gracetime %}
+                                        <input type="checkbox" id="isAllowedClockIn" data-id ="{{default_grace_time.id}}" data-update ="clock_in" class="oh-switch__checkbox" {% if default_grace_time.allowed_clock_in %} checked {% endif %} onchange="updateAllowedClockInOrOut(this)">
+                                    {% else %}
+                                        <input type="checkbox" id="isAllowedClockIn" class="oh-switch__checkbox" {% if default_grace_time.auto_generate %} checked {% endif %} disabled>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            <div class="d-flex">
+                                <div class="oh-switch">
+                                    {% if perms.attendance.change_gracetime %}
+                                        <input type="checkbox" id="isAllowedClockOut" data-id ="{{default_grace_time.id}}" data-update ="clock_out" class="oh-switch__checkbox" {% if default_grace_time.allowed_clock_out %} checked {% endif %} onchange="updateAllowedClockInOrOut(this)">
+                                    {% else %}
+                                        <input type="checkbox" id="isAllowedClockOut" class="oh-switch__checkbox" {% if default_grace_time.auto_generate %} checked {% endif %} disabled>
                                     {% endif %}
                                 </div>
                             </div>
@@ -118,11 +143,20 @@
         <div class="oh-sticky-table__table oh-table--sortable">
             <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__th">
+                    <div class="oh-sticky-table__sd">
                         {% trans 'Allowed time' %}
                     </div>
                     <div class="oh-sticky-table__th">
                         {% trans 'Is active' %}
+                    </div>
+                    <div class="oh-sticky-table__th">
+                        {% trans 'Applicable on clock-in' %}
+                    </div>
+                    <div class="oh-sticky-table__th">
+                        {% trans 'Applicable on clock-out' %}
+                    </div>
+                    <div class="oh-sticky-table__th">
+                        {% trans 'Assigned Shifts' %}
                     </div>
                     {% if perms.attendance.change_gracetime %}
                     <div class="oh-sticky-table__th">{% trans 'Actions' %}</div>
@@ -132,25 +166,60 @@
             <div class="oh-sticky-table__tbody">
                 {% for grace_time in grace_times %}
                 <div class="oh-sticky-table__tr" draggable="true">
-                    <div class="oh-sticky-table__td">{{ grace_time.allowed_time }} {% trans 'Hours' %}</div>
+                    <div class="oh-sticky-table__sd">{{ grace_time.allowed_time }} {% trans 'Hours' %}</div>
                     <div class="oh-sticky-table__td">
                         <div class="d-flex">
                             <div class="oh-switch">
-                                {% if perms.attendance.change_gracetime%}
-                                <input type="checkbox" name="is_active" id="GTIsActivate" class="oh-switch__checkbox"
-                                    {% if grace_time.is_active %} checked {% endif %}
-                                    hx-post="{% url 'update-isactive-gracetime' grace_time.id %}" hx-trigger="change"
-                                    hx-target="#graceTimeContainer">
+                                {% if perms.attendance.change_gracetime %}
+                                    <input type="checkbox" id="isActive" data-id ="{{grace_time.id}}" class="oh-switch__checkbox" {% if grace_time.is_active %} checked {% endif %} onchange="updateGracetimeIsActivate(this)">
                                 {% else %}
-                                <input type="checkbox" id="GTIsActivate" class="oh-switch__checkbox"
-                                    {% if grace_time.is_active %} checked {% endif %} disabled>
+                                    <input type="checkbox" id="isActive" class="oh-switch__checkbox" {% if grace_time.is_active %} checked {% endif %} disabled>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
+                    <div class="oh-sticky-table__td">
+                        <div class="d-flex">
+                            <div class="oh-switch">
+                                {% if perms.attendance.change_gracetime %}
+                                    <input type="checkbox" id="isAllowedClockIn" data-id ="{{grace_time.id}}" data-update ="clock_in" class="oh-switch__checkbox" {% if grace_time.allowed_clock_in %} checked {% endif %} onchange="updateAllowedClockInOrOut(this)">
+                                {% else %}
+                                    <input type="checkbox" id="isAllowedClockIn" class="oh-switch__checkbox" {% if grace_time.allowed_clock_in %} checked {% endif %} disabled>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__td">
+                        <div class="d-flex">
+                            <div class="oh-switch">
+                                {% if perms.attendance.change_gracetime %}
+                                    <input type="checkbox" id="isAllowedClockOut" data-id ="{{grace_time.id}}" data-update ="clock_out" class="oh-switch__checkbox" {% if grace_time.allowed_clock_out %} checked {% endif %} onchange="updateAllowedClockInOrOut(this)">
+                                {% else %}
+                                    <input type="checkbox" id="isAllowedClockOut" class="oh-switch__checkbox" {% if grace_time.allowed_clock_out %} checked {% endif %} disabled>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__td">
+                        {% if grace_time.employee_shift.all %}
+                            {% for shift in grace_time.employee_shift.all %}
+                                {{shift}}<br/>
+                            {% endfor %}
+                        {% else %}
+                            {% trans "Nil" %}
+                        {% endif %}
+                    </div>
                     {% if perms.attendance.change_gracetime%}
                     <div class="oh-sticky-table__td">
                         <div class="oh-btn-group">
+                            {% if perms.base.change_employeeshift %}
+                            <a hx-get="{% url "assign-shift" grace_time.id %}"
+                                hx-target="#objectUpdateModalTarget" type="button" data-toggle="oh-modal-toggle"
+                                data-target="#objectUpdateModal" data-toggle="oh-modal-toggle" type="button"
+                                class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Assign shift' %}">
+                                <ion-icon name="alarm-outline"></ion-icon>
+                            </a>
+                            {% endif %}
                             {% if perms.base.change_gracetime %}
                             <a hx-get="{% url 'update-grace-time' grace_time.id %}?default=False"
                                 hx-target="#objectUpdateModalTarget" type="button" data-toggle="oh-modal-toggle"
@@ -191,3 +260,63 @@
     {% endif %}
 </div>
 <!--end of Grace time  -->
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+        }
+    function updateAllowedClockInOrOut(checkbox) {
+        // Using jQuery to check if the checkbox is checked
+        var isChecked = $(checkbox).prop('checked');
+        var gracetimeId = $(checkbox).data('id');
+        var update = $(checkbox).data('update');
+
+         $.ajax({
+          type: "POST",
+          url: "{% url 'update-gracetime-clock-in-clock-out' %}",
+          data: { 'isChecked': isChecked, 'gracetimeId':gracetimeId,'update':update,'csrfmiddlewaretoken': getCookie('csrftoken') },
+          dataType: "json",
+          success: function (response) {
+            $("#ohMessages").append(`
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                    ${response.message}
+                    </div>
+                </div>`);
+                duration = 1500;
+          }
+        });
+    }
+    function updateGracetimeIsActivate(checkbox) {
+        // Using jQuery to check if the checkbox is checked
+        var isChecked = $(checkbox).prop('checked');
+        var gracetimeId = $(checkbox).data('id');
+        $.ajax({
+          type: "POST",
+          url: "{% url 'update-isactive-gracetime' %}",
+          data: { 'isChecked': isChecked, 'gracetimeId':gracetimeId,'csrfmiddlewaretoken': getCookie('csrftoken') },
+          dataType: "json",
+          success: function (response) {
+            $("#ohMessages").append(`
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                    ${response.message}
+                    </div>
+                </div>`);
+                duration = 1500;
+          }
+        });
+    }
+</script>
