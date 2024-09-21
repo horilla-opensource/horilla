@@ -1,0 +1,50 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header pb-0">
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body pt-3">
+    <div class="oh-profile-section">
+        <h1 class="oh-onboarding-card__title oh-onboarding-card__title--h2 text-center my-3">
+            {% trans "Database Authentication" %}
+        </h1>
+        <p class="text-muted text-center">
+            {% trans "Authenticate with your password to load demo database" %}
+        </p>
+        <form action="{% url 'load-demo-database' %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="password">{% trans "Password" %}</label>
+                        <div class="oh-password-input-container">
+                            <input type="password" id="load_data_password" name="load_data_password"
+                                class="oh-input oh-input--password w-100" placeholder="Database authentication passowrd"
+                                required />
+                            <button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle">
+                                <ion-icon class="oh-passowrd-input__show-icon" title="Show Password"
+                                    name="eye-outline"></ion-icon>
+                                <ion-icon class="oh-passowrd-input__hide-icon d-none" title="Hide Password"
+                                    name="eye-off-outline"></ion-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="oh-modal__dialog-footer p-0 pt-2">
+                        <button type="submit" class="oh-btn oh-btn--secondary-outline mt-2" role="button"
+                            onclick="$('#dataLoadAnimation').toggleClass('oh-modal--show')">
+                            {% trans "Authenticate" %}
+                            <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="oh-modal" id="dataLoadAnimation" role="dialog" aria-labelledby="dataLoadAnimationLabel" aria-hidden="true"
+    style="backdrop-filter: blur(8px);">
+    {% include "demo_database/animation_load_data.html" %}
+</div>

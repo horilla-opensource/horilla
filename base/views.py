@@ -5,6 +5,7 @@ This module is used to map url pattens with django views or methods
 """
 
 import json
+import uuid
 from datetime import datetime, timedelta
 from email.mime.image import MIMEImage
 from os import path
@@ -26,6 +27,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonRespons
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
@@ -150,7 +152,8 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
-from horilla.methods import get_horilla_model_class
+from horilla.horilla_settings import DB_INIT_PASSWORD, DYNAMIC_URL_PATTERNS
+from horilla.methods import get_horilla_model_class, remove_dynamic_url
 from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
 from notifications.models import Notification
@@ -212,33 +215,40 @@ def initialize_database_condition():
 
 
 def load_demo_database(request):
-    # Core data files
-    data_files = [
-        "user_data.json",
-        "employee_info_data.json",
-        "base_data.json",
-        "work_info_data.json",
-    ]
-    optional_apps = {
-        "attendance": "attendance_data.json",
-        "leave": "leave_data.json",
-        "asset_data": "asset_data.json",
-        "recruitment": "recruitment_data.json",
-        "pms": "pms_data.json",
-    }
+    if initialize_database_condition():
+        if request.method == "POST":
+            if request.POST.get("load_data_password") == DB_INIT_PASSWORD:
+                data_files = [
+                    "user_data.json",
+                    "employee_info_data.json",
+                    "base_data.json",
+                    "work_info_data.json",
+                ]
+                optional_apps = {
+                    "attendance": "attendance_data.json",
+                    "leave": "leave_data.json",
+                    "asset_data": "asset_data.json",
+                    "recruitment": "recruitment_data.json",
+                    "pms": "pms_data.json",
+                }
 
-    # Add data files for installed apps
-    data_files += [
-        file for app, file in optional_apps.items() if apps.is_installed(app)
-    ]
+                # Add data files for installed apps
+                data_files += [
+                    file
+                    for app, file in optional_apps.items()
+                    if apps.is_installed(app)
+                ]
 
-    # Load all data files
-    for file in data_files:
-        file_path = path.join(settings.BASE_DIR, "load_data", file)
-        call_command("loaddata", file_path)
+                # Load all data files
+                for file in data_files:
+                    file_path = path.join(settings.BASE_DIR, "load_data", file)
+                    call_command("loaddata", file_path)
 
-    messages.success(request, _("Database loaded successfully."))
-    return redirect(home)
+                messages.success(request, _("Database loaded successfully."))
+            else:
+                messages.error(request, _("Database Authentication Failed"))
+        return redirect(home)
+    return redirect("/")
 
 
 def initialize_database(request):
@@ -777,6 +787,16 @@ def home(request):
         employee=request.user.employee_get
     )[0]
 
+    user = request.user
+    today = timezone.now().date()  # Get today's date
+    is_birthday = None
+
+    if user.employee_get.dob != None:
+        is_birthday = (
+            user.employee_get.dob.month == today.month
+            and user.employee_get.dob.day == today.day
+        )
+
     announcements = Announcement.objects.all()
     general_expire = AnnouncementExpire.objects.all().first()
     general_expire_date = 30 if not general_expire else general_expire.days
@@ -811,6 +831,7 @@ def home(request):
         "announcement": announcement_list,
         "general_expire_date": general_expire_date,
         "charts": employee_charts.charts,
+        "is_birthday": is_birthday,
     }
 
     return render(request, "index.html", context)
@@ -6303,9 +6324,20 @@ def generate_error_report(error_list, error_data, file_name):
 
     worksheet = writer.sheets["Sheet1"]
     worksheet.set_column("A:Z", 30)
-
     writer.close()
-    return response
+
+    def get_error_sheet(request):
+        remove_dynamic_url(path_info)
+        return response
+
+    from base.urls import path, urlpatterns
+
+    # Create a unique path for the error file download
+    path_info = f"error-sheet-{uuid.uuid4()}"
+    urlpatterns.append(path(path_info, get_error_sheet, name=path_info))
+    DYNAMIC_URL_PATTERNS.append(path_info)
+
+    return path_info
 
 
 @login_required
@@ -6418,11 +6450,18 @@ def holidays_info_import(request):
             except Exception as e:
                 holiday["Other errors"] = f"{str(e)}"
                 error_list.append(holiday)
-
+        path_info = None
         if error_list:
-            return generate_error_report(error_list, error_data, file_name)
-        else:
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            path_info = generate_error_report(error_list, error_data, file_name)
+        created_holidays_count = len(holiday_dicts) - len(error_list)
+        context = {
+            "created_count": created_holidays_count,
+            "error_count": len(error_list),
+            "model": _("Holidays"),
+            "path_info": path_info,
+        }
+        html = render_to_string("import_popup.html", context)
+        return HttpResponse(html)
 
 
 @login_required

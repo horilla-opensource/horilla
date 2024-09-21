@@ -1,11 +1,9 @@
 from django.contrib.auth.models import Group
-from django.contrib.auth.views import PasswordResetConfirmView
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
 from base import announcement, request_and_approve, views
 from base.forms import (
-    AttendanceAllowedIPForm,
     MailTemplateForm,
     RotatingShiftAssignForm,
     RotatingShiftForm,
@@ -15,7 +13,6 @@ from base.forms import (
     WorkTypeRequestForm,
 )
 from base.models import (
-    AttendanceAllowedIP,
     Company,
     Department,
     EmployeeShift,
@@ -33,12 +30,12 @@ from base.models import (
     WorkType,
     WorkTypeRequest,
 )
-from employee.models import EmployeeTag
 from horilla_audit.models import AuditTag
 
 urlpatterns = [
     path("", views.home, name="home-page"),
     path("initialize-database", views.initialize_database, name="initialize-database"),
+    path("load-demo-database", views.load_demo_database, name="load-demo-database"),
     path(
         "initialize-database-user",
         views.initialize_database_user,

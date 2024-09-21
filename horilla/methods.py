@@ -1,7 +1,10 @@
 import contextlib
+import importlib
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+
+from horilla.horilla_settings import APP_URLS, DYNAMIC_URL_PATTERNS
 
 
 def get_horilla_model_class(app_label, model):
@@ -78,3 +81,29 @@ def get_urlencode(request):
     get_data.pop("instances_ids", None)
     previous_data = get_data.urlencode()
     return previous_data
+
+
+def remove_dynamic_url(path_info):
+    """Function to remove a dynamically added URL from any app's urlpatterns."""
+
+    # Iterate over all app URL patterns
+    for app_urls in APP_URLS:
+        try:
+            # Dynamically import the app's urls.py module
+            urls_module = importlib.import_module(app_urls)
+            # Access the urlpatterns in the module
+            urlpatterns = getattr(urls_module, "urlpatterns", None)
+
+            if urlpatterns:
+                # Check if the pattern exists in this app's urlpatterns
+                for path in urlpatterns:
+                    if path.name == path_info:
+                        urlpatterns.remove(path)
+                        break
+
+        except ModuleNotFoundError:
+            print(f"Module {app_urls} not found. Skipping...")
+
+    # Also remove it from the tracked dynamic paths
+    if path_info in DYNAMIC_URL_PATTERNS:
+        DYNAMIC_URL_PATTERNS.remove(path_info)

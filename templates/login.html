@@ -1,130 +1,134 @@
 {% load static %} {% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - {{white_label_company_name}} Dashboard</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
     <link rel="stylesheet" href="{% static '/build/css/style.min.css' %}" />
     <link rel="manifest" href="{% static 'build/manifest.json' %}" />
-  </head>
-  <body>
+</head>
+
+<body>
     <div id="main">
-      <div class="oh-alert-container">
-        {% for message in messages %}
-        <div class="oh-alert oh-alert--animated {{ message.tags }}">
-          {{ message }}
-        </div>
-        {% endfor %}
-      </div>
-      <main class="oh-auth">
-        <div class="oh-auth-card">
-          <h1
-            class="oh-onboarding-card__title oh-onboarding-card__title--h2 text-center my-3"
-          >
-            {% trans "Sign In" %}
-          </h1>
-          <p class="text-muted text-center">
-            {% trans "Please login to access the dashboard." %}
-          </p>
-          <form method="post" class="oh-form-group">
-            {% csrf_token %}
-            <div class="oh-input-group">
-              <label class="oh-label" for="username"
-                >{% trans "Username" %}</label
-              >
-              <input
-                type="text"
-                id="username"
-                name="username"
-                class="oh-input w-100"
-                placeholder="e.g. jane.doe@acme.com"
-              />
+        <div class="oh-alert-container">
+            {% for message in messages %}
+            <div class="oh-alert oh-alert--animated {{ message.tags }}">
+                {{ message }}
             </div>
-            <div class="oh-input-group">
-              <label class="oh-label" for="password"
-                >{% trans "Password" %}</label
-              >
-              <div class="oh-password-input-container">
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  class="oh-input oh-input--password w-100"
-                  placeholder="Use alphanumeric characters"
+            {% endfor %}
+        </div>
+        <main class="oh-auth">
+            <div class="oh-auth-card mb-4">
+                <h1 class="oh-onboarding-card__title oh-onboarding-card__title--h2 text-center my-3">
+                    {% trans "Sign In" %}
+                </h1>
+                <p class="text-muted text-center">
+                    {% trans "Please login to access the dashboard." %}
+                </p>
+                <form method="post" class="oh-form-group">
+                    {% csrf_token %}
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="username">{% trans "Username" %}</label>
+                        <input type="text" id="username" name="username" class="oh-input w-100"
+                            placeholder="e.g. adam.luis@horilla.com" />
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="password">{% trans "Password" %}</label>
+                        <div class="oh-password-input-container">
+                            <input type="password" id="password" name="password"
+                                class="oh-input oh-input--password w-100" placeholder="Use alphanumeric characters" />
+                            <button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle">
+                                <ion-icon class="oh-passowrd-input__show-icon" title="{% trans 'Show Password' %}"
+                                    name="eye-outline"></ion-icon>
+                                <ion-icon class="oh-passowrd-input__hide-icon d-none" title="{% trans 'Hide Password' %}"
+                                    name="eye-off-outline"></ion-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit"
+                        class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+                        role="button">
+                        <ion-icon class="me-2" name="lock-closed-outline"></ion-icon>
+                        {% trans "Secure Sign-in" %}
+                    </button>
+                    {% if not initialize_database %}
+                        <small class="text-center">
+                            <a href="{% url 'forgot-password' %}" class="oh-link oh-link--secondary justify-content-center">
+                                {% trans "Forgot password" %}?
+                            </a>
+                        </small>
+                    {% endif %}
+                </form>
+                {% if initialize_database %}
+                    <div>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'initialize-database' %}"
+                                class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+                                role="button" style="
+                                background-color: rgba(229, 79, 56, 0.1);
+                                color: hsl(8, 77%, 56%);
+                                ">
+                                {% trans "Initialize Database" %}
+                                <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon>
+                            </a>
+                            <a
+                                onclick="$('#dataLoadAuthentication').toggleClass('oh-modal--show');"
+                                class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+                                style="background-color: #31b46e1f; color: #1fad61" role="button">
+                                {% trans "Load Demo Data" %}
+                                <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="oh-modal" id="dataLoadAuthentication" role="dialog" aria-labelledby="dataLoadAuthenticationLabel" aria-hidden="true" style="backdrop-filter: blur(8px);">
+                        <div class="oh-modal__dialog">
+                            {% include "demo_database/auth_load_data.html" %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <div>
+                <img src={% if white_label_company.icon %}
+                        "{{white_label_company.icon.url}}"
+                        alt="{{white_label_company_name}}"
+                        style=" opacity:.90; 200px; height: 140px;"
+                    {% else %}
+                        "{% static 'images/ui/auth-logo.png' %}" alt="Horilla"
+                    {% endif %}
                 />
-                <button
-                  type="button"
-                  class="oh-btn oh-btn--transparent oh-password-input--toggle"
-                >
-                  <ion-icon
-                    class="oh-passowrd-input__show-icon"
-                    title="Show Password"
-                    name="eye-outline"
-                  ></ion-icon>
-                  <ion-icon
-                    class="oh-passowrd-input__hide-icon d-none"
-                    title="Hide Password"
-                    name="eye-off-outline"
-                  ></ion-icon>
-                </button>
-              </div>
+                {% if white_label_company %}
+                <p style=" font-size: large; color: gray; text-align: center;" class="mt-2">{{white_label_company}}</p>
+                {% endif %}
+
             </div>
-            <button
-              type="submit"
-              class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
-              role="button"
-            >
-              <ion-icon class="me-2" name="lock-closed-outline"></ion-icon>
-              {% trans "Secure Sign-in" %}
-            </button>
-            <small class="text-center"
-              ><a
-                href="{% url 'forgot-password' %}"
-                class="oh-link oh-link--secondary justify-content-center"
-                >{% trans "Forgot password" %}?</a
-              ></small
-            >
-          </form>
-        </div>
-        <div>
-          <img
-            src={% if white_label_company.icon %}"{{white_label_company.icon.url}}" {% else %} "{% static 'images/ui/auth-logo.png' %}" {% endif %}
-            alt="Horilla"
-          />
-          {% if initialize_database %}
-            <a href="{% url 'initialize-database' %}" class="oh-link justify-content-center mt-2" style="font-size: large;color: crimson;">{% trans "Initialize Database" %}<ion-icon name="arrow-forward-circle-outline"></ion-icon></a>
-          {% endif %}
-        </div>
-      </main>
+        </main>
     </div>
     <script src="{% static '/build/js/web.frontend.min.js' %}"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script
-      type="module"
-      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
-    ></script>
-    <script
-      nomodule
-      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
-    ></script>
-
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
-      $(document).ready(function () {
-        if ($(".oh-alert--warning").length > 0) {
-          Swal.fire({
-            title: 'Access Denied !',
-            text: 'Your login credentials are currently blocked. Please contact HR administrators for assistance.',
-            icon: 'warning',
-            confirmButtonText: 'OK',
-          });
-        }
-      });
+        $(document).ready(function () {
+            if ($(".oh-alert--warning").length > 0) {
+                Swal.fire({
+                    title: 'Access Denied !',
+                    text: 'Your login credentials are currently blocked. Please contact HR administrators for assistance.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                });
+            }
+        });
     </script>
-  </body>
+</body>
+
 </html>

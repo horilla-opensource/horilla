@@ -29,3 +29,10 @@ HORILLA_TIME_FORMATS = {
 }
 
 BIO_DEVICE_THREADS = {}
+
+DYNAMIC_URL_PATTERNS = []
+
+APP_URLS = [
+    "base.urls",
+    "employee.urls",
+]

@@ -443,3 +443,19 @@ $(document).on('keydown', function (event) {
         }
     }
 });
+function handleDownloadAndRefresh(event, url) {
+    // Use in import_popup.html file
+    event.preventDefault();
+
+    // Create a temporary hidden iframe to trigger the download
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+
+    // Refresh the page after a short delay
+    setTimeout(function () {
+        document.body.removeChild(iframe);  // Clean up the iframe
+        window.location.reload();  // Refresh the page
+    }, 500);  // Adjust the delay as needed
+}
