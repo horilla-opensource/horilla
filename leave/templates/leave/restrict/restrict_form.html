@@ -8,6 +8,11 @@
             </div>
         </div>
         {% endfor %}
+        <script>
+            setTimeout(function () {
+              $(".oh-modal__close").click();
+            }, 1000);
+        </script>
     </div>
     <span hx-get="{% url 'restrict-filter' %}?{{pd}}" hx-target="#restrictDays" hx-trigger="load"></span>
 {% endif %}
@@ -46,6 +51,41 @@
                 {% include "leave/job_position_field.html" %}
             </div>
         </div>
+
+        <div class="row">
+            <!-- Include All Checkbox -->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input__group">
+                    <label class="oh-label d-flex" for="{{ form.include_all.id_for_label }}">{% trans "Include all" %}
+                        <span class="oh-info ms-2" title="{{ form.include_all.help_text|safe }}"></span>
+                    </label>
+                    <div class="oh-switch">
+                        {{ form.include_all }}
+                    </div>
+                    {{ form.include_all.errors }}
+                </div>
+            </div>
+
+            <!-- Spesific Leave Types Field -->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="specific-leave-group" style="display: none;">
+                <div class="oh-input__group">
+                    <label class="oh-label d-flex" for="{{ form.spesific_leave_types.id_for_label }}">{% trans "Specific Leave Types" %}
+                        <span class="oh-info ms-2" title="{{ form.spesific_leave_types.help_text|safe }}"></span></label>
+                    {{ form.spesific_leave_types }} {{ form.spesific_leave_types.errors }}
+                </div>
+            </div>
+
+            <!-- Exclude Leave Types Field -->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="exclude-leave-group" style="display: none;">
+                <div class="oh-input__group">
+                    <label class="oh-label d-flex" for="{{ form.exclued_leave_types.id_for_label }}">{% trans "Exclude Leave Types" %}
+                        <span class="oh-info ms-2" title="{{ form.exclued_leave_types.help_text|safe }}"></span>
+                    </label>
+                    {{ form.exclued_leave_types }} {{ form.exclued_leave_types.errors }}
+                </div>
+            </div>
+        </div>
+
         <label class="oh-label d-block" for="{{ form.description.id_for_label }}">{% trans "Description" %}</label>
         {{form.description}} {{form.description.errors}}
         <div class="oh-modal__dialog-footer p-0 pt-2">
@@ -61,5 +101,58 @@
         $("select").on("select2:select", function (e) {
             $(this).closest("select")[0].dispatchEvent(new Event("change"));
         });
+
+        // Get the include_all checkbox and the fields to toggle
+        var includeAllCheckbox = document.getElementById('{{ form.include_all.id_for_label }}');
+        var specificLeaveGroup = document.getElementById('specific-leave-group');
+        var excludeLeaveGroup = document.getElementById('exclude-leave-group');
+
+        // Get the specific leave field (adjust the selector based on your actual form structure)
+        var specificLeaveField = specificLeaveGroup.querySelector('input, select, textarea'); // Adjust if it's not an input, select, or textarea
+
+        // Function to toggle visibility and required attribute
+        function toggleFields() {
+            if (includeAllCheckbox.checked) {
+                // Show exclude leave types, hide specific leave types
+                specificLeaveGroup.style.display = 'none';
+                excludeLeaveGroup.style.display = 'block';
+
+                // Remove required attribute from specific leave field
+                specificLeaveField.removeAttribute('required');
+            } else {
+                // Show specific leave types, hide exclude leave types
+                specificLeaveGroup.style.display = 'block';
+                excludeLeaveGroup.style.display = 'none';
+
+                // Check if specific leave field is empty
+                if (!specificLeaveField.value.trim()) {
+                    // If empty, set required attribute to specific leave field
+                    specificLeaveField.setAttribute('required', 'required');
+                } else {
+                    // If not empty, remove the required attribute
+                    specificLeaveField.removeAttribute('required');
+                }
+            }
+
+        }
+
+        // Add an event listener to the specific leave field to handle its value changes
+        specificLeaveField.addEventListener('input', function() {
+            if (specificLeaveField.value.trim()) {
+                // If there's a value, remove the required attribute
+                specificLeaveField.removeAttribute('required');
+            } else {
+                // If no value, set the required attribute
+                specificLeaveField.setAttribute('required', 'required');
+            }
+        });
+
+        // Initial toggle based on the current checkbox state
+        toggleFields();
+
+        // Add event listener for checkbox change
+        includeAllCheckbox.addEventListener('change', toggleFields);
+
     });
+
 </script>
