@@ -813,17 +813,30 @@ class HorillaFormView(FormView):
             setattr(self.form_class, "structured", structured)
 
     def get(
-        self, request: HttpRequest, pk=None, *args: str, **kwargs: Any
+        self, request: HttpRequest, *args: str, pk=None, **kwargs: Any
     ) -> HttpResponse:
+        _pk = pk
         response = super().get(request, *args, **kwargs)
         return response
 
     def post(
-        self, request: HttpRequest, pk=None, *args: str, **kwargs: Any
+        self, request: HttpRequest, *args: str, pk=None, **kwargs: Any
     ) -> HttpResponse:
+        _pk = pk
         self.get_form()
         response = super().post(request, *args, **kwargs)
         return response
+
+    def init_form(self, *args, data=None, files=None, instance=None, **kwargs):
+        """
+        method where first the form where initialized
+        """
+        self.form_class: forms.ModelForm
+
+        form = self.form_class(
+            data, files, instance=instance, initial=self.get_initial()
+        )
+        return form
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -856,17 +869,23 @@ class HorillaFormView(FormView):
                 self.form.previous_url = previous_url
         return context
 
+    def get_queryset(self):
+        """
+        method to get the instance for the form
+        """
+        pk = self.kwargs.get("pk")
+        return self.model.objects.filter(pk=pk).first()
+
     def get_form(self, form_class=None):
+        pk = self.kwargs.get("pk")
         if not hasattr(self, "form"):
-            pk = self.kwargs.get("pk")
-            instance = self.model.objects.filter(pk=pk).first()
+            instance = self.get_queryset()
             data = None
             files = None
             if self.request.method == "POST":
                 data = self.request.POST
                 files = self.request.FILES
-            form = self.form_class(data, files, instance=instance)
-
+            form = self.init_form(data=data, files=files, instance=instance)
             if self.is_dynamic_create_view:
                 setattr(type(form), "save", save)
 
