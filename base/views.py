@@ -228,9 +228,10 @@ def load_demo_database(request):
                 optional_apps = {
                     "attendance": "attendance_data.json",
                     "leave": "leave_data.json",
-                    "asset_data": "asset_data.json",
+                    "asset": "asset_data.json",
                     "recruitment": "recruitment_data.json",
                     "pms": "pms_data.json",
+                    "payroll": "payroll_data.json",
                 }
 
                 # Add data files for installed apps
