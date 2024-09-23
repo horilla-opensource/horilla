@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
 {% block content %}
+{% load i18n %}
 <style>
 
 </style>
@@ -13,7 +14,7 @@
               class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small"
             >
               <h1 class="oh-main__titlebar-title fw-bold">
-                Organizational Chart
+                {% trans "Organizational Chart" %}
               </h1>
               <select id="mangerSelect" class="oh-select"
                 style="
@@ -25,7 +26,7 @@
                     border-radius: 2px;
                 "
                 name="manager_id"
-                title="Reporting Managers"
+                title="{% trans 'Reporting Managers' %}"
                 hx-post="{% url 'organisation-chart' %}"
                 hx-target="#chart_target"
               >
