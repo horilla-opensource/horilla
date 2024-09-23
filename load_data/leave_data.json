@@ -3262,8 +3262,11 @@
       "start_date": "2024-09-16",
       "end_date": "2024-09-16",
       "department": 1,
+      "include_all": true,
       "description": "Horilla Project Installation",
-      "job_position": []
+      "job_position": [],
+      "spesific_leave_types": [],
+      "exclued_leave_types": []
     }
   },
   {
@@ -3278,8 +3281,11 @@
       "start_date": "2024-09-23",
       "end_date": "2024-09-27",
       "department": 2,
+      "include_all": true,
       "description": "Luanch Horilla",
-      "job_position": []
+      "job_position": [],
+      "spesific_leave_types": [],
+      "exclued_leave_types": []
     }
   },
   {
@@ -3294,8 +3300,22 @@
       "start_date": "2024-12-24",
       "end_date": "2024-12-26",
       "department": 2,
+      "include_all": true,
       "description": "Chirstmas Sales",
-      "job_position": []
+      "job_position": [],
+      "spesific_leave_types": [],
+      "exclued_leave_types": [3]
+    }
+  },
+  {
+    "model": "leave.employeepastleaverestrict",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-09-21T04:40:18.153Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "enabled": true
     }
   }
 ]

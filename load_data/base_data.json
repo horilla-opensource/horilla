@@ -27,7 +27,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
-      "company": "Horilla Next Inc.",
+      "company": "Horilla Inc.",
       "hq": false,
       "address": "The Estate , 8th Floor",
       "country": "India",
@@ -117,6 +117,18 @@
       "is_active": true,
       "department": "Finance Dept",
       "company_id": []
+    }
+  },
+  {
+    "model": "base.department",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-09-21T09:20:48.130Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "department": "Managers",
+      "company_id": [1]
     }
   },
   {
@@ -415,6 +427,19 @@
       "is_active": true,
       "job_position": "HR Business Partner",
       "department_id": 3,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 24,
+    "fields": {
+      "created_at": "2024-09-21T09:21:05.334Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Senoir Manager",
+      "department_id": 6,
       "company_id": []
     }
   },
@@ -1000,6 +1025,19 @@
       "is_active": true,
       "job_position_id": 23,
       "job_role": "Junior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 46,
+    "fields": {
+      "created_at": "2024-09-21T09:21:23.481Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 24,
+      "job_role": "Senior",
       "company_id": []
     }
   },
@@ -2528,7 +2566,7 @@
   {
     "model": "base.biometricattendance",
     "pk": 1,
-    "fields": { "is_installed": true, "company_id": null }
+    "fields": { "is_installed": false, "company_id": null }
   },
   {
     "model": "base.holidays",
