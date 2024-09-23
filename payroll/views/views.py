@@ -313,7 +313,7 @@ def contract_view(request):
 
 
 @login_required
-@hx_request_required
+# @hx_request_required         #this function is also used in payroll dashboard which uses ajax
 @owner_can_enter("payroll.view_contract", Contract)
 def view_single_contract(request, contract_id):
     """
