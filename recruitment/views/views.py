@@ -43,7 +43,7 @@ from base.backends import ConfiguredEmailBackend
 from base.context_processors import check_candidate_self_tracking
 from base.countries import country_arr, s_a, states
 from base.forms import MailTemplateForm
-from base.methods import export_data, generate_pdf, get_key_instances
+from base.methods import export_data, generate_pdf, get_key_instances, sortby
 from base.models import EmailLog, HorillaMailTemplate, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
 from horilla import settings
@@ -1368,11 +1368,14 @@ def interview_filter_view(request):
     previous_data = request.GET.urlencode()
 
     if request.user.has_perm("view_interviewschedule"):
-        interviews = InterviewSchedule.objects.all()
+        interviews = InterviewSchedule.objects.all().order_by("-interview_date")
     else:
         interviews = InterviewSchedule.objects.filter(
             employee_id=request.user.employee_get.id
-        )
+        ).order_by("-interview_date")
+
+    if request.GET.get("sortby"):
+        interviews = sortby(request, interviews, "sortby")
 
     dis_filter = InterviewFilter(request.GET, queryset=interviews).qs
 
@@ -1401,11 +1404,11 @@ def interview_view(request):
     previous_data = request.GET.urlencode()
 
     if request.user.has_perm("view_interviewschedule"):
-        interviews = InterviewSchedule.objects.all()
+        interviews = InterviewSchedule.objects.all().order_by("-interview_date")
     else:
         interviews = InterviewSchedule.objects.filter(
             employee_id=request.user.employee_get.id
-        )
+        ).order_by("-interview_date")
 
     form = InterviewFilter(request.GET, queryset=interviews)
     page_number = request.GET.get("page")
