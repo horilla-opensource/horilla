@@ -343,12 +343,26 @@ class EmployeeObjectiveCreateForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["key_result_id"].choices = list(
-            self.fields["key_result_id"].choices
-        )
-        self.fields["key_result_id"].choices.append(
-            ("create_new_key_result", "Create new Key result")
-        )
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+
+        if request.user.has_perm("pms.add_keyresult") or is_reportingmanager(request):
+            self.fields["key_result_id"].choices = list(
+                self.fields["key_result_id"].choices
+            )
+            self.fields["key_result_id"].choices.append(
+                ("create_new_key_result", "Create new Key result")
+            )
+        if request.user.has_perm("pms.add_employeeobjective") or is_reportingmanager(
+            request
+        ):
+            employees = filtersubordinatesemployeemodel(
+                request,
+                queryset=Employee.objects.filter(is_active=True),
+                perm="pms.add_employeeobjective",
+            )
+            self.fields["employee_id"].queryset = employees | Employee.objects.filter(
+                employee_user_id=request.user
+            )
 
     def as_p(self):
         """
@@ -757,22 +771,26 @@ class FeedbackForm(ModelForm):
             label="Subordinates",
         )
         reload_queryset(self.fields)
-        self.fields["period"].choices = list(self.fields["period"].choices)
-        self.fields["period"].choices.append(("create_new_period", "Create new period"))
+        if request.user.has_perm("pms.add_period") or is_reportingmanager(request):
+            self.fields["period"].choices = list(self.fields["period"].choices)
+            self.fields["period"].choices.append(
+                ("create_new_period", "Create new period")
+            )
 
         self.fields["employee_id"].widget.attrs.update(
             {"onchange": "get_collegues($(this))"}
         )
-        if request.user.has_perm("pms.add_period"):
-            employees = Employee.objects.all()
-        elif is_reportingmanager(request):
+        if request.user.has_perm("pms.add_feedback") or is_reportingmanager(request):
             # Queryset of subordinate employees
-            employees = filtersubordinatesemployeemodel(request, Employee.objects.all())
+            employees = filtersubordinatesemployeemodel(
+                request, Employee.objects.all(), perm="pms.add_feedback"
+            )
             # managers queryset
             managers = Employee.objects.filter(id=employee.id)
             self.fields["manager_id"].queryset = managers
-
-        self.fields["employee_id"].queryset = employees
+            self.fields["employee_id"].queryset = employees | Employee.objects.filter(
+                employee_user_id=request.user
+            )
 
     def clean(self):
         """
@@ -1061,21 +1079,18 @@ class MeetingsForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.pk:
-            employees = Employee.objects.filter(id__in=self.instance.employee_id.all())
-            self.fields["answer_employees"].queryset = employees
-        else:
-            self.fields["employee_id"] = HorillaMultiSelectField(
-                queryset=Employee.objects.filter(employee_work_info__isnull=False),
-                widget=HorillaMultiSelectWidget(
-                    filter_route_name="employee-widget-filter",
-                    filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
-                    filter_template_path="employee_filters.html",
-                    form=self,
-                ),
-                label=_("Employees"),
-            )
+        self.fields["employee_id"] = HorillaMultiSelectField(
+            queryset=Employee.objects.filter(employee_work_info__isnull=False),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                form=self,
+                instance=self.instance,
+            ),
+            label=_("Employees"),
+        )
         try:
             if self.data.getlist("employee_id"):
                 employees = Employee.objects.filter(
