@@ -43,7 +43,8 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
-from horilla.methods import get_horilla_model_class
+from horilla.horilla_settings import DYNAMIC_URL_PATTERNS
+from horilla.methods import get_horilla_model_class, remove_dynamic_url
 from leave.decorators import *
 from leave.filters import *
 from leave.forms import *
@@ -86,7 +87,18 @@ def generate_error_report(error_list, error_data, file_name):
     worksheet = writer.sheets["Sheet1"]
     worksheet.set_column("A:Z", 30)
     writer.close()
-    return response
+
+    def get_error_sheet(request):
+        remove_dynamic_url(path_info)
+        return response
+
+    from leave.urls import path, urlpatterns
+
+    path_info = f"error-sheet-{uuid.uuid4()}"
+    urlpatterns.append(path(path_info, get_error_sheet, name=path_info))
+    DYNAMIC_URL_PATTERNS.append(path_info)
+    path_info = f"leave/{path_info}"
+    return path_info
 
 
 @login_required
@@ -1588,11 +1600,20 @@ def assign_leave_type_import(request):
             except Exception as exception:
                 assign_leave["Other Errors"] = f"{str(exception)}"
                 error_list.append(assign_leave)
+        path_info = None
         if error_list:
-            response = generate_error_report(error_list, error_data, file_name)
-            return response
-        return redirect(leave_assign_view)
-    return redirect(leave_assign_view)
+            path_info = generate_error_report(error_list, error_data, file_name)
+        assigned_leave_count = len(assign_leave_dicts) - len(error_list)
+        context = {
+            "created_count": assigned_leave_count,
+            "error_count": len(error_list),
+            "model": _("Assined Leaves"),
+            "path_info": path_info,
+        }
+        print("______________________________________________________________________")
+        print(context)
+        html = render_to_string("import_popup.html", context)
+        return HttpResponse(html)
 
 
 @login_required

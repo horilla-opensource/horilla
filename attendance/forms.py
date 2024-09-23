@@ -1063,7 +1063,9 @@ class BulkAttendanceRequestForm(ModelForm):
             employees = filtersubordinatesemployeemodel(
                 request, Employee.objects.all(), perm="pms.add_feedback"
             )
-            self.fields["employee_id"].queryset = employees
+            self.fields["employee_id"].queryset = employees | Employee.objects.filter(
+                employee_user_id=request.user
+            )
         else:
             self.fields["employee_id"].queryset = Employee.objects.filter(
                 employee_user_id=request.user

@@ -14,6 +14,7 @@ provide the main entry points for interacting with the application's functionali
 import logging
 
 from horilla.horilla_settings import HORILLA_DATE_FORMATS
+from horilla.methods import remove_dynamic_url
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,7 @@ from django.db.models import ProtectedError
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone as django_timezone
 from django.utils.translation import gettext as __
@@ -272,17 +274,23 @@ def attendance_import(request):
         data_frame = pd.read_excel(file)
         attendance_dicts = data_frame.to_dict("records")
         attendance_import = process_attendance_data(attendance_dicts)
-
+        path_info = None
         if attendance_import:
-            error_data = handle_attendance_errors(attendance_import)
-            data_frame = pd.DataFrame(error_data, columns=error_data.keys())
-            response = HttpResponse(content_type="application/ms-excel")
-            response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
-            data_frame.to_excel(response, index=False)
-            return response
+            path_info = handle_attendance_errors(attendance_import)
 
-        return redirect(attendance_view)
-    return redirect(attendance_view)
+    created_attendance_count = len(attendance_dicts) - len(attendance_import)
+    context = {
+        "created_count": created_attendance_count,
+        "error_count": len(attendance_import),
+        "model": _("Attendance"),
+        "path_info": path_info,
+    }
+    print(
+        "_________________________________________________________________________________________"
+    )
+    print(context)
+    html = render_to_string("import_popup.html", context)
+    return HttpResponse(html)
 
 
 @login_required

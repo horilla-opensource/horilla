@@ -1,5 +1,13 @@
 """Module for handling attendance error data."""
 
+import uuid
+
+import pandas as pd
+from django.http import HttpResponse
+
+from horilla.horilla_settings import DYNAMIC_URL_PATTERNS
+from horilla.methods import remove_dynamic_url
+
 
 def handle_attendance_errors(error_list):
     """
@@ -54,5 +62,25 @@ def handle_attendance_errors(error_list):
 
     for key in keys_to_remove:
         del error_data[key]
+    data_frame = pd.DataFrame(error_data, columns=error_data.keys())
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
+    data_frame.to_excel(response, index=False)
 
-    return error_data
+    def get_error_sheet(request):
+        print("_______________________________________________________________")
+        print(DYNAMIC_URL_PATTERNS)
+        print("_______________________________________________________________")
+        remove_dynamic_url(path_info)
+        print(DYNAMIC_URL_PATTERNS)
+        print("_______________________________________________________________")
+        return response
+
+    from attendance.urls import path, urlpatterns
+
+    # Create a unique path for the error file download
+    path_info = f"error-sheet-{uuid.uuid4()}"
+    urlpatterns.append(path(path_info, get_error_sheet, name=path_info))
+    DYNAMIC_URL_PATTERNS.append(path_info)
+    path_info = f"attendance/{path_info}"
+    return path_info
