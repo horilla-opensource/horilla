@@ -221,7 +221,7 @@
                     </div> {% endcomment %}
 
                     <!-- checking  user permission for objective creation -->
-                    {% if perms.pms.add_employeeobjective %}
+                    {% if perms.pms.add_employeeobjective or request.user|is_reportingmanager %}
                         <button
                             class="oh-btn oh-btn--secondary ml-2"
                             data-toggle="oh-modal-toggle"
