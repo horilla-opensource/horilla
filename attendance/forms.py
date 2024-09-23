@@ -52,7 +52,12 @@ from attendance.models import (
     strtime_seconds,
     validate_time_format,
 )
-from base.methods import get_working_days, reload_queryset
+from base.methods import (
+    filtersubordinatesemployeemodel,
+    get_working_days,
+    is_reportingmanager,
+    reload_queryset,
+)
 from base.models import Company, EmployeeShift
 from employee.filters import EmployeeFilter
 from employee.models import Employee
@@ -162,6 +167,7 @@ class AttendanceUpdateForm(ModelForm):
             "is_validate_request_approved",
             "attendance_overtime",
             "is_active",
+            "is_holiday",
         ]
         model = Attendance
         widgets = {
@@ -268,6 +274,7 @@ class AttendanceForm(ModelForm):
             "is_validate_request_approved",
             "attendance_overtime",
             "is_active",
+            "is_holiday",
         ]
         widgets = {
             "attendance_clock_in": DateTimeInput(attrs={"type": "time"}),
@@ -1050,6 +1057,17 @@ class BulkAttendanceRequestForm(ModelForm):
         if employee and hasattr(employee, "employee_work_info"):
             shift = employee.employee_work_info.shift_id
             self.fields["shift_id"].initial = shift
+        if request.user.has_perm("attendance.add_attendance") or is_reportingmanager(
+            request
+        ):
+            employees = filtersubordinatesemployeemodel(
+                request, Employee.objects.all(), perm="pms.add_feedback"
+            )
+            self.fields["employee_id"].queryset = employees
+        else:
+            self.fields["employee_id"].queryset = Employee.objects.filter(
+                employee_user_id=request.user
+            )
 
     def clean(self):
         cleaned_data = self.cleaned_data
