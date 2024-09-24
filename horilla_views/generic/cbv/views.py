@@ -791,6 +791,7 @@ class HorillaFormView(FormView):
 
     model: object = None
     view_id: str = get_short_uuid(4)
+    hx_confirm: str = ""
     form_class: forms.ModelForm = None
     template_name = "generic/horilla_form.html"
     ids_key: str = "instance_ids"
@@ -847,6 +848,7 @@ class HorillaFormView(FormView):
         context["dynamic_create_fields"] = self.dynamic_create_fields
         context["form_class_path"] = self.form_class_path
         context["view_id"] = self.view_id
+        context["hx_confirm"] = self.hx_confirm
         pk = None
         if self.form.instance:
             pk = self.form.instance.pk
@@ -901,11 +903,24 @@ class HorillaFormView(FormView):
                     view.display_title = "Dynamic create"
                     field = dynamic_tuple[0]
                     key = self.request.session.session_key + "cbv" + field
+                    field_instance = form.instance._meta.get_field(field)
+                    value = []
+                    form_field = forms.ChoiceField
+                    if isinstance(field_instance, models.models.ManyToManyField):
+                        form_field = forms.MultipleChoiceField
+                        if form.instance.pk is not None:
+                            value = list(
+                                getattr(form.instance, field).values_list(
+                                    "id", flat=True
+                                )
+                            )
+                    else:
+                        value = getattribute(getattribute(form.instance, field), "pk")
                     CACHE.set(
                         key,
                         {
                             "dynamic_field": field,
-                            "value": getattribute(form.instance, field),
+                            "value": value,
                             "model": form._meta.model,
                         },
                     )
@@ -925,12 +940,14 @@ class HorillaFormView(FormView):
                     choices = [(instance.id, instance) for instance in queryset]
                     choices.insert(0, ("", "Select option"))
                     choices.append(("dynamic_create", "Dynamic create"))
-                    form.fields[field] = forms.ChoiceField(
+                    attrs = form.fields[field].widget.attrs
+                    form.fields[field] = form_field(
                         choices=choices,
                         label=form.fields[field].label,
                         required=form.fields[field].required,
-                        widget=forms.Select(attrs=form.fields[field].widget.attrs),
                     )
+                    form.fields[field].widget.attrs = attrs
+                    form.initial[field] = value
             if pk:
                 form.instance = instance
                 title = str(instance)
