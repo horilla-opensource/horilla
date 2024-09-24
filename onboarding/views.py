@@ -1068,6 +1068,7 @@ def employee_creation(request, token):
             employee_personal_info.employee_user_id = user
             employee_personal_info.email = candidate.email
             employee_personal_info.employee_profile = onboarding_portal.profile
+            employee_personal_info.is_from_onboarding = True
             employee_personal_info.save()
             job_position = onboarding_portal.candidate_id.job_position_id
             existing_work_info = EmployeeWorkInformation.objects.filter(

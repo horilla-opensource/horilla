@@ -436,6 +436,8 @@ class EmployeeCreationForm(ModelForm):
             "email",
             "is_active",
             "additional_info",
+            "is_from_onboarding",
+            "is_directly_converted",
         )
         widgets = {
             "dob": DateInput(attrs={"type": "date"}),
