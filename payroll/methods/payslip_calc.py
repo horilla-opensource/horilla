@@ -281,8 +281,10 @@ def calculate_allowance(**kwargs):
 
     allowances = specific_allowances | conditional_allowances | active_employees
 
-    allowances = allowances.exclude(one_time_date__lt=start_date).exclude(
-        one_time_date__gt=end_date
+    allowances = (
+        allowances.exclude(one_time_date__lt=start_date)
+        .exclude(one_time_date__gt=end_date)
+        .distinct()
     )
 
     employee_allowances = []
