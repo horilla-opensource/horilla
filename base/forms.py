@@ -298,6 +298,7 @@ class UserGroupForm(ModelForm):
     try:
         permissions = forms.MultipleChoiceField(
             choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
+            required=False,
             error_messages={
                 "required": "Please choose a permission.",
             },
