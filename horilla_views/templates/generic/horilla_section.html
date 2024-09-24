@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="{{path}}"/>
 {% endfor %}
 {% for path in script_static_paths %}
-<script src="{{path}}"></script>
+<script src="{% static path %}"></script>
 {% endfor %}
 
 
