@@ -3,7 +3,7 @@
   <span class="oh-modal__dialog-title" id="genericModalLabel">
     {{title}}
   </span>
-  <button class="oh-modal__close" aria-label="Close">
+  <button class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')" aria-label="Close">
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
