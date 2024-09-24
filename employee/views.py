@@ -2317,6 +2317,8 @@ def employee_export(_):
     field_names.remove("employee_user_id")
     field_names.remove("employee_profile")
     field_names.remove("additional_info")
+    field_names.remove("is_from_onboarding")
+    field_names.remove("is_directly_converted")
     field_names.remove("is_active")
 
     # Get the existing employee data and convert it to a DataFrame

@@ -63,6 +63,33 @@ class EmployeeFilter(FilterSet):
             (False, "No"),
         ],
     )
+
+    is_from_onboarding = django_filters.ChoiceFilter(
+        field_name="is_from_onboarding",
+        label="Is From Onboarding",
+        choices=[
+            (True, "Yes"),
+            (False, "No"),
+        ],
+    )
+    is_directly_converted = django_filters.ChoiceFilter(
+        field_name="is_directly_converted",
+        label="Is Directly Converted",
+        choices=[
+            (True, "Yes"),
+            (False, "No"),
+        ],
+    )
+    probation_from = django_filters.DateFilter(
+        field_name="candidate_get__probation_end",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    probation_till = django_filters.DateFilter(
+        field_name="candidate_get__probation_end",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
     working_today = django_filters.BooleanFilter(
         label="Working", method="get_working_today"
     )
