@@ -83,13 +83,15 @@
 
         <div class="align-items-center d-flex justify-content-between">
           <div class="oh-profile oh-profile--md" title="Owner">
-          <span class="mr-2" style="font-size:15px;">{% trans "Owner: " %}</span>
-
+            <span class="oh-profile__info-label ">
+              <span>{% trans "Owner: " %}</span>
+            </span>
             <div class="oh-profile__avatar mr-1">
               <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"
                 alt="." />
             </div>
-            <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
+            <span class="oh-profile__info-value"
+              >{{feedback.employee_id}}</span>
           </div>
           {% if perms.pms.delete_feedback or request.user|filtersubordinates %}
             <div class="oh-main__titlebar oh-main__titlebar--right justify-content-end">
@@ -106,6 +108,18 @@
                   {% endfor %}
               </select>
               <div class="oh-btn-group m-2">
+                  {% if perms.pms.change_feedback and not feedback_started %}
+                    <div class="d-flex flex-row-reverse">
+                      <button
+                        data-toggle="oh-modal-toggle"
+                        class="oh-btn oh-btn--light-bkg w-100"
+                        data-target="#feedbackModalPopup"
+                        hx-get="{% url 'feedback-update' id=feedback.id %}"
+                        hx-target="#feedbackModalTarget">
+                        <ion-icon name="create-outline" class="me-1" ></ion-icon>
+                      </button>
+                    </div>
+                  {% endif %}
                   <form action="{% url 'feedback-archive' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want archive this Feedback ?" %}')" >
                   <button class="oh-btn  w-100 "  title="{% trans 'Archive' %}" style="background-color: white;!important">
                     {% csrf_token %}
@@ -124,11 +138,10 @@
             </div>
           {% endif %}
         </div>
-      <div >
-        <div class="align-items-center d-flex">
-          <span class="mr-2" style="font-size:15px;">{% trans "Due on: " %}</span>
-          <span class="d-flex justify-content-between">{{feedback.end_date}}</span>
-          <span class='d-flex justify-content-between align-items-center ml-2'
+        <div class="align-items-center d-flex" style="min-height: 40px;">
+          <span class="oh-profile__info-label ">{% trans "Due on: " %}</span>
+          <span class="oh-profile__info-value">{{feedback.end_date}}</span>
+          <span class='d-flex justify-content-between align-items-center ml-1 mb-2'
           >
               <span title = 'due  {% if feedback.end_date == today %} today {% else %}in {{feedback.end_date|sub:today}}{% endif %}'>
                   <ion-icon
@@ -139,8 +152,8 @@
               </span>
           </span>
         </div>
-        <div class="align-items-center d-flex">
-          <span class="mr-2" style="font-size:15px;">{% trans "Answered employees: " %}</span>
+        <div class="align-items-center d-flex" style="min-height: 40px;">
+          <span class="oh-profile__info-label ">{% trans "Answered employees: " %}</span>
           <div class="d-flex justify-content-between custom-scroll">
             <div class="avatars" id="avatarsContainer">
               {% for employee in employee_statics.yes %}
@@ -154,8 +167,8 @@
             </div>
           </div>
         </div>
-        <div class="align-items-center d-flex">
-          <span class="mr-2" style="font-size:15px;" >{% trans "Employees not answerd yet: " %}</span>
+        <div class="align-items-center d-flex" style="min-height: 40px;">
+          <span class="oh-profile__info-label ">{% trans "Employees not answerd yet: " %}</span>
           <div class="d-flex justify-content-between custom-scroll">
             <div class="avatars" id="avatarsContainer">
               {% for employee in employee_statics.no %}
@@ -170,7 +183,7 @@
           </div>
         </div>
 
-      </div>
+
       <!-- checking userlevel   -->
 
     </div>
@@ -190,19 +203,7 @@
         <!-- feddback answers -->
         <div class="oh-tabs__content oh-tabs__content--active" id="feedback-answers">
           <div class="oh-card p-4">
-            {% if perms.pms.change_feedback and not feedback_started %}
-              <div class="d-flex flex-row-reverse">
-                <button
-                  class="oh-btn oh-btn--x-small d-flex align-items-center ms-2 "
-                  data-toggle="oh-modal-toggle"
-                  data-target="#feedbackModalPopup"
-                  hx-get="{%url 'feedback-update' id=feedback.id %}"
-                  hx-target="#feedbackModalTarget">
-                  <ion-icon name="create-outline" class="me-1" ></ion-icon>
-                  {% trans "Edit" %}
-                </button>
-              </div>
-            {% endif %}
+
           <div class="row">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12">
               <div class="m-2">
