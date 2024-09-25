@@ -26,6 +26,7 @@ SUBMENUS = [
     {
         "menu": trans("Asset History"),
         "redirect": reverse("asset-history"),
+        "accessibility": "asset.sidebar.history_accessibility",
     },
 ]
 
@@ -36,3 +37,11 @@ def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
     dashboard and asset category view.
     """
     return request.user.has_perm("asset.view_assetcategory")
+
+
+def history_accessibility(request, submenu, user_perms, *args, **kwargs):
+    """
+    Determine if the user has the necessary permissions to access the
+    dashboard and asset category view.
+    """
+    return request.user.has_perm("asset.view_assetassignment")
