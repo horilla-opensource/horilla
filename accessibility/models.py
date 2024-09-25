@@ -15,3 +15,4 @@ class DefaultAccessibility(HorillaModel):
 
     feature = models.CharField(max_length=100, choices=ACCESSBILITY_FEATURE)
     filter = models.JSONField()
+    exclude_all = models.BooleanField(default=False)

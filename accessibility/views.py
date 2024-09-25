@@ -27,6 +27,7 @@ def user_accessibility(request):
         accessibility = accessibility if accessibility else DefaultAccessibility()
         accessibility.feature = feature
         accessibility.filter = dict(request.POST)
+        accessibility.exclude_all = bool(request.POST.get("exclude_all"))
         accessibility.save()
         if len(request.POST.keys()) > 1:
             messages.success(request, _("Accessibility filter saved"))

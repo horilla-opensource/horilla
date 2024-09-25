@@ -75,9 +75,44 @@
         </div>
         <div class="oh-accordion-meta__body d-none" id="{{accessibility}}_body">
             <form hx-post="" hx-target="#response" hx-swap="afterend">
+              <div class="col-12 col-md-6" id="id_pk_parent_div" style="padding-right: 0;">
+                <div class="oh-label__info" for="id_pk">
+                  <label class="oh-label " for="id_pk"><b>{% trans "Restrict All" %}</b></label>
+                </div>
+                  <div id="dynamic_field_pk">
+                    <div class="oh-switch" onclick="event.stopPropagation()">
+                      <input data-accessibility="{{accessibility}}" type="checkbox" class="oh-switch__checkbox" name="exclude_all" onchange="
+                      $(this).closest('form').find('input[type=submit]').click();
+                      value = $(this).is(':checked');
+                      container = $('#{{accessibility}}formcontainer')
+                      console.log(typeof value)
+                      if (value=='true') {
+                        container.hide();
+                      }else{
+                        console.log('false');
+
+                        $(container).show();
+                      }
+                      ">
+                    </div>
+                  </div>
+              </div>
+              <div id="{{accessibility}}formcontainer">
+                <div class="mt-3" style="
+                  padding: 15px;
+                  background: #87cefa38;
+                  border-radius: 5px;
+                  border: solid 1px lightskyblue;
+                  border-left: solid #27a3ef 3px;
+                  ">
+                    {% trans "Only those normal users/employees with any category mentioned in the form can access the" %} `<b>{{display}}</b>` {% trans "feature" %}
+                    <br>
+                    {% trans "If skip all the category fields in the form, then all normal users/employees can access the feature" %}
+                </div>
                 <input hidden type="text" name="feature" value="{{accessibility}}">
                 {{accessibility_filter.form.structured}}
                 <input hidden type="submit" value="submit">
+              </div>
             </form>
             <script>
                 $(document).ready(function () {
@@ -85,26 +120,26 @@
                       $.ajax({
                         url: "{% url 'get-initial-accessibility-data' %}?feature={{accessibility}}",
                         success: function (response) {
+                                console.log(response)
                                 for (let key in response) {
                                     if (response.hasOwnProperty(key)) {
                                         let values = response[key];
                                         let field = document.querySelector(`#{{accessibility}}_body [name="${key}"]`);
-
                                         if (field) {
-                                            // Handle select fields
-                                            if (field.tagName === 'SELECT') {
-                                                // Check if it's a multiple select
-                                                if (field.multiple) {
-                                                    // Loop through the options and set selected if the value matches
-                                                    for (let option of field.options) {
-                                                      option.selected = values.includes(option.value);
-                                                    }
-                                                  } else {
-                                                    // For single select, set the value
-                                                    field.value = values[0];
-                                                  }
-                                                }
+                                          if (field.tagName === 'SELECT') {
+                                            if (field.multiple) {
+                                              for (let option of field.options) {
+                                                option.selected = values.includes(option.value);
                                               }
+                                            } else {
+                                              field.value = values[0];
+                                            }
+                                          }else if(key=="exclude_all" && values[0] == "on"){
+                                            $(field).attr("checked",true)
+                                            accessibility = $(field).attr('data-accessibility')
+                                            $(`#${accessibility}formcontainer`).hide();
+                                          }
+                                        }
                                       }
                                     }
                                     select = $("#accessibilityContainer #{{accessibility}}_body").find("select")

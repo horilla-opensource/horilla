@@ -3,8 +3,8 @@ accessibility/templatestags/accessibility_filters.py
 """
 
 from django import template
-from accessibility.methods import check_is_accessible
 
+from accessibility.methods import check_is_accessible
 
 register = template.Library()
 
