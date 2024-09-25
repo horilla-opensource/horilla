@@ -1079,7 +1079,8 @@ if apps.is_installed("attendance"):
             Employee, on_delete=models.CASCADE, verbose_name="Employee"
         )
         attendance_id = models.ManyToManyField(
-            "attendance.Attendance", verbose_name="Attendance", blank=True
+            "attendance.Attendance",
+            verbose_name="Attendance",
         )
         requested_days = models.FloatField(blank=True, null=True)
         requested_date = models.DateField(default=timezone.now)

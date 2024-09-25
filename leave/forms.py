@@ -1349,7 +1349,7 @@ if apps.is_installed("attendance"):
         def clean(self):
             cleaned_data = super().clean()
             attendance_id = cleaned_data.get("attendance_id")
-            if attendance_id is None:
+            if attendance_id is None or len(attendance_id) < 1:
                 raise forms.ValidationError(
                     {"attendance_id": _("This field is required.")}
                 )
