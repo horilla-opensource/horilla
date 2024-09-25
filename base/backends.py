@@ -201,7 +201,7 @@ __all__ = ["ConfiguredEmailBackend"]
 message_init = EmailMessage.__init__
 
 
-def my_init(
+def new_init(
     self,
     subject="",
     body="",
@@ -242,7 +242,5 @@ def my_init(
         reply_to=reply_to,
     )
 
-    print(self.__dict__)
 
-
-EmailMessage.__init__ = my_init
+EmailMessage.__init__ = new_init
