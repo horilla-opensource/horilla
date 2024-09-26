@@ -117,9 +117,9 @@
         {% elif request.GET.all_attendance %}
             <a data-toggle="oh-modal-toggle" data-target="#updateAttendanceRequest"
                 hx-get="{% url 'attendance-change' attendance_request.id %}?all_attendance=true"
-                hx-target="#updateAttendanceRequestModalBody" class="oh-btn oh-btn--info w-100">
+                hx-target="#updateAttendanceRequestModalBody" class="oh-btn oh-btn--info w-100" title='{% trans "Edit" %}'>
                 <ion-icon name="lock-open-outline" role="img" class="md hydrated" aria-label="create outline">
-                </ion-icon>{% trans "Edit" %}
+                </ion-icon>
             </a>
 
         {% elif request.GET.ot %}
@@ -131,17 +131,17 @@
                             hx-target="{% if dashboard == 'true' %}#editModalForm {% else %}#updateAttendanceModalBody{% endif %}"
                             hx-swap='innerHTML' data-toggle='oh-modal-toggle'
                             data-target="{% if dashboard == 'true' %}#editModal {% else %}#updateAttendanceModal {% endif %}"
-                            style="width: 50%;">
+                            style="width: 50%;" title='{% trans "Edit" %}'>
                             <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline">
-                            </ion-icon>{% trans "Edit" %}
+                            </ion-icon>
                         </a>
                         {% if attendance_request.attendance_overtime_approve %}
-                            <a href="#" class="oh-btn oh-btn--success disabled w-50">
-                                <ion-icon name="ban-outline"></ion-icon>{% trans "Approve" %}
+                            <a href="#" class="oh-btn oh-btn--success disabled w-50" title='{% trans "Approve" %}'>
+                                <ion-icon name="ban-outline"></ion-icon>
                             </a>
                         {% else %}
-                            <a href="{% url 'approve-overtime' attendance_request.id %}" class="oh-btn oh-btn--success w-50">
-                                <ion-icon name="checkmark-done-outline"></ion-icon>{% trans "Approve" %}
+                            <a href="{% url 'approve-overtime' attendance_request.id %}" class="oh-btn oh-btn--success w-50" title='{% trans "Approve" %}'>
+                                <ion-icon name="checkmark-done-outline"></ion-icon>
                             </a>
                         {% endif %}
                         <form action="{% url 'attendance-delete' attendance_request.id  %}"
@@ -149,8 +149,8 @@
                             hx-target="#tab_contents" method='post'
                             style="width: 50%;">
                             {% csrf_token %}
-                            <button type='submit' class="oh-btn oh-btn--danger w-100" data-action="delete"><ion-icon name="trash-outline" role="img"
-                                    class="md hydrated" aria-label="create outline"></ion-icon>{% trans "Delete" %}</button>
+                            <button type='submit' class="oh-btn oh-btn--danger w-100" data-action="delete" title='{% trans "Delete" %}'><ion-icon name="trash-outline" role="img"
+                                    class="md hydrated" aria-label="create outline"></ion-icon></button>
                         </form>
                     </div>
                 {% endif %}
@@ -163,23 +163,24 @@
                             hx-target="{% if dashboard == 'true' %}#editModalForm {% else %}#updateAttendanceModalBody{% endif %}"
                             hx-swap='innerHTML' data-toggle='oh-modal-toggle'
                             data-target="{% if dashboard == 'true' %}#editModal {% else %}#updateAttendanceModal {% endif %}"
-                            style="width: 50%;">
+                            style="width: 50%;" title='{% trans "Edit" %}'>
                             <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline">
-                            </ion-icon>{% trans "Edit" %}
+                            </ion-icon>
                         </a>
                         <a href='{% url "validate-this-attendance" attendance_request.id %}' hx-target='#updateAttendanceBody'
                             class="oh-btn oh-btn--success w-50"
+                            title='{% trans "Validate" %}'
                             data-req="/attendance/request-attendance-view/?id={{attendance_request.id}}"
                             onclick="{% if attendance_request.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}">
-                            <ion-icon name="checkmark-done-outline"></ion-icon>{% trans "Validate" %}
+                            <ion-icon name="checkmark-done-outline"></ion-icon>
                         </a>
                         <form action="{% url 'attendance-delete' attendance_request.id  %}"
                             onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
                             hx-target="#tab_contents" method='post'
                             style="width: 50%;">
                             {% csrf_token %}
-                            <button type='submit' class="oh-btn oh-btn--danger w-100" data-action="delete"><ion-icon name="trash-outline" role="img"
-                                    class="md hydrated" aria-label="create outline"></ion-icon>{% trans "Delete" %}</button>
+                            <button type='submit' class="oh-btn oh-btn--danger w-100" data-action="delete" title='{% trans "Delete" %}'><ion-icon name="trash-outline" role="img"
+                                    class="md hydrated" aria-label="create outline"></ion-icon></button>
                         </form>
                     </div>
                 {% endif %}
@@ -190,17 +191,17 @@
                     <div class="oh-btn-group">
                         <a class="oh-btn oh-btn--info" hx-get="{% url 'attendance-update' attendance_request.id %}"
                             hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle'
-                            data-target='#updateAttendanceModal' style="width: 50%;">
+                            data-target='#updateAttendanceModal' style="width: 50%;" title='{% trans "Edit" %}'>
                             <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline">
-                            </ion-icon>{% trans "Edit" %}
+                            </ion-icon>
                         </a>
                         <form action="{% url 'attendance-delete' attendance_request.id  %}"
                             onsubmit="return confirm('{% trans " Are you sure want to delete this attendance?" %}')"
                             hx-target="#tab_contents" method='post'
                             style="width: 50%;">
                             {% csrf_token %}
-                            <button type='submit' class="oh-btn oh-btn--danger w-100" data-action="delete"><ion-icon name="trash-outline" role="img"
-                                    class="md hydrated" aria-label="create outline"></ion-icon>{% trans "Delete" %}</button>
+                            <button type='submit' class="oh-btn oh-btn--danger w-100" data-action="delete" title='{% trans "Delete" %}'><ion-icon name="trash-outline" role="img"
+                                    class="md hydrated" aria-label="create outline"></ion-icon></button>
                         </form>
                     </div>
                 {% endif %}
