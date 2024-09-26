@@ -1,11 +1,62 @@
-<div
-    class="oh-main__org-chart-container"
-    id="chart-container"
-></div>
+<div class="oh-main__org-chart-container" id="chart-container"></div>
+</div >
+
 <script>
-    orgChartLoad()
-    var blah = {{act_datasource|safe}}
-    $("#chart-container").orgchart(
-        {data:blah,nodeContent:"title"}
-    )
+    var datascource = {{ act_datasource| safe}}
+    function loopChart($hierarchy) {
+        var $siblings = $hierarchy.children('.nodes').children('.hierarchy');
+        if ($siblings.length) {
+            $siblings.filter(':not(.hidden)').first().addClass('first-shown')
+                .end().last().addClass('last-shown');
+        }
+        $siblings.each(function (index, sibling) {
+            loopChart($(sibling));
+        });
+    }
+    function filterNodes(keyWord) {
+        if (!keyWord.length) {
+            return;
+        } else {
+            var $chart = $('.orgchart');
+            // disalbe the expand/collapse feture
+            $chart.addClass('noncollapsable');
+            // distinguish the matched nodes and the unmatched nodes according to the given key word
+            $chart.find('.node').filter(function (index, node) {
+                return $(node).text().toLowerCase().indexOf(keyWord) > -1;
+            }).addClass('matched')
+                .closest('.hierarchy').parents('.hierarchy').children('.node').addClass('retained');
+            // hide the unmatched nodes
+            $chart.find('.matched,.retained').each(function (index, node) {
+                $(node).removeClass('slide-up')
+                    .closest('.nodes').removeClass('hidden')
+                    .siblings('.hierarchy').removeClass('isChildrenCollapsed');
+                var $unmatched = $(node).closest('.hierarchy').siblings().find('.node:first:not(.matched,.retained)')
+                    .closest('.hierarchy').addClass('hidden');
+            });
+            // hide the redundant descendant nodes of the matched nodes
+            $chart.find('.matched').each(function (index, node) {
+                if (!$(node).siblings('.nodes').find('.matched').length) {
+                    $(node).siblings('.nodes').addClass('hidden')
+                        .parent().addClass('isChildrenCollapsed');
+                }
+            });
+            // loop chart and adjust lines
+            loopChart($chart.find('.hierarchy:first'));
+        }
+    }
+    $('#chart-container').orgchart({
+        'data': datascource,
+        'visibleLevel': 2,
+        'nodeContent': 'title',
+        'direction': 'l2r'
+    });
+    $('#key-word').on('keyup', function (event) {
+        if (event.which === 13) {
+            filterNodes(this.value);
+        } else if (event.which === 8 && this.value.length === 0) {
+            if ($('#mangerSelect').length) {
+                htmx.trigger('#mangerSelect', 'change'); // Manually trigger HTMX event
+            }
+        }
+    });
 </script>
