@@ -1612,8 +1612,6 @@ def assign_leave_type_import(request):
             "model": _("Assined Leaves"),
             "path_info": path_info,
         }
-        print("______________________________________________________________________")
-        print(context)
         html = render_to_string("import_popup.html", context)
         return HttpResponse(html)
 
