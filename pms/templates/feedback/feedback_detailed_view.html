@@ -108,17 +108,19 @@
                   {% endfor %}
               </select>
               <div class="oh-btn-group m-2">
-                  {% if perms.pms.change_feedback and not feedback_started %}
-                    <div class="d-flex flex-row-reverse">
-                      <button
-                        data-toggle="oh-modal-toggle"
-                        class="oh-btn oh-btn--light-bkg w-100"
-                        data-target="#feedbackModalPopup"
-                        hx-get="{% url 'feedback-update' id=feedback.id %}"
-                        hx-target="#feedbackModalTarget">
-                        <ion-icon name="create-outline" class="me-1" ></ion-icon>
-                      </button>
-                    </div>
+                  {% if not feedback_started %}
+                    {% if perms.pms.change_feedback or request.user|is_reportingmanager %}
+                      <div class="d-flex flex-row-reverse">
+                        <button
+                          data-toggle="oh-modal-toggle"
+                          class="oh-btn oh-btn--light-bkg w-100"
+                          data-target="#feedbackModalPopup"
+                          hx-get="{% url 'feedback-update' id=feedback.id %}"
+                          hx-target="#feedbackModalTarget">
+                          <ion-icon name="create-outline" class="me-1" ></ion-icon>
+                        </button>
+                      </div>
+                    {% endif %}
                   {% endif %}
                   <form action="{% url 'feedback-archive' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want archive this Feedback ?" %}')" >
                   <button class="oh-btn  w-100 "  title="{% trans 'Archive' %}" style="background-color: white;!important">
@@ -478,6 +480,24 @@
   $("#closanswer").click(function (e) {
     $("#answerViewAccordion").removeClass("oh-activity-sidebar--show");
   });
+
+  function get_collegues(element) {
+      var employee_id = $(element).val();
+
+      // Check if the employee_id is valid
+      if (employee_id) {
+          // Dynamically set the hx-vals attribute for the manager button
+          $('#managerButton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'manager' })).click();
+          // Dynamically set the hx-vals attribute for the colleagues button
+          $('#colleguesButton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'colleagues' })).click();
+          // Dynamically set the hx-vals attribute for the subordinates button
+          $('#subordinatesButton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'subordinates' })).click();
+          // Dynamically set the hx-vals attribute for the keyresult button
+          $('#keyresultButtton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'keyresults' })).click();
+      } else {
+          console.error('Invalid employee_id');
+      }
+  }
 </script>
 
 {% endblock %}

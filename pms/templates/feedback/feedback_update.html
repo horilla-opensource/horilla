@@ -1,6 +1,7 @@
 <!-- form  non field errors  -->
 {% load i18n %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% if feedback_form.errors %}
 <div class="oh-wrapper">
@@ -129,6 +130,11 @@
             </button>
         </div>
     </form>
+
+<button id="colleguesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_colleague_id" hidden > </button>
+<button id="managerButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_manager_id" hidden > </button>
+<button id="subordinatesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_subordinate_id" hidden > </button>
+<button id="keyresultButtton" hx-get="{% url 'get-collegues' %}" hx-target="#id_employee_key_results_id" hidden > </button>
 
 <script>
     $(document).ready(function() {

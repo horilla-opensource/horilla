@@ -188,7 +188,12 @@
 <button id="colleguesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_colleague_id" hidden > </button>
 <button id="managerButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_manager_id" hidden > </button>
 <button id="subordinatesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_subordinate_id" hidden > </button>
+<button id="keyresultButtton" hx-get="{% url 'get-collegues' %}" hx-target="#id_employee_key_results_id" hidden > </button>
+
 <script>
+    $(document).ready(function(){
+        get_collegues($('#id_employee_id'))
+    });
     function get_collegues(element) {
         var employee_id = $(element).val();
 
@@ -200,6 +205,8 @@
             $('#colleguesButton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'colleagues' })).click();
             // Dynamically set the hx-vals attribute for the subordinates button
             $('#subordinatesButton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'subordinates' })).click();
+            // Dynamically set the hx-vals attribute for the keyresult button
+            $('#keyresultButtton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'keyresults' })).click();
         } else {
             console.error('Invalid employee_id');
         }

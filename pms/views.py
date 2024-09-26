@@ -1491,9 +1491,7 @@ def feedback_creation(request):
     Returns:
         it will return feedback creation html.
     """
-    employee = request.user.employee_get
-    # if employe
-    form = FeedbackForm(employee=employee)
+    form = FeedbackForm()
     context = {
         "feedback_form": form,
     }
@@ -1690,13 +1688,19 @@ def feedback_list_search(request):
     requested_feedback = Feedback.objects.filter(pk__in=requested_feedback_ids).filter(
         review_cycle__icontains=feedback
     )
-    all_feedback = Feedback.objects.filter(
-        Q(
-            manager_id=employee_id,
-            manager_id__is_active=True,
-            archive=False,
+    if request.user.has_perm("pms.view_feedback"):
+        all_feedback = Feedback.objects.filter(archive=False).filter(
+            review_cycle__icontains=feedback
         )
-    ).filter(review_cycle__icontains=feedback)
+    else:
+        # feedbacks to review if employee is a manager
+        all_feedback = Feedback.objects.filter(
+            Q(
+                manager_id=employee_id,
+                manager_id__is_active=True,
+                archive=False,
+            )
+        ).filter(review_cycle__icontains=feedback)
     anonymous_feedback = (
         AnonymousFeedback.objects.filter(employee_id=employee_id)
         if not request.user.has_perm("pms.view_feedback")
@@ -1745,8 +1749,11 @@ def feedback_list_view(request):
         Q(manager_id=employee) | Q(colleague_id=employee) | Q(subordinate_id=employee)
     ).distinct()
 
-    # feedbacks to review if employee is a manager
-    feedback_all = Feedback.objects.all().filter(Q(manager_id=employee, archive=False))
+    if user.has_perm("pms.view_feedback"):
+        feedback_all = Feedback.objects.filter(archive=False)
+    else:
+        # feedbacks to review if employee is a manager
+        feedback_all = Feedback.objects.filter(manager_id=employee, archive=False)
     # Anonymous feedbacks
     anonymous_feedback = (
         AnonymousFeedback.objects.filter(employee_id=employee, archive=False)
@@ -1778,7 +1785,7 @@ def feedback_detailed_view(request, id, **kwargs):
     """
     feedback = Feedback.objects.get(id=id)
     is_have_perm = check_permission_feedback_detailed_view(
-        request, feedback, "pms.view_Feedback"
+        request, feedback, "pms.view_feedback"
     )
     if is_have_perm:
         feedback_started = Answer.objects.filter(feedback_id=id)
@@ -1824,7 +1831,7 @@ def feedback_detailed_view_answer(request, id, emp_id):
     employee = Employee.objects.filter(id=emp_id).first()
     feedback = Feedback.objects.filter(id=id).first()
     is_have_perm = check_permission_feedback_detailed_view(
-        request, feedback, "pms.view_Feedback"
+        request, feedback, "pms.view_feedback"
     )
     if is_have_perm:
         answers = Answer.objects.filter(employee_id=employee, feedback_id=feedback)
@@ -2101,18 +2108,28 @@ def get_collegues(request):
 
         if employee:
             employees_queryset = []
+            reporting_manager = (
+                employee.employee_work_info.reporting_manager_id
+                if employee.employee_work_info
+                else None
+            )
+
             if request.GET.get("data") == "colleagues":
                 department = employee.get_department()
+                # employee ids to exclude from collegue list
+                exclude_ids = [employee.id]
+                if reporting_manager:
+                    exclude_ids.append(reporting_manager.id)
+
                 # Get employees in the same department as the employee
-                employees_queryset = Employee.objects.filter(
-                    is_active=True, employee_work_info__department_id=department
-                ).values_list("id", "employee_first_name")
-            elif request.GET.get("data") == "manager":
-                reporting_manager = (
-                    employee.employee_work_info.reporting_manager_id
-                    if employee.employee_work_info
-                    else None
+                employees_queryset = (
+                    Employee.objects.filter(
+                        is_active=True, employee_work_info__department_id=department
+                    )
+                    .exclude(id__in=exclude_ids)
+                    .values_list("id", "employee_first_name")
                 )
+            elif request.GET.get("data") == "manager":
                 if reporting_manager:
                     employees_queryset = Employee.objects.filter(
                         id=reporting_manager.id
@@ -2121,6 +2138,10 @@ def get_collegues(request):
                 employees_queryset = Employee.objects.filter(
                     is_active=True, employee_work_info__reporting_manager_id=employee
                 ).values_list("id", "employee_first_name")
+            elif request.GET.get("data") == "keyresults":
+                employees_queryset = EmployeeKeyResult.objects.filter(
+                    employee_objective_id__employee_id=employee
+                ).values_list("id", "key_result_id__title")
             # Convert QuerySets to a list
             employees = list(employees_queryset)
             context = {"employees": employees}

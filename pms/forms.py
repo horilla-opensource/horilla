@@ -696,8 +696,7 @@ class FeedbackForm(ModelForm):
             ),
             "employee_id": forms.Select(
                 attrs={
-                    "class": " oh-select--employee-change",
-                    "style": "width:100%; display:none;",
+                    "class": "oh-select oh-select-2",
                     "required": "false",
                 },
             ),
@@ -720,6 +719,7 @@ class FeedbackForm(ModelForm):
                     "class": "oh-select oh-select-2 w-100",
                     "multiple": "multiple",
                     "style": "width:100%; display:none;",
+                    "required": "false",
                 }
             ),
             "question_template_id": forms.Select(
@@ -752,13 +752,21 @@ class FeedbackForm(ModelForm):
         Initializes the feedback form instance.
         If an instance is provided, sets the initial value for the form's date fields.
         """
+        # fetch request
         request = getattr(horilla_middlewares._thread_locals, "request", None)
+        # get instance
         instance = kwargs.get("instance")
-        employee = kwargs.pop("employee", None)
+        # set employee
+        if instance:
+            employee = instance.employee_id
+        else:
+            employee = request.user.employee_get
 
         if instance:
             kwargs["initial"] = set_date_field_initial(instance)
         super().__init__(*args, **kwargs)
+
+        # Horilla multi select filter for employee
         self.fields["subordinate_id"] = HorillaMultiSelectField(
             queryset=Employee.objects.all(),
             widget=HorillaMultiSelectWidget(
@@ -767,30 +775,34 @@ class FeedbackForm(ModelForm):
                 filter_instance_contex_name="f",
                 filter_template_path="employee_filters.html",
                 instance=self.instance,
+                required=False,
             ),
             label="Subordinates",
         )
         reload_queryset(self.fields)
+
+        # check the request user has permission to add period
         if request.user.has_perm("pms.add_period") or is_reportingmanager(request):
+            # add dyanamic period creation as choice
             self.fields["period"].choices = list(self.fields["period"].choices)
             self.fields["period"].choices.append(
                 ("create_new_period", "Create new period")
             )
-
+        # add onchange function to get employee data
         self.fields["employee_id"].widget.attrs.update(
             {"onchange": "get_collegues($(this))"}
         )
+        # filtering employees accordig to the request user
         if request.user.has_perm("pms.add_feedback") or is_reportingmanager(request):
             # Queryset of subordinate employees
             employees = filtersubordinatesemployeemodel(
                 request, Employee.objects.all(), perm="pms.add_feedback"
             )
-            # managers queryset
-            managers = Employee.objects.filter(id=employee.id)
-            self.fields["manager_id"].queryset = managers
             self.fields["employee_id"].queryset = employees | Employee.objects.filter(
                 employee_user_id=request.user
             )
+            if not instance:
+                self.fields["employee_id"].initial = employee
 
     def clean(self):
         """
@@ -798,9 +810,7 @@ class FeedbackForm(ModelForm):
         Ensures that the start date is before the end date and validates the start date.
         """
         super().clean()
-        emps = self.data.getlist("subordinate_id")
-        if emps:
-            self.errors.pop("subordinate_id", None)
+        self.errors.pop("subordinate_id", None)
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
