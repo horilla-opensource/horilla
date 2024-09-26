@@ -104,8 +104,12 @@ class Employee(models.Model):
     emergency_contact_relation = models.CharField(max_length=20, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     additional_info = models.JSONField(null=True, blank=True)
-    is_from_onboarding = models.BooleanField(default=False, null=True, blank=True)
-    is_directly_converted = models.BooleanField(default=False, null=True, blank=True)
+    is_from_onboarding = models.BooleanField(
+        default=False, null=True, blank=True, editable=False
+    )
+    is_directly_converted = models.BooleanField(
+        default=False, null=True, blank=True, editable=False
+    )
     objects = HorillaCompanyManager(
         related_company_field="employee_work_info__company_id"
     )

@@ -1,68 +1,59 @@
 {% load i18n %} {% load widget_tweaks %}
-
-<form
-  id="file-form"
-  hx-post="{% url 'file-upload' document.id %}"
-  hx-target="#uploadFileForm"
-  hx-encoding="multipart/form-data"
-  class="oh-profile-section pt-3"
->
-  {% csrf_token %}
-  <input type="hidden" name="employee_id" value="{{form.employee_id.value}}" />
-  <input type="hidden" name="status" value="requested" />
-  <input type="hidden" name="title" value="{{form.instance.title}}" />
-  <input
-    type="hidden"
-    name="rejection_reason"
-    value="{{form.rejection_reason.value}}"
-  />
-  <input
-    type="hidden"
-    name="document_request_id"
-    value="{{form.document_request_id.value}}"
-  />
-  {{form.non_field_errors}} {{form.document}} {{form.document.errors}}
-  <div class="row">
-    <div class="col-12 col-sm-12 col-md-4 col-lg-6">
-      <div class="oh-input__group">
-        <label class="oh-input__label" for="{{form.expiry_date.id_for_label}}"
-          >{% trans "Expiry Date" %}</label
-        >
-        {{form.expiry_date |attr:"type:date" }} {{form.expiry_date.errors }}
-      </div>
-    </div>
-    <div class="col-12 col-sm-12 col-md-4 col-lg-6 d-none notify">
-      <div class="oh-input__group">
-        <label class="oh-input__label" for="{{form.notify_before.id_for_label}}"
-          >{% trans "Notify Before (days)" %}</label
-        >
-        {{form.notify_before}} {{form.notify_before.errors}}
-      </div>
-    </div>
-  </div>
-  <div class="file-validation mt-3">
-    <ul class="m-0">
-      <li style="list-style: disc">
-        {% trans "Upload " %}<b>{{form.instance.document_request_id.format}}</b>
-        {% trans "file" %}
-      </li>
-      <li style="list-style: disc">
-        {% trans "Max size of the file" %}
-        {{form.instance.document_request_id.max_size}} MB
-      </li>
-    </ul>
-  </div>
-  <div class="oh-modal__dialog-footer p-0 mt-3">
-    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-      {% trans "Save" %}
+<div class="oh-modal__dialog-header pb-0">
+    <span class="oh-modal__dialog-title" id="uploadFileModalLabel">{% trans "Upload File" %}</span>
+    <button class="oh-modal__close--custom" aria-label="Close"
+        onclick="event.stopPropagation();event.preventDefault();$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
+        <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
     </button>
-  </div>
-</form>
+</div>
+<div class="oh-modal__dialog-body">
+    <form id="file-form" hx-post="{% url 'file-upload' document.id %}" hx-target="#objectCreateModalTarget"
+        hx-encoding="multipart/form-data" class="oh-profile-section pt-3">
+        {% csrf_token %}
+        <input type="hidden" name="employee_id" value="{{form.employee_id.value}}" />
+        <input type="hidden" name="status" value="requested" />
+        <input type="hidden" name="title" value="{{form.instance.title}}" />
+        <input type="hidden" name="rejection_reason" value="{{form.rejection_reason.value}}" />
+        <input type="hidden" name="document_request_id" value="{{form.document_request_id.value}}" />
+        {{form.non_field_errors}} {{form.document}} {{form.document.errors}}
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-4 col-lg-6">
+                <div class="oh-input__group">
+                    <label class="oh-input__label" for="{{form.expiry_date.id_for_label}}">{% trans "Expiry Date" %}</label>
+                    {{form.expiry_date |attr:"type:date" }} {{form.expiry_date.errors }}
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-4 col-lg-6 d-none notify">
+                <div class="oh-input__group">
+                    <label class="oh-input__label" for="{{form.notify_before.id_for_label}}">{% trans "Notify Before (days)" %}</label>
+                    {{form.notify_before}} {{form.notify_before.errors}}
+                </div>
+            </div>
+        </div>
+        <div class="file-validation mt-3">
+            <ul class="m-0">
+                <li style="list-style: disc">
+                    {% trans "Upload " %}<b>{{form.instance.document_request_id.format}}</b>
+                    {% trans "file" %}
+                </li>
+                <li style="list-style: disc">
+                    {% trans "Max size of the file" %}
+                    {{form.instance.document_request_id.max_size}} MB
+                </li>
+            </ul>
+        </div>
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+</div>
 
 <script>
-  $(document).ready(function () {
-    $("#id_expiry_date").on("change", function () {
-      $(".notify").removeClass("d-none");
+    $(document).ready(function () {
+        $("#id_expiry_date").on("change", function () {
+            $(".notify").removeClass("d-none");
+        });
     });
-  });
 </script>

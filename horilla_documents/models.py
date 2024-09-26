@@ -92,22 +92,27 @@ class Document(HorillaModel):
         super().clean(*args, **kwargs)
         file = self.document
 
+        if len(self.title) < 3:
+            raise ValidationError({"title": _("Title must be at least 3 characters")})
+
         if file and self.document_request_id:
             format = self.document_request_id.format
             max_size = self.document_request_id.max_size
             if max_size:
                 if file.size > max_size * 1024 * 1024:
-                    raise ValidationError("File size exceeds the limit")
+                    raise ValidationError(
+                        {"document": _("File size exceeds the limit")}
+                    )
 
             ext = file.name.split(".")[1].lower()
             if format == "any":
                 pass
             elif ext != format:
-                raise ValidationError(f"Please upload {format} file only.")
+                raise ValidationError(
+                    {"document": _("Please upload {} file only.").format(format)}
+                )
 
     def save(self, *args, **kwargs):
-        if len(self.title) < 3:
-            raise ValidationError(_("Title must be at least 3 characters"))
         super().save(*args, **kwargs)
         if self.is_digital_asset:
             if apps.is_installed("asset"):

@@ -1,32 +1,33 @@
 {% load i18n %}
-<form
-  id="add-form"
-  hx-post="{% url 'document-create' emp_id %}"
-  hx-target="#documentCreateForm"
-  hx-swap="innerHTML"
-  method="post"
-  hx-encoding="multipart/form-data"
->
-  {{form.errors}} {{form.as_p}}
-</form>
+<div class="oh-modal__dialog-header pb-0">
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <form id="add-form" hx-post="{% url 'document-create' emp_id %}" hx-target="#objectCreateModalTarget"
+        hx-swap="innerHTML" method="post" hx-encoding="multipart/form-data">
+        {{form.errors}} {{form.as_p}}
+    </form>
+</div>
 <script>
-  $(document).ready(function () {
-    var date = $("#id_expiry_date").val();
-    var notifyLabel = $("[for='id_notify_before']");
-    var notifyInput = $("#id_notify_before");
-    if (!date) {
-      notifyLabel.addClass("d-none");
-      notifyInput.addClass("d-none");
-    }
-    $("#id_expiry_date").on("change", function () {
-      date = $("#id_expiry_date").val();
-      if (!date) {
-        notifyLabel.addClass("d-none");
-        notifyInput.addClass("d-none");
-      } else {
-        notifyLabel.removeClass("d-none");
-        notifyInput.removeClass("d-none");
-      }
+    $(document).ready(function () {
+        var date = $("#id_expiry_date").val();
+        var notifyLabel = $("[for='id_notify_before']");
+        var notifyInput = $("#id_notify_before");
+        if (!date) {
+            notifyLabel.addClass("d-none");
+            notifyInput.addClass("d-none");
+        }
+        $("#id_expiry_date").on("change", function () {
+            date = $("#id_expiry_date").val();
+            if (!date) {
+                notifyLabel.addClass("d-none");
+                notifyInput.addClass("d-none");
+            } else {
+                notifyLabel.removeClass("d-none");
+                notifyInput.removeClass("d-none");
+            }
+        });
     });
-  });
 </script>
