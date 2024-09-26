@@ -680,10 +680,14 @@ class LeaveRequest(HorillaModel):
         else:
             self.exclude_leaves()
 
-        self.leave_clashes_count = self.count_leave_clashes()
+        if self.status in ["cancelled", "rejected"]:
+            self.leave_clashes_count = 0
+        else:
+            self.leave_clashes_count = self.count_leave_clashes()
+
+        super().save(*args, **kwargs)
 
         self.update_leave_clashes_count()
-        super().save(*args, **kwargs)
         work_info = EmployeeWorkInformation.objects.filter(employee_id=self.employee_id)
         department_id = None
         conditions = None
@@ -898,7 +902,9 @@ class LeaveRequest(HorillaModel):
         """
         Update the leave clashes count for all leave requests.
         """
-        leave_requests_to_update = LeaveRequest.objects.all().exclude(id=self.id)
+        leave_requests_to_update = LeaveRequest.objects.exclude(
+            Q(id=self.id) | Q(status="cancelled") | Q(status="rejected")
+        )
 
         for leave_request in leave_requests_to_update:
             leave_request.leave_clashes_count = leave_request.count_leave_clashes()
@@ -914,17 +920,22 @@ class LeaveRequest(HorillaModel):
         with other employees' requested dates.
         """
         work_info = EmployeeWorkInformation.objects.filter(employee_id=self.employee_id)
-        if work_info.exists():
-            overlapping_requests = LeaveRequest.objects.exclude(id=self.id).filter(
-                Q(
-                    employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+        if work_info.exists() and self.status not in ["cancelled", "rejected"]:
+            overlapping_requests = (
+                LeaveRequest.objects.exclude(id=self.id)
+                .filter(
+                    Q(
+                        employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+                    )
+                    | Q(
+                        employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
+                    ),
+                    start_date__lte=self.end_date,
+                    end_date__gte=self.start_date,
                 )
-                | Q(
-                    employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
-                ),
-                start_date__lte=self.end_date,
-                end_date__gte=self.start_date,
+                .exclude(Q(status="cancelled") | Q(status="rejected"))
             )
+
             return overlapping_requests.count()
         return 0
 

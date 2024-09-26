@@ -1029,6 +1029,8 @@ def leave_request_cancel(request, id, emp_id=None):
                 leave_request.approved_available_days = 0
                 leave_request.approved_carryforward_days = 0
                 leave_request.status = "rejected"
+                leave_request.leave_clashes_count = 0
+
                 if leave_request.multiple_approvals() and not request.user.is_superuser:
                     conditional_requests = leave_request.multiple_approvals()
                     approver = [
@@ -4141,24 +4143,34 @@ def view_clashes(request, leave_request_id):
     This method is used to filter or view the leave clashes
     """
     record = get_object_or_404(LeaveRequest, id=leave_request_id)
-    overlapping_requests = LeaveRequest.objects.filter(
-        Q(
+
+    if record.status == "rejected" or record.status == "cancelled":
+        overlapping_requests = LeaveRequest.objects.none()
+        clashed_due_to_department = LeaveRequest.objects.none()
+        clashed_due_to_job_position = LeaveRequest.objects.none()
+    else:
+        overlapping_requests = (
+            LeaveRequest.objects.filter(
+                Q(
+                    employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
+                )
+                | Q(
+                    employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
+                ),
+                start_date__lte=record.end_date,
+                end_date__gte=record.start_date,
+            )
+            .exclude(id=leave_request_id)
+            .exclude(Q(status="cancelled") | Q(status="rejected"))
+        )
+
+        clashed_due_to_department = overlapping_requests.filter(
             employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
         )
-        | Q(
+
+        clashed_due_to_job_position = overlapping_requests.filter(
             employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
-        ),
-        start_date__lte=record.end_date,
-        end_date__gte=record.start_date,
-    ).exclude(id=leave_request_id)
-
-    clashed_due_to_department = overlapping_requests.filter(
-        employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
-    )
-
-    clashed_due_to_job_position = overlapping_requests.filter(
-        employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
-    )
+        )
 
     leave_request_filter = LeaveRequestFilter(request.GET, overlapping_requests).qs
     leave_request_filter = paginator_qry(leave_request_filter, request.GET.get("page"))
@@ -4171,6 +4183,7 @@ def view_clashes(request, leave_request_id):
         request,
         "leave/leave_request/leave_clashes.html",
         {
+            "leave_request": record,
             "records": overlapping_requests,
             "current_date": date.today(),
             "requests_ids": requests_ids,
