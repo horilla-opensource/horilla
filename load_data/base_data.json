@@ -1598,7 +1598,6 @@
       "employee_shift": "Regular Shift",
       "weekly_full_time": "40:00",
       "full_time": "200:00",
-      "grace_time_id": null,
       "company_id": []
     }
   },
@@ -1613,7 +1612,6 @@
       "employee_shift": "Night Shift",
       "weekly_full_time": "40:00",
       "full_time": "200:00",
-      "grace_time_id": null,
       "company_id": []
     }
   },
@@ -1628,7 +1626,6 @@
       "employee_shift": "Morning Shift",
       "weekly_full_time": "40:00",
       "full_time": "200:00",
-      "grace_time_id": null,
       "company_id": []
     }
   },
