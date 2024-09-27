@@ -639,6 +639,7 @@ class LoanAccountForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.initial["provided_date"] = str(datetime.date.today())
         self.initial["installment_start_date"] = str(datetime.date.today())
         if self.instance.pk:
             self.verbose_name = self.instance.title
@@ -675,15 +676,34 @@ class LoanAccountForm(ModelForm):
 
 
 class AssetFineForm(LoanAccountForm):
-    verbose_name = "Asset Fine"
+    verbose_name = _("Asset Fine")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["loan_amount"].label = "Fine Amount"
-        fields_to_exclude = ["employee_id", "provided_date", "type"]
+        self.fields["loan_amount"].label = _("Fine Amount")
+        self.fields["provided_date"].label = _("Fine Date")
+
+        fields_to_exclude = [
+            "employee_id",
+            "type",
+        ]
         for field in fields_to_exclude:
             if field in self.fields:
                 del self.fields[field]
+        field_order = [
+            "title",
+            "loan_amount",
+            "provided_date",
+            "description",
+            "installments",
+            "installment_start_date",
+            "installment_amount",
+            "settled",
+        ]
+
+        self.fields = {
+            field: self.fields[field] for field in field_order if field in self.fields
+        }
 
 
 class MultipleFileInput(forms.ClearableFileInput):
