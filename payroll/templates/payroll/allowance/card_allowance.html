@@ -1,4 +1,4 @@
-{% load i18n %} {% load yes_no %} {% load static %}
+{% load i18n %} {% load static %} {% load horillafilters %}
 {% include 'filter_tags.html' %}
 {% if messages %}
 <div class="oh-wrapper">
@@ -76,7 +76,7 @@
           </div>
           <div class="oh-timeoff-modal__stat mt-2">
             <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Taxable" %}</span>
-            <span class="oh-timeoff-modal__stat-title">{{allowance.is_taxable|yesno|capfirst}}</span>
+            <span class="oh-timeoff-modal__stat-title">{{ allowance.is_taxable|yes_no }}</span>
           </div>
         </div>
 

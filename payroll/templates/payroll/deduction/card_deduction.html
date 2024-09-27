@@ -1,170 +1,158 @@
-{% load i18n %} {% load yes_no %}{% load static %}
+{% load i18n %} {% load static %} {% load horillafilters %}
 {% include 'filter_tags.html' %}
 {% if messages %}
 <div class="oh-wrapper">
     {% for message in messages %}
     <div class="oh-alert-container">
         <div class="oh-alert oh-alert--animated {{message.tags}}">
-        {{ message }}
+            {{ message }}
         </div>
     </div>
     {% endfor %}
 </div>
 {% endif %}
 {% if deductions %}
-  <!-- start of kanban -->
-  <div class="oh-layout--grid-3">
-    {% for deduction in deductions %}
-      <div class="oh-kanban-card {% if deduction.is_fixed == True %} row-status--orange {% elif deduction.is_fixed == False %} row-status--yellow {% endif %}"
-          data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-get="{% url 'single-deduction-view' deduction.id %}?{{pd}}&instances_ids={{deduction_ids}}" hx-target = "#objectDetailsModalTarget" >
-        <div class="oh-kanban-card__avatar">
-        <div class="oh-kanban-card__profile-container">
-            <img
-            src="https://ui-avatars.com/api/?name={{deduction}}&background=random"
-            class="oh-kanban-card__profile-image"
-            alt="Username"
-            />
-        </div>
-        </div>
-        <div class="oh-kanban-card__details">
-        <span class="oh-card__title oh-card__title--sm fw-bold" style="font-size:18px;">{{deduction}}</span>
+    <!-- start of kanban -->
+    <div class="oh-layout--grid-3">
+        {% for deduction in deductions %}
+        <div class="oh-kanban-card {% if deduction.is_fixed == True %} row-status--orange {% elif deduction.is_fixed == False %} row-status--yellow {% endif %}"
+            data-toggle="oh-modal-toggle" data-target="#objectDetailsModal"
+            hx-get="{% url 'single-deduction-view' deduction.id %}?{{pd}}&instances_ids={{deduction_ids}}"
+            hx-target="#objectDetailsModalTarget">
+            <div class="oh-kanban-card__avatar">
+                <div class="oh-kanban-card__profile-container">
+                    <img src="https://ui-avatars.com/api/?name={{deduction}}&background=random"
+                        class="oh-kanban-card__profile-image" alt="Username" />
+                </div>
+            </div>
+            <div class="oh-kanban-card__details">
+                <span class="oh-card__title oh-card__title--sm fw-bold" style="font-size:18px;">{{deduction}}</span>
 
 
-        <span class="oh-timeoff-modal__stat-title fw-bold text-dark mt-2 mb-1">{% trans "Amount" %}</span>
-        {% if deduction.update_compensation %}
-            {% if deduction.is_fixed %}
-              {% if position == "prefix" %}
-                <span class="oh-timeoff-modal__stat-title">{{currency}}{{deduction.amount}} {% trans "Deduct From" %} {{deduction.get_update_compensation_display}}</span>
-              {% else %}
-                <span class="oh-timeoff-modal__stat-title">{{deduction.amount}}{{currency}} {% trans "Deduct From" %} {{deduction.get_update_compensation_display}}</span>
-              {% endif %}
-            {% else %}
-                <span class="oh-timeoff-modal__stat-title">{{deduction.rate}}% {% trans "of" %} {{deduction.get_update_compensation_display}}</span>
-            {% endif %}
-        {% else %}
-            {% if deduction.is_fixed %}
-              {% if position == "prefix" %}
-                <span class="oh-timeoff-modal__stat-title ">{{currency}}{{deduction.amount}}</span>
-              {% else %}
-                <span class="oh-timeoff-modal__stat-title ">{{deduction.amount}}{{currency}}</span>
-              {% endif %}
-            {% else %}
-                <span class="oh-timeoff-modal__stat-title">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
-                <span class="oh-timeoff-modal__stat-title">{% trans "Employee Rate :" %} {{deduction.rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
-            {% endif %}
-        {% endif %}
+                <span class="oh-timeoff-modal__stat-title fw-bold text-dark mt-2 mb-1">{% trans "Amount" %}</span>
+                {% if deduction.update_compensation %}
+                    {% if deduction.is_fixed %}
+                        {% if position == "prefix" %}
+                        <span class="oh-timeoff-modal__stat-title">{{currency}}{{deduction.amount}} {% trans "Deduct From" %}
+                            {{deduction.get_update_compensation_display}}</span>
+                        {% else %}
+                        <span class="oh-timeoff-modal__stat-title">{{deduction.amount}}{{currency}} {% trans "Deduct From" %}
+                            {{deduction.get_update_compensation_display}}</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="oh-timeoff-modal__stat-title">{{deduction.rate}}% {% trans "of" %}
+                        {{deduction.get_update_compensation_display}}</span>
+                    {% endif %}
+                {% else %}
+                    {% if deduction.is_fixed %}
+                        {% if position == "prefix" %}
+                            <span class="oh-timeoff-modal__stat-title ">{{currency}}{{deduction.amount}}</span>
+                        {% else %}
+                            <span class="oh-timeoff-modal__stat-title ">{{deduction.amount}}{{currency}}</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Employee Rate :" %} {{deduction.rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
+                    {% endif %}
+                {% endif %}
 
 
-        <div class="oh-timeoff-modal__stats-container mb-1">
-          <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title fw-bold text-dark mt-2" style="width:135px;">{% trans "One Time Deduction" %}</span>
-            {% if deduction.one_time_date %}
-              <span class="oh-timeoff-modal__stat-title">{% trans "On" %}</span> <span class="oh-timeoff-modal__stat-count dateformat_changer"> {{deduction.one_time_date}}</span>
-            {% else %}
-              <span class="oh-timeoff-modal__stat-title">{% trans "No" %}</span>
-            {% endif %}
+                <div class="oh-timeoff-modal__stats-container mb-1">
+                    <div class="oh-timeoff-modal__stat">
+                        <span class="oh-timeoff-modal__stat-title fw-bold text-dark mt-2" style="width:135px;">{% trans "One Time Deduction" %}</span>
+                        {% if deduction.one_time_date %}
+                            <span class="oh-timeoff-modal__stat-title">{% trans "On" %}</span> <span
+                                class="oh-timeoff-modal__stat-count dateformat_changer"> {{deduction.one_time_date}}</span>
+                        {% else %}
+                            <span class="oh-timeoff-modal__stat-title">{% trans "No" %}</span>
+                        {% endif %}
 
-          </div>
-          <div class="oh-timeoff-modal__stat mt-2">
-            <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Pretax" %}</span>
-            <span class="oh-timeoff-modal__stat-title">{{deduction.is_pretax|yesno|capfirst}}</span>
-          </div>
-        </div>
+                    </div>
+                    <div class="oh-timeoff-modal__stat mt-2">
+                        <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Pretax" %}</span>
+                        <span class="oh-timeoff-modal__stat-title">{{deduction.is_pretax|yes_no}}</span>
+                    </div>
+                </div>
 
-        </div>
-        <div class="oh-kanban-card__dots">
-        <div class="oh-dropdown" x-data="{show: false}" onclick="event.stopPropagation()">
-            <button
-            class="oh-btn oh-btn--transparent text-muted p-3"
-            @click="show = !show"
-            title='{% trans "Actions" %}'
-            >
-            <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
-            </button>
-            <div
-            class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right"
-            x-show="show"
-            @click.outside="show = false"
-            >
-            <ul class="oh-dropdown__items">
-                <li class="oh-dropdown__item">
-                <a onclick="event.stopPropagation();"
-                  href="{% url 'update-deduction' deduction.id %}"
-                >{% trans "Edit" %}</a>
-                </li>
-                <li class="oh-dropdown__item">
-                <a class="text-danger"
-                  onclick = "event.preventDefault();event.stopPropagation();"
-                  hx-confirm="{% trans 'Do you want to delete this deduction?' %}"
-                  hx-post="{% url 'delete-deduction' deduction.id %}?{{pd}}"
-                  hx-target="#payroll-deduction-container"
-                >{% trans "Delete" %}</a
-                >
-                </li>
-            </ul>
+            </div>
+            <div class="oh-kanban-card__dots">
+                <div class="oh-dropdown" x-data="{show: false}" onclick="event.stopPropagation()">
+                    <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show"
+                        title='{% trans "Actions" %}'>
+                        <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show"
+                        @click.outside="show = false">
+                        <ul class="oh-dropdown__items">
+                            <li class="oh-dropdown__item">
+                                <a onclick="event.stopPropagation();" href="{% url 'update-deduction' deduction.id %}">{% trans "Edit" %}</a>
+                            </li>
+                            <li class="oh-dropdown__item">
+                                <a class="text-danger" onclick="event.preventDefault();event.stopPropagation();"
+                                    hx-confirm="{% trans 'Do you want to delete this deduction?' %}"
+                                    hx-post="{% url 'delete-deduction' deduction.id %}?{{pd}}"
+                                    hx-target="#payroll-deduction-container">{% trans "Delete" %}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
-        </div>
-      </div>
-    {% endfor %}
-  </div>
-  <!-- end of kanban -->
+        {% endfor %}
+    </div>
+    <!-- end of kanban -->
 
-  <!-- start of pagination -->
-  <div class="oh-pagination">
-    <span
-      class="oh-pagination__page"
-      >
-      {% trans "Page" %} {{ deductions.number }} {% trans "of" %} {{ deductions.paginator.num_pages }}.
-      </span
-    >
-    <nav class="oh-pagination__nav">
-      <div class="oh-pagination__input-container me-3">
-        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-        <input
-          type="number"
-          name="page"
-          class="oh-pagination__input"
-          value="{{deductions.number}}"
-          hx-get="{% url 'filter-deduction' %}?{{pd}}&view=card"
-          hx-target="#payroll-deduction-container"
-          min="1"
-        />
-        <span class="oh-pagination__label">{% trans "of" %} {{deductions.paginator.num_pages}}</span>
-      </div>
-      <ul class="oh-pagination__items">
-        {% if deductions.has_previous %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&view=card&page=1" class="oh-pagination__link">{% trans "First" %}</a>
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&view=card&page={{ deductions.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
-        </li>
-        {% endif %}
-        {% if deductions.has_next %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&view=card&page={{ deductions.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&view=card&page={{ deductions.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
-        </li>
-        {% endif %}
+    <!-- start of pagination -->
+    <div class="oh-pagination">
+        <span class="oh-pagination__page">
+            {% trans "Page" %} {{ deductions.number }} {% trans "of" %} {{ deductions.paginator.num_pages }}.
+        </span>
+        <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                <input type="number" name="page" class="oh-pagination__input" value="{{deductions.number}}"
+                    hx-get="{% url 'filter-deduction' %}?{{pd}}&view=card" hx-target="#payroll-deduction-container"
+                    min="1" />
+                <span class="oh-pagination__label">{% trans "of" %} {{deductions.paginator.num_pages}}</span>
+            </div>
+            <ul class="oh-pagination__items">
+                {% if deductions.has_previous %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#payroll-deduction-container'
+                            hx-get="{% url 'filter-deduction' %}?{{pd}}&view=card&page=1" class="oh-pagination__link">
+                            {% trans "First" %}
+                        </a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#payroll-deduction-container'
+                            hx-get="{% url 'filter-deduction' %}?{{pd}}&view=card&page={{ deductions.previous_page_number }}"
+                            class="oh-pagination__link">{% trans "Previous" %}</a>
+                    </li>
+                {% endif %}
+                {% if deductions.has_next %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#payroll-deduction-container'
+                            hx-get="{% url 'filter-deduction' %}?{{pd}}&view=card&page={{ deductions.next_page_number }}"
+                            class="oh-pagination__link">{% trans "Next" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#payroll-deduction-container'
+                            hx-get="{% url 'filter-deduction' %}?{{pd}}&view=card&page={{ deductions.paginator.num_pages }}"
+                            class="oh-pagination__link">{% trans "Last" %}</a>
+                    </li>
+                {% endif %}
 
-      </ul>
-    </nav>
-  </div>
-  <!-- end of pagination -->
+            </ul>
+        </nav>
+    </div>
+    <!-- end of pagination -->
 {% else %}
-<!-- start of empty page -->
-<div class="oh-404">
-  <img
-    style="width: 150px; height: 150px"
-    src="{% static 'images/ui/no-results.png' %}"
-    class="oh-404__image mb-4"
-  />
-  <h5 class="oh-404__subtitle">
-    {% trans "No search result found!" %}
-  </h5>
-</div>
-<!-- end of empty page -->
+    <!-- start of empty page -->
+    <div class="oh-404">
+        <img style="width: 150px; height: 150px" src="{% static 'images/ui/no-results.png' %}" class="oh-404__image mb-4" />
+        <h5 class="oh-404__subtitle">
+            {% trans "No search result found!" %}
+        </h5>
+    </div>
+    <!-- end of empty page -->
 {% endif %}

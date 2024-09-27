@@ -1,253 +1,183 @@
-{% extends 'index.html' %} {% block content %} {% load i18n %} {% load yes_no %}
+{% extends 'index.html' %} {% block content %} {% load i18n %}
 {% load static %}
 <style>
-  .oh-sticky-table__right {
-    position: sticky;
-    right: 0;
-    background-color: #fff;
-  }
-  .oh-sticky-table__top {
-    z-index: 12 !important;
-    top: 0;
-  }
+    .oh-sticky-table__right {
+        position: sticky;
+        right: 0;
+        background-color: #fff;
+    }
+
+    .oh-sticky-table__top {
+        z-index: 12 !important;
+        top: 0;
+    }
 </style>
 
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-  <div class="oh-main__titlebar oh-main__titlebar--left">
-    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Deductions" %}</h1>
-    <a
-      class="oh-main__titlebar-search-toggle"
-      role="button"
-      aria-label="Toggle Search"
-      @click="searchShow = !searchShow"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-main__titlebar-serach-icon md hydrated"
-        role="img"
-        aria-label="search outline"
-      ></ion-icon>
-    </a>
-  </div>
-  <form
-    hx-get='{% url "filter-deduction" %}'
-    id="filterForm"
-    hx-swap="innerHTML"
-    hx-target="#payroll-deduction-container"
-  >
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-      {% if deductions %}
-        <div
-          class="oh-input-group oh-input__search-group"
-          :class="searchShow ? 'oh-input__search-group--show' : ''"
-          >
-          <ion-icon
-            name="search-outline"
-            class="oh-input-group__icon oh-input-group__icon--left"
-          ></ion-icon>
-          <input
-            type="text"
-            class="oh-input oh-input__icon"
-            aria-label="Search Input"
-            id="filter-deduction"
-            name="search"
-            placeholder="{% trans 'Search' %}"
-            onkeyup="$('.filterButton')[0].click();"
-          />
-        </div>
-      {% endif %}
-      <div class="oh-main__titlebar-button-container">
-        {% if deductions %}
-          <ul class="oh-view-types ml-2" style="margin-bottom: 0">
-            <li class="oh-view-type deduction-view-type" data-view="list">
-              <a
-                class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
-                title="{% trans 'List' %}"
-                onclick="$('[name=view]').val('list');$('.filterButton')[0].click();"
-              >
-                <ion-icon
-                  name="list-outline"
-                  role="img"
-                  class="md hydrated"
-                  aria-label="list outline"
-                ></ion-icon>
-              </a>
-            </li>
-            <li class="oh-view-type deduction-view-type" data-view="card">
-              <a
-                class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
-                title="{% trans 'Card' %}"
-                onclick="$('[name=view]').val('card');$('.filterButton')[0].click();"
-                >
-                <ion-icon
-                  name="grid-outline"
-                  role="img"
-                  class="md hydrated"
-                  aria-label="grid outline"
-                ></ion-icon>
-              </a>
-            </li>
-          </ul>
-          <div class="oh-dropdown" x-data="{open: false}">
-            <button class="oh-btn ml-2" @click="open = !open">
-              <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-              <div id="filterCount"></div>
-            </button>
-            <div
-              class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-              x-show="open"
-              @click.outside="open = false"
-              style="display: none"
-            >
-              {% include 'payroll/deduction/filter_deduction.html' %}
-            </div>
-          </div>
-        {% endif %}
-        {% if perms.payroll.add_dedcution %}
-          <div class="oh-btn-group ml-2">
-            <div>
-              <a
-                class="oh-btn oh-btn--secondary oh-btn--shadow"
-                data-toggle="oh-modal-toggle"
-                data-target="#deductionModal"
-                href="{% url 'create-deduction' %}"
-              >
-                <ion-icon
-                  class="md hydrated"
-                  name="add-outline"
-                  role="img"
-                  aria-label="add outline"
-                ></ion-icon
-                >{% trans "Create" %}</a
-              >
-            </div>
-          </div>
-        {% endif %}
-      </div>
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">{% trans "Deductions" %}</h1>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon md hydrated" role="img"
+                aria-label="search outline"></ion-icon>
+        </a>
     </div>
-  </form>
+    <form hx-get='{% url "filter-deduction" %}' id="filterForm" hx-swap="innerHTML"
+        hx-target="#payroll-deduction-container">
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            {% if deductions %}
+                <div class="oh-input-group oh-input__search-group"
+                    :class="searchShow ? 'oh-input__search-group--show' : ''">
+                    <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+                    <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" id="filter-deduction"
+                        name="search" placeholder="{% trans 'Search' %}" onkeyup="$('.filterButton')[0].click();" />
+                </div>
+            {% endif %}
+            <div class="oh-main__titlebar-button-container">
+                {% if deductions %}
+                    <ul class="oh-view-types ml-2" style="margin-bottom: 0">
+                        <li class="oh-view-type deduction-view-type" data-view="list">
+                            <a class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
+                                title="{% trans 'List' %}"
+                                onclick="$('[name=view]').val('list');$('.filterButton')[0].click();">
+                                <ion-icon name="list-outline" role="img" class="md hydrated"
+                                    aria-label="list outline"></ion-icon>
+                            </a>
+                        </li>
+                        <li class="oh-view-type deduction-view-type" data-view="card">
+                            <a class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+                                title="{% trans 'Card' %}"
+                                onclick="$('[name=view]').val('card');$('.filterButton')[0].click();">
+                                <ion-icon name="grid-outline" role="img" class="md hydrated"
+                                    aria-label="grid outline"></ion-icon>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button class="oh-btn ml-2" @click="open = !open">
+                            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                            <div id="filterCount"></div>
+                        </button>
+                        <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                            @click.outside="open = false" style="display: none">
+                            {% include 'payroll/deduction/filter_deduction.html' %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if perms.payroll.add_dedcution %}
+                    <div class="oh-btn-group ml-2">
+                        <div>
+                            <a class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                                data-target="#deductionModal" href="{% url 'create-deduction' %}">
+                                <ion-icon class="md hydrated" name="add-outline" role="img"
+                                    aria-label="add outline"></ion-icon>{% trans "Create" %}</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </form>
 </section>
 <div class="oh-wrapper">
-  <!-- start of Quick filters  -->
-  {% if deductions %}
-    <div class="d-flex flex-row-reverse mb-2">
-      <span
-        class="me-3"
-        onclick="$('[name=is_pretax]').val('true');$('[name=is_fixed]').val('unknown');$('.filterButton').click()"
-        style="cursor: pointer"
-      >
-        <span
-          class="oh-dot oh-dot--small me-1"
-          style="background-color: red"
-        ></span>
-        {% trans "Pretax" %}
-      </span>
-
-      <span
-        class="me-3"
-        style="cursor: pointer"
-        onclick="$('[name=is_fixed]').val('true');$('[name=is_pretax]').val('unknown');$('.filterButton').click()"
-      >
-        <span
-          class="oh-dot oh-dot--small me-1"
-          style="background-color: orange"
-        ></span>
-        {% trans "Fixed" %}
-      </span>
-      <span
-        class="me-3"
-        style="cursor: pointer"
-        onclick="$('[name=is_fixed]').val('false');$('[name=is_pretax]').val('unknown');$('.filterButton').click()"
-      >
-        <span
-          class="oh-dot oh-dot--small me-1"
-          style="background-color: yellowgreen"
-        ></span>
-        {% trans "Not Fixed" %}
-      </span>
-    </div>
-  {% endif %}
-  <!-- end of quick filters  -->
-  <div id="payroll-deduction-container">
+    <!-- start of Quick filters  -->
     {% if deductions %}
-      {% if request.GET.view == "list" %}
-        {% include 'payroll/deduction/list_deduction.html' %}
-      {% else %}
-        {% include 'payroll/deduction/card_deduction.html' %}
-      {% endif %}
-    {% else %}
-      <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-        <div class="oh-wrapper">
-          <div class="oh-404">
-            <img
-              style="width: 150px; height: 150px"
-              src="{% static 'images/ui/deduction_icon.png' %}"
-              class="oh-404__image mb-4"
-              alt="Page not found. 404."
-            />
-            <h5 class="oh-404__subtitle">
-              {% trans "There are currently no deductions to consider." %}
-            </h5>
-          </div>
+        <div class="d-flex flex-row-reverse mb-2">
+            <span class="me-3"
+                onclick="$('[name=is_pretax]').val('true');$('[name=is_fixed]').val('unknown');$('.filterButton').click()"
+                style="cursor: pointer">
+                <span class="oh-dot oh-dot--small me-1" style="background-color: red"></span>
+                {% trans "Pretax" %}
+            </span>
+
+            <span class="me-3" style="cursor: pointer"
+                onclick="$('[name=is_fixed]').val('true');$('[name=is_pretax]').val('unknown');$('.filterButton').click()">
+                <span class="oh-dot oh-dot--small me-1" style="background-color: orange"></span>
+                {% trans "Fixed" %}
+            </span>
+            <span class="me-3" style="cursor: pointer"
+                onclick="$('[name=is_fixed]').val('false');$('[name=is_pretax]').val('unknown');$('.filterButton').click()">
+                <span class="oh-dot oh-dot--small me-1" style="background-color: yellowgreen"></span>
+                {% trans "Not Fixed" %}
+            </span>
         </div>
-      </main>
     {% endif %}
-  </div>
+    <!-- end of quick filters  -->
+    <div id="payroll-deduction-container">
+        {% if deductions %}
+            {% if request.GET.view == "list" %}
+                {% include 'payroll/deduction/list_deduction.html' %}
+            {% else %}
+                {% include 'payroll/deduction/card_deduction.html' %}
+            {% endif %}
+        {% else %}
+            <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+                <div class="oh-wrapper">
+                    <div class="oh-404">
+                        <img style="width: 150px; height: 150px" src="{% static 'images/ui/deduction_icon.png' %}"
+                            class="oh-404__image mb-4" alt="Page not found. 404." />
+                        <h5 class="oh-404__subtitle">
+                            {% trans "There are currently no deductions to consider." %}
+                        </h5>
+                    </div>
+                </div>
+            </main>
+        {% endif %}
+    </div>
 </div>
 
 <script>
-  $(document).ready(function () {
-    $(".deduction-view-type").click(function (e) {
-      e.preventDefault();
-      var view = $(this).attr("data-view");
-      $("#filter-deduction").attr("hx-vals", `{"view":"${view}"}`);
-      $("#filterView").val(view);
-      var currentURL = window.location.href;
-      if (/\?view=[^&]+/.test(currentURL)) {
-        newURL = currentURL.replace(/\?view=[^&]+/, "?view=" + view);
-      } else {
-        var separator = currentURL.includes("?") ? "&" : "?";
-        newURL = currentURL + separator + "view=" + view;
-      }
-      history.pushState({}, "", newURL);
-      $(".oh-btn--view-active").removeClass("oh-btn--view-active");
-      $(this).children("a").addClass("oh-btn--view-active");
-    });
-    $("#filter-deduction").focusout(function (e) {
-      $("#filterSearch").val($(this).val());
-      const formData = $("#filterForm").serializeArray();
-      const jsonObject = {};
+    $(document).ready(function () {
+        $(".deduction-view-type").click(function (e) {
+            e.preventDefault();
+            var view = $(this).attr("data-view");
+            $("#filter-deduction").attr("hx-vals", `{"view":"${view}"}`);
+            $("#filterView").val(view);
+            var currentURL = window.location.href;
+            if (/\?view=[^&]+/.test(currentURL)) {
+                newURL = currentURL.replace(/\?view=[^&]+/, "?view=" + view);
+            } else {
+                var separator = currentURL.includes("?") ? "&" : "?";
+                newURL = currentURL + separator + "view=" + view;
+            }
+            history.pushState({}, "", newURL);
+            $(".oh-btn--view-active").removeClass("oh-btn--view-active");
+            $(this).children("a").addClass("oh-btn--view-active");
+        });
+        $("#filter-deduction").focusout(function (e) {
+            $("#filterSearch").val($(this).val());
+            const formData = $("#filterForm").serializeArray();
+            const jsonObject = {};
 
-      $.each(formData, function () {
-        jsonObject[this.name] = this.value;
-      });
-      delete jsonObject.view;
-      var hxVals = JSON.stringify(jsonObject);
-      $(".deduction-view-type a").attr("hx-vals", hxVals);
-    });
+            $.each(formData, function () {
+                jsonObject[this.name] = this.value;
+            });
+            delete jsonObject.view;
+            var hxVals = JSON.stringify(jsonObject);
+            $(".deduction-view-type a").attr("hx-vals", hxVals);
+        });
 
-    $("#filter-deduction").keyup(function (e) {
-      const formData = $("#filterForm").serializeArray();
-      const jsonObject = {};
+        $("#filter-deduction").keyup(function (e) {
+            const formData = $("#filterForm").serializeArray();
+            const jsonObject = {};
 
-      $.each(formData, function () {
-        jsonObject[this.name] = this.value;
-      });
-      delete jsonObject.search;
-      var hxVals = JSON.stringify(jsonObject);
-      $(this).attr("hx-vals", hxVals);
-    });
-    $("#filterSubmit").click(function (e) {
-      const formData = $("#filterForm").serializeArray();
-      const jsonObject = {};
+            $.each(formData, function () {
+                jsonObject[this.name] = this.value;
+            });
+            delete jsonObject.search;
+            var hxVals = JSON.stringify(jsonObject);
+            $(this).attr("hx-vals", hxVals);
+        });
+        $("#filterSubmit").click(function (e) {
+            const formData = $("#filterForm").serializeArray();
+            const jsonObject = {};
 
-      $.each(formData, function () {
-        jsonObject[this.name] = this.value;
-      });
-      delete jsonObject.view;
-      var hxVals = JSON.stringify(jsonObject);
-      $(".deduction-view-type").attr("hx-vals", hxVals);
+            $.each(formData, function () {
+                jsonObject[this.name] = this.value;
+            });
+            delete jsonObject.view;
+            var hxVals = JSON.stringify(jsonObject);
+            $(".deduction-view-type").attr("hx-vals", hxVals);
+        });
     });
-  });
 </script>
 {% endblock content %}

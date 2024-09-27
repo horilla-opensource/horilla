@@ -1,4 +1,4 @@
-{% load i18n %} {% load yes_no %} {% load static %}
+{% load i18n %} {% load static %} {% load horillafilters %}
 {% if messages %}
     <div class="oh-wrapper">
         {% for message in messages %}
@@ -38,12 +38,12 @@
             {% if deduction.is_tax %}
                 <div class="oh-timeoff-modal__stat">
                     <span class="oh-timeoff-modal__stat-title">{% trans "Tax" %}</span>
-                    <span class="oh-timeoff-modal__stat-count">{{deduction.is_tax|yesno|capfirst}}</span>
+                    <span class="oh-timeoff-modal__stat-count">{{deduction.is_tax|yes_no}}</span>
                 </div>
             {% else %}
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Pretax" %}</span>
-                <span class="oh-timeoff-modal__stat-count">{{deduction.is_pretax|yesno|capfirst}}</span>
+                <span class="oh-timeoff-modal__stat-count">{{deduction.is_pretax|yes_no}}</span>
             </div>
             {% endif %}
             <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">

@@ -1,209 +1,215 @@
-{% load i18n %} {% load yes_no %}{% load static %}
+{% load i18n %} {% load static %} {% load horillafilters %}
 {% include 'filter_tags.html' %}
 {% if messages %}
 <div class="oh-wrapper">
     {% for message in messages %}
     <div class="oh-alert-container">
         <div class="oh-alert oh-alert--animated {{message.tags}}">
-        {{ message }}
+            {{ message }}
         </div>
     </div>
     {% endfor %}
 </div>
 {% endif %}
 {% if deductions %}
-  <!-- start of column toggle -->
-  <div class="oh-table_sticky--wrapper">
-    <div class="oh-sticky-dropdown--header">
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-          role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
-        <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-        <ul class="oh-dropdown__items" id="deductionCells">
-        </ul>
+    <!-- start of column toggle -->
+    <div class="oh-table_sticky--wrapper">
+        <div class="oh-sticky-dropdown--header">
+            <div class="oh-dropdown" x-data="{open: false}">
+                <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
+                        role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+                <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+                    <ul class="oh-dropdown__items" id="deductionCells">
+                    </ul>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  <!-- end of column toggle -->
-  <div id="deduction-column-table" data-table-name="deduction_column_tab">
-    <!-- start of sticky table -->
-    <div class="oh-sticky-table">
-      <div class="oh-sticky-table__table oh-table--sortable">
-        <div class="oh-sticky-table__thead">
-          <div class="oh-sticky-table__tr">
-            <div
-              class="oh-sticky-table__th {% if request.sort_option.order == '-title' %}arrow-up {% elif request.sort_option.order == 'title' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'filter-deduction' %}?{{pd}}&sortby=title"
-              hx-target="#payroll-deduction-container"
-            >
-              {% trans "Deduction" %}
-            </div>
-            <div data-cell-index="1" data-cell-title='{% trans "Specific Employees" %}' class="oh-sticky-table__th">{% trans "Specific Employees" %}</div>
-            <div data-cell-index="2" data-cell-title='{% trans "Excluded Employees" %}' class="oh-sticky-table__th">{% trans "Excluded Employees" %}</div>
-            <div data-cell-index="3" data-cell-title='{% trans "Is Pretax" %}' class="oh-sticky-table__th">{% trans "Is Pretax" %}</div>
-            <div data-cell-index="4" data-cell-title='{% trans "Is Condition Based" %}' class="oh-sticky-table__th">{% trans "Is Condition Based" %}</div>
-            <div data-cell-index="5" data-cell-title='{% trans "Condition" %}' class="oh-sticky-table__th">{% trans "Condition" %}</div>
-            <div data-cell-index="6" data-cell-title='{% trans "Is Fixed" %}' class="oh-sticky-table__th">{% trans "Is Fixed" %}</div>
-            <div data-cell-index="7" data-cell-title='{% trans "Amount" %}'
-              class="oh-sticky-table__th {% if request.sort_option.order == '-amount' %}arrow-up {% elif request.sort_option.order == 'amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'filter-deduction' %}?{{pd}}&sortby=amount"
-              hx-target="#payroll-deduction-container"
-            >{% trans "Amount" %}</div>
-            <div data-cell-index="8" data-cell-title='{% trans "Based On" %}' class="oh-sticky-table__th">{% trans "Based On" %}</div>
-            <div data-cell-index="9" data-cell-title='{% trans "Rate" %}' class="oh-sticky-table__th">{% trans "Rate" %}</div>
-            <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
-          </div>
-        </div>
-        {% for deduction in deductions %}
-        <div class="oh-sticky-table__tbody ui-sortable" draggable="true" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-get="{% url 'single-deduction-view' deduction.id %}?{{pd}}&instances_ids={{deduction_ids}}" hx-target = "#objectDetailsModalTarget">
-          <div class="oh-sticky-table__tr ui-sortable-handle">
-            <div class="oh-sticky-table__sd">{{deduction.title}}</div>
-            <div data-cell-index="1" class="oh-sticky-table__td">
-              {% for employee in deduction.specific_employees.all%}
-                {{employee}}<br />
-              {% endfor %}
-            </div>
-            <div data-cell-index="2" class="oh-sticky-table__td">
-              {% for employee in deduction.exclude_employees.all%}
-                {{employee}}<br />
-              {% endfor %}
-            </div>
-            <div data-cell-index="3" class="oh-sticky-table__td">
-              {{deduction.is_pretax|yesno|capfirst}}
-            </div>
-            <div data-cell-index="4" class="oh-sticky-table__td">
-              {{deduction.is_condition_based|yesno|capfirst}}
-            </div>
-            <div data-cell-index="5" class="oh-sticky-table__td">
-              {% if deduction.field %} {{deduction.get_field_display}}
-                {{deduction.get_condition_display}} {{deduction.value}}
-              {% endif %}
-            </div>
-            <div data-cell-index="6" class="oh-sticky-table__td">
-              {{deduction.is_fixed|yesno|capfirst}}
-            </div>
-            <div data-cell-index="7" class="oh-sticky-table__td">
-              {% if deduction.amount %}
-                {{deduction.amount}}
-              {% endif %}
-            </div>
-            <div data-cell-index="8" class="oh-sticky-table__td">
-              {% if deduction.based_on %}
-                {{deduction.get_based_on_display}}
-              {% endif%}
-            </div>
-            <div data-cell-index="9" class="oh-sticky-table__td">
-              {% if deduction.based_on %}
-                {{deduction.rate}}
-              {% endif %}
-            </div>
-            <div class="oh-sticky-table__td oh-sticky-table__right">
-              <div class="oh-btn-group">
-                <a
-                  onclick="event.stopPropagation();"
-                  class="oh-btn oh-btn--light-bkg w-100"
-                  href="{% url 'update-deduction' deduction.id %}"
-                  title='{% trans "Update" %}'
-                >
-                  <ion-icon
-                    name="create-outline"
-                    role="img"
-                    class="md hydrated"
-                    style="color: blue"
-                    aria-label="create outline"
-                  ></ion-icon>
-                </a>
-                <a
-                  class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                  onclick = "event.preventDefault();event.stopPropagation();"
-                  hx-confirm="{% trans 'Do you want to delete this deduction?' %}"
-                  hx-post="{% url 'delete-deduction' deduction.id %}?{{pd}}"
-                  hx-target="#payroll-deduction-container"
-                  title='{% trans "Delete" %}'
-                >
-                  <ion-icon
-                    name="trash-outline"
-                    role="img"
-                    class="md hydrated"
-                    aria-label="trash outline"
-                  ></ion-icon>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-    <!-- end of sticky table -->
-    <!-- start of pagination -->
-    <div class="oh-pagination">
-      <span
-        class="oh-pagination__page"
-        >
-        {% trans "Page" %} {{ deductions.number }} {% trans "of" %} {{ deductions.paginator.num_pages }}.
-        </span
-      >
-      <nav class="oh-pagination__nav">
-        <div class="oh-pagination__input-container me-3">
-          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-          <input
-            type="number"
-            name="page"
-            class="oh-pagination__input"
-            value="{{deductions.number}}"
-            hx-get="{% url 'filter-deduction' %}?{{pd}}&view=list"
-            hx-target="#payroll-deduction-container"
-            min="1"
-          />
-          <span class="oh-pagination__label">{% trans "of" %} {{deductions.paginator.num_pages}}</span>
-        </div>
-        <ul class="oh-pagination__items">
-          {% if deductions.has_previous %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&view=list&page=1" class="oh-pagination__link">{% trans "First" %}</a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&view=list&page={{ deductions.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
-          </li>
-          {% endif %}
-          {% if deductions.has_next %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&view=list&page={{ deductions.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&view=list&page={{ deductions.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
-          </li>
-          {% endif %}
+    <!-- end of column toggle -->
+    <div id="deduction-column-table" data-table-name="deduction_column_tab">
+        <!-- start of sticky table -->
+        <div class="oh-sticky-table">
+            <div class="oh-sticky-table__table oh-table--sortable">
+                <div class="oh-sticky-table__thead">
+                    <div class="oh-sticky-table__tr">
+                        <div class="oh-sticky-table__th {% if request.sort_option.order == '-title' %}arrow-up {% elif request.sort_option.order == 'title' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                            hx-get="{% url 'filter-deduction' %}?{{pd}}&sortby=title"
+                            hx-target="#payroll-deduction-container">
+                            {% trans "Deduction" %}
+                        </div>
 
-        </ul>
-      </nav>
+                        <div data-cell-index="1" data-cell-title='{% trans "Specific Employees" %}'
+                            class="oh-sticky-table__th">{% trans "Specific Employees" %}
+                        </div>
+
+                        <div data-cell-index="2" data-cell-title='{% trans "Excluded Employees" %}'
+                            class="oh-sticky-table__th">{% trans "Excluded Employees" %}
+                        </div>
+
+                        <div data-cell-index="3" data-cell-title='{% trans "Is Pretax" %}'
+                            class="oh-sticky-table__th">{% trans "Is Pretax" %}
+                        </div>
+
+                        <div data-cell-index="4" data-cell-title='{% trans "Is Condition Based" %}'
+                            class="oh-sticky-table__th">{% trans "Is Condition Based" %}
+                        </div>
+
+                        <div data-cell-index="5" data-cell-title='{% trans "Condition" %}'
+                            class="oh-sticky-table__th">{% trans "Condition" %}
+                        </div>
+
+                        <div data-cell-index="6" data-cell-title='{% trans "Is Fixed" %}'
+                            class="oh-sticky-table__th">{% trans "Is Fixed" %}
+                        </div>
+
+                        <div data-cell-index="7" data-cell-title='{% trans "Amount" %}'
+                            class="oh-sticky-table__th {% if request.sort_option.order == '-amount' %}arrow-up {% elif request.sort_option.order == 'amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                            hx-get="{% url 'filter-deduction' %}?{{pd}}&sortby=amount"
+                            hx-target="#payroll-deduction-container">{% trans "Amount" %}
+                        </div>
+
+                        <div data-cell-index="8" data-cell-title='{% trans "Based On" %}'
+                            class="oh-sticky-table__th">{% trans "Based On" %}
+                        </div>
+
+                        <div data-cell-index="9" data-cell-title='{% trans "Rate" %}'
+                            class="oh-sticky-table__th">{% trans "Rate" %}
+                        </div>
+
+                        <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
+                    </div>
+                </div>
+                {% for deduction in deductions %}
+                    <div class="oh-sticky-table__tbody ui-sortable" draggable="true" data-toggle="oh-modal-toggle"
+                        data-target="#objectDetailsModal"
+                        hx-get="{% url 'single-deduction-view' deduction.id %}?{{pd}}&instances_ids={{deduction_ids}}"
+                        hx-target="#objectDetailsModalTarget">
+                        <div class="oh-sticky-table__tr ui-sortable-handle">
+                            <div class="oh-sticky-table__sd">{{deduction.title}}</div>
+                            <div data-cell-index="1" class="oh-sticky-table__td">
+                                {% for employee in deduction.specific_employees.all%}
+                                {{employee}}<br />
+                                {% endfor %}
+                            </div>
+                            <div data-cell-index="2" class="oh-sticky-table__td">
+                                {% for employee in deduction.exclude_employees.all%}
+                                {{employee}}<br />
+                                {% endfor %}
+                            </div>
+                            <div data-cell-index="3" class="oh-sticky-table__td">
+                                {{deduction.is_pretax|yes_no}}
+                            </div>
+                            <div data-cell-index="4" class="oh-sticky-table__td">
+                                {{deduction.is_condition_based|yes_no}}
+                            </div>
+                            <div data-cell-index="5" class="oh-sticky-table__td">
+                                {% if deduction.field %} {{deduction.get_field_display}}
+                                {{deduction.get_condition_display}} {{deduction.value}}
+                                {% endif %}
+                            </div>
+                            <div data-cell-index="6" class="oh-sticky-table__td">
+                                {{deduction.is_fixed|yes_no}}
+                            </div>
+                            <div data-cell-index="7" class="oh-sticky-table__td">
+                                {% if deduction.amount %}
+                                {{deduction.amount}}
+                                {% endif %}
+                            </div>
+                            <div data-cell-index="8" class="oh-sticky-table__td">
+                                {% if deduction.based_on %}
+                                {{deduction.get_based_on_display}}
+                                {% endif%}
+                            </div>
+                            <div data-cell-index="9" class="oh-sticky-table__td">
+                                {% if deduction.based_on %}
+                                {{deduction.rate}}
+                                {% endif %}
+                            </div>
+                            <div class="oh-sticky-table__td oh-sticky-table__right">
+                                <div class="oh-btn-group">
+                                    <a onclick="event.stopPropagation();" class="oh-btn oh-btn--light-bkg w-100"
+                                        href="{% url 'update-deduction' deduction.id %}" title='{% trans "Update" %}'>
+                                        <ion-icon name="create-outline" role="img" class="md hydrated" style="color: blue"
+                                            aria-label="create outline"></ion-icon>
+                                    </a>
+                                    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                        onclick="event.preventDefault();event.stopPropagation();"
+                                        hx-confirm="{% trans 'Do you want to delete this deduction?' %}"
+                                        hx-post="{% url 'delete-deduction' deduction.id %}?{{pd}}"
+                                        hx-target="#payroll-deduction-container" title='{% trans "Delete" %}'>
+                                        <ion-icon name="trash-outline" role="img" class="md hydrated"
+                                            aria-label="trash outline"></ion-icon>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- end of sticky table -->
+        <!-- start of pagination -->
+        <div class="oh-pagination">
+            <span class="oh-pagination__page">
+                {% trans "Page" %} {{ deductions.number }} {% trans "of" %} {{ deductions.paginator.num_pages }}.
+            </span>
+            <nav class="oh-pagination__nav">
+                <div class="oh-pagination__input-container me-3">
+                    <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                    <input type="number" name="page" class="oh-pagination__input" value="{{deductions.number}}"
+                        hx-get="{% url 'filter-deduction' %}?{{pd}}&view=list" hx-target="#payroll-deduction-container"
+                        min="1" />
+                    <span class="oh-pagination__label">{% trans "of" %} {{deductions.paginator.num_pages}}</span>
+                </div>
+                <ul class="oh-pagination__items">
+                    {% if deductions.has_previous %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#payroll-deduction-container'
+                            hx-get="{% url 'filter-deduction' %}?{{pd}}&view=list&page=1" class="oh-pagination__link">{%
+                            trans "First" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#payroll-deduction-container'
+                            hx-get="{% url 'filter-deduction' %}?{{pd}}&view=list&page={{ deductions.previous_page_number }}"
+                            class="oh-pagination__link">{% trans "Previous" %}</a>
+                    </li>
+                    {% endif %}
+                    {% if deductions.has_next %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#payroll-deduction-container'
+                            hx-get="{% url 'filter-deduction' %}?{{pd}}&view=list&page={{ deductions.next_page_number }}"
+                            class="oh-pagination__link">{% trans "Next" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#payroll-deduction-container'
+                            hx-get="{% url 'filter-deduction' %}?{{pd}}&view=list&page={{ deductions.paginator.num_pages }}"
+                            class="oh-pagination__link">{% trans "Last" %}</a>
+                    </li>
+                    {% endif %}
+
+                </ul>
+            </nav>
+        </div>
+        <!-- end of pagination -->
     </div>
-    <!-- end of pagination -->
-  </div>
 {% else %}
-  <!-- start of empty page -->
-  <div class="oh-404">
-    <img
-      style="width: 150px; height: 150px"
-      src="{% static 'images/ui/no-results.png' %}"
-      class="oh-404__image mb-4"
-    />
-    <h5 class="oh-404__subtitle">
-      {% trans "No search result found!" %}
-    </h5>
-  </div>
-  <!-- end of empty page -->
+    <!-- start of empty page -->
+    <div class="oh-404">
+        <img style="width: 150px; height: 150px" src="{% static 'images/ui/no-results.png' %}" class="oh-404__image mb-4" />
+        <h5 class="oh-404__subtitle">
+            {% trans "No search result found!" %}
+        </h5>
+    </div>
+    <!-- end of empty page -->
 {% endif %}
 
 <script>
-  // toggle columns //
-  toggleColumns("deduction-column-table","deductionCells")
-  localStoragedeductionCells = localStorage.getItem("deduction_column_tab")
-  if (!localStoragedeductionCells) {
-    $("#deductionCells").find("[type=checkbox]").prop("checked",true)
-  }
-  $("[type=checkbox]").change()
+    // toggle columns //
+    toggleColumns("deduction-column-table", "deductionCells")
+    localStoragedeductionCells = localStorage.getItem("deduction_column_tab")
+    if (!localStoragedeductionCells) {
+        $("#deductionCells").find("[type=checkbox]").prop("checked", true)
+    }
+    $("[type=checkbox]").change()
 
- </script>
+</script>
