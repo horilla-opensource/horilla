@@ -144,23 +144,29 @@
               <div class="oh-btn-group">
                   <a class="oh-btn w-100" style="height:10px" href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><img width="25px" height="25px" src="{% static 'images/ui/writing.png' %}"></a>
                   <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
-                  <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
-                    {% if feedback.archive == True %}
-                      <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
-                    {% else %}
-                      <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" >
-                    {% endif %}
-                     {% csrf_token %}
-                    <ion-icon name="archive-sharp" type="submit"></ion-icon>
-                  </button>
-                  </form>
-                  {% if perms.pms.delete_feedback %}
-                    <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
+                  {% if perms.pms.delete_feedback or request.user|is_reportingmanager %}
+                    <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
+                      {% if feedback.archive == True %}
+                        <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
+                      {% else %}
+                        <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" >
+                      {% endif %}
                       {% csrf_token %}
-                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
-                          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                      <ion-icon name="archive-sharp" type="submit"></ion-icon>
                       </button>
                     </form>
+                    {% if not feedback.feedback_answer.all %}
+                      <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
+                        {% csrf_token %}
+                        <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
+                            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                        </button>
+                      </form>
+                    {% else %}
+                      <button  class="oh-btn oh-btn--danger-outline  w-100" disabled title="{% trans "Can't delete the feedback it's already answered." %}">
+                        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                      </button>
+                    {% endif %}
                   {%endif%}
               </div>
             </div>
@@ -283,24 +289,6 @@
               <div class="oh-btn-group">
                 <a class="oh-btn w-100" style="height:10px" href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><img width="25px" height="25px" src="{% static 'images/ui/writing.png' %}"></a>
                 <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
-                <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
-                  {% if feedback.archive == True %}
-                    <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
-                  {% else %}
-                    <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" >
-                  {% endif %}
-                   {% csrf_token %}
-                  <ion-icon name="archive-sharp" type="submit"></ion-icon>
-                </button>
-                </form>
-                {% if perms.pms.delete_feedback %}
-                  <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
-                    {% csrf_token %}
-                    <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
-                        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-                    </button>
-                  </form>
-                {% endif %}
             </div>
             </div>
           </div>
@@ -384,9 +372,9 @@
             <div class="oh-sticky-table__th">{% trans "Title" %}</div>
             <div class="oh-sticky-table__th">{% trans "Status" %}</div>
             <div class="oh-sticky-table__th">{% trans "Due In" %}</div>
+            {% if perms.pms.delete_feedback or request.user|is_reportingmanager %}
             <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-
-
+            {% endif %}
           </div>
         </div>
         <div class="oh-sticky-table__tbody">
@@ -423,34 +411,34 @@
               <span>{% trans feedback.status %}</span>
             </div>
             <div class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</div>
-            <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-              <div class="oh-btn-group">
-                {% comment %} {% if feedback|is_feedback_answer:request.user %}
-                  <a class="oh-btn w-100" style="height:10px" href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><img width="25px" height="25px" src="{% static 'images/ui/writing.png' %}"></a>
-                {% else %}
-                  <a class="oh-btn w-100" style="height:10px;background-color: #cccccc;" disabled  title="{% trans 'Answer' %}"><img width="25px" height="25px" src="{% static 'images/ui/writing.png' %}"></a>
-                {% endif %} {% endcomment %}
-                {% comment %} <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a> {% endcomment %}
-                <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
-                  {% if feedback.archive == True %}
-                    <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
-                  {% else %}
-                    <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" >
-                  {% endif %}
-                   {% csrf_token %}
-                  <ion-icon name="archive-sharp" type="submit"></ion-icon>
-                </button>
-                </form>
-                {% if perms.pms.delete_feedback %}
-                  <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
-                    {% csrf_token %}
-                    <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
-                        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-                    </button>
+            {% if perms.pms.delete_feedback or request.user|is_reportingmanager %}
+              <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                <div class="oh-btn-group">
+                  <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
+                      {% if feedback.archive == True %}
+                        <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
+                      {% else %}
+                        <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" >
+                      {% endif %}
+                      {% csrf_token %}
+                      <ion-icon name="archive-sharp" type="submit"></ion-icon>
+                      </button>
                   </form>
-                {% endif %}
-            </div>
-            </div>
+                  {% if not feedback.feedback_answer.all %}
+                    <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
+                      {% csrf_token %}
+                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
+                          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                      </button>
+                    </form>
+                  {% else %}
+                    <button  class="oh-btn oh-btn--danger-outline  w-100" disabled title="{% trans "Can't delete the feedback it's already answered." %}">
+                      <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                    </button>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
           </div>
           {% endfor%}
         </div>

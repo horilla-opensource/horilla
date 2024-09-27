@@ -93,20 +93,26 @@
             <span class="oh-profile__info-value"
               >{{feedback.employee_id}}</span>
           </div>
-          {% if perms.pms.delete_feedback or request.user|filtersubordinates %}
             <div class="oh-main__titlebar oh-main__titlebar--right justify-content-end">
-              <select id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="Status"
-                  hx-post="{%url 'feedback-detailed-view-status'  id=feedback.id %}"
-                  hx-trigger="change" hx-target="#message">
-                    <option value="{{feedback.status}}" selected>
-                        {% trans feedback.get_status_display %}
-                    </option>
-                  {%for value,label in feedback_status %}
-                    {% if feedback.status != label %}
-                      <option value="{{label}}">{% trans label %}</option>
-                    {% endif%}
-                  {% endfor %}
-              </select>
+              {% if  perms.pms.change_feedback or request.user|is_reportingmanager %}
+                <select id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="Status"
+                    hx-post="{%url 'feedback-detailed-view-status'  id=feedback.id %}"
+                    hx-trigger="change" hx-target="#message">
+                      <option value="{{feedback.status}}" selected>
+                          {% trans feedback.get_status_display %}
+                      </option>
+                    {%for value,label in feedback_status %}
+                      {% if feedback.status != label %}
+                        <option value="{{label}}">{% trans label %}</option>
+                      {% endif%}
+                    {% endfor %}
+                </select>
+              {% else %}
+                <label id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="Status">
+                   {% trans feedback.get_status_display %}
+                </label>
+              {% endif %}
+              {% if perms.pms.change_feedback or perms.pms.delete_feedback or request.user|is_reportingmanager  %}
               <div class="oh-btn-group m-2">
                   {% if not feedback_started %}
                     {% if perms.pms.change_feedback or request.user|is_reportingmanager %}
@@ -122,23 +128,25 @@
                       </div>
                     {% endif %}
                   {% endif %}
-                  <form action="{% url 'feedback-archive' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want archive this Feedback ?" %}')" >
-                  <button class="oh-btn  w-100 "  title="{% trans 'Archive' %}" style="background-color: white;!important">
-                    {% csrf_token %}
-                    <ion-icon name="archive-sharp" type="submit"></ion-icon>
-                  </button>
-                  </form>
-                  {% if perms.pms.delete_feedback  %}
-                    <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')">
-                      {% csrf_token %}
-                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" style="background-color: white;!important">
-                          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                  {% if perms.pms.delete_feedback or request.user|is_reportingmanager %}
+                    <form action="{% url 'feedback-archive' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want archive this Feedback ?" %}')" >
+                      <button class="oh-btn  w-100 "  title="{% trans 'Archive' %}" style="background-color: white;!important">
+                        {% csrf_token %}
+                        <ion-icon name="archive-sharp" type="submit"></ion-icon>
                       </button>
                     </form>
+                    {% if not feedback.feedback_answer.all %}
+                      <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')">
+                        {% csrf_token %}
+                        <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" style="background-color: white;!important">
+                            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                        </button>
+                      </form>
+                    {% endif %}
                   {% endif %}
               </div>
+              {% endif %}
             </div>
-          {% endif %}
         </div>
         <div class="align-items-center d-flex" style="min-height: 40px;">
           <span class="oh-profile__info-label ">{% trans "Due on: " %}</span>

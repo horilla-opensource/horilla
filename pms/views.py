@@ -1688,43 +1688,23 @@ def feedback_list_search(request):
     requested_feedback = Feedback.objects.filter(pk__in=requested_feedback_ids).filter(
         review_cycle__icontains=feedback
     )
+    all_feedback = Feedback.objects.none()
     if request.user.has_perm("pms.view_feedback"):
-        all_feedback = Feedback.objects.filter(archive=False).filter(
-            review_cycle__icontains=feedback
-        )
+        all_feedback = Feedback.objects.all().filter(review_cycle__icontains=feedback)
     else:
         # feedbacks to review if employee is a manager
-        all_feedback = Feedback.objects.filter(
-            Q(
-                manager_id=employee_id,
-                manager_id__is_active=True,
-                archive=False,
-            )
-        ).filter(review_cycle__icontains=feedback)
+        all_feedback = Feedback.objects.filter(manager_id=employee_id).filter(
+            review_cycle__icontains=feedback
+        )
     anonymous_feedback = (
         AnonymousFeedback.objects.filter(employee_id=employee_id)
         if not request.user.has_perm("pms.view_feedback")
         else AnonymousFeedback.objects.all()
     )
 
-    reporting_manager_to = employee_id.reporting_manager.all()
-    if request.user.has_perm("pms.view_feedback"):
-        context = filter_pagination_feedback(
-            request, self_feedback, requested_feedback, all_feedback, anonymous_feedback
-        )
-    elif reporting_manager_to:
-        employees_id = [i.id for i in reporting_manager_to]
-        all_feedback = Feedback.objects.filter(employee_id__in=employees_id).filter(
-            review_cycle__icontains=feedback
-        )
-        context = filter_pagination_feedback(
-            request, self_feedback, requested_feedback, all_feedback, anonymous_feedback
-        )
-    else:
-        all_feedback = Feedback.objects.none()
-        context = filter_pagination_feedback(
-            request, self_feedback, requested_feedback, all_feedback, anonymous_feedback
-        )
+    context = filter_pagination_feedback(
+        request, self_feedback, requested_feedback, all_feedback, anonymous_feedback
+    )
 
     return render(request, "feedback/feedback_list.html", context)
 
@@ -2078,6 +2058,7 @@ def get_feedback_overview(request, obj_id):
 
 
 @login_required
+@manager_can_enter(perm="pms.delete_feedback")
 def feedback_archive(request, id):
     """
     this function is used to archive the feedback for employee
