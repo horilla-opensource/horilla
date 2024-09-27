@@ -285,10 +285,6 @@ def attendance_import(request):
         "model": _("Attendance"),
         "path_info": path_info,
     }
-    print(
-        "_________________________________________________________________________________________"
-    )
-    print(context)
     html = render_to_string("import_popup.html", context)
     return HttpResponse(html)
 

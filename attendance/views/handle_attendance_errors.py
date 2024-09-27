@@ -68,12 +68,7 @@ def handle_attendance_errors(error_list):
     data_frame.to_excel(response, index=False)
 
     def get_error_sheet(request):
-        print("_______________________________________________________________")
-        print(DYNAMIC_URL_PATTERNS)
-        print("_______________________________________________________________")
         remove_dynamic_url(path_info)
-        print(DYNAMIC_URL_PATTERNS)
-        print("_______________________________________________________________")
         return response
 
     from attendance.urls import path, urlpatterns
