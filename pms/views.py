@@ -1813,10 +1813,14 @@ def feedback_detailed_view_answer(request, id, emp_id):
     is_have_perm = check_permission_feedback_detailed_view(
         request, feedback, "pms.view_feedback"
     )
+    kr_feedbacks = KeyResultFeedback.objects.filter(
+        feedback_id=feedback, employee_id=employee
+    )
     if is_have_perm:
         answers = Answer.objects.filter(employee_id=employee, feedback_id=feedback)
         context = {
             "answers": answers,
+            "kr_feedbacks": kr_feedbacks,
         }
         return render(request, "feedback/feedback_detailed_view_answer.html", context)
     else:
@@ -2036,6 +2040,7 @@ def get_feedback_overview(request, obj_id):
         question_template = feedback.question_template_id
         questions = question_template.question.all()
         feedback_answers = feedback.feedback_answer.all()
+        kr_feedbacks = feedback.feedback_key_result.all()
         feedback_overview = {}
         for question in questions:
             answer_list = []
@@ -2050,6 +2055,15 @@ def get_feedback_overview(request, obj_id):
                         }
                     )
             feedback_overview[question] = answer_list
+        for kr_feedback in kr_feedbacks:
+            answer_list = []
+            answer_list.append(
+                {kr_feedback.employee_id: [kr_feedback.answer, {"type": "6"}]}
+            )
+            feedback_overview[
+                f"Feedback about keyresult: {kr_feedback.key_result_id.key_result_id}"
+            ] = answer_list
+
         return render(
             request,
             "feedback/feedback_overview.html",

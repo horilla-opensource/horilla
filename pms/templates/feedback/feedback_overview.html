@@ -90,6 +90,26 @@
                                                             </div>
                                                         </div>
                                                         {% endif %}
+                                                        {% if value.1.type == '6' %}
+                                                        <div >
+                                                            <div class="oh-input-picker-group oh-input-picker-group--resp mt-2">
+                                                                <div class="oh-input-picker oh-input-picker--likert oh-input-picker--selected
+                                                                  {% if value.0.answer == "Bad" %}
+                                                                    oh-input-picker--1
+                                                                  {% elif value.0.answer == "Average" %}
+                                                                    oh-input-picker--2
+                                                                  {% elif value.0.answer == "Good" %}
+                                                                    oh-input-picker--3
+                                                                  {% elif value.0.answer == "Perfect" %}
+                                                                    oh-input-picker--4
+                                                                  {% endif %}
+                                                                "
+                                                                >
+                                                                  {{ value.0.answer }}
+                                                                </div>
+                                                              </div>
+                                                        </div>
+                                                        {% endif %}
                                                     </li>
                                                     </div>
                                             </div>

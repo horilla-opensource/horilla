@@ -62,6 +62,33 @@
   </li>
 
 {% endfor %}
+{% if kr_feedbacks %}
+<hr/>
+  <span class="oh-activity-sidebar__q" style="font-size: medium;">{% trans "Key results" %}</span>
+  {% for kr_feedback in kr_feedbacks %}
+  <li class="oh-activity-sidebar__qa-item">
+    <span class="oh-activity-sidebar__q"> {{forloop.counter}}. {{kr_feedback.key_result_id.key_result_id}}</span>
+    <div class="d-block">
+      <div class="oh-input-picker-group oh-input-picker-group--resp mt-2">
+        <div class="oh-input-picker oh-input-picker--likert oh-input-picker--selected
+          {% if kr_feedback.answer.answer == "Bad" %}
+            oh-input-picker--1
+          {% elif kr_feedback.answer.answer == "Average" %}
+            oh-input-picker--2
+          {% elif kr_feedback.answer.answer == "Good" %}
+            oh-input-picker--3
+          {% elif kr_feedback.answer.answer == "Perfect" %}
+            oh-input-picker--4
+          {% endif %}
+        "
+        >
+          {{ kr_feedback.answer.answer }}
+        </div>
+      </div>
+    </div>
+  </li>
+  {% endfor %}
+{% endif %}
 
 <script>
 
