@@ -1077,7 +1077,6 @@
       "apply_on": "end_of_month",
       "settled": false,
       "settled_date": null,
-      "asset_id": null,
       "deduction_ids": [
         4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
       ]
