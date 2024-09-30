@@ -546,6 +546,26 @@ class Feedback(HorillaModel):
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.review_cycle}"
 
+    def requested_employees(self):
+        manager = self.manager_id
+        colleagues = self.colleague_id.all()
+        subordinates = self.subordinate_id.all()
+        owner = self.employee_id
+
+        employees = [employee for employee in subordinates]
+
+        for employee in colleagues:
+            if employee not in employees:
+                employees.append(employee)
+
+        if manager not in employees:
+            employees.append(manager)
+
+        if owner not in employees:
+            employees.append(owner)
+
+        return employees
+
 
 class AnonymousFeedback(models.Model):
     """feedback model for creating feedback"""
@@ -682,20 +702,25 @@ class Meetings(HorillaModel):
     title = models.CharField(max_length=100)
     date = models.DateTimeField(null=True, blank=True)
     employee_id = models.ManyToManyField(
-        Employee, related_name="meeting_employee", verbose_name="Employee"
+        Employee,
+        related_name="meeting_employee",
+        verbose_name=_("Employee"),
     )
     manager = models.ManyToManyField(Employee, related_name="meeting_manager")
     answer_employees = models.ManyToManyField(
         Employee,
         blank=True,
         related_name="meeting_answer_employees",
-        verbose_name="Answerable Employees",
+        verbose_name=_("Answerable Employees"),
+        help_text=_(
+            "Select the employees who can respond to question template in this meeting's, if any are added."
+        ),
     )
     question_template = models.ForeignKey(
         QuestionTemplate, on_delete=models.PROTECT, null=True, blank=True
     )
     response = models.TextField(null=True, blank=True)
-    show_response = models.BooleanField(default=False)
+    show_response = models.BooleanField(default=False, editable=False)
 
     class Meta:
         verbose_name = _("Meetings")

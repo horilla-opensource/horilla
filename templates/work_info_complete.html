@@ -13,18 +13,31 @@
       <tbody>
         {% for employee_info in employees_with_pending %}
         <tr>
-          <td>
-            <a href="{% url 'employee-view-update' employee_info.employee.employee_id.id %}">
-              {{ employee_info.employee.employee_id }}</a>
-          </td>
-          <td style="position: relative;">
-            <a href="{% url 'employee-view-update' employee_info.employee.employee_id.id %}">
-              <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: {{ employee_info.completed_field_count }}%;"></div>
-              </div>
-              <div class="progress-text">{{ employee_info.completed_field_count }}% {% trans "Completed" %}</div>
-            </a>
-          </td>
+          {% if perms.employee.change_employee %}
+            <td>
+              <a href="{% url 'employee-view-update' employee_info.employee.employee_id.id %}">
+                {{ employee_info.employee.employee_id }}</a>
+            </td>
+            <td style="position: relative;">
+              <a href="{% url 'employee-view-update' employee_info.employee.employee_id.id %}">
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" style="width: {{ employee_info.completed_field_count }}%;"></div>
+                </div>
+                <div class="progress-text">{{ employee_info.completed_field_count }}% {% trans "Completed" %}</div>
+              </a>
+            </td>
+          {% else %}
+            <td>
+                {{ employee_info.employee.employee_id }}</a>
+            </td>
+            <td style="position: relative;">
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" style="width: {{ employee_info.completed_field_count }}%;"></div>
+                </div>
+                <div class="progress-text">{{ employee_info.completed_field_count }}% {% trans "Completed" %}</div>
+              </a>
+            </td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>

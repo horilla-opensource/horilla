@@ -75,13 +75,13 @@
                                     <div class="oh-sticky-table__tr ui-sortable-handle">
                                         <div class="oh-sticky-table__td">{{allowance.title}}</div>
                                         <div class="oh-sticky-table__td">
-                                            {{allowance.is_taxable|yesno|capfirst}}
+                                            {{allowance.is_taxable|yes_no}}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{allowance.is_condition_based|yesno|capfirst}}
+                                            {{allowance.is_condition_based|yes_no}}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{allowance.is_fixed|yesno|capfirst}}
+                                            {{allowance.is_fixed|yes_no}}
                                         </div>
                                         <div class="oh-sticky-table__td">
                                             {% if allowance.amount %}{{allowance.amount}}{% endif %}
@@ -170,10 +170,10 @@
                                     <div class="oh-sticky-table__tr ui-sortable-handle">
                                         <div class="oh-sticky-table__sd">{{deduction.title}}</div>
                                         <div class="oh-sticky-table__td">
-                                            {{deduction.is_pretax|yesno|capfirst}}
+                                            {{deduction.is_pretax|yes_no}}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{deduction.is_condition_based|yesno|capfirst}}
+                                            {{deduction.is_condition_based|yes_no}}
                                         </div>
                                         <div class="oh-sticky-table__td">
                                             {% if deduction.field %} {{deduction.get_field_display}}
@@ -181,7 +181,7 @@
                                             {% endif %}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{deduction.is_fixed|yesno|capfirst}}
+                                            {{deduction.is_fixed|yes_no}}
                                         </div>
                                         <div class="oh-sticky-table__td">
                                             {% if deduction.amount %}

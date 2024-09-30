@@ -21,7 +21,18 @@
 					<div class="oh-sticky-table__td">{{shift.weekly_full_time}}</div>
 					<div class="oh-sticky-table__td">{{shift.full_time}}</div>
 					{% if shift.grace_time_id %}
-						<div class="oh-sticky-table__td">{{shift.grace_time_id}}</div>
+						<div class="oh-sticky-table__td">
+							<div class="d-flex">
+								{{shift.grace_time_id}}
+								<div class="oh-switch ml-2">
+									{% if perms.attendance.change_gracetime %}
+										<input type="checkbox" id="isActive" data-id ="{{shift.grace_time_id.id}}" class="oh-switch__checkbox" {% if shift.grace_time_id.is_active %} checked {% endif %} onchange="updateGracetimeIsActivate(this)">
+									{% else %}
+										<input type="checkbox" id="isActive" class="oh-switch__checkbox" {% if shift.grace_time_id.is_active %} checked {% endif %} disabled>
+									{% endif %}
+								</div>
+							</div>
+						</div>
 					{% else %}
 						<div class="oh-sticky-table__td">{% trans "Nil" %}</div>
 					{% endif %}
@@ -88,24 +99,24 @@
 	  return cookieValue;
 	}
 
-	function updateIsActivate(checkbox) {
-	  // Using jQuery to check if the checkbox is checked
-	  var isChecked = $(checkbox).prop('checked');
-	  var graceId = $(checkbox).data('id');
-	  $.ajax({
-		type: "POST",
-		url: "/attendance/update-isactive-gracetime",
-		data: { 'isChecked': isChecked, 'graceId':graceId,'csrfmiddlewaretoken': getCookie('csrftoken') },
-		dataType: "json",
-		success: function (response) {
-		  $("#ohMessages").append(`
-				  <div class="oh-alert-container">
-					<div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-					  ${response.message}
-					</div>
-				  </div>`);
-				  duration = 1500;
-		}
-	  });
-	}
+	function updateGracetimeIsActivate(checkbox) {
+        // Using jQuery to check if the checkbox is checked
+        var isChecked = $(checkbox).prop('checked');
+        var gracetimeId = $(checkbox).data('id');
+        $.ajax({
+          type: "POST",
+          url: "{% url 'update-isactive-gracetime' %}",
+          data: { 'isChecked': isChecked, 'gracetimeId':gracetimeId,'csrfmiddlewaretoken': getCookie('csrftoken') },
+          dataType: "json",
+          success: function (response) {
+            $("#ohMessages").append(`
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                    ${response.message}
+                    </div>
+                </div>`);
+                duration = 1500;
+          }
+        });
+    }
   </script>

@@ -83,11 +83,6 @@ def question_order_update(request):
         new_position = int(request.POST.get("new_position"))
         qs = RecruitmentSurvey.objects.get(id=question_id)
 
-        print("____OLD POSITION______")
-        print(qs.sequence)
-        print("____NEW POSITION______")
-        print(new_position)
-
         if qs.sequence > new_position:
             new_position = new_position
         if qs.sequence <= new_position:

@@ -63,6 +63,8 @@ class HistoryTrackingFieldsForm(forms.Form):
         "mobile",
         "contract_end_date",
         "additional_info",
+        "is_from_onboarding",
+        "is_directly_converted",
         "experience",
     ]
 

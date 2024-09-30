@@ -1,279 +1,187 @@
-{% extends 'index.html' %} {% block content %} {% load i18n %} {% load yes_no %}
+{% extends 'index.html' %} {% block content %} {% load i18n %}
 {% load static %}
 <style>
-  .oh-sticky-table__right {
-    position: sticky;
-    right: 0;
-    background-color: #fff;
-  }
-  .oh-sticky-table__top {
-    z-index: 12 !important;
-    top: 0;
-  }
+    .oh-sticky-table__right {
+        position: sticky;
+        right: 0;
+        background-color: #fff;
+    }
+
+    .oh-sticky-table__top {
+        z-index: 12 !important;
+        top: 0;
+    }
 </style>
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-  <div class="oh-main__titlebar oh-main__titlebar--left">
-    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Allowances" %}</h1>
-    <a
-      class="oh-main__titlebar-search-toggle"
-      role="button"
-      aria-label="Toggle Search"
-      @click="searchShow = !searchShow"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-main__titlebar-serach-icon md hydrated"
-        role="img"
-        aria-label="search outline"
-      ></ion-icon>
-    </a>
-  </div>
-  <form
-    hx-get='{% url "filter-allowance" %}'
-    id="filterForm"
-    hx-swap="innerHTML"
-    hx-target="#payroll-allowance-container"
-  >
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-      {% if allowances %}
-        <div
-          class="oh-input-group oh-input__search-group"
-          :class="searchShow ? 'oh-input__search-group--show' : ''"
-          >
-          <ion-icon
-            name="search-outline"
-            class="oh-input-group__icon oh-input-group__icon--left"
-          ></ion-icon>
-          <input
-            type="text"
-            class="oh-input oh-input__icon"
-            aria-label="Search Input"
-            id="filter-allowance"
-            name="search"
-            placeholder="{% trans 'Search' %}"
-            onkeyup="$('.filterButton')[0].click();"
-          />
-        </div>
-      {% endif %}
-      <div class="oh-main__titlebar-button-container">
-        {% if allowances %}
-          <ul class="oh-view-types">
-            <li class="oh-view-type allowance-view-type" data-view="list">
-              <a
-                class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
-                title='{% trans "List" %}'
-                onclick="$('[name=view]').val('list');$('.filterButton')[0].click();"
-              >
-                <ion-icon
-                  name="list-outline"
-                  role="img"
-                  class="md hydrated"
-                  aria-label="list outline"
-                ></ion-icon>
-              </a>
-            </li>
-            <li class="oh-view-type allowance-view-type" data-view="card">
-              <a
-                class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
-                title='{% trans "Card" %}'
-                onclick="$('[name=view]').val('card');$('.filterButton')[0].click();"
-              >
-                <ion-icon
-                  name="grid-outline"
-                  role="img"
-                  class="md hydrated"
-                  aria-label="grid outline"
-                ></ion-icon>
-              </a>
-            </li>
-          </ul>
-          <div class="oh-dropdown" x-data="{open: false}">
-            <button class="oh-btn ml-2" @click="open = !open">
-              <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-              <div id="filterCount"></div>
-            </button>
-            <div
-              class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-              x-show="open"
-              @click.outside="open = false"
-              style="display: none"
-            >
-              {% include 'payroll/allowance/filter_allowance.html' %}
-            </div>
-          </div>
-        {% endif %}
-        {% if perms.payroll.add_allowance %}
-          <div class="oh-btn-group ml-2">
-            <div>
-              <a
-                class="oh-btn oh-btn--secondary oh-btn--shadow"
-                href="{% url 'create-allowance' %}"
-              >
-                <ion-icon
-                  class="md hydrated"
-                  name="add-outline"
-                  role="img"
-                  aria-label="add outline"
-                ></ion-icon
-                >{% trans "Create" %}</a
-              >
-            </div>
-          </div>
-        {% endif %}
-      </div>
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">{% trans "Allowances" %}</h1>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon md hydrated" role="img"
+                aria-label="search outline"></ion-icon>
+        </a>
     </div>
-  </form>
+    <form hx-get='{% url "filter-allowance" %}' id="filterForm" hx-swap="innerHTML"
+        hx-target="#payroll-allowance-container">
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            {% if allowances %}
+                <div class="oh-input-group oh-input__search-group"
+                    :class="searchShow ? 'oh-input__search-group--show' : ''">
+                    <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+                    <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" id="filter-allowance"
+                        name="search" placeholder="{% trans 'Search' %}" onkeyup="$('.filterButton')[0].click();" />
+                </div>
+            {% endif %}
+            <div class="oh-main__titlebar-button-container">
+                {% if allowances %}
+                    <ul class="oh-view-types">
+                        <li class="oh-view-type allowance-view-type" data-view="list">
+                            <a class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
+                                title='{% trans "List" %}'
+                                onclick="$('[name=view]').val('list');$('.filterButton')[0].click();">
+                                <ion-icon name="list-outline" role="img" class="md hydrated"
+                                    aria-label="list outline"></ion-icon>
+                            </a>
+                        </li>
+                        <li class="oh-view-type allowance-view-type" data-view="card">
+                            <a class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+                                title='{% trans "Card" %}'
+                                onclick="$('[name=view]').val('card');$('.filterButton')[0].click();">
+                                <ion-icon name="grid-outline" role="img" class="md hydrated"
+                                    aria-label="grid outline"></ion-icon>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button class="oh-btn ml-2" @click="open = !open">
+                            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                            <div id="filterCount"></div>
+                        </button>
+                        <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                            @click.outside="open = false" style="display: none">
+                            {% include 'payroll/allowance/filter_allowance.html' %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if perms.payroll.add_allowance %}
+                    <div class="oh-btn-group ml-2">
+                        <div>
+                            <a class="oh-btn oh-btn--secondary oh-btn--shadow" href="{% url 'create-allowance' %}">
+                                <ion-icon class="md hydrated" name="add-outline" role="img"
+                                    aria-label="add outline"></ion-icon>
+                                {% trans "Create" %}
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </form>
 </section>
 <div class="oh-wrapper">
-  <!-- start of Quick filters  -->
-  {% if allowances %}
-    <div class="d-flex flex-row-reverse mb-2">
-      <span
-        class="me-3"
-        onclick="$('[name=is_taxable]').val('true');$('[name=is_fixed]').val('unknown');$('.filterButton').click()"
-        style="cursor: pointer"
-      >
-        <span
-          class="oh-dot oh-dot--small me-1"
-          style="background-color: red"
-        ></span>
-        {% trans "Taxable" %}
-      </span>
-      <span
-        class="me-3"
-        style="cursor: pointer"
-        onclick="$('[name=is_taxable]').val('false');$('[name=is_fixed]').val('unknown');$('.filterButton').click()"
-      >
-        <span
-          class="oh-dot oh-dot--small me-1"
-          style="background-color: grey"
-        ></span>
-        {% trans "Non Taxable" %}
-      </span>
-      <span
-        class="me-3"
-        style="cursor: pointer"
-        onclick="$('[name=is_fixed]').val('true');$('[name=is_taxable]').val('unknown');$('.filterButton').click()"
-      >
-        <span
-          class="oh-dot oh-dot--small me-1"
-          style="background-color: orange"
-        ></span>
-        {% trans "Fixed" %}
-      </span>
-      <span
-        class="me-3"
-        style="cursor: pointer"
-        onclick="$('[name=is_fixed]').val('false');$('[name=is_taxable]').val('unknown');$('.filterButton').click()"
-      >
-        <span
-          class="oh-dot oh-dot--small me-1"
-          style="background-color: yellowgreen"
-        ></span>
-        {% trans "Not Fixed" %}
-      </span>
-    </div>
-  {% endif %}
-  <!-- end of quick filters  -->
-  <div id="payroll-allowance-container">
+    <!-- start of Quick filters  -->
     {% if allowances %}
-      {% if request.GET.view == 'list' %}
-        {% include 'payroll/allowance/list_allowance.html' %}
-      {% else %}
-        {% include 'payroll/allowance/card_allowance.html' %}
-      {% endif %}
-    {% else %}
-    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-      <div class="oh-wrapper">
-        <div class="oh-404">
-          <img
-            style="width: 150px; height: 150px"
-            src="{% static 'images/ui/payment.png' %}"
-            class="oh-404__image mb-4"
-            alt="Page not found. 404."
-          />
-          <h5 class="oh-404__subtitle">
-            {% trans "There are currently no allowances to consider." %}
-          </h5>
+        <div class="d-flex flex-row-reverse mb-2">
+            <span class="me-3"
+                onclick="$('[name=is_taxable]').val('true');$('[name=is_fixed]').val('unknown');$('.filterButton').click()"
+                style="cursor: pointer">
+                <span class="oh-dot oh-dot--small me-1" style="background-color: red"></span>
+                {% trans "Taxable" %}
+            </span>
+            <span class="me-3" style="cursor: pointer"
+                onclick="$('[name=is_taxable]').val('false');$('[name=is_fixed]').val('unknown');$('.filterButton').click()">
+                <span class="oh-dot oh-dot--small me-1" style="background-color: grey"></span>
+                {% trans "Non Taxable" %}
+            </span>
+            <span class="me-3" style="cursor: pointer"
+                onclick="$('[name=is_fixed]').val('true');$('[name=is_taxable]').val('unknown');$('.filterButton').click()">
+                <span class="oh-dot oh-dot--small me-1" style="background-color: orange"></span>
+                {% trans "Fixed" %}
+            </span>
+            <span class="me-3" style="cursor: pointer"
+                onclick="$('[name=is_fixed]').val('false');$('[name=is_taxable]').val('unknown');$('.filterButton').click()">
+                <span class="oh-dot oh-dot--small me-1" style="background-color: yellowgreen"></span>
+                {% trans "Not Fixed" %}
+            </span>
         </div>
-      </div>
-    </main>
     {% endif %}
-  </div>
-</div>
-
-<div
-  class="oh-modal"
-  id="allowanceModal"
-  role="dialog"
-  aria-labelledby="allowanceModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
-        {% trans "Add Allowance" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
+    <!-- end of quick filters  -->
+    <div id="payroll-allowance-container">
+        {% if allowances %}
+            {% if request.GET.view == 'list' %}
+                {% include 'payroll/allowance/list_allowance.html' %}
+            {% else %}
+                {% include 'payroll/allowance/card_allowance.html' %}
+            {% endif %}
+        {% else %}
+            <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+                <div class="oh-wrapper">
+                    <div class="oh-404">
+                        <img style="width: 150px; height: 150px" src="{% static 'images/ui/payment.png' %}"
+                            class="oh-404__image mb-4" alt="Page not found. 404." />
+                        <h5 class="oh-404__subtitle">
+                            {% trans "There are currently no allowances to consider." %}
+                        </h5>
+                    </div>
+                </div>
+            </main>
+        {% endif %}
     </div>
-    <div class="oh-modal__dialog-body" id="allowanceModalBody"></div>
-  </div>
 </div>
+
 <script>
-  $(document).ready(function () {
-    $(".allowance-view-type").click(function (e) {
-      e.preventDefault();
-      var view = $(this).attr("data-view");
-      $("#filter-allowance").attr("hx-vals", `{"view":"${view}"}`);
-      $("#filterView").val(view);
-      var currentURL = window.location.href;
-      if (/\?view=[^&]+/.test(currentURL)) {
-        newURL = currentURL.replace(/\?view=[^&]+/, "?view=" + view);
-      } else {
-        var separator = currentURL.includes("?") ? "&" : "?";
-        newURL = currentURL + separator + "view=" + view;
-      }
-      history.pushState({}, "", newURL);
-      $(".oh-btn--view-active").removeClass("oh-btn--view-active");
-      $(this).children("a").addClass("oh-btn--view-active");
-    });
-    $("#filter-allowance").focusout(function (e) {
-      $("#filterSearch").val($(this).val());
-      const formData = $("#filterForm").serializeArray();
-      const jsonObject = {};
+    $(document).ready(function () {
+        $(".allowance-view-type").click(function (e) {
+            e.preventDefault();
+            var view = $(this).attr("data-view");
+            $("#filter-allowance").attr("hx-vals", `{"view":"${view}"}`);
+            $("#filterView").val(view);
+            var currentURL = window.location.href;
+            if (/\?view=[^&]+/.test(currentURL)) {
+                newURL = currentURL.replace(/\?view=[^&]+/, "?view=" + view);
+            } else {
+                var separator = currentURL.includes("?") ? "&" : "?";
+                newURL = currentURL + separator + "view=" + view;
+            }
+            history.pushState({}, "", newURL);
+            $(".oh-btn--view-active").removeClass("oh-btn--view-active");
+            $(this).children("a").addClass("oh-btn--view-active");
+        });
+        $("#filter-allowance").focusout(function (e) {
+            $("#filterSearch").val($(this).val());
+            const formData = $("#filterForm").serializeArray();
+            const jsonObject = {};
 
-      $.each(formData, function () {
-        jsonObject[this.name] = this.value;
-      });
-      delete jsonObject.view;
-      var hxVals = JSON.stringify(jsonObject);
-      $(".allowance-view-type a").attr("hx-vals", hxVals);
-    });
+            $.each(formData, function () {
+                jsonObject[this.name] = this.value;
+            });
+            delete jsonObject.view;
+            var hxVals = JSON.stringify(jsonObject);
+            $(".allowance-view-type a").attr("hx-vals", hxVals);
+        });
 
-    $("#filter-allowance").keyup(function (e) {
-      const formData = $("#filterForm").serializeArray();
-      const jsonObject = {};
+        $("#filter-allowance").keyup(function (e) {
+            const formData = $("#filterForm").serializeArray();
+            const jsonObject = {};
 
-      $.each(formData, function () {
-        jsonObject[this.name] = this.value;
-      });
-      delete jsonObject.search;
-      var hxVals = JSON.stringify(jsonObject);
-      $(this).attr("hx-vals", hxVals);
-    });
-    $("#filterSubmit").click(function (e) {
-      const formData = $("#filterForm").serializeArray();
-      const jsonObject = {};
+            $.each(formData, function () {
+                jsonObject[this.name] = this.value;
+            });
+            delete jsonObject.search;
+            var hxVals = JSON.stringify(jsonObject);
+            $(this).attr("hx-vals", hxVals);
+        });
+        $("#filterSubmit").click(function (e) {
+            const formData = $("#filterForm").serializeArray();
+            const jsonObject = {};
 
-      $.each(formData, function () {
-        jsonObject[this.name] = this.value;
-      });
-      delete jsonObject.view;
-      var hxVals = JSON.stringify(jsonObject);
-      $(".allowance-view-type").attr("hx-vals", hxVals);
+            $.each(formData, function () {
+                jsonObject[this.name] = this.value;
+            });
+            delete jsonObject.view;
+            var hxVals = JSON.stringify(jsonObject);
+            $(".allowance-view-type").attr("hx-vals", hxVals);
+        });
     });
-  });
 </script>
 {% endblock content %}

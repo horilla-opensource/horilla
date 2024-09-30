@@ -17,16 +17,16 @@
         reloadSelectedCount($('.count_{{view_id|safe}}'));
         "
         style="cursor: pointer;">
-        <span class="label" 
+        <span class="label"
         {% comment %} style="display:none;" {% endcomment %}
         >
-        {% trans "Select" %} 
+        {% trans "Select" %}
         </span>
         {% comment %} <ion-icon style="font;font-size: 1rem;" name="checkmark-done-circle" style="font"></ion-icon> {% endcomment %}
         ({{queryset.paginator.count}})
       </div>
-      <div 
-      id="unselect_{{view_id}}" 
+      <div
+      id="unselect_{{view_id}}"
       class="oh-checkpoint-badge text-secondary d-none quick-bulk-action"
       style="cursor: pointer;"
       onclick="
@@ -39,7 +39,7 @@
         $('#{{view_id}} .bulk-list-table-row').prop('checked',false);
       "
       >
-        <span class="label" 
+        <span class="label"
         {% comment %} style="display:none;" {% endcomment %}
         >
           {% trans "Unselect" %}
@@ -49,15 +49,15 @@
           0
         </span>)
       </div>
-      <div 
-        id="export_{{view_id}}" 
+      <div
+        id="export_{{view_id}}"
         class="oh-checkpoint-badge text-info d-none quick-bulk-action"
         style="cursor: pointer;"
         data-toggle="oh-modal-toggle"
         data-target="#exportFields{{view_id|safe}}"
       >
       {% comment %} <ion-icon style="font;font-size: 1rem; margin-right:0;" name="download"></ion-icon> {% endcomment %}
-      <span class="label" 
+      <span class="label"
       {% comment %} style="display: none;" {% endcomment %}
       >
         {% trans "Export" %}
@@ -67,8 +67,8 @@
       </span>)
       </div>
       {% if bulk_path %}
-      <div 
-        id="bulk_udate_{{view_id}}" 
+      <div
+        id="bulk_udate_{{view_id}}"
         class="oh-checkpoint-badge text-warning d-none quick-bulk-action"
         style="cursor: pointer;"
         data-toggle="oh-modal-toggle"
@@ -80,7 +80,7 @@
         "
         >
         <ion-icon style="font-size: 1rem; margin-right:0;" name="create"></ion-icon>
-        <span class="label" 
+        <span class="label"
         {% comment %} style="display: none;" {% endcomment %}
         >
           {% trans "Update" %}
@@ -89,7 +89,7 @@
           0
         </span>)
       </div>
-      <form 
+      <form
         hx-get="/{{bulk_path}}"
         hx-target="#bulkUpdateModalBody{{view_id|safe}}">
         <input type="hidden" name="instance_ids">
@@ -117,7 +117,7 @@
         </div>
       </div>
       {% endfor %}
-      
+
     </div>
     {% if row_status_indications %}
     <div class="d-flex flex-row-reverse">
@@ -134,11 +134,10 @@
     {% comment %} $(document).ready(function () {
       $(".quick-bulk-action").hover(function () {
           // over
-          $(this).find('.label').show('slow');          
+          $(this).find('.label').show('slow');
         }, function () {
           // out
         }
       );
     }); {% endcomment %}
   </script>
-  

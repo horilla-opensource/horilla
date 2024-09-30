@@ -1,0 +1,18 @@
+{% load i18n %}
+<div class="oh-modal__dialog" id="assignShiftsModal">
+    <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+    <div class="oh-modal__dialog-body">
+        <form
+            hx-get="{% url "assign-shift" grace_time.id %}"
+            hx-target="#objectUpdateModalTarget"
+        >
+        {{ form.as_p }}
+        </form>
+    </div>
+</div>
+
+<script>
+$("#assignShiftsModal").find('.col-md-6').removeClass('col-md-6')
+</script>

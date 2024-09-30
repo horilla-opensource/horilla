@@ -37,6 +37,7 @@ from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
+from accessibility.decorators import enter_if_accessible
 from base.forms import ModelForm
 from base.methods import (
     choosesubordinates,
@@ -155,6 +156,11 @@ filter_mapping = {
 }
 
 
+def _check_reporting_manager(request):
+    employee = request.user.employee_get
+    return employee.reporting_manager.exists()
+
+
 # Create your views here.
 @login_required
 def get_language_code(request):
@@ -233,6 +239,11 @@ def self_info_update(request):
 
 
 @login_required
+@enter_if_accessible(
+    feature="employee_detailed_view",
+    perm="employee.view_employee",
+    method=_check_reporting_manager,
+)
 def employee_view_individual(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
@@ -894,6 +905,11 @@ def paginator_qry(qryset, page_number):
 
 
 @login_required
+@enter_if_accessible(
+    feature="employee_view",
+    perm="employee.view_employee",
+    method=_check_reporting_manager,
+)
 def employee_view(request):
     """
     This method is used to render template for view all employee
@@ -1591,6 +1607,11 @@ def employee_update_bank_details(request, obj_id=None):
 
 @login_required
 @hx_request_required
+@enter_if_accessible(
+    feature="employee_view",
+    perm="employee.view_employee",
+    method=_check_reporting_manager,
+)
 def employee_filter_view(request):
     """
     This method is used to filter employee.
@@ -2046,7 +2067,11 @@ def get_manager_in(request):
 
 
 @login_required
-@manager_can_enter("employee.view_employee")
+@enter_if_accessible(
+    feature="employee_view",
+    perm="employee.view_employee",
+    method=_check_reporting_manager,
+)
 def employee_search(request):
     """
     This method is used to search employee
@@ -2292,6 +2317,8 @@ def employee_export(_):
     field_names.remove("employee_user_id")
     field_names.remove("employee_profile")
     field_names.remove("additional_info")
+    field_names.remove("is_from_onboarding")
+    field_names.remove("is_directly_converted")
     field_names.remove("is_active")
 
     # Get the existing employee data and convert it to a DataFrame
@@ -3362,7 +3389,7 @@ def organisation_chart(request):
                     {
                         "name": employee.get_full_name(),
                         "title": getattr(
-                            employee.get_job_position(), "job_position", "Not set"
+                            employee.get_job_position(), "job_position", _("Not set")
                         ),
                         "children": create_hierarchy(employee),
                     }
@@ -3374,7 +3401,7 @@ def organisation_chart(request):
                     {
                         "name": employee.get_full_name(),
                         "title": getattr(
-                            employee.get_job_position(), "job_position", "Not set"
+                            employee.get_job_position(), "job_position", _("Not set")
                         ),
                         "className": "middle-level",
                         "children": create_hierarchy(employee),
@@ -3390,7 +3417,7 @@ def organisation_chart(request):
         manager = Employee.objects.get(id=manager_id)
         node = {
             "name": manager.get_full_name(),
-            "title": getattr(manager.get_job_position(), "job_position", "Not set"),
+            "title": getattr(manager.get_job_position(), "job_position", _("Not set")),
             "children": create_hierarchy(manager),
         }
         context = {"act_datasource": node}
@@ -3398,7 +3425,7 @@ def organisation_chart(request):
 
     node = {
         "name": manager.get_full_name(),
-        "title": getattr(manager.get_job_position(), "job_position", "Not set"),
+        "title": getattr(manager.get_job_position(), "job_position", _("Not set")),
         "children": create_hierarchy(manager),
     }
 

@@ -104,6 +104,12 @@ class Employee(models.Model):
     emergency_contact_relation = models.CharField(max_length=20, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     additional_info = models.JSONField(null=True, blank=True)
+    is_from_onboarding = models.BooleanField(
+        default=False, null=True, blank=True, editable=False
+    )
+    is_directly_converted = models.BooleanField(
+        default=False, null=True, blank=True, editable=False
+    )
     objects = HorillaCompanyManager(
         related_company_field="employee_work_info__company_id"
     )
@@ -859,3 +865,10 @@ class EmployeeGeneralSetting(HorillaModel):
     badge_id_prefix = models.CharField(max_length=5, default="PEP")
     objects = models.Manager()
     company_id = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)
+
+
+from accessibility.accessibility import ACCESSBILITY_FEATURE
+
+ACCESSBILITY_FEATURE.append(("gender_chart", "Can view Gender Chart"))
+ACCESSBILITY_FEATURE.append(("department_chart", "Can view Department Chart"))
+ACCESSBILITY_FEATURE.append(("employees_chart", "Can view Employees Chart"))

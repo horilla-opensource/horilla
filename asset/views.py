@@ -106,7 +106,7 @@ def asset_creation(request, asset_category_id):
         None
     """
     initial_data = {"asset_category_id": asset_category_id}
-    form = AssetForm(initial=request.GET.dict() if request.GET else initial_data)
+    form = AssetForm(initial=initial_data)
     if request.method == "POST":
         form = AssetForm(request.POST, initial=initial_data)
         if form.is_valid():
@@ -291,8 +291,8 @@ def asset_delete(request, asset_id):
             asset_del(request, asset)
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
-    instances_ids = request.GET.get("requests_ids")
-    instances_list = json.loads(instances_ids)
+    instances_ids = request.GET.get("requests_ids", "[]")
+    instances_list = eval(instances_ids)
     if status == "In use":
         messages.info(request, _("Asset is in use"))
         return redirect(
@@ -305,6 +305,8 @@ def asset_delete(request, asset_id):
         )
     else:
         asset_del(request, asset)
+        if len(eval(instances_ids)) <= 1:
+            return HttpResponse("<script>window.location.reload();</script>")
 
         if Asset.find(asset.id):
             return redirect(

@@ -1263,6 +1263,8 @@ def view_loans(request):
     loan = records.filter(type="loan")
     adv_salary = records.filter(type="advanced_salary")
     fine = records.filter(type="fine")
+    print("______________________________________________----------------------------")
+    print(records)
 
     fine_ids = json.dumps(list(fine.values_list("id", flat=True)))
     loan_ids = json.dumps(list(loan.values_list("id", flat=True)))
@@ -1474,8 +1476,10 @@ def asset_fine(request):
             instance.provided_date = date.today()
             instance.asset_id = asset
             instance.save()
-            messages.success(request, "Asset fine added")
-            return HttpResponse("<script>window.location.reload()</script>")
+            messages.success(request, _("Asset fine added"))
+            return HttpResponse(
+                "<script>$('#assetFineModal').removeClass('oh-modal--show');$('#reloadMessagesButton').click();</script>"
+            )
     return render(
         request,
         "payroll/asset_fine/form.html",

@@ -11,13 +11,10 @@ import uuid
 import django
 import django_filters
 from django import forms
-from django.contrib.auth.models import Group, Permission
 from django.utils.translation import gettext as _
-from django_filters import CharFilter, DateFilter
+from django_filters import CharFilter
 
 # from attendance.models import Attendance
-from base.methods import reload_queryset
-from base.models import WorkType
 from employee.models import DisciplinaryAction, Employee, Policy
 from horilla.filters import FilterSet, filter_by_name
 from horilla_documents.models import Document
@@ -65,6 +62,33 @@ class EmployeeFilter(FilterSet):
             (True, "Yes"),
             (False, "No"),
         ],
+    )
+
+    is_from_onboarding = django_filters.ChoiceFilter(
+        field_name="is_from_onboarding",
+        label="Is From Onboarding",
+        choices=[
+            (True, "Yes"),
+            (False, "No"),
+        ],
+    )
+    is_directly_converted = django_filters.ChoiceFilter(
+        field_name="is_directly_converted",
+        label="Is Directly Converted",
+        choices=[
+            (True, "Yes"),
+            (False, "No"),
+        ],
+    )
+    probation_from = django_filters.DateFilter(
+        field_name="candidate_get__probation_end",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    probation_till = django_filters.DateFilter(
+        field_name="candidate_get__probation_end",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
     )
     working_today = django_filters.BooleanFilter(
         label="Working", method="get_working_today"

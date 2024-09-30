@@ -351,7 +351,15 @@ def send_mail(request, automation, instance):
     to = tos[:1]
     cc = tos[1:]
     email_backend = ConfiguredEmailBackend()
-    host = email_backend.dynamic_from_email_with_display_name
+    display_email_name = email_backend.dynamic_from_email_with_display_name
+    if request:
+        try:
+            display_email_name = f"{request.user.employee_get.get_full_name()} <{request.user.employee_get.email}>"
+            from_email = display_email_name
+            reply_to = [display_email_name]
+        except:
+            logger.error(Exception)
+
     if mail_to_instance and request:
         attachments = []
         try:
@@ -373,7 +381,14 @@ def send_mail(request, automation, instance):
         template_bdy = template.Template(mail_template.body)
         context = template.Context({"instance": mail_to_instance, "self": sender})
         render_bdy = template_bdy.render(context)
-        email = EmailMessage(automation.title, render_bdy, host, to=to, cc=cc)
+        email = EmailMessage(
+            subject=automation.title,
+            body=render_bdy,
+            to=to,
+            cc=cc,
+            from_email=from_email,
+            reply_to=reply_to,
+        )
         email.content_subtype = "html"
 
         email.attachments = attachments

@@ -8,7 +8,7 @@
   </div>
   {% endfor %}
 <div class="oh-card" id="">
-  <div class="oh-accordion-meta">
+  <div class="oh-accordion-meta {% if request %}{% endif %}">
     <div class="">
       {% for filing_status in status %}
       <div

@@ -32,6 +32,7 @@
     <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'build/css/summernote-lite.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'build/css/orgChart.css' %}" />
     <script src="{% static '/jquery/ajax.js' %}"></script>
     <script src="{% static '/jquery/jquery.min.js' %}"></script>
     <link rel="stylesheet" href="{% static '/jquery/jqueryui.css' %}">
@@ -383,6 +384,40 @@
                     $("title").html("{{white_label_company_name}} | " + secondsToDuration(at_work_seconds));
                 }
             }, 1000);
+
+            function switchTab(e) {
+                let parentContainerEl = e.target.closest(".oh-tabs");
+                let tabElement = e.target.closest(".oh-tabs__tab");
+
+
+                let targetSelector = e.target.dataset.target;
+                let targetEl = parentContainerEl
+                    ? parentContainerEl.querySelector(targetSelector)
+                    : null;
+
+                // Highlight active tabs
+                if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
+                    parentContainerEl
+                        .querySelectorAll(".oh-tabs__tab--active")
+                        .forEach(function (item) {
+                            item.classList.remove("oh-tabs__tab--active");
+                        });
+
+                    if (!tabElement.classList.contains("oh-tabs__new-tab")) {
+                        tabElement.classList.add("oh-tabs__tab--active");
+                    }
+                }
+
+                // Switch tabs
+                if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
+                    parentContainerEl
+                        .querySelectorAll(".oh-tabs__content--active")
+                        .forEach(function (item) {
+                            item.classList.remove("oh-tabs__content--active");
+                        });
+                    targetEl.classList.add("oh-tabs__content--active");
+                }
+            }
         </script>
     {% endif %}
 </body>

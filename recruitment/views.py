@@ -13,6 +13,7 @@ provide the main entry points for interacting with the application's functionali
 
 import contextlib
 import json
+import logging
 
 from django.contrib import messages
 from django.contrib.auth.models import Permission
@@ -45,6 +46,8 @@ from recruitment.forms import (
 )
 from recruitment.methods import recruitment_manages
 from recruitment.models import Candidate, Recruitment, Stage, StageNote
+
+logger = logging.getLogger(__name__)
 
 
 def is_stagemanager(request, stage_id=False):
@@ -1261,12 +1264,15 @@ def send_acknowledgement(request):
         subject = request.POST.get("subject")
         bdy = request.POST.get("body")
         email_backend = ConfiguredEmailBackend()
+        display_email_name = email_backend.dynamic_from_email_with_display_name
+        if request:
+            try:
+                display_email_name = f"{request.user.employee_get.get_full_name()} <{request.user.employee_get.email}>"
+            except:
+                logger.error(Exception)
+
         res = send_mail(
-            subject,
-            bdy,
-            email_backend.dynamic_from_email_with_display_name,
-            [send_to],
-            fail_silently=False,
+            subject, bdy, display_email_name, [send_to], fail_silently=False
         )
         if res == 1:
             return HttpResponse(

@@ -43,7 +43,8 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
-from horilla.methods import get_horilla_model_class
+from horilla.horilla_settings import DYNAMIC_URL_PATTERNS
+from horilla.methods import get_horilla_model_class, remove_dynamic_url
 from leave.decorators import *
 from leave.filters import *
 from leave.forms import *
@@ -86,7 +87,18 @@ def generate_error_report(error_list, error_data, file_name):
     worksheet = writer.sheets["Sheet1"]
     worksheet.set_column("A:Z", 30)
     writer.close()
-    return response
+
+    def get_error_sheet(request):
+        remove_dynamic_url(path_info)
+        return response
+
+    from leave.urls import path, urlpatterns
+
+    path_info = f"error-sheet-{uuid.uuid4()}"
+    urlpatterns.append(path(path_info, get_error_sheet, name=path_info))
+    DYNAMIC_URL_PATTERNS.append(path_info)
+    path_info = f"leave/{path_info}"
+    return path_info
 
 
 @login_required
@@ -1017,6 +1029,8 @@ def leave_request_cancel(request, id, emp_id=None):
                 leave_request.approved_available_days = 0
                 leave_request.approved_carryforward_days = 0
                 leave_request.status = "rejected"
+                leave_request.leave_clashes_count = 0
+
                 if leave_request.multiple_approvals() and not request.user.is_superuser:
                     conditional_requests = leave_request.multiple_approvals()
                     approver = [
@@ -1588,11 +1602,18 @@ def assign_leave_type_import(request):
             except Exception as exception:
                 assign_leave["Other Errors"] = f"{str(exception)}"
                 error_list.append(assign_leave)
+        path_info = None
         if error_list:
-            response = generate_error_report(error_list, error_data, file_name)
-            return response
-        return redirect(leave_assign_view)
-    return redirect(leave_assign_view)
+            path_info = generate_error_report(error_list, error_data, file_name)
+        assigned_leave_count = len(assign_leave_dicts) - len(error_list)
+        context = {
+            "created_count": assigned_leave_count,
+            "error_count": len(error_list),
+            "model": _("Assined Leaves"),
+            "path_info": path_info,
+        }
+        html = render_to_string("import_popup.html", context)
+        return HttpResponse(html)
 
 
 @login_required
@@ -2438,6 +2459,7 @@ def user_request_one(request, id):
 
 
 @login_required
+@manager_can_enter("leave.view_leaverequest")
 def employee_leave(request):
     """
     function used to view employees are leave today.
@@ -4119,24 +4141,34 @@ def view_clashes(request, leave_request_id):
     This method is used to filter or view the leave clashes
     """
     record = get_object_or_404(LeaveRequest, id=leave_request_id)
-    overlapping_requests = LeaveRequest.objects.filter(
-        Q(
+
+    if record.status == "rejected" or record.status == "cancelled":
+        overlapping_requests = LeaveRequest.objects.none()
+        clashed_due_to_department = LeaveRequest.objects.none()
+        clashed_due_to_job_position = LeaveRequest.objects.none()
+    else:
+        overlapping_requests = (
+            LeaveRequest.objects.filter(
+                Q(
+                    employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
+                )
+                | Q(
+                    employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
+                ),
+                start_date__lte=record.end_date,
+                end_date__gte=record.start_date,
+            )
+            .exclude(id=leave_request_id)
+            .exclude(Q(status="cancelled") | Q(status="rejected"))
+        )
+
+        clashed_due_to_department = overlapping_requests.filter(
             employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
         )
-        | Q(
+
+        clashed_due_to_job_position = overlapping_requests.filter(
             employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
-        ),
-        start_date__lte=record.end_date,
-        end_date__gte=record.start_date,
-    ).exclude(id=leave_request_id)
-
-    clashed_due_to_department = overlapping_requests.filter(
-        employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
-    )
-
-    clashed_due_to_job_position = overlapping_requests.filter(
-        employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
-    )
+        )
 
     leave_request_filter = LeaveRequestFilter(request.GET, overlapping_requests).qs
     leave_request_filter = paginator_qry(leave_request_filter, request.GET.get("page"))
@@ -4149,6 +4181,7 @@ def view_clashes(request, leave_request_id):
         request,
         "leave/leave_request/leave_clashes.html",
         {
+            "leave_request": record,
             "records": overlapping_requests,
             "current_date": date.today(),
             "requests_ids": requests_ids,

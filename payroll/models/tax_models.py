@@ -18,9 +18,19 @@ from payroll.models.models import FilingStatus
 
 class PayrollSettings(HorillaModel):
     """
-    Payroll settings model"""
+    Payroll settings model
+    """
+
+    choices = [
+        ("prefix", _("Prefix")),
+        ("postfix", _("Postfix")),
+    ]
 
     currency_symbol = models.CharField(null=True, default="$", max_length=5)
+    position = models.CharField(
+        max_length=15, null=True, choices=choices, default="postfix"
+    )
+
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )

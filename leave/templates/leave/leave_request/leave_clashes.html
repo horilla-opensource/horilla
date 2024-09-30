@@ -97,6 +97,20 @@
       {% endfor %}
     </div>
   </div>
+{% elif leave_request.status == 'rejected' or leave_request.status == 'cancelled' %}
+  <div class="oh-sticky-table__table mt-3">
+    <div class="oh-404__subtitle">
+      <img
+        style="width: 110px; height: 110px"
+        src="{% static 'images/ui/argument.png' %}"
+        class="oh-404__image mb-4"
+        alt="Page not found. 404."
+      />
+      <h5 class="oh-404__subtitle">
+        {% trans "No clashed requestes available for cancelled or rejected leaves." %}
+      </h5>
+    </div>
+  </div>
 {% else %}
     <div class="oh-sticky-table__table mt-3">
       <div class="oh-404__subtitle">

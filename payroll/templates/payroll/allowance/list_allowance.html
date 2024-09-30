@@ -1,203 +1,193 @@
-{% load i18n %} {% load yes_no %} {% load static %}
+{% load i18n %} {% load static %}
+{% load horillafilters %}
 {% include 'filter_tags.html' %}
 {% if messages %}
 <div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+            {{ message }}
+        </div>
     </div>
-  </div>
-  {% endfor %}
+    {% endfor %}
 </div>
 {% endif %}
 {% if allowances %}
-  <!-- start of column toggle -->
-  <div class="oh-table_sticky--wrapper">
+<!-- start of column toggle -->
+<div class="oh-table_sticky--wrapper">
     <div class="oh-sticky-dropdown--header">
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-          role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
-        <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-        <ul class="oh-dropdown__items" id="allowanceCells">
-        </ul>
+        <div class="oh-dropdown" x-data="{open: false}">
+            <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
+                    role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+            <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+                <ul class="oh-dropdown__items" id="allowanceCells">
+                </ul>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  <!-- end of column toggle -->
-  <div id="allowance-column-table" data-table-name="allowance_column_tab">
+</div>
+<!-- end of column toggle -->
+<div id="allowance-column-table" data-table-name="allowance_column_tab">
     <!-- start of sticky table -->
     <div class="oh-sticky-table">
-      <div class="oh-sticky-table__table oh-table--sortable">
-        <div class="oh-sticky-table__thead">
-          <div class="oh-sticky-table__tr">
-            <div
-              class="oh-sticky-table__th {% if request.sort_option.order == '-title' %}arrow-up {% elif request.sort_option.order == 'title' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'filter-allowance' %}?{{pd}}&sortby=title"
-              hx-target="#payroll-allowance-container"
-            >
-                  {% trans "Allowance" %}
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-title' %}arrow-up {% elif request.sort_option.order == 'title' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'filter-allowance' %}?{{pd}}&sortby=title"
+                        hx-target="#payroll-allowance-container">
+                        {% trans "Allowance" %}
+                    </div>
+                    <div data-cell-index="1" data-cell-title="{% trans 'Specific Employees' %}"
+                        class="oh-sticky-table__th">{% trans "Specific Employees" %}</div>
+                    <div data-cell-index="2" data-cell-title="{% trans 'Excluded Employees' %}"
+                        class="oh-sticky-table__th">{% trans "Excluded Employees" %}</div>
+                    <div data-cell-index="3" data-cell-title="{% trans 'Is Taxable' %}"
+                        class="oh-sticky-table__th"> {%trans "Is Taxable" %} </div>
+                    <div data-cell-index="4" data-cell-title="{% trans 'Is Condition Based' %}"
+                        class="oh-sticky-table__th">{% trans "Is Condition Based" %}</div>
+                    <div data-cell-index="5" data-cell-title="{% trans 'Condition' %}"
+                        class="oh-sticky-table__th">{% trans "Condition" %}</div>
+                    <div data-cell-index="6" data-cell-title="{% trans 'Is Fixed' %}"
+                        class="oh-sticky-table__th">{% trans "Is Fixed" %}</div>
+                    <div data-cell-index="7" data-cell-title="{% trans 'Amount' %}"
+                        class="oh-sticky-table__th {% if request.sort_option.order == '-amount' %}arrow-up {% elif request.sort_option.order == 'amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'filter-allowance' %}?{{pd}}&sortby=amount"
+                        hx-target="#payroll-allowance-container">{% trans "Amount" %}</div>
+                    <div data-cell-index="8" data-cell-title="{% trans 'Based On' %}"
+                        class="oh-sticky-table__th">{% trans "Based On" %}</div>
+                    <div data-cell-index="9" data-cell-title="{% trans 'Rate' %}"
+                        class="oh-sticky-table__th">{% trans "Rate" %}</div>
+                    <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
+                </div>
             </div>
-            <div data-cell-index="1" data-cell-title="{% trans 'Specific Employees' %}" class="oh-sticky-table__th">{% trans "Specific Employees" %}</div>
-            <div data-cell-index="2" data-cell-title="{% trans 'Excluded Employees' %}" class="oh-sticky-table__th">{% trans "Excluded Employees" %}</div>
-            <div data-cell-index="3" data-cell-title="{% trans 'Is Taxable' %}" class="oh-sticky-table__th">{% trans "Is Taxable" %}</div>
-            <div data-cell-index="4" data-cell-title="{% trans 'Is Condition Based' %}" class="oh-sticky-table__th">{% trans "Is Condition Based" %}</div>
-            <div data-cell-index="5" data-cell-title="{% trans 'Condition' %}" class="oh-sticky-table__th">{% trans "Condition" %}</div>
-            <div data-cell-index="6" data-cell-title="{% trans 'Is Fixed' %}" class="oh-sticky-table__th">{% trans "Is Fixed" %}</div>
-            <div data-cell-index="7" data-cell-title="{% trans 'Amount' %}"
-              class="oh-sticky-table__th {% if request.sort_option.order == '-amount' %}arrow-up {% elif request.sort_option.order == 'amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'filter-allowance' %}?{{pd}}&sortby=amount"
-              hx-target="#payroll-allowance-container"
-            >{% trans "Amount" %}</div>
-            <div data-cell-index="8" data-cell-title="{% trans 'Based On' %}" class="oh-sticky-table__th">{% trans "Based On" %}</div>
-            <div data-cell-index="9" data-cell-title="{% trans 'Rate' %}" class="oh-sticky-table__th">{% trans "Rate" %}</div>
-            <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
-          </div>
+            {% for allowance in allowances %}
+            <div class="oh-sticky-table__tbody ui-sortable" draggable="true" data-toggle="oh-modal-toggle"
+                data-target="#objectDetailsModal"
+                hx-get="{% url 'single-allowance-view' allowance.id %}?instances_ids={{allowance_ids}}"
+                hx-target="#objectDetailsModalTarget">
+                <div class="oh-sticky-table__tr ui-sortable-handle">
+                    <div class="oh-sticky-table__sd">{{allowance.title}}</div>
+                    <div data-cell-index="1" class="oh-sticky-table__td">
+                        {% for employee in allowance.specific_employees.all %} {{employee}}<br />
+                        {% endfor %}
+                    </div>
+                    <div data-cell-index="2" class="oh-sticky-table__td">
+                        {% for employee in allowance.exclude_employees.all %} {{employee}}<br />
+                        {% endfor %}
+                    </div>
+                    <div data-cell-index="3" class="oh-sticky-table__td">
+                        {{allowance.is_taxable|yes_no}}
+                    </div>
+                    <div data-cell-index="4" class="oh-sticky-table__td">
+                        {{allowance.is_condition_based|yes_no}}
+                    </div>
+                    <div data-cell-index="5" class="oh-sticky-table__td">
+                        {% if allowance.field %} {{allowance.get_field_display}}
+                        {{allowance.get_condition_display}} {{allowance.value}} {% endif %}
+                    </div>
+                    <div data-cell-index="6" class="oh-sticky-table__td">
+                        {{allowance.is_fixed|yes_no}}
+                    </div>
+                    <div data-cell-index="7" class="oh-sticky-table__td">
+                        {% if allowance.amount %}{{allowance.amount}}{% endif %}
+                    </div>
+                    <div data-cell-index="8" class="oh-sticky-table__td">
+                        {% if allowance.get_based_on_display%}
+                        {{allowance.get_based_on_display}}
+                        {% endif %}
+                    </div>
+                    <div data-cell-index="9" class="oh-sticky-table__td ">
+                        {% if allowance.rate %}{{allowance.rate}}{% endif %}
+                    </div>
+                    <div class="oh-sticky-table__td oh-sticky-table__right">
+                        <div class="oh-btn-group">
+                            <a onclick="event.stopPropagation();" class="oh-btn oh-btn--light-bkg w-100"
+                                href="{% url 'update-allowance' allowance.id %}" title='{% trans "Update" %}'>
+                                <ion-icon name="create-outline" role="img" class="md hydrated" style="color: blue"
+                                    aria-label="create outline"></ion-icon>
+                            </a>
+                            <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                onclick="event.preventDefault();event.stopPropagation();"
+                                hx-confirm="{% trans 'Do you want to delete this Allowance?' %}"
+                                hx-post="{% url 'delete-allowance' allowance.id %}?{{pd}}&view=list"
+                                hx-target="#payroll-allowance-container" title="{% trans 'Delete' %}">
+                                <ion-icon name="trash-outline" role="img" class="md hydrated"
+                                    aria-label="trash outline"></ion-icon>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-        {% for allowance in allowances %}
-        <div class="oh-sticky-table__tbody ui-sortable" draggable="true" data-toggle="oh-modal-toggle" data-target = "#objectDetailsModal" hx-get="{% url 'single-allowance-view' allowance.id %}?instances_ids={{allowance_ids}}" hx-target = "#objectDetailsModalTarget">
-          <div class="oh-sticky-table__tr ui-sortable-handle">
-            <div class="oh-sticky-table__sd">{{allowance.title}}</div>
-            <div data-cell-index="1" class="oh-sticky-table__td">
-              {% for employee in allowance.specific_employees.all %} {{employee}}<br />
-              {% endfor %}
-            </div>
-            <div data-cell-index="2" class="oh-sticky-table__td">
-              {% for employee in allowance.exclude_employees.all %} {{employee}}<br />
-              {% endfor %}
-            </div>
-            <div data-cell-index="3" class="oh-sticky-table__td">
-              {{allowance.is_taxable|yesno|capfirst}}
-            </div>
-            <div data-cell-index="4" class="oh-sticky-table__td">
-              {{allowance.is_condition_based|yesno|capfirst}}
-            </div>
-            <div data-cell-index="5" class="oh-sticky-table__td">
-              {% if allowance.field %} {{allowance.get_field_display}}
-              {{allowance.get_condition_display}} {{allowance.value}} {% endif %}
-            </div>
-            <div data-cell-index="6" class="oh-sticky-table__td">
-              {{allowance.is_fixed|yesno|capfirst}}
-            </div>
-            <div data-cell-index="7" class="oh-sticky-table__td">
-              {% if allowance.amount %}{{allowance.amount}}{% endif %}
-            </div>
-            <div data-cell-index="8" class="oh-sticky-table__td">
-              {% if allowance.get_based_on_display%}
-                {{allowance.get_based_on_display}}
-              {% endif %}
-            </div>
-            <div data-cell-index="9" class="oh-sticky-table__td ">
-              {% if allowance.rate %}{{allowance.rate}}{% endif %}
-            </div>
-            <div class="oh-sticky-table__td oh-sticky-table__right">
-              <div class="oh-btn-group">
-                <a
-                  onclick="event.stopPropagation();"
-                  class="oh-btn oh-btn--light-bkg w-100"
-                  href="{% url 'update-allowance' allowance.id %}"
-                  title='{% trans "Update" %}'
-                >
-                  <ion-icon
-                    name="create-outline"
-                    role="img"
-                    class="md hydrated"
-                    style="color: blue"
-                    aria-label="create outline"
-                  ></ion-icon>
-                </a>
-                <a
-                  class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                  onclick = "event.preventDefault();event.stopPropagation();"
-                  hx-confirm="{% trans 'Do you want to delete this Allowance?' %}"
-                  hx-post="{% url 'delete-allowance' allowance.id %}?{{pd}}&view=list"
-                  hx-target="#payroll-allowance-container"
-                  title="{% trans 'Delete' %}"
-                >
-                  <ion-icon
-                    name="trash-outline"
-                    role="img"
-                    class="md hydrated"
-                    aria-label="trash outline"
-                  ></ion-icon>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
     </div>
     <!-- end of sticky table -->
 
     <!-- start of pagination -->
     <div class="oh-pagination">
-      <span
-        class="oh-pagination__page"
-        >
-        {% trans "Page" %} {{ allowances.number }} {% trans "of" %} {{ allowances.paginator.num_pages }}.
-        </span
-      >
-      <nav class="oh-pagination__nav">
-        <div class="oh-pagination__input-container me-3">
-          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-          <input
-            type="number"
-            name="page"
-            class="oh-pagination__input"
-            value="{{allowances.number}}"
-            hx-get="{% url 'filter-allowance' %}?{{pd}}&view=list"
-            hx-target="#payroll-allowance-container"
-            min="1"
-          />
-          <span class="oh-pagination__label">{% trans "of" %} {{allowances.paginator.num_pages}}</span>
-        </div>
-        <ul class="oh-pagination__items">
-          {% if allowances.has_previous %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#payroll-allowance-container' hx-get="{% url 'filter-allowance' %}?{{pd}}&view=list&page=1" class="oh-pagination__link">{% trans "First" %}</a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#payroll-allowance-container' hx-get="{% url 'filter-allowance' %}?{{pd}}&view=list&page={{ allowances.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
-          </li>
-          {% endif %}
-          {% if allowances.has_next %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#payroll-allowance-container' hx-get="{% url 'filter-allowance' %}?{{pd}}&view=list&page={{ allowances.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#payroll-allowance-container' hx-get="{% url 'filter-allowance' %}?{{pd}}&view=list&page={{ allowances.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
-          </li>
-          {% endif %}
+        <span class="oh-pagination__page">
+            {% trans "Page" %} {{ allowances.number }} {% trans "of" %} {{ allowances.paginator.num_pages }}.
+        </span>
+        <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                <input type="number" name="page" class="oh-pagination__input" value="{{allowances.number}}"
+                    hx-get="{% url 'filter-allowance' %}?{{pd}}&view=list" hx-target="#payroll-allowance-container"
+                    min="1" />
+                <span class="oh-pagination__label">{% trans "of" %} {{allowances.paginator.num_pages}}</span>
+            </div>
+            <ul class="oh-pagination__items">
+                {% if allowances.has_previous %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#payroll-allowance-container'
+                            hx-get="{% url 'filter-allowance' %}?{{pd}}&view=list&page=1"
+                            class="oh-pagination__link">
+                            {% trans "First" %}
+                        </a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#payroll-allowance-container'
+                            hx-get="{% url 'filter-allowance' %}?{{pd}}&view=list&page={{ allowances.previous_page_number }}"
+                            class="oh-pagination__link">{% trans "Previous" %}</a>
+                    </li>
+                {% endif %}
+                {% if allowances.has_next %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#payroll-allowance-container'
+                            hx-get="{% url 'filter-allowance' %}?{{pd}}&view=list&page={{ allowances.next_page_number }}"
+                            class="oh-pagination__link">{% trans "Next" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#payroll-allowance-container'
+                            hx-get="{% url 'filter-allowance' %}?{{pd}}&view=list&page={{ allowances.paginator.num_pages }}"
+                            class="oh-pagination__link">{% trans "Last" %}</a>
+                    </li>
+                {% endif %}
 
-        </ul>
-      </nav>
+            </ul>
+        </nav>
     </div>
     <!-- end of pagination -->
-  </div>
+</div>
 {% else %}
-  <!-- start of empty page -->
-  <div class="oh-404">
-    <img
-      style="width: 150px; height: 150px"
-      src="{% static 'images/ui/no-results.png' %}"
-      class="oh-404__image mb-4"
-    />
+<!-- start of empty page -->
+<div class="oh-404">
+    <img style="width: 150px; height: 150px" src="{% static 'images/ui/no-results.png' %}" class="oh-404__image mb-4" />
     <h5 class="oh-404__subtitle">
-      {% trans "No search result found!" %}
+        {% trans "No search result found!" %}
     </h5>
-  </div>
-  <!-- end of empty page -->
+</div>
+<!-- end of empty page -->
 {% endif %}
 
 <script>
- // toggle columns //
- toggleColumns("allowance-column-table","allowanceCells")
- localStorageallowanceCells = localStorage.getItem("allowance_column_tab")
- if (!localStorageallowanceCells) {
-   $("#allowanceCells").find("[type=checkbox]").prop("checked",true)
- }
- $("[type=checkbox]").change()
+    // toggle columns //
+    toggleColumns("allowance-column-table", "allowanceCells")
+    localStorageallowanceCells = localStorage.getItem("allowance_column_tab")
+    if (!localStorageallowanceCells) {
+        $("#allowanceCells").find("[type=checkbox]").prop("checked", true)
+    }
+    $("[type=checkbox]").change()
 
 </script>

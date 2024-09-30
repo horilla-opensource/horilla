@@ -5,11 +5,17 @@
   <div class="oh-inner-sidebar-content__header mt-4">
     <h2 class="oh-inner-sidebar-content__title">{% trans "Currency" %}</h2>
   </div>
-  <div class="oh-label__info" for="currency_symbol">
+  {% comment %} <div class="oh-label__info" for="currency_symbol">
     <label class="oh-label" for="currency_symbol">{% trans "Currency Symbol" %}</label>
   </div>
   <input type="text" name="currency_symbol" value="{{currency_form.instance.currency_symbol}}" maxlength="5" class="oh-input w-25" placeholder="Currency Symbol" required="" id="id_currency_symbol">
-  {% if perms.payroll.change_payrollsettings %}
+
+  <div class="oh-label__info" for="position">
+    <label class="oh-label" for="position">{% trans "Position" %}</label>
+  </div>
+  <span class="select2-selection--multiple w-25" >{{ currency_form.position }}</span>
+
+   {% if perms.payroll.change_payrollsettings %}
     <button
       style="display: inline;margin-left: 10px;"
       type="submit"
@@ -17,6 +23,33 @@
       >
       {% trans "Save Changes" %}
     </button>
-  {% endif %}
+  {% endif %} {% endcomment %}
+
+
+  <div>
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-3">
+        <div class="oh-input-group">
+          <div class="oh-label__info" for="currency_symbol">
+              <label class="oh-label" for="currency_symbol">{% trans "Currency Symbol" %}</label>
+            </div>
+            <input type="text" name="currency_symbol" value="{{currency_form.instance.currency_symbol}}" maxlength="5" class="oh-input w-100" placeholder="Currency Symbol" required="" id="id_currency_symbol">
+          </div>
+      </div>
+      <div class="col-sm-12 col-md-12 col-lg-3">
+        <div class="oh-input-group">
+          <div class="oh-label__info" for="position">
+            <label class="oh-label" for="position">{% trans "Position" %}</label>
+          </div>
+          <span class="select2-selection--multiple w-25" >{{ currency_form.position }}</span>
+        </div>
+      </div>
+      {% if perms.payroll.change_payrollsettings %}
+        <div  class="d-flex align-items-end col-sm-12 col-md-12 col-lg-3">
+          <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">{% trans 'Save Changes' %}</button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
   <div class="oh-inner-sidebar-content__footer"></div>
 </form>

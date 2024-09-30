@@ -7,9 +7,9 @@
 		<button
 			class="oh-btn oh-btn--secondary"
 			data-toggle="oh-modal-toggle"
-			data-target="#documentCreateModal"
+			data-target="#objectCreateModal"
 			hx-get="{% url 'document-create' emp_id %}"
-			hx-target="#documentCreateForm"
+			hx-target="#objectCreateModalTarget"
 			onclick="event.preventDefault()"
 
 		>
@@ -54,10 +54,10 @@
 								<span
 									class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
 									hx-get="{% url 'file-upload' document.id %}"
-									hx-target="#uploadFileForm"
+									hx-target="#objectCreateModalTarget"
 									data-document-id="{{ document.id }}"
 									data-toggle="oh-modal-toggle"
-									data-target="#uploadFileModal"
+									data-target="#objectCreateModal"
 									onclick="event.stopPropagation()"
 									title="Upload File"
 								>
@@ -188,31 +188,6 @@
 			</button>
 		</div>
 		<div class="oh-modal__dialog-body" id="viewFile"></div>
-	</div>
-</div>
-
-<div
-	class="oh-modal"
-	id="uploadFileModal"
-	role="dialog"
-	aria-labelledby="uploadFileModal"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<span class="oh-modal__dialog-title" id="uploadFileModalLabel"
-				>{% trans "Upload File" %}</span
-			>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon
-					name="close-outline"
-					role="img"
-					class="md hydrated"
-					aria-label="close outline"
-				></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="uploadFileForm"></div>
 	</div>
 </div>
 

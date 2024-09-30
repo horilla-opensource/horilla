@@ -1,36 +1,61 @@
-{% for field_tuple in dynamic_create_fields %}
-<div
-  class="oh-modal"
-  id="dynamicModal{{field_tuple.0}}"
-  role="dialog"
-  aria-labelledby="dynamicModal{{field_tuple.0}}"
-  aria-hidden="true"
->
+<div id="{{view_id}}">
+  {% for field_tuple in dynamic_create_fields %}
   <div
-    class="oh-modal__dialog"
-    id="dynamicModal{{field_tuple.0}}Body"
-  ></div>
+    class="oh-modal"
+    id="dynamicModal{{field_tuple.0}}"
+    role="dialog"
+    aria-labelledby="dynamicModal{{field_tuple.0}}"
+    aria-hidden="true"
+  >
+    <div
+      class="oh-modal__dialog"
+      id="dynamicModal{{field_tuple.0}}Body"
+    ></div>
+  </div>
+  {% endfor %}
+  <form id="{{view_id}}Form" hx-post="{{request.path}}?{{request.GET.urlencode}}" hx-encoding="multipart/form-data" hx-swap="outerHTML" {% if hx_confirm %} hx-confirm="{{hx_confirm}}" {% endif %}>{{form.structured}}</form>
+  {% for field_tuple in dynamic_create_fields %}
+  <form
+    id="modalButton{{field_tuple.0}}Form"
+    hx-get="/dynamic-path-{{field_tuple.0}}-{{request.session.session_key}}?dynamic_field={{field_tuple.0}}"
+    hx-target="#dynamicModal{{field_tuple.0}}Body"
+  >
+    <input type="hidden" name="dynamic_initial" data-dynamic-field="{{field_tuple.0}}">
+    <input type="hidden" name="view_id" value="{{view_id}}">
+    <button
+      hidden
+      type="submit"
+      id="modalButton{{field_tuple.0}}"
+      onclick="$('#dynamicModal{{field_tuple.0}}').addClass('oh-modal--show');"
+    >
+    {{field_tuple.0}}
+    </button>
+  </form>
+  <form id="reload-field{{field_tuple.0}}{{view_id}}"  hx-get="{% url "reload-field" %}?form_class_path={{form_class_path}}&dynamic_field={{field_tuple.0}}" hx-target="#dynamic_field_{{field_tuple.0}}">
+    <input type="hidden" name="dynamic_initial" data-dynamic-field="{{field_tuple.0}}">
+    <input type="hidden" name="view_id" value="{{view_id}}">
+    <button hidden class="reload-field" data-target="{{field_tuple.0}}">
+      Reload Field
+    </button>
+  </form>
+  <script>
+    $("#{{view_id}}Form [name={{field_tuple.0}}]").change(function (e) {
+      values = $(this).val();
+      if (values == "dynamic_create") {
+        $("#modalButton{{field_tuple.0}}").click()
+      }else if (values.includes("dynamic_create")) {
+        let index = values.indexOf("dynamic_create");
+        values.splice(index, 1);
+        $(this).val(values).change();
+        $("#modalButton{{field_tuple.0}}").parent().find('input[name=dynamic_initial]').val(values)
+        $("#reload-field{{field_tuple.0}}{{view_id}}").find('input[name=dynamic_initial]').val(values)
+        $("#modalButton{{field_tuple.0}}").click()
+      }
+    });
+    $("#reload-field{{field_tuple.0}}{{view_id}}").submit(function (e) {
+      e.preventDefault();
+      $(this).find("[name=dynamic_initial]").val();
+    });
+  </script>
+  {% endfor %}
 </div>
-{% endfor %}
-<form id="{{view_id}}" hx-post="{{request.path}}?{{request.GET.urlencode}}" hx-encoding="multipart/form-data" hx-swap="outerHTML">{{form.structured}}</form>
-{% for field_tuple in dynamic_create_fields %}
-<button
-  hidden
-  id="modalButton{{field_tuple.0}}"
-  hx-get="/dynamic-path-{{field_tuple.0}}-{{request.session.session_key}}?dynamic_field={{field_tuple.0}}"
-  hx-target="#dynamicModal{{field_tuple.0}}Body"
-  onclick="$('#dynamicModal{{field_tuple.0}}').addClass('oh-modal--show');"
->
-{{field_tuple.0}}</button>
-<button hidden class="reload-field" hx-get="{% url "reload-field" %}?form_class_path={{form_class_path}}&dynamic_field={{field_tuple.0}}" hx-target="#dynamic_field_{{field_tuple.0}}" data-target="{{field_tuple.0}}">
-  Reload Field
-</button>
-<script>
-  $("#{{view_id}} [name={{field_tuple.0}}]").change(function (e) {
-    if (this.value=="dynamic_create") {
-      $("#modalButton{{field_tuple.0}}").click()
-      $(this).val("").change();
-    }
-  });
-</script>
-{% endfor %}

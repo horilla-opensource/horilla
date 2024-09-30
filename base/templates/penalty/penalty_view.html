@@ -21,9 +21,15 @@
                 <div class="oh-sticky-table__td">{{ acc.minus_leaves }}</div>
                 <div class="oh-sticky-table__td">{{acc.deduct_from_carry_forward|yes_no}}</div>
                 {% endif %}
-                <div class="oh-sticky-table__td">
-                    {{currency}} {{ acc.penalty_amount }}
-                </div>
+                {% if position == "prefix" %}
+                    <div class="oh-sticky-table__td">
+                        {{currency}} {{ acc.penalty_amount }}
+                    </div>
+                {% else %}
+                    <div class="oh-sticky-table__td">
+                        {{ acc.penalty_amount }} {{currency}}
+                    </div>
+                {% endif %}
                 <div class="oh-sticky-table__td">{{ acc.created_at }}</div>
             </div>
             {% endfor %}

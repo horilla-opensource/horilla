@@ -8,6 +8,11 @@
   <div class="oh-modal__dialog" id="genericModalBody"></div>
 </div>
 
+<div class="oh-activity-sidebar" id="genericSidebar" style="z-index:1000;">
+  <div class="oh-activity-sidebar__body" id="genericOffCanvas">
+  </div>
+</div>
+
 <script>
   $(document).on("htmx:afterOnLoad", function (event) {
     $("[data-toggle='oh-modal-toggle']").click(function (e) {

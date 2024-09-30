@@ -54,13 +54,19 @@ class MailSendThread(Thread):
                 )
             employee = record["instances"][0].employee_id
             email_backend = ConfiguredEmailBackend()
+            display_email_name = email_backend.dynamic_from_email_with_display_name
+            if self.request:
+                try:
+                    display_email_name = f"{self.request.user.employee_get.get_full_name()} <{self.request.user.employee_get.email}>"
+                except:
+                    logger.error(Exception)
+
             email = EmailMessage(
                 f"Hello, {record['instances'][0].get_name()} Your Payslips is Ready!",
                 html_message,
-                email_backend.dynamic_from_email_with_display_name,
+                display_email_name,
                 [employee.get_mail()],
-                # reply_to=["another@example.com"],
-                # headers={"Message-ID": "foo"},
+                reply_to=[display_email_name],
             )
             email.attachments = attachments
 
@@ -71,5 +77,5 @@ class MailSendThread(Thread):
                 Payslip.objects.filter(id__in=self.ids).update(sent_to_employee=True)
             except Exception as e:
                 logger.exception(e)
-                pass
+
         return

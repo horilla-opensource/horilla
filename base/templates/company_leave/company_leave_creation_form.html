@@ -54,3 +54,10 @@
     </div>
   </form>
 </div>
+<script>
+    var week_select = $('#id_based_on_week');
+
+    week_select.find('option').filter(function() {
+        return $(this).text() === '---------';
+    }).text('All');
+</script>

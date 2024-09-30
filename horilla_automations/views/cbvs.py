@@ -28,7 +28,7 @@ class AutomationSectionView(views.HorillaSectionView):
     view_container_id = "listContainer"
 
     script_static_paths = [
-        "static/automation/automation.js",
+        "/automation/automation.js",
     ]
 
     template_name = "horilla_automations/section_view.html"

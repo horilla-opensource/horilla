@@ -79,13 +79,20 @@ class ReloadField(View):
         choices.insert(0, ("", "Select option"))
         choices.append(("dynamic_create", "Dynamic create"))
 
-        parent_form.fields[cache_field] = forms.ChoiceField(
+        form_field = forms.ChoiceField
+        if isinstance(field, forms.ModelMultipleChoiceField):
+            form_field = forms.MultipleChoiceField
+
+        parent_form.fields[cache_field] = form_field(
             choices=choices,
             label=field.label,
             required=field.required,
-            widget=forms.Select(attrs=field.widget.attrs),
         )
-        parent_form.fields[cache_field].initial = dynamic_cache["value"]
+        dynamic_initial = request.GET.get("dynamic_initial", [])
+        parent_form.fields[cache_field].widget.attrs = field.widget.attrs
+        parent_form.fields[cache_field].initial = eval(
+            f"""[{dynamic_cache["value"]},{dynamic_initial}]"""
+        )
 
         field = parent_form[cache_field]
         dynamic_id: str = get_short_uuid(4)

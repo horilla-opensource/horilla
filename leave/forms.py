@@ -251,7 +251,6 @@ class UpdateLeaveTypeForm(ConditionForm):
             del self.errors["exceed_days"]
         cleaned_data["count"] = round(cleaned_data["count"] * 2) / 2
         if not cleaned_data["limit_leave"]:
-            print(LEAVE_MAX_LIMIT)
             cleaned_data["total_days"] = LEAVE_MAX_LIMIT
             cleaned_data["reset"] = True
             cleaned_data["reset_based"] = "yearly"
@@ -1349,7 +1348,7 @@ if apps.is_installed("attendance"):
         def clean(self):
             cleaned_data = super().clean()
             attendance_id = cleaned_data.get("attendance_id")
-            if attendance_id is None:
+            if attendance_id is None or len(attendance_id) < 1:
                 raise forms.ValidationError(
                     {"attendance_id": _("This field is required.")}
                 )

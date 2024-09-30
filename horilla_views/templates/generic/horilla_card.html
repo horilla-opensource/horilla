@@ -46,9 +46,10 @@
     {% include "generic/filter_tags.html" %}
     {% endif %}
     {% if queryset %}
-  <div class="oh-layout--grid-3">
+    <div class="oh-layout--grid-3">
     {% for instance in queryset %}
     <div class="oh-kanban-card {{card_status_class|format:instance|safe}}" {{card_attrs|format:instance|safe}}>
+      {% if instance|getattribute:details.image_src %}
       <div class="oh-kanban-card__avatar">
         <div class="oh-kanban-card__profile-container">
           <img
@@ -58,6 +59,7 @@
           />
         </div>
       </div>
+      {% endif %}
       <div class="oh-kanban-card__details">
         <span class="oh-kanban-card__title">{{details.title|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}</span>
         <span class="oh-kanban-card__subtitle">{{details.subtitle|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}</span>

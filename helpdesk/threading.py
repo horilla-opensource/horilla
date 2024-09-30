@@ -44,6 +44,14 @@ class TicketSendThread(Thread):
         protocol = self.protocol
         link = "#"
         email_backend = ConfiguredEmailBackend()
+
+        display_email_name = email_backend.dynamic_from_email_with_display_name
+        if self.request:
+            try:
+                display_email_name = f"{self.request.user.employee_get.get_full_name()} <{self.request.user.employee_get.email}>"
+            except:
+                logger.error(Exception)
+
         if ticket_id != "#":
             link = f"{protocol}://{host}/helpdesk/ticket-detail/{ticket_id}/"
         for recipient in recipients:
@@ -60,10 +68,11 @@ class TicketSendThread(Thread):
             )
 
             email = EmailMessage(
-                subject,
-                html_message,
-                email_backend.dynamic_from_email_with_display_name,
-                [recipient.email],
+                subject=subject,
+                body=html_message,
+                from_email=display_email_name,
+                to=[recipient.email],
+                reply_to=[display_email_name],
             )
             email.content_subtype = "html"
             try:
@@ -142,6 +151,12 @@ class AddAssigneeThread(Thread):
         host = self.host
         protocol = self.protocol
         email_backend = ConfiguredEmailBackend()
+        display_email_name = email_backend.dynamic_from_email_with_display_name
+        if self.request:
+            try:
+                display_email_name = f"{self.request.user.employee_get.get_full_name()} <{self.request.user.employee_get.email}>"
+            except:
+                pass
         link = f"{protocol}://{host}/helpdesk/ticket-detail/{self.ticket.id}/"
         for recipient in self.recipients:
             html_message = render_to_string(
@@ -157,10 +172,11 @@ class AddAssigneeThread(Thread):
             )
 
             email = EmailMessage(
-                subject,
-                html_message,
-                email_backend.dynamic_from_email_with_display_name,
-                [recipient.email],
+                subject=subject,
+                body=html_message,
+                from_email=display_email_name,
+                to=[recipient.email],
+                reply_to=[display_email_name],
             )
             email.content_subtype = "html"
             try:
@@ -189,10 +205,16 @@ class RemoveAssigneeThread(Thread):
 
         content = "Please review the ticket details and take appropriate action accordingly. If you have any questions or require further information, feel free to reach out to the owner or the Support/Helpdesk team."
         subject = "You have been removed from a Ticket"
+        email_backend = ConfiguredEmailBackend()
 
+        display_email_name = email_backend.dynamic_from_email_with_display_name
+        if self.request:
+            try:
+                display_email_name = f"{self.request.user.employee_get.get_full_name()} <{self.request.user.employee_get.email}>"
+            except:
+                pass
         host = self.host
         protocol = self.protocol
-        email_backend = ConfiguredEmailBackend()
         link = f"{protocol}://{host}/helpdesk/ticket-detail/{self.ticket.id}/"
         for recipient in self.recipients:
             html_message = render_to_string(
@@ -208,10 +230,11 @@ class RemoveAssigneeThread(Thread):
             )
 
             email = EmailMessage(
-                subject,
-                html_message,
-                email_backend.dynamic_from_email_with_display_name,
-                [recipient.email],
+                subject=subject,
+                body=html_message,
+                from_email=display_email_name,
+                to=[recipient.email],
+                reply_to=[display_email_name],
             )
             email.content_subtype = "html"
             try:

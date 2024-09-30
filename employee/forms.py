@@ -161,6 +161,8 @@ class EmployeeForm(ModelForm):
         exclude = (
             "employee_user_id",
             "additional_info",
+            "is_from_onboarding",
+            "is_directly_converted",
         )
         widgets = {
             "dob": TextInput(attrs={"type": "date", "id": "dob"}),

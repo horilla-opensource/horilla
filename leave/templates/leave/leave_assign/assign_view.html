@@ -20,9 +20,9 @@
         id="assignLeaveTypeImportModalBody"
       >
         <form
-          action="{% url 'assign-leave-type-info-import' %}"
-          enctype="multipart/form-data"
-          method="post"
+          hx-post="{% url 'assign-leave-type-info-import' %}"
+          hx-encoding="multipart/form-data"
+          hx-target="#assignLeaveTypeImport"
           id="assignLeaveTypeImportForm"
         >
           {% csrf_token %}

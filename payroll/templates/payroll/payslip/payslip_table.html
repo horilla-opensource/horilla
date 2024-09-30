@@ -136,15 +136,27 @@
           <div data-cell-index="4" class="oh-sticky-table__td">
             {{payslip.group_name}}
           </div>
-          <div data-cell-index="5" class="oh-sticky-table__td">
-            {{currency}} {{payslip.gross_pay|floatformat:2}}
-          </div>
-          <div data-cell-index="6" class="oh-sticky-table__td">
-            {{currency}} {{payslip.deduction|floatformat:2}}
-          </div>
-          <div data-cell-index="7" class="oh-sticky-table__td">
-            {{currency}} {{payslip.net_pay|floatformat:2}}
-          </div>
+          {% if position == "prefix" %}
+            <div data-cell-index="5" class="oh-sticky-table__td">
+              {{currency}} {{payslip.gross_pay|floatformat:2}}
+            </div>
+            <div data-cell-index="6" class="oh-sticky-table__td">
+              {{currency}} {{payslip.deduction|floatformat:2}}
+            </div>
+            <div data-cell-index="7" class="oh-sticky-table__td">
+              {{currency}} {{payslip.net_pay|floatformat:2}}
+            </div>
+          {% else %}
+            <div data-cell-index="5" class="oh-sticky-table__td">
+              {{payslip.gross_pay|floatformat:2}} {{currency}}
+            </div>
+            <div data-cell-index="6" class="oh-sticky-table__td">
+              {{payslip.deduction|floatformat:2}} {{currency}}
+            </div>
+            <div data-cell-index="7" class="oh-sticky-table__td">
+              {{payslip.net_pay|floatformat:2}} {{currency}}
+            </div>
+          {% endif %}
           {% if perms.payroll.add_payslip %}
             <div data-cell-index="3" class="oh-sticky-table__td" onclick="event.preventDefault();">
               <select name="status" data-instance-id="{{payslip.id}}" hx-trigger="change" hx-post="{% url 'payslip-status-update' payslip.id %}"

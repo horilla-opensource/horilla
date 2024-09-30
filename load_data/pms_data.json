@@ -1,0 +1,316 @@
+[
+  {
+    "model": "pms.keyresult",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-09-17T09:31:25.485Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Contact Customer",
+      "description": "Description",
+      "progress_type": "%",
+      "target_value": 100,
+      "duration": 10,
+      "archive": false,
+      "company_id": 1
+    }
+  },
+  {
+    "model": "pms.keyresult",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-09-17T09:32:03.931Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Digital Marketing",
+      "description": "Descriptio",
+      "progress_type": "%",
+      "target_value": 100,
+      "duration": 10,
+      "archive": false,
+      "company_id": 1
+    }
+  },
+  {
+    "model": "pms.keyresult",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-09-17T09:32:55.218Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Social Media Influvencer",
+      "description": "Description",
+      "progress_type": "%",
+      "target_value": 100,
+      "duration": 2,
+      "archive": false,
+      "company_id": 1
+    }
+  },
+  {
+    "model": "pms.objective",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-09-17T09:33:00.753Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Increase Sales",
+      "description": "Description",
+      "duration_unit": "months",
+      "duration": 1,
+      "add_assignees": false,
+      "archive": false,
+      "company_id": null,
+      "managers": [37],
+      "assignees": [12, 13, 68],
+      "key_result_id": [3, 2, 1]
+    }
+  },
+  {
+    "model": "pms.employeeobjective",
+    "pk": 1,
+    "fields": {
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "objective": null,
+      "objective_description": null,
+      "created_at": "2024-09-17",
+      "objective_id": 1,
+      "employee_id": 12,
+      "updated_at": "2024-09-17",
+      "start_date": "2024-09-23",
+      "end_date": "2024-10-23",
+      "status": "Not Started",
+      "progress_percentage": 0,
+      "archive": false,
+      "key_result_id": []
+    }
+  },
+  {
+    "model": "pms.employeeobjective",
+    "pk": 2,
+    "fields": {
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "objective": null,
+      "objective_description": null,
+      "created_at": "2024-09-17",
+      "objective_id": 1,
+      "employee_id": 13,
+      "updated_at": "2024-09-17",
+      "start_date": "2024-09-23",
+      "end_date": "2024-10-23",
+      "status": "Not Started",
+      "progress_percentage": 0,
+      "archive": false,
+      "key_result_id": []
+    }
+  },
+  {
+    "model": "pms.employeeobjective",
+    "pk": 3,
+    "fields": {
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "objective": null,
+      "objective_description": null,
+      "created_at": "2024-09-17",
+      "objective_id": 1,
+      "employee_id": 68,
+      "updated_at": "2024-09-17",
+      "start_date": "2024-09-23",
+      "end_date": "2024-10-23",
+      "status": "Not Started",
+      "progress_percentage": 0,
+      "archive": false,
+      "key_result_id": []
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 1,
+    "fields": {
+      "key_result": "Social Media Influvencer",
+      "key_result_description": null,
+      "employee_objective_id": 1,
+      "key_result_id": 3,
+      "progress_type": "%",
+      "status": "Not Started",
+      "created_at": "2024-09-17",
+      "updated_at": "2024-09-17",
+      "start_value": 0,
+      "current_value": 0,
+      "target_value": 100,
+      "start_date": null,
+      "end_date": null,
+      "progress_percentage": 0
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 2,
+    "fields": {
+      "key_result": "Digital Marketing",
+      "key_result_description": null,
+      "employee_objective_id": 1,
+      "key_result_id": 2,
+      "progress_type": "%",
+      "status": "Not Started",
+      "created_at": "2024-09-17",
+      "updated_at": "2024-09-17",
+      "start_value": 0,
+      "current_value": 0,
+      "target_value": 100,
+      "start_date": null,
+      "end_date": null,
+      "progress_percentage": 0
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 3,
+    "fields": {
+      "key_result": "Contact Customer",
+      "key_result_description": null,
+      "employee_objective_id": 1,
+      "key_result_id": 1,
+      "progress_type": "%",
+      "status": "Not Started",
+      "created_at": "2024-09-17",
+      "updated_at": "2024-09-17",
+      "start_value": 0,
+      "current_value": 0,
+      "target_value": 100,
+      "start_date": null,
+      "end_date": null,
+      "progress_percentage": 0
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 4,
+    "fields": {
+      "key_result": "Social Media Influvencer",
+      "key_result_description": null,
+      "employee_objective_id": 2,
+      "key_result_id": 3,
+      "progress_type": "%",
+      "status": "Not Started",
+      "created_at": "2024-09-17",
+      "updated_at": "2024-09-17",
+      "start_value": 0,
+      "current_value": 0,
+      "target_value": 100,
+      "start_date": null,
+      "end_date": null,
+      "progress_percentage": 0
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 5,
+    "fields": {
+      "key_result": "Digital Marketing",
+      "key_result_description": null,
+      "employee_objective_id": 2,
+      "key_result_id": 2,
+      "progress_type": "%",
+      "status": "Not Started",
+      "created_at": "2024-09-17",
+      "updated_at": "2024-09-17",
+      "start_value": 0,
+      "current_value": 0,
+      "target_value": 100,
+      "start_date": null,
+      "end_date": null,
+      "progress_percentage": 0
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 6,
+    "fields": {
+      "key_result": "Contact Customer",
+      "key_result_description": null,
+      "employee_objective_id": 2,
+      "key_result_id": 1,
+      "progress_type": "%",
+      "status": "Not Started",
+      "created_at": "2024-09-17",
+      "updated_at": "2024-09-17",
+      "start_value": 0,
+      "current_value": 0,
+      "target_value": 100,
+      "start_date": null,
+      "end_date": null,
+      "progress_percentage": 0
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 7,
+    "fields": {
+      "key_result": "Social Media Influvencer",
+      "key_result_description": null,
+      "employee_objective_id": 3,
+      "key_result_id": 3,
+      "progress_type": "%",
+      "status": "Not Started",
+      "created_at": "2024-09-17",
+      "updated_at": "2024-09-17",
+      "start_value": 0,
+      "current_value": 0,
+      "target_value": 100,
+      "start_date": null,
+      "end_date": null,
+      "progress_percentage": 0
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 8,
+    "fields": {
+      "key_result": "Digital Marketing",
+      "key_result_description": null,
+      "employee_objective_id": 3,
+      "key_result_id": 2,
+      "progress_type": "%",
+      "status": "Not Started",
+      "created_at": "2024-09-17",
+      "updated_at": "2024-09-17",
+      "start_value": 0,
+      "current_value": 0,
+      "target_value": 100,
+      "start_date": null,
+      "end_date": null,
+      "progress_percentage": 0
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 9,
+    "fields": {
+      "key_result": "Contact Customer",
+      "key_result_description": null,
+      "employee_objective_id": 3,
+      "key_result_id": 1,
+      "progress_type": "%",
+      "status": "Not Started",
+      "created_at": "2024-09-17",
+      "updated_at": "2024-09-17",
+      "start_value": 0,
+      "current_value": 0,
+      "target_value": 100,
+      "start_date": null,
+      "end_date": null,
+      "progress_percentage": 0
+    }
+  }
+]

@@ -59,6 +59,9 @@
                     <div class="oh-sticky-table__th" hx-target="#restrictDays">
                         {% trans "Job Position" %}
                     </div>
+                    <div class="oh-sticky-table__th">
+                        {% trans "Leave Types" %}
+                    </div>
                     <div class="oh-sticky-table__th">{% trans "Description" %}</div>
                     {% if perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
                         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
@@ -92,6 +95,21 @@
                             {% else %}
                                 {% trans "All" %}
                             {% endif %}
+                        </div>
+                        <div class="oh-sticky-table__td">
+
+                            {% if day.include_all and not day.exclued_leave_types.all %}
+                                {% trans "All Leave types are Restricted" %}
+                            {% endif %}
+
+                            {% if day.spesific_leave_types.all and not day.include_all %}
+                                <b>{% trans "Restricted for these Leave Types" %} :</b> {% for i in day.spesific_leave_types.all %} {{i}}, {% endfor %}
+                            {% endif %}
+
+                            {% if day.exclued_leave_types.all  %}
+                                <b>{% trans "Excluded Leave Types" %} :</b> {% for i in day.exclued_leave_types.all %} {{i}}, {% endfor %}
+                            {% endif %}
+
                         </div>
                         <div class="oh-sticky-table__td">
                             {{day.description}}

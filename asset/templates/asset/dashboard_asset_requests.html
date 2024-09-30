@@ -69,16 +69,13 @@
                                 >
                                     <ion-icon name="checkmark-outline"></ion-icon>
                                 </a>
-                                <form
-                                    action="{% url 'asset-request-reject' req_id=asset_request.id %}"
-                                    method="post"
-                                    onclick="event.stopPropagation(); return confirm('{% trans "Do you want to reject this request?" %}')"
-                                    title="Reject request"
-                                    class="w-50"
-                                >
+                                <form action="{% url 'asset-request-reject' req_id=asset_request.id %}"
+                                    onsubmit="event.stopPropagation();return confirm('{% trans "Do you want to reject this request?" %}')"
+                                    method="post" title="{% trans 'Reject request' %}" class="w-50"
+                                    >
                                     {% csrf_token %}
-                                    <button class="oh-btn oh-btn--danger w-100">
-                                        <ion-icon name="close-outline"></ion-icon>
+                                    <button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation()">
+                                        <ion-icon name="close-circle-outline"></ion-icon>
                                     </button>
                                 </form>
                             </div>

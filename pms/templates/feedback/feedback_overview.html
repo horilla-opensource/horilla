@@ -1,0 +1,160 @@
+
+{% load i18n %}
+<div class="oh-card">
+    <div class="oh-accordion-meta">
+        {% for question,answers in feedback_overview.items %}
+            <div class="oh-accordion-meta__item">
+                <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
+                    <span class="oh-accordion-meta__title pt-3 pb-3">
+                        <div class="oh-tabs__input-badge-container">
+                            <span
+                                class="oh-badge oh-badge--round mr-1"
+                            >
+                                {{question}}
+                            </span>
+                        </div>
+                    </span>
+                </div>
+                <div class="oh-accordion-meta__body d-none">
+                    {% if answers %}
+                        <div class="oh-sticky-table oh-sticky-table--no-overflow">
+                            <div class="oh-sticky-table">
+                                <div class="oh-sticky-table__table oh-table--sortable">
+                                    <div class="oh-sticky-table__thead">
+                                        <div class="oh-sticky-table__tr">
+                                            <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                                            <div class="oh-sticky-table__th">{% trans "Answer" %}</div>
+                                        </div>
+                                    </div>
+                                    <div class="oh-sticky-table__tbody">
+                                        {% for answer in answers %}
+                                        {% for key,value in answer.items %}
+                                            <div class="oh-sticky-table__tr" draggable="true">
+                                                <div class="oh-sticky-table__td">
+                                                    <div class="oh-profile oh-profile--md">
+                                                        <div class="oh-profile__avatar mr-1">
+                                                            <img
+                                                            src="{{key.get_avatar}}"
+                                                            class="oh-profile__image"
+                                                            alt=""
+                                                            />
+                                                        </div>
+                                                            <span class="oh-profile__name oh-text--dark">{{key}}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="oh-sticky-table__td">
+                                                    {% if value.1.type == '1' %}
+                                                        <span class="oh-activity-sidebar__a">{{ value.0.answer}}</span>
+                                                        {% endif %}
+
+                                                        {% if value.1.type == '2' %}
+                                                        <div class="d-block mb-0">
+                                                            <div class="oh-rate">
+                                                            <input type="radio" id="star5" value="5" disabled {% if value.0.answer == '5' %} checked {% endif %} />
+                                                            <label for="star5" title="5 Stars">5 {% trans "Stars" %}</label>
+                                                            <input type="radio" id="star4" value="4" disabled  {% if value.0.answer == '4' %} checked {% endif %} />
+                                                            <label for="star4" title="4 Stars">4 {% trans "Stars" %}</label>
+                                                            <input type="radio" id="star3" value="3" disabled  {% if value.0.answer == '3' %} checked {% endif %} />
+                                                            <label for="star3" title="3 Stars">3 {% trans "Stars" %}</label>
+                                                            <input type="radio" id="star2" value="2" disabled  {% if value.0.answer == '2' %} checked {% endif %}  />
+                                                            <label for="star2" title="2 Stars">2 {% trans "Stars" %}</label>
+                                                            <input type="radio" id="star1" value="1" disabled  {% if value.0.answer == '1' %} checked {% endif %} />
+                                                            <label for="star1" title="1 Star">1 {% trans "Star" %}</label>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        {% if value.1.type == '3' %}
+                                                        <div class="oh-input__group">
+                                                            <div class="oh-input-picker-group">
+                                                            <div class="oh-input-picker   oh-input-picker--selected boolean-colour ">
+                                                                {{value.0.answer}}
+                                                                <input type="radio" selected />
+                                                            </div>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        {% if value.1.type == '4' %}
+                                                        <div class="d-block">
+                                                            <label class="oh-label" for="answer1"> {{value.0.answer}}</label>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        {% if value.1.type == '5' %}
+                                                        <div class="d-block">
+                                                            <div class="oh-input-picker-group oh-input-picker-group--resp mt-2">
+                                                            <div class="oh-input-picker oh-input-picker--likert likert-colour oh-input-picker--selected ">
+                                                                {{value.0.answer}}
+                                                            </div>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    </li>
+                                                    </div>
+                                            </div>
+                                        {% endfor %}
+
+                                        {% endfor %}
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <h5 class="oh-404__subtitle">{% trans "No answers yet." %}</h5>
+                    {% endif %}
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+
+  $(document).ready(function () {
+      // answer color for likert
+      var booleanText = $('.boolean-colour').text().trim()
+      var booleanEl = $('.boolean-colour')
+      var red = "oh-input-picker--1"
+      var orange = "oh-input-picker--2"
+      var yellow = "oh-input-picker--3"
+      var light_green = "oh-input-picker--4"
+      var green = "oh-input-picker--5"
+
+      $('.likert-colour').each(function() {
+        var likertText = $(this).text().trim()
+
+        if (likertText === 'Strongly Agree'){
+          $(this).addClass(green)
+        }
+        else if (likertText === 'Agree'){
+          $(this).addClass(light_green)
+        }
+        else if (likertText === 'Neutral'){
+          $(this).addClass(yellow)
+        }
+        else if (likertText === 'Disagree'){
+          $(this).addClass(orange)
+        }
+        else if (likertText === 'Strongly Disagree'){
+          $(this).addClass(red)
+        }
+      });
+
+      // boolean text colour adding
+      $('.boolean-colour').each(function() {
+        var booleanText = $(this).text().trim()
+
+        if (booleanText === 'yes'){
+          $(this).addClass(green)
+        }
+        else if (booleanText === 'no'){
+          $(this).addClass(red)
+        }
+    })
+
+
+    });
+  </script>

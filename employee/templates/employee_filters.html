@@ -92,8 +92,16 @@
               {{f.form.employee_user_id__groups}}
             </div>
             <div class="oh-input-group">
+              <label class="oh-label" for="{{f.form.probation_end.id_for_label}}">{% trans "Probation From" %}</label>
+              {{f.form.probation_from}}
+            </div>
+            <div class="oh-input-group">
               <label class="oh-label" for="{{f.form.is_active.id_for_label}}">{% trans "Is Active" %}?</label>
               {{f.form.is_active}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{f.form.is_directly_converted.id_for_label}}">{% trans "Is Directly Converted" %}?</label>
+              {{f.form.is_directly_converted}}
             </div>
           </div>
         </div>
@@ -101,6 +109,14 @@
           <div class="oh-input-group">
             <label class="oh-label" for="{{f.form.employee_user_id__user_permissions.id_for_label}}">{% trans "Permissions" %}</label>
             {{f.form.employee_user_id__user_permissions}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{f.form.probation_end.id_for_label}}">{% trans "Probation Till" %}</label>
+            {{f.form.probation_till}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{f.form.is_from_onboarding.id_for_label}}">{% trans "Is From Onboarding" %}?</label>
+            {{f.form.is_from_onboarding}}
           </div>
         </div>
       </div>

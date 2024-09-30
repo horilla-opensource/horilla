@@ -52,8 +52,13 @@ from attendance.models import (
     strtime_seconds,
     validate_time_format,
 )
-from base.methods import get_working_days, reload_queryset
-from base.models import Company
+from base.methods import (
+    filtersubordinatesemployeemodel,
+    get_working_days,
+    is_reportingmanager,
+    reload_queryset,
+)
+from base.models import Company, EmployeeShift
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla import horilla_middlewares
@@ -162,6 +167,7 @@ class AttendanceUpdateForm(ModelForm):
             "is_validate_request_approved",
             "attendance_overtime",
             "is_active",
+            "is_holiday",
         ]
         model = Attendance
         widgets = {
@@ -268,6 +274,7 @@ class AttendanceForm(ModelForm):
             "is_validate_request_approved",
             "attendance_overtime",
             "is_active",
+            "is_holiday",
         ]
         widgets = {
             "attendance_clock_in": DateTimeInput(attrs={"type": "time"}),
@@ -877,6 +884,12 @@ class GraceTimeForm(ModelForm):
     Form for create or update Grace time
     """
 
+    shifts = forms.ModelMultipleChoiceField(
+        queryset=EmployeeShift.objects.all(),
+        required=False,
+        help_text=_("Allcocate this grace time for Check-In Attendance"),
+    )
+
     class Meta:
         """
         Meta class for additional options
@@ -890,6 +903,29 @@ class GraceTimeForm(ModelForm):
         }
 
         exclude = ["objects", "allowed_time_in_secs", "is_active"]
+
+
+class GraceTimeAssignForm(forms.Form):
+    """
+    Form for create or update Grace time
+    """
+
+    shifts = forms.ModelMultipleChoiceField(
+        queryset=EmployeeShift.objects.all(),
+    )
+    verbose_name = _("Assign Shifts")
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        form_html = render_to_string("common_form.html", context)
+        return form_html
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["shifts"].widget.attrs["class"] = "oh-select w-100 oh-select-2"
 
 
 class AttendanceRequestCommentForm(ModelForm):
@@ -1021,6 +1057,19 @@ class BulkAttendanceRequestForm(ModelForm):
         if employee and hasattr(employee, "employee_work_info"):
             shift = employee.employee_work_info.shift_id
             self.fields["shift_id"].initial = shift
+        if request.user.has_perm("attendance.add_attendance") or is_reportingmanager(
+            request
+        ):
+            employees = filtersubordinatesemployeemodel(
+                request, Employee.objects.all(), perm="pms.add_feedback"
+            )
+            self.fields["employee_id"].queryset = employees | Employee.objects.filter(
+                employee_user_id=request.user
+            )
+        else:
+            self.fields["employee_id"].queryset = Employee.objects.filter(
+                employee_user_id=request.user
+            )
 
     def clean(self):
         cleaned_data = self.cleaned_data

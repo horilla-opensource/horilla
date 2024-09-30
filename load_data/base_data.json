@@ -1,0 +1,2772 @@
+[
+  {
+    "model": "base.company",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-22T08:21:11.031Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": false,
+      "company": "Horilla",
+      "hq": true,
+      "address": "ABCD street",
+      "country": "USA",
+      "state": "Nevada",
+      "city": "las vegas",
+      "zip": "89036",
+      "icon": "base/icon/Horilla_2.png",
+      "date_format": null,
+      "time_format": null
+    }
+  },
+  {
+    "model": "base.company",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-09-16T05:03:00.993Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": false,
+      "company": "Horilla Inc.",
+      "hq": false,
+      "address": "The Estate , 8th Floor",
+      "country": "India",
+      "state": "Karnataka",
+      "city": "Bangalore",
+      "zip": "560042",
+      "icon": "base/icon/Horilla_3.png",
+      "date_format": null,
+      "time_format": null
+    }
+  },
+  {
+    "model": "base.company",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-09-16T05:04:50.728Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": false,
+      "company": "Horilla Next Inc.",
+      "hq": false,
+      "address": "Alpha House",
+      "country": "United Kingdom",
+      "state": "City of London",
+      "city": "SE1 1LB",
+      "zip": "673589",
+      "icon": "base/icon/Horilla_1.png",
+      "date_format": null,
+      "time_format": null
+    }
+  },
+  {
+    "model": "base.department",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-22T04:47:23.606Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "department": "S/W Dept",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.department",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-05-22T04:47:28.319Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "department": "Sales Dept",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.department",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-05-22T04:47:33.893Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "department": "Hr Dept",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.department",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-05-22T04:47:40.208Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "department": "Marketing Dept",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.department",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-05-22T04:47:42.609Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "department": "Finance Dept",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.department",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-09-21T09:20:48.130Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "department": "Managers",
+      "company_id": [1]
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-22T04:47:23.622Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Odoo Dev",
+      "department_id": 1,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-05-22T04:47:25.943Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Django Dev",
+      "department_id": 1,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-05-22T04:47:28.333Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Sales Man",
+      "department_id": 2,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-05-22T04:47:33.908Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Training and Development Coordinator",
+      "department_id": 3,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-05-22T04:47:34.486Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Compensation and Benefits Specialist",
+      "department_id": 3,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-05-22T04:47:35.070Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Recruiter",
+      "department_id": 3,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-05-22T04:47:40.222Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Marketing Specialist",
+      "department_id": 4,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-05-22T04:47:40.779Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Digital Marketing Specialist",
+      "department_id": 4,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-05-22T04:47:41.392Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Content Creator",
+      "department_id": 4,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-05-22T04:47:41.984Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Social Media Coordinator",
+      "department_id": 4,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 11,
+    "fields": {
+      "created_at": "2024-05-22T04:47:42.624Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Chief Financial Officer (CFO)",
+      "department_id": 5,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 12,
+    "fields": {
+      "created_at": "2024-05-22T04:47:43.202Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Financial Analyst",
+      "department_id": 5,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 13,
+    "fields": {
+      "created_at": "2024-05-22T04:47:46.093Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Accounts Payable Clerk",
+      "department_id": 5,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 14,
+    "fields": {
+      "created_at": "2024-05-22T04:47:47.486Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Tax Accountant",
+      "department_id": 5,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 15,
+    "fields": {
+      "created_at": "2024-05-22T04:47:49.834Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "System Admin",
+      "department_id": 1,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 16,
+    "fields": {
+      "created_at": "2024-05-22T04:47:50.983Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "React Dev",
+      "department_id": 1,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 17,
+    "fields": {
+      "created_at": "2024-05-22T04:47:58.482Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Flutter Dev",
+      "department_id": 1,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 18,
+    "fields": {
+      "created_at": "2024-09-16T04:50:47.287Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Sales Representative",
+      "department_id": 2,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 19,
+    "fields": {
+      "created_at": "2024-09-16T04:51:09.169Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Sales Manage",
+      "department_id": 2,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 20,
+    "fields": {
+      "created_at": "2024-09-16T04:51:35.632Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Business Development Manager",
+      "department_id": 2,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 21,
+    "fields": {
+      "created_at": "2024-09-16T04:52:08.734Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Field Sales Executive",
+      "department_id": 2,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 22,
+    "fields": {
+      "created_at": "2024-09-16T04:53:52.535Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "HR Manager",
+      "department_id": 3,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 23,
+    "fields": {
+      "created_at": "2024-09-16T04:54:44.109Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "HR Business Partner",
+      "department_id": 3,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobposition",
+    "pk": 24,
+    "fields": {
+      "created_at": "2024-09-21T09:21:05.334Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position": "Senoir Manager",
+      "department_id": 6,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-22T04:47:23.637Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 1,
+      "job_role": "Jnr Dev",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-05-22T04:47:25.955Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 2,
+      "job_role": "Jnr Dev",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-05-22T04:47:28.345Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 3,
+      "job_role": "Intern",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-05-22T04:47:31.671Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 3,
+      "job_role": "Sales Manager",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-05-22T04:47:32.226Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 3,
+      "job_role": "Trainer",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-05-22T04:47:33.920Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 4,
+      "job_role": "Hr Manager",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-05-22T04:47:34.501Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 5,
+      "job_role": "Jnr Manager",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-05-22T04:47:35.084Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 6,
+      "job_role": "Jnr Manager",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-05-22T04:47:36.825Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 6,
+      "job_role": "Hr Intern",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-05-22T04:47:37.423Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 5,
+      "job_role": "Hr Intern",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 11,
+    "fields": {
+      "created_at": "2024-05-22T04:47:40.235Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 7,
+      "job_role": "Marketing Manager",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 12,
+    "fields": {
+      "created_at": "2024-05-22T04:47:40.792Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 8,
+      "job_role": "Marketing Researcher",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 13,
+    "fields": {
+      "created_at": "2024-05-22T04:47:41.404Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 9,
+      "job_role": "Intern",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 14,
+    "fields": {
+      "created_at": "2024-05-22T04:47:41.996Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 10,
+      "job_role": "Intern",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 15,
+    "fields": {
+      "created_at": "2024-05-22T04:47:42.639Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 11,
+      "job_role": "Finance Manager",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 16,
+    "fields": {
+      "created_at": "2024-05-22T04:47:43.218Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 12,
+      "job_role": "Trainer",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 17,
+    "fields": {
+      "created_at": "2024-05-22T04:47:46.107Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 13,
+      "job_role": "Marketing Executive",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 18,
+    "fields": {
+      "created_at": "2024-05-22T04:47:47.516Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 14,
+      "job_role": "Marketing Executive",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 19,
+    "fields": {
+      "created_at": "2024-05-22T04:47:49.845Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 15,
+      "job_role": "System engineer",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 20,
+    "fields": {
+      "created_at": "2024-05-22T04:47:50.391Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 15,
+      "job_role": "Maintenance Head",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 21,
+    "fields": {
+      "created_at": "2024-05-22T04:47:50.997Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 16,
+      "job_role": "Intern",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 22,
+    "fields": {
+      "created_at": "2024-05-22T04:47:55.588Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 16,
+      "job_role": "Trainer",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 23,
+    "fields": {
+      "created_at": "2024-05-22T04:47:57.905Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 16,
+      "job_role": "Team Lead",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 24,
+    "fields": {
+      "created_at": "2024-05-22T04:47:58.494Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 17,
+      "job_role": "Team Lead",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 25,
+    "fields": {
+      "created_at": "2024-05-22T04:47:59.074Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 16,
+      "job_role": "Frontend Engineer",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 26,
+    "fields": {
+      "created_at": "2024-05-22T04:47:59.681Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 17,
+      "job_role": "Project Manager",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 27,
+    "fields": {
+      "created_at": "2024-05-22T04:48:00.400Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 16,
+      "job_role": "Senior Dev",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 28,
+    "fields": {
+      "created_at": "2024-05-22T04:48:01.233Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 17,
+      "job_role": "Senior Dev",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 29,
+    "fields": {
+      "created_at": "2024-05-22T04:52:53.339Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 15,
+      "job_role": "Intern",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 30,
+    "fields": {
+      "created_at": "2024-05-22T08:25:17.947Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 1,
+      "job_role": "Senior Dev",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 31,
+    "fields": {
+      "created_at": "2024-05-22T08:25:34.639Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 2,
+      "job_role": "Senior Dev",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 32,
+    "fields": {
+      "created_at": "2024-05-22T08:25:46.596Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 2,
+      "job_role": "intern",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 33,
+    "fields": {
+      "created_at": "2024-05-22T08:26:09.648Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 4,
+      "job_role": "trainer",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 34,
+    "fields": {
+      "created_at": "2024-09-16T04:56:45.891Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 18,
+      "job_role": "Senior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 35,
+    "fields": {
+      "created_at": "2024-09-16T04:56:45.903Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 19,
+      "job_role": "Senior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 36,
+    "fields": {
+      "created_at": "2024-09-16T04:56:45.913Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 20,
+      "job_role": "Senior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 37,
+    "fields": {
+      "created_at": "2024-09-16T04:56:45.925Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 21,
+      "job_role": "Senior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 38,
+    "fields": {
+      "created_at": "2024-09-16T04:56:45.934Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 22,
+      "job_role": "Senior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 39,
+    "fields": {
+      "created_at": "2024-09-16T04:56:45.945Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 23,
+      "job_role": "Senior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 40,
+    "fields": {
+      "created_at": "2024-09-16T04:57:46.629Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 18,
+      "job_role": "Junior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 41,
+    "fields": {
+      "created_at": "2024-09-16T04:57:46.641Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 19,
+      "job_role": "Junior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 42,
+    "fields": {
+      "created_at": "2024-09-16T04:57:46.650Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 20,
+      "job_role": "Junior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 43,
+    "fields": {
+      "created_at": "2024-09-16T04:57:46.659Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 21,
+      "job_role": "Junior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 44,
+    "fields": {
+      "created_at": "2024-09-16T04:57:46.670Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 22,
+      "job_role": "Junior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 45,
+    "fields": {
+      "created_at": "2024-09-16T04:57:46.679Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 23,
+      "job_role": "Junior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.jobrole",
+    "pk": 46,
+    "fields": {
+      "created_at": "2024-09-21T09:21:23.481Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "job_position_id": 24,
+      "job_role": "Senior",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.worktype",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-22T08:28:42.978Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "work_type": "Work From Office",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.worktype",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-05-22T08:28:55.690Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "work_type": "Work From Home",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.worktype",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-05-22T08:29:04.529Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "work_type": "Hybrid",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.worktype",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-05-22T08:29:11.796Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "work_type": "Remote",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.rotatingworktype",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-22T08:29:31.860Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "name": "WFH to WFO",
+      "work_type1": 2,
+      "work_type2": 1,
+      "additional_data": {}
+    }
+  },
+  {
+    "model": "base.rotatingworktype",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-05-22T08:29:47.665Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "name": "WFO to WFH",
+      "work_type1": 1,
+      "work_type2": 2,
+      "additional_data": {}
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-08-05T09:54:25.663Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 37,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-08-05T09:54:25.749Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 36,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-08-05T09:54:25.793Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 9,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-08-05T09:54:25.845Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 71,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-08-05T09:54:25.892Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 58,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-08-05T09:54:25.938Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 44,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-08-05T09:54:25.991Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 8,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-08-05T09:54:26.038Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 39,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-08-05T09:54:26.087Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 75,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-08-05T09:54:26.135Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 43,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 11,
+    "fields": {
+      "created_at": "2024-08-05T09:54:26.181Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 70,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 12,
+    "fields": {
+      "created_at": "2024-08-05T09:54:26.220Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 66,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 13,
+    "fields": {
+      "created_at": "2024-08-05T09:54:26.277Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 20,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 14,
+    "fields": {
+      "created_at": "2024-08-05T09:54:26.319Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 32,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 15,
+    "fields": {
+      "created_at": "2024-08-05T09:54:26.376Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 6,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 16,
+    "fields": {
+      "created_at": "2024-08-05T09:54:26.425Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 10,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 17,
+    "fields": {
+      "created_at": "2024-08-05T09:54:26.467Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 2,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 18,
+    "fields": {
+      "created_at": "2024-08-05T09:54:26.514Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 17,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingworktypeassign",
+    "pk": 19,
+    "fields": {
+      "created_at": "2024-08-05T09:54:26.554Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 42,
+      "rotating_work_type_id": 2,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-11",
+      "current_work_type": 1,
+      "next_work_type": 1,
+      "based_on": "after",
+      "rotate_after_day": 3,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+    }
+  },
+  {
+    "model": "base.employeetype",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-22T04:47:23.670Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_type": "Permanent",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeetype",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-05-22T04:47:24.275Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_type": "Temporary",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeetype",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-05-22T04:47:24.846Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_type": "Trainee",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftday",
+    "pk": 1,
+    "fields": { "day": "monday", "company_id": [] }
+  },
+  {
+    "model": "base.employeeshiftday",
+    "pk": 2,
+    "fields": { "day": "tuesday", "company_id": [] }
+  },
+  {
+    "model": "base.employeeshiftday",
+    "pk": 3,
+    "fields": { "day": "wednesday", "company_id": [] }
+  },
+  {
+    "model": "base.employeeshiftday",
+    "pk": 4,
+    "fields": { "day": "thursday", "company_id": [] }
+  },
+  {
+    "model": "base.employeeshiftday",
+    "pk": 5,
+    "fields": { "day": "friday", "company_id": [] }
+  },
+  {
+    "model": "base.employeeshiftday",
+    "pk": 6,
+    "fields": { "day": "saturday", "company_id": [] }
+  },
+  {
+    "model": "base.employeeshiftday",
+    "pk": 7,
+    "fields": { "day": "sunday", "company_id": [] }
+  },
+  {
+    "model": "base.employeeshift",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-22T04:47:23.654Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_shift": "Regular Shift",
+      "weekly_full_time": "40:00",
+      "full_time": "200:00",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshift",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-05-22T04:48:00.417Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_shift": "Night Shift",
+      "weekly_full_time": "40:00",
+      "full_time": "200:00",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshift",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-05-22T08:31:14.326Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_shift": "Morning Shift",
+      "weekly_full_time": "40:00",
+      "full_time": "200:00",
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-22T08:18:22.683Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 2,
+      "shift_id": 1,
+      "minimum_working_hour": "08:15",
+      "start_time": "08:30:00",
+      "end_time": "17:30:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-05-22T08:18:22.724Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 3,
+      "shift_id": 1,
+      "minimum_working_hour": "08:15",
+      "start_time": "08:30:00",
+      "end_time": "17:30:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-05-22T08:18:22.770Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 4,
+      "shift_id": 1,
+      "minimum_working_hour": "08:15",
+      "start_time": "08:30:00",
+      "end_time": "17:30:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-05-22T08:18:22.797Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 5,
+      "shift_id": 1,
+      "minimum_working_hour": "08:15",
+      "start_time": "08:30:00",
+      "end_time": "17:30:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-05-22T08:18:22.813Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 1,
+      "shift_id": 1,
+      "minimum_working_hour": "08:15",
+      "start_time": "08:30:00",
+      "end_time": "17:30:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-05-22T08:23:24.519Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 2,
+      "shift_id": 2,
+      "minimum_working_hour": "08:00",
+      "start_time": "13:00:00",
+      "end_time": "23:00:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-05-22T08:23:24.560Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 3,
+      "shift_id": 2,
+      "minimum_working_hour": "08:00",
+      "start_time": "13:00:00",
+      "end_time": "23:00:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-05-22T08:23:24.595Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 4,
+      "shift_id": 2,
+      "minimum_working_hour": "08:00",
+      "start_time": "13:00:00",
+      "end_time": "23:00:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-05-22T08:23:24.629Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 5,
+      "shift_id": 2,
+      "minimum_working_hour": "08:00",
+      "start_time": "13:00:00",
+      "end_time": "23:00:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-05-22T08:23:24.648Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 1,
+      "shift_id": 2,
+      "minimum_working_hour": "08:00",
+      "start_time": "13:00:00",
+      "end_time": "23:00:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 11,
+    "fields": {
+      "created_at": "2024-05-22T08:24:04.634Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 6,
+      "shift_id": 1,
+      "minimum_working_hour": "08:15",
+      "start_time": "09:00:00",
+      "end_time": "17:30:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 12,
+    "fields": {
+      "created_at": "2024-05-22T08:32:11.181Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 2,
+      "shift_id": 3,
+      "minimum_working_hour": "08:00",
+      "start_time": "06:00:00",
+      "end_time": "14:00:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 13,
+    "fields": {
+      "created_at": "2024-05-22T08:32:11.211Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 3,
+      "shift_id": 3,
+      "minimum_working_hour": "08:00",
+      "start_time": "06:00:00",
+      "end_time": "14:00:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 14,
+    "fields": {
+      "created_at": "2024-05-22T08:32:11.237Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 4,
+      "shift_id": 3,
+      "minimum_working_hour": "08:00",
+      "start_time": "06:00:00",
+      "end_time": "14:00:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 15,
+    "fields": {
+      "created_at": "2024-05-22T08:32:11.261Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 5,
+      "shift_id": 3,
+      "minimum_working_hour": "08:00",
+      "start_time": "06:00:00",
+      "end_time": "14:00:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.employeeshiftschedule",
+    "pk": 16,
+    "fields": {
+      "created_at": "2024-05-22T08:32:11.281Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "day": 1,
+      "shift_id": 3,
+      "minimum_working_hour": "08:00",
+      "start_time": "06:00:00",
+      "end_time": "14:00:00",
+      "is_night_shift": false,
+      "is_auto_punch_out_enabled": false,
+      "auto_punch_out_time": null,
+      "company_id": []
+    }
+  },
+  {
+    "model": "base.rotatingshift",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-22T08:30:28.174Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "name": "Morning to Night",
+      "shift1": 3,
+      "shift2": 2,
+      "additional_data": {}
+    }
+  },
+  {
+    "model": "base.rotatingshift",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-05-22T08:30:44.634Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "name": "Night to Morning",
+      "shift1": 2,
+      "shift2": 3,
+      "additional_data": {}
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-08-05T09:48:38.892Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 12,
+      "rotating_shift_id": 1,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-06",
+      "current_shift": 1,
+      "next_shift": 3,
+      "based_on": "after",
+      "rotate_after_day": 1,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-08-05T09:48:38.967Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 13,
+      "rotating_shift_id": 1,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-06",
+      "current_shift": 1,
+      "next_shift": 3,
+      "based_on": "after",
+      "rotate_after_day": 1,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-08-05T09:48:39.015Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 11,
+      "rotating_shift_id": 1,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-06",
+      "current_shift": 1,
+      "next_shift": 3,
+      "based_on": "after",
+      "rotate_after_day": 1,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-08-05T09:48:39.058Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 16,
+      "rotating_shift_id": 1,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-09-01",
+      "current_shift": 1,
+      "next_shift": 3,
+      "based_on": "monthly",
+      "rotate_after_day": 1,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-08-05T09:48:39.109Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 18,
+      "rotating_shift_id": 1,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-12",
+      "current_shift": 3,
+      "next_shift": 2,
+      "based_on": "weekly",
+      "rotate_after_day": 1,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 0 }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-08-05T09:48:39.154Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 14,
+      "rotating_shift_id": 1,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-06",
+      "current_shift": 1,
+      "next_shift": 3,
+      "based_on": "after",
+      "rotate_after_day": 1,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-08-05T09:48:39.212Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 15,
+      "rotating_shift_id": 1,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-12",
+      "current_shift": 3,
+      "next_shift": 2,
+      "based_on": "weekly",
+      "rotate_after_day": 1,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 0 }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-08-05T09:48:39.262Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 10,
+      "rotating_shift_id": 1,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-06",
+      "current_shift": 1,
+      "next_shift": 3,
+      "based_on": "after",
+      "rotate_after_day": 1,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1 }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-08-05T09:48:39.313Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 17,
+      "rotating_shift_id": 1,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-12",
+      "current_shift": 3,
+      "next_shift": 2,
+      "based_on": "weekly",
+      "rotate_after_day": 1,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 0 }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-08-05T09:48:39.363Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 19,
+      "rotating_shift_id": 1,
+      "start_date": "2024-08-05",
+      "next_change_date": "2024-08-06",
+      "current_shift": 1,
+      "next_shift": 3,
+      "based_on": "after",
+      "rotate_after_day": 1,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": { "next_shift_index": 1 }
+    }
+  },
+  {
+    "model": "base.worktyperequest",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-23T03:42:49.581Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 1,
+      "work_type_id": 2,
+      "previous_work_type_id": null,
+      "requested_date": "2024-05-01",
+      "requested_till": "2024-05-31",
+      "description": "need work from home for a month",
+      "is_permanent_work_type": false,
+      "approved": false,
+      "canceled": false,
+      "work_type_changed": false
+    }
+  },
+  {
+    "model": "base.worktyperequest",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-05-23T03:43:59.915Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 37,
+      "work_type_id": 2,
+      "previous_work_type_id": null,
+      "requested_date": "2024-05-10",
+      "requested_till": "2024-05-15",
+      "description": "requesting for work from home",
+      "is_permanent_work_type": false,
+      "approved": false,
+      "canceled": false,
+      "work_type_changed": false
+    }
+  },
+  {
+    "model": "base.worktyperequest",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-05-23T03:44:35.523Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 13,
+      "work_type_id": 1,
+      "previous_work_type_id": null,
+      "requested_date": "2024-05-01",
+      "requested_till": "2024-05-10",
+      "description": "need a work type change",
+      "is_permanent_work_type": false,
+      "approved": false,
+      "canceled": false,
+      "work_type_changed": false
+    }
+  },
+  {
+    "model": "base.worktyperequest",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-05-23T03:45:05.899Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 32,
+      "work_type_id": 2,
+      "previous_work_type_id": null,
+      "requested_date": "2024-05-04",
+      "requested_till": "2024-05-15",
+      "description": "requesting for work from home",
+      "is_permanent_work_type": false,
+      "approved": false,
+      "canceled": false,
+      "work_type_changed": false
+    }
+  },
+  {
+    "model": "base.worktyperequest",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-05-23T03:46:16.058Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 20,
+      "work_type_id": 4,
+      "previous_work_type_id": null,
+      "requested_date": "2024-05-01",
+      "requested_till": "2024-05-31",
+      "description": "remote work type for a month",
+      "is_permanent_work_type": false,
+      "approved": false,
+      "canceled": false,
+      "work_type_changed": false
+    }
+  },
+  {
+    "model": "base.shiftrequest",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-22T11:08:54.434Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 68,
+      "shift_id": 1,
+      "previous_shift_id": 2,
+      "requested_date": "2024-01-22",
+      "reallocate_to": null,
+      "reallocate_approved": false,
+      "reallocate_canceled": false,
+      "requested_till": "2024-01-28",
+      "description": "need a shift change",
+      "is_permanent_shift": false,
+      "approved": false,
+      "canceled": false,
+      "shift_changed": false
+    }
+  },
+  {
+    "model": "base.shiftrequest",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-05-22T11:10:20.608Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 68,
+      "shift_id": 2,
+      "previous_shift_id": null,
+      "requested_date": "2024-04-11",
+      "reallocate_to": null,
+      "reallocate_approved": false,
+      "reallocate_canceled": false,
+      "requested_till": "2024-04-18",
+      "description": "need night shift",
+      "is_permanent_shift": false,
+      "approved": true,
+      "canceled": false,
+      "shift_changed": false
+    }
+  },
+  {
+    "model": "base.shiftrequest",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-05-22T11:24:28.127Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 22,
+      "shift_id": 1,
+      "previous_shift_id": 2,
+      "requested_date": "2024-02-03",
+      "reallocate_to": null,
+      "reallocate_approved": false,
+      "reallocate_canceled": false,
+      "requested_till": "2024-02-29",
+      "description": "shift change",
+      "is_permanent_shift": false,
+      "approved": true,
+      "canceled": false,
+      "shift_changed": false
+    }
+  },
+  {
+    "model": "base.shiftrequest",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-05-22T11:25:36.885Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 53,
+      "shift_id": 1,
+      "previous_shift_id": 2,
+      "requested_date": "2024-03-12",
+      "reallocate_to": null,
+      "reallocate_approved": false,
+      "reallocate_canceled": false,
+      "requested_till": "2024-03-22",
+      "description": "shift change",
+      "is_permanent_shift": false,
+      "approved": false,
+      "canceled": true,
+      "shift_changed": false
+    }
+  },
+  {
+    "model": "base.shiftrequest",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-05-22T11:26:22.665Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 69,
+      "shift_id": 2,
+      "previous_shift_id": 1,
+      "requested_date": "2024-03-10",
+      "reallocate_to": null,
+      "reallocate_approved": false,
+      "reallocate_canceled": false,
+      "requested_till": "2024-03-22",
+      "description": "shift change",
+      "is_permanent_shift": false,
+      "approved": false,
+      "canceled": false,
+      "shift_changed": false
+    }
+  },
+  {
+    "model": "base.shiftrequest",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-05-22T11:27:15.333Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 45,
+      "shift_id": 1,
+      "previous_shift_id": 3,
+      "requested_date": "2024-05-01",
+      "reallocate_to": null,
+      "reallocate_approved": false,
+      "reallocate_canceled": false,
+      "requested_till": "2024-05-31",
+      "description": "shift change",
+      "is_permanent_shift": false,
+      "approved": false,
+      "canceled": false,
+      "shift_changed": false
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-22T08:42:08.218Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "FAQ",
+      "color": "#949494",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-05-22T08:42:23.547Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Recruitment",
+      "color": "#ffcccc",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-05-22T08:42:39.708Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Payroll",
+      "color": "#a16879",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-05-24T05:31:23.654Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "attendance",
+      "color": "#000000",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-05-24T05:42:45.721Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "employee",
+      "color": "#806d8d",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.horillamailtemplate",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.733Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "title": "Offer letter",
+      "body": "<p style=\"font-size: 12.8px; text-align: center;\"><span style=\"font-weight: bolder;\"><span style=\"font-family: &quot;Courier New&quot;; font-size: 24px;\">Congratulations! Job Offer at {{instance.get_company}}</span></span></p><p style=\"font-size: 12.8px;\">username:{{instance.get_email}}</p><p style=\"font-size: 12.8px;\">password:{{instance.phone}}</p><p style=\"font-size: 12.8px;\"><i><span style=\"font-size: 14px;\">Dear {{instance.get_full_name}},</span></i></p><p style=\"font-size: 12.8px;\">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; I am delighted to extend an official offer of employment to you for the position of [Job Title] at [Company Name]. We were thoroughly impressed with your skills, experience, and the passion you demonstrated during the interview process.</p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">Here are the details of your job offer:&nbsp;</span></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">&nbsp; &nbsp; Job Position: {{instance.get_job_position}}</span></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">We believe that your unique talents will make a significant contribution to our team, and we are thrilled about the prospect of you joining us. Please take the time to review the attached detailed job description, as well as the terms and conditions outlined in the employment contract.</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">To signify your acceptance of this job offer, please confirm your agreement by [Date to Respond]. If you have any questions or need further clarification, feel free to contact me directly</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">We are excited about the value you will bring to [Company Name], and we eagerly anticipate the positive impact you'll have on our team.</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">Welcome aboard, and we look forward to a successful and fulfilling working relationship!</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">Warm regards,</span></p>",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.dynamicpagination",
+    "pk": 1,
+    "fields": { "user_id": 1, "pagination": 25 }
+  },
+  {
+    "model": "base.driverviewed",
+    "pk": 1,
+    "fields": { "user": 1, "viewed": "dashboard" }
+  },
+  {
+    "model": "base.driverviewed",
+    "pk": 2,
+    "fields": { "user": 1, "viewed": "settings" }
+  },
+  {
+    "model": "base.driverviewed",
+    "pk": 3,
+    "fields": { "user": 1, "viewed": "pipeline" }
+  },
+  {
+    "model": "base.driverviewed",
+    "pk": 4,
+    "fields": { "user": 13, "viewed": "dashboard" }
+  },
+  {
+    "model": "base.driverviewed",
+    "pk": 5,
+    "fields": { "user": 13, "viewed": "pipeline" }
+  },
+  {
+    "model": "base.dashboardemployeecharts",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-05-21T11:23:17.664Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee": 1,
+      "charts": [
+        "overall_leave_chart",
+        "attendance_analytic",
+        "hours_chart",
+        "employees_chart",
+        "department_chart",
+        "gender_chart",
+        "objective_status",
+        "key_result_status",
+        "feedback_status",
+        "leave_request_approve",
+        "asset_request_approve",
+        "feedback_answer"
+      ]
+    }
+  },
+  {
+    "model": "base.announcement",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-09-17T10:34:52.749Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Horilla Tour",
+      "description": "<h1 class=\"hr-heading hr-heading--h1 hr-hero__title\" style=\"-webkit-font-smoothing: auto; font-size: 5rem; margin-right: auto; margin-bottom: 0px; margin-left: auto; font-family: Poppins, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-weight: bold; text-align: center; max-width: 855px; line-height: 96px; color: rgb(28, 28, 28);\">The&nbsp;<span class=\"hr-hero__highlight\" style=\"-webkit-font-smoothing: auto; position: relative;\">only</span>&nbsp;HR Software You'll ever need.</h1><p class=\"hr-hero__lead\" style=\"-webkit-font-smoothing: auto; font-size: 1.25rem; color: rgb(28, 28, 28); max-width: 650px; text-align: center; margin: 1rem auto 1.5rem; font-family: &quot;Open Sans&quot;, Inter, &quot;Helvetica Neue Light&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;\">Horilla HRMS offers all the features you would expect from your favorite Open Source HR Software and much more.<span style=\"-webkit-font-smoothing: auto; font-weight: bolder;\"><br style=\"-webkit-font-smoothing: auto;\">It's free &amp; open-source!</span></p>",
+      "expire_date": "2100-09-17",
+      "disable_comments": false,
+      "attachments": [],
+      "employees": [],
+      "department": [],
+      "job_position": []
+    }
+  },
+  {
+    "model": "base.biometricattendance",
+    "pk": 1,
+    "fields": { "is_installed": false, "company_id": null }
+  },
+  {
+    "model": "base.holidays",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.776Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "name": "New Year's Day",
+      "start_date": "2024-01-01",
+      "end_date": "2024-01-01",
+      "recurring": false,
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.holidays",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.811Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "name": "Republic Day",
+      "start_date": "2024-01-26",
+      "end_date": "2024-01-26",
+      "recurring": false,
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.holidays",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.823Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "name": "Holi",
+      "start_date": "2024-03-20",
+      "end_date": "2024-03-20",
+      "recurring": false,
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.holidays",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.849Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "name": "Vishu",
+      "start_date": "2024-04-14",
+      "end_date": "2024-04-14",
+      "recurring": false,
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.holidays",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.867Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "name": "Eid al-Fitr",
+      "start_date": "2024-04-10",
+      "end_date": "2024-04-10",
+      "recurring": false,
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.holidays",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.883Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "name": "Eid al-Adha ",
+      "start_date": "2024-06-19",
+      "end_date": "2024-06-19",
+      "recurring": false,
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.holidays",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.904Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "name": "Labor Day",
+      "start_date": "2024-05-01",
+      "end_date": "2024-05-01",
+      "recurring": false,
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.holidays",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.921Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "name": "Independence Day",
+      "start_date": "2024-08-15",
+      "end_date": "2024-08-15",
+      "recurring": false,
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.holidays",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.939Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "name": "Gandhi Jayanti ",
+      "start_date": "2024-10-02",
+      "end_date": "2024-10-02",
+      "recurring": false,
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.holidays",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.959Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "name": "Children's Day",
+      "start_date": "2024-11-14",
+      "end_date": "2024-11-14",
+      "recurring": false,
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.holidays",
+    "pk": 11,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.976Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "name": "Christmas",
+      "start_date": "2024-12-25",
+      "end_date": "2024-12-25",
+      "recurring": false,
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.companyleaves",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-08-05T09:39:13.993Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "based_on_week": null,
+      "based_on_week_day": "6",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.companyleaves",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-08-05T09:39:14.027Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "based_on_week": "1",
+      "based_on_week_day": "5",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.companyleaves",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-08-05T09:39:14.044Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "based_on_week": "3",
+      "based_on_week_day": "5",
+      "company_id": null
+    }
+  }
+]

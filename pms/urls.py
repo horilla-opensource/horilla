@@ -167,6 +167,11 @@ urlpatterns = [
         views.feedback_detailed_view_status,
         name="feedback-detailed-view-status",
     ),
+    path(
+        "get-feedback-overview/<int:obj_id>",
+        views.get_feedback_overview,
+        name="get-feedback-overview",
+    ),
     path("feedback-status", views.feedback_status, name="feedback-status"),
     path(
         "question-creation/<int:id>", views.question_creation, name="question-creation"

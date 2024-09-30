@@ -190,6 +190,7 @@
 
 			{% if next != None %}
 				<a href="{% url 'employee-view-individual' next %}" title="{% trans "Next Employee" %}"
+					data-action="next"
 					style="color:hsl(8, 77%, 56%);" class="ms-1 fw-bold">
 					<ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
 				</a>
@@ -201,7 +202,7 @@
 
 			{% if previous != None %}
 				<a href="{% url 'employee-view-individual' previous %}" title="{% trans "Previous Employee" %}"
-					style="color:hsl(8, 77%, 56%);" class="ms-1 me-2 fw-bold">
+					data-action="previous" style="color:hsl(8, 77%, 56%);" class="ms-1 me-2 fw-bold">
 					<ion-icon name="arrow-back-circle-outline" style="font-size:35px;"></ion-icon>
 				</a>
 			{% else %}

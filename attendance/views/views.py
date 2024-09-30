@@ -14,6 +14,7 @@ provide the main entry points for interacting with the application's functionali
 import logging
 
 from horilla.horilla_settings import HORILLA_DATE_FORMATS
+from horilla.methods import remove_dynamic_url
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,7 @@ from django.db.models import ProtectedError
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone as django_timezone
 from django.utils.translation import gettext as __
@@ -58,6 +60,7 @@ from attendance.forms import (
     AttendanceRequestCommentForm,
     AttendanceUpdateForm,
     AttendanceValidationConditionForm,
+    GraceTimeAssignForm,
     GraceTimeForm,
     LateComeEarlyOutExportForm,
     NewRequestForm,
@@ -271,17 +274,19 @@ def attendance_import(request):
         data_frame = pd.read_excel(file)
         attendance_dicts = data_frame.to_dict("records")
         attendance_import = process_attendance_data(attendance_dicts)
-
+        path_info = None
         if attendance_import:
-            error_data = handle_attendance_errors(attendance_import)
-            data_frame = pd.DataFrame(error_data, columns=error_data.keys())
-            response = HttpResponse(content_type="application/ms-excel")
-            response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
-            data_frame.to_excel(response, index=False)
-            return response
+            path_info = handle_attendance_errors(attendance_import)
 
-        return redirect(attendance_view)
-    return redirect(attendance_view)
+    created_attendance_count = len(attendance_dicts) - len(attendance_import)
+    context = {
+        "created_count": created_attendance_count,
+        "error_count": len(attendance_import),
+        "model": _("Attendance"),
+        "path_info": path_info,
+    }
+    html = render_to_string("import_popup.html", context)
+    return HttpResponse(html)
 
 
 @login_required
@@ -1278,6 +1283,7 @@ def validate_this_attendance(request, obj_id):
             request,
             (
                 f"{attendance.employee_id} {attendance.attendance_date.strftime('%d %b %Y') }"
+                + " "
                 + _("Attendance validated.")
             ),
         )
@@ -1746,12 +1752,15 @@ def create_grace_time(request):
     """
     is_default = eval(request.GET.get("default"))
     form = GraceTimeForm(initial={"is_default": is_default})
-
     if request.method == "POST":
         form = GraceTimeForm(request.POST)
         if form.is_valid():
-            instance = form.save(commit=False)
-            instance.save()
+            cleaned_data = form.cleaned_data
+            gracetime = form.save()
+            shifts = cleaned_data.get("shifts")
+            for shift in shifts:
+                shift.grace_time_id = gracetime
+                shift.save()
             messages.success(request, _("Grace time created successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
@@ -1759,6 +1768,30 @@ def create_grace_time(request):
         "attendance/grace_time/grace_time_form.html",
         {"form": form, "is_default": is_default},
     )
+
+
+@login_required
+@hx_request_required
+@permission_required("base.change_employeeshift")
+def assign_shift(request, grace_id):
+    gracetime = GraceTime.objects.filter(id=grace_id).first() if grace_id else None
+    if gracetime:
+        form = GraceTimeAssignForm()
+        if request.method == "POST":
+            form = GraceTimeAssignForm(request.POST)
+            if form.is_valid():
+                cleaned_data = form.cleaned_data
+                shifts = cleaned_data.get("shifts")
+                for shift in shifts:
+                    shift.grace_time_id = gracetime
+                    shift.save()
+                messages.success(request, _("Grace time added to shifts successfully."))
+                return HttpResponse("<script>window.location.reload()</script>")
+        return render(
+            request,
+            "attendance/grace_time/assign_shift.html",
+            {"form": form, "grace_time": gracetime},
+        )
 
 
 @login_required
@@ -1822,30 +1855,78 @@ def delete_grace_time(request, grace_id):
 
 @login_required
 @permission_required("attendance.update_gracetime")
-def update_isactive_gracetime(request, obj_id):
+def update_isactive_gracetime(request):
+    """
+    ajax function to update is active field in GraceTime.
+    Args:
+    - isChecked: Boolean value representing the state of grace time,
+    - gracetimeId: Id of GraceTime object
+    """
+    isChecked = request.POST.get("isChecked")
+    gracetimeId = request.POST.get("gracetimeId")
+    gracetime = GraceTime.objects.get(id=gracetimeId)
+    if isChecked == "true":
+        gracetime.is_active = True
+        response = {
+            "type": "success",
+            "message": _("Gracetime activated successfully."),
+        }
+    else:
+        gracetime.is_active = False
+        response = {
+            "type": "success",
+            "message": _("Gracetime deactivated successfully."),
+        }
+    gracetime.save()
+    return JsonResponse(response)
+
+
+@login_required
+@permission_required("attendance.update_gracetime")
+def update_gracetime_clock_in_clock_out(request):
     """
     ajax function to update is active field in grace time.
     Args:
-    - is_active: Boolean value representing the state of grace time,
-    - obj_id: Id of grace time object
+    - isChecked: Boolean value representing the state of grace time,
+    - gracetimeId: Id of PayslipAutoGenerate object
     """
-    is_active = request.POST.get("is_active")
-    grace_time = GraceTime.objects.get(id=obj_id)
-    if is_active == "on":
-        grace_time.is_active = True
-        messages.success(request, _("Grace time activated successfully."))
+    isChecked = request.POST.get("isChecked")
+    gracetimeId = request.POST.get("gracetimeId")
+    update = request.POST.get("update")
+    garcetime = GraceTime.objects.get(id=gracetimeId)
+    if update == "clock_in":
+        if isChecked == "true":
+            garcetime.allowed_clock_in = True
+            response = {
+                "type": "success",
+                "message": _("Gracetime applicable on clock-In successfully."),
+            }
+        else:
+            garcetime.allowed_clock_in = False
+            response = {
+                "type": "success",
+                "message": _("Gracetime unapplicable on clock-In  successfully."),
+            }
+    elif update == "clock_out":
+        if isChecked == "true":
+            garcetime.allowed_clock_out = True
+            response = {
+                "type": "success",
+                "message": _("Gracetime applicable on clock-out successfully."),
+            }
+        else:
+            garcetime.allowed_clock_out = False
+            response = {
+                "type": "success",
+                "message": _("Gracetime unapplicable on clock-out successfully."),
+            }
     else:
-        grace_time.is_active = False
-        messages.success(request, _("Grace time deactivated successfully."))
-    grace_time.save()
-
-    context = {
-        "condition": AttendanceValidationCondition.objects.first(),
-        "default_grace_time": GraceTime.objects.filter(is_default=True).first(),
-        "grace_times": GraceTime.objects.all().exclude(is_default=True),
-    }
-
-    return render(request, "attendance/grace_time/grace_time_table.html", context)
+        response = {
+            "type": "error",
+            "message": _("Something went wrong ."),
+        }
+    garcetime.save()
+    return JsonResponse(response)
 
 
 @login_required

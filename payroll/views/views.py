@@ -313,7 +313,7 @@ def contract_view(request):
 
 
 @login_required
-@hx_request_required
+# @hx_request_required         #this function is also used in payroll dashboard which uses ajax
 @owner_can_enter("payroll.view_contract", Contract)
 def view_single_contract(request, contract_id):
     """
@@ -1736,9 +1736,9 @@ def create_or_update_auto_payslip(request, auto_id=None):
 @permission_required("payroll.change_PayslipAutoGenerate")
 def activate_auto_payslip_generate(request):
     """
-    ajax function to update is active field in grace time.
+    ajax function to update is active field in PayslipAutoGenerate.
     Args:
-    - isChecked: Boolean value representing the state of grace time,
+    - isChecked: Boolean value representing the state of PayslipAutoGenerate,
     - autoId: Id of PayslipAutoGenerate object
     """
     isChecked = request.POST.get("isChecked")

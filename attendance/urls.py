@@ -354,6 +354,7 @@ urlpatterns = [
         "pending-hours/", attendance.views.dashboard.pending_hours, name="pending-hours"
     ),
     path("create-garce-time", views.create_grace_time, name="create-grace-time"),
+    path("assign-shift/<int:grace_id>", views.assign_shift, name="assign-shift"),
     path(
         "update-garce-time/<int:grace_id>/",
         views.update_grace_time,
@@ -365,9 +366,14 @@ urlpatterns = [
         name="delete-grace-time",
     ),
     path(
-        "update-isactive-gracetime/<int:obj_id>",
+        "update-isactive-gracetime",
         views.update_isactive_gracetime,
         name="update-isactive-gracetime",
+    ),
+    path(
+        "update-gracetime-clock-in-clock-out",
+        views.update_gracetime_clock_in_clock_out,
+        name="update-gracetime-clock-in-clock-out",
     ),
     path(
         "attendance-request-add-comment/<int:attendance_id>/",

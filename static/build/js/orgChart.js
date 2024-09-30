@@ -1,5 +1,1686 @@
-function orgChartLoad(params) {
-     "use strict";!function(e){"object"==typeof module&&"object"==typeof module.exports?e(require("jquery"),window,document):e(jQuery,window,document)}(function(l,h,c,d){function t(e,t){this.$chartContainer=l(e),this.opts=t,this.defaultOptions={icons:{theme:"oci",parentNode:"oci-menu",expandToUp:"oci-chevron-up",collapseToDown:"oci-chevron-down",collapseToLeft:"oci-chevron-left",expandToRight:"oci-chevron-right",collapsed:"oci-plus-square",expanded:"oci-minus-square",spinner:"oci-spinner"},nodeTitle:"name",nodeId:"id",toggleSiblingsResp:!1,visibleLevel:999,chartClass:"",exportButton:!1,exportButtonName:"Export",exportFilename:"OrgChart",exportFileextension:"png",draggable:!1,direction:"t2b",pan:!1,zoom:!1,zoominLimit:7,zoomoutLimit:.5}}t.prototype={init:function(e){var n=this,e=(this.options=l.extend({},this.defaultOptions,this.opts,e),this.$chartContainer),t=(this.$chart&&this.$chart.remove(),this.options.data),i=this.$chart=l("<div>",{data:{options:this.options},class:"orgchart"+(""!==this.options.chartClass?" "+this.options.chartClass:"")+("t2b"!==this.options.direction?" "+this.options.direction:""),click:function(e){l(e.target).closest(".node").length||i.find(".node.focused").removeClass("focused")}}),s=("undefined"!=typeof MutationObserver&&this.triggerInitEvent(),i.append(l('<ul class="nodes"><li class="hierarchy"></li></ul>')).find(".hierarchy"));return"object"===l.type(t)?t instanceof l?this.buildHierarchy(s,this.buildJsonDS(t.children()),0,this.options):this.buildHierarchy(s,this.options.ajaxURL?t:this.attachRel(t,"00")):(i.append(`<i class="${this.options.icons.theme} ${this.options.icons.spinner} spinner"></i>`),l.ajax({url:t,dataType:"json"}).done(function(e,t,i){n.buildHierarchy(s,n.options.ajaxURL?e:n.attachRel(e,"00"),0,n.options)}).fail(function(e,t,i){console.log(i)}).always(function(){i.children(".spinner").remove()})),e.append(i),this.options.exportButton&&!l(".oc-export-btn").length&&this.attachExportButton(),this.options.pan&&this.bindPan(),this.options.zoom&&this.bindZoom(),this},triggerInitEvent:function(){var s=this,o=new MutationObserver(function(e){o.disconnect();e:for(var t=0;t<e.length;t++)for(var i=0;i<e[t].addedNodes.length;i++)if(e[t].addedNodes[i].classList.contains("orgchart")){s.options.initCompleted&&"function"==typeof s.options.initCompleted&&s.options.initCompleted(s.$chart);var n=l.Event("init.orgchart");s.$chart.trigger(n);break e}});o.observe(this.$chartContainer[0],{childList:!0})},triggerLoadEvent:function(e,t){t=l.Event("load-"+t+".orgchart");e.trigger(t)},triggerShowEvent:function(e,t){t=l.Event("show-"+t+".orgchart");e.trigger(t)},triggerHideEvent:function(e,t){t=l.Event("hide-"+t+".orgchart");e.trigger(t)},attachExportButton:function(){var t=this,e=l("<button>",{class:"oc-export-btn",text:this.options.exportButtonName,click:function(e){e.preventDefault(),t.export()}});this.$chartContainer.after(e)},setOptions:function(e,t){return"string"==typeof e&&("pan"===e&&(t?this.bindPan():this.unbindPan()),"zoom"===e)&&(t?this.bindZoom():this.unbindZoom()),"object"==typeof e&&(e.data?this.init(e):(void 0!==e.pan&&(e.pan?this.bindPan():this.unbindPan()),void 0!==e.zoom&&(e.zoom?this.bindZoom():this.unbindZoom()))),this},panStartHandler:function(e){var s=l(e.delegateTarget);if(l(e.target).closest(".node").length||e.touches&&1<e.touches.length)s.data("panning",!1);else{s.css("cursor","move").data("panning",!0);var t,i=0,n=0,o=s.css("transform"),a=("none"!==o&&(t=o.split(","),n=-1===o.indexOf("3d")?(i=parseInt(t[4]),parseInt(t[5])):(i=parseInt(t[12]),parseInt(t[13]))),0),d=0;if(e.targetTouches){if(1===e.targetTouches.length)a=e.targetTouches[0].pageX-i,d=e.targetTouches[0].pageY-n;else if(1<e.targetTouches.length)return}else a=e.pageX-i,d=e.pageY-n;s.on("mousemove touchmove",function(e){if(s.data("panning")){var t=0,i=0;if(e.targetTouches){if(1===e.targetTouches.length)t=e.targetTouches[0].pageX-a,i=e.targetTouches[0].pageY-d;else if(1<e.targetTouches.length)return}else t=e.pageX-a,i=e.pageY-d;var n,e=s.css("transform");"none"===e?-1===e.indexOf("3d")?s.css("transform","matrix(1, 0, 0, 1, "+t+", "+i+")"):s.css("transform","matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, "+t+", "+i+", 0, 1)"):(n=e.split(","),-1===e.indexOf("3d")?(n[4]=" "+t,n[5]=" "+i+")"):(n[12]=" "+t,n[13]=" "+i),s.css("transform",n.join(",")))}})}},panEndHandler:function(e){e.data.chart.data("panning")&&e.data.chart.data("panning",!1).css("cursor","default").off("mousemove")},bindPan:function(){this.$chartContainer.css("overflow","hidden"),this.$chart.on("mousedown touchstart",this.panStartHandler),l(c).on("mouseup touchend",{chart:this.$chart},this.panEndHandler)},unbindPan:function(){this.$chartContainer.css("overflow","auto"),this.$chart.off("mousedown touchstart",this.panStartHandler),l(c).off("mouseup touchend",this.panEndHandler)},zoomWheelHandler:function(e){var t=e.data.oc,e=(e.preventDefault(),1+(0<e.originalEvent.deltaY?-.2:.2));t.setChartScale(t.$chart,e)},zoomStartHandler:function(e){var t;e.touches&&2===e.touches.length&&((t=e.data.oc).$chart.data("pinching",!0),e=t.getPinchDist(e),t.$chart.data("pinchDistStart",e))},zoomingHandler:function(e){var t=e.data.oc;t.$chart.data("pinching")&&(e=t.getPinchDist(e),t.$chart.data("pinchDistEnd",e))},zoomEndHandler:function(e){var t,e=e.data.oc;e.$chart.data("pinching")&&(e.$chart.data("pinching",!1),0<(t=e.$chart.data("pinchDistEnd")-e.$chart.data("pinchDistStart"))?e.setChartScale(e.$chart,1.2):t<0&&e.setChartScale(e.$chart,.8))},bindZoom:function(){this.$chartContainer.on("wheel",{oc:this},this.zoomWheelHandler),this.$chartContainer.on("touchstart",{oc:this},this.zoomStartHandler),l(c).on("touchmove",{oc:this},this.zoomingHandler),l(c).on("touchend",{oc:this},this.zoomEndHandler)},unbindZoom:function(){this.$chartContainer.off("wheel",this.zoomWheelHandler),this.$chartContainer.off("touchstart",this.zoomStartHandler),l(c).off("touchmove",this.zoomingHandler),l(c).off("touchend",this.zoomEndHandler)},getPinchDist:function(e){return Math.sqrt((e.touches[0].clientX-e.touches[1].clientX)*(e.touches[0].clientX-e.touches[1].clientX)+(e.touches[0].clientY-e.touches[1].clientY)*(e.touches[0].clientY-e.touches[1].clientY))},setChartScale:function(e,t){var i,n=e.data("options"),s=e.css("transform"),o=1;"none"===s?e.css("transform","scale("+t+","+t+")"):(i=s.split(","),-1===s.indexOf("3d")?(o=Math.abs(h.parseFloat(i[3])*t))>n.zoomoutLimit&&o<n.zoominLimit&&e.css("transform",s+" scale("+t+","+t+")"):(o=Math.abs(h.parseFloat(i[1])*t))>n.zoomoutLimit&&o<n.zoominLimit&&e.css("transform",s+" scale3d("+t+","+t+", 1)"))},buildJsonDS:function(e){var t=this,i={name:e.contents().eq(0).text().trim(),relationship:(e.parent().parent().is("li")?"1":"0")+(e.siblings("li").length?1:0)+(e.children("ul").length?1:0)};return l.each(e.data(),function(e,t){i[e]=t}),e.children("ul").children().each(function(){i.children||(i.children=[]),i.children.push(t.buildJsonDS(l(this)))}),i},attachRel:function(t,e){var i=this;return t.relationship=e+(t.children&&0<t.children.length?1:0),t.children&&t.children.forEach(function(e){(t.isHybrid||t.isVertical)&&(e.isVertical=!0),i.attachRel(e,"1"+(1<t.children.length?1:0))}),t},loopChart:function(e,t){t=null!==t&&t!==d&&t;var i=this,e=e.find(".node:first"),n={id:e[0].id};return t&&l.each(e.data("nodeData"),function(e,t){n[e]=t}),e.siblings(".nodes").children().each(function(){n.children||(n.children=[]),n.children.push(i.loopChart(l(this),t))}),n},getHierarchy:function(e){var t;return e=null!==e&&e!==d&&e,void 0===this.$chart?"Error: orgchart does not exist":this.$chart.find(".node").length?(t=!0,this.$chart.find(".node").each(function(){if(!this.id)return t=!1}),t?this.loopChart(this.$chart,e):"Error: All nodes of orghcart to be exported must have data-id attribute!"):"Error: nodes do not exist"},getNodeState:function(e,t){var i={},n=!!e.closest("vertical").length;if("parent"===(t=t||"self")){if(n?(i=e.closest("ul").parents("ul")).length||(i=e.closest(".nodes")).length||(i=e.closest(".vertical").siblings(":first")):i=e.closest(".nodes").siblings(".node"),i.length)return i.is(".hidden")||!i.is(".hidden")&&i.closest(".nodes").is(".hidden")||!i.is(".hidden")&&i.closest(".vertical").is(".hidden")?{exist:!0,visible:!1}:{exist:!0,visible:!0}}else if("children"===t){if((i=n?e.parent().children("ul"):e.siblings(".nodes")).length)return i.is(".hidden")?{exist:!0,visible:!1}:{exist:!0,visible:!0}}else if("siblings"===t){if((i=n?e.closest("ul"):e.parent().siblings()).length&&(!n||1<i.children("li").length))return i.is(".hidden")||i.parent().is(".hidden")||n&&i.closest(".vertical").is(".hidden")?{exist:!0,visible:!1}:{exist:!0,visible:!0}}else if((i=e).length)return i.closest(".nodes").length&&i.closest(".nodes").is(".hidden")||i.closest(".hierarchy").length&&i.closest(".hierarchy").is(".hidden")||i.closest(".vertical").length&&(i.closest(".nodes").is(".hidden")||i.closest(".vertical").is(".hidden"))?{exist:!0,visible:!1}:{exist:!0,visible:!0};return{exist:!1,visible:!1}},getParent:function(e){return this.getRelatedNodes(e,"parent")},getChildren:function(e){return this.getRelatedNodes(e,"children")},getSiblings:function(e){return this.getRelatedNodes(e,"siblings")},getRelatedNodes:function(e,t){return e&&e instanceof l&&e.is(".node")?"parent"===t?e.closest(".nodes").siblings(".node"):"children"===t?e.siblings(".nodes").children(".hierarchy").find(".node:first"):"siblings"===t?e.closest(".hierarchy").siblings().find(".node:first"):l():l()},hideParentEnd:function(e){l(e.target).removeClass("sliding"),e.data.parent.addClass("hidden")},hideParent:function(e){var t=e.closest(".nodes").siblings(".node");t.find(".spinner").length&&e.closest(".orgchart").data("inAjax",!1),this.getNodeState(e,"siblings").visible&&this.hideSiblings(e),e.parent().addClass("isAncestorsCollapsed"),this.getNodeState(t).visible&&t.addClass("sliding slide-down").one("transitionend",{parent:t},this.hideParentEnd),this.getNodeState(t,"parent").visible&&this.hideParent(t)},showParentEnd:function(e){var t=e.data.node;l(e.target).removeClass("sliding"),this.isInAction(t)&&this.switchVerticalArrow(t.children(".topEdge"))},showParent:function(e){var t=e.closest(".nodes").siblings(".node").removeClass("hidden");e.closest(".hierarchy").removeClass("isAncestorsCollapsed"),this.repaint(t[0]),t.addClass("sliding").removeClass("slide-down").one("transitionend",{node:e},this.showParentEnd.bind(this))},stopAjax:function(e){e.find(".spinner").length&&e.closest(".orgchart").data("inAjax",!1)},isVisibleNode:function(e,t){return this.getNodeState(l(t)).visible},hideChildrenEnd:function(e){var t=e.data.node;e.data.animatedNodes.removeClass("sliding"),e.data.animatedNodes.closest(".nodes").addClass("hidden"),this.isInAction(t)&&this.switchVerticalArrow(t.children(".bottomEdge"))},hideChildren:function(e){e.closest(".hierarchy").addClass("isChildrenCollapsed");var t=e.siblings(".nodes"),i=(this.stopAjax(t),t.find(".node").filter(this.isVisibleNode.bind(this)));t.is(".vertical")||i.closest(".hierarchy").addClass("isCollapsedDescendant"),(t.is(".vertical")||t.find(".vertical").length)&&i.find(this.options.icons.expanded).removeClass(this.options.icons.expanded).addClass(this.options.icons.collapsed),this.repaint(i.get(0)),i.addClass("sliding slide-up").eq(0).one("transitionend",{animatedNodes:i,lowerLevel:t,node:e},this.hideChildrenEnd.bind(this))},showChildrenEnd:function(e){var t=e.data.node;e.data.animatedNodes.removeClass("sliding"),this.isInAction(t)&&this.switchVerticalArrow(t.children(".bottomEdge"))},showChildren:function(e){e.closest(".hierarchy").removeClass("isChildrenCollapsed");var t=e.siblings(".nodes"),i=t.is(".vertical"),t=(i?t.removeClass("hidden").find(".node"):t.removeClass("hidden").children(".hierarchy").find(".node:first")).filter(this.isVisibleNode.bind(this));i||(t.filter(":not(:only-child)").closest(".hierarchy").addClass("isChildrenCollapsed"),t.closest(".hierarchy").removeClass("isCollapsedDescendant")),this.repaint(t.get(0)),t.addClass("sliding").removeClass("slide-up").eq(0).one("transitionend",{node:e,animatedNodes:t},this.showChildrenEnd.bind(this))},hideSiblingsEnd:function(e){var t=e.data.node,i=e.data.nodeContainer,n=e.data.direction,n=n?"left"===n?i.prevAll(":not(.hidden)"):i.nextAll(":not(.hidden)"):i.siblings();e.data.animatedNodes.removeClass("sliding"),n.find(".node:gt(0)").filter(this.isVisibleNode.bind(this)).removeClass("slide-left slide-right").addClass("slide-up"),n.find(".nodes, .vertical").addClass("hidden").end().addClass("hidden"),this.isInAction(t)&&this.switchHorizontalArrow(t)},hideSiblings:function(e,t){var i=e.closest(".hierarchy").addClass("isSiblingsCollapsed"),n=(i.siblings().find(".spinner").length&&e.closest(".orgchart").data("inAjax",!1),t?"left"===t?i.addClass("left-sibs").prevAll(".isSiblingsCollapsed").removeClass("isSiblingsCollapsed left-sibs").end().prevAll().addClass("isCollapsedSibling isChildrenCollapsed").find(".node").filter(this.isVisibleNode.bind(this)).addClass("sliding slide-right"):i.addClass("right-sibs").nextAll(".isSiblingsCollapsed").removeClass("isSiblingsCollapsed right-sibs").end().nextAll().addClass("isCollapsedSibling isChildrenCollapsed").find(".node").filter(this.isVisibleNode.bind(this)).addClass("sliding slide-left"):(i.prevAll().find(".node").filter(this.isVisibleNode.bind(this)).addClass("sliding slide-right"),i.nextAll().find(".node").filter(this.isVisibleNode.bind(this)).addClass("sliding slide-left"),i.siblings().addClass("isCollapsedSibling isChildrenCollapsed")),i.siblings().find(".sliding"));n.eq(0).one("transitionend",{node:e,nodeContainer:i,direction:t,animatedNodes:n},this.hideSiblingsEnd.bind(this))},showSiblingsEnd:function(e){var t=e.data.node;e.data.visibleNodes.removeClass("sliding"),this.isInAction(t)&&(this.switchHorizontalArrow(t),t.children(".topEdge").removeClass(this.options.icons.expandToUp).addClass(this.options.icons.collapseToDown))},showRelatedParentEnd:function(e){l(e.target).removeClass("sliding")},showSiblings:function(e,t){var i=l(),n=e.closest(".hierarchy"),i=(t?"left"===t?n.prevAll():n.nextAll():e.closest(".hierarchy").siblings()).removeClass("hidden"),s=e.closest(".nodes").siblings(".node"),n=(t?(n.removeClass(t+"-sibs"),n.is("[class*=-sibs]")||n.removeClass("isSiblingsCollapsed"),i.removeClass("isCollapsedSibling "+t+"-sibs")):(e.closest(".hierarchy").removeClass("isSiblingsCollapsed"),i.removeClass("isCollapsedSibling")),this.getNodeState(e,"parent").visible||(e.closest(".hierarchy").removeClass("isAncestorsCollapsed"),s.removeClass("hidden"),this.repaint(s[0]),s.addClass("sliding").removeClass("slide-down").one("transitionend",this.showRelatedParentEnd)),i.find(".node").filter(this.isVisibleNode.bind(this)));this.repaint(n.get(0)),n.addClass("sliding").removeClass("slide-left slide-right"),n.eq(0).one("transitionend",{node:e,visibleNodes:n},this.showSiblingsEnd.bind(this))},startLoading:function(e){var t=this.$chart;return(void 0===t.data("inAjax")||!0!==t.data("inAjax"))&&(e.addClass("hidden"),e.parent().append(`<i class="${this.options.icons.theme} ${this.options.icons.spinner} spinner"></i>`).children().not(".spinner").css("opacity",.2),t.data("inAjax",!0),l(".oc-export-btn").prop("disabled",!0),!0)},endLoading:function(e){var t=e.parent();e.removeClass("hidden"),t.find(".spinner").remove(),t.children().removeAttr("style"),this.$chart.data("inAjax",!1),l(".oc-export-btn").prop("disabled",!1)},isInAction:function(t){return[this.options.icons.expandToUp,this.options.icons.collapseToDown,this.options.icons.collapseToLeft,this.options.icons.expandToRight].some(e=>-1<t.children(".edge").attr("class").indexOf(e))},switchVerticalArrow:function(e){e.toggleClass(this.options.icons.expandToUp+" "+this.options.icons.collapseToDown)},switchHorizontalArrow:function(e){var t,i=this.options;i.toggleSiblingsResp&&(void 0===i.ajaxURL||e.closest(".nodes").data("siblingsLoaded"))?((t=e.parent().prev()).length&&(t.is(".hidden")?e.children(".leftEdge").addClass(i.icons.collapseToLeft).removeClass(i.icons.expandToRight):e.children(".leftEdge").addClass(i.icons.expandToRight).removeClass(i.icons.collapseToLeft)),(t=e.parent().next()).length&&(t.is(".hidden")?e.children(".rightEdge").addClass(i.icons.expandToRight).removeClass(i.icons.collapseToLeft):e.children(".rightEdge").addClass(i.icons.collapseToLeft).removeClass(i.icons.expandToRight))):(t=!!(t=e.parent().siblings()).length&&!t.is(".hidden"),e.children(".leftEdge").toggleClass(i.icons.expandToRight,t).toggleClass(i.icons.collapseToLeft,!t),e.children(".rightEdge").toggleClass(i.icons.collapseToLeft,t).toggleClass(i.icons.expandToRight,!t))},repaint:function(e){e&&(e.style.offsetWidth=e.offsetWidth)},nodeEnterLeaveHandler:function(e){var t,i,n,s=l(e.delegateTarget),o=!1;s.closest(".nodes.vertical").length?(t=s.children(".toggleBtn"),"mouseenter"===e.type?s.children(".toggleBtn").length&&(o=this.getNodeState(s,"children").visible,t.toggleClass(this.options.icons.collapsed,!o).toggleClass(this.options.icons.expanded,o)):t.removeClass(this.options.icons.collapsed+" "+this.options.icons.expanded)):(t=s.children(".topEdge"),s.children(".rightEdge"),i=s.children(".bottomEdge"),n=s.children(".leftEdge"),"mouseenter"===e.type?(t.length&&(o=this.getNodeState(s,"parent").visible,t.toggleClass(this.options.icons.expandToUp,!o).toggleClass(this.options.icons.collapseToDown,o)),i.length&&(o=this.getNodeState(s,"children").visible,i.toggleClass(this.options.icons.collapseToDown,!o).toggleClass(this.options.icons.expandToUp,o)),n.length&&this.switchHorizontalArrow(s)):s.children(".edge").removeClass(`${this.options.icons.expandToUp} ${this.options.icons.collapseToDown} ${this.options.icons.collapseToLeft} `+this.options.icons.expandToRight))},nodeClickHandler:function(e){this.$chart.find(".focused").removeClass("focused"),l(e.delegateTarget).addClass("focused")},loadNodes:function(t,e,i){var n=this;this.options;l.ajax({url:e,dataType:"json"}).done(function(e){n.$chart.data("inAjax")&&("parent"===t?l.isEmptyObject(e)||n.addParent(i.parent(),e):"children"===t?e.children.length&&n.addChildren(i.parent(),e[t]):n.addSiblings(i.parent(),e.siblings||e),n.triggerLoadEvent(i.parent(),t))}).fail(function(){console.log("Failed to get "+t+" data")}).always(function(){n.endLoading(i)})},HideFirstParentEnd:function(e){var e=e.data.topEdge,t=e.parent();this.isInAction(t)&&(this.switchVerticalArrow(e),this.switchHorizontalArrow(t))},topEdgeClickHandler:function(e){e.stopPropagation();var t,i=l(e.target),e=l(e.delegateTarget),n=this.getNodeState(e,"parent");n.exist?(t=e.closest(".nodes").siblings(".node")).is(".sliding")||(n.visible?(this.hideParent(e),t.one("transitionend",{topEdge:i},this.HideFirstParentEnd.bind(this)),this.triggerHideEvent(e,"parent")):(this.showParent(e),this.triggerShowEvent(e,"parent"))):this.startLoading(i)&&(n=this.options,t=l.isFunction(n.ajaxURL.parent)?n.ajaxURL.parent(e.data("nodeData")):n.ajaxURL.parent+e[0].id,this.loadNodes("parent",t,i))},bottomEdgeClickHandler:function(e){e.stopPropagation();var t=l(e.target),e=l(e.delegateTarget),i=this.getNodeState(e,"children");i.exist?e.siblings(".nodes").children().children(".node").is(".sliding")||(i.visible?(this.hideChildren(e),this.triggerHideEvent(e,"children")):(this.showChildren(e),this.triggerShowEvent(e,"children"))):this.startLoading(t)&&(i=this.options,i=l.isFunction(i.ajaxURL.children)?i.ajaxURL.children(e.data("nodeData")):i.ajaxURL.children+e[0].id,this.loadNodes("children",i,t))},hEdgeClickHandler:function(e){e.stopPropagation();var t,i,n=l(e.target),e=l(e.delegateTarget),s=this.options,o=this.getNodeState(e,"siblings");o.exist?e.closest(".hierarchy").siblings().find(".sliding").length||(s.toggleSiblingsResp?(t=e.closest(".hierarchy").prev(),i=e.closest(".hierarchy").next(),n.is(".leftEdge")?t.is(".hidden")?(this.showSiblings(e,"left"),this.triggerShowEvent(e,"siblings")):(this.hideSiblings(e,"left"),this.triggerHideEvent(e,"siblings")):i.is(".hidden")?(this.showSiblings(e,"right"),this.triggerShowEvent(e,"siblings")):(this.hideSiblings(e,"right"),this.triggerHideEvent(e,"siblings"))):o.visible?(this.hideSiblings(e),this.triggerHideEvent(e,"siblings")):(this.showSiblings(e),this.triggerShowEvent(e,"siblings"))):this.startLoading(n)&&(t=e[0].id,i=this.getNodeState(e,"parent").exist?l.isFunction(s.ajaxURL.siblings)?s.ajaxURL.siblings(e.data("nodeData")):s.ajaxURL.siblings+t:l.isFunction(s.ajaxURL.families)?s.ajaxURL.families(e.data("nodeData")):s.ajaxURL.families+t,this.loadNodes("siblings",i,n))},expandVNodesEnd:function(e){e.data.vNodes.removeClass("sliding")},collapseVNodesEnd:function(e){e.data.vNodes.removeClass("sliding").closest("ul").addClass("hidden")},toggleVNodes:function(e){var e=l(e.target),t=e.parent().next(),i=t.find(".node"),n=t.children().children(".node");n.is(".sliding")||(e.toggleClass(this.options.icons.collapsed+" "+this.options.icons.expanded),i.eq(0).is(".slide-up")?(t.removeClass("hidden"),this.repaint(n.get(0)),n.addClass("sliding").removeClass("slide-up").eq(0).one("transitionend",{vNodes:n},this.expandVNodesEnd)):(i.addClass("sliding slide-up").eq(0).one("transitionend",{vNodes:i},this.collapseVNodesEnd),i.find(".toggleBtn").removeClass(this.options.icons.collapsed+" "+this.options.icons.expanded)))},createGhostNode:function(e){var t,i,n=l(e.target),s=this.options,e=e.originalEvent,o=/firefox/.test(h.navigator.userAgent.toLowerCase());if(c.querySelector(".ghost-node"))t=n.closest(".orgchart").children(".ghost-node").get(0),i=l(t).children().get(0);else{if(!(t=c.createElementNS("http://www.w3.org/2000/svg","svg")).classList)return;t.classList.add("ghost-node"),i=c.createElementNS("http://www.w3.org/2000/svg","rect"),t.appendChild(i),n.closest(".orgchart").append(t)}var a=n.closest(".orgchart").css("transform").split(","),d="t2b"===s.direction||"b2t"===s.direction,a=Math.abs(h.parseFloat(d?a[0].slice(a[0].indexOf("(")+1):a[1])),d=(t.setAttribute("width",d?n.outerWidth(!1):n.outerHeight(!1)),t.setAttribute("height",d?n.outerHeight(!1):n.outerWidth(!1)),i.setAttribute("x",5*a),i.setAttribute("y",5*a),i.setAttribute("width",120*a),i.setAttribute("height",40*a),i.setAttribute("rx",4*a),i.setAttribute("ry",4*a),i.setAttribute("stroke-width",+a),e.offsetX*a),r=e.offsetY*a;"l2r"===s.direction?(d=e.offsetY*a,r=e.offsetX*a):"r2l"===s.direction?(d=n.outerWidth(!1)-e.offsetY*a,r=e.offsetX*a):"b2t"===s.direction&&(d=n.outerWidth(!1)-e.offsetX*a,r=n.outerHeight(!1)-e.offsetY*a),o?(i.setAttribute("fill","rgb(255, 255, 255)"),i.setAttribute("stroke","rgb(191, 0, 0)"),(s=c.createElement("img")).src="data:image/svg+xml;utf8,"+(new XMLSerializer).serializeToString(t),e.dataTransfer.setDragImage(s,d,r)):e.dataTransfer.setDragImage&&e.dataTransfer.setDragImage(t,d,r)},getUpperLevel:function(e){return e.is(".node")?e.parents(".hierarchy").length:0},getLowerLevel:function(e){return e.is(".node")?e.closest(".hierarchy").find(".nodes").length+1:0},getLevelOrderNodes:function(e){if(!e)return[];var t=[],i=[];for(t.push(e);t.length;){for(var n=[],s=0;s<t.length;s++){var o=t.shift(),a=this.getChildren(o);a.length&&t.push(a.toArray().flat()),n.push(l(o))}i.push(n)}return i},filterAllowedDropNodes:function(i){var n=this.options,s=i.closest("[draggable]").hasClass("node"),o=i.closest(".nodes").siblings(".node"),a=i.closest(".hierarchy").find(".node");this.$chart.data("dragged",i).find(".node").each(function(e,t){s&&-1!==a.index(t)||n.dropCriteria&&!n.dropCriteria(i,o,l(t))||l(t).addClass("allowedDrop")})},dragstartHandler:function(e){e.originalEvent.dataTransfer.setData("text/html","hack for firefox"),"none"!==this.$chart.css("transform")&&this.createGhostNode(e),this.filterAllowedDropNodes(l(e.target))},dragoverHandler:function(e){l(e.delegateTarget).is(".allowedDrop")?e.preventDefault():e.originalEvent.dataTransfer.dropEffect="none"},dragendHandler:function(e){this.$chart.find(".allowedDrop").removeClass("allowedDrop")},dropHandler:async function(e){var t,i,n,s,o,e=l(e.delegateTarget),a=this.$chart.data("dragged");a.hasClass("node")?e.hasClass("allowedDrop")&&(t=a.closest(".nodes").siblings(".node"),i=l.Event("nodedrop.orgchart"),this.$chart.trigger(i,{draggedNode:a,dragZone:t,dropZone:e}),i.isDefaultPrevented()||(i=this.$chart.data("options").data,o=(s=new JSONDigger(i,this.$chart.data("options").nodeId,"children")).findOneNode({isHybrid:!0}),1<this.$chart.data("options").verticalLevel||o?(o=s.findNodeById(a.data("nodeData").id),n=Object.assign({},o),s.removeNode(o.id),(o=s.findNodeById(e.data("nodeData").id)).children?o.children.push(n):o.children=[n],this.init({data:i})):(e.siblings(".nodes").length?(s=`<i class="edge horizontalEdge rightEdge ${this.options.icons.theme}"></i><i class="edge horizontalEdge leftEdge ${this.options.icons.theme}"></i>`,a.find(".horizontalEdge").length||a.append(s),e.siblings(".nodes").append(a.closest(".hierarchy")),1===(o=a.closest(".hierarchy").siblings().find(".node:first")).length&&o.append(s)):(e.append(`<i class="edge verticalEdge bottomEdge ${this.options.icons.theme}"></i>`).after('<ul class="nodes"></ul>').siblings(".nodes").append(a.find(".horizontalEdge").remove().end().closest(".hierarchy")),e.children(".title").length&&e.children(".title").prepend(`<i class="${this.options.icons.theme} ${this.$chart.data("options").icons.parentNode} parentNodeSymbol"></i>`)),1===t.siblings(".nodes").children(".hierarchy").length?t.siblings(".nodes").children(".hierarchy").find(".node:first").find(".horizontalEdge").remove():0===t.siblings(".nodes").children(".hierarchy").length&&t.find(".bottomEdge, .parentNodeSymbol").remove().end().siblings(".nodes").remove()))):this.$chart.triggerHandler({type:"otherdropped.orgchart",draggedItem:a,dropZone:e})},touchstartHandler:function(e){this.touchHandled||e.touches&&1<e.touches.length||(this.touchHandled=!0,this.touchMoved=!1,e.preventDefault())},touchmoveHandler:function(e){var t;!this.touchHandled||e.touches&&1<e.touches.length||(e.preventDefault(),this.touchMoved||(this.filterAllowedDropNodes(l(e.currentTarget)),this.touchDragImage=this.createDragImage(e,this.$chart.data("dragged")[0])),this.touchMoved=!0,this.moveDragImage(e,this.touchDragImage),0<(e=l(c.elementFromPoint(e.touches[0].clientX,e.touches[0].clientY)).closest("div.node")).length&&(t=e[0],e.is(".allowedDrop"))?this.touchTargetNode=t:this.touchTargetNode=null)},touchendHandler:function(e){var t,i;this.touchHandled&&(this.destroyDragImage(),this.touchMoved?(this.touchTargetNode&&(t={delegateTarget:this.touchTargetNode},this.dropHandler(t),this.touchTargetNode=null),this.dragendHandler(e)):(t=e.changedTouches[0],(i=c.createEvent("MouseEvents")).initMouseEvent("click",!0,!0,h,1,t.screenX,t.screenY,t.clientX,t.clientY,e.ctrlKey,e.altKey,e.shiftKey,e.metaKey,0,null),e.target.dispatchEvent(i)),this.touchHandled=!1)},createDragImage:function(e,t){var i=t.cloneNode(!0),t=(this.copyStyle(t,i),i.style.top=i.style.left="-9999px",t.getBoundingClientRect()),e=this.getTouchPoint(e);return this.touchDragImageOffset={x:e.x-t.left,y:e.y-t.top},i.style.opacity="0.5",c.body.appendChild(i),i},destroyDragImage:function(){this.touchDragImage&&this.touchDragImage.parentElement&&this.touchDragImage.parentElement.removeChild(this.touchDragImage),this.touchDragImageOffset=null,this.touchDragImage=null},copyStyle:function(e,t){["id","class","style","draggable"].forEach(function(e){t.removeAttribute(e)}),e instanceof HTMLCanvasElement&&((n=t).width=(i=e).width,n.height=i.height,n.getContext("2d").drawImage(i,0,0));for(var i,n,s=getComputedStyle(e),o=0;o<s.length;o++){var a=s[o];a.indexOf("transition")<0&&(t.style[a]=s[a])}t.style.pointerEvents="none";for(o=0;o<e.children.length;o++)this.copyStyle(e.children[o],t.children[o])},getTouchPoint:function(e){return{x:(e=e&&e.touches?e.touches[0]:e).clientX,y:e.clientY}},moveDragImage:function(i,n){var s;i&&n&&(s=this,requestAnimationFrame(function(){var e=s.getTouchPoint(i),t=n.style;t.position="absolute",t.pointerEvents="none",t.zIndex="999999",s.touchDragImageOffset&&(t.left=Math.round(e.x-s.touchDragImageOffset.x)+"px",t.top=Math.round(e.y-s.touchDragImageOffset.y)+"px")}))},bindDragDrop:function(e){e.on("dragstart",this.dragstartHandler.bind(this)).on("dragover",this.dragoverHandler.bind(this)).on("dragend",this.dragendHandler.bind(this)).on("drop",this.dropHandler.bind(this)).on("touchstart",this.touchstartHandler.bind(this)).on("touchmove",this.touchmoveHandler.bind(this)).on("touchend",this.touchendHandler.bind(this))},createNode:function(i){var n=this.options,e=i.level,t=(i.children&&i[n.nodeId]&&l.each(i.children,function(e,t){t.parentId=i[n.nodeId]}),l("<div"+(n.draggable?' draggable="true"':"")+(i[n.nodeId]?' id="'+i[n.nodeId]+'"':"")+(i.parentId?' data-parent="'+i.parentId+'"':"")+">").addClass("node "+(i.className||"")+(e>n.visibleLevel?" slide-up":""))),s=(n.nodeTemplate?t.append(n.nodeTemplate(i)):t.append('<div class="title">'+i[n.nodeTitle]+"</div>").append(void 0!==n.nodeContent?'<div class="content">'+(i[n.nodeContent]||"")+"</div>":""),l.extend({},i)),s=(delete s.children,t.data("nodeData",s),i.relationship||"");return n.verticalLevel&&e>=n.verticalLevel||i.isVertical?Number(s.substr(2,1))&&t.append(`<i class="toggleBtn ${n.icons.theme}"></i>`).children(".title").prepend(`<i class="${n.icons.theme} ${n.icons.parentNode} parentNodeSymbol"></i>`):(i.isHybrid||(Number(s.substr(0,1))&&t.append(`<i class="edge verticalEdge topEdge ${n.icons.theme}"></i>`),Number(s.substr(1,1))&&t.append(`<i class="edge horizontalEdge rightEdge ${n.icons.theme}"></i><i class="edge horizontalEdge leftEdge ${n.icons.theme}"></i>`)),Number(s.substr(2,1))&&t.append(`<i class="edge verticalEdge bottomEdge ${n.icons.theme}"></i>`).children(".title").prepend(`<i class="${n.icons.theme} ${n.icons.parentNode} parentNodeSymbol"></i>`)),t.on("mouseenter mouseleave",this.nodeEnterLeaveHandler.bind(this)),t.on("click",this.nodeClickHandler.bind(this)),t.on("click",".topEdge",this.topEdgeClickHandler.bind(this)),t.on("click",".bottomEdge",this.bottomEdgeClickHandler.bind(this)),t.on("click",".leftEdge, .rightEdge",this.hEdgeClickHandler.bind(this)),t.on("click",".toggleBtn",this.toggleVNodes.bind(this)),n.draggable&&(this.bindDragDrop(t),this.touchHandled=!1,this.touchMoved=!1,this.touchTargetNode=null),n.createNode&&n.createNode(t,i),t},buildHierarchy:function(e,t){var i,n,s=this,o=this.options,a=0,a=t.level||(t.level=e.parentsUntil(".orgchart",".nodes").length);2<Object.keys(t).length&&e.append(this.createNode(t)),t.children&&t.children.length&&(i=a+1>o.visibleLevel||t.collapsed!==d&&t.collapsed,o.verticalLevel&&a+1>=o.verticalLevel||t.isHybrid?(n=l('<ul class="nodes">'),i&&o.verticalLevel&&a+1>=o.verticalLevel&&n.addClass("hidden"),(o.verticalLevel&&a+1===o.verticalLevel||t.isHybrid)&&!e.closest(".vertical").length?e.append(n.addClass("vertical")):e.append(n)):(n=l('<ul class="nodes'+(i?" hidden":"")+'">'),2!==Object.keys(t).length&&i&&e.addClass("isChildrenCollapsed"),e.append(n)),l.each(t.children,function(){var e=l('<li class="hierarchy">');n.append(e),this.level=a+1,s.buildHierarchy(e,this)}))},buildChildNode:function(e,t){this.buildHierarchy(e,{children:t})},addChildren:function(e,t){this.buildChildNode(e.closest(".hierarchy"),t),e.find(".parentNodeSymbol").length||e.children(".title").prepend(`<i class="${this.options.icons.theme} ${this.options.icons.parentNode} parentNodeSymbol"></i>`),e.closest(".nodes.vertical").length?e.children(".toggleBtn").length||e.append(`<i class="toggleBtn ${this.options.icons.theme}"></i>`):e.children(".bottomEdge").length||e.append(`<i class="edge verticalEdge bottomEdge ${this.options.icons.theme}"></i>`),this.isInAction(e)&&this.switchVerticalArrow(e.children(".bottomEdge"))},buildParentNode:function(e,t){t.relationship=t.relationship||"001";t=l('<ul class="nodes"><li class="hierarchy"></li></ul>').find(".hierarchy").append(this.createNode(t)).end();this.$chart.prepend(t).find(".hierarchy:first").append(e.closest("ul").addClass("nodes"))},addParent:function(e,t){this.buildParentNode(e,t),e.children(".topEdge").length||e.children(".title").after(`<i class="edge verticalEdge topEdge ${this.options.icons.theme}"></i>`),this.isInAction(e)&&this.switchVerticalArrow(e.children(".topEdge"))},buildSiblingNode:function(e,t){var i,n=(l.isArray(t)?t:t.children).length,s=e.parent().is(".nodes")?e.siblings().length+1:1,n=s+n,n=1<n?Math.floor(n/2-1):0;e.closest(".nodes").parent().is(".hierarchy")?(this.buildChildNode(e.parent().closest(".hierarchy"),t),i=e.parent().closest(".hierarchy").children(".nodes:last").children(".hierarchy"),1<s?i.eq(0).before(e.siblings().addBack().unwrap()):i.eq(n).after(e.unwrap())):(this.buildHierarchy(e.parent().prepend(l('<li class="hierarchy">')).children(".hierarchy:first"),t),e.prevAll(".hierarchy").children(".nodes").children().eq(n).after(e))},addSiblings:function(e,t){this.buildSiblingNode(e.closest(".hierarchy"),t),e.closest(".nodes").data("siblingsLoaded",!0),e.children(".leftEdge").length||e.children(".topEdge").after(`<i class="edge horizontalEdge rightEdge ${this.options.icons.theme}"></i><i class="edge horizontalEdge leftEdge ${this.options.icons.theme}"></i>`),this.isInAction(e)&&(this.switchHorizontalArrow(e),e.children(".topEdge").removeClass(this.options.icons.expandToUp).addClass(this.options.icons.collapseToDown))},removeNodes:function(e){var t=e.closest(".hierarchy").parent();t.parent().is(".hierarchy")?this.getNodeState(e,"siblings").exist?(e.closest(".hierarchy").remove(),1===t.children().length&&t.find(".node:first .horizontalEdge").remove()):t.siblings(".node").find(".bottomEdge").remove().end().end().remove():t.closest(".orgchart").remove()},hideDropZones:function(){this.$chart.find(".allowedDrop").removeClass("allowedDrop")},showDropZones:function(e){this.$chart.find(".node").each(function(e,t){l(t).addClass("allowedDrop")}),this.$chart.data("dragged",l(e))},processExternalDrop:function(e,t){t&&this.$chart.data("dragged",l(t)),e.closest(".node").triggerHandler({type:"drop"})},exportPDF:function(e,t){var i={},n=Math.floor(e.width),s=Math.floor(e.height);h.jsPDF||(h.jsPDF=h.jspdf.jsPDF),(i=s<n?new jsPDF({orientation:"landscape",unit:"px",format:[n,s]}):new jsPDF({orientation:"portrait",unit:"px",format:[s,n]})).addImage(e.toDataURL(),"png",0,0),i.save(t+".pdf")},exportPNG:function(e,t){var i="WebkitAppearance"in c.documentElement.style,n=!!h.sidebar,s="Microsoft Internet Explorer"===navigator.appName||"Netscape"===navigator.appName&&-1<navigator.appVersion.indexOf("Edge"),o=this.$chartContainer;!i&&!n||s?h.navigator.msSaveBlob(e.msToBlob(),t+".png"):(i=".download-btn"+(""!==this.options.chartClass?"."+this.options.chartClass:""),o.find(i).length||o.append('<a class="download-btn'+(""!==this.options.chartClass?" "+this.options.chartClass:"")+'" download="'+t+'.png"></a>'),o.find(i).attr("href",e.toDataURL())[0].click())},export:function(t,i){var n=this;if(t=void 0!==t?t:this.options.exportFilename,i=void 0!==i?i:this.options.exportFileextension,l(this).children(".spinner").length)return!1;var s=this.$chartContainer,e=s.find(".mask"),e=(e.length?e.removeClass("hidden"):s.append(`<div class="mask"><i class="${this.options.icons.theme} ${this.options.icons.spinner} spinner"></i></div>`),s.addClass("canvasContainer").find('.orgchart:not(".hidden")').get(0)),o="l2r"===n.options.direction||"r2l"===n.options.direction;html2canvas(e,{width:o?e.clientHeight:e.clientWidth,height:o?e.clientWidth:e.clientHeight,onclone:function(e){l(e).find(".canvasContainer").css("overflow","visible").find('.orgchart:not(".hidden"):first').css("transform","")}}).then(function(e){s.find(".mask").addClass("hidden"),"pdf"===i.toLowerCase()?n.exportPDF(e,t):n.exportPNG(e,t),s.removeClass("canvasContainer")},function(){s.removeClass("canvasContainer")})}},l.fn.orgchart=function(e){return new t(this,e).init()}});
-//# sourceMappingURL=jquery.orgchart.min.js.map
+/*
+ * jQuery OrgChart Plugin
+ * https://github.com/dabeng/OrgChart
+ *
+ * Copyright 2016, dabeng
+ * https://github.com/dabeng
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+'use strict';
 
-}
+(function (factory) {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        factory(require('jquery'), window, document);
+    } else {
+        factory(jQuery, window, document);
+    }
+}(function ($, window, document, undefined) {
+    var OrgChart = function (elem, opts) {
+        this.$chartContainer = $(elem);
+        this.opts = opts;
+        this.defaultOptions = {
+            'icons': {
+                'theme': 'oci',
+                'parentNode': 'oci-menu',
+                'expandToUp': 'oci-chevron-up',
+                'collapseToDown': 'oci-chevron-down',
+                'collapseToLeft': 'oci-chevron-left',
+                'expandToRight': 'oci-chevron-right',
+                'backToCompact': 'oci-corner-top-left',
+                'backToLoose': 'oci-corner-bottom-right',
+                'collapsed': 'oci-plus-square',
+                'expanded': 'oci-minus-square',
+                'spinner': 'oci-spinner'
+            },
+            'nodeTitle': 'name',
+            'nodeId': 'id',
+            'toggleSiblingsResp': false,
+            'visibleLevel': 999,
+            'chartClass': '',
+            'exportButton': false,
+            'exportButtonName': 'Export',
+            'exportFilename': 'OrgChart',
+            'exportFileextension': 'png',
+            'draggable': false,
+            'direction': 't2b',
+            'pan': false,
+            'zoom': false,
+            'zoominLimit': 7,
+            'zoomoutLimit': 0.5
+        };
+    };
+    //
+    OrgChart.prototype = {
+        //
+        init: function (opts) {
+            var that = this;
+            this.options = $.extend({}, this.defaultOptions, this.opts, opts);
+            // build the org-chart
+            var $chartContainer = this.$chartContainer;
+            if (this.$chart) {
+                this.$chart.remove();
+            }
+            var data = this.options.data;
+            var $chart = this.$chart = $('<div>', {
+                'data': { 'options': this.options },
+                'class': 'orgchart' + (this.options.chartClass !== '' ? ' ' + this.options.chartClass : '') + (this.options.direction !== 't2b' ? ' ' + this.options.direction : ''),
+                'click': function (event) {
+                    if (!$(event.target).closest('.node').length) {
+                        $chart.find('.node.focused').removeClass('focused');
+                    }
+                }
+            });
+            if (typeof MutationObserver !== 'undefined') {
+                this.triggerInitEvent();
+            }
+            var $root = $chart.append($('<ul class="nodes"><li class="hierarchy"></li></ul>')).find('.hierarchy');
+
+            if (data instanceof $) { // ul datasource
+                this.buildHierarchy($root, this.buildJsonDS(data.children()), 0, this.options);
+            } else { // local json datasource
+                if (data.relationship) {
+                    this.buildHierarchy($root, data);
+                } else {
+                    this.buildHierarchy($root, this.attachRel(data, '00'));
+                }
+            }
+
+            $chartContainer.append($chart);
+
+            // append the export button
+            if (this.options.exportButton && !$('.oc-export-btn').length) {
+                this.attachExportButton();
+            }
+
+            if (this.options.pan) {
+                this.bindPan();
+            }
+
+            if (this.options.zoom) {
+                this.bindZoom();
+            }
+
+            return this;
+        },
+        handleCompactNodes: function () {
+            // caculate the compact nodes' level which is used to add different styles
+            this.$chart.find('.node.compact')
+                .each((index, node) => {
+                    $(node).addClass($(node).parents('.compact').length % 2 === 0 ? 'even' : 'odd');
+                }); // the following code snippets is used to add direction arrows for the most top compact node, however the styles is not adjusted correctly
+            // .filter((index, node) => !$(node).parent().is('.compact'))
+            // .each((index, node) => {
+            //   $(node).append(`<i class="edge verticalEdge topEdge ${this.options.icons.theme}"></i>`);
+            //   if (this.getSiblings($(node)).length) {
+            //     $(node).append(`<i class="edge horizontalEdge rightEdge ${this.options.icons.theme}"></i><i class="edge horizontalEdge leftEdge ${this.options.icons.theme}"></i>`);
+            //   }
+            // });
+        },
+        //
+        triggerInitEvent: function () {
+            var that = this;
+            var mo = new MutationObserver(function (mutations) {
+                mo.disconnect();
+                initTime:
+                for (var i = 0; i < mutations.length; i++) {
+                    for (var j = 0; j < mutations[i].addedNodes.length; j++) {
+                        if (mutations[i].addedNodes[j].classList.contains('orgchart')) {
+                            that.handleCompactNodes();
+                            if (that.options.initCompleted && typeof that.options.initCompleted === 'function') {
+                                that.options.initCompleted(that.$chart);
+                            }
+                            var initEvent = $.Event('init.orgchart');
+                            that.$chart.trigger(initEvent);
+                            break initTime;
+                        }
+                    }
+                }
+            });
+            mo.observe(this.$chartContainer[0], { childList: true });
+        },
+        triggerShowEvent: function ($target, rel) {
+            var initEvent = $.Event('show-' + rel + '.orgchart');
+            $target.trigger(initEvent);
+        },
+        triggerHideEvent: function ($target, rel) {
+            var initEvent = $.Event('hide-' + rel + '.orgchart');
+            $target.trigger(initEvent);
+        },
+        // add export button for orgchart
+        attachExportButton: function () {
+            var that = this;
+            var $exportBtn = $('<button>', {
+                'class': 'oc-export-btn',
+                'text': this.options.exportButtonName,
+                'click': function (e) {
+                    e.preventDefault();
+                    that.export();
+                }
+            });
+            this.$chartContainer.after($exportBtn);
+        },
+        setOptions: function (opts, val) {
+            if (typeof opts === 'string') {
+                if (opts === 'pan') {
+                    if (val) {
+                        this.bindPan();
+                    } else {
+                        this.unbindPan();
+                    }
+                }
+                if (opts === 'zoom') {
+                    if (val) {
+                        this.bindZoom();
+                    } else {
+                        this.unbindZoom();
+                    }
+                }
+            }
+            if (typeof opts === 'object') {
+                if (opts.data) {
+                    this.init(opts);
+                } else {
+                    if (typeof opts.pan !== 'undefined') {
+                        if (opts.pan) {
+                            this.bindPan();
+                        } else {
+                            this.unbindPan();
+                        }
+                    }
+                    if (typeof opts.zoom !== 'undefined') {
+                        if (opts.zoom) {
+                            this.bindZoom();
+                        } else {
+                            this.unbindZoom();
+                        }
+                    }
+                }
+            }
+
+            return this;
+        },
+        //
+        panStartHandler: function (e) {
+            var $chart = $(e.delegateTarget);
+            if ($(e.target).closest('.node').length || (e.touches && e.touches.length > 1)) {
+                $chart.data('panning', false);
+                return;
+            } else {
+                $chart.css('cursor', 'move').data('panning', true);
+            }
+            var lastX = 0;
+            var lastY = 0;
+            var lastTf = $chart.css('transform');
+            if (lastTf !== 'none') {
+                var temp = lastTf.split(',');
+                if (lastTf.indexOf('3d') === -1) {
+                    lastX = parseInt(temp[4]);
+                    lastY = parseInt(temp[5]);
+                } else {
+                    lastX = parseInt(temp[12]);
+                    lastY = parseInt(temp[13]);
+                }
+            }
+            var startX = 0;
+            var startY = 0;
+            if (!e.targetTouches) { // pand on desktop
+                startX = e.pageX - lastX;
+                startY = e.pageY - lastY;
+            } else if (e.targetTouches.length === 1) { // pan on mobile device
+                startX = e.targetTouches[0].pageX - lastX;
+                startY = e.targetTouches[0].pageY - lastY;
+            } else if (e.targetTouches.length > 1) {
+                return;
+            }
+            $chart.on('mousemove touchmove', function (e) {
+                if (!$chart.data('panning')) {
+                    return;
+                }
+                var newX = 0;
+                var newY = 0;
+                if (!e.targetTouches) { // pand on desktop
+                    newX = e.pageX - startX;
+                    newY = e.pageY - startY;
+                } else if (e.targetTouches.length === 1) { // pan on mobile device
+                    newX = e.targetTouches[0].pageX - startX;
+                    newY = e.targetTouches[0].pageY - startY;
+                } else if (e.targetTouches.length > 1) {
+                    return;
+                }
+                var lastTf = $chart.css('transform');
+                if (lastTf === 'none') {
+                    if (lastTf.indexOf('3d') === -1) {
+                        $chart.css('transform', 'matrix(1, 0, 0, 1, ' + newX + ', ' + newY + ')');
+                    } else {
+                        $chart.css('transform', 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, ' + newX + ', ' + newY + ', 0, 1)');
+                    }
+                } else {
+                    var matrix = lastTf.split(',');
+                    if (lastTf.indexOf('3d') === -1) {
+                        matrix[4] = ' ' + newX;
+                        matrix[5] = ' ' + newY + ')';
+                    } else {
+                        matrix[12] = ' ' + newX;
+                        matrix[13] = ' ' + newY;
+                    }
+                    $chart.css('transform', matrix.join(','));
+                }
+            });
+        },
+        //
+        panEndHandler: function (e) {
+            if (e.data.chart.data('panning')) {
+                e.data.chart.data('panning', false).css('cursor', 'default').off('mousemove');
+            }
+        },
+        //
+        bindPan: function () {
+            this.$chartContainer.css('overflow', 'hidden');
+            this.$chart.on('mousedown touchstart', this.panStartHandler);
+            $(document).on('mouseup touchend', { 'chart': this.$chart }, this.panEndHandler);
+        },
+        //
+        unbindPan: function () {
+            this.$chartContainer.css('overflow', 'auto');
+            this.$chart.off('mousedown touchstart', this.panStartHandler);
+            $(document).off('mouseup touchend', this.panEndHandler);
+        },
+        //
+        zoomWheelHandler: function (e) {
+            var oc = e.data.oc;
+            e.preventDefault();
+            var newScale = 1 + (e.originalEvent.deltaY > 0 ? -0.2 : 0.2);
+            oc.setChartScale(oc.$chart, newScale);
+        },
+        //
+        zoomStartHandler: function (e) {
+            if (e.touches && e.touches.length === 2) {
+                var oc = e.data.oc;
+                oc.$chart.data('pinching', true);
+                var dist = oc.getPinchDist(e);
+                oc.$chart.data('pinchDistStart', dist);
+            }
+        },
+        zoomingHandler: function (e) {
+            var oc = e.data.oc;
+            if (oc.$chart.data('pinching')) {
+                var dist = oc.getPinchDist(e);
+                oc.$chart.data('pinchDistEnd', dist);
+            }
+        },
+        zoomEndHandler: function (e) {
+            var oc = e.data.oc;
+            if (oc.$chart.data('pinching')) {
+                oc.$chart.data('pinching', false);
+                var diff = oc.$chart.data('pinchDistEnd') - oc.$chart.data('pinchDistStart');
+                if (diff > 0) {
+                    oc.setChartScale(oc.$chart, 1.2);
+                } else if (diff < 0) {
+                    oc.setChartScale(oc.$chart, 0.8);
+                }
+            }
+        },
+        //
+        bindZoom: function () {
+            this.$chartContainer.on('wheel', { 'oc': this }, this.zoomWheelHandler);
+            this.$chartContainer.on('touchstart', { 'oc': this }, this.zoomStartHandler);
+            $(document).on('touchmove', { 'oc': this }, this.zoomingHandler);
+            $(document).on('touchend', { 'oc': this }, this.zoomEndHandler);
+        },
+        unbindZoom: function () {
+            this.$chartContainer.off('wheel', this.zoomWheelHandler);
+            this.$chartContainer.off('touchstart', this.zoomStartHandler);
+            $(document).off('touchmove', this.zoomingHandler);
+            $(document).off('touchend', this.zoomEndHandler);
+        },
+        //
+        getPinchDist: function (e) {
+            return Math.sqrt((e.touches[0].clientX - e.touches[1].clientX) * (e.touches[0].clientX - e.touches[1].clientX) +
+                (e.touches[0].clientY - e.touches[1].clientY) * (e.touches[0].clientY - e.touches[1].clientY));
+        },
+        //
+        setChartScale: function ($chart, newScale) {
+            var opts = $chart.data('options');
+            var lastTf = $chart.css('transform');
+            var matrix = '';
+            var targetScale = 1;
+            if (lastTf === 'none') {
+                $chart.css('transform', 'scale(' + newScale + ',' + newScale + ')');
+            } else {
+                matrix = lastTf.split(',');
+                if (lastTf.indexOf('3d') === -1) {
+                    targetScale = Math.abs(window.parseFloat(matrix[3]) * newScale);
+                    if (targetScale > opts.zoomoutLimit && targetScale < opts.zoominLimit) {
+                        $chart.css('transform', lastTf + ' scale(' + newScale + ',' + newScale + ')');
+                    }
+                } else {
+                    targetScale = Math.abs(window.parseFloat(matrix[1]) * newScale);
+                    if (targetScale > opts.zoomoutLimit && targetScale < opts.zoominLimit) {
+                        $chart.css('transform', lastTf + ' scale3d(' + newScale + ',' + newScale + ', 1)');
+                    }
+                }
+            }
+        },
+        //
+        buildJsonDS: function ($li) {
+            var that = this;
+            var subObj = {
+                'name': $li.contents().eq(0).text().trim(),
+                'relationship': ($li.parent().parent().is('li') ? '1' : '0') + ($li.siblings('li').length ? 1 : 0) + ($li.children('ul').length ? 1 : 0)
+            };
+            $.each($li.data(), function (key, value) {
+                subObj[key] = value;
+            });
+            $li.children('ul').children().each(function () {
+                if (!subObj.children) { subObj.children = []; }
+                subObj.children.push(that.buildJsonDS($(this)));
+            });
+            return subObj;
+        },
+        // process datasource and add necessary information
+        attachRel: function (data, flags) {
+            var that = this;
+            data.relationship = flags + (data.children && data.children.length > 0 ? 1 : 0);
+            if (this.options?.compact?.constructor === Function && this.options.compact(data)) {
+                data.compact = true;
+            }
+            if (data.children) {
+                data.children.forEach(function (item) {
+                    if (data.hybrid || data.vertical) { // identify all the descendant nodes except the root node of hybrid structure
+                        item.vertical = true;
+                    } else if (data.compact && item.children) { // identify all the compact ancestor nodes
+                        item.compact = true;
+                    } else if (data.compact && !item.children) { // identify all the compact descendant nodes
+                        item.associatedCompact = true;
+                    }
+                    that.attachRel(item, '1' + (data.children.length > 1 ? 1 : 0));
+                });
+            }
+            return data;
+        },
+        //
+        loopChart: function ($chart, includeNodeData) {
+            includeNodeData = (includeNodeData !== null && includeNodeData !== undefined) ? includeNodeData : false;
+            var that = this;
+            var $node = $chart.find('.node:first');
+            var subObj = { 'id': $node[0].id };
+            if (includeNodeData) {
+                $.each($node.data('nodeData'), function (key, value) {
+                    subObj[key] = value;
+                });
+            }
+            $node.siblings('.nodes').children().each(function () {
+                if (!subObj.children) { subObj.children = []; }
+                subObj.children.push(that.loopChart($(this), includeNodeData));
+            });
+            return subObj;
+        },
+        //
+        getHierarchy: function (includeNodeData) {
+            includeNodeData = (includeNodeData !== null && includeNodeData !== undefined) ? includeNodeData : false;
+            if (typeof this.$chart === 'undefined') {
+                return 'Error: orgchart does not exist'
+            } else {
+                if (!this.$chart.find('.node').length) {
+                    return 'Error: nodes do not exist'
+                } else {
+                    var valid = true;
+                    this.$chart.find('.node').each(function () {
+                        if (!this.id) {
+                            valid = false;
+                            return false;
+                        }
+                    });
+                    if (!valid) {
+                        return 'Error: All nodes of orghcart to be exported must have data-id attribute!';
+                    }
+                }
+            }
+            return this.loopChart(this.$chart, includeNodeData);
+        },
+        // detect the exist/display state of related node
+        getNodeState: function ($node, relation) {
+            var $target = {};
+            var isVerticalNode = !!$node.closest('vertical').length;
+            var relation = relation || 'self';
+            if (relation === 'parent') {
+                if (isVerticalNode) {
+                    $target = $node.closest('ul').parents('ul');
+                    if (!$target.length) {
+                        $target = $node.closest('.nodes');
+                        if (!$target.length) {
+                            $target = $node.closest('.vertical').siblings(':first');
+                        }
+                    }
+                } else {
+                    $target = $node.closest('.nodes').siblings('.node');
+                }
+                if ($target.length) {
+                    if ($target.is('.hidden') || (!$target.is('.hidden') && $target.closest('.nodes').is('.hidden')) || (!$target.is('.hidden') && $target.closest('.vertical').is('.hidden'))) {
+                        return { 'exist': true, 'visible': false };
+                    }
+                    return { 'exist': true, 'visible': true };
+                }
+            } else if (relation === 'children') {
+                $target = isVerticalNode ? $node.parent().children('ul') : $node.siblings('.nodes');
+                if ($target.length) {
+                    if (!$target.is('.hidden')) {
+                        return { 'exist': true, 'visible': true };
+                    }
+                    return { 'exist': true, 'visible': false };
+                }
+            } else if (relation === 'siblings') {
+                $target = isVerticalNode ? $node.closest('ul') : $node.parent().siblings();
+                if ($target.length && (!isVerticalNode || $target.children('li').length > 1)) {
+                    if (!$target.is('.hidden') && !$target.parent().is('.hidden') && (!isVerticalNode || !$target.closest('.vertical').is('.hidden'))) {
+                        return { 'exist': true, 'visible': true };
+                    }
+                    return { 'exist': true, 'visible': false };
+                }
+            } else {
+                $target = $node;
+                if ($target.length) {
+                    if (!(($target.closest('.nodes').length && $target.closest('.nodes').is('.hidden')) ||
+                        ($target.closest('.hierarchy').length && $target.closest('.hierarchy').is('.hidden')) ||
+                        ($target.closest('.vertical').length && ($target.closest('.nodes').is('.hidden') || $target.closest('.vertical').is('.hidden')))
+                    )) {
+                        return { 'exist': true, 'visible': true };
+                    }
+                    return { 'exist': true, 'visible': false };
+                }
+            }
+            return { 'exist': false, 'visible': false };
+        },
+        getParent: function ($node) {
+            return this.getRelatedNodes($node, 'parent');
+        },
+        getChildren: function ($node) {
+            return this.getRelatedNodes($node, 'children');
+        },
+        getSiblings: function ($node) {
+            return this.getRelatedNodes($node, 'siblings');
+        },
+        // find the related nodes
+        getRelatedNodes: function ($node, relation) {
+            if (!$node || !($node instanceof $) || !$node.is('.node')) {
+                return $();
+            }
+            if (relation === 'parent') {
+                return $node.closest('.nodes').siblings('.node');
+            } else if (relation === 'children') {
+                return $node.siblings('.nodes').children('.hierarchy').find('.node:first');
+            } else if (relation === 'siblings') {
+                return $node.closest('.hierarchy').siblings().find('.node:first');
+            } else {
+                return $();
+            }
+        },
+        hideParentEnd: function (event) {
+            $(event.target).removeClass('sliding');
+            event.data.parent.addClass('hidden');
+        },
+        // recursively hide the ancestor node and sibling nodes of the specified node
+        hideParent: function ($node) {
+            var $parent = $node.closest('.nodes').siblings('.node');
+            if ($parent.find('.spinner').length) {
+                $node.closest('.orgchart').data('inAjax', false);
+            }
+            // hide the sibling nodes
+            if (this.getNodeState($node, 'siblings').visible) {
+                this.hideSiblings($node);
+            }
+            // hide the lines
+            $node.parent().addClass('isAncestorsCollapsed');
+            // hide the superior nodes with transition
+            if (this.getNodeState($parent).visible) {
+                $parent.addClass('sliding slide-down').one('transitionend', { 'parent': $parent }, this.hideParentEnd);
+            }
+            // if the current node has the parent node, hide it recursively
+            if (this.getNodeState($parent, 'parent').visible) {
+                this.hideParent($parent);
+            }
+        },
+        showParentEnd: function (event) {
+            var $node = event.data.node;
+            $(event.target).removeClass('sliding');
+            if (this.isInAction($node)) {
+                this.switchVerticalArrow($node.children('.topEdge'));
+            }
+        },
+        // show the parent node of the specified node
+        showParent: function ($node) {
+            // just show only one superior level
+            var $parent = $node.closest('.nodes').siblings('.node').removeClass('hidden');
+            // just show only one line
+            $node.closest('.hierarchy').removeClass('isAncestorsCollapsed');
+            // show parent node with animation
+            this.repaint($parent[0]);
+            $parent.addClass('sliding').removeClass('slide-down').one('transitionend', { 'node': $node }, this.showParentEnd.bind(this));
+        },
+        stopAjax: function ($nodeLevel) {
+            if ($nodeLevel.find('.spinner').length) {
+                $nodeLevel.closest('.orgchart').data('inAjax', false);
+            }
+        },
+        isVisibleNode: function (index, elem) {
+            return this.getNodeState($(elem)).visible;
+        },
+        isCompactDescendant: function (index, elem) {
+            return $(elem).parent().is('.node.compact');
+        },
+        // do some necessary cleanup tasks when hide animation is finished
+        hideChildrenEnd: function (event) {
+            var $node = event.data.node;
+            event.data.animatedNodes.removeClass('sliding');
+            event.data.animatedNodes.closest('.nodes').addClass('hidden');
+            if (this.isInAction($node)) {
+                this.switchVerticalArrow($node.children('.bottomEdge'));
+            }
+        },
+        // recursively hide the descendant nodes of the specified node
+        hideChildren: function ($node) {
+            $node.closest('.hierarchy').addClass('isChildrenCollapsed');
+            var $lowerLevel = $node.siblings('.nodes');
+            this.stopAjax($lowerLevel);
+            var $animatedNodes = $lowerLevel.find('.node').filter(this.isVisibleNode.bind(this)).not(this.isCompactDescendant.bind(this));
+            var isVerticalDesc = $lowerLevel.is('.vertical');
+            if (!isVerticalDesc) {
+                $animatedNodes.closest('.hierarchy').addClass('isCollapsedDescendant');
+            }
+            if ($lowerLevel.is('.vertical') || $lowerLevel.find('.vertical').length) {
+                $animatedNodes.find(this.options.icons.expanded).removeClass(this.options.icons.expanded).addClass(this.options.icons.collapsed);
+            }
+            this.repaint($animatedNodes.get(0));
+            $animatedNodes.addClass('sliding slide-up').eq(0).one('transitionend', { 'animatedNodes': $animatedNodes, 'lowerLevel': $lowerLevel, 'node': $node }, this.hideChildrenEnd.bind(this));
+        },
+        //
+        showChildrenEnd: function (event) {
+            var $node = event.data.node;
+            event.data.animatedNodes.removeClass('sliding');
+            if (this.isInAction($node)) {
+                this.switchVerticalArrow($node.children('.bottomEdge'));
+            }
+        },
+        // show the children nodes of the specified node
+        showChildren: function ($node) {
+            var that = this;
+            $node.closest('.hierarchy').removeClass('isChildrenCollapsed');
+            var $levels = $node.siblings('.nodes');
+            var isVerticalDesc = $levels.is('.vertical');
+            var $animatedNodes = isVerticalDesc
+                ? $levels.removeClass('hidden').find('.node').filter(this.isVisibleNode.bind(this))
+                : $levels.removeClass('hidden').children('.hierarchy').find('.node:first').filter(this.isVisibleNode.bind(this));
+            if (!isVerticalDesc) {
+                $animatedNodes.filter(':not(:only-child)').closest('.hierarchy').addClass('isChildrenCollapsed');
+                $animatedNodes.closest('.hierarchy').removeClass('isCollapsedDescendant');
+            }
+            // the two following statements are used to enforce browser to repaint
+            this.repaint($animatedNodes.get(0));
+            $animatedNodes.addClass('sliding').removeClass('slide-up').eq(0).one('transitionend', { 'node': $node, 'animatedNodes': $animatedNodes }, this.showChildrenEnd.bind(this));
+        },
+        //
+        hideSiblingsEnd: function (event) {
+            var that = this;
+            var $node = event.data.node;
+            var $nodeContainer = event.data.nodeContainer;
+            var direction = event.data.direction;
+            var $siblings = direction ? (direction === 'left' ? $nodeContainer.prevAll(':not(.hidden)') : $nodeContainer.nextAll(':not(.hidden)')) : $nodeContainer.siblings();
+            event.data.animatedNodes.removeClass('sliding');
+            $siblings.find('.node:gt(0)').filter(this.isVisibleNode.bind(this))
+                .removeClass('slide-left slide-right')
+                .addClass(function () {
+                    if (that.options.compact) {
+                        return '';
+                    } else {
+                        return 'slide-up';
+                    }
+                });
+            $siblings.find('.nodes, .vertical').addClass('hidden')
+                .end().addClass('hidden');
+
+            if (this.isInAction($node)) {
+                this.switchHorizontalArrow($node);
+            }
+        },
+        // hide the sibling nodes of the specified node
+        hideSiblings: function ($node, direction) {
+            var that = this;
+            var $nodeContainer = $node.closest('.hierarchy').addClass('isSiblingsCollapsed');
+            if ($nodeContainer.siblings().find('.spinner').length) {
+                $node.closest('.orgchart').data('inAjax', false);
+            }
+            if (direction) {
+                if (direction === 'left') {
+                    $nodeContainer.addClass('left-sibs')
+                        .prevAll('.isSiblingsCollapsed').removeClass('isSiblingsCollapsed left-sibs').end()
+                        .prevAll().addClass('isCollapsedSibling isChildrenCollapsed')
+                        .find('.node').filter(this.isVisibleNode.bind(this)).addClass('sliding slide-right');
+                } else {
+                    $nodeContainer.addClass('right-sibs')
+                        .nextAll('.isSiblingsCollapsed').removeClass('isSiblingsCollapsed right-sibs').end()
+                        .nextAll().addClass('isCollapsedSibling isChildrenCollapsed')
+                        .find('.node').filter(this.isVisibleNode.bind(this)).addClass('sliding slide-left');
+                }
+            } else {
+                $nodeContainer.prevAll().find('.node').filter(this.isVisibleNode.bind(this)).addClass('sliding slide-right');
+                $nodeContainer.nextAll().find('.node').filter(this.isVisibleNode.bind(this)).addClass('sliding slide-left');
+                $nodeContainer.siblings().addClass('isCollapsedSibling isChildrenCollapsed');
+            }
+            var $animatedNodes = $nodeContainer.siblings().find('.sliding');
+            $animatedNodes.eq(0).one('transitionend', { 'node': $node, 'nodeContainer': $nodeContainer, 'direction': direction, 'animatedNodes': $animatedNodes }, this.hideSiblingsEnd.bind(this));
+        },
+        //
+        showSiblingsEnd: function (event) {
+            var $node = event.data.node;
+            event.data.visibleNodes.removeClass('sliding');
+            if (this.isInAction($node)) {
+                this.switchHorizontalArrow($node);
+                $node.children('.topEdge').removeClass(this.options.icons.expandToUp).addClass(this.options.icons.collapseToDown);
+            }
+        },
+        //
+        showRelatedParentEnd: function (event) {
+            $(event.target).removeClass('sliding');
+        },
+        // show the sibling nodes of the specified node
+        showSiblings: function ($node, direction) {
+            var that = this;
+            // firstly, show the sibling nodes
+            var $siblings = $();
+            var $nodeContainer = $node.closest('.hierarchy');
+            if (direction) {
+                if (direction === 'left') {
+                    $siblings = $nodeContainer.prevAll().removeClass('hidden');
+                } else {
+                    $siblings = $nodeContainer.nextAll().removeClass('hidden');
+                }
+            } else {
+                $siblings = $node.closest('.hierarchy').siblings().removeClass('hidden');
+            }
+            // secondly, show the lines
+            var $upperLevel = $node.closest('.nodes').siblings('.node');
+            if (direction) {
+                $nodeContainer.removeClass(direction + '-sibs');
+                if (!$nodeContainer.is('[class*=-sibs]')) {
+                    $nodeContainer.removeClass('isSiblingsCollapsed');
+                }
+                $siblings.removeClass('isCollapsedSibling ' + direction + '-sibs');
+            } else {
+                $node.closest('.hierarchy').removeClass('isSiblingsCollapsed');
+                $siblings.removeClass('isCollapsedSibling');
+            }
+            // thirdly, show parent node if it is collapsed
+            if (!this.getNodeState($node, 'parent').visible) {
+                $node.closest('.hierarchy').removeClass('isAncestorsCollapsed');
+                $upperLevel.removeClass('hidden');
+                this.repaint($upperLevel[0]);
+                $upperLevel.addClass('sliding').removeClass('slide-down').one('transitionend', this.showRelatedParentEnd);
+            }
+            // lastly, show the sibling nodes with animation
+            var $visibleNodes = $siblings.find('.node').filter(this.isVisibleNode.bind(this));
+            this.repaint($visibleNodes.get(0));
+            $visibleNodes.addClass('sliding').removeClass('slide-left slide-right');
+            $visibleNodes.eq(0).one('transitionend', { 'node': $node, 'visibleNodes': $visibleNodes }, this.showSiblingsEnd.bind(this));
+        },
+        // start up loading status for requesting new nodes
+        startLoading: function ($edge) {
+            var $chart = this.$chart;
+            if (typeof $chart.data('inAjax') !== 'undefined' && $chart.data('inAjax') === true) {
+                return false;
+            }
+
+            $edge.addClass('hidden');
+            $edge.parent().append(`<i class="${this.options.icons.theme} ${this.options.icons.spinner} spinner"></i>`)
+                .children().not('.spinner').css('opacity', 0.2);
+            $chart.data('inAjax', true);
+            $('.oc-export-btn').prop('disabled', true);
+            return true;
+        },
+        // terminate loading status for requesting new nodes
+        endLoading: function ($edge) {
+            var $node = $edge.parent();
+            $edge.removeClass('hidden');
+            $node.find('.spinner').remove();
+            $node.children().removeAttr('style');
+            this.$chart.data('inAjax', false);
+            $('.oc-export-btn').prop('disabled', false);
+        },
+        // whether the cursor is hovering over the node
+        isInAction: function ($node) {
+            return [
+                this.options.icons.expandToUp,
+                this.options.icons.collapseToDown,
+                this.options.icons.collapseToLeft,
+                this.options.icons.expandToRight
+            ].some((icon) => $node.children('.edge').attr('class').indexOf(icon) > -1);
+        },
+        //
+        switchVerticalArrow: function ($arrow) {
+            $arrow.toggleClass(`${this.options.icons.expandToUp} ${this.options.icons.collapseToDown}`);
+        },
+        //
+        switchHorizontalArrow: function ($node) {
+            var opts = this.options;
+            if (opts.toggleSiblingsResp && (typeof opts.ajaxURL === 'undefined' || $node.closest('.nodes').data('siblingsLoaded'))) {
+                var $prevSib = $node.parent().prev();
+                if ($prevSib.length) {
+                    if ($prevSib.is('.hidden')) {
+                        $node.children('.leftEdge').addClass(opts.icons.collapseToLeft).removeClass(opts.icons.expandToRight);
+                    } else {
+                        $node.children('.leftEdge').addClass(opts.icons.expandToRight).removeClass(opts.icons.collapseToLeft);
+                    }
+                }
+                var $nextSib = $node.parent().next();
+                if ($nextSib.length) {
+                    if ($nextSib.is('.hidden')) {
+                        $node.children('.rightEdge').addClass(opts.icons.expandToRight).removeClass(opts.icons.collapseToLeft);
+                    } else {
+                        $node.children('.rightEdge').addClass(opts.icons.collapseToLeft).removeClass(opts.icons.expandToRight);
+                    }
+                }
+            } else {
+                var $sibs = $node.parent().siblings();
+                var sibsVisible = $sibs.length ? !$sibs.is('.hidden') : false;
+                $node.children('.leftEdge').toggleClass(opts.icons.expandToRight, sibsVisible).toggleClass(opts.icons.collapseToLeft, !sibsVisible);
+                $node.children('.rightEdge').toggleClass(opts.icons.collapseToLeft, sibsVisible).toggleClass(opts.icons.expandToRight, !sibsVisible);
+            }
+        },
+        //
+        repaint: function (node) {
+            if (node) {
+                node.style.offsetWidth = node.offsetWidth;
+            }
+        },
+        // determines how to show arrow buttons
+        nodeEnterLeaveHandler: function (event) {
+            var $node = $(event.delegateTarget);
+            var flag = false;
+            if ($node.closest('.nodes.vertical').length) {
+                var $toggleBtn = $node.children('.toggleBtn');
+                if (event.type === 'mouseenter') {
+                    if ($node.children('.toggleBtn').length) {
+                        flag = this.getNodeState($node, 'children').visible;
+                        $toggleBtn.toggleClass(this.options.icons.collapsed, !flag).toggleClass(this.options.icons.expanded, flag);
+                    }
+                } else {
+                    $toggleBtn.removeClass(`${this.options.icons.collapsed} ${this.options.icons.expanded}`);
+                }
+            } else {
+                var $topEdge = $node.children('.topEdge');
+                var $rightEdge = $node.children('.rightEdge');
+                var $bottomEdge = $node.children('.bottomEdge');
+                var $leftEdge = $node.children('.leftEdge');
+                if (event.type === 'mouseenter') {
+                    if ($topEdge.length) {
+                        flag = this.getNodeState($node, 'parent').visible;
+                        $topEdge.toggleClass(this.options.icons.expandToUp, !flag).toggleClass(this.options.icons.collapseToDown, flag);
+                    }
+                    if ($bottomEdge.length) {
+                        flag = this.getNodeState($node, 'children').visible;
+                        $bottomEdge.toggleClass(this.options.icons.collapseToDown, !flag).toggleClass(this.options.icons.expandToUp, flag);
+                    }
+                    if ($leftEdge.length) {
+                        this.switchHorizontalArrow($node);
+                    }
+                } else {
+                    $node.children('.edge').removeClass(`${this.options.icons.expandToUp} ${this.options.icons.collapseToDown} ${this.options.icons.collapseToLeft} ${this.options.icons.expandToRight}`);
+                }
+            }
+        },
+        //
+        nodeClickHandler: function (event) {
+            this.$chart.find('.focused').removeClass('focused');
+            $(event.delegateTarget).addClass('focused');
+        },
+        addAncestors: function (data, parentId) {
+            var $root = this.$chart.children('.nodes').children('.hierarchy');
+            this.buildHierarchy($root, data);
+            $root.children().slice(0, 2)
+                .wrapAll('<li class="hierarchy"></li>').parent()
+                .appendTo($('#' + parentId).siblings('.nodes'));
+        },
+        addDescendants: function (data, $parent) {
+            var that = this;
+            var $descendants = $('<ul class="nodes"></ul>');
+            $parent.after($descendants);
+            $.each(data, function (i) {
+                $descendants.append($('<li class="hierarchy"></li>'));
+                that.buildHierarchy($descendants.children().eq(i), this);
+            });
+        },
+        //
+        HideFirstParentEnd: function (event) {
+            var $topEdge = event.data.topEdge;
+            var $node = $topEdge.parent();
+            if (this.isInAction($node)) {
+                this.switchVerticalArrow($topEdge);
+                this.switchHorizontalArrow($node);
+            }
+        },
+        // actions on clinking top edge of a node
+        topEdgeClickHandler: function (event) {
+            var that = this;
+            var $topEdge = $(event.target);
+            var $node = $(event.delegateTarget);
+            var parentState = this.getNodeState($node, 'parent');
+            if (parentState.exist) {
+                var $parent = $node.closest('.nodes').siblings('.node');
+                if ($parent.is('.sliding')) { return; }
+                // hide the ancestor nodes and sibling nodes of the specified node
+                if (parentState.visible) {
+                    this.hideParent($node);
+                    $parent.one('transitionend', { 'topEdge': $topEdge }, this.HideFirstParentEnd.bind(this));
+                    this.triggerHideEvent($node, 'parent');
+                } else { // show the ancestors and siblings
+                    this.showParent($node);
+                    this.triggerShowEvent($node, 'parent');
+                }
+            }
+        },
+        // actions on clinking bottom edge of a node
+        bottomEdgeClickHandler: function (event) {
+            var $bottomEdge = $(event.target);
+            var $node = $(event.delegateTarget);
+            var childrenState = this.getNodeState($node, 'children');
+            if (childrenState.exist) {
+                var $children = $node.siblings('.nodes').children().children('.node');
+                if ($children.is('.sliding')) { return; }
+                // hide the descendant nodes of the specified node
+                if (childrenState.visible) {
+                    this.hideChildren($node);
+                    this.triggerHideEvent($node, 'children');
+                } else { // show the descendants
+                    this.showChildren($node);
+                    this.triggerShowEvent($node, 'children');
+                }
+            }
+        },
+        // actions on clicking horizontal edges
+        hEdgeClickHandler: function (event) {
+            var $hEdge = $(event.target);
+            var $node = $(event.delegateTarget);
+            var opts = this.options;
+            var siblingsState = this.getNodeState($node, 'siblings');
+            if (siblingsState.exist) {
+                var $siblings = $node.closest('.hierarchy').siblings();
+                if ($siblings.find('.sliding').length) { return; }
+                if (opts.toggleSiblingsResp) {
+                    var $prevSib = $node.closest('.hierarchy').prev();
+                    var $nextSib = $node.closest('.hierarchy').next();
+                    if ($hEdge.is('.leftEdge')) {
+                        if ($prevSib.is('.hidden')) {
+                            this.showSiblings($node, 'left');
+                            this.triggerShowEvent($node, 'siblings');
+                        } else {
+                            this.hideSiblings($node, 'left');
+                            this.triggerHideEvent($node, 'siblings');
+                        }
+                    } else {
+                        if ($nextSib.is('.hidden')) {
+                            this.showSiblings($node, 'right');
+                            this.triggerShowEvent($node, 'siblings');
+                        } else {
+                            this.hideSiblings($node, 'right');
+                            this.triggerHideEvent($node, 'siblings');
+                        }
+                    }
+                } else {
+                    if (siblingsState.visible) {
+                        this.hideSiblings($node);
+                        this.triggerHideEvent($node, 'siblings');
+                    } else {
+                        this.showSiblings($node);
+                        this.triggerShowEvent($node, 'siblings');
+                    }
+                }
+            }
+        },
+        // show the compact node's children in the compact mode
+        backToCompactHandler: function (event) {
+            $(event.delegateTarget).removeClass('looseMode')
+                .find('.looseMode').removeClass('looseMode')
+                .children('.backToCompactSymbol').addClass('hidden').end()
+                .children('.backToLooseSymbol').removeClass('hidden');
+            $(event.delegateTarget).children('.backToCompactSymbol').addClass('hidden').end()
+                .children('.backToLooseSymbol').removeClass('hidden');
+        },
+        // show the compact node's children in the loose mode
+        backToLooseHandler: function (event) {
+            $(event.delegateTarget)
+                .addClass('looseMode')
+                .children('.backToLooseSymbol').addClass('hidden').end()
+                .children('.backToCompactSymbol').removeClass('hidden');
+        },
+        //
+        expandVNodesEnd: function (event) {
+            event.data.vNodes.removeClass('sliding');
+        },
+        //
+        collapseVNodesEnd: function (event) {
+            event.data.vNodes.removeClass('sliding').closest('ul').addClass('hidden');
+        },
+        // event handler for toggle buttons in Hybrid(horizontal + vertical) OrgChart
+        toggleVNodes: function (event) {
+            var $toggleBtn = $(event.target);
+            var $descWrapper = $toggleBtn.parent().next();
+            var $descendants = $descWrapper.find('.node');
+            var $children = $descWrapper.children().children('.node');
+            if ($children.is('.sliding')) { return; }
+            $toggleBtn.toggleClass(`${this.options.icons.collapsed} ${this.options.icons.expanded}`);
+            if ($descendants.eq(0).is('.slide-up')) {
+                $descWrapper.removeClass('hidden');
+                this.repaint($children.get(0));
+                $children.addClass('sliding').removeClass('slide-up').eq(0).one('transitionend', { 'vNodes': $children }, this.expandVNodesEnd);
+            } else {
+                $descendants.addClass('sliding slide-up').eq(0).one('transitionend', { 'vNodes': $descendants }, this.collapseVNodesEnd);
+                $descendants.find('.toggleBtn').removeClass(`${this.options.icons.collapsed} ${this.options.icons.expanded}`);
+            }
+        },
+        //
+        createGhostNode: function (event) {
+            var $nodeDiv = $(event.target);
+            var opts = this.options;
+            var origEvent = event.originalEvent;
+            var isFirefox = /firefox/.test(window.navigator.userAgent.toLowerCase());
+            var ghostNode, nodeCover;
+            if (!document.querySelector('.ghost-node')) {
+                ghostNode = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                if (!ghostNode.classList) return;
+                ghostNode.classList.add('ghost-node');
+                nodeCover = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                ghostNode.appendChild(nodeCover);
+                $nodeDiv.closest('.orgchart').append(ghostNode);
+            } else {
+                ghostNode = $nodeDiv.closest('.orgchart').children('.ghost-node').get(0);
+                nodeCover = $(ghostNode).children().get(0);
+            }
+            var transValues = $nodeDiv.closest('.orgchart').css('transform').split(',');
+            var isHorizontal = opts.direction === 't2b' || opts.direction === 'b2t';
+            var scale = Math.abs(window.parseFloat(isHorizontal ? transValues[0].slice(transValues[0].indexOf('(') + 1) : transValues[1]));
+            ghostNode.setAttribute('width', isHorizontal ? $nodeDiv.outerWidth(false) : $nodeDiv.outerHeight(false));
+            ghostNode.setAttribute('height', isHorizontal ? $nodeDiv.outerHeight(false) : $nodeDiv.outerWidth(false));
+            nodeCover.setAttribute('x', 5 * scale);
+            nodeCover.setAttribute('y', 5 * scale);
+            nodeCover.setAttribute('width', 120 * scale);
+            nodeCover.setAttribute('height', 40 * scale);
+            nodeCover.setAttribute('rx', 4 * scale);
+            nodeCover.setAttribute('ry', 4 * scale);
+            nodeCover.setAttribute('stroke-width', 1 * scale);
+            var xOffset = origEvent.offsetX * scale;
+            var yOffset = origEvent.offsetY * scale;
+            if (opts.direction === 'l2r') {
+                xOffset = origEvent.offsetY * scale;
+                yOffset = origEvent.offsetX * scale;
+            } else if (opts.direction === 'r2l') {
+                xOffset = $nodeDiv.outerWidth(false) - origEvent.offsetY * scale;
+                yOffset = origEvent.offsetX * scale;
+            } else if (opts.direction === 'b2t') {
+                xOffset = $nodeDiv.outerWidth(false) - origEvent.offsetX * scale;
+                yOffset = $nodeDiv.outerHeight(false) - origEvent.offsetY * scale;
+            }
+            if (isFirefox) { // hack for old version of Firefox(< 48.0)
+                nodeCover.setAttribute('fill', 'rgb(255, 255, 255)');
+                nodeCover.setAttribute('stroke', 'rgb(191, 0, 0)');
+                var ghostNodeWrapper = document.createElement('img');
+                ghostNodeWrapper.src = 'data:image/svg+xml;utf8,' + (new XMLSerializer()).serializeToString(ghostNode);
+                origEvent.dataTransfer.setDragImage(ghostNodeWrapper, xOffset, yOffset);
+            } else {
+                // IE/Edge do not support this, so only use it if we can
+                if (origEvent.dataTransfer.setDragImage)
+                    origEvent.dataTransfer.setDragImage(ghostNode, xOffset, yOffset);
+            }
+        },
+        // get the level amount of a hierachy
+        getUpperLevel: function ($node) {
+            if (!$node.is('.node')) {
+                return 0;
+            }
+            return $node.parents('.hierarchy').length;
+        },
+        // get the level amount of a hierachy
+        getLowerLevel: function ($node) {
+            if (!$node.is('.node')) {
+                return 0;
+            }
+            return $node.closest('.hierarchy').find('.nodes').length + 1;
+        },
+        // get nodes in level order traversal
+        getLevelOrderNodes: function ($root) {
+            if (!$root) return [];
+            var queue = [];
+            var output = [];
+            queue.push($root);
+            while (queue.length) {
+                var row = [];
+                for (var i = 0; i < queue.length; i++) {
+                    var cur = queue.shift();
+                    var children = this.getChildren(cur);
+                    if (children.length) {
+                        queue.push(children.toArray().flat());
+                    }
+                    row.push($(cur));
+                }
+                output.push(row);
+            }
+            return output;
+        },
+        //
+        filterAllowedDropNodes: function ($dragged) {
+            var opts = this.options;
+            // what is being dragged?  a node, or something within a node?
+            var draggingNode = $dragged.closest('[draggable]').hasClass('node');
+            var $dragZone = $dragged.closest('.nodes').siblings('.node'); // parent node
+            var $dragHier = $dragged.closest('.hierarchy').find('.node'); // this node, and its children
+            this.$chart.data('dragged', $dragged)
+                .find('.node').each(function (index, node) {
+                    if (!draggingNode || $dragHier.index(node) === -1) {
+                        if (opts.dropCriteria) {
+                            if (opts.dropCriteria($dragged, $dragZone, $(node))) {
+                                $(node).addClass('allowedDrop');
+                            }
+                        } else {
+                            $(node).addClass('allowedDrop');
+                        }
+                    }
+                });
+        },
+        //
+        dragstartHandler: function (event) {
+            event.originalEvent.dataTransfer.setData('text/html', 'hack for firefox');
+            // if users enable zoom or direction options
+            if (this.$chart.css('transform') !== 'none') {
+                this.createGhostNode(event);
+            }
+            this.filterAllowedDropNodes($(event.target));
+        },
+        //
+        dragoverHandler: function (event) {
+            if (!$(event.delegateTarget).is('.allowedDrop')) {
+                event.originalEvent.dataTransfer.dropEffect = 'none';
+            } else {
+                // default action for drag-and-drop of div is not to drop, so preventing default action for nodes which have allowedDrop class
+                //to fix drag and drop on IE and Edge
+                event.preventDefault();
+            }
+        },
+        //
+        dragendHandler: function (event) {
+            this.$chart.find('.allowedDrop').removeClass('allowedDrop');
+        },
+        // when user drops the node, it will be removed from original parent node and be added to new parent node
+        dropHandler: async function (event) {
+            var that = this;
+            var $dropZone = $(event.delegateTarget);
+            var $dragged = this.$chart.data('dragged');
+
+            // Pass on drops which are not nodes (since they are not our doing)
+            if (!$dragged.hasClass('node')) {
+                this.$chart.triggerHandler({ 'type': 'otherdropped.orgchart', 'draggedItem': $dragged, 'dropZone': $dropZone });
+                return;
+            }
+
+            if (!$dropZone.hasClass('allowedDrop')) {
+                // We are trying to drop a node into a node which isn't allowed
+                // IE/Edge have a habit of allowing this, so we need our own double-check
+                return;
+            }
+
+            var $dragZone = $dragged.closest('.nodes').siblings('.node');
+            var dropEvent = $.Event('nodedrop.orgchart');
+            this.$chart.trigger(dropEvent, { 'draggedNode': $dragged, 'dragZone': $dragZone, 'dropZone': $dropZone });
+            if (dropEvent.isDefaultPrevented()) {
+                return;
+            }
+            // special process for hybrid chart
+            var datasource = this.$chart.data('options').data;
+            var digger = new JSONDigger(datasource, this.$chart.data('options').nodeId, 'children');
+            const hybridNode = digger.findOneNode({ 'hybrid': true });
+            if (this.$chart.data('options').verticalLevel > 1 || hybridNode) {
+                var draggedNode = digger.findNodeById($dragged.data('nodeData').id);
+                var copy = Object.assign({}, draggedNode);
+                digger.removeNode(draggedNode.id);
+                var dropNode = digger.findNodeById($dropZone.data('nodeData').id);
+                if (dropNode.children) {
+                    dropNode.children.push(copy);
+                } else {
+                    dropNode.children = [copy];
+                }
+                that.init({ 'data': datasource });
+            } else {
+                // The folowing code snippets are used to process horizontal chart
+                // firstly, deal with the hierarchy of drop zone
+                if (!$dropZone.siblings('.nodes').length) { // if the drop zone is a leaf node
+                    $dropZone.append(`<i class="edge verticalEdge bottomEdge ${this.options.icons.theme}"></i>`)
+                        .after('<ul class="nodes"></ul>')
+                        .siblings('.nodes').append($dragged.find('.horizontalEdge').remove().end().closest('.hierarchy'));
+                    if ($dropZone.children('.title').length) {
+                        $dropZone.children('.title').prepend(`<i class="${this.options.icons.theme} ${this.$chart.data('options').icons.parentNode} parentNodeSymbol"></i>`);
+                    }
+                } else {
+                    var horizontalEdges = `<i class="edge horizontalEdge rightEdge ${this.options.icons.theme}"></i><i class="edge horizontalEdge leftEdge ${this.options.icons.theme}"></i>`;
+                    if (!$dragged.find('.horizontalEdge').length) {
+                        $dragged.append(horizontalEdges);
+                    }
+                    $dropZone.siblings('.nodes').append($dragged.closest('.hierarchy'));
+                    var $dropSibs = $dragged.closest('.hierarchy').siblings().find('.node:first');
+                    if ($dropSibs.length === 1) {
+                        $dropSibs.append(horizontalEdges);
+                    }
+                }
+                // secondly, deal with the hierarchy of dragged node
+                if ($dragZone.siblings('.nodes').children('.hierarchy').length === 1) { // if there is only one sibling node left
+                    $dragZone.siblings('.nodes').children('.hierarchy').find('.node:first')
+                        .find('.horizontalEdge').remove();
+                } else if ($dragZone.siblings('.nodes').children('.hierarchy').length === 0) {
+                    $dragZone.find('.bottomEdge, .parentNodeSymbol').remove()
+                        .end().siblings('.nodes').remove();
+                }
+            }
+        },
+        //
+        touchstartHandler: function (event) {
+            if (this.touchHandled)
+                return;
+
+            if (event.touches && event.touches.length > 1)
+                return;
+
+            this.touchHandled = true;
+            this.touchMoved = false; // this is so we can work out later if this was a 'press' or a 'drag' touch
+            event.preventDefault();
+        },
+        //
+        touchmoveHandler: function (event) {
+            if (!this.touchHandled)
+                return;
+
+            if (event.touches && event.touches.length > 1)
+                return;
+
+            event.preventDefault();
+
+            if (!this.touchMoved) {
+                // we do not bother with createGhostNode (dragstart does) since the touch event does not have a dataTransfer property
+                this.filterAllowedDropNodes($(event.currentTarget));  // will also set 'this.$chart.data('dragged')' for us
+                // create an image which can be used to illustrate the drag (our own createGhostNode)
+                this.touchDragImage = this.createDragImage(event, this.$chart.data('dragged')[0]);
+            }
+            this.touchMoved = true;
+
+            // move our dragimage so it follows our finger
+            this.moveDragImage(event, this.touchDragImage);
+
+            var $touching = $(document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY));
+            var $touchingNodes = $touching.closest('div.node');
+            if ($touchingNodes.length > 0) {
+                var touchingNodeElement = $touchingNodes[0];
+                if ($touchingNodes.is('.allowedDrop')) {
+                    this.touchTargetNode = touchingNodeElement;
+                }
+                else {
+                    this.touchTargetNode = null;
+                }
+            }
+            else {
+                this.touchTargetNode = null;
+            }
+        },
+        //
+        touchendHandler: function (event) {
+            if (!this.touchHandled) {
+                return;
+            }
+            this.destroyDragImage();
+            if (this.touchMoved) {
+                // we've had movement, so this was a 'drag' touch
+                if (this.touchTargetNode) {
+                    var fakeEventForDropHandler = { delegateTarget: this.touchTargetNode };
+                    this.dropHandler(fakeEventForDropHandler);
+                    this.touchTargetNode = null;
+                }
+                this.dragendHandler(event);
+            }
+            else {
+                // we did not move, so this was a 'press' touch (fake a click)
+                var firstTouch = event.changedTouches[0];
+                var fakeMouseClickEvent = document.createEvent('MouseEvents');
+                fakeMouseClickEvent.initMouseEvent('click', true, true, window, 1, firstTouch.screenX, firstTouch.screenY, firstTouch.clientX, firstTouch.clientY, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, 0, null);
+                event.target.dispatchEvent(fakeMouseClickEvent);
+            }
+            this.touchHandled = false;
+        },
+        //
+        createDragImage: function (event, source) {
+            var dragImage = source.cloneNode(true);
+            this.copyStyle(source, dragImage);
+            dragImage.style.top = dragImage.style.left = '-9999px';
+            var sourceRectangle = source.getBoundingClientRect();
+            var sourcePoint = this.getTouchPoint(event);
+            this.touchDragImageOffset = { x: sourcePoint.x - sourceRectangle.left, y: sourcePoint.y - sourceRectangle.top };
+            dragImage.style.opacity = '0.5';
+            document.body.appendChild(dragImage);
+            return dragImage;
+        },
+        //
+        destroyDragImage: function () {
+            if (this.touchDragImage && this.touchDragImage.parentElement)
+                this.touchDragImage.parentElement.removeChild(this.touchDragImage);
+            this.touchDragImageOffset = null;
+            this.touchDragImage = null;
+        },
+        //
+        copyStyle: function (src, dst) {
+            // remove potentially troublesome attributes
+            var badAttributes = ['id', 'class', 'style', 'draggable'];
+            badAttributes.forEach(function (att) {
+                dst.removeAttribute(att);
+            });
+            // copy canvas content
+            if (src instanceof HTMLCanvasElement) {
+                var cSrc = src, cDst = dst;
+                cDst.width = cSrc.width;
+                cDst.height = cSrc.height;
+                cDst.getContext('2d').drawImage(cSrc, 0, 0);
+            }
+            // copy style (without transitions)
+            var cs = getComputedStyle(src);
+            for (var i = 0; i < cs.length; i++) {
+                var key = cs[i];
+                if (key.indexOf('transition') < 0) {
+                    dst.style[key] = cs[key];
+                }
+            }
+            dst.style.pointerEvents = 'none';
+            // and repeat for all children
+            for (var i = 0; i < src.children.length; i++) {
+                this.copyStyle(src.children[i], dst.children[i]);
+            }
+        },
+        //
+        getTouchPoint: function (event) {
+            if (event && event.touches) {
+                event = event.touches[0];
+            }
+            return {
+                x: event.clientX,
+                y: event.clientY
+            };
+        },
+        //
+        moveDragImage: function (event, image) {
+            if (!event || !image)
+                return;
+            var orgChartMaster = this;
+            requestAnimationFrame(function () {
+                var pt = orgChartMaster.getTouchPoint(event);
+                var s = image.style;
+                s.position = 'absolute';
+                s.pointerEvents = 'none';
+                s.zIndex = '999999';
+                if (orgChartMaster.touchDragImageOffset) {
+                    s.left = Math.round(pt.x - orgChartMaster.touchDragImageOffset.x) + 'px';
+                    s.top = Math.round(pt.y - orgChartMaster.touchDragImageOffset.y) + 'px';
+                }
+            });
+        },
+        //
+        bindDragDrop: function ($node) {
+            $node.on('dragstart', this.dragstartHandler.bind(this))
+                .on('dragover', this.dragoverHandler.bind(this))
+                .on('dragend', this.dragendHandler.bind(this))
+                .on('drop', this.dropHandler.bind(this))
+                .on('touchstart', this.touchstartHandler.bind(this))
+                .on('touchmove', this.touchmoveHandler.bind(this))
+                .on('touchend', this.touchendHandler.bind(this));
+        },
+        // create node
+        createNode: function (data) {
+            var that = this;
+            var opts = this.options;
+            var level = data.level;
+            if (data.children && data[opts.nodeId]) {
+                $.each(data.children, function (index, child) {
+                    child.parentId = data[opts.nodeId]
+                });
+            }
+            // construct the content of node
+            var $nodeDiv = $('<div' + (opts.draggable ? ' draggable="true"' : '') + (data[opts.nodeId] ? ' id="' + data[opts.nodeId] + '"' : '') + (data.parentId ? ' data-parent="' + data.parentId + '"' : '') + '>')
+                .addClass('node ' + (data.className || '') + (level > opts.visibleLevel ? ' slide-up' : ''));
+            if (opts.nodeTemplate) {
+                $nodeDiv.append(opts.nodeTemplate(data));
+            } else {
+                $nodeDiv.append('<div class="title">' + data[opts.nodeTitle] + '</div>')
+                    .append(typeof opts.nodeContent !== 'undefined' ? '<div class="content">' + (data[opts.nodeContent] || '') + '</div>' : '');
+            }
+            //
+            var nodeData = $.extend({}, data);
+            delete nodeData.children;
+            $nodeDiv.data('nodeData', nodeData);
+            // append 4 direction arrows or expand/collapse buttons or reset buttons
+            var flags = data.relationship || '';
+            if ((opts.verticalLevel && level >= opts.verticalLevel) || data.vertical) {
+                if (Number(flags.substr(2, 1))) {
+                    $nodeDiv.append(`<i class="toggleBtn ${opts.icons.theme}"></i>`)
+                        .children('.title').prepend(`<i class="${opts.icons.theme} ${opts.icons.parentNode} parentNodeSymbol"></i>`);
+                }
+            } else if (data.hybrid) {
+                if (Number(flags.substr(2, 1))) {
+                    $nodeDiv.append(`<i class="edge verticalEdge bottomEdge ${opts.icons.theme}"></i>`)
+                        .children('.title').prepend(`<i class="${opts.icons.theme} ${opts.icons.parentNode} parentNodeSymbol"></i>`);
+                }
+            } else if (data.compact) {
+                $nodeDiv.css('grid-template-columns', `repeat(${Math.floor(Math.sqrt(data.children.length + 1))}, auto)`);
+                if (Number(flags.substr(2, 1))) {
+                    $nodeDiv.append(`
+            <i class="${opts.icons.theme} ${opts.icons.backToCompact} backToCompactSymbol hidden"></i>
+            <i class="${opts.icons.theme} ${opts.icons.backToLoose} backToLooseSymbol"></i>
+            `)
+                        .children('.title').prepend(`<i class="${opts.icons.theme} ${opts.icons.parentNode} parentNodeSymbol"></i>`);
+                }
+            } else if (data.associatedCompact) {
+
+            } else {
+                if (Number(flags.substr(0, 1))) {
+                    $nodeDiv.append(`<i class="edge verticalEdge topEdge ${opts.icons.theme}"></i>`);
+                }
+                if (Number(flags.substr(1, 1))) {
+                    $nodeDiv.append(`<i class="edge horizontalEdge rightEdge ${opts.icons.theme}"></i><i class="edge horizontalEdge leftEdge ${opts.icons.theme}"></i>`);
+                }
+                if (Number(flags.substr(2, 1))) {
+                    $nodeDiv.append(`<i class="edge verticalEdge bottomEdge ${opts.icons.theme}"></i>`)
+                        .children('.title').prepend(`<i class="${opts.icons.theme} ${opts.icons.parentNode} parentNodeSymbol"></i>`);
+                }
+            }
+
+            $nodeDiv.on('mouseenter mouseleave', this.nodeEnterLeaveHandler.bind(this));
+            $nodeDiv.on('click', this.nodeClickHandler.bind(this));
+            $nodeDiv.on('click', '.topEdge', this.topEdgeClickHandler.bind(this));
+            $nodeDiv.on('click', '.bottomEdge', this.bottomEdgeClickHandler.bind(this));
+            $nodeDiv.on('click', '.leftEdge, .rightEdge', this.hEdgeClickHandler.bind(this));
+            $nodeDiv.on('click', '.toggleBtn', this.toggleVNodes.bind(this));
+            $nodeDiv.on('click', '> .backToCompactSymbol', this.backToCompactHandler.bind(this));
+            $nodeDiv.on('click', '> .backToLooseSymbol', this.backToLooseHandler.bind(this));
+
+            if (opts.draggable) {
+                this.bindDragDrop($nodeDiv);
+                this.touchHandled = false;
+                this.touchMoved = false;
+                this.touchTargetNode = null;
+            }
+            // allow user to append dom modification after finishing node create of orgchart
+            if (opts.createNode) {
+                opts.createNode($nodeDiv, data);
+            }
+
+            return $nodeDiv;
+        },
+        // recursively build the tree
+        buildHierarchy: function ($appendTo, data) {
+            var that = this;
+            var opts = this.options;
+            var level = 0;
+            var $nodeDiv;
+            if (data.level) {
+                level = data.level;
+            } else {
+                level = data.level = $appendTo.parentsUntil('.orgchart', '.nodes').length;
+            }
+            // Construct the node
+            if (Object.keys(data).length > 2) {
+                $nodeDiv = this.createNode(data);
+                $appendTo.append($nodeDiv);
+            }
+            // Construct the "inferior nodes"
+            if (data.children && data.children.length) {
+                var isHidden = level + 1 > opts.visibleLevel || (data.collapsed !== undefined && data.collapsed);
+                var $nodesLayer;
+                if ((opts.verticalLevel && (level + 1) >= opts.verticalLevel) || data.hybrid) {
+                    $nodesLayer = $('<ul class="nodes">');
+                    if (isHidden && (opts.verticalLevel && (level + 1) >= opts.verticalLevel)) {
+                        $nodesLayer.addClass('hidden');
+                    }
+                    if (((opts.verticalLevel && level + 1 === opts.verticalLevel) || data.hybrid)
+                        && !$appendTo.closest('.vertical').length) {
+                        $appendTo.append($nodesLayer.addClass('vertical'));
+                    } else {
+                        $appendTo.append($nodesLayer);
+                    }
+                } else if (data.compact) {
+                    $nodeDiv.addClass('compact');
+                } else {
+                    $nodesLayer = $('<ul class="nodes' + (isHidden ? ' hidden' : '') + '">');
+                    if (Object.keys(data).length === 2) {
+                        $appendTo.append($nodesLayer);
+                    } else {
+                        if (isHidden) {
+                            $appendTo.addClass('isChildrenCollapsed');
+                        }
+                        $appendTo.append($nodesLayer);
+                    }
+                }
+                // recurse through children nodes
+                $.each(data.children, function () {
+                    this.level = level + 1;
+                    if (data.compact) {
+                        that.buildHierarchy($nodeDiv, this);
+                    } else {
+                        var $nodeCell = $('<li class="hierarchy">');
+                        $nodesLayer.append($nodeCell);
+                        that.buildHierarchy($nodeCell, this);
+                    }
+                });
+            }
+        },
+        // build the child nodes of specific node
+        buildChildNode: function ($appendTo, data) {
+            this.buildHierarchy($appendTo, { 'children': data });
+        },
+        // exposed method
+        addChildren: function ($node, data) {
+            this.buildChildNode($node.closest('.hierarchy'), data);
+            if (!$node.find('.parentNodeSymbol').length) {
+                $node.children('.title').prepend(`<i class="${this.options.icons.theme} ${this.options.icons.parentNode} parentNodeSymbol"></i>`);
+            }
+            if ($node.closest('.nodes.vertical').length) {
+                if (!$node.children('.toggleBtn').length) {
+                    $node.append(`<i class="toggleBtn ${this.options.icons.theme}"></i>`);
+                }
+            } else {
+                if (!$node.children('.bottomEdge').length) {
+                    $node.append(`<i class="edge verticalEdge bottomEdge ${this.options.icons.theme}"></i>`);
+                }
+            }
+            if (this.isInAction($node)) {
+                this.switchVerticalArrow($node.children('.bottomEdge'));
+            }
+        },
+        // build the parent node of specific node
+        buildParentNode: function ($currentRoot, data) {
+            data.relationship = data.relationship || '001';
+            var $newRootWrapper = $('<ul class="nodes"><li class="hierarchy"></li></ul>')
+                .find('.hierarchy').append(this.createNode(data)).end();
+            this.$chart.prepend($newRootWrapper)
+                .find('.hierarchy:first').append($currentRoot.closest('ul').addClass('nodes'));
+        },
+        // exposed method
+        addParent: function ($currentRoot, data) {
+            this.buildParentNode($currentRoot, data);
+            if (!$currentRoot.children('.topEdge').length) {
+                $currentRoot.children('.title').after(`<i class="edge verticalEdge topEdge ${this.options.icons.theme}"></i>`);
+            }
+            if (this.isInAction($currentRoot)) {
+                this.switchVerticalArrow($currentRoot.children('.topEdge'));
+            }
+        },
+        // build the sibling nodes of specific node
+        buildSiblingNode: function ($nodeChart, data) {
+            var newSiblingCount = $.isArray(data) ? data.length : data.children.length;
+            var existingSibligCount = $nodeChart.parent().is('.nodes') ? $nodeChart.siblings().length + 1 : 1;
+            var siblingCount = existingSibligCount + newSiblingCount;
+            var insertPostion = (siblingCount > 1) ? Math.floor(siblingCount / 2 - 1) : 0;
+            // just build the sibling nodes for the specific node
+            if ($nodeChart.closest('.nodes').parent().is('.hierarchy')) {
+                this.buildChildNode($nodeChart.parent().closest('.hierarchy'), data);
+                var $siblings = $nodeChart.parent().closest('.hierarchy').children('.nodes:last').children('.hierarchy');
+                if (existingSibligCount > 1) {
+                    $siblings.eq(0).before($nodeChart.siblings().addBack().unwrap());
+                } else {
+                    $siblings.eq(insertPostion).after($nodeChart.unwrap());
+                }
+            } else { // build the sibling nodes and parent node for the specific ndoe
+                this.buildHierarchy($nodeChart.parent().prepend($('<li class="hierarchy">')).children('.hierarchy:first'), data);
+                $nodeChart.prevAll('.hierarchy').children('.nodes').children().eq(insertPostion).after($nodeChart);
+            }
+        },
+        //
+        addSiblings: function ($node, data) {
+            this.buildSiblingNode($node.closest('.hierarchy'), data);
+            $node.closest('.nodes').data('siblingsLoaded', true);
+            if (!$node.children('.leftEdge').length) {
+                $node.children('.topEdge').after(`<i class="edge horizontalEdge rightEdge ${this.options.icons.theme}"></i><i class="edge horizontalEdge leftEdge ${this.options.icons.theme}"></i>`);
+            }
+            if (this.isInAction($node)) {
+                this.switchHorizontalArrow($node);
+                $node.children('.topEdge').removeClass(this.options.icons.expandToUp).addClass(this.options.icons.collapseToDown);
+            }
+        },
+        // remove node and its descendent nodes
+        removeNodes: function ($node) {
+            var $wrapper = $node.closest('.hierarchy').parent();
+            if ($wrapper.parent().is('.hierarchy')) {
+                if (this.getNodeState($node, 'siblings').exist) {
+                    $node.closest('.hierarchy').remove();
+                    if ($wrapper.children().length === 1) {
+                        $wrapper.find('.node:first .horizontalEdge').remove();
+                    }
+                } else {
+                    $wrapper.siblings('.node').find('.bottomEdge').remove()
+                        .end().end().remove();
+                }
+            } else { // if $node is root node
+                $wrapper.closest('.orgchart').remove();
+            }
+        },
+        //
+        hideDropZones: function () {
+            // Remove all the 'this is a drop zone' indicators
+            var orgChartObj = this;
+            orgChartObj.$chart.find('.allowedDrop')
+                .removeClass('allowedDrop');
+        },
+        //
+        showDropZones: function (dragged) {
+            // Highlight all the 'drop zones', and set dragged, so that the drop/enter can work out what happens later
+            // TODO: This assumes all nodes are droppable: it doesn't run the custom isDroppable function - it should!
+            var orgChartObj = this;
+            orgChartObj.$chart.find('.node')
+                .each(function (index, node) {
+                    $(node).addClass('allowedDrop');
+                });
+            orgChartObj.$chart.data('dragged', $(dragged));
+        },
+        //
+        processExternalDrop: function (dropZone, dragged) {
+            // Allow an external drop event to be handled by one of our nodes
+            if (dragged) {
+                this.$chart.data('dragged', $(dragged));
+            }
+            var droppedOnNode = dropZone.closest('.node');
+            // would like to just call 'dropZoneHandler', but I can't reach it from here
+            // instead raise a drop event on the node element
+            droppedOnNode.triggerHandler({ 'type': 'drop' });
+        },
+        //
+        exportPDF: function (canvas, exportFilename) {
+            var doc = {};
+            var docWidth = Math.floor(canvas.width);
+            var docHeight = Math.floor(canvas.height);
+            if (!window.jsPDF) {
+                window.jsPDF = window.jspdf.jsPDF;
+            }
+
+            if (docWidth > docHeight) {
+                doc = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'px',
+                    format: [docWidth, docHeight]
+                });
+            } else {
+                doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'px',
+                    format: [docHeight, docWidth]
+                });
+            }
+            doc.addImage(canvas.toDataURL(), 'png', 0, 0);
+            doc.save(exportFilename + '.pdf');
+        },
+        //
+        exportPNG: function (canvas, exportFilename) {
+            var that = this;
+            var isWebkit = 'WebkitAppearance' in document.documentElement.style;
+            var isFf = !!window.sidebar;
+            var isEdge = navigator.appName === 'Microsoft Internet Explorer' || (navigator.appName === "Netscape" && navigator.appVersion.indexOf('Edge') > -1);
+            var $chartContainer = this.$chartContainer;
+
+            if ((!isWebkit && !isFf) || isEdge) {
+                window.navigator.msSaveBlob(canvas.msToBlob(), exportFilename + '.png');
+            } else {
+                var selector = '.download-btn' + (that.options.chartClass !== '' ? '.' + that.options.chartClass : '');
+
+                if (!$chartContainer.find(selector).length) {
+                    $chartContainer.append('<a class="download-btn' + (that.options.chartClass !== '' ? ' ' + that.options.chartClass : '') + '"'
+                        + ' download="' + exportFilename + '.png"></a>');
+                }
+
+                $chartContainer.find(selector).attr('href', canvas.toDataURL())[0].click();
+            }
+        },
+        //
+        export: function (exportFilename, exportFileextension) {
+            var that = this;
+            exportFilename = (typeof exportFilename !== 'undefined') ? exportFilename : this.options.exportFilename;
+            exportFileextension = (typeof exportFileextension !== 'undefined') ? exportFileextension : this.options.exportFileextension;
+            if ($(this).children('.spinner').length) {
+                return false;
+            }
+            var $chartContainer = this.$chartContainer;
+            var $mask = $chartContainer.find('.mask');
+            if (!$mask.length) {
+                $chartContainer.append(`<div class="mask"><i class="${this.options.icons.theme} ${this.options.icons.spinner} spinner"></i></div>`);
+            } else {
+                $mask.removeClass('hidden');
+            }
+            var sourceChart = $chartContainer.addClass('canvasContainer').find('.orgchart:not(".hidden")').get(0);
+            var flag = that.options.direction === 'l2r' || that.options.direction === 'r2l';
+            html2canvas(sourceChart, {
+                'width': flag ? sourceChart.clientHeight : sourceChart.clientWidth,
+                'height': flag ? sourceChart.clientWidth : sourceChart.clientHeight,
+                'onclone': function (cloneDoc) {
+                    $(cloneDoc).find('.canvasContainer').css('overflow', 'visible')
+                        .find('.orgchart:not(".hidden"):first').css('transform', '');
+                }
+            })
+                .then(function (canvas) {
+                    $chartContainer.find('.mask').addClass('hidden');
+
+                    if (exportFileextension.toLowerCase() === 'pdf') {
+                        that.exportPDF(canvas, exportFilename);
+                    } else {
+                        that.exportPNG(canvas, exportFilename);
+                    }
+
+                    $chartContainer.removeClass('canvasContainer');
+                }, function () {
+                    $chartContainer.removeClass('canvasContainer');
+                });
+        }
+    };
+
+    $.fn.orgchart = function (opts) {
+        return new OrgChart(this, opts).init();
+    };
+
+}));

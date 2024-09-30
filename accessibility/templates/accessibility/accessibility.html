@@ -1,0 +1,181 @@
+{% extends "settings.html" %}
+{% block settings %}
+{% load i18n %}
+<div id="response" hidden>
+</div>
+<div
+  class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
+>
+  <h2 class="oh-inner-sidebar-content__title oh-label__info">
+    {% trans "Default Accessibility" %}
+    <span class="oh-info mr-2 mb-2" title="{% trans "Limit default view access to horilla feature" %}">
+    </span>
+  </h2>
+
+</div>
+<div class="oh-card" id="accessibilityContainer">
+    <div class="oh-accordion-meta">
+    {% for accessibility, display in accessibility %}
+      <div class="oh-accordion-meta__item">
+        <div class="oh-accordion-meta__header">
+          <span class="oh-accordion-meta__title"
+            >{{display}}</span
+          >
+          <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
+            <div class="oh-dropdown" x-data="{open: false}">
+              <button
+                class="oh-btn oh-stop-prop oh-accordion-meta__btn"
+                @click="open = !open"
+                @click.outside="open = false"
+              >
+                {% trans "Actions" %}
+                <ion-icon
+                  class="ms-2 oh-accordion-meta__btn-icon"
+                  name="caret-down-outline"
+                ></ion-icon>
+              </button>
+              <div
+                class="oh-dropdown__menu oh-dropdown__menu--right"
+                x-show="open"
+              >
+                <ul class="oh-dropdown__items">
+                  {% comment %} <li class="oh-dropdown__item">
+                    <a href="#" class="oh-dropdown__link">Archive</a>
+                  </li> {% endcomment %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      class="oh-dropdown__link oh-dropdown__link--danger"
+                      onclick="
+                        Swal.fire({
+                          title: 'Are you sure?',
+                          text: `{% trans "You won't be able to revert this!" %}`,
+                          icon: 'warning',
+                          showCancelButton: true,
+                          confirmButtonColor: '#3085d6',
+                          cancelButtonColor: '#d33',
+                          confirmButtonText: '{% trans 'Yes' %}, {% trans 'Clear it' %}!'
+                          }).then((result) => {
+                          if (result.isConfirmed) {
+                             $('#{{accessibility}}_body select').val('')
+                             $('#{{accessibility}}_body').find('input[type=submit]').click()
+                             $('#{{accessibility}}_body select').parent().find('span').remove()
+                             $('#{{accessibility}}_body select').select2()
+                          }
+                        });
+
+                      "
+                      >{% trans "Clear Filter" %}</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="oh-accordion-meta__body d-none" id="{{accessibility}}_body">
+            <form hx-post="" hx-target="#response" hx-swap="afterend">
+              <div class="col-12 col-md-6" id="id_pk_parent_div" style="padding-right: 0;">
+                <div class="oh-label__info" for="id_pk">
+                  <label class="oh-label " for="id_pk"><b>{% trans "Restrict All" %}</b></label>
+                </div>
+                  <div id="dynamic_field_pk">
+                    <div class="oh-switch" onclick="event.stopPropagation()">
+                      <input data-accessibility="{{accessibility}}" type="checkbox" class="oh-switch__checkbox" name="exclude_all" onchange="
+                      $(this).closest('form').find('input[type=submit]').click();
+                      value = $(this).is(':checked');
+                      container = $('#{{accessibility}}formcontainer')
+                      console.log(typeof value)
+                      if (value=='true') {
+                        container.hide();
+                      }else{
+                        console.log('false');
+
+                        $(container).show();
+                      }
+                      ">
+                    </div>
+                  </div>
+              </div>
+              <div id="{{accessibility}}formcontainer">
+                <div class="mt-3" style="
+                  padding: 15px;
+                  background: #87cefa38;
+                  border-radius: 5px;
+                  border: solid 1px lightskyblue;
+                  border-left: solid #27a3ef 3px;
+                  ">
+                    {% trans "Only those normal users/employees with any category mentioned in the form can access the" %} `<b>{{display}}</b>` {% trans "feature" %}
+                    <br>
+                    {% trans "If skip all the category fields in the form, then all normal users/employees can access the feature" %}
+                </div>
+                <input hidden type="text" name="feature" value="{{accessibility}}">
+                {{accessibility_filter.form.structured}}
+                <input hidden type="submit" value="submit">
+              </div>
+            </form>
+            <script>
+                $(document).ready(function () {
+                    setTimeout(() => {
+                      $.ajax({
+                        url: "{% url 'get-initial-accessibility-data' %}?feature={{accessibility}}",
+                        success: function (response) {
+                                console.log(response)
+                                for (let key in response) {
+                                    if (response.hasOwnProperty(key)) {
+                                        let values = response[key];
+                                        let field = document.querySelector(`#{{accessibility}}_body [name="${key}"]`);
+                                        if (field) {
+                                          if (field.tagName === 'SELECT') {
+                                            if (field.multiple) {
+                                              for (let option of field.options) {
+                                                option.selected = values.includes(option.value);
+                                              }
+                                            } else {
+                                              field.value = values[0];
+                                            }
+                                          }else if(key=="exclude_all" && values[0] == "on"){
+                                            $(field).attr("checked",true)
+                                            accessibility = $(field).attr('data-accessibility')
+                                            $(`#${accessibility}formcontainer`).hide();
+                                          }
+                                        }
+                                      }
+                                    }
+                                    select = $("#accessibilityContainer #{{accessibility}}_body").find("select")
+                                    select.parent().find('span').remove()
+                                    select.select2()
+
+                            }
+                        });
+
+                    }, 100);
+                });
+            </script>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+  <script>
+    // Save the filter form while change the filter form
+    $("#accessibilityContainer select").change(function (e) {
+        $(this).parent().closest("form").find("input[type=submit]").click();
+    });
+    $(document).mouseup(function(e) {
+        var container = $('.select2.select2-container');
+        if (!container.is(e.target) && container.has(e.target).length === 0) {
+            setTimeout(() => {
+                $(".select2-container.select2-container--default.select2-container--open").removeClass("select2-container--open")
+            }, 10);
+        }
+    });
+  </script>
+  <script>
+    const items = document.querySelectorAll("#accessibilityContainer select");
+    items.forEach((item, index) => {
+        item.id = `select-${index + 1}`;
+    });
+
+</script>
+{% endblock settings %}

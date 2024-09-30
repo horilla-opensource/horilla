@@ -43,7 +43,7 @@ from base.backends import ConfiguredEmailBackend
 from base.context_processors import check_candidate_self_tracking
 from base.countries import country_arr, s_a, states
 from base.forms import MailTemplateForm
-from base.methods import export_data, generate_pdf, get_key_instances
+from base.methods import export_data, generate_pdf, get_key_instances, sortby
 from base.models import EmailLog, HorillaMailTemplate, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
 from horilla import settings
@@ -251,7 +251,6 @@ def recruitment(request):
                     redirect=reverse("pipeline"),
                 )
             return HttpResponse("<script>location.reload();</script>")
-    print(dynamic)
     return render(
         request, "recruitment/recruitment_form.html", {"form": form, "dynamic": dynamic}
     )
@@ -1368,11 +1367,14 @@ def interview_filter_view(request):
     previous_data = request.GET.urlencode()
 
     if request.user.has_perm("view_interviewschedule"):
-        interviews = InterviewSchedule.objects.all()
+        interviews = InterviewSchedule.objects.all().order_by("-interview_date")
     else:
         interviews = InterviewSchedule.objects.filter(
             employee_id=request.user.employee_get.id
-        )
+        ).order_by("-interview_date")
+
+    if request.GET.get("sortby"):
+        interviews = sortby(request, interviews, "sortby")
 
     dis_filter = InterviewFilter(request.GET, queryset=interviews).qs
 
@@ -1401,11 +1403,11 @@ def interview_view(request):
     previous_data = request.GET.urlencode()
 
     if request.user.has_perm("view_interviewschedule"):
-        interviews = InterviewSchedule.objects.all()
+        interviews = InterviewSchedule.objects.all().order_by("-interview_date")
     else:
         interviews = InterviewSchedule.objects.filter(
             employee_id=request.user.employee_get.id
-        )
+        ).order_by("-interview_date")
 
     form = InterviewFilter(request.GET, queryset=interviews)
     page_number = request.GET.get("page")
@@ -1647,6 +1649,7 @@ def candidate_conversion(request, cand_id, **kwargs):
             email=can_mail,
             phone=can_mob,
             gender=can_gender,
+            is_directly_converted=True,
         )
         candidate_obj.converted_employee_id = new_employee
         candidate_obj.save()
@@ -1923,8 +1926,6 @@ def send_acknowledgement(request):
     attachments = [
         (file.name, file.read(), file.content_type) for file in other_attachments
     ]
-    email_backend = ConfiguredEmailBackend()
-    host = email_backend.dynamic_from_email_with_display_name
     if candidate_id:
         candidate_obj = Candidate.objects.filter(id=candidate_id)
     else:
@@ -1960,10 +1961,9 @@ def send_acknowledgement(request):
         render_bdy = template_bdy.render(context)
         to = candidate.email
         email = EmailMessage(
-            subject,
-            render_bdy,
-            host,
-            [to],
+            subject=subject,
+            body=render_bdy,
+            to=[to],
         )
         email.content_subtype = "html"
 
