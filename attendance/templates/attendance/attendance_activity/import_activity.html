@@ -10,8 +10,8 @@
 </div>
 
 <div class="oh-modal__dialog-body" id="activityImportModalBody">
-    <form action="{% url 'attendance-activity-import' %}" enctype="multipart/form-data" method="post"
-        class="oh-profile-section" id="activityImportForm">
+    <form hx-post="{% url 'attendance-activity-import' %}" hx-encoding="multipart/form-data"
+        hx-target="#objectCreateModalTarget" hx-swap="outerHTML" class="oh-profile-section" id="activityImportForm">
         {% csrf_token %}
         <div id="uploading" class="oh-modal__dialog-body mr-5" style="display: none;">
             <div class="loader-container" style="margin: auto;">

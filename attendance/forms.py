@@ -543,7 +543,7 @@ class AttendanceValidationConditionForm(forms.ModelForm):
                 _(
                     "<span title='Do not Auto Validate Attendance if an Employee Works More Than this Amount of Duration'>{}</span>"
                 ),
-                _("Maximum Allowed working hours"),
+                _("Worked Hours(At Work) Auto Approve Till"),
             ),
             "minimum_overtime_to_approve": _("Minimum Hour to Approve Overtime"),
             "overtime_cutoff": _("Maximum Allowed Overtime Per Day"),

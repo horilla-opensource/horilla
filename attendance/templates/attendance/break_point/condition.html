@@ -28,6 +28,9 @@
                     <div class="oh-sticky-table__th">
                         {% trans 'OT Cut-Off/Day' %}
                     </div>
+                    <div class="oh-sticky-table__th">
+                        {% trans 'Auto Approve OT' %}
+                    </div>
                     {% if perms.attendance.change_attendancevalidationcondition %}
                         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                     {% endif %}
@@ -39,6 +42,7 @@
                         <div class="oh-sticky-table__td">{{ condition.validation_at_work }}</div>
                         <div class="oh-sticky-table__td">{{ condition.minimum_overtime_to_approve }}</div>
                         <div class="oh-sticky-table__td">{{ condition.overtime_cutoff }}</div>
+                        <div class="oh-sticky-table__td">{{ condition.auto_approve_ot|yesno:"Yes,No" }}</div>
                         {% if perms.attendance.change_attendancevalidationcondition %}
                             <div class="oh-sticky-table__td">
                                 <a hx-get="{% url 'attendance-settings-update' condition.id %}"

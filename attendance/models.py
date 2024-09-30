@@ -325,7 +325,11 @@ class Attendance(HorillaModel):
             if overtime > cutoff_seconds:
                 self.overtime_second = cutoff_seconds
                 self.attendance_overtime = format_time(cutoff_seconds)
+        if condition.auto_approve_ot and self.overtime_second >= strtime_seconds(
+            condition.minimum_overtime_to_approve
+        ):
 
+            self.attendance_overtime_approve = True
         if self.pk is not None:
             # Get the previous values of the boolean field
             prev_state = Attendance.objects.get(pk=self.pk)
@@ -726,13 +730,18 @@ class AttendanceValidationCondition(HorillaModel):
     """
 
     validation_at_work = models.CharField(
-        max_length=10, validators=[validate_time_format]
+        max_length=10,
+        validators=[validate_time_format],
+        verbose_name=_("Worked Hours Auto Approve Till"),
     )
     minimum_overtime_to_approve = models.CharField(
         blank=True, null=True, max_length=10, validators=[validate_time_format]
     )
     overtime_cutoff = models.CharField(
         blank=True, null=True, max_length=10, validators=[validate_time_format]
+    )
+    auto_approve_ot = models.BooleanField(
+        default=False, verbose_name=_("Auto Approve OT")
     )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()

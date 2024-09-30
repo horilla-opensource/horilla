@@ -4,6 +4,8 @@ This module defines the configuration for the 'attendance' app within the Horill
 
 from django.apps import AppConfig
 
+from horilla.horilla_settings import APP_URLS
+
 
 class AttendanceConfig(AppConfig):
     """
@@ -28,5 +30,7 @@ class AttendanceConfig(AppConfig):
         middleware_path = "attendance.middleware.AttendanceMiddleware"
         if middleware_path not in MIDDLEWARE:
             MIDDLEWARE.append(middleware_path)
+
+        APP_URLS.append("attendance.urls")  # Used to remove Dynamically Added Urls
 
         super().ready()

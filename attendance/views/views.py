@@ -12,8 +12,9 @@ provide the main entry points for interacting with the application's functionali
 """
 
 import logging
+import uuid
 
-from horilla.horilla_settings import HORILLA_DATE_FORMATS
+from horilla.horilla_settings import DYNAMIC_URL_PATTERNS, HORILLA_DATE_FORMATS
 from horilla.methods import remove_dynamic_url
 
 logger = logging.getLogger(__name__)
@@ -878,17 +879,22 @@ def process_activity_dicts(activity_dicts):
     from attendance.views.clock_in_out import clock_in, clock_out
 
     if not activity_dicts:
-        return
+        return []
+
     sorted_activity_dicts = sort_activity_dicts(activity_dicts)
+    error_dicts = []  # List to store dictionaries with errors
+
     for activity in sorted_activity_dicts:
         badge_id = activity.get("Badge ID")
         if not badge_id:
             activity["Error 1"] = "Please add the Badge ID column in the Excel sheet."
+            error_dicts.append(activity)
             continue
 
         employee = Employee.objects.filter(badge_id=badge_id).first()
         if not employee:
             activity["Error 2"] = "Invalid Badge ID"
+            error_dicts.append(activity)
             continue
 
         check_in_date = parse_date(activity["In Date"], "Error 4", activity)
@@ -903,37 +909,70 @@ def process_activity_dicts(activity_dicts):
             if not pd.isna(activity["Check Out"])
             else None
         )
-        if not any(key.startswith("Error") for key in activity.keys()):
-            if check_in_time:
-                try:
-                    clock_in(
-                        Request(
-                            user=employee.employee_user_id,
-                            date=check_in_date,
-                            time=check_in_time,
-                            datetime=django_timezone.make_aware(
-                                datetime.combine(check_in_date, check_in_time)
-                            ),
-                        )
-                    )
-                except Exception as e:
-                    logger.error(f"Got an error in import clock in {e}")
 
-            if check_out_time and check_out_date:
-                try:
-                    clock_out(
-                        Request(
-                            user=employee.employee_user_id,
-                            date=check_out_date,
-                            time=check_out_time,
-                            datetime=django_timezone.make_aware(
-                                datetime.combine(check_out_date, check_out_time)
-                            ),
-                        )
+        if any(key.startswith("Error") for key in activity.keys()):
+            error_dicts.append(activity)
+            continue
+
+        if check_in_time:
+            try:
+                clock_in(
+                    Request(
+                        user=employee.employee_user_id,
+                        date=check_in_date,
+                        time=check_in_time,
+                        datetime=django_timezone.make_aware(
+                            datetime.combine(check_in_date, check_in_time)
+                        ),
                     )
-                except Exception as e:
-                    logger.error(f"Got an error in import clock out {e}")
-    return activity_dicts
+                )
+            except Exception as e:
+                activity["Error 6"] = f"Got an error in import clock in {e}"
+                error_dicts.append(activity)
+
+        if check_out_time and check_out_date:
+            try:
+                clock_out(
+                    Request(
+                        user=employee.employee_user_id,
+                        date=check_out_date,
+                        time=check_out_time,
+                        datetime=django_timezone.make_aware(
+                            datetime.combine(check_out_date, check_out_time)
+                        ),
+                    )
+                )
+            except Exception as e:
+                activity["Error 7"] = f"Got an error in import clock out {e}"
+                error_dicts.append(activity)
+
+    return error_dicts
+
+
+def handle_activity_import_error(error_data):
+
+    # Directly create the DataFrame from the list of dictionaries
+    data_frame = pd.DataFrame(error_data)
+
+    # Create an HTTP response with an Excel attachment
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
+    data_frame.to_excel(response, index=False)
+
+    def get_activity_error_sheet(request):
+        remove_dynamic_url(path_info)
+        return response
+
+    from attendance.urls import path, urlpatterns
+
+    # Create a unique path for the error file download
+    path_info = f"activity-error-sheet-{uuid.uuid4()}"
+    urlpatterns.append(path(path_info, get_activity_error_sheet, name=path_info))
+    DYNAMIC_URL_PATTERNS.append(path_info)
+
+    # Return the path information
+    path_info = f"attendance/{path_info}"
+    return path_info
 
 
 @login_required
@@ -944,9 +983,18 @@ def attendance_activity_import(request):
         data_frame = pd.read_excel(file)
         activity_dicts = data_frame.to_dict("records")
         if activity_dicts:
-            activity_dicts = process_activity_dicts(activity_dicts)
+            import_error_dicts = process_activity_dicts(activity_dicts)
+            path_info = handle_activity_import_error(import_error_dicts)
+            created_activity_count = len(activity_dicts) - len(import_error_dicts)
+            context = {
+                "created_count": created_activity_count,
+                "error_count": len(import_error_dicts),
+                "model": _("Attendance Activity"),
+                "path_info": path_info,
+            }
+            html = render_to_string("import_popup.html", context)
             messages.success(request, _("Attendance activity imported successfully"))
-            return redirect(attendance_activity_view)
+            return HttpResponse(html)
     return render(request, "attendance/attendance_activity/import_activity.html")
 
 
@@ -1177,27 +1225,6 @@ def validation_condition_create(request):
     condition = AttendanceValidationCondition.objects.first()
     if request.method == "POST":
         form = AttendanceValidationConditionForm(request.POST)
-        if form.is_valid():
-            form.save()
-    return render(
-        request,
-        "attendance/break_point/condition.html",
-        {"form": form, "condition": condition},
-    )
-
-
-@login_required
-@permission_required("attendance.change_attendancevalidationcondition")
-def validation_condition_update(request, obj_id):
-    """
-    This method is used to update validation condition
-    Args:
-        obj_id : validation condition instance id
-    """
-    condition = AttendanceValidationCondition.objects.get(id=obj_id)
-    form = AttendanceValidationConditionForm(instance=condition)
-    if request.method == "POST":
-        form = AttendanceValidationConditionForm(request.POST, instance=condition)
         if form.is_valid():
             form.save()
     return render(
