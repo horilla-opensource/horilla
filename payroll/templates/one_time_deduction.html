@@ -50,7 +50,9 @@
     </div>
   </div>
 </div>
-
+{% for field in form.hidden_fields %}
+{{field}}
+{% endfor %}
 <script>
   function conditionalVisibility() {
   if (!$("#id_is_condition_based").is(":checked")) {
