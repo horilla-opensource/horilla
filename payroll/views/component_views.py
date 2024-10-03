@@ -192,7 +192,7 @@ def payroll_calculation(employee, start_date, end_date):
         + loss_of_pay_amount
     )
 
-    net_pay = (basic_pay + total_allowance) - total_deductions
+    net_pay = gross_pay - total_deductions
     updated_net_pay_data = update_compensation_deduction(
         employee, net_pay, "net_pay", start_date, end_date
     )

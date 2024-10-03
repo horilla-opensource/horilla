@@ -192,6 +192,8 @@ def hourly_computation(employee, wage, start_date, end_date):
     return {
         "basic_pay": basic_pay,
         "loss_of_pay": 0,
+        "paid_days": len(attendances_on_period),
+        "unpaid_days": 0,
     }
 
 
@@ -281,6 +283,8 @@ def daily_computation(employee, wage, start_date, end_date):
     return {
         "basic_pay": basic_pay,
         "loss_of_pay": loss_of_pay,
+        "paid_days": total_working_days,
+        "unpaid_days": unpaid_leaves,
     }
 
 
