@@ -16,7 +16,8 @@
             <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
                     <div class="oh-sticky-table__th">{% trans "Batch Number" %}</div>
-                    <div class="oh-sticky-table__th">{% trans " Description" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Description" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Assets" %}</div>
                     {% if perms.asset.change_assetlot or perms.asset.delete_assetlot %}
                         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                     {% endif %}
@@ -24,10 +25,16 @@
             </div>
             <div class="oh-sticky-table__tbody">
                 {% for batch_number in batch_numbers %}
-                    <div class="oh-sticky-table__tr" draggable="true">
+                    <div class="oh-sticky-table__tr" style="cursor: text;" draggable="true">
                         <div class="oh-sticky-table__td">{{batch_number.lot_number}}</div>
                         <div class="oh-sticky-table__td">
                             {{batch_number.lot_description}}
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            <a href="{% url "asset-category-view" %}?asset_lot_number_id={{batch_number.id}}" style="cursor: pointer;" class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1">
+                             {{batch_number.asset_set.count}}
+                             {% trans "Assets" %}
+                            </a>
                         </div>
                         {% if perms.asset.change_assetlot or perms.asset.delete_assetlot %}
                             <div class="oh-sticky-table__td">

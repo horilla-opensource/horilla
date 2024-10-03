@@ -91,6 +91,9 @@ class AssetFilter(CustomFilterSet):
     Custom filter set for Asset instances.
     """
 
+    search = django_filters.CharFilter(method="search_method")
+    category = django_filters.CharFilter(field_name="asset_category_id")
+
     class Meta:
         """
         A nested class that specifies the configuration for the filter.
@@ -106,6 +109,15 @@ class AssetFilter(CustomFilterSet):
         super().__init__(*args, **kwargs)
         for visible in self.form.visible_fields():
             visible.field.widget.attrs["id"] = str(uuid.uuid4())
+
+    def search_method(self, queryset, _, value):
+        """
+        Search method
+        """
+        return (
+            queryset.filter(asset_name__icontains=value)
+            | queryset.filter(asset_category_id__asset_category_name__icontains=value)
+        ).distinct()
 
 
 class CustomAssetFilter(CustomFilterSet):
@@ -227,6 +239,8 @@ class AssetCategoryFilter(CustomFilterSet):
     Custom filter set for AssetCategory instances.
     """
 
+    search = django_filters.CharFilter(method="serach_method")
+
     class Meta:
         """
         Specifies the model and fields to be used for filtering AssetCategory instances.
@@ -244,6 +258,23 @@ class AssetCategoryFilter(CustomFilterSet):
         super().__init__(*args, **kwargs)
         for visible in self.form.visible_fields():
             visible.field.widget.attrs["id"] = str(uuid.uuid4())
+
+    def serach_method(self, queryset, _, value):
+        """
+        Search method
+        """
+        return (
+            queryset.filter(asset_category_name__icontains=value)
+            | queryset.filter(asset__asset_name__icontains=value)
+        ).distinct()
+
+    def filter_queryset(self, queryset):
+        # Get the base filtered queryset
+        queryset = super().filter_queryset(queryset)
+        assets = AssetFilter(data=self.data).qs
+        return (
+            queryset.filter(asset__pk__in=assets.values_list("pk", flat=True))
+        ).distinct()
 
 
 class AssetRequestReGroup:

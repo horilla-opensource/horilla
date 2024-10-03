@@ -29,7 +29,8 @@
         <div
           class="oh-accordion-meta__header oh-accordion-meta__header--custom"
           data-target="#assetCategory{{asset_category.id}}"
-          hx-get="{%url 'asset-list' cat_id=asset_category.id %}"
+          hx-get="{%url 'asset-list' cat_id=asset_category.id %}?category={{asset_category.pk}}&{{request.GET.urlencode}}"
+          hx-trigger="load"
           hx-target="#assetCategory{{asset_category.id}}">
             <div class="d-flex">
                 <span

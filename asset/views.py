@@ -344,27 +344,7 @@ def asset_list(request, cat_id):
     """
     context = {}
     asset_under = ""
-    assets_in_category = Asset.objects.none()
-    asset_info = request.GET.get("asset_info")
-    asset_list_filter = request.GET.get("asset_list")
-    if asset_list_filter:
-        # if the data is present means that it is for asset filtered list
-        query = request.GET.get("query")
-        asset_under = "asset_filter"
-        if query:
-            assets_in_category = Asset.objects.filter(asset_name__icontains=query)
-        else:
-            assets_in_category = Asset.objects.all()
-    elif asset_info:
-        pass
-    else:
-        # if the data is not present means that it is for asset category list
-        asset_under = "asset_category"
-        asset_category = AssetCategory.objects.get(id=cat_id)
-        assets_in_category = Asset.objects.filter(asset_category_id=asset_category)
-
-    previous_data = request.GET.urlencode()
-    asset_filtered = AssetFilter(request.GET, queryset=assets_in_category)
+    asset_filtered = AssetFilter(request.GET)
     asset_list = asset_filtered.qs
 
     paginator = Paginator(asset_list, get_pagination())
@@ -372,6 +352,7 @@ def asset_list(request, cat_id):
     page_obj = paginator.get_page(page_number)
 
     requests_ids = json.dumps([instance.id for instance in page_obj.object_list])
+    previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(Asset, data_dict)
     context = {
@@ -379,7 +360,7 @@ def asset_list(request, cat_id):
         "pg": previous_data,
         "asset_category_id": cat_id,
         "asset_under": asset_under,
-        "asset_count": len(assets_in_category) or None,
+        "asset_count": len(asset_list) or None,
         "filter_dict": data_dict,
         "requests_ids": requests_ids,
     }
@@ -465,12 +446,11 @@ def filter_pagination_asset_category(request):
         search = ""
 
     previous_data = request.GET.urlencode()
-    asset_category_queryset = AssetCategory.objects.all().filter(
-        asset_category_name__icontains=search
-    )
     asset_category_filtered = AssetCategoryFilter(
-        request.GET, queryset=asset_category_queryset
+        request.GET,
     )
+
+    asset_category_queryset = asset_category_filtered.qs
     asset_category_paginator = Paginator(asset_category_filtered.qs, get_pagination())
     page_number = request.GET.get("page")
     asset_categories = asset_category_paginator.get_page(page_number)
@@ -528,12 +508,6 @@ def asset_category_view_search_filter(request):
     Raises:
         None
     """
-
-    search_type = request.GET.get("type")
-    query = request.GET.get("search")
-    if search_type == "asset":
-        # searching asset will redirect to asset list and pass the query
-        return redirect(f"/asset/asset-list/0?asset_list=asset&query={query}")
     context = filter_pagination_asset_category(request)
     return render(request, "category/asset_category.html", context)
 

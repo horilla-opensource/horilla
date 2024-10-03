@@ -1,5 +1,8 @@
 {% load i18n %} {% load static %}
-
+<script>
+  $("#asset-count{{asset_category_id}}").html("{{assets.paginator.count}}");
+  $("#asset-count{{asset_category_id}}").attr("title","{{assets.paginator.count}} {% trans 'Assets' %}");
+</script>
 <!-- start of messages -->
 {% if messages %}
 <div class="oh-wrapper">

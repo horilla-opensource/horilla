@@ -20,6 +20,11 @@ SUBMENUS = [
         "accessibility": "asset.sidebar.dashboard_accessibility",
     },
     {
+        "menu": trans("Asset Batches"),
+        "redirect": reverse("asset-batch-view"),
+        "accessibility": "asset.sidebar.lot_accessibility",
+    },
+    {
         "menu": trans("Request and Allocation"),
         "redirect": reverse("asset-request-allocation-view"),
     },
@@ -45,3 +50,10 @@ def history_accessibility(request, submenu, user_perms, *args, **kwargs):
     dashboard and asset category view.
     """
     return request.user.has_perm("asset.view_assetassignment")
+
+
+def lot_accessibility(request, subment, user_perms, *args, **kwargs):
+    """
+    Asset batch sidebar accessibility method
+    """
+    return request.user.has_perm("asset.view_assetlot")

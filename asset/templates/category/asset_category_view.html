@@ -70,11 +70,6 @@
                 <!-- end of search -->
             </div>
             <div class="oh-main__titlebar-button-container">
-                {% if perms.asset.view_assetlot %}
-                    <a href="{% url 'asset-batch-view'%}" style="text-decoration:none;">
-                        <button class="oh-btn ml-2"> <ion-icon name="list-outline" class="me-1"></ion-icon>{% trans "Batch No" %}</button>
-                    </a>
-                {% endif %}
                 <!-- import asset start  -->
 
                 <!-- import asset end  -->
@@ -94,7 +89,7 @@
                     <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
                         @click.outside="open = false" style="display: none;">
                         <div class="oh-dropdown__filter-body">
-                            <div class="oh-accordion">
+                            {% comment %} <div class="oh-accordion">
                                 <div class="oh-accordion-header">{% trans "Asset Category" %}</div>
                                 <div class="oh-accordion-body">
                                     <form hx-get="{%url 'asset-category-view-search-filter' %}" hx-target="#assetCategoryList" hx-swap="innerHTML" id="filterForm">
@@ -117,11 +112,11 @@
                                     </div>
                                 </form>
                                 </div>
-                            </div>
+                            </div> {% endcomment %}
                             <div class="oh-accordion">
                                 <div class="oh-accordion-header">{% trans "Asset" %}</div>
                                 <div class="oh-accordion-body">
-                                    <form hx-get="{%url 'asset-list' cat_id=0 %}?asset_list='asset'" name="asset_list" hx-target="#assetCategoryList" hx-swap="innerHTML" id="filterForm2">
+                                    <form hx-get="{%url 'asset-category-view-search-filter' %}" name="asset_list" hx-target="#assetCategoryList" hx-swap="innerHTML" id="filterForm2">
                                     <div class="row">
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
@@ -163,12 +158,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="oh-dropdown__filter-footer">
-                                        <button class="oh-btn oh-btn--secondary oh-btn--small  w-100 filterButton">{% trans "Filter" %}</button>
-                                    </div>
-                                    </form>
                                 </div>
                             </div>
+                            <div class="oh-dropdown__filter-footer">
+                                <button class="oh-btn oh-btn--secondary oh-btn--small  w-100 filterButton">{% trans "Filter" %}</button>
+                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
