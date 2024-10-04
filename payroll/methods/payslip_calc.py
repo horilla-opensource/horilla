@@ -12,6 +12,7 @@ from django.apps import apps
 
 # from attendance.models import Attendance
 from horilla.methods import get_horilla_model_class
+from payroll.methods.deductions import update_compensation_deduction
 from payroll.methods.limits import compute_limit
 from payroll.models import models
 from payroll.models.models import (
@@ -217,9 +218,18 @@ def calculate_gross_pay(*_args, **kwargs):
     total_allowance = kwargs["total_allowance"]
     # basic_pay = compute_salary_on_period(employee, start_date, end_date)["basic_pay"]
     gross_pay = total_allowance + basic_pay
+
+    employee, start_date, end_date = (
+        kwargs[key] for key in ("employee", "start_date", "end_date")
+    )
+
+    updated_gross_pay_data = update_compensation_deduction(
+        employee, gross_pay, "gross_pay", start_date, end_date
+    )
     return {
-        "gross_pay": gross_pay,
+        "gross_pay": updated_gross_pay_data["compensation_amount"],
         "basic_pay": basic_pay,
+        "deductions": updated_gross_pay_data["deductions"],
     }
 
 

@@ -154,11 +154,8 @@ def payroll_calculation(employee, start_date, end_date):
 
     kwargs["allowances"] = allowances
     kwargs["total_allowance"] = total_allowance
-    gross_pay = calculate_gross_pay(**kwargs)["gross_pay"]
-    updated_gross_pay_data = update_compensation_deduction(
-        employee, gross_pay, "gross_pay", start_date, end_date
-    )
-    gross_pay = updated_gross_pay_data["compensation_amount"]
+    updated_gross_pay_data = calculate_gross_pay(**kwargs)
+    gross_pay = updated_gross_pay_data["gross_pay"]
     gross_pay_deductions = updated_gross_pay_data["deductions"]
 
     kwargs["gross_pay"] = gross_pay
