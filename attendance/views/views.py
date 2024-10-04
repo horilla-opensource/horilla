@@ -333,8 +333,15 @@ def attendance_view(request):
     attendances = Attendance.objects.filter(
         attendance_validated=True, employee_id__is_active=True
     )
+    # ot_attendances = Attendance.objects.filter(
+    #     overtime_second__gte=minot,
+    #     attendance_validated=True,
+    #     employee_id__is_active=True,
+    # )
+    # for attendance in ot_attendances:
+    #     attendance.min_ot_achieved = True
     ot_attendances = Attendance.objects.filter(
-        overtime_second__gte=minot,
+        overtime_second__gt=0,
         attendance_validated=True,
         employee_id__is_active=True,
     )

@@ -63,7 +63,7 @@ def attendance_search(request):
     validate_attendances = all_attendances.filter(attendance_validated=False)
     attendances = all_attendances.filter(attendance_validated=True)
     ot_attendances = all_attendances.filter(
-        overtime_second__gte=minot,
+        overtime_second__gt=0,
         attendance_validated=True,
     )
 
@@ -163,6 +163,7 @@ def attendance_search(request):
             "field": field,
             "filter_dict": data_dict,
             "month_name": month_name,
+            "minot": minot,
         },
     )
 

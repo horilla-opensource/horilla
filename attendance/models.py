@@ -208,6 +208,11 @@ class Attendance(HorillaModel):
             "attendance_clock_in",
         ]
 
+    def check_min_ot(self):
+        """
+        Method to check the min ot for the attendance
+        """
+
     def __str__(self) -> str:
         return f"{self.employee_id.employee_first_name} \
             {self.employee_id.employee_last_name} - {self.attendance_date}"

@@ -222,9 +222,13 @@ class AttendanceUpdateForm(ModelForm):
 
         self.fields["attendance_overtime_approve"].label = _("Approve overtime?")
         self.fields["attendance_validated"].label = _("Validate Attendance?")
-        if instance is not None and (
-            strtime_seconds(instance.attendance_overtime) < condition
-            or not instance.attendance_validated
+        if (
+            instance is not None
+            and not instance.attendance_overtime_approve
+            and (
+                strtime_seconds(instance.attendance_overtime) < condition
+                or not instance.attendance_validated
+            )
         ):
             del self.fields["attendance_overtime_approve"]
 
