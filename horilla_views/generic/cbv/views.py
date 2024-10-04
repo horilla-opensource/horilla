@@ -879,6 +879,7 @@ class HorillaFormView(FormView):
         return self.model.objects.filter(pk=pk).first()
 
     def get_form(self, form_class=None):
+
         pk = self.kwargs.get("pk")
         if not hasattr(self, "form"):
             instance = self.get_queryset()
@@ -904,7 +905,8 @@ class HorillaFormView(FormView):
                     field = dynamic_tuple[0]
                     key = self.request.session.session_key + "cbv" + field
                     field_instance = form.instance._meta.get_field(field)
-                    value = []
+                    value = form.initial.get(field, [])
+
                     form_field = forms.ChoiceField
                     if isinstance(field_instance, models.models.ManyToManyField):
                         form_field = forms.MultipleChoiceField
@@ -915,7 +917,8 @@ class HorillaFormView(FormView):
                                 )
                             )
                     else:
-                        value = getattribute(getattribute(form.instance, field), "pk")
+                        value = getattr(getattribute(form.instance, field), "pk", value)
+
                     CACHE.set(
                         key,
                         {
