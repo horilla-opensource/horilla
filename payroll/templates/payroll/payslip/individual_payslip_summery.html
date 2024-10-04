@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n horillafilters %}
 {% if messages %}
 <div class="oh-wrapper">
   {% for message in messages %}
@@ -51,28 +51,17 @@
 
     <div class="oh-payslip__netpay" style="text-align:left; border-radius: 15px; border: 1px solid hsl(213,22%,84%);">
       <div style="border-radius: 15px; background-color: #d2f8d7; padding: 10px; border-left: 3px solid #00cc66;">
-        {% if position == "prefix" %}
-          <span class="oh-payslip__netpay-amount">{{ currency }} {{ net_pay|floatformat:2 }}</span>
-        {% else %}
-          <span class="oh-payslip__netpay-amount">{{ net_pay|floatformat:2 }} {{ currency }}</span>
-        {% endif %}
+        <span class="oh-payslip__netpay-amount">{{ net_pay|floatformat:2|currency_symbol_position }}</span>
+
           <span class="oh-payslip__netpay-title">{% trans "Employee Net Pay" %}</span>
       </div>
       <div class="payslip__netpay__summary">
-          {% if position == "prefix" %}
-            <span class="oh-payslip__netpay-title">{% trans "Actual Basic Pay" %} <small style="margin-left:36px; font-weight:bold;">: {{currency}} {{instance.contract_wage}}</small></span>
-          {% else %}
-            <span class="oh-payslip__netpay-title">{% trans "Actual Basic Pay" %} <small style="margin-left:36px; font-weight:bold;">: {{instance.contract_wage}} {{currency}}</small></span>
-          {% endif %}
+          <span class="oh-payslip__netpay-title">{% trans "Actual Basic Pay" %} <small style="margin-left:36px; font-weight:bold;">: {{instance.contract_wage|currency_symbol_position}}</small></span>
           <span class="oh-payslip__netpay-title">{% trans "Paid Days" %} <small style="margin-left:86px;font-weight:bold;">: {{paid_days}}</small> </span>
           <span class="oh-payslip__netpay-title">{% trans "LOP Days" %} <small style="margin-left:93px ;font-weight:bold;">: {{unpaid_days}}</small> </span>
           <span class="oh-payslip__netpay-title">
               {% trans "Updated Basic Pay" %}
-                {% if position == "prefix" %}
-                  <small style="margin-left:20px;font-weight:bold;">: {{currency}} {{basic_pay|floatformat:2}}
-                {% else %}
-                  <small style="margin-left:20px;font-weight:bold;">: {{basic_pay|floatformat:2}} {{currency}}
-                {% endif %}
+                <small style="margin-left:20px;font-weight:bold;">: {{basic_pay|floatformat:2|currency_symbol_position}}
 
                 <br><i style="font-style: italic; margin-left: 10px; font-weight: normal;"><ion-icon name="information-circle-outline" style="color:blue;"></ion-icon>{% trans "The payslip is calculated based on the updated basic pay" %}</i>
 
@@ -110,48 +99,30 @@
           >
             {% trans "Basic Pay" %}
           </td>
-          {% if position == "prefix" %}
-            <td class="oh-payslip__table-td" colspan="2">
-              {{currency}} {{basic_pay|floatformat:2}}
-            </td>
-          {% else %}
-            <td class="oh-payslip__table-td" colspan="2">
-              {{basic_pay|floatformat:2}} {{currency}}
-            </td>
-          {% endif %}
+          <td class="oh-payslip__table-td" colspan="2">
+            {{basic_pay|floatformat:2|currency_symbol_position}}
+          </td>
         </tr>
         {% for allowance in allowances %}
-        <tr>
-          <td class="oh-payslip__table-td">{{allowance.title}}</td>
-          {% if position == "prefix" %}
+          <tr>
+            <td class="oh-payslip__table-td">{{allowance.title}}</td>
             <td class="oh-payslip__table-td">
-              {{currency}} {{allowance.amount|floatformat:2}}
+              {{allowance.amount|floatformat:2|currency_symbol_position}}
             </td>
-          {% else %}
-            <td class="oh-payslip__table-td">
-              {{allowance.amount|floatformat:2}} {{currency}}
-            </td>
-          {% endif %}
-        </tr>
+          </tr>
         {% endfor %}
       </tbody>
       <tfoot class="oh-payslip__table-tfoot">
         <tr class="oh-payslip__table-tr">
           <th
-            class="oh-payslip__table-tf"
-            title="{% trans 'Some Deduction will update the total gross pay using the deductions that are enabled update compensation' %}"
+            class="oh-payslip__table-tf oh-label__info"
           >
             {% trans "Total Gross Pay" %}
+            <span class="oh-info mb-1" title="{% trans 'Some Deduction will update the total gross pay using the deductions that are enabled update compensation' %}"></span>
           </th>
-          {% if position == "prefix" %}
-            <th class="oh-payslip__table-tf">
-              {{currency}} {{gross_pay|floatformat:2}}
-            </th>
-          {% else %}
-            <th class="oh-payslip__table-tf">
-              {{gross_pay|floatformat:2}} {{currency}}
-            </th>
-          {% endif %}
+          <th class="oh-payslip__table-tf">
+            {{gross_pay|floatformat:2|currency_symbol_position}}
+          </th>
         </tr>
       </tfoot>
     </table>
@@ -176,128 +147,78 @@
       <tbody class="oh-payslip__table-tbody">
         <tr class="oh-payslip__table-tr">
           <td class="oh-payslip__table-td">{% trans "Loss of Pay" %}</td>
-          {% if position == "prefix" %}
-            <td class="oh-payslip__table-td">
-              {{currency}} {{loss_of_pay|floatformat:2}}
-            </td>
-          {% else %}
-            <td class="oh-payslip__table-td">
-              {{loss_of_pay|floatformat:2}} {{currency}}
-            </td>
-          {% endif %}
+          <td class="oh-payslip__table-td">
+            {{loss_of_pay|floatformat:2|currency_symbol_position}}
+          </td>
         </tr>
         {% for deduction in basic_pay_deductions %}
-        <tr class="oh-payslip__table-tr">
-          <td class="oh-payslip__table-td">{{deduction.title}}</td>
-          {% if position == "prefix" %}
+          <tr class="oh-payslip__table-tr">
+            <td class="oh-payslip__table-td">{{deduction.title}}</td>
             <td class="oh-payslip__table-td">
-              {{currency}} {{deduction.amount|floatformat:2}}
+              {{deduction.amount|floatformat:2|currency_symbol_position}}
             </td>
-          {% else %}
+          </tr>
+        {% endfor %}
+        {% for deduction in gross_pay_deductions %}
+          <tr class="oh-payslip__table-tr">
+            <td class="oh-payslip__table-td">{{deduction.title}}</td>
             <td class="oh-payslip__table-td">
-              {{deduction.amount|floatformat:2}} {{currency}}
+              {{deduction.amount|floatformat:2|currency_symbol_position}}
             </td>
-          {% endif %}
-        </tr>
-        {% endfor %} {% for deduction in gross_pay_deductions %}
-        <tr class="oh-payslip__table-tr">
-          <td class="oh-payslip__table-td">{{deduction.title}}</td>
-          {% if position == "prefix" %}
+          </tr>
+        {% endfor %}
+        {% for deduction in pretax_deductions %}
+          <tr class="oh-payslip__table-tr">
+            <td class="oh-payslip__table-td">{{deduction.title}}</td>
             <td class="oh-payslip__table-td">
-              {{currency}} {{deduction.amount|floatformat:2}}
+              {{deduction.amount|floatformat:2|currency_symbol_position}}
             </td>
-          {% else %}
+          </tr>
+        {% endfor %}
+        {% for deduction in post_tax_deductions %}
+          <tr class="oh-payslip__table-tr">
+            <td class="oh-payslip__table-td">{{deduction.title}}</td>
             <td class="oh-payslip__table-td">
-              {{deduction.amount|floatformat:2}} {{currency}}
+              {{deduction.amount|floatformat:2|currency_symbol_position}}
             </td>
-          {% endif %}
-        </tr>
-        {% endfor %} {% for deduction in pretax_deductions %}
-        <tr class="oh-payslip__table-tr">
-          <td class="oh-payslip__table-td">{{deduction.title}}</td>
-          {% if position == "prefix" %}
-            <td class="oh-payslip__table-td">
-              {{currency}} {{deduction.amount|floatformat:2}}
-            </td>
-          {% else %}
-            <td class="oh-payslip__table-td">
-              {{deduction.amount|floatformat:2}} {{currency}}
-            </td>
-          {% endif %}
-        </tr>
-        {% endfor %} {% for deduction in post_tax_deductions %}
-        <tr class="oh-payslip__table-tr">
-          <td class="oh-payslip__table-td">{{deduction.title}}</td>
-          {% if position == "prefix" %}
-            <td class="oh-payslip__table-td">
-              {{currency}} {{deduction.amount|floatformat:2}}
-            </td>
-          {% else %}
-            <td class="oh-payslip__table-td">
-              {{deduction.amount|floatformat:2}} {{currency}}
-            </td>
-          {% endif %}
-        </tr>
+          </tr>
         {% endfor %}
 
         <tr class="oh-payslip__table-tr">
           <td class="oh-payslip__table-td">{% trans "Federal Tax" %}</td>
-          {% if position == "prefix" %}
-            <td class="oh-payslip__table-td">
-              {{currency}} {{federal_tax|floatformat:2}}
-            </td>
-          {% else %}
-            <td class="oh-payslip__table-td">
-              {{federal_tax|floatformat:2}} {{currency}}
-            </td>
-          {% endif %}
+          <td class="oh-payslip__table-td">
+            {{federal_tax|floatformat:2|currency_symbol_position}}
+          </td>
         </tr>
 
         {% for deduction in tax_deductions %}
-        <tr class="oh-payslip__table-tr">
-          <td class="oh-payslip__table-td">{{deduction.title}}</td>
-          {% if position == "prefix" %}
+          <tr class="oh-payslip__table-tr">
+            <td class="oh-payslip__table-td">{{deduction.title}}</td>
+              <td class="oh-payslip__table-td">
+                {{deduction.amount|floatformat:2|currency_symbol_position}}
+              </td>
+          </tr>
+        {% endfor %}
+        {% for deduction in net_deductions %}
+          <tr class="oh-payslip__table-tr">
+            <td class="oh-payslip__table-td">{{deduction.title}}</td>
             <td class="oh-payslip__table-td">
-              {{currency}} {{deduction.amount|floatformat:2}}
+              {{deduction.amount|floatformat:2|currency_symbol_position}}
             </td>
-          {% else %}
-            <td class="oh-payslip__table-td">
-              {{deduction.amount|floatformat:2}} {{currency}}
-            </td>
-          {% endif %}
-        </tr>
-        {% endfor %} {% for deduction in net_deductions %}
-        <tr class="oh-payslip__table-tr">
-          <td class="oh-payslip__table-td">{{deduction.title}}</td>
-          {% if position == "prefix" %}
-            <td class="oh-payslip__table-td">
-              {{currency}}{{deduction.amount|floatformat:2}}
-            </td>
-          {% else %}
-            <td class="oh-payslip__table-td">
-              {{currency}}{{deduction.amount|floatformat:2}}
-            </td>
-          {% endif %}
-        </tr>
+          </tr>
         {% endfor %}
       </tbody>
       <tfoot class="oh-payslip__table-tfoot">
         <tr class="oh-payslip__table-tr">
           <th
-            class="oh-payslip__table-tf"
-            title="{% trans 'Some deductions are not calculated to total deductions because they are deduducted before the calculation starts they deducted from basic pay, gross pay and some deduct after calculating the net pay' %}"
+            class="oh-payslip__table-tf oh-label__info"
           >
             {% trans "Total Deductions" %}
+            <span class="oh-info mb-1" title="{% trans 'Some deductions are not included in the total deductions because they are given as updated compensations. These deductions may be applied before the main calculation begins, such as from the basic pay or gross pay, while others are deducted after calculating the net pay.' %}"></span>
           </th>
-          {% if position == "prefix" %}
-            <th class="oh-payslip__table-tf">
-              {{currency}} {{total_deductions|floatformat:2}}
-            </th>
-          {% else %}
-            <th class="oh-payslip__table-tf">
-              {{total_deductions|floatformat:2}} {{currency}}
-            </th>
-          {% endif %}
+          <th class="oh-payslip__table-tf">
+            {{total_deductions|floatformat:2|currency_symbol_position}}
+          </th>
         </tr>
       </tfoot>
     </table>
@@ -315,11 +236,7 @@
       </p>
     </div>
     <div class="oh-payslip__net-payable-right">
-      {% if position == "prefix" %}
-        <span class="oh-payslip__net-payable-amount">{{currency}} {{net_pay|floatformat:2}}</span>
-      {% else %}
-        <span class="oh-payslip__net-payable-amount">{{net_pay|floatformat:2}} {{currency}}</span>
-      {% endif %}
+      <span class="oh-payslip__net-payable-amount">{{net_pay|floatformat:2|currency_symbol_position}}</span>
     </div>
   </div>
 </div>

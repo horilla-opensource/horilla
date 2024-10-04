@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static horillafilters %}
 <div class="oh-sticky-table" style="height: 250px;">
   <div class="oh-sticky-table__table oh-table--sortable">
     <div class="oh-sticky-table__thead">
@@ -25,8 +25,8 @@
               <span class="oh-profile__name oh-text--dark">{{ deduction.title }}</span>
             </div>
           </div>
-          <div class="oh-sticky-table__td">{{ currency }} {{ deduction.employee_contribution|floatformat:2 }}</div>
-          <div class="oh-sticky-table__td">{{ currency }} {{ deduction.employer_contribution|floatformat:2 }}</div>
+          <div class="oh-sticky-table__td">{{ deduction.employee_contribution|floatformat:2|currency_symbol_position }}</div>
+          <div class="oh-sticky-table__td">{{ deduction.employer_contribution|floatformat:2|currency_symbol_position }}</div>
         </div>
       {% endfor %}
       {% if not contribution_deductions %}

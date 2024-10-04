@@ -1,4 +1,4 @@
-{% load i18n %} {% load attendancefilters static %}
+{% load i18n %} {% load attendancefilters static horillafilters %}
 {% include 'filter_tags.html' %}
 <div class="oh-card">
   {% dynamic_regroup payslips by "group_name" as group_payslips %}
@@ -97,27 +97,15 @@
                     {% endfor %}
                   </select>
                 </div>
-                {% if position == "prefix" %}
                   <div class="oh-sticky-table__td">
-                    {{currency}} {{payslip.gross_pay|floatformat:2}}
+                    {{payslip.gross_pay|floatformat:2|currency_symbol_position}}
                   </div>
                   <div class="oh-sticky-table__td">
-                    {{currency}} {{payslip.deduction|floatformat:2}}
+                    {{payslip.deduction|floatformat:2|currency_symbol_position}}
                   </div>
                   <div class="oh-sticky-table__td">
-                    {{currency}} {{payslip.net_pay|floatformat:2}}
+                    {{payslip.net_pay|floatformat:2|currency_symbol_position}}
                   </div>
-                {% else %}
-                  <div class="oh-sticky-table__td">
-                    {{payslip.gross_pay|floatformat:2}} {{currency}}
-                  </div>
-                  <div class="oh-sticky-table__td">
-                    {{payslip.deduction|floatformat:2}} {{currency}}
-                  </div>
-                  <div class="oh-sticky-table__td">
-                    {{payslip.net_pay|floatformat:2}} {{currency}}
-                  </div>
-                {% endif %}
                 <div class="oh-sticky-table__td">
                   <div class="oh-btn-group">
                     <a href="{% url 'view-created-payslip' payslip.id %}" type="button" title="{% trans 'View' %}" class="oh-btn oh-btn--light-bkg w-50"> <ion-icon name="eye-outline"></ion-icon></a>

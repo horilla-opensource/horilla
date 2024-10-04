@@ -32,24 +32,15 @@
                 <span class="oh-timeoff-modal__stat-title fw-bold text-dark mt-2 mb-1">{% trans "Amount" %}</span>
                 {% if deduction.update_compensation %}
                     {% if deduction.is_fixed %}
-                        {% if position == "prefix" %}
-                        <span class="oh-timeoff-modal__stat-title">{{currency}}{{deduction.amount}} {% trans "Deduct From" %}
+                        <span class="oh-timeoff-modal__stat-title">{{deduction.amount|currency_symbol_position}}{% trans "Deduct From" %}
                             {{deduction.get_update_compensation_display}}</span>
-                        {% else %}
-                        <span class="oh-timeoff-modal__stat-title">{{deduction.amount}}{{currency}} {% trans "Deduct From" %}
-                            {{deduction.get_update_compensation_display}}</span>
-                        {% endif %}
                     {% else %}
                         <span class="oh-timeoff-modal__stat-title">{{deduction.rate}}% {% trans "of" %}
                         {{deduction.get_update_compensation_display}}</span>
                     {% endif %}
                 {% else %}
                     {% if deduction.is_fixed %}
-                        {% if position == "prefix" %}
-                            <span class="oh-timeoff-modal__stat-title ">{{currency}}{{deduction.amount}}</span>
-                        {% else %}
-                            <span class="oh-timeoff-modal__stat-title ">{{deduction.amount}}{{currency}}</span>
-                        {% endif %}
+                        <span class="oh-timeoff-modal__stat-title ">{{deduction.amount|currency_symbol_position}}</span>
                     {% else %}
                         <span class="oh-timeoff-modal__stat-title">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
                         <span class="oh-timeoff-modal__stat-title">{% trans "Employee Rate :" %} {{deduction.rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>

@@ -70,24 +70,15 @@
                 <span class="oh-timeoff-modal__stat-title">{% trans "Amount" %}</span>
                 {% if deduction.update_compensation %}
                     {% if deduction.is_fixed %}
-                        {% if position == "prefix" %}
-                            <span class="oh-timeoff-modal__stat-count">{{currency}} {{deduction.amount}} {% trans "Deduct From" %}
+                        <span class="oh-timeoff-modal__stat-count">{{deduction.amount|currency_symbol_position}}{% trans "Deduct From" %}
                             {{deduction.get_update_compensation_display}}</span>
-                        {% else %}
-                            <span class="oh-timeoff-modal__stat-count">{{deduction.amount}} {{currency}} {% trans "Deduct From" %}
-                                {{deduction.get_update_compensation_display}}</span>
-                        {% endif %}
                     {% else %}
                         <span class="oh-timeoff-modal__stat-count">{{deduction.rate}}% {% trans "of" %}
                             {{deduction.get_update_compensation_display}}</span>
                     {% endif %}
                 {% else %}
                     {% if deduction.is_fixed %}
-                        {% if position == "prefix" %}
-                            <span class="oh-timeoff-modal__stat-count">{{currency}} {{deduction.amount}}</span>
-                        {% else %}
-                            <span class="oh-timeoff-modal__stat-count">{{deduction.amount}} {{currency}}</span>
-                        {% endif %}
+                        <span class="oh-timeoff-modal__stat-count">{{deduction.amount|currency_symbol_position}}</span>
                     {% else %}
                         <span class="oh-timeoff-modal__stat-count">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
                         <span class="oh-timeoff-modal__stat-count">{% trans "Employee Rate :" %} {{deduction.rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
@@ -99,11 +90,7 @@
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Has Maximum Limit" %}</span>
                 {% if deduction.has_max_limit %}
-                    {% if position == "prefix" %}
-                        <span class="oh-timeoff-modal__stat-count">{{currency}} {{deduction.maximum_amount}} {% trans "For working days on a month" %}</span>
-                    {% else %}
-                        <span class="oh-timeoff-modal__stat-count">{{deduction.maximum_amount}} {{currency}} {% trans "For working days on a month" %}</span>
-                    {% endif %}
+                    <span class="oh-timeoff-modal__stat-count">{{deduction.maximum_amount|currency_symbol_position}}{% trans "For working days on a month" %}</span>
                 {% else %}
                     <span class="oh-timeoff-modal__stat-count">{% trans "No" %}</span>
                 {% endif %}

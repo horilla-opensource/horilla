@@ -1,4 +1,4 @@
-{% load static %} {% load i18n %}
+{% load static %} {% load i18n horillafilters %}
 {% if records %}
   <div class="oh-sticky-table__table mt-3">
     <div class="oh-sticky-table__thead">
@@ -27,15 +27,9 @@
             {% trans "No" %}
           {% endif %}
         </div>
-        {% if position == 'prefix' %}
-          <div class="oh-sticky-table__td">
-            {{currency}} {{ acc.penalty_amount }}
-          </div>
-        {% else %}
-          <div class="oh-sticky-table__td">
-            {{ acc.penalty_amount }} {{currency}}
-          </div>
-        {% endif %}
+        <div class="oh-sticky-table__td">
+          {{ acc.penalty_amount|currency_symbol_position }}
+        </div>
         <div class="oh-sticky-table__td">{{ acc.created_at }}</div>
       </div>
       {% endfor %}

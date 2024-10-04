@@ -1,4 +1,5 @@
-{% load i18n %} {% if messages %}
+{% load i18n horillafilters %}
+{% if messages %}
 <div class="oh-alert-container">
   {% for message in messages %}
   <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
@@ -15,7 +16,8 @@
 
       {% if perms.payroll.change_taxbracket %}
       <div class="oh-sticky-table__th"></div>
-      {% endif %} {% if perms.payroll.delete_taxbracket %}
+      {% endif %}
+      {% if perms.payroll.delete_taxbracket %}
       <div class="oh-sticky-table__th"></div>
       {% endif %}
     </div>
@@ -26,24 +28,12 @@
       <div class="oh-sticky-table__td">
         {{ tax_bracket.tax_rate|stringformat:".2f" }}%
       </div>
-      {% if position == "prefix" %}
-        <div class="oh-sticky-table__td">
-          {{currency}} {{ tax_bracket.min_income|stringformat:".2f" }}
-        </div>
-      {% else %}
-        <div class="oh-sticky-table__td">
-          {{ tax_bracket.min_income|stringformat:".2f" }} {{currency}}
-        </div>
-      {% endif %}
-      {% if position == "prefix" %}
-        <div class="oh-sticky-table__td">
-          {{currency}} {{ tax_bracket.get_display_max_income|stringformat:".2f" }}
-        </div>
-      {% else %}
-        <div class="oh-sticky-table__td">
-          {{ tax_bracket.get_display_max_income|stringformat:".2f" }} {{currency}}
-        </div>
-      {% endif %}
+      <div class="oh-sticky-table__td">
+        {{ tax_bracket.min_income|stringformat:".2f"|currency_symbol_position }}
+      </div>
+      <div class="oh-sticky-table__td">
+        {{ tax_bracket.get_display_max_income|stringformat:".2f"|currency_symbol_position }}
+      </div>
       {% if perms.payroll.change_taxbracket %}
       <div class="oh-sticky-table__td">
         <div class="oh-btn-group">
@@ -64,7 +54,8 @@
           </a>
         </div>
       </div>
-      {% endif %} {% if perms.payroll.delete_taxbracket %}
+      {% endif %}
+      {% if perms.payroll.delete_taxbracket %}
       <div class="oh-sticky-table__td">
         <div class="oh-btn-group">
           <button

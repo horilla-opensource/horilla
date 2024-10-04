@@ -36,33 +36,19 @@
                 {% if allowance.based_on == "basic_pay" %}
                     <span class="oh-timeoff-modal__stat-title">{{allowance.rate}}% of {{allowance.get_based_on_display}}</span>
                 {% endif %}
-                {% if position == "postfix" %}
+
                   {% if allowance.based_on == "attendance" %}
-                      <span class="oh-timeoff-modal__stat-title">{{allowance.per_attendance_fixed_amount}} {{currency}} {% trans "Amount Per Attendance" %}</span>
+                      <span class="oh-timeoff-modal__stat-title">{{allowance.per_attendance_fixed_amount|currency_symbol_position}} {% trans "Amount Per Attendance" %}</span>
                   {% endif %}
                   {% if allowance.based_on == "shift_id" %}
-                      <span class="oh-timeoff-modal__stat-title">{{allowance.shift_per_attendance_amount}} {{currency}} {% trans "Amount Per" %} {{allowance.shift_id}}</span>
+                      <span class="oh-timeoff-modal__stat-title"> {{allowance.shift_per_attendance_amount|currency_symbol_position}} {% trans "Amount Per" %} {{allowance.shift_id}}</span>
                   {% endif %}
                   {% if allowance.based_on == "work_type_id" %}
-                      <span class="oh-timeoff-modal__stat-title">{{allowance.work_type_per_attendance_amount}} {{currency}} {% trans "Amount Per" %} {{allowance.work_type_id}}</span>
+                      <span class="oh-timeoff-modal__stat-title">{{allowance.work_type_per_attendance_amount|currency_symbol_position}} {% trans "Amount Per" %} {{allowance.work_type_id}}</span>
                   {% endif %}
                   {% if allowance.based_on == "overtime" %}
-                      <span class="oh-timeoff-modal__stat-title">{{allowance.amount_per_one_hr}} {{currency}} {% trans "Amount Per One Hour" %}</span>
+                      <span class="oh-timeoff-modal__stat-title">{{allowance.amount_per_one_hr|currency_symbol_position}} {% trans "Amount Per One Hour" %}</span>
                   {% endif %}
-                {% else %}
-                  {% if allowance.based_on == "attendance" %}
-                      <span class="oh-timeoff-modal__stat-title">{{currency}} {{allowance.per_attendance_fixed_amount}} {% trans "Amount Per Attendance" %}</span>
-                  {% endif %}
-                  {% if allowance.based_on == "shift_id" %}
-                      <span class="oh-timeoff-modal__stat-title"> {{currency}} {{allowance.shift_per_attendance_amount}} {% trans "Amount Per" %} {{allowance.shift_id}}</span>
-                  {% endif %}
-                  {% if allowance.based_on == "work_type_id" %}
-                      <span class="oh-timeoff-modal__stat-title">{{currency}} {{allowance.work_type_per_attendance_amount}} {% trans "Amount Per" %} {{allowance.work_type_id}}</span>
-                  {% endif %}
-                  {% if allowance.based_on == "overtime" %}
-                      <span class="oh-timeoff-modal__stat-title">{{currency}} {{allowance.amount_per_one_hr}} {% trans "Amount Per One Hour" %}</span>
-                  {% endif %}
-                {% endif %}
             {% endif %}
 
         <div class="oh-timeoff-modal__stats-container mb-1">
