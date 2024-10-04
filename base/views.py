@@ -878,9 +878,9 @@ def employee_workinfo_complete(request):
             for field_name in fields_to_focus
             if getattr(employee, field_name) is not None
         )
-        if completed_field_count < 14:
+        if completed_field_count < 15:
             # Create a dictionary with employee information and pending field count
-            percent = f"{((completed_field_count / 14) * 100):.1f}"
+            percent = f"{((completed_field_count / 15) * 100):.1f}"
             employee_info = {
                 "employee": employee,
                 "completed_field_count": percent,
