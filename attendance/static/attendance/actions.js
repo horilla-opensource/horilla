@@ -1672,19 +1672,103 @@ $(".requested-attendance-row").change(function () {
 // ******************************************************************
 
 // Iterate through all elements with the 'dateformat_changer' class and format their content
-
-$(".dateformat_changer").each(function (index, element) {
-  var currentDate = $(element).text().trim();
-  // Checking currentDate value is a date or None value.
-  if (/[\.,\-\/]/.test(currentDate)) {
-    var formattedDate = dateFormatter.getFormattedDate(currentDate);
-  } else if (currentDate) {
-    var formattedDate = currentDate;
-  } else {
-    var formattedDate = "None";
-  }
-  $(element).text(formattedDate);
+getCurrentLanguageCode(function (code) {
+  languageCode = code;
 });
+
+if (languageCode != 'de') {
+
+  $(".dateformat_changer").each(function (index, element) {
+    var currentDate = $(element).text().trim();
+    // Checking currentDate value is a date or None value.
+    if (/[\.,\-\/]/.test(currentDate)) {
+      var formattedDate = dateFormatter.getFormattedDate(currentDate);
+
+    } else if (currentDate) {
+      var formattedDate = currentDate;
+    } else {
+      var formattedDate = "None";
+    }
+
+    $(element).text(formattedDate);
+
+  });
+}
+
+for_mat = dateFormatter.dateFormat
+
+if (languageCode === 'de') {
+
+  if (["DD-MM-YYYY", "DD.MM.YYYY", "DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD", "YYYY/MM/DD", "MMM. D, YYYY", "D MMM. YYYY"].includes(for_mat))  {
+
+    $(".dateformat_changer").each(function (index, element) {
+      var currentDate = $(element).text().trim();
+      let eng_date = '';  // Initialize eng_date at the start of each iteration
+
+      // Check if currentDate is empty or equals "None"
+      if (!currentDate || currentDate.toLowerCase() === "none") {
+          eng_date = 'None';  // Reset the eng_date to 'None' if it's invalid
+          $(element).text(eng_date);  // Set to 'None' in the DOM
+          return;
+      }
+      // Create a mapping of month names from different languages to English
+      const monthMap = {
+        "Januar": "January", "Februar": "February", "März": "March", "Mai": "May",
+        "April": "April", "Juni": "June", "Juli": "July", "August": "August",
+        "September": "September", "Oktober": "October", "November": "November", "Dezember": "December",
+      };
+      // Split the date string into day, month, and year
+      let [day, month, year] = currentDate.split(' ');
+      // Convert the month to English
+      month = monthMap[month] || month;  // If no mapping is found, use the original month
+      // Create a new date object
+      let date = new Date(`${month} ${day}, ${year}`);
+
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        $(element).text(currentDate);  // Set to 'Invalid Date' in the DOM
+        return;
+      }
+      // Format the date in English using Intl.DateTimeFormat
+      eng_date = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(date);
+      // Apply the formatted date
+      if (/[\.,\-\/]/.test(currentDate)) {
+          var formattedDate = dateFormatter.getFormattedDate(eng_date);
+      } else if (currentDate) {
+          var formattedDate = eng_date;  // Use the formatted English date
+      } else {
+          var formattedDate = "None";
+      }
+      if (["MMM. D, YYYY", "D MMM. YYYY"].includes(for_mat))  {
+        formattedDate = formattedDate.replace(/Mar. /g, ' Mär. ');
+        formattedDate = formattedDate.replace(/May. /g, ' Mai. ');
+        formattedDate = formattedDate.replace(/Oct. /g, ' Okt. ');
+        formattedDate = formattedDate.replace(/Dec. /g, ' Dez. ');
+      }
+      $(element).text(formattedDate);  // Set the formatted date in the DOM
+    });
+  }
+  else{
+    $(".dateformat_changer").each(function (index, element) {
+      var currentDate = $(element).text().trim();
+      if (["MMMM D, YYYY", "DD MMMM, YYYY"].includes(for_mat) & languageCode === 'de' )  {
+        if (isNaN(currentDate)) {
+            $(element).text(currentDate);
+            return;
+        }
+      }
+      // Apply the formatted date
+      if (/[\.,\-\/]/.test(currentDate)) {
+          var formattedDate = dateFormatter.getFormattedDate(currentDate);
+      } else if (currentDate) {
+          var formattedDate = currentDate;  // Use the formatted English date
+      } else {
+          var formattedDate = "None";
+      }
+      $(element).text(formattedDate);  // Set the formatted date in the DOM
+    });
+  }
+}
 
 // Display the formatted date wherever needed
 var currentDate = $(".dateformat_changer").first().text();
