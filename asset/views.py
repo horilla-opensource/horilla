@@ -457,6 +457,8 @@ def filter_pagination_asset_category(request):
     data_dict = parse_qs(previous_data)
     get_key_instances(AssetCategory, data_dict)
     asset_creation_form = AssetForm()
+    if data_dict.get("type"):
+        del data_dict["type"]
     asset_category_form = AssetCategoryForm()
     asset_filter_form = AssetFilter()
     return {

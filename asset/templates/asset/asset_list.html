@@ -16,7 +16,6 @@
 </div>
 {% endif %}
 <!-- end of messages -->
-{% include 'filter_tags.html' %}
 <div
   class="oh-sticky-table oh-sticky-table--no-overflow mb-5"
   id="assetList{{asset_category.id}}"
@@ -70,7 +69,7 @@
                       class="oh-btn oh-btn--light-bkg w-100"
                       data-toggle="oh-modal-toggle"
                       data-target="#objectUpdateModal"
-                      hx-get="{% url 'asset-update'  asset_id=asset.id %}?asset_under=asset_filter&{{pg}}"
+                      hx-get="{% url 'asset-update'  asset_id=asset.id %}?asset_under=asset_filter&{{request.GET.urlencode}}"
                       title="{% trans 'Update' %}"
                       hx-target="#objectUpdateModalTarget"
                       onclick="event.stopPropagation()"
@@ -88,7 +87,7 @@
                       class="oh-btn oh-btn--light-bkg w-100"
                       data-toggle="oh-modal-toggle"
                       data-target="#objectUpdateModal"
-                      hx-get="{% url 'asset-update'  asset_id=asset.id %}?{{pg}}"
+                      hx-get="{% url 'asset-update'  asset_id=asset.id %}?{{request.GET.urlencode}}"
                       title="{% trans 'Update' %}"
                       hx-target="#objectUpdateModalTarget"
                       onclick="event.stopPropagation()"
@@ -108,7 +107,7 @@
                     class="oh-btn oh-btn--light-bkg w-100"
                     data-toggle="oh-modal-toggle"
                     data-target="#objectCreateModal"
-                    hx-get="{% url 'duplicate-asset' asset.id %}?{{pg}}"
+                    hx-get="{% url 'duplicate-asset' asset.id %}?{{request.GET.urlencode}}"
                     hx-target="#objectCreateModalTarget"
                     title="{% trans 'Duplicate' %}"
                     onclick="event.stopPropagation()"
@@ -142,7 +141,7 @@
                 {% endif %}
                 {% if perms.asset.delete_asset %}
                   {% if asset_under == 'asset_filter' %}
-                    <form action="{% url 'asset-delete' asset.id %}?asset_list=asset_filter&{{pg}}"
+                    <form action="{% url 'asset-delete' asset.id %}?asset_list=asset_filter&{{request.GET.urlencode}}"
                       onsubmit="return confirm('{% trans "Do you want to delete this asset?" %}')"
                       method="post" style="width:100%">
                       {% csrf_token %}
@@ -161,7 +160,7 @@
                     </form>
                   {% else %}
                     <form hx-confirm="{% trans 'Do you want to delete this asset?' %}"
-                        hx-post="{% url 'asset-delete' asset_id=asset.id %}?{{pg}}"
+                        hx-post="{% url 'asset-delete' asset_id=asset.id %}?{{request.GET.urlencode}}"
                         hx-target="#assetCategory{{asset.asset_category_id.id}}"
                         onclick="event.stopPropagation()"
                         style="width:100%">
@@ -205,7 +204,7 @@
         class="oh-pagination__input"
         value="{{assets.number }}"
         min="1"
-        hx-get="{% url 'asset-list' cat_id=asset_category_id  %}?{{pg}}"
+        hx-get="{% url 'asset-list' cat_id=asset_category_id  %}?{{request.GET.urlencode}}"
         hx-target="#assetCategory{{asset_category_id}}"
       />
       <span class="oh-pagination__label"
@@ -216,7 +215,7 @@
       {% if assets.has_previous %}
       <li class="oh-pagination__item oh-pagination__item--wide">
         <a
-          hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{pg}}&page=1"
+          hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{request.GET.urlencode}}&page=1"
           class="oh-pagination__link"
           hx-target="#assetCategory{{asset_category_id}}"
           >{% trans "First" %}</a
@@ -224,7 +223,7 @@
       </li>
       <li class="oh-pagination__item oh-pagination__item--wide">
         <a
-          hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{pg}}&page={{ assets.previous_page_number }}"
+          hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{request.GET.urlencode}}&page={{ assets.previous_page_number }}"
           class="oh-pagination__link"
           hx-target="#assetCategory{{asset_category_id}}"
           >{% trans "Previous" %}</a
@@ -233,7 +232,7 @@
       {%endif %} {% if assets.has_next %}
       <li class="oh-pagination__item oh-pagination__item--wide">
         <a
-          hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{pg}}&page={{ assets.next_page_number }}"
+          hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{request.GET.urlencode}}&page={{ assets.next_page_number }}"
           class="btn btn-outline-secondary"
           hx-target="#assetCategory{{asset_category_id}}"
           >{% trans "Next" %}</a
@@ -241,7 +240,7 @@
       </li>
       <li class="oh-pagination__item oh-pagination__item--wide">
         <a
-          hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{pg}}&page={{ assets.paginator.num_pages }}"
+          hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{request.GET.urlencode}}&page={{ assets.paginator.num_pages }}"
           hx-target="#assetCategory{{asset_category_id}}"
           class="oh-pagination__link"
           >{% trans "Last" %}</a
