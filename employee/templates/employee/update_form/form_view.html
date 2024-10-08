@@ -42,8 +42,13 @@
       });
 
       // Active tab script
-      function activeCandTab() {
-        var activeTab = localStorage.getItem("activeCandTab")
+      function activeEmpTab() {
+        var activeTab = localStorage.getItem("activeEmpTab")
+
+        if (!["#personal", "#work", "#bank"].includes(activeTab)) {
+          activeTab = "#personal";
+        }
+
         if(activeTab != null){
           $(".oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
           $(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
@@ -54,11 +59,11 @@
           }
         }
       }
-      activeCandTab()
+      activeEmpTab()
       $("[data-action=general-tab]").on("click",function (e) {
         e.preventDefault();
         const targetId = $(this).attr('data-target');
-        localStorage.setItem("activeCandTab",targetId)
+        localStorage.setItem("activeEmpTab",targetId)
       });
 
     });

@@ -44,8 +44,13 @@
 	$(document).ready(function() {
 
 		  // Active tab script
-		function activeCandTab() {
-		  var activeTab = localStorage.getItem("activeCandTab")
+		function activeEmpprofileTab() {
+		  var activeTab = localStorage.getItem("activeEmpprofileTab")
+
+		  if (!["#personal", "#bank"].includes(activeTab)) {
+			activeTab = "#personal";
+		  }
+
 		  if (!$(activeTab).length && $(`[data-target="#personal"]`).length) {
 			$(`[data-target="#personal"]`)[0].click()
 		  }else if(activeTab != null){
@@ -58,11 +63,11 @@
 			}
 		  }
 		}
-		activeCandTab()
+		activeEmpprofileTab()
 		$("[data-action=general-tab]").on("click",function (e) {
 		  e.preventDefault();
 		  const targetId = $(this).attr('data-target');
-		  localStorage.setItem("activeCandTab",targetId)
+		  localStorage.setItem("activeEmpprofileTab",targetId)
 		});
 
 	  });
