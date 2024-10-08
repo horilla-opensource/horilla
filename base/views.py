@@ -4955,10 +4955,15 @@ def save_date_format(request):
                 company_name = Company.objects.filter(company=employee_company)
                 emp_company = company_name.first()
 
-                # Save the selected format to the backend
-                emp_company.date_format = selected_format
-                emp_company.save()
-                messages.success(request, _("Date format saved successfully."))
+                if emp_company is None:
+                    messages.warning(
+                        request, _("Please update the company field for the user.")
+                    )
+                else:
+                    # Save the selected format to the backend
+                    emp_company.date_format = selected_format
+                    emp_company.save()
+                    messages.success(request, _("Date format saved successfully."))
             else:
                 messages.warning(
                     request, _("Date format cannot saved. You are not in the company.")
@@ -5017,10 +5022,15 @@ def save_time_format(request):
                 company_name = Company.objects.filter(company=employee_company)
                 emp_company = company_name.first()
 
-                # Save the selected format to the backend
-                emp_company.time_format = selected_format
-                emp_company.save()
-                messages.success(request, _("Time format saved successfully."))
+                if emp_company is None:
+                    messages.warning(
+                        request, _("Please update the company field for the user.")
+                    )
+                else:
+                    # Save the selected format to the backend
+                    emp_company.time_format = selected_format
+                    emp_company.save()
+                    messages.success(request, _("Time format saved successfully."))
             else:
                 messages.warning(
                     request, _("Time format cannot saved. You are not in the company.")
