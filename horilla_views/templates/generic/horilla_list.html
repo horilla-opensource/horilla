@@ -16,7 +16,7 @@
       $("#reloadMessagesButton").click()
     }
   </script>
-  <button class="reload-record" hidden hx-get="{{request.path}}?{{saved_filters.urlencode}}" hx-target="#{{view_id|safe}}" hx-swap="outerHTML">
+  <button class="reload-record" id="{{view_id|safe}}Reload" hidden hx-get="{{request.path}}?{{saved_filters.urlencode}}" hx-target="#{{view_id|safe}}" hx-swap="outerHTML">
   </button>
   {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
   {% if queryset|length %}
@@ -80,8 +80,9 @@
             {% endif %} {% for cell in columns %}
             <div
 
+              id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
               class="oh-sticky-table__th"
-              style="z-index: 11;width:100px;">
+              style="z-index: 11;width:200px;">
               <div
               {% for sort_map in sortby_mapping %}
               {% if sort_map.0 == cell.0 %}
@@ -156,13 +157,15 @@
             {% endif %} {% for cell in columns %}
             {% with attribute=cell.1 index=forloop.counter %} {% if not cell.2 %}
             <div
-              class="{% if index == 1 %} oh-sticky-table__sd {% else %} oh-sticky-table__td{% endif %}"
+              data-header-id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
+              class="{% if index == 1 %} oh-sticky-table__sd {% else %} oh-sticky-table__td{% endif %} t-body"
             >
               {{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
             </div>
             {% else %}
             <div
-              class="{% if index == 1 %} oh-sticky-table__sd {% else %} oh-sticky-table__td{% endif %}"
+              data-header-id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
+              class="{% if index == 1 %} oh-sticky-table__sd {% else %} oh-sticky-table__td{% endif %} t-body"
             >
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
