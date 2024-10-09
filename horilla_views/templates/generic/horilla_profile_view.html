@@ -75,6 +75,7 @@
       </div>
 
       <div class="d-flex align-items-center gap-3">
+        {% if instances %}
         <div class="container-right-left-arrows float-right">
           <a
 
@@ -109,7 +110,9 @@
               aria-label="arrow forward circle outline"
             ></ion-icon>
           </a>
+
         </div>
+        {% endif %}
         {% if actions %}
         <div class="oh-dropdown" x-data="{open: false}">
           <button
