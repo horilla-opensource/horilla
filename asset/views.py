@@ -439,23 +439,33 @@ def delete_asset_category(request, cat_id):
 
 def filter_pagination_asset_category(request):
     """
-    This view is used for pagination
+    This view is used for pagination and filtering asset categories
     """
-    search = request.GET.get("search")
-    if search is None:
-        search = ""
+    search = request.GET.get("search", "")
 
     previous_data = request.GET.urlencode()
-    asset_category_filtered = AssetCategoryFilter(
-        request.GET,
-    )
 
-    asset_category_queryset = asset_category_filtered.qs
-    asset_category_paginator = Paginator(asset_category_filtered.qs, get_pagination())
+    asset_category_queryset = AssetCategory.objects.all()
+
+    if request.GET:
+        asset_category_filtered = AssetCategoryFilter(
+            request.GET, queryset=asset_category_queryset
+        )
+        asset_category_queryset = (
+            asset_category_filtered.qs
+        )  # Filter the queryset based on the GET params
+        asset_category_filtered_form = asset_category_filtered.form  # Show filter form
+    else:
+        asset_category_filtered_form = None
+
+    # Pagination
+    asset_category_paginator = Paginator(asset_category_queryset, get_pagination())
     page_number = request.GET.get("page")
     asset_categories = asset_category_paginator.get_page(page_number)
+
     data_dict = parse_qs(previous_data)
     get_key_instances(AssetCategory, data_dict)
+
     asset_creation_form = AssetForm()
     if data_dict.get("type"):
         del data_dict["type"]
@@ -465,7 +475,7 @@ def filter_pagination_asset_category(request):
         "asset_creation_form": asset_creation_form,
         "asset_category_form": asset_category_form,
         "asset_categories": asset_categories,
-        "asset_category_filter_form": asset_category_filtered.form,
+        "asset_category_filter_form": asset_category_filtered_form,
         "asset_filter_form": asset_filter_form.form,
         "pg": previous_data,
         "filter_dict": data_dict,
