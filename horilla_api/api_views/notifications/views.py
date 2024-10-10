@@ -1,23 +1,22 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from ...api_serializers.notifications.serializers import NotificationSerializer
-from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
-
 
 
 class NotificationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, type):
-        if type == 'all':
+        if type == "all":
             queryset = request.user.notifications.all()
-        elif type == 'unread':
+        elif type == "unread":
             queryset = request.user.notifications.unread()
-            
+
         pagination = PageNumberPagination()
         page = pagination.paginate_queryset(queryset, request)
         serializer = NotificationSerializer(page, many=True)
@@ -47,12 +46,11 @@ class NotificationBulkReadDelView(APIView):
         obj = request.user.notifications.all()
         obj.mark_all_as_read()
         return Response({"status": "marked as read"}, status=200)
-    
+
     def delete(self, request):
         obj = request.user.notifications.all()
         obj.mark_all_as_deleted()
         return Response({"status": "deleted"}, status=200)
-
 
 
 class NotificationBulkDelUnreadMessageView(APIView):
@@ -62,4 +60,3 @@ class NotificationBulkDelUnreadMessageView(APIView):
         obj = request.user.notifications.unread()
         obj.mark_all_as_deleted()
         return Response({"status": "deleted"}, status=200)
-    

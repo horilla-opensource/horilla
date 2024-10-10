@@ -1,20 +1,21 @@
 from rest_framework import serializers
+
 from attendance.models import *
 from recruitment.models import RecruitmentMailTemplate
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
     employee_first_name = serializers.CharField(
-        source="employee_id.employee_first_name", read_only=True)
+        source="employee_id.employee_first_name", read_only=True
+    )
     employee_last_name = serializers.CharField(
-        source="employee_id.employee_last_name", read_only=True)
-    shift_name = serializers.CharField(
-        source="shift_id.employee_shift", read_only=True)
-    badge_id = serializers.CharField(
-        source="employee_id.badge_id", read_only=True)
+        source="employee_id.employee_last_name", read_only=True
+    )
+    shift_name = serializers.CharField(source="shift_id.employee_shift", read_only=True)
+    badge_id = serializers.CharField(source="employee_id.badge_id", read_only=True)
     employee_profile_url = serializers.SerializerMethodField(read_only=True)
-    work_type = serializers.CharField(source="work_type_id.work_type",read_only=True)
-    
+    work_type = serializers.CharField(source="work_type_id.work_type", read_only=True)
+
     class Meta:
         model = Attendance
         exclude = [
@@ -34,11 +35,14 @@ class AttendanceSerializer(serializers.ModelSerializer):
         # Check if attendance exists for the employee on the current date
         if self.instance:
             return data
-        employee_id = data.get('employee_id')
-        attendance_date = data.get('attendance_date', date.today())
-        if Attendance.objects.filter(employee_id=employee_id, attendance_date=attendance_date).exists():
+        employee_id = data.get("employee_id")
+        attendance_date = data.get("attendance_date", date.today())
+        if Attendance.objects.filter(
+            employee_id=employee_id, attendance_date=attendance_date
+        ).exists():
             raise ValidationError(
-                ("Attendance for this employee on the current date already exists."))
+                ("Attendance for this employee on the current date already exists.")
+            )
         return data
 
     def get_employee_profile_url(self, obj):
@@ -51,13 +55,13 @@ class AttendanceSerializer(serializers.ModelSerializer):
 
 class AttendanceRequestSerializer(serializers.ModelSerializer):
     employee_first_name = serializers.CharField(
-        source="employee_id.employee_first_name", read_only=True)
+        source="employee_id.employee_first_name", read_only=True
+    )
     employee_last_name = serializers.CharField(
-        source="employee_id.employee_last_name", read_only=True)
-    shift_name = serializers.CharField(
-        source="shift_id.employee_shift", read_only=True)
-    badge_id = serializers.CharField(
-        source="employee_id.badge_id", read_only=True)
+        source="employee_id.employee_last_name", read_only=True
+    )
+    shift_name = serializers.CharField(source="shift_id.employee_shift", read_only=True)
+    badge_id = serializers.CharField(source="employee_id.badge_id", read_only=True)
     employee_profile_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -87,7 +91,9 @@ class AttendanceRequestSerializer(serializers.ModelSerializer):
             "attendance_clock_in_date": validated_data.get("attendance_clock_in_date"),
             "attendance_clock_in": validated_data.get("attendance_clock_in"),
             "attendance_clock_out": validated_data.get("attendance_clock_out"),
-            "attendance_clock_out_date": validated_data.get("attendance_clock_out_date"),
+            "attendance_clock_out_date": validated_data.get(
+                "attendance_clock_out_date"
+            ),
             "shift_id": validated_data.get("shift_id"),
             "work_type_id": validated_data.get("work_type_id"),
             "attendance_worked_hour": validated_data.get("attendance_worked_hour"),
@@ -128,8 +134,8 @@ class AttendanceRequestSerializer(serializers.ModelSerializer):
         return new_instance
 
     def update(self, instance, validated_data):
-        if 'employee_id' in validated_data:
-            validated_data.pop('employee_id')
+        if "employee_id" in validated_data:
+            validated_data.pop("employee_id")
         return super().update(instance, validated_data)
 
     def get_employee_profile_url(self, obj):
@@ -141,12 +147,13 @@ class AttendanceRequestSerializer(serializers.ModelSerializer):
 
 
 class AttendanceOverTimeSerializer(serializers.ModelSerializer):
-    badge_id = serializers.CharField(
-        source='employee_id.badge_id', read_only=True)
+    badge_id = serializers.CharField(source="employee_id.badge_id", read_only=True)
     employee_first_name = serializers.CharField(
-        source="employee_id.employee_first_name", read_only=True)
+        source="employee_id.employee_first_name", read_only=True
+    )
     employee_last_name = serializers.CharField(
-        source="employee_id.employee_last_name", read_only=True)
+        source="employee_id.employee_last_name", read_only=True
+    )
     employee_profile_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -175,24 +182,29 @@ class AttendanceOverTimeSerializer(serializers.ModelSerializer):
 
 class AttendanceLateComeEarlyOutSerializer(serializers.ModelSerializer):
     employee_first_name = serializers.CharField(
-        source="employee_id.employee_first_name", read_only=True)
+        source="employee_id.employee_first_name", read_only=True
+    )
     employee_last_name = serializers.CharField(
-        source="employee_id.employee_last_name", read_only=True)
+        source="employee_id.employee_last_name", read_only=True
+    )
 
     class Meta:
         model = AttendanceLateComeEarlyOut
-        fields = '__all__'
+        fields = "__all__"
 
 
 class AttendanceActivitySerializer(serializers.ModelSerializer):
     employee_first_name = serializers.CharField(
-        source="employee_id.employee_first_name", read_only=True)
+        source="employee_id.employee_first_name", read_only=True
+    )
     employee_last_name = serializers.CharField(
-        source="employee_id.employee_last_name", read_only=True)
+        source="employee_id.employee_last_name", read_only=True
+    )
 
     class Meta:
         model = AttendanceActivity
         fields = "__all__"
+
 
 class MailTemplateSerializer(serializers.ModelSerializer):
     class Meta:

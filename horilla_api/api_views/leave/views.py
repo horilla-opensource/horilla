@@ -1,23 +1,25 @@
-from rest_framework.views import APIView
+import contextlib
+
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.models import AnonymousUser
+from django.db.models import Count
+from django.http import Http404, QueryDict
+from django.utils.decorators import method_decorator
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from base.methods import filtersubordinates
 from horilla_api.api_serializers.leave.serializers import *
-from leave.models import LeaveRequest
-from rest_framework.pagination import PageNumberPagination
-from django.http import Http404
-from django.contrib.auth.models import AnonymousUser
-from django.http import QueryDict
-from django_filters.rest_framework import DjangoFilterBackend
 from leave.filters import *
-from django.contrib.auth.decorators import permission_required
-from django.utils.decorators import method_decorator
-from django.db.models import Count
+from leave.methods import filter_conditional_leave_request
+from leave.models import LeaveRequest
+from notifications.signals import notify
+
 from ...api_decorators.base.decorators import manager_permission_required
 from ...api_methods.base.methods import groupby_queryset
-from leave.methods import filter_conditional_leave_request
-from base.methods import filtersubordinates
-from notifications.signals import notify
-import contextlib
 
 
 class EmployeeAvailableLeaveGetAPIView(APIView):
