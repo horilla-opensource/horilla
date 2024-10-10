@@ -23,6 +23,9 @@ django-mathfilters
 django-model-utils
 django-simple-history
 django-widget-tweaks
+djangorestframework
+djangorestframework-simplejwt
+drf-yasg
 et-xmlfile
 html5lib
 Jinja2
