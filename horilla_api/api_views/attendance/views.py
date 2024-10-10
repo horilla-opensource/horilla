@@ -1,26 +1,34 @@
-from django.db.models import Case, Value, When, F, CharField
-from django.http import QueryDict
-from attendance.models import AttendanceActivity
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from datetime import date, datetime, timedelta, timezone
-from attendance.models import EmployeeShiftDay
+
+from django import template
+from django.conf import settings
+from django.contrib.auth.decorators import permission_required
+from django.core.mail import EmailMessage
+from django.db.models import Case, CharField, F, Value, When
+from django.http import QueryDict
+from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from attendance.models import Attendance, AttendanceActivity, EmployeeShiftDay
+from attendance.views.clock_in_out import *
 from attendance.views.dashboard import (
     find_expected_attendances,
     find_late_come,
     find_on_time,
 )
 from attendance.views.views import *
-from attendance.views.clock_in_out import *
-from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
-from attendance.models import Attendance
-from base.methods import is_reportingmanager
+from base.backends import ConfiguredEmailBackend
+from base.methods import generate_pdf, is_reportingmanager
+from employee.filters import EmployeeFilter
+from recruitment.models import RecruitmentMailTemplate
+
 from ...api_decorators.base.decorators import manager_permission_required
 from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
-from employee.filters import EmployeeFilter
-from horilla_api.api_serializers.attendance.serializers import (
+from ...api_serializers.attendance.serializers import (
     AttendanceActivitySerializer,
     AttendanceLateComeEarlyOutSerializer,
     AttendanceOverTimeSerializer,
@@ -28,15 +36,6 @@ from horilla_api.api_serializers.attendance.serializers import (
     AttendanceSerializer,
     MailTemplateSerializer,
 )
-from rest_framework.pagination import PageNumberPagination
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import permission_required
-from django.conf import settings
-from django.core.mail import EmailMessage
-from recruitment.models import RecruitmentMailTemplate
-from base.backends import ConfiguredEmailBackend
-from django import template
-from base.methods import generate_pdf
 
 # Create your views here.
 
@@ -238,9 +237,7 @@ class AttendanceView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required("attendance.change_attendance", raise_exception=True)
-    )
+    @method_decorator(permission_required("attendance.change_attendance"))
     def put(self, request, pk):
         try:
             attendance = Attendance.objects.get(id=pk)
@@ -267,9 +264,7 @@ class AttendanceView(APIView):
                 }
         return Response(serializer_errors, status=400)
 
-    @method_decorator(
-        permission_required("attendance.delete_attendance", raise_exception=True)
-    )
+    @method_decorator(permission_required("attendance.delete_attendance"))
     def delete(self, request, pk):
         attendance = Attendance.objects.get(id=pk)
         month = attendance.attendance_date
@@ -590,11 +585,7 @@ class AttendanceOverTimeView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required(
-            "attendance.delete_attendanceovertime", raise_exception=True
-        )
-    )
+    @method_decorator(permission_required("attendance.delete_attendanceovertime"))
     def delete(self, request, pk):
         attendance = get_object_or_404(AttendanceOverTime, pk=pk)
         attendance.delete()
