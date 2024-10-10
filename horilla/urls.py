@@ -35,6 +35,7 @@ urlpatterns = [
         "^inbox/notifications/", include(notifications.urls, namespace="notifications")
     ),
     path("i18n/", include("django.conf.urls.i18n")),
+    path("backup/", include("backup.urls")),
 ]
 
 if settings.DEBUG:

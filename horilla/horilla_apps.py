@@ -19,6 +19,7 @@ INSTALLED_APPS.append("auditlog")
 INSTALLED_APPS.append("biometric")
 INSTALLED_APPS.append("helpdesk")
 INSTALLED_APPS.append("offboarding")
+INSTALLED_APPS.append("horilla_backup")
 
 
 AUDITLOG_INCLUDE_ALL_MODELS = True

@@ -1,0 +1,67 @@
+{% extends "settings.html" %}
+{% block settings %}
+{% load i18n %}
+{% if form.errors %}
+<!-- form errors  -->
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+        {% for error in form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+            {{ error }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+<form method="post" action="{% url 'gdrive' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{form.as_p}}
+ </form>
+
+ <script>
+    $(document).ready(function() {
+
+        $('.oh-payslip__header').append(`<div class="d-flex">
+            {% if show %}
+            {% if active %}
+            <a class="oh-btn oh-btn--danger mr-2" href="{% url 'gdrive_start_stop' %}" title="Stop">Stop</a>
+            {% else %}
+            <a class="oh-btn oh-btn--success mr-2" href="{% url 'gdrive_start_stop' %}" title="Start">Start</a>
+            {% endif %}
+            <a class="oh-btn oh-btn--danger-outline" href="{% url 'gdrive_delete' %}" title="Remove">
+                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+            </a>
+            {% endif %}
+        </div>`)
+        if (!$('#id_interval').is(':checked')) {
+            $('#id_seconds').parent().hide();
+        }
+        if (!$('#id_fixed').is(':checked')) {
+            $('#id_hour').parent().hide();``
+            $('#id_minute').parent().hide();
+        }
+        $('#id_interval').change(function() {
+            if ($(this).is(':checked')) {
+                $('#id_fixed4').prop('checked', false);
+                $('#id_hour').parent().hide();
+                $('#id_minute').parent().hide();
+                $('#id_seconds').parent().show();
+            } else {
+                $('#id_seconds').parent().hide();
+            }
+        });
+        $('#id_fixed').change(function() {
+            if ($(this).is(':checked')) {
+                $('#id_interval').prop('checked', false);
+                $('#id_seconds').parent().hide();
+                $('#id_hour').parent().show();
+                $('#id_minute').parent().show();
+            } else {
+                $('#id_hour').parent().hide();
+                $('#id_minute').parent().hide();
+            }
+        });
+    });
+</script>
+
+{% endblock settings %}
