@@ -198,8 +198,7 @@ class Employee(models.Model):
             f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
         )
         if self.employee_profile:
-            full_filename = settings.MEDIA_ROOT + self.employee_profile.name
-
+            full_filename = self.employee_profile.name
             if default_storage.exists(full_filename):
                 url = self.employee_profile.url
         return url

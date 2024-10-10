@@ -219,7 +219,7 @@ class LeaveType(HorillaModel):
         """
         url = f"https://ui-avatars.com/api/?name={self.name}&background=random"
         if self.icon:
-            full_filename = settings.MEDIA_ROOT + self.icon.name
+            full_filename = self.icon.name
 
             if default_storage.exists(full_filename):
                 url = self.icon.url

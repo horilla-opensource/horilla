@@ -463,7 +463,7 @@ class Candidate(HorillaModel):
             f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
         )
         if self.profile:
-            full_filename = settings.MEDIA_ROOT + self.profile.name
+            full_filename = self.profile.name
 
             if default_storage.exists(full_filename):
                 url = self.profile.url
