@@ -35,6 +35,7 @@ urlpatterns = [
         "^inbox/notifications/", include(notifications.urls, namespace="notifications")
     ),
     path("i18n/", include("django.conf.urls.i18n")),
+    path("api/", include("horilla_api.urls")),
 ]
 
 if settings.DEBUG:

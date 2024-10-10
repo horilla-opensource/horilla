@@ -8,4 +8,5 @@ from horilla import (
     horilla_context_processors,
     horilla_middlewares,
     horilla_settings,
+    rest_conf,
 )
