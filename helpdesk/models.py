@@ -60,6 +60,14 @@ class DepartmentManager(HorillaModel):
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
 
+    class Meta:
+        unique_together = ("department", "manager")
+
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        if not self.manager.get_department() == self.department:
+            raise ValidationError(_(f"This employee is not from {self.department} ."))
+
 
 class TicketType(HorillaModel):
     title = models.CharField(max_length=100, unique=True)
@@ -107,6 +115,9 @@ class Ticket(HorillaModel):
         related_company_field="employee_id__employee__work_info__company_id"
     )
 
+    class Meta:
+        ordering = ["-created_date"]
+
     def clean(self, *args, **kwargs):
         super().clean(*args, **kwargs)
         deadline = self.deadline
@@ -142,6 +153,36 @@ class Ticket(HorillaModel):
         This method is used to return the tracked history of the instance
         """
         return get_diff(self)
+
+
+class ClaimRequest(HorillaModel):
+    ticket_id = models.ForeignKey(
+        Ticket,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    is_approved = models.BooleanField(default=False)
+    is_rejected = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ("ticket_id", "employee_id")
+
+    def __str__(self) -> str:
+        return f"{self.ticket_id}|{self.employee_id}"
+
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        if not self.ticket_id:
+            raise ValidationError({"ticket_id": _("This field is required.")})
+        if not self.employee_id:
+            raise ValidationError({"employee_id": _("This field is required.")})
 
 
 class Comment(HorillaModel):

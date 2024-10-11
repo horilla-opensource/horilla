@@ -38,7 +38,6 @@
 
 <!-- start of request view  -->
 <div class="oh-wrapper" id="ticketContainer">
-	{% if my_tickets or allocated_tickets or all_tickets %}
 		<!-- start of Quick filters  -->
 		<div class="d-flex flex-row-reverse mb-2">
 			<span
@@ -148,29 +147,6 @@
 			</div>
 		</div>
 		<!-- end of contents -->
-	{% else %}
-		<div
-			style="
-				height: 70vh;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			"
-			class=""
-		>
-			<div style="" class="oh-404">
-				<img
-					style="display: block; width: 150px; height: 150px; margin: 10px auto"
-					src="{% static 'images/ui/ticket.png' %}"
-					class="mb-4"
-					alt=""
-				/>
-				<h3 style="font-size: 20px" class="oh-404__subtitle">
-					{% trans "There are no tickets at the moment." %}
-				</h3>
-			</div>
-		</div>
-	{% endif %}
 </div>
 <!-- end of request view  -->
 

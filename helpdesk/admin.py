@@ -3,6 +3,7 @@ from django.contrib import admin
 from helpdesk.models import (
     FAQ,
     Attachment,
+    ClaimRequest,
     Comment,
     DepartmentManager,
     FAQCategory,
@@ -18,3 +19,4 @@ admin.site.register(FAQ)
 admin.site.register(FAQCategory)
 admin.site.register(Attachment)
 admin.site.register(DepartmentManager)
+admin.site.register(ClaimRequest)

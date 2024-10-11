@@ -27,7 +27,7 @@ from django import forms
 from django.template.loader import render_to_string
 
 from base.forms import ModelForm
-from base.methods import is_reportingmanager
+from base.methods import filtersubordinatesemployeemodel, is_reportingmanager
 from base.models import Department, JobPosition
 from employee.forms import MultipleFileField
 from employee.models import Employee
@@ -121,14 +121,30 @@ class TicketForm(ModelForm):
         self.fields["attachment"] = MultipleFileField(
             label="Attachements", required=False
         )
-        self.fields["tags"].choices = list(self.fields["tags"].choices)
-        self.fields["tags"].choices.append(("create_new_tag", "Create new tag"))
-        self.fields["ticket_type"].choices = list(self.fields["ticket_type"].choices)
         request = getattr(horilla_middlewares._thread_locals, "request", None)
-        if is_reportingmanager(request):
+        instance = kwargs.get("instance")
+        if instance:
+            employee = instance.employee_id
+        else:
+            employee = request.user.employee_get
+        # initialising employee queryset according to the user
+        self.fields["employee_id"].queryset = filtersubordinatesemployeemodel(
+            request, Employee.objects.filter(is_active=True), perm="helpdesk.add_ticket"
+        ) | Employee.objects.filter(employee_user_id=request.user)
+        self.fields["employee_id"].initial = employee
+        # appending dynamic create option according to user
+        if is_reportingmanager(request) or request.user.has_perm(
+            "helpdesk.add_tickettype"
+        ):
+            self.fields["ticket_type"].choices = list(
+                self.fields["ticket_type"].choices
+            )
             self.fields["ticket_type"].choices.append(
                 ("create_new_ticket_type", "Create new ticket type")
             )
+        if is_reportingmanager(request) or request.user.has_perm("base.add_tags"):
+            self.fields["tags"].choices = list(self.fields["tags"].choices)
+            self.fields["tags"].choices.append(("create_new_tag", "Create new tag"))
 
 
 class TicketTagForm(ModelForm):
@@ -152,8 +168,10 @@ class TicketTagForm(ModelForm):
         If an instance is provided, sets the initial value for the form's .
         """
         super().__init__(*args, **kwargs)
-        self.fields["tags"].choices = list(self.fields["tags"].choices)
-        self.fields["tags"].choices.append(("create_new_tag", "Create new tag"))
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        if is_reportingmanager(request) or request.user.has_perm("base.add_tags"):
+            self.fields["tags"].choices = list(self.fields["tags"].choices)
+            self.fields["tags"].choices.append(("create_new_tag", "Create new tag"))
 
 
 class TicketRaisedOnForm(ModelForm):
@@ -215,3 +233,21 @@ class DepartmentManagerCreateForm(ModelForm):
     class Meta:
         model = DepartmentManager
         fields = ["department", "manager"]
+        widgets = {
+            "department": forms.Select(
+                attrs={
+                    "onchange": "getDepartmentEmployees($(this))",
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "instance" in kwargs:
+            department = kwargs["instance"].department
+            # Get the employees related to this department
+            employees = department.employeeworkinformation_set.values_list(
+                "employee_id", flat=True
+            )
+            # Set the manager field queryset to be those employees
+            self.fields["manager"].queryset = Employee.objects.filter(id__in=employees)

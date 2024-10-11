@@ -1,16 +1,11 @@
 {% load i18n %}
 <!-- start of filter  -->
 <form
-    {% if request.GET.view == 'card' %}
-    method="get"
-    action=""
-    {% else %}
-    method="post"
     hx-get="{% url 'ticket-filter' %}?view={{view}}"
     hx-target="#ticket_list"
-    {% endif %}
     id="filterForm"
     class="d-flex"
+    onsubmit="event.preventDefault()"
 >
     {% csrf_token %}
     <div
@@ -186,10 +181,10 @@
 </form>
 <!-- end of filter  -->
 <script>
-	$(document).ready(function () {
+	{% comment %} $(document).ready(function () { {% endcomment %}
 
 		$("#id_field").on("change", function () {
 			$(".filterButton")[0].click();
 		});
-	});
+	{% comment %} }); {% endcomment %}
 </script>

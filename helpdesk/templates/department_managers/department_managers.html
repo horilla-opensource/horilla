@@ -64,4 +64,11 @@
 </div>
 <!-- end of edit modal -->
 <!-- end of modals -->
+<button id="getDepartmentEmployeesButton" hx-get="{% url "get-department-employee" %}" hx-target="#id_manager" hidden></button>
+<script>
+	function getDepartmentEmployees(element){
+		var dep_id = element.val()
+		$('#getDepartmentEmployeesButton').attr('hx-vals', JSON.stringify({ dep_id: dep_id })).click();
+	}
+</script>
 {% endblock settings %}

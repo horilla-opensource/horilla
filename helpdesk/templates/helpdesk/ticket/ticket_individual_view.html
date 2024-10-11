@@ -1,0 +1,139 @@
+{% load static %} {% load i18n %}{% load helpdeskfilters %}
+
+<div class="oh-modal__dialog-header">
+    <span
+      class="oh-modal__dialog-title"
+      id="objectDetailsModalLabel"
+        >
+      {{ ticket }}
+    </span>
+    <button class="oh-modal__close" aria-label="Close">
+      <button  class="oh-modal__close"><ion-icon  name="close-outline"></ion-icon></button>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+	<a class="oh-timeoff-modal__profile-content pt-4" style="text-decoration:none;"
+		href ="{% url 'employee-view-individual' ticket.employee_id.id %}">
+	    <div class="oh-profile mb-2">
+	        <div class="oh-profile__avatar">
+	            <img
+	            src="{{ticket.employee_id.get_avatar}}"
+	            class="oh-profile__image me-2"
+	            alt="Mary Magdalene"
+	            />
+	        </div>
+	        <div class="oh-timeoff-modal__profile-info">
+	            <span class="oh-timeoff-modal__user fw-bold m-0"
+	            >{{ticket.employee_id.get_full_name}}</span
+	            >
+	            <span
+	            class="oh-timeoff-modal__user m-0"
+	            style="font-size: 18px; color: #4d4a4a"
+	            >
+	            {{ticket.employee_id.employee_work_info.department_id}} /
+	            {{ticket.employee_id.employee_work_info.job_position_id}}</span
+	            >
+	        </div>
+	    </div>
+	</a>
+	<div class="oh-modal__dialog-header pt-0 pb-0">
+		<div class="oh-timeoff-modal__stats-container">
+			<div class="oh-timeoff-modal__stat">
+				<span class="oh-timeoff-modal__stat-title"
+					>{% trans "Ticket type" %}
+				</span>
+				<span class="oh-timeoff-modal__stat-count"
+					>{{ticket.ticket_type}}</span
+				>
+			</div>
+			<div class="oh-timeoff-modal__stat">
+				<span class="oh-timeoff-modal__stat-title"
+					>{% trans "Forward to" %}</span
+				>
+				<span class="oh-timeoff-modal__stat-count"
+					>{{ticket.get_raised_on}}</span
+				>
+			</div>
+		</div>
+
+	    <div class="oh-timeoff-modal__stats-container mt-3">
+			<div class="oh-timeoff-modal__stat">
+				<span class="oh-timeoff-modal__stat-title"
+					>{% trans "Dead line" %}
+				</span>
+				<span class="oh-timeoff-modal__stat-count dateformat_changer"
+					>{{ticket.deadline}}</span
+				>
+			</div>
+			<div class="oh-timeoff-modal__stat">
+				<span class="oh-timeoff-modal__stat-title"
+					>{% trans "Priority" %}
+				</span>
+				<div class="oh-rate">
+
+                    {% if ticket.priority == 'low' %}
+						<div class="d-flex">
+							<div class="oh-rate">
+								{% for i in "321" %}
+									<input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '1' == i %} checked {% endif %}/>
+									<label for="star{{i}}{{ticket.id}}"
+									{% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+								{% endfor %}
+							</div>
+						</div>
+					{% elif ticket.priority == 'medium' %}
+						<div class="d-flex">
+							<div class="oh-rate">
+								{% for i in "321" %}
+									<input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '2' == i %} checked {% endif %}/>
+									<label for="star{{i}}{{ticket.id}}"
+									{% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+								{% endfor %}
+							</div>
+						</div>
+					{% else %}
+						<div class="d-flex">
+							<div class="oh-rate">
+								{% for i in "321" %}
+									<input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '3' == i %} checked {% endif %}/>
+									<label for="star{{i}}{{ticket.id}}"
+									{% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+								{% endfor %}
+							</div>
+						</div>
+					{% endif %}
+                </div>
+			</div>
+		</div>
+		<div class="oh-timeoff-modal__stats-container mt-3">
+			<div class="oh-timeoff-modal__stat w-100">
+				<span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
+				<span class="oh-timeoff-modal__stat-count"
+					>{{ticket.description}}</span
+				>
+			</div>
+		</div>
+        <div class = "oh-modal__button-container text-center mt-3" onclick="event.stopPropagation()">
+            <div class="oh-btn-group" style="border:none">
+                {% if ticket|calim_request_exists:request.user.employee_get or request.user.employee_get in ticket.assigned_to.all %}
+                    <a
+                        href="#"
+                        class="oh-btn oh-btn--info w-100 oh-btn--disabled"
+                        title="{% trans 'Claim' %}"
+                    >
+						<ion-icon name="checkmark-done-outline"></ion-icon>
+                    </a>
+                {% else %}
+                    <a
+                        type="submit"
+                        href = "{% url 'claim-ticket' ticket.id %}"
+                        class="oh-btn oh-btn--info w-100"
+                        title="{% trans 'Claim' %}"
+                    >
+                        <ion-icon name="checkmark-done-outline"></ion-icon>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+	</div>
+</div>

@@ -57,6 +57,16 @@ urlpatterns = [
         name="ticket-detail",
         kwargs={"model": Ticket},
     ),
+    path(
+        "ticket-individual-view/<int:ticket_id>",
+        views.ticket_individual_view,
+        name="ticket-individual-view",
+    ),
+    path(
+        "view-ticket-claim-request/<int:ticket_id>",
+        views.view_ticket_claim_request,
+        name="view-ticket-claim-request",
+    ),
     path("ticket-change-tag", views.ticket_update_tag, name="ticket-change-tag"),
     path(
         "ticket-change-raised-on/<int:ticket_id>",
@@ -70,6 +80,11 @@ urlpatterns = [
     ),
     path("ticket-create-tag", views.create_tag, name="ticket-create-tag"),
     path("remove-tag", views.remove_tag, name="remove-tag"),
+    path(
+        "view-ticket-document/<int:doc_id>",
+        views.view_ticket_document,
+        name="view-ticket-document",
+    ),
     path("comment-create/<int:ticket_id>", views.comment_create, name="comment-create"),
     path("comment-edit/", views.comment_edit, name="comment-edit"),
     path(
@@ -77,6 +92,11 @@ urlpatterns = [
     ),
     path("get-raised-on", views.get_raised_on, name="get-raised-on"),
     path("claim-ticket/<int:id>", views.claim_ticket, name="claim-ticket"),
+    path(
+        "approve-claim-request/<int:req_id>",
+        views.approve_claim_request,
+        name="approve-claim-request",
+    ),
     path(
         "tickets-select-filter",
         views.tickets_select_filter,
@@ -122,5 +142,10 @@ urlpatterns = [
         "department-manager-view/",
         views.view_department_managers,
         name="department-manager-view",
+    ),
+    path(
+        "get-department-employee",
+        views.get_department_employees,
+        name="get-department-employee",
     ),
 ]
