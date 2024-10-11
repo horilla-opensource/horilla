@@ -2140,7 +2140,7 @@ def get_collegues(request):
             # Convert QuerySets to a list
             employees = list(employees_queryset)
             context = {"employees": employees}
-            employee_html = render_to_string("feedback/employees_select.html", context)
+            employee_html = render_to_string("employee/employees_select.html", context)
             return HttpResponse(employee_html)
         else:
             return JsonResponse({"error": "Employee not found"}, status=404)
