@@ -306,6 +306,11 @@ urlpatterns = [
         name="update-fields-based-shift",
     ),
     path(
+        "update-worked-hour-field",
+        views.update_worked_hour_field,
+        name="update-worked-hour-field",
+    ),
+    path(
         "update-date-details",
         views.form_date_checking,
         name="update-date-details",
