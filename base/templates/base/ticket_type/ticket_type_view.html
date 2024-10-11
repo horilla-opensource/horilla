@@ -6,7 +6,7 @@
 				<div class="oh-sticky-table__th">{% trans "Ticket Type" %}</div>
 				<div class="oh-sticky-table__th">{% trans "Type" %}</div>
 				<div class="oh-sticky-table__th">{% trans "Prefix" %}</div>
-				{% if perms.helpdesk.delete_tickettype or perms.helpdesk.delete_tickettype %}
+				{% if perms.helpdesk.change_tickettype or perms.helpdesk.delete_tickettype %}
 					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 				{% endif %}
 			</div>
@@ -17,7 +17,7 @@
 				<div class="oh-sticky-table__td">{{t_type}}</div>
 				<div class="oh-sticky-table__td">{{t_type.get_type_display}}</div>
 				<div class="oh-sticky-table__td">{{t_type.prefix}}</div>
-				{% if perms.helpdesk.delete_tickettype or perms.helpdesk.delete_tickettype %}
+				{% if perms.helpdesk.change_tickettype or perms.helpdesk.delete_tickettype %}
 					<div class="oh-sticky-table__td">
 						<div class="oh-btn-group">
 							{% if perms.helpdesk.change_tickettype %}
