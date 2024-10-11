@@ -82,6 +82,10 @@ class EmployeeWorkInformationSerializer(serializers.ModelSerializer):
         source="work_type_id.work_type", read_only=True
     )
     company_name = serializers.CharField(source="company_id.company", read_only=True)
+    tags = serializers.SerializerMethodField()
+
+    def get_tags(self, obj):
+        return [{"id": tag.id, "title": tag.title} for tag in obj.tags.all()]
 
     class Meta:
         model = EmployeeWorkInformation
