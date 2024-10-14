@@ -85,7 +85,10 @@ class EmployeeWorkInformationSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
 
     def get_tags(self, obj):
-        return [{"id": tag.id, "title": tag.title} for tag in obj.tags.all()]
+        return [
+            {"id": tag.id, "title": tag.title, "color": tag.color}
+            for tag in obj.tags.all()
+        ]
 
     class Meta:
         model = EmployeeWorkInformation
