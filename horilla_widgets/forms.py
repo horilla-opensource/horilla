@@ -10,6 +10,8 @@ from django import forms
 
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 
+forms.Select.option_template_name = "horilla_widgets/select_option.html"
+
 
 class HorillaForm(forms.Form):
     def clean(self) -> Dict[str, Any]:
