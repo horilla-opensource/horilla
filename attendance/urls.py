@@ -321,6 +321,11 @@ urlpatterns = [
         name="user-request-one-view",
     ),
     path(
+        "get-attendance-activities/<int:obj_id>",
+        views.get_attendance_activities,
+        name="get-attendance-activities",
+    ),
+    path(
         "hour-attendance-select/",
         views.hour_attendance_select,
         name="hour-attendance-select",

@@ -1,0 +1,48 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header pb-0">
+    <span class="oh-modal__dialog-title">
+        {% trans "Activities" %}
+    </span>
+    <button class="oh-modal__close--custom" aria-label="Close"
+        onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show');">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <div class="oh-multiple-table-sort">
+        <div class="oh-sticky-table oh-sticky-table--no-overflow">
+            <div class="oh-sticky-table__table">
+                <div class="oh-sticky-table__thead">
+                    <div class="oh-sticky-table__tr">
+                        <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                        <div class="oh-sticky-table__th">{% trans "Attendance Date" %}</div>
+                        <div class="oh-sticky-table__th">{% trans "In Date" %}</div>
+                        <div class="oh-sticky-table__th">{% trans "Clock In" %}</div>
+                        <div class="oh-sticky-table__th">{% trans "Clock Out" %}</div>
+                        <div class="oh-sticky-table__th">{% trans "Out Date" %}</div>
+                    </div>
+                </div>
+                <div class="oh-sticky-table__tbody">
+                    {% for activity in attendance.activities.query %}
+                        <div class="oh-sticky-table__tr oh-multiple-table-sort__movable" draggable="true">
+                            <div class="oh-sticky-table__sd">
+                                <div class="oh-profile oh-profile--md">
+                                    <div class="oh-profile__avatar mr-1">
+                                        <img src="https://ui-avatars.com/api/?name={{activity.employee_id}}&background=random"
+                                            class="oh-profile__image" alt="Mary Magdalene" />
+                                    </div>
+                                    <span class="oh-profile__name oh-text--dark">{{activity.employee_id}}</span>
+                                </div>
+                            </div>
+                            <div class="oh-sticky-table__td">{{activity.attendance_date}}</div>
+                            <div class="oh-sticky-table__td">{{activity.clock_in_date}}</div>
+                            <div class="oh-sticky-table__td">{{activity.clock_in}}</div>
+                            <div class="oh-sticky-table__td">{{activity.clock_out}}</div>
+                            <div class="oh-sticky-table__td">{{activity.clock_out_date}}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

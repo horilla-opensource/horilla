@@ -1673,6 +1673,17 @@ def user_request_one_view(request, id):
 
 
 @login_required
+@hx_request_required
+def get_attendance_activities(request, obj_id):
+    attendance = Attendance.find(obj_id)
+    return render(
+        request,
+        "attendance/attendance/attendance_activites_view.html",
+        context={"attendance": attendance},
+    )
+
+
+@login_required
 def hour_attendance_select(request):
     page_number = request.GET.get("page")
     context = {}

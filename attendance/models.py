@@ -217,6 +217,15 @@ class Attendance(HorillaModel):
         return f"{self.employee_id.employee_first_name} \
             {self.employee_id.employee_last_name} - {self.attendance_date}"
 
+    def activities(self):
+        """
+        This method is used to return the activites and count of activites comes for an attendance
+        """
+        activities = AttendanceActivity.objects.filter(
+            attendance_date=self.attendance_date, employee_id=self.employee_id
+        )
+        return {"query": activities, "count": activities.count()}
+
     def requested_fields(self):
         """
         This method will returns the value difference fields

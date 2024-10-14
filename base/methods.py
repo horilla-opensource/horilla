@@ -666,28 +666,12 @@ def is_holiday(date):
     Returns:
         Holidays or bool: The Holidays object if the date is a holiday, otherwise False.
     """
-    holidays = Holidays.objects.all()
-    for holiday in holidays:
-        start_date = holiday.start_date
-        end_date = holiday.end_date
-        # Check if the date is within the range of the holiday dates
-        if start_date <= date <= end_date:
-            return holiday
-        # Check for recurring holidays
-        if holiday.recurring:
-            try:
-                # Create a new date object for comparison without the year
-                start_date_without_year = datetime(
-                    year=date.year, month=start_date.month, day=start_date.day
-                ).date()
-                end_date_without_year = datetime(
-                    year=date.year, month=end_date.month, day=end_date.day
-                ).date()
-                if start_date_without_year <= date <= end_date_without_year:
-                    return holiday
-            except:
-                return False
-    return False
+    # Get holidays that either match the exact date range or are recurring
+    holiday = Holidays.objects.filter(
+        Q(start_date__lte=date, end_date__gte=date)
+        | Q(recurring=True, start_date__month=date.month, start_date__day=date.day)
+    ).first()
+    return holiday if holiday else False
 
 
 def is_company_leave(input_date):
@@ -698,29 +682,25 @@ def is_company_leave(input_date):
     Returns:
         CompanyLeaves or bool: The CompanyLeaves object if the date is a company leave, otherwise False.
     """
-    # Calculate the week number within the month (1-5)
+    # Calculate the week number within the month (0-4) and weekday (0 for Monday to 6 for Sunday)
     first_day_of_month = input_date.replace(day=1)
-    first_week_day = first_day_of_month.weekday()  # Monday is 0 and Sunday is 6
-    adjusted_day = input_date.day + first_week_day
-    date_week_no = (adjusted_day - 1) // 7
-    # Calculate the weekday (1 for Monday to 7 for Sunday)
-    date_week_day = input_date.isoweekday() - 1
-    company_leaves = CompanyLeaves.objects.all()
-    for company_leave in company_leaves:
-        week_no = (
-            company_leave.based_on_week
-            if not company_leave.based_on_week
-            else int(company_leave.based_on_week)
-        )  # from 0 for the first week to 4 for the fifth week
-        week_day = int(
-            company_leave.based_on_week_day
-        )  # from 0 to 6 for Monday to Sunday
-        if not week_no:
-            if date_week_day == week_day:
-                return company_leave
-        if date_week_no == week_no and date_week_day == week_day:
-            return company_leave
-    return False
+    adjusted_day = (
+        input_date.day + first_day_of_month.weekday()
+    )  # Adjust day based on first day of the month
+    date_week_no = (adjusted_day - 1) // 7  # Calculate the week number (0-based)
+    date_week_day = input_date.weekday()  # Get weekday (0 for Monday to 6 for Sunday)
+
+    # Query for company leaves that match the week number and weekday
+    company_leave = CompanyLeaves.objects.filter(
+        Q(
+            based_on_week=None, based_on_week_day=date_week_day
+        )  # Match week-independent leaves
+        | Q(
+            based_on_week=date_week_no, based_on_week_day=date_week_day
+        )  # Match specific week and weekday
+    ).first()
+
+    return company_leave if company_leave else False
 
 
 def get_date_range(start_date, end_date):
