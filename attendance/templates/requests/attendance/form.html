@@ -1,8 +1,14 @@
-<form
-  hx-post="{% url 'attendance-change' form.instance.id %}"
-  hx-target="#updateAttendanceRequestModalBody"
-  class="m-3"
-  method="post"
->
-  {% csrf_token %} {{form.as_p}}
-</form>
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Attendance Update Request" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <form hx-post="{% url 'attendance-change' form.instance.id %}" hx-target="#objectUpdateModalTarget" id="attendanceRequestForm">
+        {% csrf_token %} {{form.as_p}}
+    </form>
+</div>

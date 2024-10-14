@@ -443,9 +443,9 @@
 											<div class="oh-btn-group">
 												<a
 													data-toggle="oh-modal-toggle"
-													data-target="#updateAttendanceRequest"
+													data-target="#objectUpdateModal"
 													hx-get="{% url 'attendance-change' attendance.id %}"
-													hx-target="#updateAttendanceRequestModalBody"
+													hx-target="#objectUpdateModalTarget"
 													class="oh-btn oh-btn--light-bkg w-100"
 													title="{% trans 'Edit Request' %}"
 													onclick="event.stopPropagation()"

@@ -38,6 +38,7 @@ from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone as django_timezone
+from django.utils.timezone import now
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
@@ -1266,24 +1267,30 @@ def validation_condition_delete(request, obj_id):
 @manager_can_enter("attendance.change_attendance")
 def validate_bulk_attendance(request):
     """
-    This method is used to validate bulk of attendances
+    This method is used to validate a bulk of attendances.
     """
-    ids = request.POST["ids"]
-    ids = json.loads(ids)
+    ids = json.loads(request.POST["ids"])
+    validate_req_count = 0
+    success_messages = []
+    error_messages = []
+
     for obj_id in ids:
         try:
             attendance = Attendance.objects.get(id=obj_id)
-            if not attendance.is_validate_request:
-                attendance.attendance_validated = True
-                attendance.save()
-                messages.success(request, _("Attendance validated."))
-            else:
-                messages.info(
-                    request,
+
+            if attendance.is_validate_request:
+                error_messages.append(
                     _(
                         "Pending attendance update request for {}'s attendance on {}!"
-                    ).format(attendance.employee_id, attendance.attendance_date),
+                    ).format(attendance.employee_id, attendance.attendance_date)
                 )
+                continue
+
+            attendance.attendance_validated = True
+            attendance.save()
+            validate_req_count += 1
+
+            # Send notification
             notify.send(
                 request.user.employee_get,
                 recipient=attendance.employee_id.employee_user_id,
@@ -1295,8 +1302,23 @@ def validate_bulk_attendance(request):
                 redirect=reverse("view-my-attendance") + f"?id={attendance.id}",
                 icon="checkmark",
             )
-        except (Attendance.DoesNotExist, OverflowError, ValueError):
-            messages.error(request, _("Attendance not found"))
+
+        except Attendance.DoesNotExist:
+            error_messages.append(_("Attendance not found"))
+        except (OverflowError, ValueError):
+            error_messages.append(_("Invalid attendance ID"))
+
+    # Handle messages
+    if validate_req_count > 0:
+        messages.success(
+            request, _("{} Attendances validated.").format(validate_req_count)
+        )
+    for msg in success_messages + error_messages:
+        if "Pending" in msg:
+            messages.info(request, msg)
+        else:
+            messages.error(request, msg)
+
     return JsonResponse({"message": "success"})
 
 
@@ -1552,11 +1574,19 @@ def update_worked_hour_field(request):
     specified HTML template.
     """
     clock_in = parse_datetime(
-        request.GET.get("attendance_clock_in_date"),
+        (
+            now().strftime("%Y-%m-%d")
+            if request.GET.get("create_bulk")
+            else request.GET.get("attendance_clock_in_date")
+        ),
         request.GET.get("attendance_clock_in"),
     )
     clock_out = parse_datetime(
-        request.GET.get("attendance_clock_out_date"),
+        (
+            now().strftime("%Y-%m-%d")
+            if request.GET.get("create_bulk")
+            else request.GET.get("attendance_clock_out_date")
+        ),
         request.GET.get("attendance_clock_out"),
     )
 

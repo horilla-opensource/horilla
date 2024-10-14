@@ -24,7 +24,7 @@
                                     {{ field|add_class:"form-control" }}
                                 </div>
                             {% else %}
-                                <div class="col-12 col-md-6" id="id_{{field.name}}_div">
+                                <div class="col-12 col-md-6" id="id_{{field.name}}_parent_div">
                                     <label class="oh-label {% if field.field.required %} required-star{% endif %}"
                                         for="id_{{ field.name }}" title="{{ field.help_text|safe }}">{{ field.label }}</label>
                                     {% if field.field.widget.input_type == "checkbox" %}

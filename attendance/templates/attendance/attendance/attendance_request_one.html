@@ -115,9 +115,9 @@
         {% if request.GET.my_attendance %}
 
         {% elif request.GET.all_attendance %}
-            <a data-toggle="oh-modal-toggle" data-target="#updateAttendanceRequest"
+            <a data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
                 hx-get="{% url 'attendance-change' attendance_request.id %}?all_attendance=true"
-                hx-target="#updateAttendanceRequestModalBody" class="oh-btn oh-btn--info w-100" title='{% trans "Edit" %}'>
+                hx-target="#objectUpdateModalTarget" class="oh-btn oh-btn--info w-100" title="{% trans 'Edit' %}">
                 <ion-icon name="lock-open-outline" role="img" class="md hydrated" aria-label="create outline">
                 </ion-icon>
             </a>

@@ -1,146 +1,112 @@
-{% load i18n %}{% load l10n %} {% load basefilters %}
+{% load i18n %} {% load basefilters %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-  <button
-    hx-get="{% url 'validate-attendance-request' previous %}?requests_ids={{requests_ids}}"
-    hx-target="#validateAttendanceRequestModalBody"
-    class="oh-modal__diaglog-nav oh-modal__nav-prev"
-    data-action="previous"
-  >
-    <ion-icon
-      name="chevron-back-outline"
-      class="md hydrated"
-      role="img"
-      aria-label="chevron back outline"
-    ></ion-icon>
-  </button>
+    <button hx-get="{% url 'validate-attendance-request' previous %}?requests_ids={{requests_ids}}"
+        hx-target="#validateAttendanceRequestModalBody" class="oh-modal__diaglog-nav oh-modal__nav-prev"
+        data-action="previous">
+        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+            aria-label="chevron back outline"></ion-icon>
+    </button>
 
-  <button
-    hx-get="{% url 'validate-attendance-request' next %}?requests_ids={{requests_ids}}"
-    hx-target="#validateAttendanceRequestModalBody"
-    class="oh-modal__diaglog-nav oh-modal__nav-next"
-    data-action="next"
-  >
-    <ion-icon
-      name="chevron-forward-outline"
-      class="md hydrated"
-      role="img"
-      aria-label="chevron forward outline"
-    ></ion-icon>
-  </button>
+    <button hx-get="{% url 'validate-attendance-request' next %}?requests_ids={{requests_ids}}"
+        hx-target="#validateAttendanceRequestModalBody" class="oh-modal__diaglog-nav oh-modal__nav-next"
+        data-action="next">
+        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+            aria-label="chevron forward outline"></ion-icon>
+    </button>
 </div>
 <a class="oh-timeoff-modal__profile-content pt-4" style="text-decoration:none;"
-  href ="{% url 'employee-view-individual' attendance.employee_id.id %}">
-  <div class="oh-profile mb-2">
-    <div class="oh-profile__avatar">
-      <img
-        src="{{attendance.employee_id.get_avatar}}"
-        class="oh-profile__image me-2"
-        alt="Mary Magdalene"
-      />
+    href="{% url 'employee-view-individual' attendance.employee_id.id %}">
+    <div class="oh-profile mb-2">
+        <div class="oh-profile__avatar">
+            <img src="{{attendance.employee_id.get_avatar}}" class="oh-profile__image me-2" alt="Mary Magdalene" />
+        </div>
+        <div class="oh-timeoff-modal__profile-info">
+            <span class="oh-timeoff-modal__user fw-bold m-0">{{attendance.employee_id.get_full_name}}</span>
+            <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: #4d4a4a">
+                {{attendance.employee_id.employee_work_info.department_id}} /
+                {{attendance.employee_id.employee_work_info.job_position_id}}</span>
+        </div>
     </div>
-    <div class="oh-timeoff-modal__profile-info">
-      <span class="oh-timeoff-modal__user fw-bold m-0"
-        >{{attendance.employee_id.get_full_name}}</span
-      >
-      <span
-        class="oh-timeoff-modal__user m-0"
-        style="font-size: 18px; color: #4d4a4a"
-      >
-        {{attendance.employee_id.employee_work_info.department_id}} /
-        {{attendance.employee_id.employee_work_info.job_position_id}}</span
-      >
-    </div>
-  </div>
 </a>
 
 <table class="table w-100 mt-3 mb-5">
-  <tr>
-    <th>{% trans "Field" %}</th>
-    <th style="border-bottom: solid orange 4px">{% trans "Current Value" %}</th>
-    <th style="border-bottom: solid green 4px">
-      {% trans "Requested Value" %}
-    </th>
-  </tr>
-  {% for key, diff in data.items %}
-  <tr>
-    <td class="pt-2 pb-2">{{key}}</td>
-      {% if key == 'Check-Out Date' or key == 'Attendance date' or key == 'Check-In Date'%}
+    <tr>
+        <th>{% trans "Field" %}</th>
+        <th style="border-bottom: solid orange 4px">{% trans "Current Value" %}</th>
+        <th style="border-bottom: solid green 4px">
+            {% trans "Requested Value" %}
+        </th>
+    </tr>
+    {% for key, diff in data.items %}
+    <tr>
+        <td class="pt-2 pb-2">{{key}}</td>
+        {% if key == 'Check-Out Date' or key == 'Attendance date' or key == 'Check-In Date'%}
         {% if diff.0 == 'None' %}
-          <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
-          <td class="p-2 ml-2 dateformat_changer">{{diff.1}},</td>
+        <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+        <td class="p-2 ml-2 dateformat_changer">{{diff.1}},</td>
         {% endif %}
         {% if diff.1 == 'None' %}
-          <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
-          <td class="p-2 ml-2 dateformat_changer">{{diff.1}}</td>
+        <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
+        <td class="p-2 ml-2 dateformat_changer">{{diff.1}}</td>
         {% endif %}
-        {% if diff.0 == 'None' and  diff.1 == 'None'%}
-          <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
-          <td class="p-2 ml-2 dateformat_changer">{{diff.1}}</td>
+        {% if diff.0 == 'None' and diff.1 == 'None'%}
+        <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+        <td class="p-2 ml-2 dateformat_changer">{{diff.1}}</td>
         {% endif %}
-        {% if diff.0 != 'None' and  diff.1 != 'None'%}
-          <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
-          <td class="p-2 ml-2 dateformat_changer">{{diff.1}},</td>
+        {% if diff.0 != 'None' and diff.1 != 'None'%}
+        <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
+        <td class="p-2 ml-2 dateformat_changer">{{diff.1}},</td>
         {% endif %}
-      {% elif key == 'Check-Out' or key == 'Check-In'%}
+        {% elif key == 'Check-Out' or key == 'Check-In'%}
         {% if diff.0 == 'None' %}
-          <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
-          <td class="p-2 ml-2 timeformat_changer">{{diff.1}},</td>
+        <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+        <td class="p-2 ml-2 timeformat_changer">{{diff.1}},</td>
         {% endif %}
         {% if diff.1 == 'None' %}
-          <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
-          <td class="p-2 ml-2 timeformat_changer">{{diff.1}}</td>
+        <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
+        <td class="p-2 ml-2 timeformat_changer">{{diff.1}}</td>
         {% endif %}
-        {% if diff.0 == 'None' and  diff.1 == 'None'%}
-          <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
-          <td class="p-2 ml-2 timeformat_changer">{{diff.1}}</td>
+        {% if diff.0 == 'None' and diff.1 == 'None'%}
+        <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+        <td class="p-2 ml-2 timeformat_changer">{{diff.1}}</td>
         {% endif %}
-        {% if diff.0 != 'None' and  diff.1 != 'None'%}
-          <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
-          <td class="p-2 ml-2 timeformat_changer">{{diff.1}},</td>
+        {% if diff.0 != 'None' and diff.1 != 'None'%}
+        <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
+        <td class="p-2 ml-2 timeformat_changer">{{diff.1}},</td>
         {% endif %}
-      {% else %}
+        {% else %}
         <td class="p-2 ml-2">{% if diff.0 %}{{diff.0}}{% endif %}</td>
         <td class="p-2 ml-2">{{diff.1}}</td>
-      {% endif %}
+        {% endif %}
     </tr>
-  {% endfor %}
-  <tr>
-    <th>{% trans "Description" %}</th>
-  </tr>
-  <tr>
-    <td>{{attendance.request_description}}</td>
-  </tr>
+    {% endfor %}
+    <tr>
+        <th>{% trans "Description" %}</th>
+    </tr>
+    <tr>
+        <td>{{attendance.request_description}}</td>
+    </tr>
 </table>
 <div class="oh-modal__button-container text-center">
-  <div class="oh-btn-group d-flex flex-row-reverse">
-    <a
-      href="{% url 'cancel-validate-attendance-request' attendance.id %}"
-      data-toggle="oh-modal-toggle"
-      class="oh-btn oh-btn--secondary w-100"
-    >
-      <ion-icon name="close-circle-outline"></ion-icon>
-      {% trans "Reject" %}
-    </a>
-    {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-    <a
-      href="{% url 'approve-validate-attendance-request' attendance.id %}"
-      class="oh-btn oh-btn--success w-100"
-    >
-      <ion-icon name="checkmark-outline"></ion-icon>
-      {% trans "Approve" %}
-    </a>
-    {% endif %}
-    {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-    <a
-      hx-get="{% url 'edit-validate-attendance' attendance.id %}"
-      hx-target="#editValidateAttendanceRequestModalBody"
-      data-target="#editValidateAttendanceRequest"
-      data-toggle="oh-modal-toggle"
-      class="oh-btn oh-btn--info w-100"
-      >
-      <ion-icon name="create-outline"></ion-icon>
-      {% trans "Edit" %}
-    </a>
-    {% endif %}
-  </div>
+    <div class="oh-btn-group d-flex flex-row-reverse">
+        <a href="{% url 'cancel-validate-attendance-request' attendance.id %}" data-toggle="oh-modal-toggle"
+            class="oh-btn oh-btn--secondary w-100">
+            <ion-icon name="close-circle-outline"></ion-icon>
+            {% trans "Reject" %}
+        </a>
+        {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+        <a href="{% url 'approve-validate-attendance-request' attendance.id %}" class="oh-btn oh-btn--success w-100">
+            <ion-icon name="checkmark-outline"></ion-icon>
+            {% trans "Approve" %}
+        </a>
+        {% endif %}
+        {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+        <a hx-get="{% url 'edit-validate-attendance' attendance.id %}"
+            hx-target="#editValidateAttendanceRequestModalBody" data-target="#editValidateAttendanceRequest"
+            data-toggle="oh-modal-toggle" class="oh-btn oh-btn--info w-100">
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
+        </a>
+        {% endif %}
+    </div>
 </div>

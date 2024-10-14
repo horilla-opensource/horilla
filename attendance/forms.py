@@ -606,6 +606,20 @@ class AttendanceRequestForm(ModelForm):
     AttendanceRequestForm
     """
 
+    def update_worked_hour_hx_fields(self, field_name):
+        """Update the widget attributes for worked hour fields."""
+        self.fields[field_name].widget.attrs.update(
+            {
+                "id": str(uuid.uuid4()),
+                "hx-include": "#attendanceRequestForm",
+                "hx-target": "#id_attendance_worked_hour_parent_div",
+                "hx-swap": "outerHTML",
+                "hx-select": "#id_attendance_worked_hour_parent_div",
+                "hx-get": "/attendance/update-worked-hour-field",
+                "hx-trigger": "change delay:300ms",  # Delay added here for 500ms
+            }
+        )
+
     def __init__(self, *args, **kwargs):
         if instance := kwargs.get("instance"):
             # django forms not showing value inside the date, time html element.
@@ -637,6 +651,13 @@ class AttendanceRequestForm(ModelForm):
                 "hx-get": "/attendance/update-fields-based-shift",
             }
         )
+        for field in [
+            "attendance_clock_in_date",
+            "attendance_clock_in",
+            "attendance_clock_out_date",
+            "attendance_clock_out",
+        ]:
+            self.update_worked_hour_hx_fields(field)
         self.fields["attendance_date"].widget.attrs.update(
             {
                 "onchange": "attendanceDateChange($(this))",
@@ -1092,11 +1113,26 @@ class BulkAttendanceRequestForm(ModelForm):
             "from_date",
             "to_date",
             "shift_id",
-            "attendance_worked_hour",
+            "work_type_id",
             "attendance_clock_in",
             "attendance_clock_out",
             "minimum_hour",
+            "attendance_worked_hour",
             "request_description",
+        )
+
+    def update_worked_hour_hx_fields(self, field_name):
+        """Update the widget attributes for worked hour fields."""
+        self.fields[field_name].widget.attrs.update(
+            {
+                "id": str(uuid.uuid4()),
+                "hx-include": "#attendanceRequestForm",
+                "hx-target": "#id_attendance_worked_hour_parent_div",
+                "hx-swap": "outerHTML",
+                "hx-select": "#id_attendance_worked_hour_parent_div",
+                "hx-get": "/attendance/update-worked-hour-field",
+                "hx-trigger": "change delay:300ms",
+            }
         )
 
     def __init__(self, *args, **kwargs):
@@ -1106,6 +1142,11 @@ class BulkAttendanceRequestForm(ModelForm):
         if employee and hasattr(employee, "employee_work_info"):
             shift = employee.employee_work_info.shift_id
             self.fields["shift_id"].initial = shift
+        for field in [
+            "attendance_clock_in",
+            "attendance_clock_out",
+        ]:
+            self.update_worked_hour_hx_fields(field)
         if request.user.has_perm("attendance.add_attendance") or is_reportingmanager(
             request
         ):
