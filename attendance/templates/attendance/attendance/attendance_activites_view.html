@@ -28,8 +28,7 @@
                             <div class="oh-sticky-table__sd">
                                 <div class="oh-profile oh-profile--md">
                                     <div class="oh-profile__avatar mr-1">
-                                        <img src="https://ui-avatars.com/api/?name={{activity.employee_id}}&background=random"
-                                            class="oh-profile__image" alt="Mary Magdalene" />
+                                        <img src="{{activity.employee_id.get_avatar}}" class="oh-profile__image me-2" alt="{{activity.employee_id.first_name}}" />
                                     </div>
                                     <span class="oh-profile__name oh-text--dark">{{activity.employee_id}}</span>
                                 </div>
