@@ -230,6 +230,8 @@ def load_demo_database(request):
                     "leave": "leave_data.json",
                     "asset": "asset_data.json",
                     "recruitment": "recruitment_data.json",
+                    "onboarding": "onboarding_data.json",
+                    "offboarding": "offboarding_data.json",
                     "pms": "pms_data.json",
                     "payroll": "payroll_data.json",
                 }

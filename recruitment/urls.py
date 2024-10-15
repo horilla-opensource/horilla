@@ -339,7 +339,7 @@ urlpatterns = [
         name="recruitment-application-survey",
     ),
     path(
-        "recruitment-survey-question-template-view",
+        "recruitment-survey-question-template-view/",
         recruitment.views.surveys.view_question_template,
         name="recruitment-survey-question-template-view",
     ),

@@ -1515,5 +1515,110 @@
       "max_income": Infinity,
       "tax_rate": 37.0
     }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-09-21T08:42:06.139Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Reimbursment For Travel",
+      "type": "reimbursement",
+      "employee_id": 11,
+      "allowance_on": "2024-09-01",
+      "attachment": "payroll/reimbursements/Passport_yHUaQ2e.pdf",
+      "ad_to_encash": 0.0,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 0,
+      "amount": 2000.0,
+      "status": "requested",
+      "description": "Request for travels amount reimbursment"
+    }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-10-15T04:38:48.945Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Transportation Cost",
+      "type": "reimbursement",
+      "employee_id": 28,
+      "allowance_on": "2024-10-17",
+      "attachment": "payroll/reimbursements/Multiple_Approvals_1Q5Ce9r.png",
+      "ad_to_encash": 0.0,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 0,
+      "amount": 100.0,
+      "status": "requested",
+      "description": "Transportation cost for client meeting (taxi fare to and from office to clientÆs location)."
+    }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-10-15T04:39:28.342Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Conference registratio",
+      "type": "reimbursement",
+      "employee_id": 19,
+      "allowance_on": "2024-10-18",
+      "attachment": "payroll/reimbursements/Cosec_TgVWkpp.png",
+      "ad_to_encash": 0.0,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 0,
+      "amount": 1200.0,
+      "status": "requested",
+      "description": "Conference registration fee for DjangoCon 2024 (online workshop)."
+    }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-10-15T04:39:56.670Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Lunch with client",
+      "type": "reimbursement",
+      "employee_id": 22,
+      "allowance_on": "2024-10-15",
+      "attachment": "payroll/reimbursements/Mutliple_Approval_Form_gcX4pnl.png",
+      "ad_to_encash": 0.0,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 0,
+      "amount": 300.0,
+      "status": "requested",
+      "description": "Lunch with client (meal expenses incurred during project discussion with ABC Corp)."
+    }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-10-15T04:40:31.350Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Software license",
+      "type": "reimbursement",
+      "employee_id": 19,
+      "allowance_on": "2024-10-15",
+      "attachment": "payroll/reimbursements/Horilla_2_PLf7NkW.png",
+      "ad_to_encash": 0.0,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 0,
+      "amount": 2500.0,
+      "status": "requested",
+      "description": "Software license for Sublime Text (1-year subscription for team development)."
+    }
   }
 ]

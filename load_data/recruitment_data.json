@@ -938,6 +938,34 @@
     }
   },
   {
+    "model": "recruitment.surveytemplate",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-10-15T04:08:07.657Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Odoo Developer Template",
+      "description": "For an Odoo developer interview exam, here are some types of questions that can be asked using the provided",
+      "is_general_template": false,
+      "company_id": 1
+    }
+  },
+  {
+    "model": "recruitment.surveytemplate",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-10-15T04:13:08.737Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Django Developer Template",
+      "description": "Here are some types of questions you can ask in a Django developer interview exam.",
+      "is_general_template": false,
+      "company_id": 1
+    }
+  },
+  {
     "model": "recruitment.recruitmentsurvey",
     "pk": 1,
     "fields": {
@@ -970,6 +998,204 @@
       "options": "",
       "template_id": [1],
       "recruitment_ids": [1],
+      "job_position_ids": []
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurvey",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-10-15T04:08:37.429Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "is_mandatory": true,
+      "question": "Have you worked with Odoo's ORM before ?",
+      "sequence": 0,
+      "type": "checkbox",
+      "options": "",
+      "template_id": [2],
+      "recruitment_ids": [1],
+      "job_position_ids": []
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurvey",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-10-15T04:09:33.102Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "is_mandatory": true,
+      "question": "Which Odoo module have you worked on the most?",
+      "sequence": 0,
+      "type": "options",
+      "options": "Sales, Inventory, Accounting, Human Resources",
+      "template_id": [2],
+      "recruitment_ids": [1],
+      "job_position_ids": []
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurvey",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-10-15T04:10:25.767Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "is_mandatory": true,
+      "question": "Which of the following are key features of OdooÆs ORM?",
+      "sequence": 0,
+      "type": "multiple",
+      "options": "Data modeling, SQL query generation, Form building, Workflow automation",
+      "template_id": [2],
+      "recruitment_ids": [1],
+      "job_position_ids": []
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurvey",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-10-15T04:10:47.869Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "is_mandatory": false,
+      "question": "Explain how you would customize an Odoo report for a client.",
+      "sequence": 0,
+      "type": "text",
+      "options": "",
+      "template_id": [2],
+      "recruitment_ids": [1],
+      "job_position_ids": []
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurvey",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-10-15T04:11:01.784Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "is_mandatory": false,
+      "question": "How many years of experience do you have working with Odoo?",
+      "sequence": 0,
+      "type": "number",
+      "options": "",
+      "template_id": [2],
+      "recruitment_ids": [1],
+      "job_position_ids": []
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurvey",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-10-15T04:11:20.757Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "is_mandatory": false,
+      "question": "Estimate your proficiency with Python in relation to Odoo development (0-100%).",
+      "sequence": 0,
+      "type": "percentage",
+      "options": "",
+      "template_id": [2],
+      "recruitment_ids": [1],
+      "job_position_ids": []
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurvey",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-10-15T04:11:41.456Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "is_mandatory": true,
+      "question": "Rate your experience in using Odoo Studio on a scale of 1 to 5.",
+      "sequence": 0,
+      "type": "rating",
+      "options": "",
+      "template_id": [2],
+      "recruitment_ids": [1],
+      "job_position_ids": []
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurvey",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-10-15T04:13:39.132Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "is_mandatory": true,
+      "question": "Have you implemented class-based views (CBVs) in Django?",
+      "sequence": 0,
+      "type": "checkbox",
+      "options": "",
+      "template_id": [3],
+      "recruitment_ids": [2],
+      "job_position_ids": []
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurvey",
+    "pk": 11,
+    "fields": {
+      "created_at": "2024-10-15T04:14:26.896Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "is_mandatory": true,
+      "question": "Which ORM-related tasks have you most frequently used in Django?",
+      "sequence": 0,
+      "type": "options",
+      "options": "Writing custom queries, Query optimization, Database migrations, Managing relations between models",
+      "template_id": [3],
+      "recruitment_ids": [2],
+      "job_position_ids": []
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurvey",
+    "pk": 12,
+    "fields": {
+      "created_at": "2024-10-15T04:15:18.850Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "is_mandatory": true,
+      "question": "Which of the following are key components of Django's architecture ?",
+      "sequence": 0,
+      "type": "options",
+      "options": "Views, Models, Controllers, Templates",
+      "template_id": [3],
+      "recruitment_ids": [2],
+      "job_position_ids": []
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurvey",
+    "pk": 13,
+    "fields": {
+      "created_at": "2024-10-15T04:15:35.442Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "is_mandatory": false,
+      "question": "How do you handle user authentication in a Django project?",
+      "sequence": 0,
+      "type": "text",
+      "options": "",
+      "template_id": [3],
+      "recruitment_ids": [2],
       "job_position_ids": []
     }
   }

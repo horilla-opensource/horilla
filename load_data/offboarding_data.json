@@ -1,0 +1,241 @@
+[
+  {
+    "model": "offboarding.offboarding",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-10-15T03:07:52.493Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Offboarding 2024",
+      "description": "Offboarding pipeline 2024",
+      "status": "ongoing",
+      "company_id": null,
+      "managers": [1]
+    }
+  },
+  {
+    "model": "offboarding.offboarding",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-10-15T03:10:52.493Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Offboarding 2025",
+      "description": "Offboarding pipeline 2025",
+      "status": "ongoing",
+      "company_id": null,
+      "managers": [1]
+    }
+  },
+  {
+    "model": "offboarding.offboardingstage",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-10-15T03:07:52.499Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Notice Period",
+      "type": "notice_period",
+      "offboarding_id": 1,
+      "sequence": 0,
+      "managers": []
+    }
+  },
+  {
+    "model": "offboarding.offboardingstage",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-10-15T03:07:52.517Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Exit interview",
+      "type": "interview",
+      "offboarding_id": 1,
+      "sequence": 0,
+      "managers": []
+    }
+  },
+  {
+    "model": "offboarding.offboardingstage",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-10-15T03:07:52.527Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Work Handover",
+      "type": "handover",
+      "offboarding_id": 1,
+      "sequence": 0,
+      "managers": []
+    }
+  },
+  {
+    "model": "offboarding.offboardingstage",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-10-15T03:07:52.537Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "FNF",
+      "type": "fnf",
+      "offboarding_id": 1,
+      "sequence": 0,
+      "managers": []
+    }
+  },
+  {
+    "model": "offboarding.offboardingstage",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-10-15T03:07:52.547Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Farewell",
+      "type": "other",
+      "offboarding_id": 1,
+      "sequence": 0,
+      "managers": []
+    }
+  },
+  {
+    "model": "offboarding.offboardingstage",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-10-15T03:07:52.556Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Archived",
+      "type": "archived",
+      "offboarding_id": 1,
+      "sequence": 0,
+      "managers": []
+    }
+  },
+  {
+    "model": "offboarding.offboardingstage",
+    "pk": 8,
+    "fields": {
+      "created_at": "2024-10-15T03:07:52.517Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Exit interview",
+      "type": "interview",
+      "offboarding_id": 2,
+      "sequence": 0,
+      "managers": []
+    }
+  },
+  {
+    "model": "offboarding.offboardingstage",
+    "pk": 9,
+    "fields": {
+      "created_at": "2024-10-15T03:07:52.527Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Work Handover",
+      "type": "handover",
+      "offboarding_id": 2,
+      "sequence": 0,
+      "managers": []
+    }
+  },
+  {
+    "model": "offboarding.offboardingstage",
+    "pk": 10,
+    "fields": {
+      "created_at": "2024-10-15T03:07:52.537Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "FNF",
+      "type": "fnf",
+      "offboarding_id": 2,
+      "sequence": 0,
+      "managers": []
+    }
+  },
+  {
+    "model": "offboarding.offboardingstage",
+    "pk": 11,
+    "fields": {
+      "created_at": "2024-10-15T03:07:52.547Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Farewell",
+      "type": "other",
+      "offboarding_id": 2,
+      "sequence": 0,
+      "managers": []
+    }
+  },
+  {
+    "model": "offboarding.offboardingstage",
+    "pk": 12,
+    "fields": {
+      "created_at": "2024-10-15T03:07:52.556Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Archived",
+      "type": "archived",
+      "offboarding_id": 2,
+      "sequence": 0,
+      "managers": []
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-10-15T03:45:33.566Z",
+      "created_by": 13,
+      "modified_by": 13,
+      "is_active": true,
+      "employee_id": 12,
+      "title": "Resignation",
+      "description": "<p>After much consideration, I have decided to pursue a new opportunity that aligns with my career goals and personal aspirations. Working at Horilla has been an incredibly rewarding experience, and I deeply appreciate the support, guidance, and opportunities for growth provided by the company and my colleagues.</p><p>I am committed to ensuring a smooth transition and will do my best to complete my ongoing tasks and assist in handing over responsibilities. Please let me know how I can support the transition process.</p><p>I want to express my gratitude to the entire team at Horilla for the collaboration, learning, and support throughout my time here. I will cherish the experience and the relationships I have built.</p><p>Thank you once again for the opportunity to be a part of Horilla, and I wish the company continued success in the future.</p>",
+      "planned_to_leave_on": "2024-10-31",
+      "status": "requested",
+      "offboarding_employee_id": null
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-10-15T03:46:37.925Z",
+      "created_by": 29,
+      "modified_by": 29,
+      "is_active": true,
+      "employee_id": 28,
+      "title": "Resignation Letter",
+      "description": "<p>This was not an easy decision, but after careful thought, I believe it is the right time for me to explore new professional challenges. My time at Horilla has been an enriching journey, and I am truly grateful for the opportunities I have had to contribute and grow, both professionally and personally.</p><p>I will do my best to ensure a smooth transition and am happy to assist in handing over my current projects or training a replacement if necessary. Please feel free to guide me on how I can assist during this period.</p><p>Thank you once again for the support and for allowing me to be part of such a fantastic team. I wish Horilla continued growth and success, and I look forward to staying connected in the future.</p>",
+      "planned_to_leave_on": "2024-10-30",
+      "status": "requested",
+      "offboarding_employee_id": null
+    }
+  },
+  {
+    "model": "offboarding.offboardinggeneralsetting",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-10-15T03:43:33.290Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "resignation_request": true,
+      "company_id": null
+    }
+  }
+]

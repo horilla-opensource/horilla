@@ -1678,17 +1678,17 @@ class Reimbursement(HorillaModel):
     """
 
     reimbursement_types = [
-        ("reimbursement", "Reimbursement"),
-        ("bonus_encashment", "Bonus Point Encashment"),
+        ("reimbursement", _("Reimbursement")),
+        ("bonus_encashment", _("Bonus Point Encashment")),
     ]
 
     if apps.is_installed("leave"):
-        reimbursement_types.append(("leave_encashment", "Leave Encashment"))
+        reimbursement_types.append(("leave_encashment", _("Leave Encashment")))
 
     status_types = [
-        ("requested", "Requested"),
-        ("approved", "Approved"),
-        ("rejected", "Rejected"),
+        ("requested", _("Requested")),
+        ("approved", _("Approved")),
+        ("rejected", _("Rejected")),
     ]
     title = models.CharField(max_length=50)
     type = models.CharField(
@@ -1708,20 +1708,22 @@ class Reimbursement(HorillaModel):
             on_delete=models.PROTECT,
             blank=True,
             null=True,
-            verbose_name="Leave type",
+            verbose_name=_("Leave type"),
         )
     ad_to_encash = models.FloatField(
-        default=0, help_text="Available Days to encash", verbose_name="Available days"
+        default=0,
+        help_text=_("Available Days to encash"),
+        verbose_name=_("Available days"),
     )
     cfd_to_encash = models.FloatField(
         default=0,
-        help_text="Carry Forward Days to encash",
-        verbose_name="Carry forward days",
+        help_text=_("Carry Forward Days to encash"),
+        verbose_name=_("Carry forward days"),
     )
     bonus_to_encash = models.IntegerField(
         default=0,
-        help_text="Bonus points to encash",
-        verbose_name="Bonus points",
+        help_text=_("Bonus points to encash"),
+        verbose_name=_("Bonus points"),
     )
     amount = models.FloatField(default=0)
     status = models.CharField(
