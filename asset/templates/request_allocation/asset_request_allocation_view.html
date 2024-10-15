@@ -253,18 +253,6 @@
 		</div>
 	</div>
 </main>
-<div class="oh-modal" id="assetFineModal" role="dialog" aria-labelledby="assetFineModal" aria-hidden="true"
-	style="z-index: 1022;">
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<button type="button" class="oh-modal_close--custom"
-				onclick="$('#assetFineModal').removeClass('oh-modal--show');">
-				<ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="assetFineModalBody"></div>
-	</div>
-</div>
 
 <!-- end  of  asset request modal start -->
 <script>
@@ -277,7 +265,7 @@
 			$(".filterButton")[0].click();
 		});
 
-		$("#assetFineModalBody").on("htmx:afterSwap", function () {
+		$("#dynamicCreateModalTarget").on("htmx:afterSwap", function () {
 			$("[name='installment_amount']").on("change keyup", function () {
 				var loanAmount = $("[name='loan_amount']").val();
 				var installmentAmount = $(this).val();

@@ -47,6 +47,48 @@ function getCurrentLanguageCode(callback) {
 	}
 }
 
+function getAssetImportTemplate() {
+	var languageCode = null;
+	getCurrentLanguageCode(function (code) {
+		languageCode = code;
+		var confirmMessage = downloadMessages[languageCode];
+		// Use SweetAlert for the confirmation dialog
+		Swal.fire({
+			text: confirmMessage,
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonColor: "#008000",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Confirm",
+		}).then(function (result) {
+			if (result.isConfirmed) {
+				$.ajax({
+					type: "GET",
+					url: "/asset/asset-excel",
+					dataType: "binary",
+					xhrFields: {
+						responseType: "blob",
+					},
+					success: function (response) {
+						const file = new Blob([response], {
+							type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+						});
+						const url = URL.createObjectURL(file);
+						const link = document.createElement("a");
+						link.href = url;
+						link.download = "my_excel_file.xlsx";
+						document.body.appendChild(link);
+						link.click();
+					},
+					error: function (xhr, textStatus, errorThrown) {
+						console.error("Error downloading file:", errorThrown);
+					},
+				});
+			}
+		});
+	});
+}
+
 $(document).ready(function () {
 	$("#import-dropdown").hide();
 	// asset category accordion
@@ -102,45 +144,8 @@ $(document).ready(function () {
 	});
 });
 
+
 $(".asset-info-import").click(function (e) {
 	e.preventDefault();
-	var languageCode = null;
-	getCurrentLanguageCode(function (code) {
-		languageCode = code;
-		var confirmMessage = downloadMessages[languageCode];
-		// Use SweetAlert for the confirmation dialog
-		Swal.fire({
-			text: confirmMessage,
-			icon: "question",
-			showCancelButton: true,
-			confirmButtonColor: "#008000",
-			cancelButtonColor: "#d33",
-			confirmButtonText: "Confirm",
-		}).then(function (result) {
-			if (result.isConfirmed) {
-				$.ajax({
-					type: "GET",
-					url: "/asset/asset-excel",
-					dataType: "binary",
-					xhrFields: {
-						responseType: "blob",
-					},
-					success: function (response) {
-						const file = new Blob([response], {
-							type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-						});
-						const url = URL.createObjectURL(file);
-						const link = document.createElement("a");
-						link.href = url;
-						link.download = "my_excel_file.xlsx";
-						document.body.appendChild(link);
-						link.click();
-					},
-					error: function (xhr, textStatus, errorThrown) {
-						console.error("Error downloading file:", errorThrown);
-					},
-				});
-			}
-		});
-	});
+	getAssetImportTemplate();
 });

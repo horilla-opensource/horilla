@@ -1,9 +1,31 @@
-{% extends 'index.html' %}
 {% load i18n %}
-{% block content %}
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  <input type="file" name="file">
-  <button type="submit">{% trans "Import Excel file" %}</button>
-</form>
-{% endblock %}
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title m-0" id="assetImportLavel">
+        {% trans "Import Assets" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body" id="assetImportModalBody">
+    <div id="AssetImportResponse"></div>
+    <form action="{%url 'asset-import' %}" enctype="multipart/form-data" method="post" class="oh-profile-section">
+        {% csrf_token %}
+        <div class="oh-dropdown__import-form">
+            <label class="oh-dropdown__import-label" for="uploadFile">
+                <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
+                <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
+                <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
+            </label>
+            <input type="file" name="asset_import" id="uploadFile" />
+            <div class="d-inline float-end">
+                <a href="#" style="text-decoration:none; display: inline-block;"
+                    class="oh-dropdown__link asset-info-import" data-toggle="oh-modal-toggle" onclick="getAssetImportTemplate();">
+                    <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;"></ion-icon>
+                    <span>{% trans "Download Template" %}</span>
+                </a>
+            </div>
+        </div>
+        <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3">{% trans "Upload" %}</button>
+    </form>
+</div>

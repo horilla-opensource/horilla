@@ -1056,6 +1056,8 @@ def asset_import(request):
     Returns:
         HttpResponseRedirect: A redirect to the asset category view after processing the import.
     """
+    if request.META.get("HTTP_HX_REQUEST"):
+        return render(request, "asset/asset_import.html")
     try:
         if request.method == "POST":
             file = request.FILES.get("asset_import")

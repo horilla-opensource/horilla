@@ -69,9 +69,9 @@
                             class="oh-btn oh-btn--primary oh-btn--shadow w-100 ml-2"
                             type="button"
                             hx-get="{% url "asset-fine" %}?employee_id={{asset_alocation.assigned_to_employee_id.id}}&asset_id={{asset_id}}"
-                            hx-target="#assetFineModalBody"
+                            hx-target="#dynamicCreateModalTarget"
                             data-toggle="oh-modal-toggle"
-                            data-target="#assetFineModal"
+                            data-target="#dynamicCreateModal"
                         >
                             {% trans "Add Fine" %}
                         </button>

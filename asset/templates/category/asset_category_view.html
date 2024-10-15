@@ -10,35 +10,37 @@
     .button-link {
         display: inline-block;
         padding: 12px 15px;
-        background-color: #F0EFEF; /* Change this to your desired button color */
-        color: #312D2D; /* Text color for the button */
+        background-color: #F0EFEF;
+        /* Change this to your desired button color */
+        color: #312D2D;
+        /* Text color for the button */
         text-align: center;
         text-decoration: none;
         cursor: pointer;
     }
 
     .oh-modal_close--custom {
-      border: none;
-      background: none;
-      font-size: 1.5rem;
-      opacity: 0.7;
-      position: absolute;
-      top: 25px;
-      right: 15px;
+        border: none;
+        background: none;
+        font-size: 1.5rem;
+        opacity: 0.7;
+        position: absolute;
+        top: 25px;
+        right: 15px;
     }
-  </style>
+</style>
 
 <!-- start of messages -->
 {% if messages %}
-<div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated oh-alert--warning">
-            {{ message }}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+        <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated oh-alert--warning">
+                {{ message }}
+            </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
 {% endif %}
 <!-- end of messages -->
 
@@ -56,31 +58,22 @@
             <div class="oh-input-group oh-input__search-group "
                 :class="searchShow ? 'oh-input__search-group--show' : ''">
                 <!-- search form start -->
-                <form id="searchForm" hx-trigger="keyup delay:0.5s"  hx-get="{% url 'asset-category-view-search-filter' %}?asset_list=asset&type=asset" hx-target="#assetCategoryList">
+                <form id="searchForm" hx-trigger="keyup delay:0.5s"
+                    hx-get="{% url 'asset-category-view-search-filter' %}?asset_list=asset&type=asset"
+                    hx-target="#assetCategoryList">
                     <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-                    <input name="search" type="text" id="assetSearchField" class="oh-input oh-input__icon " aria-label="Search Input" placeholder="{% trans 'Search' %}" />
-                    {% comment %} <select size="2" name="type" class='oh-input__icon'
-                      onclick="document.getElementById('searchForm').dispatchEvent(new Event('submit'));"
-                      style="border: none;overflow: hidden; display: flex; position: absolute; z-index: 999; margin-left:8%;"
-                      >
+                    <input name="search" type="text" id="assetSearchField" class="oh-input oh-input__icon "
+                        aria-label="Search Input" placeholder="{% trans 'Search' %}" />
+                    <!-- <select size="2" name="type" class='oh-input__icon'
+                        onclick="document.getElementById('searchForm').dispatchEvent(new Event('submit'));"
+                        style="border: none;overflow: hidden; display: flex; position: absolute; z-index: 999; margin-left:8%;">
                         <option value="asset">{% trans "Search in :Asset" %}</option>
-                        <option value="category" >{% trans "Search in :Asset Category" %}</option>
-                    </select> {% endcomment %}
+                        <option value="category">{% trans "Search in :Asset Category" %}</option>
+                    </select> -->
                 </form>
                 <!-- end of search -->
             </div>
             <div class="oh-main__titlebar-button-container">
-                <!-- import asset start  -->
-
-                <!-- import asset end  -->
-                <!-- asset export start  -->
-                {% comment %} <div class="oh-dropdown">
-                    <button class="oh-btn ml-2">
-                        <ion-icon name="arrow-up-outline" class="me-1"></ion-icon> {% trans "Export" %}
-                    </button>
-
-                </div> {% endcomment %}
-                <!--  asset export end  -->
                 <!--  asset filter  -->
                 <div class="oh-dropdown" x-data="{open: false}">
                     <button class="oh-btn ml-2" @click="open = !open">
@@ -89,75 +82,77 @@
                     <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
                         @click.outside="open = false" style="display: none;">
                         <div class="oh-dropdown__filter-body">
-                            {% comment %} <div class="oh-accordion">
+                            <!-- <div class="oh-accordion">
                                 <div class="oh-accordion-header">{% trans "Asset Category" %}</div>
                                 <div class="oh-accordion-body">
-                                    <form hx-get="{%url 'asset-category-view-search-filter' %}" hx-target="#assetCategoryList" hx-swap="innerHTML" id="filterForm">
-                                    <div class="row">
-                                        <div class="col-sm-12 col-md-12 col-lg-12">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{asset_category_filter_form.asset_category_name.id_for_label}}">{% trans "Category Name" %}</label>
-                                                {{asset_category_filter_form.asset_category_name}}
+                                    <form hx-get="{%url 'asset-category-view-search-filter' %}"
+                                        hx-target="#assetCategoryList" hx-swap="innerHTML" id="filterForm">
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{asset_category_filter_form.asset_category_name.id_for_label}}">{% trans "Category Name" %}</label>
+                                                    {{asset_category_filter_form.asset_category_name}}
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{asset_category_filter_form.asset_category_description.id_for_label}}">{% trans "Description" %}</label>
+                                                    {{asset_category_filter_form.asset_category_description}}
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-sm-12 col-md-12 col-lg-12">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{asset_category_filter_form.asset_category_description.id_for_label}}">{% trans "Description" %}</label>
-                                                {{asset_category_filter_form.asset_category_description}}
-                                            </div>
+                                        <div class="oh-dropdown__filter-footer">
+                                            <button class="oh-btn oh-btn--secondary oh-btn--small  w-100 filterButton">{% trans "Filter" %}</button>
                                         </div>
-                                    </div>
-                                    <div class="oh-dropdown__filter-footer">
-                                        <button class="oh-btn oh-btn--secondary oh-btn--small  w-100 filterButton">{% trans "Filter" %}</button>
-                                    </div>
-                                </form>
+                                    </form>
                                 </div>
-                            </div> {% endcomment %}
+                            </div> -->
                             <div class="oh-accordion">
                                 <div class="oh-accordion-header">{% trans "Asset" %}</div>
                                 <div class="oh-accordion-body">
-                                    <form hx-get="{%url 'asset-category-view-search-filter' %}" name="asset_list" hx-target="#assetCategoryList" hx-swap="innerHTML" id="filterForm2">
-                                    <div class="row">
-                                        <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{asset_filter_form.asset_name.id_for_label}}">{% trans "Asset Name" %}</label>
-                                                {{asset_filter_form.asset_name}}
-                                            </div>
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{asset_filter_form.asset_tracking_id.id_for_label}}">{% trans "Tracking Id" %}</label>
-                                                {{asset_filter_form.asset_tracking_id}}
-                                            </div>
+                                    <form hx-get="{%url 'asset-category-view-search-filter' %}" name="asset_list"
+                                        hx-target="#assetCategoryList" hx-swap="innerHTML" id="filterForm2">
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{asset_filter_form.asset_name.id_for_label}}">{% trans "Asset Name" %}</label>
+                                                    {{asset_filter_form.asset_name}}
+                                                </div>
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{asset_filter_form.asset_tracking_id.id_for_label}}">{% trans "Tracking Id" %}</label>
+                                                    {{asset_filter_form.asset_tracking_id}}
+                                                </div>
 
-                                        </div>
-                                        <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{asset_filter_form.asset_purchase_date.id_for_label}}">{% trans "Purchase Date" %}</label>
-                                                {{asset_filter_form.asset_purchase_date |attr:"type:date"}}
                                             </div>
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{asset_filter_form.asset_purchase_cost.id_for_label}}">{% trans "Purchase Cost" %}</label>
-                                                {{asset_filter_form.asset_purchase_cost}}
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{asset_filter_form.asset_purchase_date.id_for_label}}">{% trans "Purchase Date" %}</label>
+                                                    {{asset_filter_form.asset_purchase_date |attr:"type:date"}}
+                                                </div>
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{asset_filter_form.asset_purchase_cost.id_for_label}}">{% trans "Purchase Cost" %}</label>
+                                                    {{asset_filter_form.asset_purchase_cost}}
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{asset_filter_form.asset_lot_number_id.id_for_label}}">{% trans "Asset Batch Number" %}</label>
+                                                    {{asset_filter_form.asset_lot_number_id}}
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{asset_filter_form.asset_category_id.id_for_label}}">{% trans "Category" %}</label>
+                                                    {{asset_filter_form.asset_category_id}}
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{asset_filter_form.asset_status.id_for_label}}">{% trans "Status" %}</label>
+                                                    {{asset_filter_form.asset_status}}
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{asset_filter_form.asset_lot_number_id.id_for_label}}">{% trans "Asset Batch Number" %}</label>
-                                                {{asset_filter_form.asset_lot_number_id}}
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{asset_filter_form.asset_category_id.id_for_label}}">{% trans "Category" %}</label>
-                                                {{asset_filter_form.asset_category_id}}
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-12 col-lg-12">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{asset_filter_form.asset_status.id_for_label}}">{% trans "Status" %}</label>
-                                                {{asset_filter_form.asset_status}}
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                             <div class="oh-dropdown__filter-footer">
@@ -169,128 +164,71 @@
                 </div>
                 <!-- asset filter end -->
                 <div class="oh-dropdown ml-2" x-data="{open: false}">
-                    <button
-                      onclick="event.stopPropagation();event.preventDefault()"
-                      class="oh-btn oh-btn--dropdown"
-                      @click="open = !open"
-                      @click.outside="open = false"
-                    >
-                      {% trans "Actions" %}
+                    <button onclick="event.stopPropagation();event.preventDefault()" class="oh-btn oh-btn--dropdown"
+                        @click="open = !open" @click.outside="open = false">
+                        {% trans "Actions" %}
                     </button>
-                    <div
-                      class="oh-dropdown__menu oh-dropdown__menu--right"
-                      x-show="open"
-                      style="display: none"
-                    >
-                      <ul class="oh-dropdown__items">
-                          <li class="oh-dropdown__item" id="import-button">
-                            <a
-                              href="#"
-                              class="oh-dropdown__link asset-info-import"
-                              data-toggle="oh-modal-toggle" data-target="#assetImport" class="button-link" onclick="return confirm('{% trans "Do you want to download template ?" %}')"
-                              >{% trans "Import" %}</a
-                            >
-                          </li>
-                          <li class="oh-dropdown__item">
-                            <a
-                              href="#"
-                              class="oh-dropdown__link"
-                              data-toggle="oh-modal-toggle"
-                              data-target="#objectCreateModal"
-                              hx-get="{% url 'asset-export-excel' %}"
-                              hx-target="#objectCreateModalTarget"
-                              >{% trans "Export" %}</a
-                            >
-                          </li>
-                      </ul>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
+                        <ul class="oh-dropdown__items">
+                            <li class="oh-dropdown__item" id="import-button">
+                                <a href="#" class="oh-dropdown__link asset-info-import" data-toggle="oh-modal-toggle"
+                                    data-target="#objectCreateModal" hx-get="{%url 'asset-import' %}"
+                                    hx-target="#objectCreateModalTarget" class="button-link"
+                                    onclick="return confirm('{% trans "Do you want to download template ?" %}')">
+                                    {% trans "Import" %}
+                                </a>
+                            </li>
+                            <li class="oh-dropdown__item">
+                                <a href="#" class="oh-dropdown__link" data-toggle="oh-modal-toggle"
+                                    data-target="#objectCreateModal" hx-get="{% url 'asset-export-excel' %}"
+                                    hx-target="#objectCreateModalTarget">{% trans "Export" %}</a>
+                            </li>
+                        </ul>
                     </div>
-                  </div>
+                </div>
                 <div class="oh-btn-group ml-2">
                     {% if perms.asset.add_assetcategory %}
                         <div>
-                            <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#objectCreateModal"
-                            hx-get="{%url 'asset-category-creation' %}"
-                            hx-target="#objectCreateModalTarget">
-                            <ion-icon name="add-outline"></ion-icon>
-                            {% trans "Create" %}
+                            <a href="#" class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                                data-target="#objectCreateModal" hx-get="{%url 'asset-category-creation' %}"
+                                hx-target="#objectCreateModalTarget">
+                                <ion-icon name="add-outline"></ion-icon>
+                                {% trans "Create" %}
                             </a>
                         </div>
-                {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>
     </section>
-</div>
-<div class="oh-modal" id="assetImport" role="dialog" aria-labelledby="assetImport" aria-hidden="true">
-    <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header">
-            <h2 class="oh-modal__dialog-title m-0" id="assetImportLavel">
-            {% trans "Import Assets" %}
-            </h2>
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
-            </button>
-        </div>
-        <div class="oh-modal__dialog-body" id="assetImportModalBody">
-            <div id="AssetImportResponse"></div>
-            <form action="{%url 'asset-import' %}" enctype="multipart/form-data" method="post" class="oh-profile-section">
-                {% csrf_token %}
-                <div class="oh-dropdown__import-form">
-                    <label class="oh-dropdown__import-label" for="uploadFile">
-                        <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
-                        <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
-                        <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
-                    </label>
-                    <input type="file" name="asset_import" id="uploadFile" />
-                    <div class="d-inline float-end">
-                        <a
-                          href="#"
-                          style="text-decoration:none; display: inline-block;"
-                          class="oh-dropdown__link asset-info-import"
-                          data-toggle="oh-modal-toggle"
-                          data-target="#assetImport"
-                        >
-                          <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;"></ion-icon>
-                          <span>{% trans "Download Template" %}</span>
-                        </a>
-                    </div>
-                </div>
-                <button type="submit"
-                    class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3">{% trans "Upload" %}</button>
-            </form>
+    </div>
+    <div class="oh-wrapper">
+        <div id="assetCategoryList">
+            <!-- including asset category -->
+            {% include 'category/asset_category.html' %}
         </div>
     </div>
-</div>
-<div class="oh-wrapper">
-    <div id="assetCategoryList">
-        <!-- including asset category -->
-        {% include 'category/asset_category.html' %}
-    </div>
-</div>
 </main>
 
 {% if dashboard == 'true' %}
-<script>
-    $(document).ready(function() {
-        $("[name='asset_list']").find("[name=asset_status]").val("In use")
-        $("[name='asset_list']").find(".filterButton").click()
-    });
-</script>
+    <script>
+        $(document).ready(function () {
+            $("[name='asset_list']").find("[name=asset_status]").val("In use")
+            $("[name='asset_list']").find(".filterButton").click()
+        });
+    </script>
 {% endif %}
 <script>
     function handleFormSubmit() {
 
         $('#successMessage').show();
 
-        setTimeout(function() {
+        setTimeout(function () {
             $('#successMessage').hide();
         }, 3000);
 
         return false; // Prevent the default form submission
-      }
-
+    }
 </script>
 <script src="{% static '/base/filter.js' %}"></script>
 <script src="{% static 'src/asset_category/assetCategoryView.js' %}"></script>
