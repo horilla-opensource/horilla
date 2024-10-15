@@ -1,2 +1,10 @@
-<form hx-post="{% url 'asset-fine' %}?asset_id={{ asset_id }}&employee_id={{ employee_id }}"
-    hx-target="#assetFineModalBody">{{ form.as_p }}</form>
+<div class="oh-modal__dialog-header">
+    <button type="button" class="oh-modal_close--custom"
+        onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show');">
+        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body" id="assetFineModalBody">
+    <form hx-post="{% url 'asset-fine' %}?asset_id={{ asset_id }}&employee_id={{ employee_id }}"
+        hx-target="#dynamicCreateModalTarget">{{ form.as_p }}</form>
+</div>
