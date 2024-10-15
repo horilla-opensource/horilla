@@ -24,6 +24,7 @@ from employee.models import (
 )
 from employee.views import work_info_export, work_info_import
 from horilla.decorators import owner_can_enter
+from horilla_api.api_methods.employee.methods import get_next_badge_id
 from horilla_documents.models import Document, DocumentRequest
 from notifications.signals import notify
 
@@ -89,7 +90,6 @@ class EmployeeAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk=None):
-
         if pk:
             try:
                 employee = Employee.objects.get(pk=pk)
@@ -215,22 +215,19 @@ class EmployeeBankDetailsAPIView(APIView):
         return queryset
 
     def get(self, request, pk=None):
-        if pk:
-            try:
-                bank_detail = EmployeeBankDetails.objects.get(pk=pk)
-            except EmployeeBankDetails.DoesNotExist:
-                return Response(
-                    {"error": "Bank details do not exist"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+        bank_detail = EmployeeBankDetails.objects.get(pk=pk)
+        if (
+            request.user.employee_get
+            in [
+                bank_detail.employee_id,
+                bank_detail.employee_id.get_reporting_manager(),
+            ]
+        ) or request.user.has_perm("employee.view_employeebankdetails"):
 
             serializer = EmployeeBankDetailsSerializer(bank_detail)
             return Response(serializer.data)
-        paginator = PageNumberPagination()
-        employee_bank_details = self.get_queryset(request)
-        page = paginator.paginate_queryset(employee_bank_details, request)
-        serializer = EmployeeBankDetailsSerializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+
+        return Response({"message": "No permission"}, status=400)
 
     @manager_or_owner_permission_required(
         EmployeeBankDetails, "employee.add_employeebankdetails"
@@ -296,8 +293,13 @@ class EmployeeWorkInformationAPIView(APIView):
 
     def get(self, request, pk):
         work_info = EmployeeWorkInformation.objects.get(pk=pk)
-        serializer = EmployeeWorkInformationSerializer(work_info)
-        return Response(serializer.data)
+        if (
+            request.user.employee_get == work_info.reporting_manager_id
+            or request.user.has_perm("employee.view_employeeworkinformation")
+        ):
+            serializer = EmployeeWorkInformationSerializer(work_info)
+            return Response(serializer.data, status=200)
+        return Response({"message": "No permission"}, status=400)
 
     @manager_permission_required("employee.add_employeeworkinformation")
     def post(self, request):
@@ -309,17 +311,19 @@ class EmployeeWorkInformationAPIView(APIView):
 
     @manager_permission_required("employee.change_employeeworkinformation")
     def put(self, request, pk):
-        try:
-            work_info = EmployeeWorkInformation.objects.get(pk=pk)
-        except EmployeeWorkInformation.DoesNotExist:
-            raise Http404
-        serializer = EmployeeWorkInformationSerializer(
-            work_info, data=request.data, partial=True
-        )
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        work_info = EmployeeWorkInformation.objects.get(pk=pk)
+        if (
+            request.user.employee_get == work_info.reporting_manager_id
+            or request.user.has_perm("employee.change_employeeworkinformation")
+        ):
+            serializer = EmployeeWorkInformationSerializer(
+                work_info, data=request.data, partial=True
+            )
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "No permission"}, status=400)
 
     @method_decorator(
         permission_required("employee.delete_employeeworkinformation"), name="dispatch"

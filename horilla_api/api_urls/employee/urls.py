@@ -17,11 +17,6 @@ urlpatterns = [
         name="employee-list-detailed",
     ),  # Alternative endpoint for listing employees
     path(
-        "employee-bank-details/",
-        views.EmployeeBankDetailsAPIView.as_view(),
-        name="employee-bank-details-list",
-    ),
-    path(
         "employee-bank-details/<int:pk>/",
         views.EmployeeBankDetailsAPIView.as_view(),
         name="employee-bank-details-detail",

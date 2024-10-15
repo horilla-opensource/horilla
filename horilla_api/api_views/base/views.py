@@ -357,6 +357,8 @@ class WorkTypeRequestView(APIView):
             return Response(serializer.data, status=200)
         # permission based queryset
         work_type_requests = self.get_queryset(request)
+        print("work_type_requests: ", work_type_requests)
+
         # filtering queryset
         work_type_request_filter_queryset = self.filterset_class(
             request.GET, queryset=work_type_requests
@@ -1362,9 +1364,14 @@ class EmployeeTabPermissionCheck(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        instance = request.user.employee_get
+
+        instance = Employee.objects.filter(id=request.GET.get("employee_id")).first()
         if _is_reportingmanger(request, instance) or request.user.has_perms(
-            ["attendance.view_worktyperequest", "perms.attendance.view_shiftrequest"]
+            [
+                "attendance.view_worktyperequest",
+                "attendance.view_shiftrequest",
+                "employee.change_employee",
+            ]
         ):
             return Response(status=200)
-        return Response(status=400)
+        return Response({"message": "No permission"}, status=400)
