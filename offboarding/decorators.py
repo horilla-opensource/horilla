@@ -45,7 +45,7 @@ def any_manager_can_enter(function, perm, offboarding_employee_can_enter=False):
 @decorator_with_arguments
 def offboarding_manager_can_enter(function, perm):
     def _function(request, *args, **kwargs):
-        employee = request.user.has_perm(perm)
+        employee = request.user.employee_get
         if (
             request.user.has_perm(perm)
             or Offboarding.objects.filter(managers=employee).exists()
@@ -66,7 +66,7 @@ def offboarding_manager_can_enter(function, perm):
 @decorator_with_arguments
 def offboarding_or_stage_manager_can_enter(function, perm):
     def _function(request, *args, **kwargs):
-        employee = request.user.has_perm(perm)
+        employee = request.user.employee_get
         if (
             request.user.has_perm(perm)
             or Offboarding.objects.filter(managers=employee).exists()

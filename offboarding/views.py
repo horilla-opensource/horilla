@@ -146,7 +146,9 @@ def pipeline(request):
 
 @login_required
 @hx_request_required
-@permission_required("offboarding_view_offboardingemployee")
+@any_manager_can_enter(
+    "offboarding.view_offboarding", offboarding_employee_can_enter=True
+)
 def filter_pipeline(request):
     """
     This method is used filter offboarding process
@@ -603,7 +605,7 @@ def task_assign(request):
 
 
 @login_required
-@permission_required("offboarding.delete_offboardingtask")
+@offboarding_or_stage_manager_can_enter("offboarding.delete_offboardingtask")
 def delete_task(request):
     """
     This method is used to delete the task

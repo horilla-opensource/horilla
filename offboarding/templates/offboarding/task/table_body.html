@@ -7,7 +7,7 @@
 </div>
 {% endif %}
 {% for employee in stage.list %}
-    {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_managers:offboarding.offboarding or request.user.employee_get|is_in_managers:stage.grouper or request.user.employee_get|is_in_managers:employee %}
+    {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding.offboarding or request.user.employee_get|is_in_managers:offboarding.offboarding or request.user.employee_get|is_in_managers:stage.grouper or request.user.employee_get|is_in_managers:employee %}
         <div
             class="oh-sticky-table__tr oh-multiple-table-sort__movable"
             data-employee="{{employee.employee_id.get_full_name}}"

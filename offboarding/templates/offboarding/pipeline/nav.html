@@ -3,7 +3,7 @@
   <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
     <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Offboarding' %}</h1>
   </div>
-  {% if perms.offboarding.change_offboardingstage or request.user.employee_get|any_manager %}
+  {% if perms.offboarding.change_offboardingstage or request.user.employee_get|any_manager or request.user.employee_get|is_in_offboarding:offboarding.offboarding %}
     <form onsubmit="event.preventDefault()" hx-target="#offboardingContainer" hx-get="{% url 'offboarding-pipeline-filter' %}"  class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small" >
       {% if offboardings %}
         <div class="oh-input-group oh-input__search-group mr-4">
