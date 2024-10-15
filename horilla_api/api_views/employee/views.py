@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import permission_required
 from django.db.models import ProtectedError, Q
 from django.http import Http404
 from django.utils.decorators import method_decorator
@@ -24,6 +23,7 @@ from employee.models import (
 )
 from employee.views import work_info_export, work_info_import
 from horilla.decorators import owner_can_enter
+from horilla_api.api_decorators.base.decorators import permission_required
 from horilla_api.api_methods.employee.methods import get_next_badge_id
 from horilla_documents.models import Document, DocumentRequest
 from notifications.signals import notify
@@ -113,7 +113,7 @@ class EmployeeAPIView(APIView):
         serializer = EmployeeSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
-    @manager_permission_required("employee.change_employee")
+    @method_decorator(permission_required("employee.add_employee"))
     def post(self, request):
         serializer = EmployeeSerializer(data=request.data)
         if serializer.is_valid():
@@ -124,14 +124,10 @@ class EmployeeAPIView(APIView):
     def put(self, request, pk):
         user = request.user
         employee = Employee.objects.get(pk=pk)
-        is_manager = EmployeeWorkInformation.objects.filter(
-            reporting_manager_id=user.employee_get
-        ).first()
         if (
-            employee == user.employee_get
-            or is_manager
-            or user.has_perm("employee.change_employee")
-        ):
+            employee
+            in [user.employee_get, request.user.employee_get.get_reporting_manager()]
+        ) or user.has_perm("employee.change_employee"):
             serializer = EmployeeSerializer(employee, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -621,9 +617,7 @@ class DocumentRequestAPIView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @method_decorator(
-        permission_required("employee.delete_employee", raise_exception=True)
-    )
+    @method_decorator(permission_required("employee.delete_employee"))
     def delete(self, request, pk):
         document_request = self.get_object(pk)
         document_request.delete()
@@ -733,9 +727,7 @@ class DocumentBulkApproveRejectAPIView(APIView):
 class EmployeeBulkArchiveView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @method_decorator(
-        permission_required("employee.delete_employee", raise_exception=True)
-    )
+    @method_decorator(permission_required("employee.delete_employee"))
     def post(self, request, is_active):
         ids = request.data.get("ids")
         error = []
@@ -757,9 +749,7 @@ class EmployeeBulkArchiveView(APIView):
 class EmployeeArchiveView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @method_decorator(
-        permission_required("employee.delete_employee", raise_exception=True)
-    )
+    @method_decorator(permission_required("employee.delete_employee"))
     def post(self, request, id, is_active):
         employee = Employee.objects.get(id=id)
         employee.is_active = is_active

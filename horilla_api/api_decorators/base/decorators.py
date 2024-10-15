@@ -1,11 +1,16 @@
 from functools import wraps
 
+from django.contrib import messages
+from django.http import HttpResponse
+from django.shortcuts import render
 from rest_framework import status
 from rest_framework.permissions import BasePermission
 from rest_framework.response import Response
 
 from base.models import MultipleApprovalManagers
 from employee.models import EmployeeWorkInformation
+from horilla.horilla_middlewares import _thread_locals
+from horilla_views.cbv_methods import decorator_with_arguments
 
 
 class ManagerPermission(BasePermission):
@@ -120,3 +125,21 @@ def check_approval_status(model, perm):
         return wrapper
 
     return decorator
+
+
+@decorator_with_arguments
+def permission_required(function, perm):
+    """
+    Decorator to validate user permissions
+    """
+
+    def _function(self, *args, **kwargs):
+        request = getattr(_thread_locals, "request")
+        if not getattr(self, "request", None):
+            self.request = request
+        if request.user.has_perm(perm):
+            return function(self, *args, **kwargs)
+        else:
+            return Response({"message": "No permission"}, status=401)
+
+    return _function

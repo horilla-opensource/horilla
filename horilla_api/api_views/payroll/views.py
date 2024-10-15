@@ -88,7 +88,7 @@ class PayslipDownloadView(APIView):
 class PayslipSendMailView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @method_decorator(permission_required("payroll.add_payslip", raise_exception=True))
+    @method_decorator(permission_required("payroll.add_payslip"))
     def post(self, request):
         email_backend = ConfiguredEmailBackend()
         if not getattr(
@@ -135,7 +135,7 @@ class ContractView(APIView):
         serializer = ContractSerializer(page, many=True)
         return pagination.get_paginated_response(serializer.data)
 
-    @method_decorator(permission_required("payroll.add_contract", raise_exception=True))
+    @method_decorator(permission_required("payroll.add_contract"))
     def post(self, request):
         serializer = ContractSerializer(data=request.data)
         if serializer.is_valid():
@@ -143,9 +143,7 @@ class ContractView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required("payroll.change_contract", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.change_contract"))
     def put(self, request, pk):
         contract = Contract.objects.get(id=pk)
         serializer = ContractSerializer(instance=contract, data=request.data)
@@ -154,9 +152,7 @@ class ContractView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required("payroll.delete_contract", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.delete_contract"))
     def delete(self, request, pk):
         contract = Contract.objects.get(id=pk)
         contract.delete()
@@ -166,9 +162,7 @@ class ContractView(APIView):
 class AllowanceView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @method_decorator(
-        permission_required("payroll.view_allowance", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.view_allowance"))
     def get(self, request, pk=None):
         if pk:
             allowance = Allowance.objects.get(id=pk)
@@ -181,9 +175,7 @@ class AllowanceView(APIView):
         serializer = AllowanceSerializer(page, many=True)
         return pagination.get_paginated_response(serializer.data)
 
-    @method_decorator(
-        permission_required("payroll.add_allowance", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.add_allowance"))
     def post(self, request):
         serializer = AllowanceSerializer(data=request.data)
         if serializer.is_valid():
@@ -191,9 +183,7 @@ class AllowanceView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required("payroll.change_allowance", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.change_allowance"))
     def put(self, request, pk):
         contract = Allowance.objects.get(id=pk)
         serializer = AllowanceSerializer(instance=contract, data=request.data)
@@ -202,9 +192,7 @@ class AllowanceView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required("payroll.delete_allowance", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.delete_allowance"))
     def delete(self, request, pk):
         contract = Allowance.objects.get(id=pk)
         contract.delete()
@@ -214,9 +202,7 @@ class AllowanceView(APIView):
 class DeductionView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @method_decorator(
-        permission_required("payroll.view_deduction", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.view_deduction"))
     def get(self, request, pk=None):
         if pk:
             deduction = Deduction.objects.get(id=pk)
@@ -229,9 +215,7 @@ class DeductionView(APIView):
         serializer = DeductionSerializer(page, many=True)
         return pagination.get_paginated_response(serializer.data)
 
-    @method_decorator(
-        permission_required("payroll.add_deduction", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.add_deduction"))
     def post(self, request):
         serializer = DeductionSerializer(data=request.data)
         if serializer.is_valid():
@@ -239,9 +223,7 @@ class DeductionView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required("payroll.change_deduction", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.change_deduction"))
     def put(self, request, pk):
         contract = Deduction.objects.get(id=pk)
         serializer = DeductionSerializer(instance=contract, data=request.data)
@@ -250,9 +232,7 @@ class DeductionView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required("payroll.delete_deduction", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.delete_deduction"))
     def delete(self, request, pk):
         contract = Deduction.objects.get(id=pk)
         contract.delete()
@@ -262,9 +242,7 @@ class DeductionView(APIView):
 class LoanAccountView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @method_decorator(
-        permission_required("payroll.add_loanaccount", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.add_loanaccount"))
     def post(self, request):
         serializer = LoanAccountSerializer(data=request.data)
         if serializer.is_valid():
@@ -272,9 +250,7 @@ class LoanAccountView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required("payroll.view_loanaccount", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.view_loanaccount"))
     def get(self, request, pk=None):
         if pk:
             loan_account = LoanAccount.objects.get(id=pk)
@@ -286,9 +262,7 @@ class LoanAccountView(APIView):
         serializer = LoanAccountSerializer(page, many=True)
         return pagination.get_paginated_response(serializer.data)
 
-    @method_decorator(
-        permission_required("payroll.change_loanaccount", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.change_loanaccount"))
     def put(self, request, pk):
         loan_account = LoanAccount.objects.get(id=pk)
         serializer = LoanAccountSerializer(loan_account, data=request.data)
@@ -297,9 +271,7 @@ class LoanAccountView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required("payroll.delete_loanaccount", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.delete_loanaccount"))
     def delete(self, request, pk):
         loan_account = LoanAccount.objects.get(id=pk)
         loan_account.delete()
@@ -337,9 +309,7 @@ class ReimbursementView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required("payroll.change_reimbursement", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.change_reimbursement"))
     def put(self, request, pk):
         reimbursement = Reimbursement.objects.get(id=pk)
         serializer = self.serializer_class(instance=reimbursement, data=request.data)
@@ -348,9 +318,7 @@ class ReimbursementView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required("payroll.delete_reimbursement", raise_exception=True)
-    )
+    @method_decorator(permission_required("payroll.delete_reimbursement"))
     def delete(self, request, pk):
         reimbursement = Reimbursement.objects.get(id=pk)
         reimbursement.delete()

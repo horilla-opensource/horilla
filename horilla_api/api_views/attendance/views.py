@@ -2,7 +2,6 @@ from datetime import date, datetime, timedelta, timezone
 
 from django import template
 from django.conf import settings
-from django.contrib.auth.decorators import permission_required
 from django.core.mail import EmailMessage
 from django.db.models import Case, CharField, F, Value, When
 from django.http import QueryDict
@@ -15,6 +14,7 @@ from rest_framework.views import APIView
 
 from attendance.models import Attendance, AttendanceActivity, EmployeeShiftDay
 from attendance.views.clock_in_out import *
+from attendance.views.clock_in_out import clock_out
 from attendance.views.dashboard import (
     find_expected_attendances,
     find_late_come,
@@ -26,7 +26,10 @@ from base.methods import generate_pdf, is_reportingmanager
 from employee.filters import EmployeeFilter
 from recruitment.models import RecruitmentMailTemplate
 
-from ...api_decorators.base.decorators import manager_permission_required
+from ...api_decorators.base.decorators import (
+    manager_permission_required,
+    permission_required,
+)
 from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
 from ...api_serializers.attendance.serializers import (
     AttendanceActivitySerializer,
@@ -130,38 +133,24 @@ class ClockOutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        datetime_now = datetime.now()
-        if request.__dict__.get("datetime"):
-            datetime_now = request.datetime
-        employee, work_info = employee_exists(request)
-        shift = work_info.shift_id
-        date_today = date.today()
-        if request.__dict__.get("date"):
-            date_today = request.date
-        day = date_today.strftime("%A").lower()
-        day = EmployeeShiftDay.objects.get(day=day)
-        attendance = (
-            Attendance.objects.filter(employee_id=employee)
-            .order_by("id", "attendance_date")
-            .last()
-        )
-        if attendance is not None:
-            day = attendance.attendance_day
-        now = datetime.now().strftime("%H:%M")
-        if request.__dict__.get("time"):
-            now = request.time.strftime("%H:%M")
-        minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
-            day=day, shift=shift
-        )
-        early_out_instance = attendance.late_come_early_out.filter(type="early_out")
-        if not early_out_instance.exists():
-            early_out(
-                attendance=attendance, start_time=start_time_sec, end_time=end_time_sec
-            )
 
-        clock_out_attendance_and_activity(
-            employee=employee, date_today=date_today, now=now, out_datetime=datetime_now
-        )
+        current_date = date.today()
+        current_time = datetime.now().time()
+        current_datetime = datetime.now()
+
+        try:
+            clock_out(
+                Request(
+                    user=request.user,
+                    date=current_date,
+                    time=current_time,
+                    datetime=current_datetime,
+                )
+            )
+            return Response({"message": "Clocked-Out"}, status=200)
+
+        except Exception as error:
+            logger.error("Got an error in clock_out", error)
         return Response({"message": "Clocked-Out"}, status=200)
 
 

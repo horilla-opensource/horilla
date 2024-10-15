@@ -34,13 +34,13 @@ from base.views import (
     work_type_request_export,
 )
 from employee.models import Actiontype, Employee
-from horilla.decorators import permission_required
 from notifications.signals import notify
 
 from ...api_decorators.base.decorators import (
     check_approval_status,
     manager_or_owner_permission_required,
     manager_permission_required,
+    permission_required,
 )
 from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
 from ...api_serializers.base.serializers import (
@@ -518,63 +518,6 @@ class WorkTypeRequestExport(APIView):
         return work_type_request_export(request)
 
 
-class RotatingWorkTypeView(APIView):
-
-    serializer_class = RotatingWorkTypeSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self, request):
-        queryset = RotatingWorkType.objects.all()
-        user = request.user
-        # checking user level permissions
-        perm = "base.view_rotatingworktype"
-        queryset = permission_based_queryset(user, perm, queryset)
-        return queryset
-
-    def get(self, request, pk=None):
-        if pk:
-            rotating_work_type = object_check(RotatingWorkType, pk)
-            if rotating_work_type is None:
-                return Response({"error": "RotatingWorkType not found"}, status=404)
-            serializer = self.serializer_class(rotating_work_type)
-            return Response(serializer.data, status=200)
-
-        rotating_work_types = self.get_queryset(request)
-        serializer = self.serializer_class(rotating_work_types, many=True)
-        return Response(serializer.data, status=200)
-
-    @method_decorator(permission_required("base.add_rotatingworktype"), name="dispatch")
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
-
-    @method_decorator(
-        permission_required("base.change_rotatingworktype"), name="dispatch"
-    )
-    def put(self, request, pk):
-        rotating_work_type = object_check(RotatingWorkType, pk)
-        if rotating_work_type is None:
-            return Response({"error": "RotatingWorkType not found"}, status=404)
-        serializer = self.serializer_class(rotating_work_type, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=200)
-        return Response(serializer.errors, status=400)
-
-    @method_decorator(
-        permission_required("base.delete_rotatingworktype"), name="dispatch"
-    )
-    def delete(self, request, pk):
-        rotating_work_type = object_check(RotatingWorkType, pk)
-        if rotating_work_type is None:
-            return Response({"error": "RotatingWorkType not found"}, status=404)
-        response, status_code = object_delete(RotatingWorkType, pk)
-        return Response(response, status=status_code)
-
-
 class IndividualRotatingWorktypesView(APIView):
     serializer_class = RotatingWorkTypeAssignSerializer
     permission_classes = [IsAuthenticated]
@@ -1035,9 +978,7 @@ class RotatingWorkTypeView(APIView):
     serializer_class = RotatingWorkTypeSerializer
     permission_classes = [IsAuthenticated]
 
-    @method_decorator(
-        permission_required("base.view_rotatingworktype"), name="dispatch"
-    )
+    @method_decorator(permission_required("base.view_rotatingworktype"))
     def get(self, request, pk=None):
         if pk:
             rotating_work_type = object_check(RotatingWorkType, pk)
