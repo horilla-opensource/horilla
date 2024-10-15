@@ -98,21 +98,17 @@ class EmployeeAPIView(APIView):
                     {"error": "Employee does not exist"},
                     status=status.HTTP_404_NOT_FOUND,
                 )
-
             serializer = EmployeeSerializer(employee)
             return Response(serializer.data)
-
         paginator = PageNumberPagination()
         employees_queryset = Employee.objects.all()
         employees_filter_queryset = self.filterset_class(
             request.GET, queryset=employees_queryset
         ).qs
-
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, employees_filter_queryset)
-
         page = paginator.paginate_queryset(employees_filter_queryset, request)
         serializer = EmployeeSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -223,7 +219,6 @@ class EmployeeBankDetailsAPIView(APIView):
                 bank_detail.employee_id.get_reporting_manager(),
             ]
         ) or request.user.has_perm("employee.view_employeebankdetails"):
-
             serializer = EmployeeBankDetailsSerializer(bank_detail)
             return Response(serializer.data)
 
@@ -294,9 +289,9 @@ class EmployeeWorkInformationAPIView(APIView):
     def get(self, request, pk):
         work_info = EmployeeWorkInformation.objects.get(pk=pk)
         if (
-            request.user.employee_get == work_info.reporting_manager_id
-            or request.user.has_perm("employee.view_employeeworkinformation")
-        ):
+            request.user.employee_get
+            in [work_info.employee_id, work_info.reporting_manager_id]
+        ) or request.user.has_perm("employee.view_employeeworkinformation"):
             serializer = EmployeeWorkInformationSerializer(work_info)
             return Response(serializer.data, status=200)
         return Response({"message": "No permission"}, status=400)

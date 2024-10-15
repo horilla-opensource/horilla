@@ -182,6 +182,7 @@ class AttendanceView(APIView):
 
     def get_queryset(self, request, type):
         if type == "ot":
+
             condition = AttendanceValidationCondition.objects.first()
             minot = strtime_seconds("00:30")
             if condition is not None:
@@ -190,6 +191,14 @@ class AttendanceView(APIView):
                     overtime_second__gte=minot,
                     attendance_validated=True,
                 )
+            if request.user.has_perm("attendance.view_attendance"):
+                queryset = queryset
+            subordinates = Employee.objects.filter(
+                employee_work_info__reporting_manager_id=request.user.employee_get
+            )
+
+            print("subordinates: ", subordinates)
+            print(subordinates)
 
         elif type == "validated":
             queryset = Attendance.objects.filter(attendance_validated=True)

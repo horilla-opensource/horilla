@@ -410,12 +410,18 @@ class WorkTypeRequestView(APIView):
         WorkTypeRequest, "base.change_worktyperequest"
     )
     def put(self, request, pk):
+        print("request.user.employee_get: ", request.user.employee_get)
+        print()
+        print("request.data: ", request.data)
         work_type_request = object_check(WorkTypeRequest, pk)
         if work_type_request is None:
             return Response({"error": "WorkTypeRequest not found"}, status=404)
         serializer = self.serializer_class(work_type_request, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            print()
+            print("serializer.data: ", serializer.data)
+            print()
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
