@@ -1,4 +1,5 @@
-from datetime import timezone
+import datetime
+from datetime import date, timezone
 
 import django
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -23,6 +24,7 @@ from base.models import (
     WorkTypeRequest,
 )
 from employee.models import Actiontype, Employee
+from horilla import horilla_middlewares
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -339,15 +341,40 @@ class WorkTypeRequestSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def validate(self, attrs):
-        # Create an instance of the model with the provided data
-        instance = WorkTypeRequest(**attrs)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        # Check if the user is not a superuser
+        requested_date = attrs.get("requested_date", None)
 
-        # Call the model's clean method for validation
-        try:
-            instance.clean()
-        except DjangoValidationError as e:
-            # Raise DRF's ValidationError with the same message
-            raise serializers.ValidationError(e)
+        if request and not request.user.is_superuser:
+
+            if requested_date and requested_date < datetime.datetime.today().date():
+                raise serializers.ValidationError(
+                    {"requested_date": "Date must be greater than or equal to today."}
+                )
+
+        # Validate requested_till is not earlier than requested_date
+        requested_till = attrs.get("requested_till", None)
+        if requested_till and requested_till < requested_date:
+            raise serializers.ValidationError(
+                {
+                    "requested_till": (
+                        "End date must be greater than or equal to start date."
+                    )
+                }
+            )
+
+        # Check if any work type request already exists
+        if self.instance and self.instance.is_any_work_type_request_exists():
+            raise serializers.ValidationError(
+                {"error": "A work type request already exists during this time period."}
+            )
+
+        # Validate if `is_permanent_work_type` is False, `requested_till` must be provided
+        if not attrs.get("is_permanent_work_type", False):
+            if not requested_till:
+                raise serializers.ValidationError(
+                    {"requested_till": ("Requested till field is required.")}
+                )
 
         return attrs
 

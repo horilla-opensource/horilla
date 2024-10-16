@@ -378,7 +378,9 @@ class WorkTypeRequestView(APIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
+        print("------------------reached")
         if serializer.is_valid():
+            print("------------------valid")
             instance = serializer.save()
             try:
                 notify.send(
@@ -402,7 +404,9 @@ class WorkTypeRequestView(APIView):
                 )
                 return Response(serializer.data, status=201)
             except Exception as E:
+                print("------------exception", E)
                 return Response(serializer.errors, status=400)
+        print("-----------error", serializer.errors)
         return Response(serializer.errors, status=400)
 
     @check_approval_status(WorkTypeRequest, "base.change_worktyperequest")
