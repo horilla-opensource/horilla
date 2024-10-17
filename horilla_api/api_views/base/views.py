@@ -357,8 +357,6 @@ class WorkTypeRequestView(APIView):
             return Response(serializer.data, status=200)
         # permission based queryset
         work_type_requests = self.get_queryset(request)
-        print("work_type_requests: ", work_type_requests)
-
         # filtering queryset
         work_type_request_filter_queryset = self.filterset_class(
             request.GET, queryset=work_type_requests
@@ -378,9 +376,7 @@ class WorkTypeRequestView(APIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        print("------------------reached")
         if serializer.is_valid():
-            print("------------------valid")
             instance = serializer.save()
             try:
                 notify.send(
@@ -404,9 +400,7 @@ class WorkTypeRequestView(APIView):
                 )
                 return Response(serializer.data, status=201)
             except Exception as E:
-                print("------------exception", E)
                 return Response(serializer.errors, status=400)
-        print("-----------error", serializer.errors)
         return Response(serializer.errors, status=400)
 
     @check_approval_status(WorkTypeRequest, "base.change_worktyperequest")
@@ -414,18 +408,12 @@ class WorkTypeRequestView(APIView):
         WorkTypeRequest, "base.change_worktyperequest"
     )
     def put(self, request, pk):
-        print("request.user.employee_get: ", request.user.employee_get)
-        print()
-        print("request.data: ", request.data)
         work_type_request = object_check(WorkTypeRequest, pk)
         if work_type_request is None:
             return Response({"error": "WorkTypeRequest not found"}, status=404)
         serializer = self.serializer_class(work_type_request, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            print()
-            print("serializer.data: ", serializer.data)
-            print()
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
