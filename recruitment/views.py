@@ -1227,8 +1227,8 @@ def application_form(request):
             candidate_obj = form.save(commit=False)
             recruitment_obj = candidate_obj.recruitment_id
             stages = recruitment_obj.stage_set.all()
-            if stages.filter(stage_type="initial").exists():
-                candidate_obj.stage_id = stages.filter(stage_type="initial").first()
+            if stages.filter(stage_type="applied").exists():
+                candidate_obj.stage_id = stages.filter(stage_type="applied").first()
             else:
                 candidate_obj.stage_id = stages.order_by("sequence").first()
             candidate_obj.save()

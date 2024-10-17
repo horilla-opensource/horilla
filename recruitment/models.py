@@ -251,8 +251,15 @@ def create_initial_stage(sender, instance, created, **kwargs):
     This is post save method, used to create initial stage for the recruitment
     """
     if created:
+        applied_stage = Stage()
+        applied_stage.sequence = 0
+        applied_stage.recruitment_id = instance
+        applied_stage.stage = "Applied"
+        applied_stage.stage_type = "applied"
+        applied_stage.save()
+
         initial_stage = Stage()
-        initial_stage.sequence = 0
+        initial_stage.sequence = 1
         initial_stage.recruitment_id = instance
         initial_stage.stage = "Initial"
         initial_stage.stage_type = "initial"
@@ -266,6 +273,7 @@ class Stage(HorillaModel):
 
     stage_types = [
         ("initial", _("Initial")),
+        ("applied", _("Applied")),
         ("test", _("Test")),
         ("interview", _("Interview")),
         ("cancelled", _("Cancelled")),

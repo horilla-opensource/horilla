@@ -352,6 +352,7 @@ class CandidateCreationForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["source"].initial = "software"
         self.fields["profile"].widget.attrs["accept"] = ".jpg, .jpeg, .png"
         self.fields["profile"].required = False
         self.fields["resume"].widget.attrs["accept"] = ".pdf"

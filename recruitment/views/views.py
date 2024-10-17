@@ -1272,6 +1272,7 @@ def candidate(request):
         if form.is_valid():
             candidate_obj = form.save(commit=False)
             candidate_obj.start_onboard = False
+            candidate_obj.source = "software"
             if candidate_obj.stage_id is None:
                 candidate_obj.stage_id = Stage.objects.filter(
                     recruitment_id=candidate_obj.recruitment_id, stage_type="initial"
