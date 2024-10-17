@@ -49,11 +49,16 @@
     </div>
 
     <div class="oh-kanban-card__details">
-      <span
-        class="oh-card__title oh-card__title--sm fw-bold"
-        style="font-size: 18px"
-        >{{leave_type.name}}</span
-      >
+
+      <div style="width: 95%; overflow: hidden;">
+        <span
+          class="oh-card__title oh-card__title--sm fw-bold"
+          style="font-size: 18px; word-break: break-word;"
+        >
+          {{leave_type.name}}
+        </span>
+      </div>
+
       <div class="oh-timeoff-modal__stats-container mb-1">
         <div class="oh-timeoff-modal__stat mt-1">
           <span class="oh-timeoff-modal__stat-title fw-bold text-dark"
