@@ -459,6 +459,17 @@ class Employee(models.Model):
             .first()
         )
 
+    def get_subordinate_employees(self):
+        """
+        Function to get all Employee objects of subordinates reporting to a given manager.
+        :param manager: Employee object who is the reporting manager.
+        :return: QuerySet of Employee objects.
+        """
+        subordinates = Employee.objects.filter(
+            employee_work_info__reporting_manager_id=self
+        )
+        return subordinates
+
     def save(self, *args, **kwargs):
         # your custom code here
         # ...
