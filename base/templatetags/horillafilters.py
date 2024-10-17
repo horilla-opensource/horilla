@@ -87,11 +87,14 @@ def is_clocked_in(user):
         last_attendance = (
             employee.employee_attendances.all().order_by("attendance_date", "id").last()
         )
-        if last_attendance is not None:
+        if last_attendance is not None and last_attendance.attendance_clock_out:
             last_activity = employee.employee_attendance_activities.filter(
                 attendance_date=last_attendance.attendance_date
             ).last()
-            return False if last_activity is None else last_activity.clock_out is None
+            if not last_activity:
+                return False
+            return last_activity.clock_out is None
+        return True
     return False
 
 

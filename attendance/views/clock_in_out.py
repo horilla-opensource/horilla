@@ -486,13 +486,31 @@ def clock_out(request):
     )
     if attendance:
         early_out_instance = attendance.late_come_early_out.filter(type="early_out")
+        is_night_shift = attendance.is_night_shift()
+        next_date = attendance.attendance_date + timedelta(days=1)
         if not early_out_instance.exists():
-            early_out(
-                attendance=attendance,
-                start_time=start_time_sec,
-                end_time=end_time_sec,
-                shift=shift,
-            )
+            if is_night_shift:
+                now_sec = strtime_seconds(now)
+                mid_sec = strtime_seconds("12:00")
+
+                if (attendance.attendance_date == date_today) or (
+                    # check is next day mid
+                    mid_sec >= now_sec
+                    and date_today == next_date
+                ):
+                    early_out(
+                        attendance=attendance,
+                        start_time=start_time_sec,
+                        end_time=end_time_sec,
+                        shift=shift,
+                    )
+            elif attendance.attendance_date == date_today:
+                early_out(
+                    attendance=attendance,
+                    start_time=start_time_sec,
+                    end_time=end_time_sec,
+                    shift=shift,
+                )
 
     script = ""
     hidden_label = ""

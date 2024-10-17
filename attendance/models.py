@@ -213,6 +213,18 @@ class Attendance(HorillaModel):
         Method to check the min ot for the attendance
         """
 
+    def is_night_shift(self):
+        """
+        check is night shift or not
+        """
+        day = self.attendance_day
+        if day is None:
+            return False
+        schedule = day.day_schedule.filter(shift_id=self.shift_id).first()
+        if not schedule:
+            return False
+        return schedule.is_night_shift
+
     def __str__(self) -> str:
         return f"{self.employee_id.employee_first_name} \
             {self.employee_id.employee_last_name} - {self.attendance_date}"

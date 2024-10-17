@@ -236,7 +236,25 @@ class Employee(models.Model):
         """
         if apps.is_installed("attendance"):
             today = datetime.today()
-            attendance = self.employee_attendances.filter(attendance_date=today).first()
+            yesterday = today - timedelta(days=1)
+            today_attendance = None
+            yesterday_attendance = None
+            attendances = list(
+                self.employee_attendances.filter(
+                    attendance_date__in=[yesterday, today]
+                ).order_by("attendance_clock_in")
+            )
+
+            if len(attendances) == 1:
+                yesterday_attendance, today_attendance = attendances[0], None
+            elif len(attendances) == 2:
+                yesterday_attendance, today_attendance = attendances
+            else:
+                yesterday_attendance, today_attendance = None, None
+
+            attendance = today_attendance
+            if not today_attendance:
+                attendance = yesterday_attendance
             minimum_hour_seconds = strtime_seconds(
                 getattr(attendance, "minimum_hour", "0")
             )
@@ -251,6 +269,7 @@ class Employee(models.Model):
                 "forecasted_pending_hours": format_time(forecasted_pending_hours),
                 "forecasted_at_work_seconds": at_work,
                 "forecasted_pending_hours_seconds": forecasted_pending_hours,
+                "has_attendance": attendance is not None,
             }
         else:
             return {}
