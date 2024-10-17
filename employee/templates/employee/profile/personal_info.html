@@ -199,7 +199,7 @@
         <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel"
           >{% trans "Upload Photo" %}</span
         >
-        <button class="oh-modal__close" aria-label="Close">
+        <button class="oh-modal__close" aria-label="Close" id="closeModalBtn">
           <ion-icon name="close-outline"></ion-icon>
         </button>
       </div>
@@ -211,6 +211,7 @@
             hx-encoding="multipart/form-data"
             method="post"
             id="file-form"
+            onsubmit="return submitForm(event)"
           >
             {% csrf_token %}
             <div class="oh-profile-section__modal-avatar">
@@ -249,6 +250,12 @@
       </div>
     </div>
     <div id="personalMessage"></div>
+    <script>
+      function submitForm(event) {
+        event.preventDefault();
+        $("#closeModalBtn").click();
+      }
+    </script>
     <script>
       $(document).ready(function () {
         $("#id_employee_profile").change(function (e) {
