@@ -1055,34 +1055,6 @@
     }
   },
   {
-    "model": "payroll.loanaccount",
-    "pk": 1,
-    "fields": {
-      "created_at": "2024-09-21T08:40:56.173Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "type": "loan",
-      "title": "Emergency Loan",
-      "employee_id": 13,
-      "loan_amount": 54000.0,
-      "provided_date": "2024-01-10",
-      "allowance_id": 4,
-      "description": "Medical Case",
-      "is_fixed": true,
-      "rate": 0.0,
-      "installment_amount": 3000.0,
-      "installments": 18,
-      "installment_start_date": "2024-11-01",
-      "apply_on": "end_of_month",
-      "settled": false,
-      "settled_date": null,
-      "deduction_ids": [
-        4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
-      ]
-    }
-  },
-  {
     "model": "payroll.reimbursementmultipleattachment",
     "pk": 1,
     "fields": { "attachment": "payroll/reimbursements/Passport.pdf" }

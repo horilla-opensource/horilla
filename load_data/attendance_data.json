@@ -3918,74 +3918,6 @@
     }
   },
   {
-    "model": "attendance.attendance",
-    "pk": 300,
-    "fields": {
-      "created_at": "2024-08-21T10:18:08.102Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "employee_id": 1,
-      "attendance_date": "2024-08-21",
-      "shift_id": 1,
-      "work_type_id": null,
-      "attendance_day": 3,
-      "attendance_clock_in_date": "2024-08-21",
-      "attendance_clock_in": "15:48:00",
-      "attendance_clock_out_date": "2024-08-26",
-      "attendance_clock_out": "15:10:00",
-      "attendance_worked_hour": "119:22",
-      "minimum_hour": "08:15",
-      "attendance_overtime": "04:00",
-      "attendance_overtime_approve": false,
-      "attendance_validated": false,
-      "at_work_second": 429720,
-      "overtime_second": 14400,
-      "approved_overtime_second": 0,
-      "is_validate_request": false,
-      "is_bulk_request": false,
-      "is_validate_request_approved": false,
-      "request_description": null,
-      "request_type": "update_request",
-      "is_holiday": false,
-      "requested_data": null
-    }
-  },
-  {
-    "model": "attendance.attendance",
-    "pk": 301,
-    "fields": {
-      "created_at": "2024-08-26T09:40:17.706Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "employee_id": 1,
-      "attendance_date": "2024-08-26",
-      "shift_id": 1,
-      "work_type_id": null,
-      "attendance_day": 1,
-      "attendance_clock_in_date": "2024-08-26",
-      "attendance_clock_in": "15:10:00",
-      "attendance_clock_out_date": null,
-      "attendance_clock_out": null,
-      "attendance_worked_hour": "00:00",
-      "minimum_hour": "08:15",
-      "attendance_overtime": "00:00",
-      "attendance_overtime_approve": false,
-      "attendance_validated": false,
-      "at_work_second": 0,
-      "overtime_second": 0,
-      "approved_overtime_second": 0,
-      "is_validate_request": false,
-      "is_bulk_request": false,
-      "is_validate_request_approved": false,
-      "request_description": null,
-      "request_type": "update_request",
-      "is_holiday": false,
-      "requested_data": null
-    }
-  },
-  {
     "model": "attendance.attendanceovertime",
     "pk": 1,
     "fields": {
@@ -6009,45 +5941,6 @@
       "employee_id": 1,
       "type": "late_come",
       "created_at": "2024-05-24T04:18:24.245Z"
-    }
-  },
-  {
-    "model": "attendance.attendancelatecomeearlyout",
-    "pk": 4,
-    "fields": {
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "attendance_id": 300,
-      "employee_id": 1,
-      "type": "late_come",
-      "created_at": "2024-08-21T10:18:08.710Z"
-    }
-  },
-  {
-    "model": "attendance.attendancelatecomeearlyout",
-    "pk": 5,
-    "fields": {
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "attendance_id": 300,
-      "employee_id": 1,
-      "type": "early_out",
-      "created_at": "2024-08-26T09:40:15.608Z"
-    }
-  },
-  {
-    "model": "attendance.attendancelatecomeearlyout",
-    "pk": 6,
-    "fields": {
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "attendance_id": 301,
-      "employee_id": 1,
-      "type": "late_come",
-      "created_at": "2024-08-26T09:40:18.339Z"
     }
   },
   {
@@ -8382,66 +8275,6 @@
       "is_leave_record": false,
       "day_percentage": 0.0,
       "last_update": "2024-08-05T09:39:16.557Z"
-    }
-  },
-  {
-    "model": "attendance.workrecords",
-    "pk": 300,
-    "fields": {
-      "record_name": null,
-      "work_record_type": "CONF",
-      "employee_id": 1,
-      "date": "2024-05-24",
-      "at_work": "70:46",
-      "min_hour": "08:15",
-      "at_work_second": 254760,
-      "min_hour_second": 29700,
-      "note": "",
-      "message": "Validate the attendance",
-      "is_attendance_record": true,
-      "is_leave_record": false,
-      "day_percentage": 0.5,
-      "last_update": "2024-08-05T09:39:16.579Z"
-    }
-  },
-  {
-    "model": "attendance.workrecords",
-    "pk": 301,
-    "fields": {
-      "record_name": null,
-      "work_record_type": "CONF",
-      "employee_id": 1,
-      "date": "2024-08-21",
-      "at_work": "119:22",
-      "min_hour": "08:15",
-      "at_work_second": 429720,
-      "min_hour_second": 29700,
-      "note": "",
-      "message": "Validate the attendance",
-      "is_attendance_record": true,
-      "is_leave_record": false,
-      "day_percentage": 0.0,
-      "last_update": "2024-08-26T09:40:14.910Z"
-    }
-  },
-  {
-    "model": "attendance.workrecords",
-    "pk": 302,
-    "fields": {
-      "record_name": null,
-      "work_record_type": "FDP",
-      "employee_id": 1,
-      "date": "2024-08-26",
-      "at_work": "00:00",
-      "min_hour": "08:15",
-      "at_work_second": 0,
-      "min_hour_second": 29700,
-      "note": "",
-      "message": "Currently working",
-      "is_attendance_record": true,
-      "is_leave_record": false,
-      "day_percentage": 0.0,
-      "last_update": "2024-08-26T09:40:17.864Z"
     }
   }
 ]
