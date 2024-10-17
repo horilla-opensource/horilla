@@ -18,7 +18,7 @@
   {% if bulk_select_option %}
   {% include "generic/quick_actions.html" %}
   {% endif %}
-  <button class="reload-record" hidden hx-get="{{request.path}}?{{request.GET.urlencode}}" hx-target="#{{view_id|safe}}" hx-swap="outerHTML">
+  <button class="reload-record" id="{{view_id|safe}}Reload" hidden hx-get="{{request.path}}?{{request.GET.urlencode}}" hx-target="#{{view_id|safe}}" hx-swap="outerHTML">
   </button>
   {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
   <div class="oh-card">
