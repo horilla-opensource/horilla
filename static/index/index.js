@@ -459,3 +459,18 @@ function handleDownloadAndRefresh(event, url) {
         window.location.reload();  // Refresh the page
     }, 500);  // Adjust the delay as needed
 }
+
+function updateUserPanelCount(e) {
+    var count = $(e).closest('.oh-sticky-table__tr').find('.oh-user-panel').length;
+    setTimeout(() => {
+        var $permissionCountSpan = $(e).closest('.oh-permission-table--toggle').parent().find('.oh-permission-count');
+        var currentText = $permissionCountSpan.text();
+
+        var firstSpaceIndex = currentText.indexOf(' ');
+        var textAfterNumber = currentText.slice(firstSpaceIndex + 1);
+        var newText = count + ' ' + textAfterNumber;
+
+        $permissionCountSpan.text(newText);
+
+    }, 100);
+}

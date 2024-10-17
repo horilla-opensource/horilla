@@ -1218,6 +1218,7 @@ def object_delete(request, obj_id, **kwargs):
     """
     model = kwargs.get("model")
     redirect_path = kwargs.get("redirect_path")
+    delete_error = False
     try:
         instance = model.objects.get(id=obj_id)
         instance.delete()
@@ -1225,6 +1226,7 @@ def object_delete(request, obj_id, **kwargs):
             request, _("The {} has been deleted successfully.").format(instance)
         )
     except model.DoesNotExist:
+        delete_error = True
         messages.error(request, _("{} not found.").format(model._meta.verbose_name))
     except ProtectedError as e:
         model_verbose_names_set = set()
@@ -1232,6 +1234,7 @@ def object_delete(request, obj_id, **kwargs):
             model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
 
         model_names_str = ", ".join(model_verbose_names_set)
+        delete_error = True
         messages.error(
             request,
             _("This {} is already in use for {}.").format(instance, model_names_str),
@@ -1251,6 +1254,13 @@ def object_delete(request, obj_id, **kwargs):
         previous_data = request.GET.urlencode()
         redirect_path = redirect_path + "?" + previous_data
         return redirect(redirect_path)
+    elif kwargs.get("HttpResponse"):
+        return_part = (
+            "<script>window.location.reload()</script>"
+            if delete_error
+            else kwargs.get("HttpResponse")
+        )
+        return HttpResponse(f"{return_part}")
     else:
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 

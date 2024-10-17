@@ -5,49 +5,37 @@
 			<div class="oh-sticky-table__tr">
 				<div class="oh-sticky-table__th">{% trans "Department" %}</div>
 				{% if perms.base.change_department or perms.base.delete_department %}
-					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+				<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 				{% endif %}
 			</div>
 		</div>
 		<div class="oh-sticky-table__tbody">
 			{% for dep in departments %}
-			<div class="oh-sticky-table__tr" draggable="true">
-				<div class="oh-sticky-table__td">{{dep}}</div>
-				{% if perms.base.change_department or perms.base.delete_department %}
-					<div class="oh-sticky-table__td">
-						<div class="oh-btn-group">
-							{% if perms.base.change_department %}
-							<a
-								hx-get="{% url 'department-update' dep.id %}"
-								hx-target="#departmentEditForm"
-								data-toggle="oh-modal-toggle"
-								data-target="#departmentEditModal"
-								type="button"
-								class="oh-btn oh-btn--light-bkg w-50"
-								title="{% trans 'Edit' %}"
-							>
-								<ion-icon name="create-outline"></ion-icon
-							></a>
-							{% endif %}
-							{% if perms.base.delete_deaprtment %}
-							<form action="{% url 'department-delete' dep.id %}"
-								class="w-50"
-								onsubmit="return confirm('{% trans "Are you sure you want to delete this department?" %}');"
-								method='post'>
-								{% csrf_token %}
-								<button
-									type="submit"
-									class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-									title="{% trans 'Remove' %}"
-								>
-									<ion-icon name="trash-outline"></ion-icon>
-								</button>
-							</form>
-							{% endif %}
+				<div class="oh-sticky-table__tr" draggable="true" id="departmentTr{{dep.id}}">
+					<div class="oh-sticky-table__td">{{dep}}</div>
+					{% if perms.base.change_department or perms.base.delete_department %}
+						<div class="oh-sticky-table__td">
+							<div class="oh-btn-group">
+								{% if perms.base.change_department %}
+									<a hx-get="{% url 'department-update' dep.id %}" hx-target="#departmentEditForm"
+										data-toggle="oh-modal-toggle" data-target="#departmentEditModal" type="button"
+										class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
+										<ion-icon name="create-outline"></ion-icon></a>
+								{% endif %}
+								{% if perms.base.delete_deaprtment %}
+									<form hx-confirm="{% trans 'Are you sure you want to delete this department?' %}" hx-swap="delete"
+										hx-post="{% url 'department-delete' dep.id %}" hx-target="#departmentTr{{dep.id}}" class="w-50">
+										{% csrf_token %}
+										<button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+											title="{% trans 'Remove' %}">
+											<ion-icon name="trash-outline"></ion-icon>
+										</button>
+									</form>
+								{% endif %}
+							</div>
 						</div>
-					</div>
-				{% endif %}
-			</div>
+					{% endif %}
+				</div>
 			{% endfor %}
 		</div>
 	</div>

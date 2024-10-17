@@ -219,7 +219,10 @@ urlpatterns = [
         "department-delete/<int:obj_id>/",
         views.object_delete,
         name="department-delete",
-        kwargs={"model": Department, "redirect": "/settings/department-view"},
+        kwargs={
+            "model": Department,
+            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+        },
     ),
     path(
         "settings/job-position-creation/",
@@ -241,7 +244,10 @@ urlpatterns = [
         "job-position-delete/<int:obj_id>/",
         views.object_delete,
         name="job-position-delete",
-        kwargs={"model": JobPosition, "redirect": "/settings/job-position-view"},
+        kwargs={
+            "model": JobPosition,
+            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+        },
     ),
     path("settings/job-role-create/", views.job_role_create, name="job-role-create"),
     path("settings/job-role-view/", views.job_role_view, name="job-role-view"),
@@ -255,7 +261,10 @@ urlpatterns = [
         "job-role-delete/<int:obj_id>/",
         views.object_delete,
         name="job-role-delete",
-        kwargs={"model": JobRole, "redirect": "/settings/job-role-view"},
+        kwargs={
+            "model": JobRole,
+            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+        },
     ),
     path("settings/work-type-view/", views.work_type_view, name="work-type-view"),
     path("settings/work-type-create/", views.work_type_create, name="work-type-create"),
@@ -269,7 +278,10 @@ urlpatterns = [
         "work-type-delete/<int:obj_id>/",
         views.object_delete,
         name="work-type-delete",
-        kwargs={"model": WorkType, "redirect": "/settings/work-type-view"},
+        kwargs={
+            "model": WorkType,
+            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+        },
     ),
     path(
         "add-remove-work-type-fields",
@@ -305,7 +317,7 @@ urlpatterns = [
         name="rotating-work-type-delete",
         kwargs={
             "model": RotatingWorkType,
-            "redirect": "/settings/rotating-work-type-view",
+            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
         },
     ),
     path(
@@ -385,7 +397,7 @@ urlpatterns = [
         name="employee-type-delete",
         kwargs={
             "model": EmployeeType,
-            "redirect": "/settings/employee-type-view",
+            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
         },
     ),
     path(
@@ -410,7 +422,7 @@ urlpatterns = [
         name="employee-shift-delete",
         kwargs={
             "model": EmployeeShift,
-            "redirect": "/settings/employee-shift-view",
+            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
         },
     ),
     path(
@@ -435,7 +447,7 @@ urlpatterns = [
         name="employee-shift-schedule-delete",
         kwargs={
             "model": EmployeeShiftSchedule,
-            "redirect": "/settings/employee-shift-schedule-view",
+            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
         },
     ),
     path(
@@ -778,7 +790,10 @@ urlpatterns = [
         "tag-delete/<int:obj_id>",
         views.object_delete,
         name="tag-delete",
-        kwargs={"model": Tags, "redirect": "/settings/tag-view/"},
+        kwargs={
+            "model": Tags,
+            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+        },
     ),
     path("audit-tag-create", views.audit_tag_create, name="audit-tag-create"),
     path(

@@ -11,42 +11,32 @@
 		</div>
 		<div class="oh-sticky-table__tbody">
 			{% for type in work_types %}
-			<div class="oh-sticky-table__tr" draggable="true">
-				<div class="oh-sticky-table__td">{{type}}</div>
-				{% if perms.base.change_worktype or perms.base.delete_worktype %}
-					<div class="oh-sticky-table__td">
-						<div class="oh-btn-group">
-							{% if perms.base.change_worktype %}
-							<a
-								data-toggle="oh-modal-toggle"
-								data-target="#workTypeModal"
-								hx-get="{% url 'work-type-update' type.id %}"
-								hx-target="#workTypeForm"
-								type="button"
-								class="oh-btn oh-btn--light-bkg w-50"
-								title="{% trans 'Edit' %}"
-							>
-								<ion-icon name="create-outline"></ion-icon
-							></a>
-							{% endif %}
-							{% if perms.base.delete_worktype %}
-							<form action="{% url 'work-type-delete' type.id %}" class="w-50"
-								onsubmit="return confirm('{% trans "Are you sure you want to delete this work type?" %}');"
-								method='post'>
-								{% csrf_token %}
-								<button
-									type="submit"
-									class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-									title="{% trans 'Remove' %}"
-								>
-									<ion-icon name="trash-outline"></ion-icon>
-								</button>
-							</form>
-							{% endif %}
+				<div class="oh-sticky-table__tr" draggable="true" id="workTypeTr{{type.id}}">
+					<div class="oh-sticky-table__td">{{type}}</div>
+					{% if perms.base.change_worktype or perms.base.delete_worktype %}
+						<div class="oh-sticky-table__td">
+							<div class="oh-btn-group">
+								{% if perms.base.change_worktype %}
+									<a data-toggle="oh-modal-toggle" data-target="#workTypeModal"
+										hx-get="{% url 'work-type-update' type.id %}" hx-target="#workTypeForm" type="button"
+										class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
+										<ion-icon name="create-outline"></ion-icon></a>
+								{% endif %}
+								{% if perms.base.delete_worktype %}
+									<form hx-confirm="{% trans 'Are you sure you want to delete this work type?' %}"
+										hx-post="{% url 'work-type-delete' type.id %}" hx-target="#workTypeTr{{type.id}}"
+										hx-swap="delete" class="w-50">
+										{% csrf_token %}
+										<button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+											title="{% trans 'Remove' %}">
+											<ion-icon name="trash-outline"></ion-icon>
+										</button>
+									</form>
+								{% endif %}
+							</div>
 						</div>
-					</div>
-				{% endif %}
-			</div>
+					{% endif %}
+				</div>
 			{% endfor %}
 		</div>
 	</div>

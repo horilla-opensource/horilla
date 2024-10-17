@@ -16,101 +16,71 @@
 
 						<div class="oh-sticky-table__tbody">
 							{% for department in departments %}
-							<div
-								class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
-								data-count="{{department.job_position.all|length}}"
-								data-label="Job Position"
-							>
-								<div class="oh-sticky-table__sd oh-permission-table--toggle">
-									<div class="d-flex align-items-center">
-										<button class="oh-permission-table__collapse me-2">
-											<ion-icon
-												class="oh-permission-table__collapse-down"
-												title="{% trans 'Reveal' %}"
-												name="chevron-down-outline"
-											></ion-icon>
-											<ion-icon
-												class="oh-permission-table__collapse-up"
-												title="{% trans 'Collapse' %}"
-												name="chevron-up-outline"
-											></ion-icon>
-										</button>
-										<span class="oh-permission-table__user"
-											>{{department}}</span
-										>
+								<div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
+									data-count="{{department.job_position.all|length}}" data-label="Job Position">
+									<div class="oh-sticky-table__sd oh-permission-table--toggle">
+										<div class="d-flex align-items-center">
+											<button class="oh-permission-table__collapse me-2" onclick="updateUserPanelCount(this);">
+												<ion-icon class="oh-permission-table__collapse-down"
+													title="{% trans 'Reveal' %}" name="chevron-down-outline"></ion-icon>
+												<ion-icon class="oh-permission-table__collapse-up"
+													title="{% trans 'Collapse' %}" name="chevron-up-outline"></ion-icon>
+											</button>
+											<span class="oh-permission-table__user">{{department}}</span>
+										</div>
+									</div>
+									<div class="oh-sticky-table__td">
+										<span class="oh-permission-count">
+											{{department.job_position.all|length}}
+											{% trans "Job Positions" %}
+										</span>
+										{% for job in department.job_position.all %}
+											<div id="jobPositionDiv{{job.id}}">
+												<span class="oh-user-panel oh-collapse-panel oh-sticky-table__tr oh-permission-table__tr">
+													<div class="oh-profile oh-profile--md">
+														<div class="oh-profile__avatar mr-1">
+															<img src="https://ui-avatars.com/api/?name={{job}}&background=random"
+																class="oh-profile__image" alt="" />
+														</div>
+														<span class="oh-profile__name oh-text--dark">{{job|capfirst}}</span>
+													</div>
+													<div>
+														<div class="d-flex">
+															{% if perms.base.change_jobposition %}
+																<div class="m-2">
+																	<a hx-get="{% url 'job-position-update' job.id %}"
+																		hx-target="#jobPositionForm" data-toggle="oh-modal-toggle"
+																		data-target="#jobPositionModal" title="{% trans 'Edit' %}">
+																		<ion-icon name="pencil"></ion-icon>
+																	</a>
+																</div>
+															{% endif %}
+															{% if perms.base.delete_jobposition %}
+															<div class="m-2">
+																<form hx-confirm="{% trans 'Are you sure you want to delete this job position?' %}" hx-swap="delete"
+																	hx-post="{% url 'job-position-delete' job.id %}" hx-target="#jobPositionDiv{{job.id}}">
+																	<button type="submit" style="
+																			background: none;
+																			color: inherit;
+																			border: none;
+																			padding: 0;
+																			font: inherit;
+																			cursor: pointer;
+																			outline: none;
+																		" title="{% trans 'Remove' %}">
+																		<ion-icon name="close" class="text-danger"></ion-icon>
+																	</button>
+																	{% csrf_token %}
+																</form>
+															</div>
+															{% endif %}
+														</div>
+													</div>
+												</span>
+											</div>
+										{% endfor %}
 									</div>
 								</div>
-								<div class="oh-sticky-table__td">
-									<span class="oh-permission-count">
-										{{department.job_position.all|length}}
-										{% trans "Job Positions" %}
-									</span>
-									{% for job in department.job_position.all %}
-									<span
-										class="oh-user-panel oh-collapse-panel oh-sticky-table__tr oh-permission-table__tr"
-									>
-										<div class="oh-profile oh-profile--md">
-											<div class="oh-profile__avatar mr-1">
-												<img
-													src="https://ui-avatars.com/api/?name={{job}}&background=random"
-													class="oh-profile__image"
-													alt=""
-												/>
-											</div>
-											<span class="oh-profile__name oh-text--dark"
-												>{{job|capfirst}}</span
-											>
-										</div>
-										<div>
-											<div class="d-flex">
-												{% if perms.base.change_jobposition %}
-												<div class="m-2">
-													<a
-														hx-get="{% url 'job-position-update' job.id %}"
-														hx-target="#jobPositionForm"
-														data-toggle="oh-modal-toggle"
-														data-target="#jobPositionModal"
-														title="{% trans 'Edit' %}"
-													>
-														<ion-icon name="pencil"></ion-icon>
-													</a>
-												</div>
-												{% endif %}
-												{% if perms.base.delete_jobposition %}
-												<div class="m-2">
-													<form
-														action="{% url 'job-position-delete' job.id %}"
-														onsubmit="return confirm('{% trans "Are you sure you want to delete this job position?" %}');"
-														method="post"
-													>
-														<button
-															type="submit"
-															style="
-																background: none;
-																color: inherit;
-																border: none;
-																padding: 0;
-																font: inherit;
-																cursor: pointer;
-																outline: none;
-															"
-															title="{% trans 'Remove' %}"
-														>
-															<ion-icon
-																name="close"
-																class="text-danger"
-															></ion-icon>
-														</button>
-														{% csrf_token %}
-													</form>
-												</div>
-												{% endif %}
-											</div>
-										</div>
-									</span>
-									{% endfor %}
-								</div>
-							</div>
 							{% endfor %}
 						</div>
 					</div>
