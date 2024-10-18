@@ -74,7 +74,7 @@
             {% endif %}
             {% if attachment.file.url|slice:"-4:" == '.png' or attachment.file.url|slice:"-4:" == '.jpg' or attachment.file.url|slice:"-5:" == '.jpeg' or attachment.file.url|slice:"-4:" == '.gif' or attachment.file.url|slice:"-4:" == '.bmp' or attachment.file.url|slice:"-5:" == '.webp' or attachment.file.url|slice:"-5:" == '.tiff' or attachment.file.url|slice:"-4:" == '.tif' or attachment.file.url|slice:"-4:" == '.svg' %} <!-- If not a PDF, display the image -->
                 <a href="{{ attachment.file.url }}" target="_blank">
-                    <img style="max-width: 538px;" src="{{ attachment.file.url }}" class="img-fluid rounded" alt="Attachment Image">
+                    <img src="{{ attachment.file.url }}" class="img-fluid rounded" alt="Attachment Image" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                 </a>
             {% else %}
             <!-- If the file is a PDF or something, display a link to download -->
