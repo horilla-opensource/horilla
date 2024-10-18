@@ -242,7 +242,7 @@ class Employee(models.Model):
             attendances = list(
                 self.employee_attendances.filter(
                     attendance_date__in=[yesterday, today]
-                ).order_by("attendance_clock_in")
+                ).order_by("attendance_date")
             )
 
             if len(attendances) == 1:

@@ -83,6 +83,22 @@ class AttendanceActivity(HorillaModel):
 
         ordering = ["-attendance_date", "employee_id__employee_first_name", "clock_in"]
 
+    def duration(self):
+        """
+        Duration calc b/w in-out method
+        """
+
+        if not self.clock_out or not self.clock_out_date:
+            self.clock_out_date = datetime.today().date()
+            self.clock_out = datetime.now().time()
+
+        clock_in_datetime = datetime.combine(self.clock_in_date, self.clock_in)
+        clock_out_datetime = datetime.combine(self.clock_out_date, self.clock_out)
+
+        time_difference = clock_out_datetime - clock_in_datetime
+
+        return time_difference.total_seconds()
+
 
 class Attendance(HorillaModel):
     """
