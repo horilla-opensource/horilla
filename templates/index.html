@@ -137,27 +137,7 @@
 
                         {% if breadcrumbs %}
                             <!-- Start of breadcrumb in nav bar -->
-                            <ul class="oh-navbar__breadcrumb">
-                                {% for breadcrumb in breadcrumbs %}
-                                    {% if forloop.last %}
-                                        <li class="oh-navbar__breadcrumb-item">
-                                            {% if breadcrumb.found %}
-                                                <a href="{{breadcrumb.url}}" class="oh-navbar__breadcrumb-link active">{% trans breadcrumb.name %}</a>
-                                            {% else %}
-                                                <a href="#" class="oh-navbar__breadcrumb-link active">{% trans breadcrumb.name %}</a>
-                                            {% endif %}
-                                        </li>
-                                    {% else %}
-                                        <li class="oh-navbar__breadcrumb-item">
-                                            {% if breadcrumb.found %}
-                                                <a href="{{breadcrumb.url}}" class="oh-navbar__breadcrumb-link">{% trans breadcrumb.name %}</a>
-                                            {% else %}
-                                                <a href="#" class="oh-navbar__breadcrumb-link">{% trans breadcrumb.name %}</a>
-                                            {% endif %}
-                                        </li>
-                                    {% endif %}
-                                {% endfor %}
-                            </ul>
+                            {% include "base/navbar_components/breadcrumbs_view.html" %}
                             <!-- End of breadcrumb in nav bar -->
                         {% endif %}
                         </a>
@@ -186,98 +166,17 @@
                         <!-- End of notifications button in nav bar -->
 
                         <!-- Start of Languages dropdown in nav bar -->
-                        <div class="oh-dropdown" id="multiLanguage" x-data="{open: false}" @click="open = !open">
-                            <div class="oh-navbar__action-icons">
-                                <a href="#" class="oh-navbar__action-icons-link" title="Languages">
-                                    <ion-icon name="globe-outline" class="oh-navbar__icon"></ion-icon>
-                                </a>
-                                <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
-                                    @click.outside="open = false" style="display:none; margin-top:95%;">
-                                    <ul class="oh-dropdown__items">
-                                        {% get_available_languages as LANGUAGES %}
-                                        {% for language in LANGUAGES %}
-                                            <li class="oh-dropdown__item">
-                                                <a href="{% url 'set_language' %}" class="oh-dropdown__link"
-                                                    onclick="event.preventDefault(); document.getElementById('language-form-{{ language.0 }}').submit();">
-                                                    <img src="{% static 'images/ui/' %}{{ language.0 }}.png" class="oh-dropdown__lang-icon" />{{ language.1 }}
-                                                    {% if language.0 == LANGUAGE_CODE %}
-                                                        <ion-icon name="checkmark-circle-outline"
-                                                            style="position: relative; top: 3.3px; color: green; font-size: 1.2em;">
-                                                        </ion-icon>
-                                                    {% endif %}
-                                                </a>
-                                                <form id="language-form-{{ language.0 }}" action="{% url 'set_language' %}" method="post" style="display: none;">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="language" value="{{ language.0 }}">
-                                                </form>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        {% include "base/navbar_components/language_settings.html" %}
                         <!-- End of Languages dropdown in nav bar -->
 
                         {% if perms.base.view_company %}
                             <!-- Start of Companies dropdown in nav bar -->
-                            <div id="multCompany" class="oh-dropdown" x-data="{open: false}" @click="open = !open" title="{% trans 'Companies' %}">
-                                <div class="oh-navbar__action-icons">
-                                    <a href="#" class="oh-navbar__action-icons-link">
-                                        <ion-icon name="business"></ion-icon>
-                                    </a>
-                                    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
-                                        @click.outside="open = false" style="display:none; margin-top:115%;">
-                                        <ul class="oh-dropdown__items">
-                                            {% for company in all_companies %}
-                                                <li class="oh-dropdown__item">
-                                                    <a hx-get="{% url 'update-selected-company' %}?company_id={{company.0}}"class="oh-dropdown__link">
-                                                        <img src="{{company.2}}" class="oh-dropdown__lang-icon" style="border-radius: 50%;" />
-                                                        {{company.1}}
-                                                        {% if company.3 %}
-                                                            <ion-icon name="checkmark-circle-outline" style="position: relative; top: 3.3px; color: green; font-size: 1.2em;"></ion-icon>
-                                                        {% endif %}
-                                                        {% if not company_selected and request.user.employee_get.employee_work_info.company_id.id == company.0 %}
-                                                            <ion-icon name="checkmark-circle-outline" style="position: relative; top: 3.3px; color: green; font-size: 1.2em;"></ion-icon>
-                                                        {% endif %}
-                                                    </a>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
+                            {% include "base/navbar_components/company_selection.html" %}
                             <!-- End of Companies dropdown in nav bar -->
                         {% endif %}
 
                         <!-- Start of profile dropdown in nav bar -->
-                        <div class="oh-dropdown" x-data="{open: false}" id="mainNavProfile">
-                            <div class="oh-navbar__user-info" @click="open = !open" @click.outside="open = false">
-                                <div class="oh-navbar__user-photo">
-                                    <img src="{{request.user.employee_get.get_avatar}}" class="oh-navbar__user-image"
-                                        loading="lazy" />
-                                </div>
-                                <span class="oh-navbar__user-name">{{user.employee_get.employee_first_name | title}}</span>
-                            </div>
-                            <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
-                                style="display: none;">
-                                <ul class="oh-dropdown__items">
-                                    {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
-                                        <li class="oh-dropdown__item">
-                                            <a href="/employee/employee-profile" class="oh-dropdown__link">{% trans "My Profile" %}</a>
-                                        </li>
-                                        <li class="oh-dropdown__item">
-                                            <a href="/change-password" class="oh-dropdown__link">{% trans "Change Password" %}</a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
-                                <hr />
-                                <ul class="oh-dropdown__items">
-                                    <li class="oh-dropdown__item">
-                                        <a href="/logout" class="oh-dropdown__link">{% trans "Logout" %}</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        {% include "navbar_component/profile_section.html" %}
                         <!-- End of profile dropdown in nav bar -->
                     </div>
                 </div>
