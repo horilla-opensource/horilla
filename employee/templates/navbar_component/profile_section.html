@@ -1,0 +1,30 @@
+{% load static %}
+{% load i18n %}
+<div class="oh-dropdown" x-data="{open: false}" id="mainNavProfile">
+    <div class="oh-navbar__user-info" @click="open = !open" @click.outside="open = false">
+        <div class="oh-navbar__user-photo">
+            <img src="{{request.user.employee_get.get_avatar}}" class="oh-navbar__user-image"
+                loading="lazy" />
+        </div>
+        <span class="oh-navbar__user-name">{{user.employee_get.employee_first_name | title}}</span>
+    </div>
+    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
+        style="display: none;">
+        <ul class="oh-dropdown__items">
+            {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
+                <li class="oh-dropdown__item">
+                    <a href="/employee/employee-profile" class="oh-dropdown__link">{% trans "My Profile" %}</a>
+                </li>
+                <li class="oh-dropdown__item">
+                    <a href="/change-password" class="oh-dropdown__link">{% trans "Change Password" %}</a>
+                </li>
+            {% endif %}
+        </ul>
+        <hr />
+        <ul class="oh-dropdown__items">
+            <li class="oh-dropdown__item">
+                <a href="/logout" class="oh-dropdown__link">{% trans "Logout" %}</a>
+            </li>
+        </ul>
+    </div>
+</div>
