@@ -56,6 +56,16 @@ urlpatterns = [
         views.DisciplinaryActionAPIView.as_view(),
         name="disciplinary-action-detail",
     ),
+    path(
+        "disciplinary-action-type/",
+        views.ActiontypeView.as_view(),
+        name="disciplinary-action-type",
+    ),
+    path(
+        "disciplinary-action-type/<int:pk>/",
+        views.ActiontypeView.as_view(),
+        name="disciplinary-action-type",
+    ),
     path("policies/", views.PolicyAPIView.as_view(), name="policy-list"),
     path("policies/<int:pk>/", views.PolicyAPIView.as_view(), name="policy-detail"),
     path(

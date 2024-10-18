@@ -44,7 +44,6 @@ from ...api_decorators.base.decorators import (
 )
 from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
 from ...api_serializers.base.serializers import (
-    ActiontypeSerializer,
     CompanySerializer,
     DepartmentSerializer,
     EmployeeShiftScheduleSerializer,
@@ -1203,48 +1202,6 @@ class RotatingShiftAssignBulkDelete(APIView):
             return Response({"error": str(E)}, status=400)
 
 
-class ActiontypeView(APIView):
-    serializer_class = ActiontypeSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, pk=None):
-        if pk:
-            action_type = object_check(Actiontype, pk)
-            if action_type is None:
-                return Response({"error": "Actiontype not found"}, status=404)
-            serializer = self.serializer_class(action_type)
-            return Response(serializer.data, status=200)
-        action_types = Actiontype.objects.all()
-        paginater = PageNumberPagination()
-        page = paginater.paginate_queryset(action_types, request)
-        serializer = self.serializer_class(page, many=True)
-        return paginater.get_paginated_response(serializer.data)
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
-
-    def put(self, request, pk):
-        action_type = object_check(Actiontype, pk)
-        if action_type is None:
-            return Response({"error": "Actiontype not found"}, status=404)
-        serializer = self.serializer_class(action_type, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=200)
-        return Response(serializer.errors, status=400)
-
-    def delete(self, request, pk):
-        action_type = object_check(Actiontype, pk)
-        if action_type is None:
-            return Response({"error": "Actiontype not found"}, status=404)
-        response, status_code = object_delete(Actiontype, pk)
-        return Response(response, status=status_code)
-
-
 class RotatingWorKTypePermissionCheck(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -1275,7 +1232,7 @@ class WorktypeRequestApprovePermissionCheck(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        instance = request.user.employee_get
+        instance = Employee.objects.filter(id=request.GET.get("employee_id")).first()
         if (
             _is_reportingmanger(request, instance)
             or request.user.has_perm("approve_shiftrequest")
@@ -1289,7 +1246,7 @@ class ShiftRequestApprovePermissionCheck(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        instance = request.user.employee_get
+        instance = Employee.objects.filter(id=request.GET.get("employee_id")).first()
         if (
             _is_reportingmanger(request, instance)
             or request.user.has_perm("approve_shiftrequest")
@@ -1307,10 +1264,20 @@ class EmployeeTabPermissionCheck(APIView):
         instance = Employee.objects.filter(id=request.GET.get("employee_id")).first()
         if _is_reportingmanger(request, instance) or request.user.has_perms(
             [
-                "attendance.view_worktyperequest",
+                "view.view_worktyperequest",
                 "attendance.view_shiftrequest",
                 "employee.change_employee",
             ]
         ):
             return Response(status=200)
         return Response({"message": "No permission"}, status=400)
+
+
+class CheckUserLevel(APIView):
+    def get(self, request):
+        perm = request.GET.get("perm")
+        instance = Employee.objects.filter(id=request.GET.get("employee_id")).first()
+        if _is_reportingmanger(request, instance) or request.user.has_perm(perm):
+
+            return Response(status=200)
+        return Response({"error": "No permission"}, status=400)

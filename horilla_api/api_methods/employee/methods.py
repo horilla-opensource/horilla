@@ -1,12 +1,7 @@
 import re
 
-from django.http import QueryDict
-from responses import logger
-from rest_framework.pagination import PageNumberPagination
-
 from base.models import *
 from employee.models import *
-from employee.models import Employee
 
 
 def get_next_badge_id():
@@ -54,6 +49,5 @@ def get_next_badge_id():
                 prefix.insert(0, str(item))
             prefix = "".join(prefix)
     except Exception as e:
-        logger.exception(e)
         prefix = get_initial_prefix(None)["get_initial_prefix"]
     return prefix

@@ -1,11 +1,7 @@
 import datetime
-from datetime import date, timezone
 
-import django
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.http import QueryDict
 from rest_framework import serializers
-from rest_framework.serializers import ValidationError
 
 from base.models import (
     Company,
@@ -23,7 +19,6 @@ from base.models import (
     WorkType,
     WorkTypeRequest,
 )
-from employee.models import Actiontype, Employee
 from horilla import horilla_middlewares
 
 
@@ -446,9 +441,3 @@ class ShiftRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShiftRequest
         fields = "__all__"
-
-
-class ActiontypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Actiontype
-        fields = ["id", "title", "action_type"]

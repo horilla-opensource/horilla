@@ -224,16 +224,6 @@ urlpatterns = [
         name="rotating-shift-assigns-bulk-delete",
     ),
     path(
-        "disciplinary-action-type/",
-        views.ActiontypeView.as_view(),
-        name="disciplinary-action-type",
-    ),
-    path(
-        "disciplinary-action-type/<int:pk>/",
-        views.ActiontypeView.as_view(),
-        name="disciplinary-action-type",
-    ),
-    path(
         "rotating-worktype-create-permission-check/<int:id>",
         views.RotatingWorKTypePermissionCheck.as_view(),
         name="rotating-worktype-create-permission-check",
@@ -258,4 +248,5 @@ urlpatterns = [
         views.EmployeeTabPermissionCheck.as_view(),
         name="rotating-shift-create-permission-check",
     ),
+    path("check-user-level", views.CheckUserLevel.as_view(), name="check-user-level"),
 ]
