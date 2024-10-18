@@ -6,23 +6,33 @@ urlpatterns = [
     re_path(
         r"^asset-categories/(?P<pk>\d+)?$",
         AssetCategoryAPIView.as_view(),
-        name="asset-category-detail",
+        name="api-asset-category-detail",
     ),
     re_path(
-        r"^asset-lots/(?P<pk>\d+)?$", AssetLotAPIView.as_view(), name="asset-lot-detail"
+        r"^asset-lots/(?P<pk>\d+)?$",
+        AssetLotAPIView.as_view(),
+        name="api-asset-lot-detail",
     ),
-    re_path(r"^assets/(?P<pk>\d+)?$", AssetAPIView.as_view(), name="asset-detail"),
+    re_path(r"^assets/(?P<pk>\d+)?$", AssetAPIView.as_view(), name="api-asset-detail"),
     re_path(
         r"^asset-allocations/(?P<pk>\d+)?$",
         AssetAllocationAPIView.as_view(),
-        name="asset-allocation-detail",
+        name="api-asset-allocation-detail",
     ),
     re_path(
         r"^asset-requests/(?P<pk>\d+)?$",
         AssetRequestAPIView.as_view(),
-        name="asset-request-detail",
+        name="api-asset-request-detail",
     ),
-    path("asset-return/<int:pk>", AssetReturnAPIView.as_view(), name="asset-return"),
-    path("asset-reject/<int:pk>", AssetRejectAPIView.as_view(), name="asset-reject"),
-    path("asset-approve/<int:pk>", AssetApproveAPIView.as_view(), name="asset-approve"),
+    path(
+        "asset-return/<int:pk>", AssetReturnAPIView.as_view(), name="api-asset-return"
+    ),
+    path(
+        "asset-reject/<int:pk>", AssetRejectAPIView.as_view(), name="api-asset-reject"
+    ),
+    path(
+        "asset-approve/<int:pk>",
+        AssetApproveAPIView.as_view(),
+        name="api-asset-approve",
+    ),
 ]
