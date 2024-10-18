@@ -1,0 +1,23 @@
+{% load static %}
+{% load i18n %}
+<ul class="oh-navbar__breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+        {% if forloop.last %}
+            <li class="oh-navbar__breadcrumb-item">
+                {% if breadcrumb.found %}
+                    <a href="{{breadcrumb.url}}" class="oh-navbar__breadcrumb-link active">{% trans breadcrumb.name %}</a>
+                {% else %}
+                    <a href="#" class="oh-navbar__breadcrumb-link active">{% trans breadcrumb.name %}</a>
+                {% endif %}
+            </li>
+        {% else %}
+            <li class="oh-navbar__breadcrumb-item">
+                {% if breadcrumb.found %}
+                    <a href="{{breadcrumb.url}}" class="oh-navbar__breadcrumb-link">{% trans breadcrumb.name %}</a>
+                {% else %}
+                    <a href="#" class="oh-navbar__breadcrumb-link">{% trans breadcrumb.name %}</a>
+                {% endif %}
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>

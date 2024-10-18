@@ -1,0 +1,28 @@
+{% load static %}
+{% load i18n %}
+<div id="multCompany" class="oh-dropdown" x-data="{open: false}" @click="open = !open" title="{% trans 'Companies' %}">
+    <div class="oh-navbar__action-icons">
+        <a href="#" class="oh-navbar__action-icons-link">
+            <ion-icon name="business"></ion-icon>
+        </a>
+        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
+            @click.outside="open = false" style="display:none; margin-top:115%;">
+            <ul class="oh-dropdown__items">
+                {% for company in all_companies %}
+                    <li class="oh-dropdown__item">
+                        <a hx-get="{% url 'update-selected-company' %}?company_id={{company.0}}"class="oh-dropdown__link">
+                            <img src="{{company.2}}" class="oh-dropdown__lang-icon" style="border-radius: 50%;" />
+                            {{company.1}}
+                            {% if company.3 %}
+                                <ion-icon name="checkmark-circle-outline" style="position: relative; top: 3.3px; color: green; font-size: 1.2em;"></ion-icon>
+                            {% endif %}
+                            {% if not company_selected and request.user.employee_get.employee_work_info.company_id.id == company.0 %}
+                                <ion-icon name="checkmark-circle-outline" style="position: relative; top: 3.3px; color: green; font-size: 1.2em;"></ion-icon>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
