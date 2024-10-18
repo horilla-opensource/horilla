@@ -21,7 +21,7 @@
           <div class="d-flex justify-content-between">
             <div class="loan-type">{{ record.get_type_display }}</div>
             <div>
-              <a class="mr-2" hx-get="{% url 'create-loan' %}?instance_id={{ record.id }}" hx-target="#loanModalBody" data-toggle="oh-modal-toggle" data-target="#loanModal"><ion-icon class="text-dark" name="create-outline"></ion-icon></a>
+              <a class="mr-2" hx-get="{% url 'create-loan' %}?instance_id={{ record.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"><ion-icon class="text-dark" name="create-outline"></ion-icon></a>
               <a href="{% url 'delete-loan' %}?ids={{ record.id }}" onclick="return confirm('Do you want to delete this record?')"><ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
             </div>
           </div>
@@ -42,7 +42,7 @@
             <div class="oh-progress-bar__state" role="progressbar" aria-valuemax="100" style="width:{{ record.installment_ratio }}%"></div>
           </div>
           <p class="oh-faq-card__desc">{{ record.description }}.</p>
-          <a hx-get="{% url 'view-installments' %}?loan_id={{ record.id }}" hx-target="#viewInstallmentModalBody" data-target="#viewInstallmentModal" data-toggle="oh-modal-toggle" class="oh-btn oh-btn--secondary oh-btn--block">{% trans 'Installments' %}</a>
+          <a hx-get="{% url 'view-installments' %}?loan_id={{ record.id }}" hx-target="#objectDetailsModalTarget" data-target="#objectDetailsModal" data-toggle="oh-modal-toggle" class="oh-btn oh-btn--secondary oh-btn--block">{% trans 'Installments' %}</a>
         </div>
       {% endfor %}
   </div>

@@ -1,7 +1,11 @@
 {% load i18n %}{% load widget_tweaks %}
-<form
-  hx-post="{% url 'add-payslip-deduction' %}?employee_id={{employee_id}}&payslip_id={{payslip_id}}"
-  hx-target="#addDeductionFormModal"
->
-  {{form.as_p}}
-</form>
+<div class="oh-modal__dialog-header">
+    <button type="button" class="oh-modal__close" aria-label="Close"
+        style="margin-top: 34px;margin-right: 34px;"><ion-icon name="close-outline"></ion-icon></button>
+</div>
+<div class="oh-modal__dialog-body" id="addDeductionFormModal">
+    <form hx-post="{% url 'add-payslip-deduction' %}?employee_id={{employee_id}}&payslip_id={{payslip_id}}"
+        hx-target="#addDeductionFormModal">
+        {{form.as_p}}
+    </form>
+</div>

@@ -74,9 +74,9 @@
                 <div class="oh-main__titlebar-button-container">
                     <a
                         hx-get="{% url 'create-loan' %}"
-                        hx-target="#loanModalBody"
+                        hx-target="#objectCreateModalTarget"
                         data-toggle="oh-modal-toggle"
-                        data-target="#loanModal"
+                        data-target="#objectCreateModal"
                         class="oh-btn oh-btn--secondary"
                     >
                         <ion-icon name="add-outline"></ion-icon>
@@ -91,7 +91,7 @@
 
 <script>
     $(document).ready(function () {
-        $("#loanModalBody").on("htmx:afterSwap", function () {
+        $("#objectCreateModalTarget").on("htmx:afterSwap", function () {
             $("[name='installment_amount']").on("change", function () {
                 var loanAmount = $("[name='loan_amount']").val();
                 var installmentAmount = $(this).val();

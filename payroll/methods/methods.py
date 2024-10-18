@@ -40,7 +40,6 @@ def get_total_days(start_date, end_date):
         start_date = date(2023, 1, 1)
         end_date = date(2023, 1, 10)
         days_on_period = get_total_days(start_date, end_date)
-        print(days_on_period)  # Output: 10
     """
     delta = end_date - start_date
     total_days = delta.days + 1  # Add 1 to include the end date itself

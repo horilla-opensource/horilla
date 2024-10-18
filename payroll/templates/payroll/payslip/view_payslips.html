@@ -9,49 +9,6 @@
   }
 </style>
 <div id="messages"></div>
-<div
-  class="oh-modal"
-  id="individualPayslipModal"
-  role="dialog"
-  aria-labelledby="individualPayslipModal"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header pb-0">
-      <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
-        {% trans "Create Payslip" %}
-      </h1>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div class="oh-modal__dialog-body" id="individualPayslipModal">
-      {% include "payroll/payslip/create_payslip.html" %}
-    </div>
-  </div>
-</div>
-
-<div
-  class="oh-modal"
-  id="bulkPayslipModal"
-  role="dialog"
-  aria-labelledby="bulkPayslipModal"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header pb-0">
-      <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
-        {% trans "Bulk Payslip" %}
-      </h1>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div class="oh-modal__dialog-body" id="bulkPayslipModal">
-      {% include "payroll/payslip/bulk_create_payslip.html" %}
-    </div>
-  </div>
-</div>
 
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
   <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -187,7 +144,9 @@
                   <a
                     class="oh-dropdown__link"
                     data-toggle="oh-modal-toggle"
-                    data-target="#bulkPayslipModal"
+                    data-target="#objectCreateModal"
+                    hx-get="{% url 'generate-payslip' %}"
+                    hx-target="#objectCreateModalTarget"
                     >{% trans "Generate" %}</a
                   >
                 </li>
@@ -264,7 +223,9 @@
           <a
             class="oh-btn oh-btn--secondary oh-btn--shadow"
             data-toggle="oh-modal-toggle"
-            data-target="#individualPayslipModal"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'create-payslip' %}"
+            hx-target="#objectCreateModalTarget"
           >
             <ion-icon
               class="md hydrated"

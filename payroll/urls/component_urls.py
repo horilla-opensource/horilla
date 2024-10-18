@@ -64,6 +64,11 @@ urlpatterns = [
         name="delete-deduction",
     ),
     path("create-payslip", component_views.create_payslip, name="create-payslip"),
+    path(
+        "check-contract-start-date",
+        component_views.check_contract_start_date,
+        name="check-contract-start-date",
+    ),
     path("generate-payslip", component_views.generate_payslip, name="generate-payslip"),
     path(
         "validate-start-date",

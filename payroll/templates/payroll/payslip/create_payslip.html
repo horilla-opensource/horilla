@@ -1,49 +1,52 @@
-{% load i18n %}
-<form
-  action="{% url 'create-payslip' %}"
-  class="oh-profile-section pt-1"
-  method="post"
->
-  {% csrf_token %}
-  <div class="row">
-    <div class="col-12">
-      <div class="oh-input__group">
-        <label
-          class="oh-input__label"
-          for="{{individual_form.employee_id.id_for_label}}"
-          >{% trans "Employee" %}</label
-        >
-        {{individual_form.employee_id}} {{individual_form.employee_id.errors}}
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-      <div class="oh-input__group">
-        <label
-          class="oh-input__label"
-          for="{{individual_form.start_date.id_for_label}}"
-          >{% trans "Start Date" %}</label
-        >
-        {{individual_form.start_date}} {{individual_form.start_date.errors}}
-      </div>
-    </div>
-    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-      <div class="oh-input__group">
-        <label
-          class="oh-input__label"
-          for="{{individual_form.end_date.id_for_label}}"
-          >{% trans "End Date" %}</label
-        >
-        {{individual_form.end_date}} {{individual_form.end_date.errors }}
-      </div>
-    </div>
-  </div>
-  <div class="oh-modal__dialog-footer p-0 pt-4">
-    <input
-      type="submit"
-      value="Save"
-      class="oh-btn oh-btn--secondary oh-btn--shadow"
-    />
-  </div>
-</form>
+{% load i18n %} {% load static %}
+<div class="oh-modal__dialog-header pb-0">
+    <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Create Payslip" %}
+    </h1>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body" id="individualPayslipModal">
+    <form hx-post="{% url 'create-payslip' %}" hx-target="#objectCreateModalTarget" class="oh-profile-section pt-1"
+        id="payslipCreateForm">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-12">
+                <div class="oh-input__group">
+                    <label class="oh-input__label" for="{{individual_form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
+                    {{individual_form.employee_id}} {{individual_form.employee_id.errors}}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div id="contractStartDateDiv" class="mt-2"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input__group">
+                    <label class="oh-input__label" for="{{individual_form.start_date.id_for_label}}">{% trans "Start Date" %}</label>
+                    {{individual_form.start_date}} {{individual_form.start_date.errors}}
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input__group">
+                    <label class="oh-input__label" for="{{individual_form.end_date.id_for_label}}">{% trans "End Date" %}</label>
+                    {{individual_form.end_date}} {{individual_form.end_date.errors }}
+                </div>
+            </div>
+        </div>
+        <div class="oh-modal__dialog-footer p-0 pt-4">
+            <input type="submit" value="Save" class="oh-btn oh-btn--secondary oh-btn--shadow" />
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        $("select").on("select2:select", function (e) {
+            $(this).closest("select")[0].dispatchEvent(new Event("change"));
+        });
+    });
+</script>

@@ -133,9 +133,9 @@ class ContractForm(ModelForm):
             dynamic_url = self.get_dynamic_hx_post_url(self.instance)
             self.fields["contract_status"].widget.attrs.update(
                 {
-                    "hx-target": "#contractFormTarget",
+                    "hx-target": "this",
                     "hx-post": dynamic_url,
-                    "hx-swap": "outerHTML",
+                    "hx-swap": "beforebegin",
                 }
             )
         first = PayrollGeneralSetting.objects.first()

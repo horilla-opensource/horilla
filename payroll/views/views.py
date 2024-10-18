@@ -181,7 +181,7 @@ def contract_status_update(request, contract_id):
             for errors in contract_form.errors.values():
                 for error in errors:
                     messages.error(request, error)
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HttpResponse("<script>$('#reloadMessagesButton').click()</script>")
 
 
 @login_required

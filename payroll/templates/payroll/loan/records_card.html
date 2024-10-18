@@ -24,7 +24,7 @@
                                 <div class="loan-type">{{ record.get_type_display }}</div>
                                 <div>
                                     {% if perms.payroll.change_loanaccount or request.user %}
-                                        <a class="mr-2" hx-get="{% url 'create-loan' %}?instance_id={{ record.id }}" hx-target="#loanModalBody" data-toggle="oh-modal-toggle" data-target="#loanModal" title='{% trans "Edit" %}'><ion-icon class="text-dark" name="create-outline"></ion-icon></a>
+                                        <a class="mr-2" hx-get="{% url 'create-loan' %}?instance_id={{ record.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" title='{% trans "Edit" %}'><ion-icon class="text-dark" name="create-outline"></ion-icon></a>
                                     {% endif %}
                                     {% if perms.payroll.delete_loanaccount %}
                                         <a href="{% url 'delete-loan' %}?ids={{ record.id }}" onclick="return confirm('Do you want to delete this record?')" title='{% trans "Delete" %}'><ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
@@ -109,7 +109,7 @@
                             <div class="d-flex justify-content-between">
                                 <div class="loan-type">{{ record.get_type_display }}</div>
                                 <div>
-                                <a class="mr-2" hx-get="{% url 'create-loan' %}?instance_id={{ record.id }}" hx-target="#loanModalBody" data-toggle="oh-modal-toggle" data-target="#loanModal" title='{% trans "Edit" %}'><ion-icon class="text-dark" name="create-outline"></ion-icon></a>
+                                <a class="mr-2" hx-get="{% url 'create-loan' %}?instance_id={{ record.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" title='{% trans "Edit" %}'><ion-icon class="text-dark" name="create-outline"></ion-icon></a>
                                 <a href="{% url 'delete-loan' %}?ids={{ record.id }}" onclick="return confirm('Do you want to delete this record?')" title='{% trans "Delete" %}'><ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
                                 </div>
                             </div>
@@ -192,7 +192,7 @@
                                 <div class="loan-type">{{ record.get_type_display }}</div>
                                 <div>
                                 {% if perms.payroll.change_loanaccount or request.user %}
-                                    <a class="mr-2" hx-get="{% url 'create-loan' %}?instance_id={{ record.id }}" hx-target="#loanModalBody" data-toggle="oh-modal-toggle" data-target="#loanModal" title='{% trans "Edit" %}'><ion-icon class="text-dark" name="create-outline"></ion-icon></a>
+                                    <a class="mr-2" hx-get="{% url 'create-loan' %}?instance_id={{ record.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" title='{% trans "Edit" %}'><ion-icon class="text-dark" name="create-outline"></ion-icon></a>
                                 {% endif %}
                                 {% if perms.payroll.delete_loanaccount %}
                                     <a href="{% url 'delete-loan' %}?ids={{ record.id }}" onclick="return confirm('Do you want to delete this record?')" title='{% trans "Delete" %}'><ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
@@ -268,55 +268,6 @@
                     <!-- end of empty page -->
                 {% endif %}
             </div>
-        </div>
-    </div>
-
-    <!-- start of comment modal -->
-    <div
-        class="oh-modal"
-        id="shiftcommentModal"
-        role="dialog"
-        aria-labelledby="emptagModal"
-        aria-hidden="true"
-    >
-        <div class="oh-modal__dialog">
-            <div class="oh-modal__dialog-header">
-                <h2 class="oh-modal__dialog-title" id="createModalTitle">
-                    {% trans "Add Comment" %}
-                </h2>
-                <button class="oh-modal__close" aria-label="Close">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
-            </div>
-            <div
-                class="oh-modal__dialog-body"
-                id="shiftRequestCommentForm"
-            ></div>
-        </div>
-    </div>
-    <!-- end of comment modal -->
-
-    <div
-        class="oh-modal"
-        style="z-index: 60"
-        id="shiftRequestDetailModal"
-        role="dialog"
-        aria-labelledby="shiftRequestDetailModal"
-        aria-hidden="true"
-    >
-        <div class="oh-modal__dialog">
-            <div class="oh-modal__dialog-header">
-                <h2 class="oh-modal__dialog-title" id="">
-                    {% trans "Details" %}
-                </h2>
-                <button class="oh-modal__close" aria-label="Close">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
-            </div>
-            <div
-                class="oh-modal__dialog-body oh-modal__dialog-relative"
-                id="shiftRequestDetailTarget"
-            ></div>
         </div>
     </div>
 

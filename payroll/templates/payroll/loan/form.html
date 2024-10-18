@@ -1,3 +1,8 @@
-<form hx-post="{% url "create-loan" %}?instance_id={{instance_id}}" hx-target="#loanModalBody">
-    {{form.as_p}}
-</form>
+<div class="oh-modal__dialog-header">
+    <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+</div>
+<div class="oh-modal__dialog-body" id="loanModalBody">
+    <form hx-post="{% url 'create-loan' %}?instance_id={{instance_id}}" hx-target="#objectCreateModalTarget">
+        {{form.as_p}}
+    </form>
+</div>

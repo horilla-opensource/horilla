@@ -11,7 +11,7 @@
 <div class="oh-modal__dialog-body">
   <form
     hx-post="{% url 'add-bonus' %}?employee_id={{employee_id}}&payslip_id={{payslip_id}}"
-    hx-target="#addBonusModalBody"
+    hx-target="#objectCreateModalTarget"
     class="oh-profile-section"
   >
     {{ form.as_p }}

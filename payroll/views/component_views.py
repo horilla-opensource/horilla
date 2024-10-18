@@ -19,6 +19,7 @@ from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, Side
@@ -706,6 +707,16 @@ def generate_payslip(request):
     Requires the user to be logged in and have the 'payroll.add_payslip' permission.
 
     """
+    if (
+        request.META.get("HTTP_HX_REQUEST")
+        and request.META.get("HTTP_HX_TARGET") == "objectCreateModalTarget"
+    ):
+        bulk_form = forms.GeneratePayslipForm()
+        return render(
+            request,
+            "payroll/payslip/bulk_create_payslip.html",
+            {"bulk_form": bulk_form},
+        )
     payslips = []
     json_data = []
     form = forms.GeneratePayslipForm()
@@ -765,6 +776,45 @@ def generate_payslip(request):
 
 
 @login_required
+@hx_request_required
+def check_contract_start_date(request):
+    """
+    Check if the employee's contract start date is after the provided payslip start date.
+    """
+    employee_id = request.GET.get("employee_id")
+    start_date = request.GET.get("start_date")
+
+    contract = payroll.models.models.Contract.objects.filter(
+        employee_id=employee_id, contract_status="active"
+    ).first()
+
+    if not contract or start_date >= str(contract.contract_start_date):
+        return HttpResponse("")
+
+    title_message = _(
+        "When this payslip is run, the payslip start date will be updated to match the employee contract start date."
+    )
+    text_content = _("Employee Contract Start Date")
+
+    return HttpResponse(
+        format_html(
+            """
+        <div id='messageDiv' style='background-color: hsl(48, 100%, 94%);
+            border: 1px solid hsl(46, 97%, 88%);
+            border-radius: 18px; padding:5px; font-weight: bold; display: flex;'>
+            {text_content}: {contract_start_date}
+            <img style='width: 20px; height: 20px; cursor: pointer;'
+                src='/static/images/ui/info.png' class='ml-2' title='{title_message}'>
+        </div>
+        """,
+            text_content=text_content,
+            contract_start_date=contract.contract_start_date,
+            title_message=title_message,
+        )
+    )
+
+
+@login_required
 @permission_required("payroll.add_payslip")
 def create_payslip(request, new_post_data=None):
     """
@@ -780,8 +830,26 @@ def create_payslip(request, new_post_data=None):
     """
     if new_post_data:
         request.POST = new_post_data
+
     form = forms.PayslipForm()
+
     if request.method == "POST":
+        employee_id = request.POST.get("employee_id")
+        start_date = (
+            datetime.strptime(request.POST.get("start_date"), "%Y-%m-%d").date()
+            if isinstance(request.POST.get("start_date"), str)
+            else request.POST.get("start_date")
+        )
+
+        if employee_id and start_date:
+            contract = payroll.models.models.Contract.objects.filter(
+                employee_id=employee_id, contract_status="active"
+            ).first()
+
+            if contract and start_date < contract.contract_start_date:
+                new_post_data = request.POST.copy()
+                new_post_data["start_date"] = contract.contract_start_date
+                request.POST = new_post_data
         form = forms.PayslipForm(request.POST)
         if form.is_valid():
             employee = form.cleaned_data["employee_id"]
@@ -795,11 +863,6 @@ def create_payslip(request, new_post_data=None):
                 employee = form.cleaned_data["employee_id"]
                 start_date = form.cleaned_data["start_date"]
                 end_date = form.cleaned_data["end_date"]
-                contract = payroll.models.models.Contract.objects.filter(
-                    employee_id=employee, contract_status="active"
-                ).first()
-                if start_date < contract.contract_start_date:
-                    start_date = contract.contract_start_date
                 payslip_data = payroll_calculation(employee, start_date, end_date)
                 payslip_data["payslip"] = payslip
                 data = {}
@@ -836,12 +899,14 @@ def create_payslip(request, new_post_data=None):
                     ),
                     icon="close",
                 )
-                return render(
-                    request,
-                    "payroll/payslip/individual_payslip.html",
-                    payslip_data,
+                return HttpResponse(
+                    f'<script>window.location.href = "/payroll/view-payslip/{payslip_data["instance"].id}/"</script>'
                 )
-    return render(request, "payroll/common/form.html", {"form": form})
+    return render(
+        request,
+        "payroll/payslip/create_payslip.html",
+        {"individual_form": form},
+    )
 
 
 @login_required
@@ -919,7 +984,6 @@ def view_payslip(request):
     export_column = forms.PayslipExportColumnForm()
     filter_form = PayslipFilter(request.GET, payslips)
     payslips = filter_form.qs
-    individual_form = forms.PayslipForm()
     bulk_form = forms.GeneratePayslipForm()
     field = request.GET.get("group_by")
     if field in Payslip.__dict__.keys():
@@ -936,7 +1000,6 @@ def view_payslip(request):
             "f": filter_form,
             "export_column": export_column,
             "export_filter": PayslipFilter(request.GET),
-            "individual_form": individual_form,
             "bulk_form": bulk_form,
             "filter_dict": data_dict,
             "gp_fields": PayslipReGroup.fields,
@@ -1260,8 +1323,6 @@ def view_loans(request):
     loan = records.filter(type="loan")
     adv_salary = records.filter(type="advanced_salary")
     fine = records.filter(type="fine")
-    print("______________________________________________----------------------------")
-    print(records)
 
     fine_ids = json.dumps(list(fine.values_list("id", flat=True)))
     loan_ids = json.dumps(list(loan.values_list("id", flat=True)))
