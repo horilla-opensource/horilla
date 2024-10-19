@@ -303,6 +303,7 @@ class EmployeeObjectiveCreateForm(BaseForm):
     key_result_id = forms.ModelMultipleChoiceField(
         queryset=KeyResult.objects.all().exclude(archive=True),
         label=_("Key result"),
+        required=False,
         widget=forms.SelectMultiple(
             attrs={
                 "class": "oh-select oh-select-2 select2-hidden-accessible",
@@ -327,16 +328,11 @@ class EmployeeObjectiveCreateForm(BaseForm):
             "objective_id",
             "key_result_id",
             "start_date",
-            "end_date",
             "status",
             "archive",
         ]
-        exclude = ["is_active"]
         widgets = {
             "start_date": forms.DateInput(
-                attrs={"class": "oh-input w-100", "type": "date"}
-            ),
-            "end_date": forms.DateInput(
                 attrs={"class": "oh-input w-100", "type": "date"}
             ),
         }
@@ -403,12 +399,16 @@ class EmployeeKeyResultForm(BaseForm):
             "target_value",
             "start_date",
             "end_date",
-            # 'archive',
         ]
         widgets = {
             "employee_objective_id": forms.HiddenInput(),
             "start_date": forms.DateInput(
-                attrs={"class": "oh-input w-100", "type": "date"}
+                attrs={
+                    "class": "oh-input w-100",
+                    "type": "date",
+                    "required": True,
+                    "onchange": "startDateChange()",
+                }
             ),
             "end_date": forms.DateInput(
                 attrs={"class": "oh-input w-100", "type": "date"}
@@ -425,23 +425,26 @@ class EmployeeKeyResultForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
         if self.initial.get("employee_objective_id"):
-            if type(self.initial.get("employee_objective_id")) == int:
+            if (
+                type(self.initial.get("employee_objective_id")) == int
+                or type(self.initial.get("employee_objective_id")) == str
+            ):
                 self.verbose_name = EmployeeObjective.objects.get(
-                    id=(self.initial.get("employee_objective_id"))
+                    id=int(self.initial.get("employee_objective_id"))
                 ).employee_id
             else:
                 self.verbose_name = self.initial.get(
                     "employee_objective_id"
                 ).employee_id
-
-        reload_queryset(self.fields)
-        self.fields["key_result_id"].choices = list(
-            self.fields["key_result_id"].choices
-        )
-        self.fields["key_result_id"].choices.append(
-            ("create_new_key_result", "Create new Key result")
-        )
+        if request.user.has_perm("pms.add_keyresult") or is_reportingmanager(request):
+            self.fields["key_result_id"].choices = list(
+                self.fields["key_result_id"].choices
+            )
+            self.fields["key_result_id"].choices.append(
+                ("create_new_key_result", "Create new Key result")
+            )
 
 
 from base.forms import ModelForm as MF

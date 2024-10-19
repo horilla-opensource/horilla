@@ -322,7 +322,7 @@ urlpatterns = [
         name="delete-employee-objective",
     ),
     path(
-        "change-employee-objective-status/<int:emp_obj>",
+        "change-employee-objective-status",
         views.change_employee_objective_status,
         name="change-employee-objective-status",
     ),
@@ -351,6 +351,7 @@ urlpatterns = [
         views.key_result_current_value_update,
         name="key-result-current-value-update",
     ),
+    path("get-keyresult-data", views.get_keyresult_data, name="get-keyresult-data"),
     path(
         "view-meetings",
         views.view_meetings,

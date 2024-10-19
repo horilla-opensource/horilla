@@ -33,7 +33,7 @@
                                                 {{emp_objective}}
                                         </div>
                                         {% if emp_objective.employee_key_result.first %}
-                                        <div class="oh-progress-container progress_barmm"  style="width:50%">
+                                        <div class="oh-progress-container progress_bar_objective"  style="width:50%">
                                             <div class="oh-progress" role="progressbar">
                                                     <div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc( {{ emp_objective.progress_percentage }}%)"></div>
                                             </div>
@@ -51,7 +51,7 @@
                                                         hx-target="#objectDetailsModalTarget"
                                                         data-toggle="oh-modal-toggle"
                                                         data-target="#objectDetailsModal"
-                                                        type="button" title="{% trans 'View' %}"
+                                                        type="button" title="{% trans 'Viewxxxxxxxxxxxx' %}"
                                                         class="oh-btn oh-btn--light-bkg p-3 w-100"  onclick="event.stopPropagation()"
                                                     >
                                                         <ion-icon name="eye-outline"></ion-icon>
@@ -72,9 +72,9 @@
                                                     <button  style="border-right:1px solid hsl(8, 77%, 56%)"
                                                         class="oh-btn oh-btn--secondary-outline float-end"
                                                         hx-get='{% url "employee-key-result-creation" emp_objective.id %}'
-                                                        hx-target="#objectDetailsModalTarget"
+                                                        hx-target="#objectCreateModalTarget"
                                                         data-toggle="oh-modal-toggle"
-                                                        data-target="#objectDetailsModal"
+                                                        data-target="#objectCreateModal"
                                                         title="Add Key Result"
                                                         onclick="event.stopPropagation()"
                                                     >
@@ -223,7 +223,7 @@
                 if (totalProgress > 100) {
                     totalProgress = 100;
                 }
-                objectiveProgressContainer = $(element).closest('.oh-accordion-meta__item').find('.progress_barmm');
+                objectiveProgressContainer = $(element).closest('.oh-accordion-meta__item').find('.progress_bar_objective');
                 objectiveProgressContainer.html(
                     '<div class="oh-progress" role="progressbar">'+
                     '<div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc('+ totalProgress + '%)"></div>' +

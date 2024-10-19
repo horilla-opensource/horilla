@@ -27,7 +27,7 @@
       type="button"
       id="keyResultCloseButton"
       class="oh-modal__close--custom"
-      onclick="removeCreateKR();$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show');"
+      onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show');"
       {% if messages %}
         hx-get="{{redirect_url}}"
         hx-target="#objectCreateModalTarget"

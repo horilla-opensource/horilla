@@ -63,10 +63,10 @@
     </a>
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title me-3">{% trans "Status" %}</span>
-                {% if perms.pms.change_employeeobjective or instance|is_manager:request.user %}
+                {% if perms.pms.change_employeeobjective or instance|is_manager_or_owner:request.user %}
 
                     <select name="status" id="{{instance.id}}" class="oh-table__editable-input p-3"
-                    hx-trigger="change" hx-post="{% url 'change-employee-objective-status' instance.id %}" hx-target="#objectDetailsModalTarget"
+                    onchange="changeObjectiveStatus(this)" data-empObj = {{instance.id}}
                     >
                         {% for status in objective_key_result_status %}
                         <option value="{{status.0}}"  {% if status.0 == instance.status %} selected {% endif %}>

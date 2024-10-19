@@ -20,7 +20,7 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success">
                             <div class="oh-card-dashboard__header">
-                                <span class="oh-card-dashboard__title">{% trans "Total Objectives" %}</span>
+                                <span class="oh-card-dashboard__title">{% trans "Total employee objectives" %}</span>
                             </div>
                             <div class="oh-card-dashboard__body">
                                 <a href="{% url 'objective-list-view' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
@@ -32,7 +32,7 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="oh-card-dashboard oh-card-dashboard--neutral">
                             <div class="oh-card-dashboard__header">
-                                <span class="oh-card-dashboard__title">{% trans "Total Key Results" %}</span>
+                                <span class="oh-card-dashboard__title">{% trans "Total key results" %}</span>
                             </div>
                             <div class="oh-card-dashboard__body">
                                 <a href="{% url 'view-key-result' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
@@ -44,7 +44,7 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="oh-card-dashboard oh-card-dashboard--danger">
                             <div href="{% url 'objective-list-view' %}" style="text-decoration: none;" class="oh-card-dashboard__header">
-                                <span class="oh-card-dashboard__title">{% trans "Total Feedbacks" %}</span>
+                                <span class="oh-card-dashboard__title">{% trans "Total feedbacks" %}</span>
                             </div>
                             <div class="oh-card-dashboard__body">
                                 <a href="{% url 'feedback-view' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
@@ -59,7 +59,7 @@
                     <div class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable mb-3">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                                <span class="oh-card-dashboard__title">{% trans "Objective Status" %}</span>
+                                <span class="oh-card-dashboard__title">{% trans "Objective status" %}</span>
                                 <span class="oh-card-dashboard__title float-end" id="objective-status-chart" style="cursor:pointer"><ion-icon name="caret-forward"></ion-icon></span>
 
                             </div>
@@ -70,7 +70,7 @@
                                     <div style="height: 430px; display:flex;align-items: center;justify-content: center;" class="">
                                         <div style="" class="">
                                             <img style="display: block;width: 100px;margin: 20px auto ;" src="{% static 'images/ui/goal.png' %}" class="" alt="Page not found. 404."/>
-                                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No Objectives are available." %}</h3>
+                                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No objectives are available." %}</h3>
                                         </div>
                                     </div>
                                 {% endif %}
@@ -81,7 +81,7 @@
                     <div class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                                <span class="oh-card-dashboard__title">{% trans "Key Result Status" %}</span>
+                                <span class="oh-card-dashboard__title">{% trans "Key result status" %}</span>
                                 <span class="oh-card-dashboard__title float-end" id="key-result-status-chart" style="cursor:pointer"><ion-icon name="caret-forward"></ion-icon></span>
                             </div>
                             <div class="oh-card-dashboard__body">
@@ -91,7 +91,7 @@
                                     <div style="height: 430px; display:flex;align-items: center;justify-content: center;" class="">
                                         <div style="" class="">
                                             <img style="display: block;width: 100px;margin: 20px auto ;" src="{% static 'images/ui/keyresult.png' %}" class=""/>
-                                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No Key Results are available." %}</h3>
+                                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No key results are available." %}</h3>
                                         </div>
                                     </div>
                                 {% endif %}
@@ -102,7 +102,7 @@
                     <div class="col-12 col-sm-12 col-md-12 col-lg-5 mb-3 ">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                                <span class="oh-card-dashboard__title">{% trans "Feedback Status" %}</span>
+                                <span class="oh-card-dashboard__title">{% trans "Feedback status" %}</span>
                                 <span class="oh-card-dashboard__title float-end" id="feedback-status-chart" style="cursor:pointer"><ion-icon name="caret-forward"></ion-icon></span>
                             </div>
                             <div class="oh-card-dashboard__body">
@@ -112,7 +112,7 @@
                                     <div style="height:220px; display:flex;align-items: center;justify-content: center;" class="">
                                         <div style="" class="">
                                             <img style="display: block;width: 100px;margin: 20px auto ;" src="{% static 'images/ui/feedback.png' %}" class="" />
-                                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No Feedbacks are available." %}</h3>
+                                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No feedbacks are available." %}</h3>
                                         </div>
                                     </div>
                                 {% endif %}

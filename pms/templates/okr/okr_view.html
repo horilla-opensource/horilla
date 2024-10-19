@@ -150,18 +150,6 @@
     }
   }
 
-    function removeCreateKR(){
-      $("#id_key_result_id option[value='create_new_key_result']").prop('selected',false)
-      // Select the li element
-      var listItem = $('li.select2-selection__choice[title="Create new Key result"]');
-
-      // Select the remove span within the li element
-      var removeSpan = listItem.find('span.select2-selection__choice__remove');
-
-      // Trigger a click event on the remove span
-      removeSpan.click();
-
-    }
 
 </script>
 {% endblock content %}

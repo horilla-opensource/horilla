@@ -1,7 +1,7 @@
 {% load static i18n%}
 {% load i18n %}
 
-
+{% if em %}{% else %}{% endif %}
 {% if objective_form.non_field_errors %}
 <!-- form non field errors  -->
 <div class="oh-wrapper">
@@ -26,7 +26,7 @@
     </h2>
   {% endif %}
 
-  <button type="button" class="oh-modal__close--custom" onclick="$('#objectDetailsModal').removeClass('oh-modal--show');">
+  <button type="button" class="oh-modal__close--custom" onclick="$('#objectCreateModal').removeClass('oh-modal--show');">
     <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
   </button>
 </div>
@@ -34,14 +34,16 @@
   {% if update %}
     <form
       hx-post="{%url 'employee-key-result-update' form.instance.id %}"
-      hx-target="#objectDetailsModalTarget"
-      id="objectiveForm"
+      hx-target="#objectCreateModalTarget"
+      id="empKeyrsultForm"
+      data-url="employee-key-result-update/{{form.instance.id}}?"
     >
   {% else %}
     <form
       hx-post="{%url 'employee-key-result-creation' emp_objective.id %}"
-      hx-target="#objectDetailsModalTarget"
-      id="objectiveForm"
+      hx-target="#objectCreateModalTarget"
+      id="empKeyrsultForm"
+      data-url="employee-key-result-creation/{{emp_objective.id}}?"
     >
   {% endif %}
 
@@ -49,29 +51,8 @@
     {{form.as_p}}
   </form>
 </div>
-
-<!-- key result modal -->
-<div class="oh-modal" id="kRModal" role="dialog" aria-labelledby="editKeyResultModal" aria-hidden="true">
-  <div class="oh-modal__dialog">
-    <!-- for creating key result -->
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" >
-        {% trans "Create Key Result" %}
-      </h2>
-      <button type="button" class="oh-modal__close--custom" onclick="$('#kRModal').hide();">
-        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
-      </button>
-    </div>
-    <div class="oh-modal__dialog-body" id="kRModalTarget">
-       <form
-       {% comment %} onsubmit="saveKeyResult();event.preventDefault();" {% endcomment %}
-       hx-post='{% url "key-result-creation" %}'
-       hx-target="#kRModal"
-       >
-          {% csrf_token %}
-          {{k_form.as_p}}
-       </form>
-      </div>
-  </div>
-</div>
-<!-- end of key result modal -->
+{% if request.GET.key_result_id %}
+<script>
+  $('#id_key_result_id').val({{request.GET.key_result_id}}).change()
+</script>
+{% endif %}

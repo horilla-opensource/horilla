@@ -11,24 +11,21 @@
         {% endfor %}
     </div>
 {% endif %}
-{% for emp_objective in emp_objectives %}
+{% for emp_objective in emp_objectives.object_list %}
     {% if perms.pms.view_employeeobjective or emp_objective|is_manager_or_owner:request.user %}
         <div class="oh-accordion-meta">
             <div class="oh-accordion-meta__item">
                 <div class="oh-accordion-meta__header"
                     onclick="
-                        {% comment %} event.stopPropagation(); {% endcomment %}
                         $(this).toggleClass('oh-accordion-meta__header--show');
                         $(this).parent().find('.oh-accordion-meta__body').toggleClass('d-none');
                         "
-                    {% comment %} {% if perms.payroll.view_taxbracket %} {% endcomment %}
                         data-target="#krBody{{emp_objective.id}}"
                         hx-get="{% url 'kr-table-view' emp_objective.id %}?{{request.GET.urlencode}}&objective_id={{objective.id}}"
                         hx-target="#krData{{emp_objective.id}}"
-                    {% comment %} {% endif %}  {% endcomment %}
                     >
                     <div class="oh-accordion-meta__title d-flex align-items-center justify-content-between w-100 ">
-                        <div class="d-flex align-items-center justify-content-between" style="width:60%">
+                        <div class="d-flex align-items-center justify-content-between" style="width:85%">
                             <div class="oh-tabs__input-badge-container">
                                 <span
                                     class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
@@ -38,19 +35,43 @@
                                     {{emp_objective.employee_id}}
                             </div>
                             {% if emp_objective.employee_key_result.first %}
-                            <div class="oh-progress-container progress_barmm"  style="width:50%">
+                            <div class="oh-progress-container progress_bar_objective"  style="width:50%">
                                 <div class="oh-progress" role="progressbar">
                                         <div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc( {{ emp_objective.progress_percentage }}%)"></div>
                                 </div>
                                 <div class="oh-progress-container__percentage" style="width:50px" name= "key_result_percentage">{{emp_objective.progress_percentage}} %</div>
                             </div>
                             {% endif %}
+                            <div
+                                    onclick="event.stopPropagation()"
+                                >
+                                {% if perms.pms.change_employeeobjective or emp_objective|is_manager_or_owner:request.user %}
+                                    <select
+                                        name="status"
+                                        onchange="changeObjectiveStatus(this)"
+                                        id="employeeStatus-{{emp_objective.id}}"
+                                        class="oh-select w-100"
+                                        data-empObj = {{emp_objective.id}}
+                                    >
+                                        {% for status in emp_objective.STATUS_CHOICES %}
+                                            <option value="{{status.0}}" {% if status.0 == emp_objective.status %} selected{% endif %}>{{status.1}}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% else %}
+                                    <select
+                                        name="status"
+                                        id="employeeStatus-{{emp_objective.id}}"
+                                        class="oh-select w-100"
+                                        data-empObj = {{emp_objective.id}}
+                                    >
+                                        <option value="{{emp_objective.status}}"selected>{{emp_objective.get_status_display}}</option>
+                                    </select>
+                                {% endif %}
+                            </div>
                         </div>
                         <div>
-                            {% comment %} <div class="d-flex" onclick="event.stopPropagation()"> {% endcomment %}
 
                                 <div class="oh-btn-group">
-                                    {% comment %} {% if request.user|is_reportingmanager or perms.pms.view_employeekeyresult %} {% endcomment %}
                                         <a
                                             hx-get='{% url "view-employee-objective" emp_objective.id %}'
                                             hx-target="#objectDetailsModalTarget"
@@ -61,7 +82,6 @@
                                         >
                                             <ion-icon name="eye-outline"></ion-icon>
                                         </a>
-                                    {% comment %} {% endif %} {% endcomment %}
                                     {% if request.user|is_reportingmanager or perms.pms.view_employeekeyresult %}
                                         <a
                                             hx-get='{% url "objective-detailed-view-activity" emp_objective.id %}'
@@ -77,9 +97,9 @@
                                         <button  style="border-right:1px solid hsl(8, 77%, 56%)"
                                             class="oh-btn oh-btn--secondary-outline float-end"
                                             hx-get='{% url "employee-key-result-creation" emp_objective.id %}'
-                                            hx-target="#objectDetailsModalTarget"
+                                            hx-target="#objectCreateModalTarget"
                                             data-toggle="oh-modal-toggle"
-                                            data-target="#objectDetailsModal"
+                                            data-target="#objectCreateModal"
                                             title="Add Key Result"
                                             onclick="event.stopPropagation()"
                                         >
@@ -164,3 +184,66 @@
         </div>
     {% endif %}
 {% endfor %}
+<!-- pagination start -->
+<div class="oh-pagination">
+
+    <span class="oh-pagination__page">
+            {% trans "Page" %} {{ emp_objectives.number }}
+            {%trans "of" %} {{ emp_objectives.paginator.num_pages }}.
+    </span>
+    <nav class="oh-pagination__nav">
+      <div class="oh-pagination__input-container me-3">
+        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+        <input
+          type="number"
+          name="page"
+          class="oh-pagination__input"
+          value="{{emp_objectives.number}}"
+          min="1"
+          hx-get="{% url 'emp-objective-search' objective.id %}?{{pg}}"
+          hx-target="#emp_objective_card"
+        />
+        <span class="oh-pagination__label"
+          >{% trans "of" %} {{emp_objectives.paginator.num_pages}}</span
+        >
+      </div>
+      <ul class="oh-pagination__items">
+        {% if emp_objectives.has_previous %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a
+            hx-get="{% url 'emp-objective-search' objective.id %}?{{pg}}&page=1"
+            class="oh-pagination__link"
+            hx-target="#emp_objective_card"
+            >{% trans "First" %}</a
+          >
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a
+            hx-get="{% url 'emp-objective-search' objective.id %}?{{pg}}&page={{ emp_objectives.previous_page_number }}"
+            class="oh-pagination__link"
+            hx-target="#emp_objective_card"
+            >{% trans "Previous" %}</a
+          >
+        </li>
+        {%endif %} {% if emp_objectives.has_next %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a
+            hx-get="{% url 'emp-objective-search' objective.id %}?{{pg}}&page={{ emp_objectives.next_page_number }}"
+            class="btn btn-outline-secondary"
+            hx-target="#emp_objective_card"
+            >{% trans "Next" %}</a
+          >
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a
+            hx-get="{% url 'emp-objective-search' objective.id %}?{{pg}}&page={{ emp_objectives.paginator.num_pages }}"
+            hx-target="#emp_objective_card"
+            class="oh-pagination__link"
+            >{% trans "Last" %}</a
+          >
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  <!-- end of pagination -->

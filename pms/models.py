@@ -349,9 +349,28 @@ class EmployeeKeyResult(models.Model):
         start_value = self.start_value
         current_value = self.current_value
         target_value = self.target_value
+
+        # Unique constraint employee_objective_id and key_result_id
+        if EmployeeKeyResult.objects.filter(
+            key_result_id=self.key_result_id,
+            employee_objective_id=self.employee_objective_id,
+        ).exists():
+            raise ValidationError(
+                _(
+                    f"{self.employee_objective_id.employee_id} already assigned {self.key_result_id}."
+                )
+            )
         if target_value == 0:
             raise ValidationError(
                 {"target_value": _("The target value can't be zero.")}
+            )
+        if self.key_result_id.progress_type == "%" and target_value > 100:
+            raise ValidationError(
+                {
+                    "target_value": _(
+                        "The key result progress type is in percentage, so the target value cannot exceed 100."
+                    )
+                }
             )
         if start_value > current_value or start_value > target_value:
             raise ValidationError(
@@ -367,9 +386,10 @@ class EmployeeKeyResult(models.Model):
             )
 
     def save(self, *args, **kwargs):
-        # if self.employee_id is None:
-        #     self.employee_id = self.employee_objective_id.employee_id
-        # if self.target_value != 0:
+        if self.start_date and not self.end_date:
+            self.end_date = self.start_date + relativedelta(
+                days=self.key_result_id.duration
+            )
         if not self.pk and not self.current_value:
             self.current_value = self.start_value
         if self.key_result_id:

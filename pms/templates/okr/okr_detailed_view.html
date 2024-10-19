@@ -197,6 +197,9 @@
   <div class="oh-activity-sidebar" id="OKRactivitySidebar">
     <div class="oh-activity-sidebar__body" id="activityContainer"></div>
   </div>
+  <button id="keyresultDataButton" hx-include="#empKeyrsultForm" hx-get="{% url "get-keyresult-data" %}?data-update=target_value" hx-target="#empKeyrsultForm #id_target_value" hx-swap="outerHTML" hidden></button>
+  <button id="endDateChangeButton" hx-include="#empKeyrsultForm" hx-get="{% url "get-keyresult-data" %}?data-update=end_date" hx-target="#empKeyrsultForm #id_end_date" hx-swap="outerHTML" hidden></button>
+  <button id="changeObjStatusButton" hx-get="{% url 'change-employee-objective-status' %}" hx-target="" hidden></button>
   <script>
     $(document).ready(function () {
       $(".oh-accordion-meta__header").click(function () {
@@ -232,31 +235,37 @@
     //create key result dynamically
     function keyResultChange(element) {
       var selectedValue = $(element).val();
-      if (selectedValue.includes("create_new_key_result")) {
-        var parentForm = element.parents().closest("form");
-        var view = parentForm.serialize();
-        let dynamicKeyResult = $("#dynamicKeyResult");
-        dynamicKeyResult.attr("hx-vals", `{"data":"${view}"}`);
-        dynamicKeyResult.click();
+      if (selectedValue !== null && selectedValue !== '') {
+        if (selectedValue.includes("create_new_key_result")) {
+          var parentForm = $(element).closest("form");
+          var view = parentForm.serialize();
+          // Get the value of the 'data-url' attribute correctly
+          var dataUrl = $('#empKeyrsultForm').attr('data-url');
+          // Corrected attribute assignment with proper JSON format
+          $('#dynamicKeyResult').attr("hx-vals", `{"data":"${view}", "dataUrl":"${dataUrl}"}`);
+          dynamicKeyResult.click();
+          $(element).val('').change();
+        } else {
+          // selectedValue is not null or empty, this will work
+          $('#keyresultDataButton').click();
+          $('#endDateChangeButton').click()
+        }
       }
     }
-    function removeCreateKR() {
-      $("#id_key_result_id option[value='create_new_key_result']").prop(
-        "selected",
-        false
-      );
-      // Select the li element
-      var listItem = $(
-        'li.select2-selection__choice[title="Create new Key result"]'
-      );
-
-      // Select the remove span within the li element
-      var removeSpan = listItem.find("span.select2-selection__choice__remove");
-
-      // Trigger a click event on the remove span
-      removeSpan.click();
+    function startDateChange(){
+      var keyResultId = $('#id_key_result_id').val()
+      if (keyResultId !== null && keyResultId !== '' ){
+        $('#endDateChangeButton').click()
+      }
     }
 
+
+    //change employee objective status
+    function changeObjectiveStatus(element){
+      var status = $(element).val();
+      var empObjId = $(element).attr('data-empObj');
+      $('#changeObjStatusButton').attr("hx-vals", `{"empObjId":"${empObjId}", "status":"${status}"}`).click();
+    }
     function progress(element) {
       var currentValue = $(element).val();
       keyResultTable = $(element).closest(".oh-sticky-table__tbody");
@@ -309,7 +318,7 @@
               }
               objectiveProgressContainer = $(element)
                 .closest(".oh-accordion-meta__item")
-                .find(".progress_barmm");
+                .find(".progress_bar_objective");
               objectiveProgressContainer.html(
                 '<div class="oh-progress" role="progressbar">' +
                   '<div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc(' +

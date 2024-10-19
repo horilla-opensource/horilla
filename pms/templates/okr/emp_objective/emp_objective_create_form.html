@@ -14,7 +14,7 @@
       hx-post="{%url 'create-employee-objective' %}"
       hx-target="#objectCreateModalTarget"
       id="empObjectiveCreateForm"
-      data-url="create-employee-objective/?data="
+      data-url="create-employee-objective/?"
     >
         {% csrf_token %}
         {{form.as_p}}

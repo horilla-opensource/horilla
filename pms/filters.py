@@ -194,7 +194,7 @@ class ObjectiveFilter(CustomFilterSet):
         empty = queryset.model.objects.none()
         for split in values:
             empty = empty | (
-                queryset.filter(objective_id__title=split)
+                queryset.filter(objective_id__title__icontains=split)
                 | queryset.filter(
                     objective_id__managers__employee_first_name__icontains=split
                 )
@@ -328,6 +328,7 @@ class EmployeeObjectiveFilter(FilterSet):
                 empty
                 | (queryset.filter(employee_id__employee_first_name__icontains=split))
                 | (queryset.filter(employee_id__employee_last_name__icontains=split))
+                | (queryset.filter(objective__icontains=split))
             )
 
         return empty.distinct()

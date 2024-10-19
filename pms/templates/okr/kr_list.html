@@ -31,13 +31,13 @@
                     <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
                     <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
                     <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-                    {% if perms.pms.change_employeeobjective %}
+                    {% if perms.pms.change_employeeobjective or emp_objective|is_manager:request.user %}
                         <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
                     {% endif %}
                 </div>
             </div>
             <div class="oh-sticky-table__tbody">
-                {% for kr in krs %}
+                {% for kr in krs.object_list %}
                     <div class="oh-sticky-table__tr" data-kr-id="{{kr.id}}"
                         {% comment %} onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`" {% endcomment %}
                     >
@@ -112,9 +112,9 @@
                                         class="oh-btn oh-btn--light-bkg w-50"
                                         title="{% trans 'Edit' %}"
                                         data-toggle="oh-modal-toggle"
-                                        data-target="#objectDetailsModal"
+                                        data-target="#objectCreateModal"
                                         hx-get='{% url "employee-key-result-update" kr.id %}'
-                                        hx-target="#objectDetailsModalTarget"
+                                        hx-target="#objectCreateModalTarget"
                                     >
                                         <ion-icon name="create-outline"></ion-icon>
                                     </button>
@@ -146,10 +146,10 @@
         </div>
     </div>
 
-    {% comment %} <div class="oh-pagination">
+    <div class="oh-pagination">
         <span class="oh-pagination__page">
-            {% trans "Page" %} {{ my_ticket_list.list.number }}
-            {%trans "of" %} {{my_ticket_list.list.paginator.num_pages }}.
+            {% trans "Page" %} {{ krs.number }}
+            {%trans "of" %} {{ krs.paginator.num_pages }}.
         </span>
         <nav class="oh-pagination__nav">
             <div class="oh-pagination__input-container me-3">
@@ -158,26 +158,26 @@
                 >
                 <input
                     type="number"
-                    name="{{my_ticket_list.dynamic_name}}"
+                    name="krs_page"
                     class="oh-pagination__input"
-                    value="{{my_ticket_list.list.number}}"
-                    hx-get="{% url 'ticket-filter' %}?{{pd}}"
-                    hx-target="#view-container"
+                    value="{{krs.number}}"
+                    hx-get="{% url 'kr-table-view' emp_objective.id %}?{{pd}}"
+                    hx-target="#krData{{emp_objective.id}}"
                     min="1"
                 />
                 <span class="oh-pagination__label"
                     >{% trans "of" %}
-                    {{my_ticket_list.list.paginator.num_pages}}</span
+                    {{krs.paginator.num_pages}}</span
                 >
             </div>
             <ul class="oh-pagination__items">
-                {% if my_ticket_list.list.has_previous %}
+                {% if krs.has_previous %}
                 <li
                     class="oh-pagination__item oh-pagination__item--wide"
                 >
                     <a
-                        hx-target="#view-container"
-                        hx-get="{% url 'ticket-filter' %}?{{pd}}&{{my_ticket_list.dynamic_name}}=1"
+                        hx-target="#krData{{emp_objective.id}}"
+                        hx-get="{% url 'kr-table-view' emp_objective.id %}?{{pd}}&krs_page=1"
                         class="oh-pagination__link"
                         >{% trans "First" %}</a
                     >
@@ -186,19 +186,19 @@
                     class="oh-pagination__item oh-pagination__item--wide"
                 >
                     <a
-                        hx-target="#view-container"
-                        hx-get="{% url 'ticket-filter' %}?{{pd}}&{{my_ticket_list.dynamic_name}}={{ my_ticket_list.list.previous_page_number }}"
+                        hx-target="#krData{{emp_objective.id}}"
+                        hx-get="{% url 'kr-table-view' emp_objective.id  %}?{{pd}}&krs_page={{ krs.previous_page_number }}"
                         class="oh-pagination__link"
                         >{% trans "Previous" %}</a
                     >
                 </li>
-                {% endif %} {% if my_ticket_list.list.has_next %}
+                {% endif %} {% if krs.has_next %}
                 <li
                     class="oh-pagination__item oh-pagination__item--wide"
                 >
                     <a
-                        hx-target="#view-container"
-                        hx-get="{% url 'ticket-filter' %}?{{pd}}&{{my_ticket_list.dynamic_name}}={{ my_ticket_list.list.next_page_number }}"
+                        hx-target="#krData{{emp_objective.id}}"
+                        hx-get="{% url 'kr-table-view' emp_objective.id  %}?{{pd}}&krs_page={{ krs.next_page_number }}"
                         class="oh-pagination__link"
                         >{% trans "Next" %}</a
                     >
@@ -207,8 +207,8 @@
                     class="oh-pagination__item oh-pagination__item--wide"
                 >
                     <a
-                        hx-target="#view-container"
-                        hx-get="{% url 'ticket-filter' %}?{{pd}}&{{my_ticket_list.dynamic_name}}={{ my_ticket_list.list.paginator.num_pages }}"
+                        hx-target="#krData{{emp_objective.id}}"
+                        hx-get="{% url 'kr-table-view' emp_objective.id  %}?{{pd}}&krs_page={{ krs.paginator.num_pages }}"
                         class="oh-pagination__link"
                         >{% trans "Last" %}</a
                     >
@@ -216,19 +216,12 @@
                 {% endif %}
             </ul>
         </nav>
-    </div> {% endcomment %}
+    </div>
 
 {% else %}
     <!-- start of empty page -->
-    {% comment %} <div class="oh-404"> {% endcomment %}
-       {% comment %} <img
-        style="width: 150px; height: 150px"
-        src="{% static 'images/ui/no-results.png' %}"
-        class="oh-404__image mb-4"
-        />  {% endcomment %}
         <h5 class="oh-404__subtitle" style="padding: 30px;">
         {% trans "No valid key result assigned!" %}
         </h5>
-  {% comment %} </div> {% endcomment %}
-  <!-- end of empty page -->
+    <!-- end of empty page -->
 {% endif %}
