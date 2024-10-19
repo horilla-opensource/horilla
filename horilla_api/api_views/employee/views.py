@@ -50,6 +50,10 @@ from ...api_serializers.employee.serializers import (
 )
 
 
+def permission_check(request, perm):
+    return request.user.has_perm(perm)
+
+
 def object_check(cls, pk):
     try:
         obj = cls.objects.get(id=pk)
@@ -440,6 +444,8 @@ class ActiontypeView(APIView):
         return paginater.get_paginated_response(serializer.data)
 
     def post(self, request):
+        if permission_check(request, "employee.add_actiontype") is False:
+            return Response({"error": "No permission"}, status=401)
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -447,6 +453,8 @@ class ActiontypeView(APIView):
         return Response(serializer.errors, status=400)
 
     def put(self, request, pk):
+        if permission_check(request, "employee.change_actiontype") is False:
+            return Response({"error": "No permission"}, status=401)
         action_type = object_check(Actiontype, pk)
         if action_type is None:
             return Response({"error": "Actiontype not found"}, status=404)
@@ -457,6 +465,8 @@ class ActiontypeView(APIView):
         return Response(serializer.errors, status=400)
 
     def delete(self, request, pk):
+        if permission_check(request, "employee.delete_actiontype") is False:
+            return Response({"error": "No permission"}, status=401)
         action_type = object_check(Actiontype, pk)
         if action_type is None:
             return Response({"error": "Actiontype not found"}, status=404)
@@ -544,6 +554,8 @@ class DisciplinaryActionAPIView(APIView):
             return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
+        if permission_check(request, "employee.add_disciplinaryaction") is False:
+            return Response({"error": "No permission"}, status=401)
         serializer = DisciplinaryActionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -551,6 +563,8 @@ class DisciplinaryActionAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
+        if permission_check(request, "employee.add_disciplinaryaction") is False:
+            return Response({"error": "No permission"}, status=401)
         disciplinary_action = self.get_object(pk)
         serializer = DisciplinaryActionSerializer(
             disciplinary_action, data=request.data
@@ -561,6 +575,8 @@ class DisciplinaryActionAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
+        if permission_check(request, "employee.add_disciplinaryaction") is False:
+            return Response({"error": "No permission"}, status=401)
         disciplinary_action = self.get_object(pk)
         disciplinary_action.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -613,6 +629,9 @@ class PolicyAPIView(APIView):
             return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
+        if permission_check(request, "employee.add_policy") is False:
+            return Response({"error": "No permission"}, status=401)
+
         serializer = PolicySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -620,6 +639,8 @@ class PolicyAPIView(APIView):
         return Response(serializer.errors, status=400)
 
     def put(self, request, pk):
+        if permission_check(request, "employee.change_policy") is False:
+            return Response({"error": "No permission"}, status=401)
         policy = self.get_object(pk)
         serializer = PolicySerializer(policy, data=request.data)
         if serializer.is_valid():
@@ -628,6 +649,8 @@ class PolicyAPIView(APIView):
         return Response(serializer.errors, status=400)
 
     def delete(self, request, pk):
+        if permission_check(request, "employee.delete_policy") is False:
+            return Response({"error": "No permission"}, status=401)
         policy = self.get_object(pk)
         policy.delete()
         return Response(status=204)

@@ -233,7 +233,8 @@ class AttendanceView(APIView):
                     "error": [
                         "Attendance for this employee on the current date already exists."
                     ]
-                }
+                },
+                status=400,
             )
         return Response(serializer.errors, status=400)
 

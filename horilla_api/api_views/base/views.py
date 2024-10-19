@@ -539,9 +539,23 @@ class RotatingWorkTypeAssignView(APIView):
     filterset_class = RotatingWorkTypeAssignFilter
     permission_classes = [IsAuthenticated]
 
+    def _permission_check(self, request, obj=None, pk=None):
+        if pk:
+            employee = request.user.employee_get
+            manager = obj.employee_id.get_reporting_manager()
+            if (
+                employee == obj.employee_id
+                or manager == employee
+                or request.user.has_perm("base.view_rotatingworktypeassign")
+            ):
+                return True
+            return False
+
     @manager_permission_required("base.view_rotatingworktypeassign")
     def get(self, request, pk=None):
+
         if pk:
+
             rotating_work_type_assign = object_check(RotatingWorkTypeAssign, pk)
             if rotating_work_type_assign is None:
                 return Response(
@@ -1276,8 +1290,6 @@ class EmployeeTabPermissionCheck(APIView):
 class CheckUserLevel(APIView):
     def get(self, request):
         perm = request.GET.get("perm")
-        instance = Employee.objects.filter(id=request.GET.get("employee_id")).first()
-        if _is_reportingmanger(request, instance) or request.user.has_perm(perm):
-
+        if request.user.has_perm(perm):
             return Response(status=200)
         return Response({"error": "No permission"}, status=400)
