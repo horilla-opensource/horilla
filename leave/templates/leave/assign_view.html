@@ -1,0 +1,328 @@
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{ message.tags }}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div
+  class="oh-modal"
+  id="assignLeaveTypeImport"
+  role="dialog"
+  aria-labelledby="assignLeaveTypeImport"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="assignLeaveTypeImportLavel">
+        {% trans "Import Assigned Leaves" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div
+        class="oh-modal__dialog-body p-0 pt-2"
+        id="assignLeaveTypeImportModalBody"
+      >
+        <form
+          action="{%url 'assign-leave-type-info-import' %}"
+          enctype="multipart/form-data"
+          method="post"
+          id="assignLeaveTypeImportForm"
+        >
+          {% csrf_token %}
+          <div
+            class="oh-modal__dialog-body mr-5"
+            id="uploading"
+            style="display: none"
+          >
+            <div class="loader-container">
+              <div class="loader"></div>
+              <div class="loader-text">{% trans "Uploading..." %}</div>
+            </div>
+          </div>
+          <div id="uploadContainer">
+            <label class="oh-dropdown__import-label" for="uploadFile">
+              <ion-icon
+                name="cloud-upload"
+                class="oh-dropdown__import-form-icon"
+              ></ion-icon>
+              <span class="oh-dropdown__import-form-title"
+                >{% trans "Upload a File" %}</span
+              >
+              <span class="oh-dropdown__import-form-text"
+                >{% trans "Drag and drop files here" %}</span
+              >
+            </label>
+            <input type="file" name="assign_leave_type_import" id="" required />
+          </div>
+          <button
+            type="submit"
+            class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
+          >
+            {% trans "Upload" %}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="assignedLeavesExport"
+  role="dialog"
+  aria-labelledby="assignedLeavesExport"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="assignedLeavesExportLavel">
+        {% trans "Export Assigned Leaves" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div
+        class="oh-modal__dialog-body p-0 pt-2"
+        id="assignedLeavesExportModalBody"
+      >
+        <form
+          action="{%url 'assigned-leaves-info-export' %}"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          id="assignedLeavesExportForm"
+        >
+          {% csrf_token %}
+          {% include "leave/leave_assign/assigned_leaves_export_filter.html" %}
+          <div class="oh-dropdown__filter-footer">
+            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
+              {% trans "Export" %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">
+      {% trans "All Assigned Leaves" %}
+    </h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon"
+      ></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    {% if available_leaves %}
+    <div
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        type="text"
+        class="oh-input oh-input__icon"
+        aria-label="Search Input"
+        placeholder="{% trans 'Search' %}"
+        name="search"
+        hx-get="{% url 'assign-filter' %}"
+        hx-trigger="keyup"
+        hx-target="#assignedLeaves"
+      />
+    </div>
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open">
+          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+          <div id="filterCount"></div>
+        </button>
+        {% include "leave/leave_assign/assigned_leaves_filter.html" %}
+      </div>
+      {% endif %}
+      <div class="oh-dropdown ml-2" x-data="{open: false}">
+        <button
+          class="oh-btn oh-btn--dropdown"
+          @click="open = !open"
+          @click.outside="open = false"
+        >
+          {% trans "Actions" %}
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right"
+          x-show="open"
+          style="display: none"
+        >
+          <ul class="oh-dropdown__items">
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                class="oh-dropdown__link"
+                id="assign-leave-type-info-import"
+                data-toggle="oh-modal-toggle"
+                data-target="#assignLeaveTypeImport"
+                >{% trans "Import" %}</a
+              >
+            </li>
+            {% if available_leaves %}
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                class="oh-dropdown__link"
+                id="assign-leave-type-export"
+                data-toggle="oh-modal-toggle"
+                data-target="#assignedLeavesExport"
+                >{% trans "Export" %}</a
+              >
+            </li>
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                id="bulkAssignedLeavesDelete"
+                class="oh-dropdown__link oh-dropdown__link--danger"
+                >{% trans "Delete" %}</a
+              >
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+      <div class="oh-btn-group ml-2">
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#editModal2"
+            hx-get="{% url 'assign' %}"
+            hx-target="#assignLeaveForm"
+          >
+            {% trans "Assign" %}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="oh-wrapper" id="assignedLeaves">
+  {% if available_leaves %}
+    {% include 'leave/leave_assign/assigned_leave.html'%}
+  {% else %}
+  <div
+    style="
+      height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    "
+    class=""
+  >
+    <div style="" class="oh-404">
+      <img
+        style="display: block; width: 150px; height: 150px; margin: 10px auto"
+        src="{% static 'images/ui/leave_types.png' %}"
+        class="mb-4"
+        alt=""
+      />
+      <h3 style="font-size: 20px" class="oh-404__subtitle">
+        {% trans "There are no leave assigned at the moment." %}
+      </h3>
+    </div>
+  </div>
+  {% endif %}
+</div>
+<!-- update available leave -->
+<div
+  class="oh-modal"
+  id="editModal1"
+  role="dialog"
+  aria-labelledby="editDialogModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+    <div class="oh-modal__dialog-header">
+      <span class="oh-modal__dialog-title" id="editDialogDialog"
+        >{% trans "Update Available Leave" %}</span
+      >
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div id="leaveForm"></div>
+  </div>
+</div>
+
+<!-- Assign leave -->
+<div
+  class="oh-modal"
+  id="editModal2"
+  role="dialog"
+  aria-labelledby="editDialogModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+    <div class="oh-modal__dialog-header">
+      <span class="oh-modal__dialog-title" id="editDialogDialog"
+        >{% trans "Assign Leave" %}</span
+      >
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div id="assignLeaveForm"></div>
+  </div>
+</div>
+
+<script>
+
+  $(document).on('htmx:load', '#assignedLeaves', function () {
+      // Create a new script element
+      var scriptElement = document.createElement("script");
+      // Set the source URL of the script file to be loaded
+      scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
+      // Append the script element to the head of the HTML document
+      document.head.appendChild(scriptElement);
+  });
+
+  $(document).on('htmx:load', '#assignLeaveForm', function () {
+      {% include 'select2.js' %}
+      $('#leaveTypeAssign #id_leave_type_id').select2();
+      $('#employeeAssign #id_employee_id').select2();
+  });
+
+  $('#delete-link').on('click', function (event) {
+
+      event.preventDefault(); // prevent the default behavior of the link
+
+      const link = $(this);
+      const confirmation = confirm("{% trans 'Are you sure you want to delete?' %}");
+
+      if (confirmation) {
+          window.location.href = link.attr('href'); // execute the href if confirmed
+      }
+  });
+</script>
+
+<script src="{% static '/base/filter.js' %}"></script>
+<script src="{% static '/leave_assign/action.js' %}"></script>
+
+{% endblock %}
