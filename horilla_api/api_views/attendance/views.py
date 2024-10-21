@@ -409,6 +409,19 @@ class AttendanceRequestView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
+        employee_id = request.data.get("employee_id")
+        attendance_date = request.data.get("attendance_date", date.today())
+        if Attendance.objects.filter(
+            employee_id=employee_id, attendance_date=attendance_date
+        ).exists():
+            return Response(
+                {
+                    "error": [
+                        "Attendance for this employee on the current date already exists."
+                    ]
+                },
+                status=400,
+            )
         return Response(serializer.errors, status=404)
 
     @manager_permission_required("attendance.update_attendance")
