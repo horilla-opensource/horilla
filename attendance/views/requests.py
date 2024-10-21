@@ -706,6 +706,7 @@ def edit_validate_attendance(request, attendance_id):
     initial["request_description"] = attendance.request_description
     form = AttendanceRequestForm(initial=initial)
     form.instance.id = attendance.id
+    hx_target = request.META.get("HTTP_HX_TARGET")
     if request.method == "POST":
         form = AttendanceRequestForm(request.POST, instance=copy.copy(attendance))
         if form.is_valid():
@@ -739,7 +740,11 @@ def edit_validate_attendance(request, attendance_id):
                                 </script>
                                 """
             )
-    return render(request, "requests/attendance/update_form.html", {"form": form})
+    return render(
+        request,
+        "requests/attendance/update_form.html",
+        {"form": form, "hx_target": hx_target},
+    )
 
 
 @login_required

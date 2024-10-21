@@ -546,7 +546,7 @@ def parse_date(date_str, error_key, activity):
 
 def parse_datetime(date_str, time_str):
     return (
-        datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+        datetime.strptime(f"{date_str} {time_str[:5]}", "%Y-%m-%d %H:%M")
         if date_str and time_str
         else None
     )

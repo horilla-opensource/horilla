@@ -1,8 +1,4 @@
-<form
-  hx-post="{% url 'edit-validate-attendance' form.instance.id %}"
-  hx-target="#updateAttendanceRequestModalBody"
-  class="m-3"
-  method="post"
->
-  {% csrf_token %} {{form.as_p}}
+<form hx-post="{% url 'edit-validate-attendance' form.instance.id %}" id="attendanceRequestForm"
+    hx-target="{% if hx_target %}#{{hx_target}}{% else %}#updateAttendanceRequestModalBody{% endif %}">
+    {% csrf_token %} {{form.as_p}}
 </form>
