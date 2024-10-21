@@ -143,7 +143,12 @@ from base.models import (
 )
 from employee.filters import EmployeeFilter
 from employee.forms import ActiontypeForm
-from employee.models import Actiontype, Employee, EmployeeWorkInformation
+from employee.models import (
+    Actiontype,
+    DisciplinaryAction,
+    Employee,
+    EmployeeWorkInformation,
+)
 from horilla.decorators import (
     delete_permission,
     duplicate_permission,
@@ -6104,11 +6109,22 @@ def action_type_delete(request, act_id):
     """
     This method is used to delete the action type.
     """
-    Actiontype.objects.filter(id=act_id).delete()
-    message = _("Action has been deleted successfully!")
-    return HttpResponse(
-        f"<div class='oh-wrapper'> <div class='oh-alert-container'> <div class='oh-alert oh-alert--animated oh-alert--success'>{message}</div></div></div>"
-    )
+    if DisciplinaryAction.objects.filter(action=act_id).exists():
+
+        messages.error(
+            request,
+            _(
+                "This action type is in use in disciplinary actions and cannot be deleted."
+            ),
+        )
+        return HttpResponse("<script>window.location.reload()</script>")
+
+    else:
+        Actiontype.objects.filter(id=act_id).delete()
+        message = _("Action has been deleted successfully!")
+        return HttpResponse(
+            f"<div class='oh-wrapper'> <div class='oh-alert-container'> <div class='oh-alert oh-alert--animated oh-alert--success'>{message}</div></div></div>"
+        )
 
 
 @login_required
