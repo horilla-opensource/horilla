@@ -1,19 +1,18 @@
 from django import template
 from django.template.defaultfilters import register
 
-from helpdesk.models import ClaimRequest,DepartmentManager
+from helpdesk.models import ClaimRequest, DepartmentManager
 
 register = template.Library()
 
+
 @register.filter(name="calim_request_exists")
-def calim_request_exists(ticket,employee):
-    return ClaimRequest.objects.filter(
-        ticket_id = ticket,
-        employee_id = employee
-    ).exists()
+def calim_request_exists(ticket, employee):
+    return ClaimRequest.objects.filter(ticket_id=ticket, employee_id=employee).exists()
+
 
 @register.filter(name="is_department_manager")
-def is_department_manager(employee,ticket):
+def is_department_manager(employee, ticket):
     """
     Check requested user is a department manger or not
     """
@@ -25,6 +24,5 @@ def is_department_manager(employee,ticket):
     else:
         return False
     return DepartmentManager.objects.filter(
-        manager = employee,
-        department = department
+        manager=employee, department=department
     ).exists()

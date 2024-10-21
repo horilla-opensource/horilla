@@ -148,4 +148,9 @@ urlpatterns = [
         views.get_department_employees,
         name="get-department-employee",
     ),
+    path(
+        "delete-ticket-document/<int:doc_id>",
+        views.delete_ticket_document,
+        name="delete-ticket-document",
+    ),
 ]

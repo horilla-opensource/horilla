@@ -1166,6 +1166,22 @@ def view_ticket_document(request, doc_id):
 
 
 @login_required
+@hx_request_required
+def delete_ticket_document(request, doc_id):
+    """
+    This function used to delete the uploaded document in the modal.
+    Parameters:
+
+    request (HttpRequest): The HTTP request object.
+    id (int): The id of the document.
+
+    """
+    Attachment.objects.get(id=doc_id).delete()
+    messages.success(request, _("Document has been deleted."))
+    return HttpResponse("<script>window.location.reload()</script>")
+
+
+@login_required
 def comment_create(request, ticket_id):
     """ "
     This method is used to create comment to a ticket

@@ -339,15 +339,33 @@
               <div class="oh-helpdesk__chatbox">
                 <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST" enctype="multipart/form-data" class="oh-chat oh-chat__input-wrapper">
                   {% csrf_token %}
-                  <input name= "file" multiple="True" type="file" id="fileUpload" class="d-none" />
+                  <input name="file" multiple="True" type="file" id="fileUpload" class="d-none" />
                   <label
                     aria-role="button"
                     for="fileUpload"
-                    aria-label="Send Message"
-                    class="oh-btn oh-btn--chat oh-btn--chat-attachments"></label>
+                    aria-label="Attach Files"
+                    class="oh-btn oh-btn--chat oh-btn--chat-attachments"
+                  >
+                    <!-- The file count badge -->
+                    <span id="fileCount" style="
+                      position: absolute;
+                      top: -6px;   /* Adjust the top position */
+                      right: -6px; /* Adjust the right position */
+                      background-color: red;
+                      color: white;
+                      font-size: 12px;
+                      border-radius: 50%;
+                      padding: 2px 6px;
+                      min-width: 16px;
+                      text-align: center;
+                      display: none; /* Initially hidden */
+                    ">
+                    </span>
+                  </label>
+
                   <textarea
                     name="comment"
-                    class="oh-helpdesk__chat-input oh-chat__main-input"
+                    class="oh-helpdesk__chat-input oh-chat__main-input ps-5"
                     placeholder="Type something..."
                   ></textarea>
                   <button
@@ -529,28 +547,45 @@
                         {% for attachment in attachments %}
                           {% with extension=attachment.file.name|lower|slice:"-4:" %}
                             <a
-                              class ="me-2"
-                              data-toggle="oh-modal-toggle"
-                              data-target ="#viewFileModal"
-                              hx-target="#viewFile"
-                              hx-get="{% url 'view-ticket-document' attachment.id %}"
+                                class="me-2 position-relative d-inline-block"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#viewFileModal"
+                                hx-target="#viewFile"
+                                hx-get="{% url 'view-ticket-document' attachment.id %}"
                             >
-                              <div class="oh-helpdesk__icon">
-                                <span class="oh-file-icon
-                                  {% if extension == '.pdf' %} oh-file-icon--pdf
-                                  {% elif extension in '.jpg .jpeg .png .gif .svg' %} oh-file-icon--image
-                                  {% elif extension in '.mp3 .wav .ogg' %} oh-file-icon--audio
-                                  {% elif extension in '.doc .docx' %} oh-file-icon--word
-                                  {% elif extension in '.xls .xlsx' %} oh-file-icon--excel
-                                  {% elif extension in '.ppt .pptx' %} oh-file-icon--powerpoint
-                                  {% elif extension in '.html' %} oh-file-icon--html
-                                  {% else %} oh-file-icon--default
-                                  {% endif %}"
-                                  title = "{{ attachment }}"
+                                <!-- File icon -->
+                                <div class="oh-helpdesk__icon">
+                                    <span class="oh-file-icon
+                                        {% if extension == '.pdf' %} oh-file-icon--pdf
+                                        {% elif extension in '.jpg .jpeg .png .gif .svg' %} oh-file-icon--image
+                                        {% elif extension in '.mp3 .wav .ogg' %} oh-file-icon--audio
+                                        {% elif extension in '.doc .docx' %} oh-file-icon--word
+                                        {% elif extension in '.xls .xlsx' %} oh-file-icon--excel
+                                        {% elif extension in '.ppt .pptx' %} oh-file-icon--powerpoint
+                                        {% elif extension in '.html' %} oh-file-icon--html
+                                        {% else %} oh-file-icon--default
+                                        {% endif %}"
+                                        title="{{ attachment }}"
+                                    >
+                                    </span>
+                                </div>
+
+                                <!-- Cross mark for delete action (absolute positioned) -->
+                                <span
+                                    class="position-absolute"
+                                    style="top: -6px; right: 0px; color: red; font-size: 16px; cursor: pointer;"
+                                    title="Delete attachment"
+                                    hx-delete="{% url 'delete-ticket-document' attachment.id %}"
+                                    hx-confirm="Are you sure you want to delete this file?"
+                                    hx-swap="none"
+                                    hx-trigger="click"
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                    onclick="deleteFile(event);"
                                 >
+                                    &times;
                                 </span>
-                              </div>
                             </a>
+
                           {% endwith %}
                         {% endfor %}
 
@@ -626,6 +661,25 @@
 		<div class="oh-modal__dialog-body" id="viewFile"></div>
 	</div>
 </div>
+
+    <script>
+      function deleteFile(event) {
+          event.stopPropagation(); // Prevent the event from bubbling up
+          // No additional code is needed here, HTMX will handle the request automatically
+      }
+
+      document.getElementById('fileUpload').addEventListener('change', function() {
+        const fileCount = this.files.length;
+        const countSpan = document.getElementById('fileCount');
+
+        if (fileCount > 0) {
+          countSpan.textContent = fileCount;
+          countSpan.style.display = 'inline-block'; // Show the badge
+        } else {
+          countSpan.style.display = 'none'; // Hide if no files are selected
+        }
+      });
+    </script>
 
     <script>
       // Function to send rating via AJAX
