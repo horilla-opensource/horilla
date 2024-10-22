@@ -1728,7 +1728,7 @@ def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
     if created:
         penalty_amount = instance.penalty_amount
         if apps.is_installed("payroll") and penalty_amount:
-            Deduction = get_horilla_model_class(app_label="payroll", model="Deduction")
+            Deduction = get_horilla_model_class(app_label="payroll", model="deduction")
             penalty = Deduction()
             if instance.late_early_id:
                 penalty.title = f"{instance.late_early_id.get_type_display()} penalty"

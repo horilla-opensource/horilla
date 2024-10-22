@@ -79,51 +79,6 @@
   },
   {
     "model": "recruitment.stage",
-    "pk": 1,
-    "fields": {
-      "created_at": "2024-05-22T08:48:40.159Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "recruitment_id": 1,
-      "stage": "Initial",
-      "stage_type": "initial",
-      "sequence": 0,
-      "stage_managers": []
-    }
-  },
-  {
-    "model": "recruitment.stage",
-    "pk": 2,
-    "fields": {
-      "created_at": "2024-05-22T08:55:43.916Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "recruitment_id": 2,
-      "stage": "Initial",
-      "stage_type": "initial",
-      "sequence": 0,
-      "stage_managers": []
-    }
-  },
-  {
-    "model": "recruitment.stage",
-    "pk": 3,
-    "fields": {
-      "created_at": "2024-05-22T09:03:26.902Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "recruitment_id": 3,
-      "stage": "Initial",
-      "stage_type": "initial",
-      "sequence": 0,
-      "stage_managers": []
-    }
-  },
-  {
-    "model": "recruitment.stage",
     "pk": 4,
     "fields": {
       "created_at": "2024-05-22T09:15:46.474Z",

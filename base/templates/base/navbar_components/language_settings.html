@@ -15,7 +15,7 @@
                             onclick="event.preventDefault(); document.getElementById('language-form-{{ language.0 }}').submit();">
                             <img src="{% static 'images/ui/' %}{{ language.0 }}.png" class="oh-dropdown__lang-icon" />{{ language.1 }}
                             {% if language.0 == LANGUAGE_CODE %}
-                                <ion-icon name="checkmark-circle-outline" 
+                                <ion-icon name="checkmark-circle-outline"
                                     style="position: relative; top: 3.3px; color: green; font-size: 1.2em;">
                                 </ion-icon>
                             {% endif %}
