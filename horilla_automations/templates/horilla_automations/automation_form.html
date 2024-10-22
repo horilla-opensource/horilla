@@ -2,17 +2,16 @@
 {% include "generic/horilla_form.html" %}
 </div>
 <script>
-  $("form#{{view_id}} button").click(function (e) {
+  $("#{{view_id}} form button").click(function (e) {
     const form = document.getElementById('multipleConditionForm');
     const elements = form.elements;
     const queryString = Array.from(elements)
       .filter(element => element.name && !element.disabled)
       .map(element => encodeURIComponent(element.name) + '=' + encodeURIComponent(element.value))
       .join('&');
-      $("form#{{view_id}} [name=condition_querystring]").val(queryString);
+      $("#{{view_id}} form [name=condition_querystring]").val(queryString);
     html = $(".note-editable #multipleConditionForm").html()
-    $("form#{{view_id}} [name=condition_html]").val(html);
-
+    $("#{{view_id}} form [name=condition_html]").val(html);
   });
   function getToMail(element) {
     model = $(this).val();
@@ -25,7 +24,6 @@
       toolbar: false,
     })
     .summernote("code", getHtml());
-
   {% if form.instance.pk %}
   $("#id_mail_to").val({{form.instance.mail_to|safe}}).change()
   $("#dynamic_field_condition .note-editable").html($("<form id='multipleConditionForm'></form>"));
