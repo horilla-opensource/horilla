@@ -72,7 +72,7 @@
                 <div class="oh-sticky-table__th text-center">{% trans "Task Status" %}</div>
                 <div class="oh-sticky-table__th text-center" style="width: 250px;">{% trans "Actions" %}</div>
                 {% for task in stage.grouper.offboardingtask_set.all %}
-                {% if request.user.employee_get.offboardingemployee.employeetask_set.all|is_employee_tasks:task or perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}
+                {% if request.user.employee_get.offboardingemployee.employeetask_set.all|is_employee_tasks:task or perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager or request.user.employee_get|is_task_manager:task.title %}
                 <div class="oh-sticky-table__th" style="width: 200px;" >
                   <div class="d-flex justify-content-between align-items-center">
                     <span>

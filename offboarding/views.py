@@ -186,8 +186,23 @@ def create_offboarding(request):
     if request.method == "POST":
         form = OffboardingForm(request.POST, instance=instance)
         if form.is_valid():
-            form.save()
+            off_boarding = form.save()
             messages.success(request, _("Offboarding saved"))
+            users = [
+                employee.employee_user_id for employee in off_boarding.managers.all()
+            ]
+            notify.send(
+                request.user.employee_get,
+                recipient=users,
+                verb="You are chosen as an offboarding manager",
+                verb_ar="لقد تم اختيارك كمدير عملية المغادرة",
+                verb_de="Sie wurden als Offboarding-Manager ausgewählt",
+                verb_es="Has sido elegido como gerente de offboarding",
+                verb_fr="Vous avez été choisi comme responsable du processus de départ",
+                icon="people-circle",
+                redirect=reverse("offboarding-pipeline"),
+            )
+
             return HttpResponse("<script>window.location.reload()</script>")
 
     return render(
@@ -236,6 +251,18 @@ def create_stage(request):
             instance.save()
             instance.managers.set(form.data.getlist("managers"))
             messages.success(request, _("Stage saved"))
+            users = [employee.employee_user_id for employee in instance.managers.all()]
+            notify.send(
+                request.user.employee_get,
+                recipient=users,
+                verb="You are chosen as offboarding stage manager",
+                verb_ar="لقد تم اختيارك كمدير لمرحلة عملية المغادرة",
+                verb_de="Sie wurden als Manager der Offboarding-Phase ausgewählt",
+                verb_es="Has sido elegido como gerente de la etapa de offboarding",
+                verb_fr="Vous avez été choisi comme responsable de l'étape de départ",
+                icon="people-circle",
+                redirect=reverse("offboarding-pipeline"),
+            )
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "offboarding/stage/form.html", {"form": form})
 
