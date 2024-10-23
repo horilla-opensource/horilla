@@ -99,7 +99,7 @@
                                 <img src="{{leave_request.leave_type_id.get_avatar}}" class="oh-profile__image"
                                     alt="Leave Type Icon" />
                             </div>
-                            <span class="oh-profile__name oh-text--dark">{{leave_request.leave_type_id}}</span>
+                            <span class="oh-profile__name oh-text--dark">{{leave_request.leave_type_id|truncatechars:12}}</span>
 
                             {% if leave_request in leave_requests_with_interview %}
                                 <span class="tooltip">

@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="oh-kanban-card__details mt-2">
-                <span class="oh-kanban-card__title">{{user_leave.leave_type_id}}</span>
+                <span class="oh-kanban-card__title">{{user_leave.leave_type_id|truncatechars:20}}</span>
                 <span class="oh-kanban-card__subtitle">{% trans "Available Leave Days" %} : {% if user_leave.leave_type_id.limit_leave %}{{user_leave.available_days}} {% else %}{% trans "No Limit" %}{% endif %}</span><br>
                 <span class="oh-kanban-card__subtitle">{% trans "Carryforward Leave Days" %} :
                     {{user_leave.carryforward_days}}</span><br>
