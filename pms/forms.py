@@ -672,7 +672,7 @@ class FeedbackForm(ModelForm):
         widget=forms.Select(
             attrs={
                 "class": " oh-select--period-change ",
-                "style": "width:100%; display:none;",
+                "style": "width:100%;",
             }
         ),
         required=False,
@@ -706,41 +706,42 @@ class FeedbackForm(ModelForm):
             "manager_id": forms.Select(
                 attrs={
                     "class": "oh-select oh-select-2 ",
-                    "style": "width:100%; display:none;",
-                    "required": "false",
+                    "style": "width:100%;",
+                    "required": "true",
                 },
             ),
             "colleague_id": forms.SelectMultiple(
                 attrs={
                     "class": "oh-select oh-select-2 w-100",
                     "multiple": "multiple",
-                    "style": "width:100%; display:none;",
+                    "style": "width:100%;",
                 }
             ),
             "subordinate_id": forms.SelectMultiple(
                 attrs={
                     "class": "oh-select oh-select-2 w-100",
                     "multiple": "multiple",
-                    "style": "width:100%; display:none;",
+                    "style": "width:100%;",
                     "required": "false",
                 }
             ),
             "question_template_id": forms.Select(
                 attrs={
                     "class": "oh-select oh-select--lg oh-select-no-search",
-                    "style": "width:100%; display:none;",
-                    "required": "false",
+                    "style": "width:100%;",
+                    "required": "true",
                 }
             ),
             "cyclic_feedback": forms.CheckboxInput(
                 attrs={
                     "class": "oh-switch__checkbox",
+                    "onchange": "changeCyclicFeedback(this)",
                 }
             ),
             "cyclic_feedback_period": forms.Select(
                 attrs={
                     "class": "oh-select oh-select--lg oh-select-no-search",
-                    "style": "width:100%; display:none;",
+                    "style": "width:100%;",
                 }
             ),
             "cyclic_feedback_days_count": forms.NumberInput(
@@ -765,8 +766,10 @@ class FeedbackForm(ModelForm):
         else:
             employee = request.user.employee_get
 
-        if instance:
-            kwargs["initial"] = set_date_field_initial(instance)
+        if not instance:
+            today = datetime.datetime.today().date()
+            kwargs["initial"] = {"start_date": today, "end_date": today}
+
         super().__init__(*args, **kwargs)
 
         # Horilla multi select filter for employee

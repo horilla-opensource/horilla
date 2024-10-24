@@ -1468,43 +1468,43 @@ def feedback_creation(request):
     return render(request, "feedback/feedback_creation.html", context)
 
 
-@login_required
-@manager_can_enter(perm="pms.add_feedback")
-def feedback_creation_ajax(request):
-    """
-    This view is used to create feedback object.
-    Returns:
-        it will return feedback creation html.
-    """
-    # this ajax request is used to get the Key result and manager of the choosen employee
-    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
-    if is_ajax:
-        if request.method == "POST":
-            employee_id = request.POST.get("employee_id")
-            key_results = EmployeeKeyResult.objects.filter(
-                employee_objective_id__employee_id=employee_id
-            ).values()
-            employee_work_info = EmployeeWorkInformation.objects.filter(
-                employee_id__id=employee_id
-            ).first()
-            reporting_manager_id = employee_work_info.reporting_manager_id
-            if reporting_manager_id:
-                reporting_manager = {
-                    "id": reporting_manager_id.id or None,
-                    "employee_first_name": reporting_manager_id.employee_first_name
-                    or None,
-                    "employee_last_name": reporting_manager_id.employee_last_name
-                    or None,
-                }
-            else:
-                reporting_manager = None
-            return JsonResponse(
-                {
-                    "key_results": list(key_results),
-                    "reporting_manager": reporting_manager,
-                }
-            )
-        return JsonResponse({"status": "Invalid request"}, status=400)
+# @login_required
+# @manager_can_enter(perm="pms.add_feedback")
+# def feedback_creation_ajax(request):
+#     """
+#     This view is used to create feedback object.
+#     Returns:
+#         it will return feedback creation html.
+#     """
+#     # this ajax request is used to get the Key result and manager of the choosen employee
+#     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+#     if is_ajax:
+#         if request.method == "POST":
+#             employee_id = request.POST.get("employee_id")
+#             key_results = EmployeeKeyResult.objects.filter(
+#                 employee_objective_id__employee_id=employee_id
+#             ).values()
+#             employee_work_info = EmployeeWorkInformation.objects.filter(
+#                 employee_id__id=employee_id
+#             ).first()
+#             reporting_manager_id = employee_work_info.reporting_manager_id
+#             if reporting_manager_id:
+#                 reporting_manager = {
+#                     "id": reporting_manager_id.id or None,
+#                     "employee_first_name": reporting_manager_id.employee_first_name
+#                     or None,
+#                     "employee_last_name": reporting_manager_id.employee_last_name
+#                     or None,
+#                 }
+#             else:
+#                 reporting_manager = None
+#             return JsonResponse(
+#                 {
+#                     "key_results": list(key_results),
+#                     "reporting_manager": reporting_manager,
+#                 }
+#             )
+#         return JsonResponse({"status": "Invalid request"}, status=400)
 
 
 @login_required
@@ -1593,7 +1593,7 @@ def filter_pagination_feedback(
     feedbacks_own = feedback_paginator_own.get_page(page_number)
     feedbacks_requested = feedback_paginator_requested.get_page(page_number)
     feedbacks_all = feedback_paginator_all.get_page(page_number)
-    now = datetime.datetime.now()
+    now = datetime.datetime.today().date()
     data_dict = parse_qs(previous_data)
     get_key_instances(Feedback, data_dict)
     context = {
@@ -1964,19 +1964,21 @@ def feedback_detailed_view_status(request, id):
     answer = Answer.objects.filter(feedback_id=feedback)
     if status == "Not Started" and answer:
         messages.warning(request, _("Feedback is already started"))
-        return render(request, "messages.html")
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
     feedback.status = status
     feedback.save()
     if (feedback.status) == status:
-        messages.info(
+        messages.success(
             request, _("Feedback status updated to  %(status)s") % {"status": _(status)}
         )
-        return render(request, "messages.html")
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
     messages.info(
         request,
         _("Error occurred during status update to %(status)s") % {"status": _(status)},
     )
-    return render(request, "message.html")
+    return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
 
 @login_required

@@ -12,8 +12,8 @@
     </div>
 </div>
 {% endif %}
-
 <form hx-post="{%url 'feedback-update' id=feedback_form.instance.id %}" hx-target="#feedbackModalTarget" class="oh-profile-section">
+    {{feedback_form.non_field_errors}}
    {% csrf_token %}
         <div class="oh-input__group ">
             <label class="oh-input__label" for="{{feedback_form.review_cycle.id_for_label}}">{% trans "Review Cycle" %}</label>
@@ -123,7 +123,6 @@
         <div class="w-100 d-flex align-items-center justify-content-end">
             <button
                 type="submit"
-                onclick="validateFeedBack(event)"
                 class="oh-btn oh-btn--secondary oh-btn--w-100-resp"
             >
                 {% trans "Save" %}
