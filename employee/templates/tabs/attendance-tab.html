@@ -203,7 +203,7 @@
 												<a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
 											{% endif %}
 											{% if perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %}
-												<form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}" hx-post="{% url 'attendance-overtime-delete' ot.id  %}" hx-target="#hourAccount{{ot.id}}" hx-swap="delete" class='w-50'>
+												<form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}" hx-post="{% url 'attendance-overtime-delete' ot.id  %}" hx-target="#hourAccount{{ot.id}}" hx-swap="outerHTML" class='w-50'>
 													{% csrf_token %}
 													<button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"   title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
 												</form>

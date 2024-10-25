@@ -133,7 +133,7 @@
 						<form hx-confirm="{% trans 'Are you sure you want to delete this Document Request?' %}"
 							hx-post="{% url 'document-delete' document.id %}"
 							hx-target="#document{{document.id}}"
-							hx-swap="delete"
+							hx-swap="outerHTML"
 							class=""
 							onclick="event.stopPropagation()"
 							>

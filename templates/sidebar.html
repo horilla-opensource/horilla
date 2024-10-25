@@ -446,7 +446,7 @@ function initializeSummernote(candId,searchWords,) {
   function validateFile(element,fileTarget,reload=false) {
     var fileInput = document.getElementById(fileTarget);
     var filePath = fileInput.value;
-    var allowedExtensions = /(\.xlsx)$/i;
+    var allowedExtensions = /(\.xlsx|\.csv)$/i;
 
     if (!allowedExtensions.exec(filePath)) {
       Swal.fire({

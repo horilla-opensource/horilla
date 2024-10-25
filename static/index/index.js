@@ -300,17 +300,13 @@ var originalConfirm = window.confirm;
 window.confirm = function (message) {
     var event = window.event || {};
     event.preventDefault();
-    var languageCode = null;
-    languageCode = $("#main-section-data").attr("data-lang");
-    var confirm =
-        confirmModal[languageCode] ||
-        ((languageCode = "en"), confirmModal[languageCode]);
-    var cancel =
-        cancelModal[languageCode] ||
-        ((languageCode = "en"), cancelModal[languageCode]);
-    // Add event listener to "Confirm" button
+    var languageCode = $("#main-section-data").attr("data-lang") || "en";
+    var confirm = confirmModal[languageCode];
+    var cancel = cancelModal[languageCode];
+
     $("#confirmModalBody").html(message);
     var submit = false;
+
     Swal.fire({
         text: message,
         icon: "question",
@@ -321,44 +317,34 @@ window.confirm = function (message) {
         cancelButtonText: cancel,
     }).then((result) => {
         if (result.isConfirmed) {
+            var path = event.target["htmx-internal-data"]?.path;
+            var verb = event.target["htmx-internal-data"]?.verb;
+            var hxTarget = $(event.target).attr("hx-target");
+            var hxVals = $(event.target).attr("hx-vals") ? JSON.parse($(event.target).attr("hx-vals")) : {};
+            var hxSwap = $(event.target).attr("hx-swap");
             if (event.target.tagName.toLowerCase() === "form") {
-                if (event.target["htmx-internal-data"]) {
-                    var path = event.target["htmx-internal-data"].path;
-                    var verb = event.target["htmx-internal-data"].verb;
-                    var hxTarget = $(event.target).attr("hx-target");
-                    if (verb === "post") {
-                        htmx.ajax("POST", path, hxTarget);
-                    } else {
-                        htmx.ajax("GET", path, hxTarget);
-                    }
+                if (verb === "post") {
+                    htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals });
                 } else {
-                    event.target.submit();
+                    htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals });
                 }
             } else if (event.target.tagName.toLowerCase() === "a") {
                 if (event.target.href) {
                     window.location.href = event.target.href;
                 } else {
-                    var path = event.target["htmx-internal-data"].path;
-                    var verb = event.target["htmx-internal-data"].verb;
-                    var hxTarget = $(event.target).attr("hx-target");
                     if (verb === "post") {
-                        // hx.post(path)
-                        htmx.ajax("POST", path, hxTarget);
+                        htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals });
                     } else {
-                        htmx.ajax("GET", path, hxTarget);
+                        htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals });
                     }
                 }
             } else {
-                var path = event.target["htmx-internal-data"].path;
-                var verb = event.target["htmx-internal-data"].verb;
-                var hxTarget = $(event.target).attr("hx-target");
                 if (verb === "post") {
-                    htmx.ajax("POST", path, hxTarget);
+                    htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals });
                 } else {
-                    htmx.ajax("GET", path, hxTarget);
+                    htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals });
                 }
             }
-        } else {
         }
     });
 };

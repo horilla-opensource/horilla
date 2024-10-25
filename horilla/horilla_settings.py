@@ -1,3 +1,5 @@
+from django.core.files.storage import FileSystemStorage
+
 from horilla import settings
 
 """
@@ -10,6 +12,7 @@ DB_INIT_PASSWORD = "d3f6a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d"
 
 
 HORILLA_DATE_FORMATS = {
+    "DD/MM/YY": "%d/%m/%y",
     "DD-MM-YYYY": "%d-%m-%Y",
     "DD.MM.YYYY": "%d.%m.%Y",
     "DD/MM/YYYY": "%d/%m/%Y",
@@ -33,6 +36,8 @@ HORILLA_TIME_FORMATS = {
 BIO_DEVICE_THREADS = {}
 
 DYNAMIC_URL_PATTERNS = []
+
+FILE_STORAGE = FileSystemStorage(location="csv_tmp/")
 
 APP_URLS = [
     "base.urls",

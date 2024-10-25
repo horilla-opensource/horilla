@@ -50,7 +50,7 @@
 									{% if perms.base.delete_employeeshift %}
 										<form hx-confirm="{% trans 'Are you sure you want to delete this shift?' %}"
 											hx-post="{% url 'employee-shift-delete' shift.id %}" hx-target="#shiftTr{{shift.id}}"
-											hx-swap="delete" class="w-50">
+											hx-swap="outerHTML" class="w-50">
 											{% csrf_token %}
 											<button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
 												title="{% trans 'Remove' %}">

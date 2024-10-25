@@ -845,3 +845,14 @@ def get_next_month_same_date(date_obj):
     total_days_in_month = calendar.monthrange(year, month)[1]
     day = min(day, total_days_in_month)
     return date(day=day, month=month, year=year)
+
+
+def format_date(date_str):
+    # List of possible date formats to try
+
+    for format_name, format_string in HORILLA_DATE_FORMATS.items():
+        try:
+            return datetime.strptime(date_str, format_string).strftime("%Y-%m-%d")
+        except ValueError:
+            continue
+    raise ValueError(f"Invalid date format: {date_str}")

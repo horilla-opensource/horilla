@@ -4,7 +4,9 @@ views.py
 This module is used to map url pattens with django views or methods
 """
 
+import csv
 import json
+import os
 import uuid
 from datetime import datetime, timedelta
 from email.mime.image import MIMEImage
@@ -19,6 +21,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
+from django.core.files.base import ContentFile
 from django.core.mail import EmailMultiAlternatives
 from django.core.management import call_command
 from django.core.paginator import Paginator
@@ -103,6 +106,7 @@ from base.methods import (
     export_data,
     filtersubordinates,
     filtersubordinatesemployeemodel,
+    format_date,
     get_key_instances,
     get_pagination,
     sortby,
@@ -158,7 +162,11 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
-from horilla.horilla_settings import DB_INIT_PASSWORD, DYNAMIC_URL_PATTERNS
+from horilla.horilla_settings import (
+    DB_INIT_PASSWORD,
+    DYNAMIC_URL_PATTERNS,
+    FILE_STORAGE,
+)
 from horilla.methods import get_horilla_model_class, remove_dynamic_url
 from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
@@ -6121,10 +6129,8 @@ def action_type_delete(request, act_id):
 
     else:
         Actiontype.objects.filter(id=act_id).delete()
-        message = _("Action has been deleted successfully!")
-        return HttpResponse(
-            f"<div class='oh-wrapper'> <div class='oh-alert-container'> <div class='oh-alert oh-alert--animated oh-alert--success'>{message}</div></div></div>"
-        )
+        messages.success(request, _("Action has been deleted successfully!"))
+        return HttpResponse(f"<script>$('#reloadMessagesButton').click()</script>")
 
 
 @login_required
@@ -6443,11 +6449,158 @@ def holidays_excel_template(request):
         return HttpResponse(exception)
 
 
+def csv_holiday_import(file):
+    """
+    Imports holiday data from a CSV file.
+
+    This function reads a CSV file containing holiday information, validates the data,
+    and saves valid holiday records to the database using bulk creation for efficiency.
+
+    The expected format for the CSV file is:
+    - "Holiday Name": Name of the holiday (string)
+    - "Start Date": Start date of the holiday (date string in a recognized format)
+    - "End Date": End date of the holiday (date string in a recognized format)
+    - "Recurring": Indicates whether the holiday recurs ("yes" or "no")
+    """
+    holiday_list, error_list = [], []
+    file_name = FILE_STORAGE.save("holiday_import.csv", ContentFile(file.read()))
+    holiday_file = FILE_STORAGE.path(file_name)
+
+    with open(holiday_file, errors="ignore") as csv_file:
+        save = True
+        reader = csv.reader(csv_file)
+        next(reader)
+
+        for total_rows, row in enumerate(reader, start=1):
+            try:
+                name, start_date, end_date, recurring = row
+                holiday_dict = {
+                    "Holiday Name": name,
+                    "Start Date": start_date,
+                    "End Date": end_date,
+                    "Recurring": recurring,
+                }
+
+                try:
+                    start_date = format_date(start_date)
+                except:
+                    save = False
+                    holiday_dict["Start Date Error"] = _("Invalid start date format.")
+                    error_list.append(holiday_dict)
+
+                try:
+                    end_date = format_date(end_date)
+                except:
+                    save = False
+                    holiday_dict["End Date Error"] = _("Invalid end date format.")
+                    error_list.append(holiday_dict)
+
+                if recurring.lower() not in ["yes", "no"]:
+                    save = False
+                    holiday_dict["Recurring Field Error"] = _(
+                        "Recurring must be yes or no."
+                    )
+                    error_list.append(holiday_dict)
+
+                if save:
+                    holiday_list.append(
+                        Holidays(
+                            name=name,
+                            start_date=start_date,
+                            end_date=end_date,
+                            recurring=recurring.lower() == "yes",
+                        )
+                    )
+
+            except Exception as e:
+                holiday_dict["Other Errors"] = str(e)
+                error_list.append(holiday_dict)
+
+    if holiday_list:
+        Holidays.objects.bulk_create(holiday_list)
+
+    if os.path.exists(holiday_file):
+        os.remove(holiday_file)
+
+    return (error_list, total_rows)
+
+
+def excel_holiday_import(file):
+    """
+    Imports holiday data from an Excel file.
+
+    This function reads an Excel file containing holiday information, validates the data,
+    and saves valid holiday records to the database using bulk creation for efficiency
+
+    The expected format for the Excel file is:
+    - "Holiday Name": Name of the holiday (string)
+    - "Start Date": Start date of the holiday (date string in a recognized format)
+    - "End Date": End date of the holiday (date string in a recognized format)
+    - "Recurring": Indicates whether the holiday recurs ("yes" or "no")
+
+    """
+    error_list = []
+    valid_holidays = []
+    data_frame = pd.read_excel(file)
+    holiday_dicts = data_frame.to_dict("records")
+
+    for holiday in holiday_dicts:
+        save = True
+        try:
+            name = holiday["Holiday Name"]
+
+            try:
+                start_date = pd.to_datetime(holiday["Start Date"]).date()
+            except Exception:
+                save = False
+                holiday["Start Date Error"] = _("Invalid start date format {}").format(
+                    holiday["Start Date"]
+                )
+
+            try:
+                end_date = pd.to_datetime(holiday["End Date"]).date()
+            except Exception:
+                save = False
+                holiday["End Date Error"] = _("Invalid end date format {}").format(
+                    holiday["End Date"]
+                )
+
+            recurring_str = holiday.get("Recurring", "").lower()
+            if recurring_str in ["yes", "no"]:
+                recurring = recurring_str == "yes"
+            else:
+                save = False
+                holiday["Recurring Field Error"] = _(
+                    "Recurring must be {} or {}"
+                ).format("yes", "no")
+
+            if save:
+                holiday_instance = Holidays(
+                    name=name,
+                    start_date=start_date,
+                    end_date=end_date,
+                    recurring=recurring,
+                )
+                valid_holidays.append(holiday_instance)
+            else:
+                error_list.append(holiday)
+
+        except Exception as e:
+            holiday["Other errors"] = str(e)
+            error_list.append(holiday)
+
+    if valid_holidays:
+        Holidays.objects.bulk_create(valid_holidays)
+
+    return error_list, len(holiday_dicts)
+
+
 @login_required
 @permission_required("base.add_holiday")
 def holidays_info_import(request):
+    result = None
     file_name = "HolidaysImportError.xlsx"
-    error_list = []
+    path_info = None
     error_data = {
         "Holiday Name": [],
         "Start Date": [],
@@ -6455,64 +6608,41 @@ def holidays_info_import(request):
         "Recurring": [],
         "Start Date Error": [],
         "End Date Error": [],
-        "Reccuring Field Error": [],
-        "Other errors": [],
+        "Recurring Field Error": [],
+        "Other Errors": [],
     }
 
     if request.method == "POST":
-        file = request.FILES["holidays_import"]
-        data_frame = pd.read_excel(file)
-        holiday_dicts = data_frame.to_dict("records")
-        for holiday in holiday_dicts:
-            save = True
-            try:
-                name = holiday["Holiday Name"]
-                try:
-                    start_date = pd.to_datetime(holiday["Start Date"]).date()
-                except Exception as e:
-                    save = False
-                    holiday["Start Date Error"] = _(
-                        "Invalid start date format {}"
-                    ).format(holiday["Start Date"])
-                try:
-                    end_date = pd.to_datetime(holiday["End Date"]).date()
-                except Exception as e:
-                    save = False
-                    holiday["End Date Error"] = _("Invalid end date format {}").format(
-                        holiday["End Date"]
-                    )
-                if holiday["Recurring"].lower() in ["yes", "no"]:
-                    recurring = True if holiday["Recurring"].lower() == "yes" else False
-                else:
-                    save = False
-                    holiday["Reccuring Field Error"] = _(
-                        "Recurring must be {} or {}"
-                    ).format("yes", "no")
-                if save:
-                    holiday = Holidays(
-                        name=name,
-                        start_date=start_date,
-                        end_date=end_date,
-                        recurring=recurring,
-                    )
-                    holiday.save()
-                else:
-                    error_list.append(holiday)
-            except Exception as e:
-                holiday["Other errors"] = f"{str(e)}"
-                error_list.append(holiday)
-        path_info = None
-        if error_list:
-            path_info = generate_error_report(error_list, error_data, file_name)
-        created_holidays_count = len(holiday_dicts) - len(error_list)
-        context = {
-            "created_count": created_holidays_count,
-            "error_count": len(error_list),
-            "model": _("Holidays"),
-            "path_info": path_info,
-        }
-        html = render_to_string("import_popup.html", context)
-        return HttpResponse(html)
+        file = request.FILES.get("holidays_import")
+        if file:
+            content_type = file.content_type
+            if content_type == "text/csv":
+                error_list, total_count = csv_holiday_import(file)
+                if error_list:
+                    path_info = generate_error_report(error_list, error_data, file_name)
+            elif (
+                content_type
+                == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ):
+                error_list, total_count = excel_holiday_import(file)
+                if error_list:
+                    path_info = generate_error_report(error_list, error_data, file_name)
+            else:
+                messages.error(
+                    request, _("The file you attempted to import is unsupported")
+                )
+                return HttpResponse("<script>window.location.reload()</script>")
+
+            created_holidays_count = total_count - len(error_list)
+            context = {
+                "created_count": created_holidays_count,
+                "error_count": len(error_list),
+                "model": _("Holidays"),
+                "path_info": path_info,
+            }
+            result = render_to_string("import_popup.html", context)
+
+    return HttpResponse(result)
 
 
 @login_required

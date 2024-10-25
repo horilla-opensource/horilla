@@ -62,7 +62,7 @@
 																		hx-confirm="{% trans 'Are you sure you want to delete this job role?' %}"
 																		hx-post="{% url 'job-role-delete' role.id %}"
 																		hx-target="#jobRoleDiv{{role.id}}"
-																		hx-swap="delete"
+																		hx-swap="outerHTML"
 																		class="mr-3 float-left">
 																		<button role="submit" style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer; outline: none;" title="{% trans 'Remove' %}">
 																			<ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
