@@ -88,7 +88,7 @@
                             <div class="oh-sticky-table__tbody">
                                 {% for leave_request in leave_request_list.list %}
                                 <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25"
-                                hx-get="{% url 'one-request-view' leave_request.id %}" hx-target="#objectDetailsModalW25Target">
+                                hx-get="{% url 'one-request-view' leave_request.id %}?instances_ids={{requests_ids}}" hx-target="#objectDetailsModalW25Target">
                                     <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--blue {% elif leave_request.status == "cancelled_and_rejected" %} row-status--black
                                         {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--gray
                                         {% elif leave_request.status == "rejected" %}row-status--red{% endif %}" onclick="event.stopPropagation()">
@@ -101,24 +101,22 @@
                                         </div>
                                     </div>
                                     <div class="oh-sticky-table__td">
-                                      {% if leave_request in leave_requests_with_interview %}
-                                        <div class="d-flex" style="flex-direction: row-reverse; margin-bottom:-25px;">
-                                          <span class="tooltip">
-                                              <span class="material-symbols-outlined d-flex" style="flex-direction: row-reverse;color:#ff9146;">
-                                                  warning
-                                              </span>
-                                              <span class="tooltiptext fw-bold">
-                                                {{leave_request.employee_id}}&nbsp {% trans "has an interview in this requested date range." %}
-                                              </span>
-                                          </span>
-                                        </div>
-                                      {% endif %}
                                         <div class="oh-profile oh-profile--md">
                                             <div class="oh-profile__avatar mr-1">
                                                 <img src="{{leave_request.employee_id.get_avatar}}" class="oh-profile__image"
                                                     alt="" />
                                             </div>
                                             <span class="oh-profile__name oh-text--dark">{{leave_request.employee_id}}</span>
+                                            {% if leave_request in leave_requests_with_interview %}
+                                              <span class="tooltip">
+                                                  <span class="material-symbols-outlined d-flex" style="flex-direction: row-reverse;color:#ff9146;">
+                                                      warning
+                                                  </span>
+                                                  <span class="tooltiptext fw-bold">
+                                                    {{leave_request.employee_id}}&nbsp {% trans "has an interview in this requested date range." %}
+                                                  </span>
+                                              </span>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.leave_type_id}}</div>

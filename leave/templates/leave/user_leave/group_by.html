@@ -93,9 +93,13 @@
                                         </div>
                                     </div>
                                     <div class="oh-sticky-table__td">
-
-                                        {% if leave_request in leave_requests_with_interview %}
-                                            <div class="d-flex" style="flex-direction: row-reverse; margin-bottom:-30px;">
+                                        <div class="oh-profile oh-profile--md">
+                                            <div class="oh-profile__avatar mr-1">
+                                                <img src="{{leave_request.leave_type_id.get_avatar}}" class="oh-profile__image"
+                                                    alt="Leave Type Icon" />
+                                            </div>
+                                            <span class="oh-profile__name oh-text--dark">{{leave_request.leave_type_id|truncatechars:12}}</span>
+                                            {% if leave_request in leave_requests_with_interview %}
                                                 <span class="tooltip">
                                                     <span class="material-symbols-outlined" style="flex-direction: row-reverse;color:#ff9146;">
                                                         warning
@@ -104,14 +108,7 @@
                                                     You have an interview in this requested date range.
                                                     </span>
                                                 </span>
-                                            </div>
-                                        {% endif %}
-                                        <div class="oh-profile oh-profile--md">
-                                            <div class="oh-profile__avatar mr-1">
-                                                <img src="{{leave_request.leave_type_id.get_avatar}}" class="oh-profile__image"
-                                                    alt="Leave Type Icon" />
-                                            </div>
-                                            <span class="oh-profile__name oh-text--dark">{{leave_request.leave_type_id}}</span>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' %} diff-cell{% endif %} dateformat_changer"> {{leave_request.start_date}}</div>
