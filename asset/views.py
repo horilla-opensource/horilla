@@ -110,7 +110,12 @@ def asset_creation(request, asset_category_id):
         None
     """
     initial_data = {"asset_category_id": asset_category_id}
-    form = AssetForm(initial=initial_data)
+    # Use request.GET to pre-fill the form with dynamic create batch number data if available
+    form = (
+        AssetForm(request.GET, initial=initial_data)
+        if request.GET
+        else AssetForm(initial=initial_data)
+    )
     if request.method == "POST":
         form = AssetForm(request.POST, initial=initial_data)
         if form.is_valid():
