@@ -862,6 +862,7 @@ def kr_table_view(request, emp_objective_id):
         "key_result_status": EmployeeKeyResult.STATUS_CHOICES,
         "emp_objective": emp_objective,
         "pd": previous_data,
+        "today": datetime.datetime.today().date(),
     }
     template = "okr/kr_list.html"
     return render(request, template, context)
