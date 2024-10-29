@@ -228,6 +228,9 @@ class DeductionForm(forms.ModelForm):
         )
         reload_queryset(self.fields)
         self.fields["style"].widget = widget.StyleWidget(form=self)
+        for field_name, field in self.fields.items():
+            if isinstance(field.widget, forms.Select):
+                field.widget.option_template_name = "horilla_widgets/select_option.html"
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
