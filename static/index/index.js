@@ -86,20 +86,21 @@ function getAssignedLeave(employeeElement) {
         }
     });
 }
+function selectSelected(viewId, storeKey = "selectedInstances") {
 
-function selectSelected(viewId) {
     ids = JSON.parse(
-        $("#selectedInstances").attr("data-ids") || "[]"
+        $(`#${storeKey}`).attr("data-ids") || "[]"
     );
     $.each(ids, function (indexInArray, valueOfElement) {
         $(`${viewId} .oh-sticky-table__tbody .list-table-row[value=${valueOfElement}]`).prop("checked", true).change()
+        $(`${viewId} tbody .list-table-row[value=${valueOfElement}]`).prop("checked", true).change()
     });
-    $(`${viewId} .oh-sticky-table__tbody .list-table-row`).change(function (
+    $(`${viewId} .oh-sticky-table__tbody .list-table-row,${viewId} tbody .list-table-row`,).change(function (
         e
     ) {
         id = $(this).val()
         ids = JSON.parse(
-            $("#selectedInstances").attr("data-ids") || "[]"
+            $(`#${storeKey}`).attr("data-ids") || "[]"
         );
         ids = Array.from(new Set(ids));
         let index = ids.indexOf(id);
@@ -110,10 +111,12 @@ function selectSelected(viewId) {
                 ids.splice(index, 1);
             }
         }
-        $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+        $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids));
     }
     );
-    reloadSelectedCount($('#count_{{view_id|safe}}'));
+    if (viewId) {
+        reloadSelectedCount($(`#count_${viewId}`), storeKey);
+    }
 
 }
 
@@ -171,8 +174,8 @@ function toggleReimbursmentType(element) {
     }
 }
 
-function reloadSelectedCount(targetElement) {
-    count = JSON.parse($("#selectedInstances").attr("data-ids") || "[]").length
+function reloadSelectedCount(targetElement, storeKey = "selectedInstances") {
+    var count = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]").length
     id = targetElement.attr("id")
     if (id) {
         id = id.split("count_")[1]
@@ -198,16 +201,16 @@ function removeHighlight() {
     }, 200);
 }
 
-function removeId(element) {
+function removeId(element, storeKey = "selectedInstances") {
     id = element.val();
     viewId = element.attr("data-view-id")
-    ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]")
+    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]")
     let elementToRemove = 5;
     if (ids[ids.length - 1] === id) {
         ids.pop();
     }
     ids = JSON.stringify(ids)
-    $("#selectedInstances").attr("data-ids", ids);
+    $(`#${storeKey}`).attr("data-ids", ids);
 
 }
 
