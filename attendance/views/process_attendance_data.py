@@ -30,16 +30,38 @@ def process_attendance_data(attendance_dicts):
         list: A list of dictionaries representing errors encountered during processing.
     """
     error_list = []
+    attendance_list = []
+    today = datetime.today().date()
+
+    # Cache all necessary data in bulk to reduce DB hits
+    badge_ids = [d["Badge ID"] for d in attendance_dicts]
+    employees = {
+        emp.badge_id: emp
+        for emp in Employee.objects.filter(
+            badge_id__in=[d["Badge ID"] for d in attendance_dicts], is_active=True
+        )
+    }
+    shifts = {shift.employee_shift: shift for shift in EmployeeShift.objects.all()}
+    work_types = {wt.work_type: wt for wt in WorkType.objects.all()}
+    existing_attendance_records = {
+        (att.employee_id.badge_id, att.attendance_date): att
+        for att in Attendance.objects.filter(
+            employee_id__badge_id__in=badge_ids
+        ).select_related("employee_id")
+    }
+
     for attendance_data in attendance_dicts:
         save = True
         try:
-            today = datetime.today().date()
             badge_id = attendance_data["Badge ID"]
             shift_id = attendance_data["Shift"]
             work_type_id = attendance_data["Work type"]
-            employee = Employee.objects.filter(badge_id=badge_id).first()
-            shift = EmployeeShift.objects.filter(employee_shift=shift_id).first()
-            work_type = WorkType.objects.filter(work_type=work_type_id).first()
+
+            # Retrieve objects from cached dictionaries
+            employee = employees.get(badge_id)
+            shift = shifts.get(shift_id)
+            work_type = work_types.get(work_type_id)
+
             attendance_date = None
             check_in_date = None
             check_out_date = None
@@ -48,13 +70,9 @@ def process_attendance_data(attendance_dicts):
                 attendance_date = pd.to_datetime(
                     attendance_data["Attendance date"]
                 ).date()
-                existing_attendance = Attendance.objects.filter(
-                    employee_id__badge_id=badge_id,
-                    attendance_date=attendance_data["Attendance date"],
-                ).first()
-                if existing_attendance:
+                if (badge_id, attendance_date) in existing_attendance_records:
                     attendance_data["Attendance Error"] = (
-                        "Attendance for this date already exists"
+                        "This employee's attendance for this date already exists."
                     )
                     save = False
             except Exception as exception:
@@ -163,24 +181,30 @@ def process_attendance_data(attendance_dicts):
                     save = False
 
             if save:
-                attendance = Attendance(
-                    employee_id=employee,
-                    shift_id=shift,
-                    work_type_id=work_type,
-                    attendance_date=attendance_date,
-                    attendance_clock_in_date=check_in_date,
-                    attendance_clock_in=format_time(check_in),
-                    attendance_clock_out_date=check_out_date,
-                    attendance_clock_out=format_time(check_out),
-                    attendance_worked_hour=format_time(worked_hour),
-                    minimum_hour=format_time(minimum_hour),
+                attendance_list.append(
+                    Attendance(
+                        employee_id=employee,
+                        shift_id=shift,
+                        work_type_id=work_type,
+                        attendance_date=attendance_date,
+                        attendance_clock_in_date=check_in_date,
+                        attendance_clock_in=format_time(check_in),
+                        attendance_clock_out_date=check_out_date,
+                        attendance_clock_out=format_time(check_out),
+                        attendance_worked_hour=format_time(worked_hour),
+                        minimum_hour=format_time(minimum_hour),
+                    )
                 )
-                attendance.save()
+                existing_attendance_records[(badge_id, attendance_date)] = (
+                    employee,
+                    attendance_date,
+                )
             else:
                 error_list.append(attendance_data)
 
         except Exception as exception:
             attendance_data["Other Errors"] = f"{str(exception)}"
             error_list.append(attendance_data)
-
+    if attendance_list:
+        Attendance.objects.bulk_create(attendance_list)
     return error_list

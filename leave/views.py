@@ -17,6 +17,7 @@ from django.db.models import ProtectedError, Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.encoding import force_str
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
@@ -1506,18 +1507,17 @@ def leave_assign_bulk_delete(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
+    count = 0
     for assigned_leave_id in ids:
         try:
             assigned_leave = AvailableLeave.objects.get(id=assigned_leave_id)
-            leave_type = assigned_leave.leave_type_id
-            employee = assigned_leave.employee_id
             assigned_leave.delete()
-            messages.success(
-                request,
-                _("{} assigned to {} deleted.".format(leave_type, employee)),
-            )
+            count += 1
         except Exception as e:
             messages.error(request, _("Assigned leave not found."))
+    messages.success(
+        request, _("{} assigned leaves deleted successfully ").format(count)
+    )
     return JsonResponse({"message": "Success"})
 
 
@@ -1548,7 +1548,7 @@ def assign_leave_type_excel(_request):
 @manager_can_enter("leave.add_availableleave")
 def assign_leave_type_import(request):
     """
-    This function accepts a POST request containing an Excel file with assign leave type to employee data.
+    This function accepts a POST request containing an Excel file with assigned leave type to employee data.
     It processes the data, checks for errors, and either assigns leave types to employees
     or generates an error report in the form of an Excel file.
     """
@@ -1560,56 +1560,73 @@ def assign_leave_type_import(request):
         "Assigned Error": [],
         "Other Errors": [],
     }
-    error_list = []
-    file_name = "AssignLeaveError.xlsx"
+
     if request.method == "POST":
         file = request.FILES["assign_leave_type_import"]
         data_frame = pd.read_excel(file)
         assign_leave_dicts = data_frame.to_dict("records")
-        for assign_leave in assign_leave_dicts:
-            try:
-                save = True
-                assign_leave_type = assign_leave["Leave Type"]
-                badge_id = assign_leave["Employee Badge ID"]
-                employee = Employee.objects.filter(badge_id__iexact=badge_id).first()
-                leave_type = LeaveType.objects.filter(
-                    name__iexact=assign_leave_type
-                ).first()
-                if employee is None:
-                    save = False
-                    assign_leave["Badge ID Error"] = _("This badge id does not exist.")
 
-                if leave_type is None:
-                    save = False
-                    assign_leave["Leave Type Error"] = _(
-                        "This leave type does not exist."
-                    )
-                if AvailableLeave.objects.filter(
-                    leave_type_id=leave_type, employee_id=employee
-                ).exists():
-                    save = False
-                    assign_leave["Assigned Error"] = _(
-                        "Leave type has already been assigned to the employee."
-                    )
-                if save:
-                    AvailableLeave(
-                        leave_type_id=leave_type,
-                        employee_id=employee,
-                        available_days=leave_type.total_days,
-                    ).save()
-                else:
-                    error_list.append(assign_leave)
-            except Exception as exception:
-                assign_leave["Other Errors"] = f"{str(exception)}"
+        # Pre-fetch all employees and leave types
+        employees = {emp.badge_id.lower(): emp for emp in Employee.objects.all()}
+        leave_types = {lt.name.lower(): lt for lt in LeaveType.objects.all()}
+        available_leaves = {
+            (al.leave_type.id, al.employee.id): al
+            for al in AvailableLeave.objects.all()
+        }
+
+        assign_leave_list = []
+        error_list = []
+
+        for assign_leave in assign_leave_dicts:
+            badge_id = assign_leave.get("Employee Badge ID", "").strip().lower()
+            assign_leave_type = assign_leave.get("Leave Type", "").strip().lower()
+            employee = employees.get(badge_id)
+            leave_type = leave_types.get(assign_leave_type)
+
+            errors = []
+            if employee is None:
+                errors.append(_("This badge id does not exist."))
+            if leave_type is None:
+                errors.append(_("This leave type does not exist."))
+            if errors:
+                assign_leave[
+                    "Badge ID Error" if "badge id" in errors[0] else "Leave Type Error"
+                ] = " ".join(force_str(error) for error in errors)
                 error_list.append(assign_leave)
+                continue
+
+            # Check if leave type has already been assigned to the employee
+            if (leave_type.id, employee.id) in available_leaves:
+                assign_leave["Assigned Error"] = _(
+                    "Leave type has already been assigned to the employee."
+                )
+                error_list.append(assign_leave)
+                continue
+
+            # If no errors, create the AvailableLeave instance
+            assign_leave_list.append(
+                AvailableLeave(
+                    leave_type_id=leave_type,
+                    employee_id=employee,
+                    available_days=leave_type.total_days,
+                )
+            )
+
+        # Bulk create available leaves
+        if assign_leave_list:
+            AvailableLeave.objects.bulk_create(assign_leave_list)
+
+        # Generate error report if there are errors
         path_info = None
         if error_list:
-            path_info = generate_error_report(error_list, error_data, file_name)
-        assigned_leave_count = len(assign_leave_dicts) - len(error_list)
+            path_info = generate_error_report(
+                error_list, error_data, "AssignLeaveError.xlsx"
+            )
+
         context = {
-            "created_count": assigned_leave_count,
+            "created_count": len(assign_leave_dicts) - len(error_list),
             "error_count": len(error_list),
-            "model": _("Assined Leaves"),
+            "model": _("Assigned Leaves"),
             "path_info": path_info,
         }
         html = render_to_string("import_popup.html", context)

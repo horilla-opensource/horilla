@@ -259,6 +259,8 @@ def attendance_excel(_request):
         return HttpResponse(exception)
 
 
+@login_required
+@permission_required("attendance.add_attendance")
 def attendance_import(request):
     """
     Save the import of attendance data from an uploaded Excel file, validate the data,
