@@ -13,9 +13,6 @@
     html = $(".note-editable #multipleConditionForm").html()
     $("#{{view_id}} form [name=condition_html]").val(html);
   });
-  function getToMail(element) {
-    model = $(this).val();
-  }
   $("#dynamic_field_condition").parent().removeClass("col-md-6");
   // summernote
   $("#dynamic_field_condition textarea")
