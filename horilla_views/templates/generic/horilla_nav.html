@@ -15,7 +15,14 @@
     </a>
   </div>
   {% if search_url %}
-  <form autocomplete="off" id="filterForm" onsubmit="event.preventDefault()" hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}" hx-replace-url="true" hx-target="{{search_swap_target}}" class="oh-main__titlebar oh-main__titlebar--right">
+  <form autocomplete="off"
+    id="filterForm"
+    onsubmit="event.preventDefault()"
+    hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}"
+    hx-replace-url="false"
+    hx-target="{{search_swap_target}}"
+    class="oh-main__titlebar oh-main__titlebar--right"
+  >
     <div class="oh-input-group oh-input__search-group" id="searchGroup">
       <ion-icon
         name="search-outline"
@@ -82,10 +89,8 @@
           {% if active_view.type == type.type %}
           <script>
             $("form#filterForm.oh-main__titlebar oh-main__titlebar--right").attr('hx-get','{{type.url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}');
-            setTimeout(() => {
-              $(".oh-view-types .oh-view-type[data-type={{type.type}}]").click()
-              $(".oh-view-types .oh-view-type[data-type={{type.type}}] a").addClass("oh-btn--view-active")
-            }, 10);
+            $(".oh-view-types .oh-view-type[data-type={{type.type}}] a").addClass("oh-btn--view-active")
+
           </script>
           {% endif %}
         </li>
@@ -202,6 +207,12 @@
 
   </div>
   <script>
+    setTimeout(() => {
+      $(".oh-btn--view-active").click();
+      if (!$(".oh-btn--view-active").length) {
+        $("#applyFilter").click()
+      }
+    }, 100);
     $(".oh-btn--view").click(function (e) {
       e.preventDefault();
       $(".oh-btn--view-active").removeClass("oh-btn--view-active");
@@ -227,7 +238,6 @@
 <script>
   filterCountUpdate("filterForm")
   $(document).ready(function () {
-    $("#filterForm select").select2("destroy")
     $("#filterForm select").parent().find("span").remove()
     $("#filterForm select").select2()
   });
