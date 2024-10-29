@@ -3,6 +3,10 @@
 </dic>
 
 <script>
+dynamic_value = $("#{{dynamic_id}} [name={{field.name}}]").val()
+if (dynamic_value != "dynamic_create"){
+  $("#{{dynamic_id}} [name={{field.name}}]").change()
+}
 $("#{{dynamic_id}} [name={{field.name}}]").change(function (e) {
     values = $(this).val();
     if (values == "dynamic_create") {
