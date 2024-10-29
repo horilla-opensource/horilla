@@ -1306,14 +1306,14 @@ def employee_view_update(request, obj_id, **kwargs):
             instance=EmployeeBankDetails.objects.filter(employee_id=employee).first()
         )
         if request.POST:
-            if request.POST.get("employee_first_name") is not None:
+            if request.POST.get("form") == "personal":
                 form = EmployeeForm(request.POST, instance=employee)
                 if form.is_valid():
                     form.save()
                     messages.success(
                         request, _("Employee personal information updated.")
                     )
-            elif request.POST.get("reporting_manager_id") is not None:
+            elif request.POST.get("form") == "work":
                 instance = EmployeeWorkInformation.objects.filter(
                     employee_id=employee
                 ).first()
@@ -1342,7 +1342,7 @@ def employee_view_update(request, obj_id, **kwargs):
                         employee_id=employee
                     ).first()
                 )
-            elif request.POST.get("any_other_code1"):
+            elif request.POST.get("form") == "bank":
                 instance = EmployeeBankDetails.objects.filter(
                     employee_id=employee
                 ).first()
