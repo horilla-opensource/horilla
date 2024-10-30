@@ -168,10 +168,10 @@
   </div>
   <script>
     var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
-    let badge = $(`#badge-${tabId}`);
-    let count = "{{queryset.paginator.count}}";
-    let label = badge.attr("data-badge-label") || "";
-    let title = count + " " + label;
+    var badge = $(`#badge-${tabId}`);
+    var count = "{{queryset.paginator.count}}";
+    var label = badge.attr("data-badge-label") || "";
+    var title = count + " " + label;
     badge.html(count);
     badge.attr("title", title);
   </script>

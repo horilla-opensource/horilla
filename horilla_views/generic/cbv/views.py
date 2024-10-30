@@ -87,6 +87,7 @@ class HorillaListView(ListView):
     selected_instances_key_id: str = "selectedInstances"
 
     show_filter_tags: bool = True
+    show_toggle_form: bool = True
     filter_keys_to_remove: list = []
 
     records_per_page: int = 50
@@ -235,6 +236,7 @@ class HorillaListView(ListView):
         context["columns"] = self.visible_column
         context["hidden_columns"] = list(set(self.columns) - set(self.visible_column))
         context["toggle_form"] = self.toggle_form
+        context["show_toggle_form"] = self.show_toggle_form
         context["search_url"] = self.search_url
 
         context["action_method"] = self.action_method
@@ -497,6 +499,7 @@ class HorillaDetailedView(DetailView):
 
     action_method: list = []
     actions: list = []
+    cols: dict = {}
 
     ids_key: str = "instance_ids"
 
@@ -534,6 +537,7 @@ class HorillaDetailedView(DetailView):
         context["body"] = self.body
         context["actions"] = self.actions
         context["action_method"] = self.action_method
+        context["cols"] = self.cols
 
         CACHE.get(self.request.session.session_key + "cbv")[
             HorillaDetailedView

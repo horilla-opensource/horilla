@@ -36,6 +36,7 @@
   <div id="keyResultsContainer">
     <div class="my-3" id="keyResultCard">
       <div class="oh-card oh-card--no-shadow oh-card__body">
+        {% if header %}
         <a
           class="oh-timeoff-modal__profile-content"
           style="text-decoration: none"
@@ -61,14 +62,14 @@
             </div>
           </div>
         </a>
-
+        {% endif %}
         <div
           class="oh-modal__dialog-header {% if header %} oh-card__footer--border-top{% endif %}"
           style="padding-top: 5px; padding-rigth: 0px; padding-left: 0px"
         >
           <div class="row">
             {% for col in body %}
-            <div class="col-6 mt-3">
+            <div class="col-{% if cols|get_item:col.1 %}{{cols|get_item:col.1}}{% else %}6{% endif %} mt-3">
               {% if not col.2 %}
               <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{{col.0}}</span>
