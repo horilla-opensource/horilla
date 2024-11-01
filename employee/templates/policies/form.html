@@ -1,22 +1,30 @@
 {% load i18n %}
-
+{% if messages %}
+    <span hx-get="{% url 'search-policies' %}" hx-trigger="load delay:.2s" hx-target="#policyContainer"
+        hx-on-htmx-after-request="
+        setTimeout(function() {
+        $('#reloadMessagesButton').click();
+        $('.oh-modal__close').click();
+        }, 250);
+    "></span>
+{% endif %}
 <div class="oh-modal__dialog-header">
-  <h2 class="oh-modal__dialog-title">
-    {% trans "Policy" %}
-  </h2>
-  <button class="oh-modal__close" aria-label="Close">
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <h2 class="oh-modal__dialog-title">
+        {% trans "Policy" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 
 <div class="oh-modal__dialog-body">
-  <form hx-post="{% url 'create-policy' %}?instance_id={{form.instance.id}}" hx-encoding="multipart/form-data"
-    class="oh-profile-section" hx-target="#objectCreateModalTarget">
-    {{ form.as_p }}
-    <div class="oh-modal__dialog-footer p-0">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow mt-3">
-        {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+    <form hx-post="{% url 'create-policy' %}?instance_id={{form.instance.id}}" hx-encoding="multipart/form-data"
+        class="oh-profile-section" hx-target="#objectCreateModalTarget">
+        {{ form.as_p }}
+        <div class="oh-modal__dialog-footer p-0">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow mt-3">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
 </div>

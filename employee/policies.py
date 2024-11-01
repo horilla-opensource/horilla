@@ -62,7 +62,8 @@ def create_policy(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Policy saved")
-            return HttpResponse("<script>window.location.reload()</script>")
+            form = PolicyForm()
+            # return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "policies/form.html", {"form": form})
 
 

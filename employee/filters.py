@@ -5,22 +5,21 @@ This page is used to register filter for employee models
 
 """
 
-import datetime
-import uuid
-
 import django
 import django_filters
 from django import forms
 from django.utils.translation import gettext as _
 from django_filters import CharFilter
 
-# from attendance.models import Attendance
 from employee.models import DisciplinaryAction, Employee, Policy
-from horilla.filters import FilterSet, filter_by_name
+
+# from attendance.models import Attendance
+from horilla.filters import FilterSet, HorillaFilterSet, filter_by_name
 from horilla_documents.models import Document
+from horilla_views.templatetags.generic_template_filters import getattribute
 
 
-class EmployeeFilter(FilterSet):
+class EmployeeFilter(HorillaFilterSet):
     """
     Filter set class for Candidate model
 
@@ -29,6 +28,7 @@ class EmployeeFilter(FilterSet):
     """
 
     search = django_filters.CharFilter(method="filter_by_name")
+    search_field = django_filters.CharFilter(method="search_in")
     selected_search_field = django_filters.ChoiceFilter(
         label="Search Field",
         choices=[
@@ -89,9 +89,6 @@ class EmployeeFilter(FilterSet):
         field_name="candidate_get__probation_end",
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
-    )
-    working_today = django_filters.BooleanFilter(
-        label="Working", method="get_working_today"
     )
 
     not_in_yet = django_filters.DateFilter(
@@ -189,112 +186,21 @@ class EmployeeFilter(FilterSet):
             return queryset.filter(q_objects)
         return super().filter_queryset(queryset)
 
-        # Continue with the default behavior for other filters
-
-    def get_working_today(self, queryset, _, value):
-        today = datetime.datetime.now().date()
-        yesterday = today - datetime.timedelta(days=1)
-
-        # working_employees = Attendance.objects.filter(
-        #     attendance_date__gte=yesterday,
-        #     attendance_date__lte=today,
-        #     attendance_clock_out_date__isnull=True,
-        # ).values_list("employee_id", flat=True)
-        working_employees = []
-        if value:
-            queryset = queryset.filter(id__in=working_employees)
-        else:
-            queryset = queryset.exclude(id__in=working_employees)
-        return queryset
-
-    def filter_by_name(self, queryset, _, value):
+    def filter_by_name(self, queryset, name, value):
         """
-        Filter queryset by first name or last name.
+        Employee search method
         """
-        filter_method = {
-            "department": "employee_work_info__department_id__department__icontains",
-            "job_position": "employee_work_info__job_position_id__job_position__icontains",
-            "job_role": "employee_work_info__job_role_id__job_role__icontains",
-            "shift": "employee_work_info__shift_id__employee_shift__icontains",
-            "work_type": "employee_work_info__work_type_id__work_type__icontains",
-            "company": "employee_work_info__company_id__company__icontains",
-        }
-        search_field = self.data.get("search_field")
-        # Split the search value into first name and last name
-        if not search_field:
-            parts = value.split()
-            first_name = parts[0]
-            last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
-            # Filter the queryset by first name and last name
-            if first_name and last_name:
-                queryset = queryset.filter(
-                    employee_first_name__icontains=first_name,
-                    employee_last_name__icontains=last_name,
-                )
-            elif first_name:
-                queryset = queryset.filter(employee_first_name__icontains=first_name)
-            elif last_name:
-                queryset = queryset.filter(employee_last_name__icontains=last_name)
-        else:
-            if search_field == "reporting_manager":
-                parts = value.split()
-                first_name = parts[0]
-                last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
-                if first_name and last_name:
-                    queryset = queryset.filter(
-                        employee_work_info__reporting_manager_id__employee_first_name__icontains=first_name,
-                        employee_work_info__reporting_manager_id__employee_last_name__icontains=last_name,
-                    )
-                elif first_name:
-                    queryset = queryset.filter(
-                        employee_work_info__reporting_manager_id__employee_first_name__icontains=first_name
-                    )
-                elif last_name:
-                    queryset = queryset.filter(
-                        employee_work_info__reporting_manager_id__employee_last_name__icontains=last_name
-                    )
-            else:
-                filter = filter_method.get(search_field)
-                queryset = queryset.filter(**{filter: value})
+        value = value.lower()
 
-        return queryset
+        if self.data.get("search_field"):
+            return queryset
 
-    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
-        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
-        self.form.fields["is_active"].initial = True
-        self.form.fields["email"].widget.attrs["autocomplete"] = "email"
-        self.form.fields["phone"].widget.attrs["autocomplete"] = "phone"
-        self.form.fields["country"].widget.attrs["autocomplete"] = "country"
-        for field in self.form.fields.keys():
-            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
-        self.model_choice_filters = [
-            filter
-            for filter in self.filters.values()
-            if isinstance(filter, django_filters.ModelMultipleChoiceFilter)
-        ]
-        for model_choice_filter in self.model_choice_filters:
-            queryset = (
-                model_choice_filter.queryset.filter(is_active=True)
-                if model_choice_filter.queryset.model == Employee
-                else model_choice_filter.queryset
-            )
-            choices = [
-                ("not_set", _("Not Set")),
-            ]
-            choices.extend([(obj.id, str(obj)) for obj in queryset])
+        def _icontains(instance):
+            result = str(getattribute(instance, "get_full_name")).lower()
+            return instance.pk if value in result else None
 
-            self.form.fields[model_choice_filter.field_name] = (
-                forms.MultipleChoiceField(
-                    choices=choices,
-                    required=False,
-                    widget=forms.SelectMultiple(
-                        attrs={
-                            "class": "oh-select oh-select-2 select2-hidden-accessible",
-                            "id": uuid.uuid4(),
-                        }
-                    ),
-                )
-            )
+        ids = list(filter(None, map(_icontains, queryset)))
+        return queryset.filter(id__in=ids)
 
 
 class EmployeeReGroup:
