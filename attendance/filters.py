@@ -5,6 +5,7 @@ This page is used to register filter for attendance models
 
 """
 
+import datetime
 import uuid
 
 import django_filters
@@ -20,6 +21,7 @@ from attendance.models import (
     strtime_seconds,
 )
 from base.filters import FilterSet
+from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla.filters import filter_by_name
 
@@ -644,3 +646,40 @@ class AttendanceRequestReGroup:
         ("employee_id__employee_work_info__employee_type_id", "Employment Type"),
         ("employee_id__employee_work_info__company_id", "Company"),
     ]
+
+
+def get_working_today(queryset, _name, value):
+    today = datetime.datetime.now().date()
+    yesterday = today - datetime.timedelta(days=1)
+
+    working_employees = Attendance.objects.filter(
+        attendance_date__gte=yesterday,
+        attendance_date__lte=today,
+        attendance_clock_out_date__isnull=True,
+    ).values_list("employee_id", flat=True)
+
+    if value:
+        queryset = queryset.filter(id__in=working_employees)
+    else:
+        queryset = queryset.exclude(id__in=working_employees)
+    return queryset
+
+
+og_init = EmployeeFilter.__init__
+
+
+def online_init(self, *args, **kwargs):
+    og_init(self, *args, **kwargs)
+    custom_field = django_filters.BooleanFilter(
+        label="Working", method=get_working_today
+    )
+    self.filters["working_today"] = custom_field
+    self.form.fields["working_today"] = custom_field.field
+    self.form.fields["working_today"].widget.attrs.update(
+        {
+            "class": "oh-select oh-select-2 w-100",
+        }
+    )
+
+
+EmployeeFilter.__init__ = online_init
