@@ -1730,12 +1730,12 @@ def biometric_device_live(request):
                 )
                 response = cosec.basic_config()
                 if response.get("app"):
-                    thread = COSECBioAttendanceThread(device.id)
-                    thread.start()
-                    BIO_DEVICE_THREADS[device.id] = thread
                     device.is_live = True
                     device.is_scheduler = False
                     device.save()
+                    thread = COSECBioAttendanceThread(device.id)
+                    thread.start()
+                    BIO_DEVICE_THREADS[device.id] = thread
                 else:
                     raise TimeoutError
             else:

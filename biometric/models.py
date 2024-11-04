@@ -221,7 +221,7 @@ class BiometricEmployees(models.Model):
         null=True, blank=True, validators=[MaxValueValidator(99999999)]
     )
     user_id = models.CharField(max_length=100)
-    employee_id = models.ForeignKey(Employee, on_delete=models.DO_NOTHING)
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     device_id = models.ForeignKey(
         BiometricDevices, on_delete=models.CASCADE, null=True, blank=True
     )
