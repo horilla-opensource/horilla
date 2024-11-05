@@ -120,3 +120,11 @@ def col(field: object):
     field_name = field.name
     cols = getattr(field.form, "cols", {})
     return cols.get(field_name, 6)
+
+
+@register.filter("get_item")
+def get_item(dictionary: dict, key: str):
+    """
+    get_item method to access from dictionary
+    """
+    return dictionary.get(key, "")
