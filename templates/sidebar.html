@@ -423,9 +423,12 @@ function initializeSummernote(candId,searchWords,) {
   }
 
   function highlightRow(checkbox) {
+    console.log(checkbox)
     checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+    checkbox.closest("tr").removeClass("highlight-selected");
     if (checkbox.is(":checked")) {
       checkbox.closest(".oh-sticky-table__tr").addClass("highlight-selected");
+      checkbox.closest("tr").addClass("highlight-selected");
     }
   }
   function toggleHighlight(ids) {

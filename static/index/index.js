@@ -30,14 +30,15 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function addToSelectedId(newIds) {
+function addToSelectedId(newIds, storeKey) {
+
     ids = JSON.parse(
-        $("#selectedInstances").attr("data-ids") || "[]"
+        $(`#${storeKey}`).attr("data-ids") || "[]"
     );
 
     ids = [...ids, ...newIds.map(String)]
     ids = Array.from(new Set(ids));
-    $("#selectedInstances").attr("data-ids", JSON.stringify(ids))
+    $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids))
 }
 
 function attendanceDateChange(selectElement) {
@@ -213,7 +214,6 @@ function removeId(element, storeKey = "selectedInstances") {
     $(`#${storeKey}`).attr("data-ids", ids);
 
 }
-
 function bulkStageUpdate(canIds, stageId, preStageId) {
     $.ajax({
         type: "POST",

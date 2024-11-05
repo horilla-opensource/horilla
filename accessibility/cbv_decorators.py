@@ -2,28 +2,29 @@
 employee/decorators.py
 """
 
-from django.http import HttpResponse
 from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
+from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.utils.translation import gettext_lazy as _
+
 from accessibility.methods import check_is_accessible
 from base.decorators import decorator_with_arguments
 from horilla.horilla_middlewares import _thread_locals
+
 
 @decorator_with_arguments
 def enter_if_accessible(function, feature, perm=None, method=None):
     """
     accessible check decorator for cbv
     """
-    
 
     def check_accessible(self, *args, **kwargs):
         """
         Check accessible
         """
         path = "/"
-        request = getattr(_thread_locals,"request")
-        if not getattr(self,"request",None):
+        request = getattr(_thread_locals, "request")
+        if not getattr(self, "request", None):
             self.request = request
         referrer = request.META.get("HTTP_REFERER")
         if referrer and request.path not in referrer:
