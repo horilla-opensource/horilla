@@ -327,9 +327,9 @@ class Reverse:
         return str(self.reverse)
 
 
-def getmodelattribute(value, attr: str):
+def getmodelattribute(value: models.Model, attr: str):
     """
-    Gets an attribute of a model dynamically from a string name, handling related fields.
+    Gets an attribute of a model dynamically, handling related fields.
     """
     result = value
     attrs = attr.split("__")

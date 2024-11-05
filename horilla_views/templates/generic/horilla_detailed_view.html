@@ -94,12 +94,16 @@
   {% if actions and not action_method %}
   <div class="oh-btn-group" style="width: 100%">
     {% for action in actions %}
-    <button {{action.attrs|format:object|safe}}>
+    <a {{action.attrs|format:object|safe}}>
       <ion-icon name="{{action.icon}}"></ion-icon>
       {{action.action}}
-    </button>
+    </a>
     {% endfor %}
   </div>
   {% else %} {{object|getattribute:action_method|safe}} {% endif %}
   {% endif %}
 </div>
+
+<script>
+  $("#reloadMessagesButton").click();
+</script>

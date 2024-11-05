@@ -12,6 +12,7 @@ import types
 from django import template
 from django.conf import settings
 from django.contrib.auth.context_processors import PermWrapper
+from django.db.models.utils import AltersData
 from django.template.defaultfilters import register
 
 from horilla.config import import_method
@@ -63,7 +64,15 @@ def getattribute(value, attr: str):
     result = ""
     attrs = attr.split("__")
     for attr in attrs:
-        if hasattr(value, str(attr)):
+        if isinstance(
+            value,
+            AltersData,
+        ) and hasattr(value, "through"):
+            result = []
+            queryset = value.all()
+            for record in queryset:
+                result.append(getattribute(record, attr))
+        elif hasattr(value, str(attr)):
             result = getattr(value, attr)
             if isinstance(result, types.MethodType):
                 result = result()
@@ -127,4 +136,6 @@ def get_item(dictionary: dict, key: str):
     """
     get_item method to access from dictionary
     """
-    return dictionary.get(key, "")
+    if dictionary:
+        return dictionary.get(key, "")
+    return ""
