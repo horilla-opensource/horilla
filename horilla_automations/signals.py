@@ -347,7 +347,12 @@ def send_mail(request, automation, instance):
     mail_to_instance = model_class.objects.filter(pk=pk).first()
     tos = []
     for mapping in eval(automation.mail_to):
-        tos.append(getattribute(mail_to_instance, mapping))
+        result = getattribute(mail_to_instance, mapping)
+        if isinstance(result, list):
+            tos = tos + result
+            continue
+        tos.append(result)
+    tos = list(filter(None, tos))
     to = tos[:1]
     cc = tos[1:]
     email_backend = ConfiguredEmailBackend()
@@ -360,7 +365,7 @@ def send_mail(request, automation, instance):
         except:
             logger.error(Exception)
 
-    if mail_to_instance and request:
+    if mail_to_instance and request and tos:
         attachments = []
         try:
             sender = request.user.employee_get
