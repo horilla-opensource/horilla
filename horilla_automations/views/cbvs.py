@@ -134,7 +134,7 @@ class AutomationListView(views.HorillaListView):
             """,
         },
     ]
-
+    header_attrs = {"action": "style='width:100px;'"}
     columns = [
         ("Title", "title"),
         ("Model", "model"),
