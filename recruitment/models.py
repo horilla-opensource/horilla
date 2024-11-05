@@ -445,6 +445,12 @@ class Candidate(HorillaModel):
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
     last_updated = models.DateField(null=True, auto_now=True)
 
+    converted_employee_id.exclude_from_automation = True
+    mail_to_related_fields = [
+        ("stage_id__stage_managers__get_mail", "Stage Managers"),
+        ("recruitment_id__recruitment_managers__get_mail", "Recruitment Managers"),
+    ]
+
     def __str__(self):
         return f"{self.name}"
 
