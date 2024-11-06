@@ -4,7 +4,9 @@
 		<div class="oh-sticky-table__thead">
 			<div class="oh-sticky-table__tr">
 				<div class="oh-sticky-table__th">{% trans "Employee Type" %}</div>
-				<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+				{% if perms.base.change_employeetype or perms.base.delete_employeetype %}
+					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+				{% endif %}
 			</div>
 		</div>
 		<div class="oh-sticky-table__tbody">

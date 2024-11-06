@@ -3289,13 +3289,16 @@ def work_type_request_view(request):
     """
     previous_data = request.GET.urlencode()
     employee = Employee.objects.filter(employee_user_id=request.user).first()
-    work_type_requests = filtersubordinates(
-        request, WorkTypeRequest.objects.all(), "base.add_worktyperequest"
-    )
-    work_type_requests = work_type_requests | WorkTypeRequest.objects.filter(
-        employee_id=employee
-    )
-    work_type_requests = work_type_requests.filter(employee_id__is_active=True)
+    if request.user.has_perm("base.view_worktyperequest"):
+        work_type_requests = WorkTypeRequest.objects.all()
+    else:
+        work_type_requests = filtersubordinates(
+            request, WorkTypeRequest.objects.all(), "base.add_worktyperequest"
+        )
+        work_type_requests = work_type_requests | WorkTypeRequest.objects.filter(
+            employee_id=employee
+        )
+        work_type_requests = work_type_requests.filter(employee_id__is_active=True)
     requests_ids = json.dumps(
         [
             instance.id
@@ -3360,7 +3363,11 @@ def work_type_request_search(request):
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
     f = WorkTypeRequestFilter(request.GET)
-    work_typ_requests = filtersubordinates(request, f.qs, "base.add_worktyperequest")
+    work_typ_requests = (
+        filtersubordinates(request, f.qs, "base.add_worktyperequest")
+        if not request.user.has_perm("base.view_worktyperequest")
+        else f.qs
+    )
     employee_work_requests = list(WorkTypeRequest.objects.filter(employee_id=employee))
     subordinates_work_requests = list(work_typ_requests)
     combined_requests = list(set(subordinates_work_requests + employee_work_requests))
@@ -3995,7 +4002,7 @@ def shift_request_view(request):
     shift_requests = filtersubordinates(
         request,
         ShiftRequest.objects.filter(reallocate_to__isnull=True),
-        "base.add_shiftrequest",
+        "base.view_shiftrequest",
     )
     shift_requests = shift_requests | ShiftRequest.objects.filter(employee_id=employee)
     shift_requests = shift_requests.filter(employee_id__is_active=True)
@@ -5727,12 +5734,13 @@ def create_shiftrequest_comment(request, shift_id):
                     "comments": comments,
                     "no_comments": no_comments,
                     "request_id": shift_id,
+                    "shift_request": shift,
                 },
             )
     return render(
         request,
         "shift_request/htmx/shift_comment.html",
-        {"form": form, "request_id": shift_id},
+        {"form": form, "request_id": shift_id, "shift_request": shift},
     )
 
 
@@ -5742,6 +5750,7 @@ def view_shift_comment(request, shift_id):
     """
     This method is used to render all the notes of the employee
     """
+    shift_request = ShiftRequest.find(shift_id)
     comments = ShiftRequestComment.objects.filter(request_id=shift_id).order_by(
         "-created_at"
     )
@@ -5766,6 +5775,7 @@ def view_shift_comment(request, shift_id):
             "comments": comments,
             "no_comments": no_comments,
             "request_id": shift_id,
+            "shift_request": shift_request,
         },
     )
 
@@ -5799,6 +5809,7 @@ def view_work_type_comment(request, work_type_id):
     """
     This method is used to render all the notes of the employee
     """
+    work_type_request = WorkTypeRequest.find(work_type_id)
     comments = WorkTypeRequestComment.objects.filter(request_id=work_type_id).order_by(
         "-created_at"
     )
@@ -5823,6 +5834,7 @@ def view_work_type_comment(request, work_type_id):
             "comments": comments,
             "no_comments": no_comments,
             "request_id": work_type_id,
+            "work_type_request": work_type_request,
         },
     )
 
@@ -5854,13 +5866,10 @@ def delete_shiftrequest_comment(request, comment_id):
     """
     This method is used to delete shift request comments
     """
-    comment = ShiftRequestComment.objects.filter(id=comment_id)
-    if not request.user.has_perm("base.delete_shiftrequestcomment"):
-        comment = comment.filter(employee_id__employee_user_id=request.user)
-    shift_id = comment.first().request_id.id
+    comment = ShiftRequestComment.find(comment_id)
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return redirect("view-shift-comment", shift_id=shift_id)
+    return HttpResponse()
 
 
 @login_required
@@ -5971,12 +5980,13 @@ def create_worktyperequest_comment(request, worktype_id):
                     "comments": comments,
                     "no_comments": no_comments,
                     "request_id": worktype_id,
+                    "work_type_request": work_type,
                 },
             )
     return render(
         request,
         "work_type_request/htmx/work_type_comment.html",
-        {"form": form, "request_id": worktype_id},
+        {"form": form, "request_id": worktype_id, "work_type_request": work_type},
     )
 
 
@@ -5987,12 +5997,9 @@ def delete_worktyperequest_comment(request, comment_id):
     This method is used to delete Work type request comments
     """
     comment = WorkTypeRequestComment.objects.filter(id=comment_id)
-    if not request.user.has_perm("base.delete_worktyperequestcomment"):
-        comment = comment.filter(employee_id__employee_user_id=request.user)
-    worktype_id = comment.first().request_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return redirect("view-work-type-comment", work_type_id=worktype_id)
+    return HttpResponse()
 
 
 @login_required
