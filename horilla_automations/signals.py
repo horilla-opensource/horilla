@@ -386,8 +386,12 @@ def send_mail(request, automation, instance):
         template_bdy = template.Template(mail_template.body)
         context = template.Context({"instance": mail_to_instance, "self": sender})
         render_bdy = template_bdy.render(context)
+
+        title_template = template.Template(automation.title)
+        title_context = template.Context({"instance": instance, "self": sender})
+        render_title = title_template.render(title_context)
         email = EmailMessage(
-            subject=automation.title,
+            subject=render_title,
             body=render_bdy,
             to=to,
             cc=cc,

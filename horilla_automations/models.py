@@ -29,7 +29,7 @@ class MailAutomation(HorillaModel):
         ("on_update", "On Update"),
         ("on_delete", "On Delete"),
     ]
-    title = models.CharField(max_length=50, unique=True)
+    title = models.CharField(max_length=256, unique=True)
     method_title = models.CharField(max_length=50, editable=False)
     model = models.CharField(max_length=100, choices=MODEL_CHOICES, null=False)
     mail_to = models.TextField(verbose_name="Mail to")
