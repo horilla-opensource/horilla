@@ -1022,6 +1022,10 @@ class HorillaNavView(TemplateView):
         context["create_attrs"] = self.create_attrs
         context["search_in"] = self.search_in
         context["filter_instance_context_name"] = self.filter_instance
+        last_filter = CACHE.get(
+            self.request.session.session_key + "last-applied-filter", {}
+        )
+        context["last_filter"] = dict(last_filter)
         if self.filter_instance:
             context[self.filter_form_context_name] = self.filter_instance.form
         context["active_view"] = models.ActiveView.objects.filter(

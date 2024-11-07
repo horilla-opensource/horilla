@@ -34,4 +34,9 @@ urlpatterns = [
         views.SearchInIds.as_view(),
         name="search-in-instance-ids",
     ),
+    path(
+        "last-applied-filter",
+        views.LastAppliedFilter.as_view(),
+        name="last-applied-filter",
+    ),
 ]

@@ -115,7 +115,31 @@
             <button
              type="submit"
              id="applyFilter"
-             onclick="filterCountUpdate('filterForm')"
+             onclick="
+             filterCountUpdate('filterForm');
+              // if (event.isTrusted) {
+                var formData = new FormData($('#filterForm')[0]);
+                var filterData = {};
+                formData.forEach((value, key) => {
+                    if (filterData[key]) {
+                        filterData[key] = [].concat(filterData[key], value);
+                    } else {
+                        filterData[key] = value;
+                    }
+                });
+                console.log(filterData)
+                $.ajax({
+                  type: 'get',
+                  url: `{% url 'last-applied-filter' %}`,
+                  data: filterData,
+                  traditional:true,
+                  success: function (response) {
+
+                  }
+                });
+
+              // }
+             "
              class="oh-btn oh-btn--secondary oh-btn--small w-100">
               {% trans "Filter" %}
             </button>
@@ -207,6 +231,25 @@
 
   </div>
   <script>
+    var form = $('#filterForm')[0];
+    var data ={{last_filter|safe}}
+    for (const key in data) {
+      const field = form.elements[key];
+      const value = data[key][0];  // Get the first element in the array
+
+      if (field) {
+        if (field.type === 'checkbox') {
+          field.checked = value === 'on';
+        } else if (field.type === 'select-multiple') {
+          // Handle multiple select fields
+          Array.from(field.options).forEach(option => {
+            option.selected = data[key].includes(option.value);
+          });
+        } else {
+          field.value = value;  // Set the value for other input types
+        }
+      }
+    }
     setTimeout(() => {
       $(".oh-btn--view-active").click();
       if (!$(".oh-btn--view-active").length) {

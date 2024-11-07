@@ -237,3 +237,21 @@ class SearchInIds(View):
         context: dict = CACHE.get(cache_key)
         context["instances"] = context["filter_class"](self.request.GET).qs
         return render(self.request, "generic/filter_result.html", context)
+
+
+@method_decorator(login_required, name="dispatch")
+class LastAppliedFilter(View):
+    """
+    Class view to handle last applied filter
+    """
+
+    def get(self, *args, **kwargs):
+        """
+        Get method
+        """
+        CACHE.set(
+            self.request.session.session_key + "last-applied-filter",
+            self.request.GET,
+            timeout=600,
+        )
+        return HttpResponse("success")
