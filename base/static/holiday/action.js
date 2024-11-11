@@ -321,20 +321,10 @@ $("#bulkHolidaysDelete").click(function (e) {
           ids = [];
           ids.push($("#selectedHolidays").attr("data-ids"));
           ids = JSON.parse($("#selectedHolidays").attr("data-ids"));
-          $.ajax({
-            type: "POST",
-            url: "/holidays-bulk-delete",
-            data: {
-              csrfmiddlewaretoken: getCookie("csrftoken"),
-              ids: JSON.stringify(ids),
-            },
-            success: function (response, textStatus, jqXHR) {
-              if (jqXHR.status === 200) {
-                location.reload();
-              } else {
-              }
-            },
-          });
+          var hxValue = JSON.stringify(ids);
+          $("#bulkHolidaysDeleteSpan").attr("hx-vals", `{"ids":${hxValue}}`);
+          $('#unselectAllHolidays').click();
+          $("#bulkHolidaysDeleteSpan").click();
         }
       });
     }

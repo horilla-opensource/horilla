@@ -348,15 +348,19 @@ window.confirm = function (message) {
                 });
             });
             if (event.target.tagName.toLowerCase() === "form") {
-                if (verb === "post") {
-                    htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals })
-                        .then(response => {
+                if (path && verb) {
+                    if (verb === "post") {
+                        htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals })
+                            .then(response => {
+                                ajaxWithResponseHandler(event);
+                            });
+                    } else {
+                        htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals }).then(response => {
                             ajaxWithResponseHandler(event);
                         });
+                    }
                 } else {
-                    htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals }).then(response => {
-                        ajaxWithResponseHandler(event);
-                    });
+                    event.target.submit();
                 }
             } else if (event.target.tagName.toLowerCase() === "a") {
                 if (event.target.href) {

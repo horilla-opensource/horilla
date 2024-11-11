@@ -6783,8 +6783,7 @@ def bulk_holiday_delete(request):
     """
     This method is used to delete bulk of holidays
     """
-    ids = request.POST["ids"]
-    ids = json.loads(ids)
+    ids = request.POST.getlist("ids")
     del_ids = []
     for holiday_id in ids:
         try:
@@ -6796,7 +6795,7 @@ def bulk_holiday_delete(request):
     messages.success(
         request, _("{} Holidays have been successfully deleted.".format(len(del_ids)))
     )
-    return JsonResponse({"message": "Success"})
+    return redirect("holiday-filter")
 
 
 @login_required

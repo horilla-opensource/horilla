@@ -65,6 +65,7 @@
                                             <a href="#" id="bulkHolidaysDelete" class="oh-dropdown__link oh-dropdown__link--danger"
                                                 data-action="delete">{% trans "Delete" %}</a>
                                         </li>
+                                        <span id="bulkHolidaysDeleteSpan" hx-vals="" hx-post="{% url 'holidays-bulk-delete' %}" hx-target="#holidays"></span>
                                     {% endif %}
                                 {% endif %}
                             </ul>

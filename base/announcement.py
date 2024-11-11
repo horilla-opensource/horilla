@@ -266,7 +266,6 @@ def comment_view(request, anoun_id):
 
 
 @login_required
-@permission_required(perm="base.delete_announcementcomment")
 def delete_announcement_comment(request, comment_id):
     """
     This method is used to delete announcement comments
@@ -275,7 +274,7 @@ def delete_announcement_comment(request, comment_id):
     anoun_id = comment.announcement_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return redirect("announcement-view-comment", anoun_id=anoun_id)
+    return HttpResponse()
 
 
 @login_required

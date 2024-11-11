@@ -198,7 +198,7 @@ urlpatterns = [
         kwargs={"model": Company},
     ),
     path(
-        "company-delete/<int:obj_id>/",
+        "settings/company-delete/<int:obj_id>/",
         views.object_delete,
         name="company-delete",
         kwargs={"model": Company, "redirect": "/settings/company-view"},
