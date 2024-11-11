@@ -4,7 +4,7 @@
 		<div class="oh-sticky-table__thead">
 			<div class="oh-sticky-table__tr">
 				<div class="oh-sticky-table__th">{% trans "Title" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Highlight" %}</div>
+				<div class="oh-sticky-table__th">{% trans "Highlight" %}</div>
 				{% if perms.horilla_audit.delete_audittag or perms.horilla_audit.delete_audittag %}
 					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 				{% endif %}
@@ -12,49 +12,37 @@
 		</div>
 		<div class="oh-sticky-table__tbody">
 			{% for tag in audittags %}
-			<div class="oh-sticky-table__tr" draggable="true">
-				<div class="oh-sticky-table__td">{{tag}}</div>
-                {% if tag.highlight == True %}
-                    <div class="oh-sticky-table__td">{% trans "Yes" %}</div>
-                {% else %}
-                    <div class="oh-sticky-table__td">{% trans "No" %}</div>
-                {% endif %}
-				{% if perms.horilla_audit.delete_audittag or perms.horilla_audit.delete_audittag %}
-					<div class="oh-sticky-table__td">
-						<div class="oh-btn-group">
-							{% if perms.horilla_audit.change_audittag %}
-							<a
-								hx-get="{% url 'audit-tag-update' tag.id %}"
-								hx-target="#audittagEditForm"
-								data-toggle="oh-modal-toggle"
-								data-target="#audittagEditModal"
-								type="button"
-								class="oh-btn oh-btn--light-bkg w-50"
-								title="{% trans 'Edit' %}"
-							>
-								<ion-icon name="create-outline"></ion-icon
-							></a>
-							{% endif %}
-							{% if perms.horilla_audit.delete_audittag %}
-							<form
-								action="{% url 'audit-tag-delete' tag.id %}"
-								class="w-50"
-								onsubmit="return confirm('{% trans "Are you sure you want to delete this history tag ?" %}');"
-								method='post'>
-								{% csrf_token %}
-								<button
-									type="submit"
-									class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-									title="{% trans 'Remove' %}"
-								>
-									<ion-icon name="trash-outline"></ion-icon>
-								</button>
-							</form>
-							{% endif %}
+				<div class="oh-sticky-table__tr" draggable="true" id="auditTagTr{{tag.id}}">
+					<div class="oh-sticky-table__td">{{tag}}</div>
+					{% if tag.highlight == True %}
+						<div class="oh-sticky-table__td">{% trans "Yes" %}</div>
+					{% else %}
+						<div class="oh-sticky-table__td">{% trans "No" %}</div>
+					{% endif %}
+					{% if perms.horilla_audit.delete_audittag or perms.horilla_audit.delete_audittag %}
+						<div class="oh-sticky-table__td">
+							<div class="oh-btn-group">
+								{% if perms.horilla_audit.change_audittag %}
+									<a hx-get="{% url 'audit-tag-update' tag.id %}" hx-target="#audittagEditForm"
+										data-toggle="oh-modal-toggle" data-target="#audittagEditModal" type="button"
+										class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
+										<ion-icon name="create-outline"></ion-icon></a>
+								{% endif %}
+								{% if perms.horilla_audit.delete_audittag %}
+									<form hx-confirm="{% trans 'Are you sure you want to delete this history tag ?' %}"
+										hx-post="{% url 'audit-tag-delete' tag.id %}" hx-swap="outerHTML"
+										hx-on-htmx-after-request="reloadMessage(this);" hx-target="#auditTagTr{{tag.id}}" class="w-50">
+										{% csrf_token %}
+										<button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+											title="{% trans 'Remove' %}">
+											<ion-icon name="trash-outline"></ion-icon>
+										</button>
+									</form>
+								{% endif %}
+							</div>
 						</div>
-					</div>
-				{% endif %}
-			</div>
+					{% endif %}
+				</div>
 			{% endfor %}
 		</div>
 	</div>

@@ -28,8 +28,8 @@
 								{% endif %}
 								{% if perms.base.delete_rotatingworktype %}
 									<form hx-confirm="{% trans 'Are you sure you want to delete this rotating work type?' %}"
-										hx-post="{% url 'rotating-work-type-delete' rwork.id %}"
-										hx-target="#rotatingWorkTypeTr{{rwork.id}}" hx-swap="outerHTML" class="w-50">
+										hx-post="{% url 'rotating-work-type-delete' rwork.id %}" hx-swap="outerHTML" class="w-50"
+										hx-target="#rotatingWorkTypeTr{{rwork.id}}" hx-on-htmx-after-request="reloadMessage(this);" >
 										{% csrf_token %}
 										<button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
 											title="{% trans 'Remove' %}">

@@ -32,7 +32,8 @@
 								{% endif %}
 								{% if perms.base.delete_tags %}
 									<form hx-confirm="{% trans 'Are you sure you want to delete this tag ?' %}"
-										hx-post="{% url 'tag-delete' tag.id %}" hx-target="#tagTr{{tag.id}}" hx-swap="outerHTML"
+										hx-post="{% url 'tag-delete' tag.id %}" hx-target="#tagTr{{tag.id}}"
+										hx-on-htmx-after-request="reloadMessage(this);" hx-swap="outerHTML"
 										class="w-50">
 										{% csrf_token %}
 										<button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"

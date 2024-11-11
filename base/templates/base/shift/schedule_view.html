@@ -60,6 +60,7 @@
 																	<form
 																		hx-confirm="{% trans 'Are you sure you want to delete this schedule?' %}"
 																		hx-post="{% url 'employee-shift-schedule-delete' schedule.id %}"
+																		hx-on-htmx-after-request="reloadMessage(this);"
 																		hx-target="#shiftSchedule{{schedule.id}}" hx-swap="outerHTML">
 																		<button type="submit" style="
 																							background: none;

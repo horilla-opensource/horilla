@@ -60,6 +60,7 @@
 																<div class="m-2">
 																	<form
 																		hx-confirm="{% trans 'Are you sure you want to delete this job role?' %}"
+																		hx-on-htmx-after-request="reloadMessage(this);"
 																		hx-post="{% url 'job-role-delete' role.id %}"
 																		hx-target="#jobRoleDiv{{role.id}}"
 																		hx-swap="outerHTML"

@@ -406,6 +406,6 @@ urlpatterns = [
         "employee-tag-delete/<int:obj_id>/",
         object_delete,
         name="employee-tag-delete",
-        kwargs={"model": EmployeeTag, "redirect": "/employee/employee-tag-view/"},
+        kwargs={"model": EmployeeTag, "HttpResponse": True},
     ),
 ]

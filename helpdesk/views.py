@@ -1670,7 +1670,7 @@ def ticket_type_delete(request, t_type_id):
         messages.success(request, _("Ticket type has been deleted successfully!"))
     else:
         messages.error(request, _("Ticket type not found"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HttpResponse()
 
 
 @login_required

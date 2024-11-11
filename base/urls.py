@@ -221,7 +221,7 @@ urlpatterns = [
         name="department-delete",
         kwargs={
             "model": Department,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path(
@@ -246,7 +246,7 @@ urlpatterns = [
         name="job-position-delete",
         kwargs={
             "model": JobPosition,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path("settings/job-role-create/", views.job_role_create, name="job-role-create"),
@@ -263,7 +263,7 @@ urlpatterns = [
         name="job-role-delete",
         kwargs={
             "model": JobRole,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path("settings/work-type-view/", views.work_type_view, name="work-type-view"),
@@ -280,7 +280,7 @@ urlpatterns = [
         name="work-type-delete",
         kwargs={
             "model": WorkType,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path(
@@ -317,7 +317,7 @@ urlpatterns = [
         name="rotating-work-type-delete",
         kwargs={
             "model": RotatingWorkType,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path(
@@ -397,7 +397,7 @@ urlpatterns = [
         name="employee-type-delete",
         kwargs={
             "model": EmployeeType,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path(
@@ -422,7 +422,7 @@ urlpatterns = [
         name="employee-shift-delete",
         kwargs={
             "model": EmployeeShift,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path(
@@ -447,7 +447,7 @@ urlpatterns = [
         name="employee-shift-schedule-delete",
         kwargs={
             "model": EmployeeShiftSchedule,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path(
@@ -792,7 +792,7 @@ urlpatterns = [
         name="tag-delete",
         kwargs={
             "model": Tags,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path("audit-tag-create", views.audit_tag_create, name="audit-tag-create"),
@@ -803,7 +803,7 @@ urlpatterns = [
         "audit-tag-delete/<int:obj_id>",
         views.object_delete,
         name="audit-tag-delete",
-        kwargs={"model": AuditTag, "redirect": "/settings/tag-view/"},
+        kwargs={"model": AuditTag, "HttpResponse": True},
     ),
     path(
         "configuration/multiple-approval-condition",

@@ -1254,11 +1254,12 @@ def object_delete(request, obj_id, **kwargs):
         redirect_path = redirect_path + "?" + previous_data
         return redirect(redirect_path)
     elif kwargs.get("HttpResponse"):
-        return_part = (
-            "<script>window.location.reload()</script>"
-            if delete_error
-            else kwargs.get("HttpResponse")
-        )
+        if delete_error:
+            return_part = "<script>window.location.reload()</script>"
+        elif kwargs.get("HttpResponse") is True:
+            return_part = ""
+        else:
+            return_part = kwargs.get("HttpResponse")
         return HttpResponse(f"{return_part}")
     else:
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -6123,7 +6124,7 @@ def action_type_delete(request, act_id):
     else:
         Actiontype.objects.filter(id=act_id).delete()
         messages.success(request, _("Action has been deleted successfully!"))
-        return HttpResponse(f"<script>$('#reloadMessagesButton').click()</script>")
+        return HttpResponse()
 
 
 @login_required

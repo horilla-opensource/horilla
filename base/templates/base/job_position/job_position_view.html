@@ -58,7 +58,7 @@
 															{% if perms.base.delete_jobposition %}
 															<div class="m-2">
 																<form hx-confirm="{% trans 'Are you sure you want to delete this job position?' %}" hx-swap="outerHTML"
-																	hx-post="{% url 'job-position-delete' job.id %}" hx-target="#jobPositionDiv{{job.id}}">
+																	hx-post="{% url 'job-position-delete' job.id %}" hx-target="#jobPositionDiv{{job.id}}" hx-on-htmx-after-request="reloadMessage(this);">
 																	<button type="submit" style="
 																			background: none;
 																			color: inherit;

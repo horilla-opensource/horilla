@@ -298,6 +298,20 @@ function checkSequence(element) {
     }
 }
 
+function reloadMessage(e) {
+    $('#reloadMessagesButton').click();
+}
+
+function ajaxWithResponseHandler(event) {
+    $(event.target).each(function () {
+        $.each(this.attributes, function () {
+            if (this.specified && this.name === 'hx-on-htmx-after-request') {
+                eval(this.value);
+            }
+        });
+    });
+}
+
 var originalConfirm = window.confirm;
 // Override the default confirm function with SweetAlert
 window.confirm = function (message) {
@@ -325,27 +339,48 @@ window.confirm = function (message) {
             var hxTarget = $(event.target).attr("hx-target");
             var hxVals = $(event.target).attr("hx-vals") ? JSON.parse($(event.target).attr("hx-vals")) : {};
             var hxSwap = $(event.target).attr("hx-swap");
+            $(event.target).each(function () {
+                $.each(this.attributes, function () {
+                    if (this.specified && this.name === 'hx-on-htmx-before-request') {
+                        eval(this.value);
+
+                    }
+                });
+            });
             if (event.target.tagName.toLowerCase() === "form") {
                 if (verb === "post") {
-                    htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals });
+                    htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals })
+                        .then(response => {
+                            ajaxWithResponseHandler(event);
+                        });
                 } else {
-                    htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals });
+                    htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals }).then(response => {
+                        ajaxWithResponseHandler(event);
+                    });
                 }
             } else if (event.target.tagName.toLowerCase() === "a") {
                 if (event.target.href) {
                     window.location.href = event.target.href;
                 } else {
                     if (verb === "post") {
-                        htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals });
+                        htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals }).then(response => {
+                            ajaxWithResponseHandler(event);
+                        });
                     } else {
-                        htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals });
+                        htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals }).then(response => {
+                            ajaxWithResponseHandler(event);
+                        });
                     }
                 }
             } else {
                 if (verb === "post") {
-                    htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals });
+                    htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals }).then(response => {
+                        ajaxWithResponseHandler(event);
+                    });
                 } else {
-                    htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals });
+                    htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals }).then(response => {
+                        ajaxWithResponseHandler(event);
+                    });
                 }
             }
         }
