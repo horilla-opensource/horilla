@@ -19,7 +19,7 @@
   {% if bulk_select_option and queryset|length %}
   {% include "generic/quick_actions.html" %}
   {% endif %}
-  <button class="reload-record" id="{{view_id|safe}}Reload" hidden hx-get="{{request.path}}?{{request.GET.urlencode}}" hx-target="#{{view_id|safe}}" hx-swap="outerHTML">
+  <button class="reload-record" id="{{view_id|safe}}Reload" hidden hx-get="{{request.path}}?{{request.GET.urlencode}}" hx-target="#{{view_id|safe}}" hx-swap="outerHTML" hx-on:click="htmxLoadIndicator(this);">
   </button>
   {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
   <div class="oh-card">
@@ -250,7 +250,7 @@
                   class="oh-pagination__input"
                   value="{{group.list.number}}"
                   hx-get="{{search_url}}?{{request.GET.urlencode}}"
-                  hx-target="#{{view_id}}"
+                  hx-target="#{{view_id}}" hx-on:click="htmxLoadIndicator(this);"
                   min="1"
                 />
                 <span class="oh-pagination__label"
@@ -264,7 +264,7 @@
                   <a
                     hx-target="#{{view_id}}"
                     hx-get="{{search_url}}?{{request.GET.urlencode}}&{{group.dynamic_name}}=1"
-                    class="oh-pagination__link"
+                    class="oh-pagination__link" hx-on:click="htmxLoadIndicator(this);"
                     >{% trans "First" %}</a
                   >
                 </li>
@@ -272,7 +272,7 @@
                   <a
                     hx-target="#{{view_id}}"
                     hx-get="{{search_url}}?{{request.GET.urlencode}}&{{group.dynamic_name}}={{ group.list.previous_page_number }}"
-                    class="oh-pagination__link"
+                    class="oh-pagination__link" hx-on:click="htmxLoadIndicator(this);"
                     >{% trans "Previous" %}</a
                   >
                 </li>
@@ -281,7 +281,7 @@
                   <a
                     hx-target="#{{view_id}}"
                     hx-get="{{search_url}}?{{request.GET.urlencode}}&{{group.dynamic_name}}={{ group.list.next_page_number }}"
-                    class="oh-pagination__link"
+                    class="oh-pagination__link" hx-on:click="htmxLoadIndicator(this);"
                     >{% trans "Next" %}</a
                   >
                 </li>
@@ -289,7 +289,7 @@
                   <a
                     hx-target="#{{view_id}}"
                     hx-get="{{search_url}}?{{request.GET.urlencode}}&{{group.dynamic_name}}={{ group.list.paginator.num_pages }}"
-                    class="oh-pagination__link"
+                    class="oh-pagination__link" hx-on:click="htmxLoadIndicator(this);"
                     >{% trans "Last" %}</a
                   >
                 </li>
