@@ -1,16 +1,7 @@
 {% load static %} {% load i18n %}
 {% if messages %}
-    <div class="oh-wrapper">
-        {% for message in messages %}
-            <div class="oh-alert-container">
-                <div class="oh-alert oh-alert--animated {{message.tags}}">
-                    {{ message }}
-                </div>
-            </div>
-        {% endfor %}
         <span hx-trigger="load" hx-target="#biometricDeviceList"
-            hx-get="{% url 'search-devices' %}?{{pd}}&page=1&view=card"></span>
-    </div>
+            hx-get="{% url 'search-devices' %}?{{pd}}&page=1&view=card" hx-on-htmx-after-request="reloadMessage(this);"></span>
 {% endif %}
 <div class="oh-modal__dialog-header pb-0">
     <h2 class="oh-modal__dialog-title" id="biometricDeviceLavel">
@@ -43,6 +34,11 @@
                 {{biometric_form.port.errors}}
                 <label class="oh-label" for="{{biometric_form.port.id_for_label}}">{% trans "Port No" %}</label>
                 {{biometric_form.port}}
+            </div>
+            <div class="oh-input-group" id="zkPassword" style="display: none">
+                {{biometric_form.zk_password.errors}}
+                <label class="oh-label" for="{{biometric_form.zk_password.id_for_label}}">{% trans "Password" %}</label>
+                {{biometric_form.zk_password}}
             </div>
             <div class="oh-input-group" id="machinUserName" style="display: none">
                 {{biometric_form.cosec_username.errors}}
