@@ -413,13 +413,22 @@ nav.after(
 );
 
 $(document).on("htmx:beforeRequest", function (event, data) {
-    var response = event.detail.xhr.response;
-    var target = $(event.detail.elt.getAttribute("hx-target"));
-    var avoid_target = ["BiometricDeviceTestFormTarget", "reloadMessages", "infinite"];
-    if (!target.closest("form").length && avoid_target.indexOf(target.attr("id")) === -1) {
-        target.html(`<div class="animated-background"></div>`);
+    if (!Array.from(event.target.getAttributeNames()).some(attr => attr.startsWith('hx-on'))) {
+        var response = event.detail.xhr.response;
+        var target = $(event.detail.elt.getAttribute("hx-target"));
+        var avoid_target = ["BiometricDeviceTestFormTarget", "reloadMessages", "infinite"];
+        if (!target.closest("form").length && avoid_target.indexOf(target.attr("id")) === -1) {
+            target.html(`<div class="animated-background"></div>`);
+        }
     }
 });
+function htmxLoadIndicator(e) {
+    var target = $(e).attr('hx-target');
+    $(target).find('th').empty();
+    $(target).find('th').addClass('skeleton');
+    $(target).find('td').empty();
+    $(target).find('td').addClass('skeleton');
+}
 
 $(document).on('keydown', function (event) {
     // Check if the cursor is not focused on an input field
