@@ -21,6 +21,7 @@
     hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}"
     hx-replace-url="false"
     hx-target="{{search_swap_target}}"
+    hx-on:submit="htmxLoadIndicator(this);"
     class="oh-main__titlebar oh-main__titlebar--right"
   >
     <div class="oh-input-group oh-input__search-group" id="searchGroup">
@@ -62,7 +63,7 @@
       />
       {% if search_in %}
       <input type="text" hidden name="search_field">
-      <div class="custom-dropdown" id="dropdown">
+      <div class="custom-dropdown" id="dropdown" style="z-index: 1000 !important;">
         <ul class="search_content">
           {% for option in search_in %}
           <li>
