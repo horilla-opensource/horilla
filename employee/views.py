@@ -3035,16 +3035,13 @@ def employee_note_delete(request, note_id):
 
     note = EmployeeNote.objects.get(id=note_id)
     note.delete()
-    message = _("Note deleted successfully...")
-    return HttpResponse(
-        f"<div class='oh-wrapper'> <div class='oh-alert-container'>\
-            <div class='oh-alert oh-alert--animated oh-alert--success'>\
-                {message}</div></div></div>"
-    )
+    messages.success(request, _("Note deleted successfully."))
+    return HttpResponse()
 
 
 @login_required
 @hx_request_required
+@manager_can_enter(perm="employee.add_notefiles")
 def add_more_employee_files(request, note_id):
     """
     This method is used to Add more files to the Employee note.
@@ -3065,6 +3062,8 @@ def add_more_employee_files(request, note_id):
 
 
 @login_required
+@hx_request_required
+@manager_can_enter(perm="employee.delete_notefiles")
 def delete_employee_note_file(request, note_file_id):
     """
     This method is used to delete the stage note file
@@ -3072,12 +3071,8 @@ def delete_employee_note_file(request, note_file_id):
         id : stage file instance id
     """
     file = NoteFiles.objects.get(id=note_file_id)
-    notes = file.employeenote_set.all()
-    if not request.user.has_perm("employee.delete_notefile"):
-        file.employeenote_set.filter(employee_id__employee_user_id=request.user)
-    employee_id = notes.first().employee_id.id
     file.delete()
-    return redirect(f"/employee/note-tab/{employee_id}")
+    return HttpResponse()
 
 
 @login_required
@@ -3481,7 +3476,6 @@ def employee_tag_create(request):
             form.save()
             form = EmployeeTagForm()
             messages.success(request, _("Tag has been created successfully!"))
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "base/employee_tag/employee_tag_form.html",

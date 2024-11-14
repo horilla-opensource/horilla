@@ -61,138 +61,138 @@
                         </div>
                         <div class="oh-sticky-table__tbody">
                             {% for shift_request in data %}
-                            <div class="oh-sticky-table__tr" draggable="true"
-                                hx-get="{% url 'shift-request-details' shift_request.id %}?instances_ids={{requests_ids}}"
-                                hx-target="#objectDetailsModalTarget" data-toggle='oh-modal-toggle'
-                                data-target='#objectDetailsModal'>
-                                <div class="oh-sticky-table__sd {% if shift_request.approved %} row-status--yellow {% elif  shift_request.canceled %} row-status--red {% endif %}" onclick="event.stopPropagation();">
-                                    <div class="centered-div">
-                                        <input type="checkbox" id="{{shift_request.id}}" onchange="highlightRow($(this))" class="oh-input employee-checkbox oh-input__checkbox all-shift-requests-row" />
-                                    </div>
-                                </div>
-                                <div class="oh-sticky-table__td">
-                                    <div class="oh-profile oh-profile--md">
-                                        <div class="oh-profile__avatar mr-1">
-                                            <img src="{{shift_request.employee_id.get_avatar}}" class="oh-profile__image"
-                                                alt="Username">
+                                <div class="oh-sticky-table__tr" draggable="true"
+                                    hx-get="{% url 'shift-request-details' shift_request.id %}?instances_ids={{requests_ids}}"
+                                    hx-target="#objectDetailsModalTarget" data-toggle='oh-modal-toggle'
+                                    data-target='#objectDetailsModal'>
+                                    <div class="oh-sticky-table__sd {% if shift_request.approved %} row-status--yellow {% elif  shift_request.canceled %} row-status--red {% endif %}" onclick="event.stopPropagation();">
+                                        <div class="centered-div">
+                                            <input type="checkbox" id="{{shift_request.id}}" onchange="highlightRow($(this))" class="oh-input employee-checkbox oh-input__checkbox all-shift-requests-row" />
                                         </div>
-                                        <span class="oh-profile__name oh-text--dark">{{shift_request.employee_id}}</span>
                                     </div>
-                                </div>
-                                <div class="oh-sticky-table__td" data-cell-index="2">{{shift_request.shift_id}}</div>
-                                <div class="oh-sticky-table__td" data-cell-index="3">{{shift_request.previous_shift_id}}
-                                </div>
-                                <div class="oh-sticky-table__td dateformat_changer" data-cell-index="4">
-                                    {{shift_request.requested_date}}</div>
-                                <div class="oh-sticky-table__td dateformat_changer" data-cell-index="5">
-                                    {{shift_request.requested_till}}</div>
-                                <div class="oh-sticky-table__td" data-cell-index="6">
-                                    {% if shift_request.approved %}
-                                        {% trans "Approved" %}
-                                    {% elif shift_request.canceled %}
-                                        {% trans "Rejected" %}
-                                    {% else %}
-                                        {% trans "Requested" %}
-                                    {% endif %}
-                                </div>
+                                    <div class="oh-sticky-table__td">
+                                        <div class="oh-profile oh-profile--md">
+                                            <div class="oh-profile__avatar mr-1">
+                                                <img src="{{shift_request.employee_id.get_avatar}}" class="oh-profile__image"
+                                                    alt="Username">
+                                            </div>
+                                            <span class="oh-profile__name oh-text--dark">{{shift_request.employee_id}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="oh-sticky-table__td" data-cell-index="2">{{shift_request.shift_id}}</div>
+                                    <div class="oh-sticky-table__td" data-cell-index="3">{{shift_request.previous_shift_id}}
+                                    </div>
+                                    <div class="oh-sticky-table__td dateformat_changer" data-cell-index="4">
+                                        {{shift_request.requested_date}}</div>
+                                    <div class="oh-sticky-table__td dateformat_changer" data-cell-index="5">
+                                        {{shift_request.requested_till}}</div>
+                                    <div class="oh-sticky-table__td" data-cell-index="6">
+                                        {% if shift_request.approved %}
+                                            {% trans "Approved" %}
+                                        {% elif shift_request.canceled %}
+                                            {% trans "Rejected" %}
+                                        {% else %}
+                                            {% trans "Requested" %}
+                                        {% endif %}
+                                    </div>
 
-                                <div class="oh-sticky-table__td" data-cell-index="7">
-                                    {{shift_request.description|truncatechars:30}}
-                                </div>
+                                    <div class="oh-sticky-table__td" data-cell-index="7">
+                                        {{shift_request.description|truncatechars:30}}
+                                    </div>
 
-                                <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                                    <button type="button" hx-get="{% url 'view-shift-comment' shift_request.id %}"
-                                        hx-target="#commentContainer" data-target='#activitySidebar' title="View Comment"
-                                        class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
-                                        style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
-                                        onclick="event.stopPropagation()">
-                                        <ion-icon name="newspaper-outline" role="img" class="md hydrated"
-                                            aria-label="newspaper outline"></ion-icon>
-                                    </button>
-                                </div>
+                                    <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
+                                        <button type="button" hx-get="{% url 'view-shift-comment' shift_request.id %}"
+                                            hx-target="#commentContainer" data-target='#activitySidebar' title="View Comment"
+                                            class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
+                                            style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
+                                            onclick="event.stopPropagation()">
+                                            <ion-icon name="newspaper-outline" role="img" class="md hydrated"
+                                                aria-label="newspaper outline"></ion-icon>
+                                        </button>
+                                    </div>
 
-                                <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                                    {% if request.user.employee_get == shift_request.employee_id or perms.base.change_shiftrequest or perms.base.add_shiftrequest or perms.base.delete_shiftrequest or request.user|is_reportingmanager %}
-                                        <div class="oh-btn-group">
-                                            {% if request.user.employee_get == shift_request.employee_id or perms.base.change_shiftrequest or request.user|is_reportingmanager %}
-                                                {% if shift_request.approved == False and not shift_request.canceled %}
-                                                    <a hx-get="{% url 'shift-request-update' shift_request.id %}"
-                                                        hx-target='#shiftRequestModalUpdateBody' data-toggle="oh-modal-toggle"
-                                                        data-target='#shiftRequestModalUpdate' class="oh-btn oh-btn--light-bkg w-50"
-                                                        title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
-                                                {% else %}
-                                                    <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="create-outline"></ion-icon></button></td>
+                                    <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
+                                        {% if request.user.employee_get == shift_request.employee_id or perms.base.change_shiftrequest or perms.base.add_shiftrequest or perms.base.delete_shiftrequest or request.user|is_reportingmanager %}
+                                            <div class="oh-btn-group">
+                                                {% if request.user.employee_get == shift_request.employee_id or perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+                                                    {% if shift_request.approved == False and not shift_request.canceled %}
+                                                        <a hx-get="{% url 'shift-request-update' shift_request.id %}"
+                                                            hx-target='#shiftRequestModalUpdateBody' data-toggle="oh-modal-toggle"
+                                                            data-target='#shiftRequestModalUpdate' class="oh-btn oh-btn--light-bkg w-50"
+                                                            title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+                                                    {% else %}
+                                                        <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="create-outline"></ion-icon></button></td>
+                                                    {% endif %}
                                                 {% endif %}
-                                            {% endif %}
-                                            {% if request.user.employee_get == shift_request.employee_id or perms.base.add_shiftrequest or request.user|is_reportingmanager %}
-                                                <a class="oh-btn oh-btn--light-bkg w-50" data-toggle="oh-modal-toggle"
-                                                    data-target="#objectCreateModal"
-                                                    hx-get="{% url 'shift-request-duplicate' shift_request.id %}?{{pg}}"
-                                                    title="{% trans 'Duplicate' %}" hx-target="#objectCreateModalTarget"
-                                                    style="cursor: pointer;">
-                                                    <ion-icon name="copy-outline"></ion-icon>
+                                                {% if request.user.employee_get == shift_request.employee_id or perms.base.add_shiftrequest or request.user|is_reportingmanager %}
+                                                    <a class="oh-btn oh-btn--light-bkg w-50" data-toggle="oh-modal-toggle"
+                                                        data-target="#objectCreateModal"
+                                                        hx-get="{% url 'shift-request-duplicate' shift_request.id %}?{{pg}}"
+                                                        title="{% trans 'Duplicate' %}" hx-target="#objectCreateModalTarget"
+                                                        style="cursor: pointer;">
+                                                        <ion-icon name="copy-outline"></ion-icon>
+                                                    </a>
+                                                {% endif %}
+                                                {% if request.user.employee_get == shift_request.employee_id or perms.base.delete_shiftrequest or request.user|is_reportingmanager %}
+                                                    {% if shift_request.approved == False and shift_request.canceled == False %}
+                                                    <form action="{% url 'shift-request-delete' shift_request.id  %}"
+                                                        onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');"
+                                                        method='post' class="w-75">
+                                                        {% csrf_token %}
+                                                        <button type='submit'
+                                                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                            title="{% trans 'Remove' %}"><ion-icon
+                                                                name="trash-outline"></ion-icon></button>
+                                                    </form>
+                                                    {% elif perms.base.delete_shiftrequest or request.user|is_reportingmanager %}
+                                                    <form action="{% url 'shift-request-delete' shift_request.id  %}"
+                                                        onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');"
+                                                        method='post' class="w-75">
+                                                        {% csrf_token %}
+                                                        <button type='submit'
+                                                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                            title="{% trans 'Remove' %}"><ion-icon
+                                                                name="trash-outline"></ion-icon></button>
+                                                    </form>
+                                                    {% else %}
+                                                    <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="trash-outline"></ion-icon></button></td>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+                                    <div class="oh-sticky-table__td oh-sticky-table__right " onclick="event.stopPropagation();">
+                                        <div class="oh-btn-group">
+                                            {% if shift_request.approved == False and shift_request.canceled == False %}
+                                                <a href="{% url 'shift-request-approve' shift_request.id %}"
+                                                    title="{% trans 'Approve' %}" onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
+                                                    class="oh-btn oh-btn--success w-100">
+                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                </a>
+                                            {% else %}
+                                                <a href="#" title="{% trans 'Approve' %}"
+                                                    class="oh-btn oh-btn--success oh-btn--disabled w-100">
+                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                                 </a>
                                             {% endif %}
-                                            {% if request.user.employee_get == shift_request.employee_id or perms.base.delete_shiftrequest or request.user|is_reportingmanager %}
-                                                {% if shift_request.approved == False and shift_request.canceled == False %}
-                                                <form action="{% url 'shift-request-delete' shift_request.id  %}"
-                                                    onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');"
-                                                    method='post' class="w-75">
-                                                    {% csrf_token %}
-                                                    <button type='submit'
-                                                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                                        title="{% trans 'Remove' %}"><ion-icon
-                                                            name="trash-outline"></ion-icon></button>
-                                                </form>
-                                                {% elif perms.base.delete_shiftrequest or request.user|is_reportingmanager %}
-                                                <form action="{% url 'shift-request-delete' shift_request.id  %}"
-                                                    onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');"
-                                                    method='post' class="w-75">
-                                                    {% csrf_token %}
-                                                    <button type='submit'
-                                                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                                        title="{% trans 'Remove' %}"><ion-icon
-                                                            name="trash-outline"></ion-icon></button>
-                                                </form>
-                                                {% else %}
-                                                <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="trash-outline"></ion-icon></button></td>
-                                                {% endif %}
+
+                                            {% if shift_request.canceled == False %}
+                                                <a href="{% url 'shift-request-cancel' shift_request.id %}"
+                                                    title="{% trans 'Reject' %}"
+                                                    onclick="return confirm('{% trans "Do you want to reject this request?" %}')"
+                                                    class="oh-btn oh-btn--danger w-100">
+                                                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                                </a>
+                                            {% else %}
+                                                <a type="submit" href="#" title="{% trans 'Reject' %}" class="oh-btn oh-btn--danger oh-btn--disabled w-100">
+                                                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                                </a>
                                             {% endif %}
                                         </div>
+                                    </div>
                                     {% endif %}
                                 </div>
-                                {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
-                                <div class="oh-sticky-table__td oh-sticky-table__right " onclick="event.stopPropagation();">
-                                    <div class="oh-btn-group">
-                                        {% if shift_request.approved == False and shift_request.canceled == False %}
-                                            <a href="{% url 'shift-request-approve' shift_request.id %}"
-                                                title="{% trans 'Approve' %}" onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
-                                                class="oh-btn oh-btn--success w-100">
-                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                            </a>
-                                        {% else %}
-                                            <a href="#" title="{% trans 'Approve' %}"
-                                                class="oh-btn oh-btn--success oh-btn--disabled w-100">
-                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                            </a>
-                                        {% endif %}
-
-                                        {% if shift_request.canceled == False %}
-                                            <a href="{% url 'shift-request-cancel' shift_request.id %}"
-                                                title="{% trans 'Reject' %}"
-                                                onclick="return confirm('{% trans "Do you want to reject this request?" %}')"
-                                                class="oh-btn oh-btn--danger w-100">
-                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                            </a>
-                                        {% else %}
-                                            <a type="submit" href="#" title="{% trans 'Reject' %}" class="oh-btn oh-btn--danger oh-btn--disabled w-100">
-                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                            </a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                {% endif %}
-                            </div>
                             {% endfor %}
                         </div>
                     </div>

@@ -109,6 +109,7 @@ from base.methods import (
     format_date,
     get_key_instances,
     get_pagination,
+    is_reportingmanager,
     sortby,
 )
 from base.models import (
@@ -4011,7 +4012,7 @@ def shift_request_view(request):
     allocated_shift_requests = filtersubordinates(
         request,
         ShiftRequest.objects.filter(reallocate_to__isnull=False),
-        "base.add_shiftrequest",
+        "base.view_shiftrequest",
     )
     allocated_requests = ShiftRequest.objects.filter(reallocate_to__isnull=False)
     if not request.user.has_perm("base.view_shiftrequest"):
@@ -4816,22 +4817,25 @@ def delete_notification(request, id):
     """
     This method is used to delete notification
     """
+    script = ""
     try:
         request.user.notifications.get(id=id).delete()
         messages.success(request, _("Notification deleted."))
     except Exception as e:
         messages.error(request, e)
-    notifications = request.user.notifications.all()
-    return render(
-        request, "notification/all_notifications.html", {"notifications": notifications}
-    )
+    if not request.user.notifications.all():
+        script = """<span hx-get='/all-notifications' hx-target='#allNotificationBody' hx-trigger='load'></span>"""
+    return HttpResponse(script)
 
 
 @login_required
 def mark_as_read_notification(request, notification_id):
+    script = ""
     notification = Notification.objects.get(id=notification_id)
     notification.mark_as_read()
-    return redirect(notifications)
+    if not request.user.notifications.unread():
+        script = """<span hx-get='/notifications' hx-target='#notificationContainer' hx-trigger='load'></span>"""
+    return HttpResponse(script)
 
 
 @login_required
@@ -5782,26 +5786,27 @@ def view_shift_comment(request, shift_id):
 
 
 @login_required
-@permission_required("offboarding.delete_offboardingnote")
+@hx_request_required
 def delete_shift_comment_file(request):
     """
     Used to delete attachment
     """
     ids = request.GET.getlist("ids")
-    BaserequestFile.objects.filter(id__in=ids).delete()
-    messages.success(request, _("File deleted successfully"))
     shift_id = request.GET["shift_id"]
-    comments = ShiftRequestComment.objects.filter(request_id=shift_id).order_by(
-        "-created_at"
-    )
-    return render(
-        request,
-        "shift_request/htmx/shift_comment.html",
-        {
-            "comments": comments,
-            "request_id": shift_id,
-        },
-    )
+    comment_id = request.GET["comment_id"]
+    comment = ShiftRequestComment.find(comment_id)
+    script = ""
+    if (
+        request.user.employee_get == comment.employee_id
+        or request.user.has_perm("base.delete_baserequestfile")
+        or is_reportingmanager(request)
+    ):
+        BaserequestFile.objects.filter(id__in=ids).delete()
+        messages.success(request, _("File deleted successfully"))
+    else:
+        messages.warning(request, _("You don't have permission"))
+        script = f"""<span hx-get="/view-shift-comment/{shift_id}/" hx-trigger="load" hx-target="#commentContainer" data-target="#activitySidebar"></span>"""
+    return HttpResponse(script)
 
 
 @login_required
@@ -5841,24 +5846,27 @@ def view_work_type_comment(request, work_type_id):
 
 
 @login_required
-@permission_required("offboarding.delete_offboardingnote")
+@hx_request_required
 def delete_work_type_comment_file(request):
     """
     Used to delete attachment
     """
     ids = request.GET.getlist("ids")
-    BaserequestFile.objects.filter(id__in=ids).delete()
-    messages.success(request, _("File deleted successfully"))
-    work_type_id = request.GET["work_type_id"]
-    comments = WorkTypeRequestComment.objects.filter(request_id=work_type_id)
-    return render(
-        request,
-        "work_type_request/htmx/work_type_comment.html",
-        {
-            "comments": comments,
-            "request_id": work_type_id,
-        },
-    )
+    request_id = request.GET["request_id"]
+    comment_id = request.GET["comment_id"]
+    comment = WorkTypeRequestComment.find(comment_id)
+    script = ""
+    if (
+        request.user.employee_get == comment.employee_id
+        or request.user.has_perm("base.delete_baserequestfile")
+        or is_reportingmanager(request)
+    ):
+        BaserequestFile.objects.filter(id__in=ids).delete()
+        messages.success(request, _("File deleted successfully"))
+    else:
+        messages.warning(request, _("You don't have permission"))
+        script = f"""<span hx-get="/view-work-type-comment/{request_id}/" hx-trigger="load" hx-target="#commentContainer" data-target="#activitySidebar"></span>"""
+    return HttpResponse(script)
 
 
 @login_required
@@ -5868,9 +5876,19 @@ def delete_shiftrequest_comment(request, comment_id):
     This method is used to delete shift request comments
     """
     comment = ShiftRequestComment.find(comment_id)
-    comment.delete()
-    messages.success(request, _("Comment deleted successfully!"))
-    return HttpResponse()
+    request_id = comment.request_id.id
+    script = ""
+    if (
+        request.user.employee_get == comment.employee_id
+        or request.user.has_perm("base.delete_baserequestfile")
+        or is_reportingmanager(request)
+    ):
+        comment.delete()
+        messages.success(request, _("Comment deleted successfully!"))
+    else:
+        messages.warning(request, _("You don't have permission"))
+        script = f"""<span hx-get="/view-shift-comment/{request_id}/" hx-trigger="load" hx-target="#commentContainer" data-target="#activitySidebar"></span>"""
+    return HttpResponse(script)
 
 
 @login_required
@@ -5997,10 +6015,20 @@ def delete_worktyperequest_comment(request, comment_id):
     """
     This method is used to delete Work type request comments
     """
-    comment = WorkTypeRequestComment.objects.filter(id=comment_id)
-    comment.delete()
-    messages.success(request, _("Comment deleted successfully!"))
-    return HttpResponse()
+    script = ""
+    comment = WorkTypeRequestComment.find(comment_id)
+    request_id = comment.request_id.id
+    if (
+        request.user.employee_get == comment.employee_id
+        or request.user.has_perm("base.delete_baserequestfile")
+        or is_reportingmanager(request)
+    ):
+        comment.delete()
+        messages.success(request, _("Comment deleted successfully!"))
+    else:
+        messages.warning(request, _("You don't have permission"))
+        script = f"""<span hx-get="/view-work-type-comment/{request_id}/" hx-trigger="load" hx-target="#commentContainer" data-target="#activitySidebar"></span>"""
+    return HttpResponse(script)
 
 
 @login_required
@@ -6026,7 +6054,7 @@ def pagination_settings_view(request):
 
 
 @login_required
-@permission_required("base.view_actiontype")
+@permission_required("employee.view_actiontype")
 def action_type_view(request):
     """
     This method is used to show Action Type
@@ -6039,7 +6067,7 @@ def action_type_view(request):
 
 @login_required
 @hx_request_required
-@permission_required("base.add_actiontype")
+@permission_required("employee.add_actiontype")
 def action_type_create(request):
     """
     This method renders form and template to create Action Type
@@ -6053,9 +6081,7 @@ def action_type_create(request):
             form.save()
             form = ActiontypeForm()
             messages.success(request, _("Action has been created successfully!"))
-            if dynamic == "None":
-                return HttpResponse("<script>window.location.reload()</script>")
-            else:
+            if dynamic != "None":
                 url = reverse("create-actions")
                 instance = Actiontype.objects.all().order_by("-id").first()
                 mutable_get = request.GET.copy()
@@ -6075,7 +6101,7 @@ def action_type_create(request):
 
 @login_required
 @hx_request_required
-@permission_required("base.change_actiontype")
+@permission_required("employee.change_actiontype")
 def action_type_update(request, act_id):
     """
     This method renders form and template to update Action type
@@ -6084,7 +6110,10 @@ def action_type_update(request, act_id):
     form = ActiontypeForm(instance=action)
 
     if action.action_type == "warning":
-        if AccountBlockUnblock.objects.first().is_enabled:
+        if (
+            AccountBlockUnblock.objects.first()
+            and AccountBlockUnblock.objects.first().is_enabled
+        ):
             form.fields["block_option"].widget = forms.HiddenInput()
 
     if request.method == "POST":
@@ -6096,7 +6125,6 @@ def action_type_update(request, act_id):
             form.save()
             form = ActiontypeForm()
             messages.success(request, _("Action has been updated successfully!"))
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "base/action_type/action_type_form.html",

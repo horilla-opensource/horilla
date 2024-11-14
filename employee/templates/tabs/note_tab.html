@@ -1,295 +1,164 @@
 {% load static %}{% load i18n %} {% load basefilters %}
 {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
-    </div>
-  </div>
-  {% endfor %}
-</div>
+    <script>reloadMessage();</script>
 {% endif %}
 <script>
-  function submitForm(elem) {
-    $(elem).siblings('.add_more_submit').click()
-  }
-  function enlargeDoc(src,$element) {
-    var enlargeDocContainer = $element.parents().closest("li").find("#enlargeDocContainer")
-    enlargeDocContainer.empty()
-    style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
-    var enlargedImage = $('<iframe>').attr({ src: src, style: style })
-    var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
-    enlargeDocContainer.append(enlargedImage)
-    enlargeDocContainer.append(name)
-    setTimeout(function () {
-        enlargeDocContainer.show()
-
-        const iframe = document.querySelector('iframe').contentWindow
-        var iframe_document = iframe.document
-        iframe_image = iframe_document.getElementsByTagName('img')[0]
-        $(iframe_image).attr('style', 'width:100%; height:100%;')
-    }, 100)
-}
-
-function hideEnlargeDoc() {
-    var enlargeDocContainer = $('.enlargeDocContainer')
-    enlargeDocContainer.empty()
-}
-
-$(document).on('click', function (event) {
-    if (!$(event.target).closest('#enlargeDocContainer').length) {
-        hideEnlargeDoc()
+    function submitForm(elem) {
+        $(elem).siblings('.add_more_submit').click()
     }
-})
+    function enlargeDoc(src, $element) {
+        var enlargeDocContainer = $element.parents().closest("li").find("#enlargeDocContainer")
+        enlargeDocContainer.empty()
+        style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
+        var enlargedImage = $('<iframe>').attr({ src: src, style: style })
+        var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
+        enlargeDocContainer.append(enlargedImage)
+        enlargeDocContainer.append(name)
+        setTimeout(function () {
+            enlargeDocContainer.show()
+
+            const iframe = document.querySelector('iframe').contentWindow
+            var iframe_document = iframe.document
+            iframe_image = iframe_document.getElementsByTagName('img')[0]
+            $(iframe_image).attr('style', 'width:100%; height:100%;')
+        }, 100)
+    }
+
+    function hideEnlargeDoc() {
+        var enlargeDocContainer = $('.enlargeDocContainer')
+        enlargeDocContainer.empty()
+    }
+
+    $(document).on('click', function (event) {
+        if (!$(event.target).closest('#enlargeDocContainer').length) {
+            hideEnlargeDoc()
+        }
+    })
 </script>
 <style>
-  .enlarge-image-container {
-    display: none;
-    position: fixed;
-    top: 40%;
-    left: 40%;
-    transform: translate(-50%, -50%);
-    width: 30%;
-    height: 50%;
-    z-index: 9999;
-  }
+    .enlarge-image-container {
+        display: none;
+        position: fixed;
+        top: 40%;
+        left: 40%;
+        transform: translate(-50%, -50%);
+        width: 30%;
+        height: 50%;
+        z-index: 9999;
+    }
 </style>
 
- {% if notes %}
-<span id="addnote" style="cursor: pointer">
-  {% if perms.employee.add_employeenote or request.user|is_reportingmanager %}
-  <form
-    hx-target="#note_target"
-    hx-post="{% url 'add-employee-note' employee.id %}"
-    id="noteForm"
-  >
-    {% csrf_token %}
-    <div class="mt-4">
-
-      <form method="post"
-          hx-target="#note_target"
-          hx-post="{% url 'add-employee-note' employee.id %}" id="commentForm">
-          {% csrf_token %}
-
-          <div>
-            <div class="mt-4">
-              <span class="oh-activity-sidebar__title fw-bold">{{employee}}'s {% trans "Notes" %}</span>
-              <input type="text" name="description" id="commentInput" class="oh-input w-100 mt-2" placeholder="Add notes">
-            </div>
-            <button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp" style="display: none;">
-              {% trans "Add" %}
-            </button>
-          </div>
-
-          <div class="oh-inner-sidebar-content__footer"></div>
-      </form>
-
-    </div>
-    <div class="d-flex flex-row-reverse">
-      <button
-        type="submit"
-        id="noteButton"
-        class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-        style="display: none"
-      >
-        {% trans "Add" %}
-      </button>
-    </div>
-  </form>
-  {% endif %}
-</span>
-<ol class="oh-activity-sidebar__qa-list" role="list">
-  {% for note in notes %}
-    <div id="employeeNote{{note.id}}">
-      <li class="oh-activity-sidebar__qa-item">
-          <span class="oh-activity-sidebar__q">{{note.description}}
-            {% if perms.employee.delete_employeenote or request.user|is_reportingmanager %}
-            <span
-            class="float-end"
-            hx-get="{% url 'employee-note-delete' note.id %}"
-            hx-target="#employeeNote{{note.id}}"
-            hx-swap="delete"
-            id="deleteNote"
-            >
-            <ion-icon name="trash-outline" style="font-size: 24px"></ion-icon>
-            </span>
-              {% endif %}
-          </span>
-
-          <div class="d-flex mt-2 mb-2">
-            {% for file in note.note_files.all %}
-            <a
-              href="{{ file.files.url }}"
-              rel="noopener noreferrer"
-              target="_blank"
-              ><span
-                class="oh-file-icon oh-file-icon--pdf"
-                onmouseover="enlargeDoc('{{ file.files.url }}',$(this))"
-                onmouseout = "hideEnlargeDoc()"
-                style="width: 40px; height: 40px"
-                ><img
-                  src="{% static 'images/ui/minus-icon.png' %}"
-                  style="display: block; width: 50%; height: 50%"
-                  hx-get='{% url "delete-employee-note-file" file.id %}'
-                  hx-target="#note_target"
-                  onclick="event.stopPropagation();event.preventDefault()" /></span
-            ></a>
-            {% endfor %}
-
-            <form
-              hx-post="{% url 'add-more-files-employee' note.id %}"
-              class="add-files-form"
-              hx-encoding="multipart/form-data"
-              data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#note_target"
-
-            >
-              {% csrf_token %}
-              <label for="addFile_{{note.id}}" title="Add Files"
-                ><ion-icon
-                  name="add-outline"
-                  style="font-size: 24px"
-                  role="img"
-                  class="md hydrated"
-                  aria-label="add outline"
-                ></ion-icon
-              ></label>
-              <input
-                type="file"
-                name="files"
-                class="d-none"
-                multiple="true"
-                id="addFile_{{note.id}}"
-                onchange="submitForm(this)"
-              />
-              <input
-                type="submit"
-                class="d-none add_more_submit"
-                value="save"
-              />
-            </form>
-          </div>
-
-        <span class="oh-activity-sidebar__a">
-          {% trans "by" %}
-          <img
-            src="https://ui-avatars.com/api/?name={{note.updated_by.get_full_name}}&amp;background=random"
-            style="width: 1.5em; border-radius: 100%"
-            alt="User"
-          />
-          {{note.updated_by}}
-        </span>
-        <span class="oh-activity-sidebar__a">
-          {% trans "at" %} &nbsp
-          <span class="dateformat_changer">{{ note.created_at|date:"Y-m-d" }}</span>
-          &nbsp
-          <span class="timeformat_changer">{{ note.created_at|time:"H:i" }}</span>
-        </span>
-        <div style="width: 30%">
-          <div id="enlargeDocContainer" class="enlargeDocContainer"></div>
-        </div>
-      </li>
-    </div>
-  {% endfor %}
-</ol>
-{% else %} {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
-    </div>
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
-<div class="mt-4">
-
-  <form method="post"
-      hx-target="#note_target"
-      hx-post="{% url 'add-employee-note' employee.id %}" id="commentForm">
-      {% csrf_token %}
-
-      <div>
+{% if notes %}
+    <span id="addnote" style="cursor: pointer">
         <div class="mt-4">
-          <span class="oh-activity-sidebar__title fw-bold">{{employee}}'s {% trans "Notes" %}</span>
-          <input type="text" name="description" id="commentInput" class="oh-input w-100 mt-2" placeholder="Add notes">
+            <form hx-target="#note_target" hx-post="{% url 'add-employee-note' employee.id %}" id="commentForm">
+                {% csrf_token %}
+                <div>
+                    <div class="mt-4">
+                        <span class="oh-activity-sidebar__title fw-bold">{{employee}}'s {% trans "Notes" %}</span>
+                        {% if perms.employee.add_employeenote or request.user|is_reportingmanager %}
+                            <input type="text" hx-on:keyup="toggleCommentButton(this);" name="description" id="commentInput"
+                            class="oh-input w-100 mt-2" placeholder="{% trans 'Add notes' %}">
+                        {% endif %}
+                    </div>
+                    <button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+                        style="display: none;">
+                        {% trans "Add" %}
+                    </button>
+                </div>
+                <div class="oh-inner-sidebar-content__footer"></div>
+            </form>
         </div>
-        <button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp" style="display: none;">
-          {% trans "Add" %}
-        </button>
-      </div>
-
-      <div class="oh-inner-sidebar-content__footer"></div>
-  </form>
-
-</div>
-<div class="d-flex mt-5" style="margin-left: 30%">
-  <img
-    style="width: 80px; height: 90px"
-    src="{% static 'images/ui/no_notes.png' %}"
-  />
-  <h5 class="oh-404__subtitle mt-4 ml-2">
-    {% trans "No notes have been added for this employee" %}
-  </h5>
-</div>
-
-{% endif %}
-<div
-  class="oh-modal"
-  id="addNoteModal"
-  role="dialog"
-  aria-labelledby="addNoteModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <span class="oh-modal__dialog-title" id="addNoteModalLabel">
-        <h5>{% trans "Add Note" %}</h5>
-      </span>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
+    </span>
+    <ol class="oh-activity-sidebar__qa-list" role="list">
+        {% for note in notes %}
+            <div id="employeeNote{{note.id}}">
+                <li class="oh-activity-sidebar__qa-item">
+                    <span class="oh-activity-sidebar__q">{{note.description}}
+                        {% if perms.employee.delete_employeenote or request.user|is_reportingmanager %}
+                        <span class="float-end" hx-get="{% url 'employee-note-delete' note.id %}"
+                            hx-on:click="setTimeout(() => {reloadMessage(this);},100);" hx-target="#employeeNote{{note.id}}"
+                            hx-swap="delete" id="deleteNote">
+                            <ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="close outline"></ion-icon></span>
+                        </span>
+                        {% endif %}
+                    </span>
+                    {% if perms.employee.view_notefiles or request.user|is_reportingmanager %}
+                        <div class="d-flex mt-2 mb-2">
+                            {% for file in note.note_files.all %}
+                                <a href="{{ file.files.url }}" rel="noopener noreferrer" target="_blank">
+                                    <span class="oh-file-icon oh-file-icon--pdf" id="noteFile{{file.id}}"
+                                        onmouseover="enlargeDoc('{{ file.files.url }}',$(this))" onmouseout="hideEnlargeDoc()"
+                                        style="width: 40px; height: 40px">
+                                        {% if perms.employee.delete_notefiles or request.user|is_reportingmanager %}
+                                            <img src="{% static 'images/ui/minus-icon.png' %}"
+                                                style="display: block; width: 50%; height: 50%" hx-swap="delete"
+                                                hx-get="{% url 'delete-employee-note-file' file.id %}" hx-target="#noteFile{{file.id}}"
+                                                onclick="event.stopPropagation();event.preventDefault()" />
+                                        {% endif %}
+                                    </span>
+                                </a>
+                            {% endfor %}
+                            {% if perms.employee.add_notefiles or request.user|is_reportingmanager %}
+                                <form hx-post="{% url 'add-more-files-employee' note.id %}" class="add-files-form"
+                                    hx-encoding="multipart/form-data" data-target="#activitySidebar" hx-swap="innerHTML"
+                                    hx-target="#note_target">
+                                    {% csrf_token %}
+                                    <label for="addFile_{{note.id}}" title="Add Files"><ion-icon name="add-outline"
+                                            style="font-size: 24px" role="img" class="md hydrated"
+                                            aria-label="add outline"></ion-icon></label>
+                                    <input type="file" name="files" class="d-none" multiple="true" id="addFile_{{note.id}}"
+                                        onchange="submitForm(this)" />
+                                    <input type="submit" class="d-none add_more_submit" value="save" />
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    <span class="oh-activity-sidebar__a">
+                        {% trans "by" %}
+                        <img src="https://ui-avatars.com/api/?name={{note.updated_by.get_full_name}}&amp;background=random"
+                            style="width: 1.5em; border-radius: 100%" alt="User" />
+                        {{note.updated_by}}
+                    </span>
+                    <span class="oh-activity-sidebar__a">
+                        {% trans "at" %} &nbsp
+                        <span class="dateformat_changer">{{ note.created_at|date:"Y-m-d" }}</span>
+                        &nbsp
+                        <span class="timeformat_changer">{{ note.created_at|time:"H:i" }}</span>
+                    </span>
+                    <div style="width: 30%">
+                        <div id="enlargeDocContainer" class="enlargeDocContainer"></div>
+                    </div>
+                </li>
+            </div>
+        {% endfor %}
+    </ol>
+{% else %}
+    <div class="mt-4">
+        <form hx-target="#note_target" hx-post="{% url 'add-employee-note' employee.id %}"
+            hx-on:change="console.log('test');" id="commentForm">
+            {% csrf_token %}
+            <div>
+                <div class="mt-4">
+                    <span class="oh-activity-sidebar__title fw-bold">{{employee}}'s {% trans "Notes" %}</span>
+                    {% if perms.employee.add_employeenote or request.user|is_reportingmanager %}
+                    <input type="text" hx-on:keyup="toggleCommentButton(this);" name="description" id="commentInput"
+                        class="oh-input w-100 mt-2" placeholder="{% trans 'Add notes' %}">
+                    {% endif %}
+                </div>
+                <button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+                    style="display: none;">
+                    {% trans "Add" %}
+                </button>
+            </div>
+            <div class="oh-inner-sidebar-content__footer"></div>
+        </form>
     </div>
-    <div class="oh-modal__dialog-body" id="remark-content"></div>
-  </div>
-</div>
 
-<div
-  class="oh-modal"
-  id="updateNoteModal"
-  role="dialog"
-  aria-labelledby="updateNoteModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog" id="modalContent"></div>
-</div>
-<script>
-  $(document).ready(function () {
-    const noteInput = $("#noteInput");
-    const noteButton = $("#noteButton");
-    noteInput.on("input", function () {
-      if (noteInput.val().trim() !== "") {
-        noteButton.show();
-      } else {
-        noteButton.hide();
-      }
-    });
-  });
-</script>
-
-<script>
-  // Get references to the input field and comment button
-  const commentInput = document.getElementById('commentInput');
-  const commentButton = document.getElementById('commentButton');
-
-  // Add event listener to the input field
-  commentInput.addEventListener('input', function() {
-      // Show the comment button if the input field is not empty, hide it otherwise
-      if (commentInput.value.trim() !== '') {
-          commentButton.style.display = 'inline';
-      } else {
-          commentButton.style.display = 'none';
-      }
-  });
-</script>
+    <div class="d-flex mt-5" style="margin-left: 30%">
+        <img style="width: 80px; height: 90px" src="{% static 'images/ui/no_notes.png' %}" />
+        <h5 class="oh-404__subtitle mt-4 ml-2">
+            {% trans "No notes have been added for this employee" %}
+        </h5>
+    </div>
+{% endif %}

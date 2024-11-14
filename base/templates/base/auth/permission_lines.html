@@ -62,9 +62,6 @@
 {% endif %}
 
 <script>
-  function selectAllViews(elem){
-    $(elem).closest('.oh-sticky-table__thead').siblings('.oh-sticky-table__tbody').find('.view-permission').prop('checked',$(elem).is(':checked')).change()
-  }
   function selectAllPermissions(elem) {
       $(elem).closest('.oh-sticky-table__thead').siblings('.oh-sticky-table__tbody').find('.row-permission').prop('checked',$(elem).is(':checked')).change()
   }
