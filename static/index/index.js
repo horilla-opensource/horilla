@@ -497,6 +497,11 @@ function handleDownloadAndRefresh(event, url) {
     }, 500);  // Adjust the delay as needed
 }
 
+function toggleCommentButton(e) {
+    const $button = $(e).closest('form').find('#commentButton');
+    $button.toggle($(e).val().trim() !== '');
+}
+
 function updateUserPanelCount(e) {
     var count = $(e).closest('.oh-sticky-table__tr').find('.oh-user-panel').length;
     setTimeout(() => {

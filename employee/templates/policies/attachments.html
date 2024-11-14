@@ -2,7 +2,7 @@
 <form hx-post="{% url 'add-attachment-policy' %}?policy_id={{policy.id}}" hx-target="#attachmentContainer" class="add-files-form d-flex" method="post"
     hx-encoding="multipart/form-data">
     {% for attachment in policy.attachments.all %}
-        {% if perms.employee.delete_policy %}
+        {% if perms.employee.delete_policymultiplefile %}
             <a href="{{ attachment.attachment.url }}" rel="noopener noreferrer" target="_blank"><span
                 class="oh-file-icon oh-file-icon--pdf" onmouseover="enlargeImage('{{ attachment.attachment.url }}')"
                 style="width:40px;height:40px"><img src="{% static '/images/ui/minus-icon.png' %}"
@@ -21,7 +21,7 @@
         {% endif %}
 
     {% endfor %}
-    {% if perms.employee.add_policy %}
+    {% if perms.employee.add_policymultiplefile %}
     {% csrf_token %}
     <input type="file" name="files" class="d-none" multiple="true" id="addFile_18" onchange="submitForm(this)" />
     <input type="submit" class="d-none add_more_submit" value="save" />

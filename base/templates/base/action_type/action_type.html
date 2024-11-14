@@ -17,7 +17,9 @@
 		{% endif %}
 	</div>
 	{% if action_types %}
-		{% include 'base/action_type/action_type_view.html' %}
+		<div id="actionTypes">
+			{% include 'base/action_type/action_type_view.html' %}
+		</div>
 	{% else %}
 		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
 			<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/legal.png' %}" class="" alt="Page not found. 404." />

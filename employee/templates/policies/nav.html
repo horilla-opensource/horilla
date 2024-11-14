@@ -10,7 +10,7 @@
       <input hx-get="{% url 'search-policies' %}" name="search" hx-trigger="keyup changed delay:.2s" hx-target="#policyContainer" type="text" placeholder="Search" style="margin-right:10px" class="oh-input oh-input__icon mr-3" autocomplete="false" aria-label="Search Input" />
     </div>
     {% include 'policies/filter.html' %}
-    {% if perms.payroll.add_policyaccount %}
+    {% if perms.employee.add_policy %}
       <div class="oh-main__titlebar-button-container">
         <div class="oh-main__titlebar-button-container">
           <a hx-get="{% url 'create-policy' %}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--secondary">

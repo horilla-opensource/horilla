@@ -853,6 +853,10 @@ class Actiontype(HorillaModel):
     def __str__(self) -> str:
         return f"{self.title}"
 
+    class Meta:
+        verbose_name = _("Action Type")
+        verbose_name_plural = _("Action Types")
+
 
 class DisciplinaryAction(HorillaModel):
     """

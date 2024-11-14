@@ -10,100 +10,101 @@
         onsubmit="event.preventDefault()">
         <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
 
-            {% if perms.employee.add_disciplinaryaction %}
+
             {% if data %}
-            <div class="oh-main__titlebar-button-container">
-                <div class="oh-input-group oh-input__search-group mr-4">
-                    <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated"
-                        role="img" aria-label="search outline"></ion-icon>
-                    <input name="search" type="text" placeholder="Search" style="margin-right:10px"
-                        class="oh-input oh-input__icon mr-3" autocomplete="false" aria-label="Search Input"
-                        onkeyup="$('.filterButton')[0].click()" />
-                </div>
-                <div class="oh-dropdown" x-data="{open: false}">
-                    <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-                        <div id="filterCount"></div>
-                    </button>
-                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
-                        @click.outside="open = false" style="display: none">
-                        <div class="oh-dropdown__filter-body">
-                            <div class="oh-accordion">
-                                <div class="oh-accordion-header">{% trans "Disciplinary Action" %}</div>
-                                <div class="oh-accordion-body">
-                                    <div class="row">
-                                        <div class="col-sm-12 col-md-12 col-lg-12">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{f.form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
-                                                {{f.form.employee_id}}
-                                            </div>
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{f.form.action.id_for_label}}">{% trans "Action Taken" %}</label>
-                                                {{f.form.action}}
-                                            </div>
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{f.form.start_date.id_for_label}}">{% trans "Date" %}</label>
-                                                {{f.form.start_date}}
+                <div class="oh-main__titlebar-button-container">
+                    <div class="oh-input-group oh-input__search-group mr-4">
+                        <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated"
+                            role="img" aria-label="search outline"></ion-icon>
+                        <input name="search" type="text" placeholder="Search" style="margin-right:10px"
+                            class="oh-input oh-input__icon mr-3" autocomplete="false" aria-label="Search Input"
+                            onkeyup="$('.filterButton')[0].click()" />
+                    </div>
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                            <div id="filterCount"></div>
+                        </button>
+                        <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                            @click.outside="open = false" style="display: none">
+                            <div class="oh-dropdown__filter-body">
+                                <div class="oh-accordion">
+                                    <div class="oh-accordion-header">{% trans "Disciplinary Action" %}</div>
+                                    <div class="oh-accordion-body">
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{f.form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
+                                                    {{f.form.employee_id}}
+                                                </div>
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{f.form.action.id_for_label}}">{% trans "Action Taken" %}</label>
+                                                    {{f.form.action}}
+                                                </div>
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{f.form.start_date.id_for_label}}">{% trans "Date" %}</label>
+                                                    {{f.form.start_date}}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="oh-accordion">
-                                <div class="oh-accordion-header">{% trans "Work Information" %}</div>
-                                <div class="oh-accordion-body">
-                                    <div class="row">
-                                        <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{f.form.employee_id__employee_work_info__company_id.id_for_label}}">{% trans "Company" %}</label>
-                                                {{f.form.employee_id__employee_work_info__company_id}}
+                                <div class="oh-accordion">
+                                    <div class="oh-accordion-header">{% trans "Work Information" %}</div>
+                                    <div class="oh-accordion-body">
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{f.form.employee_id__employee_work_info__company_id.id_for_label}}">{% trans "Company" %}</label>
+                                                    {{f.form.employee_id__employee_work_info__company_id}}
+                                                </div>
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{f.form.employee_id__employee_work_info__department_id.id_for_label}}">{% trans "Department" %}</label>
+                                                    {{f.form.employee_id__employee_work_info__department_id}}
+                                                </div>
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{f.form.employee_id__employee_work_info__shift_id.id_for_label}}">{% trans "Shift" %}</label>
+                                                    {{f.form.employee_id__employee_work_info__shift_id}}
+                                                </div>
                                             </div>
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{f.form.employee_id__employee_work_info__department_id.id_for_label}}">{% trans "Department" %}</label>
-                                                {{f.form.employee_id__employee_work_info__department_id}}
-                                            </div>
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{f.form.employee_id__employee_work_info__shift_id.id_for_label}}">{% trans "Shift" %}</label>
-                                                {{f.form.employee_id__employee_work_info__shift_id}}
-                                            </div>
-                                        </div>
 
-                                        <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{f.form.employee_id__employee_work_info__reporting_manager_id.id_for_label}}">{% trans "Reporting Manager" %}</label>
-                                                {{f.form.employee_id__employee_work_info__reporting_manager_id}}
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{f.form.employee_id__employee_work_info__reporting_manager_id.id_for_label}}">{% trans "Reporting Manager" %}</label>
+                                                    {{f.form.employee_id__employee_work_info__reporting_manager_id}}
+                                                </div>
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{f.form.employee_id__employee_work_info__job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
+                                                    {{f.form.employee_id__employee_work_info__job_position_id}}
+                                                </div>
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label" for="{{f.form.employee_id__employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
+                                                    {{f.form.employee_id__employee_work_info__work_type_id}}
+                                                </div>
                                             </div>
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{f.form.employee_id__employee_work_info__job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
-                                                {{f.form.employee_id__employee_work_info__job_position_id}}
-                                            </div>
-                                            <div class="oh-input-group">
-                                                <label class="oh-label" for="{{f.form.employee_id__employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
-                                                {{f.form.employee_id__employee_work_info__work_type_id}}
-                                            </div>
-                                        </div>
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="oh-dropdown__filter-footer">
-                            <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">
-                                {% trans "Filter" %}
-                            </button>
+                            <div class="oh-dropdown__filter-footer">
+                                <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">
+                                    {% trans "Filter" %}
+                                </button>
+                            </div>
                         </div>
                     </div>
+                    {% endif %}
+                    {% if perms.employee.add_disciplinaryaction %}
+                        <div class="oh-main__titlebar-button-container">
+                            <a hx-get="{% url 'create-actions' %}" hx-target="#objectCreateModalTarget"
+                                data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--secondary">
+                                <ion-icon name="add-outline"></ion-icon>
+                                {% trans 'Take An Action' %}
+                            </a>
+                        </div>
+                    {% endif %}
                 </div>
-                {% endif %}
-                <div class="oh-main__titlebar-button-container">
-                    <a hx-get="{% url 'create-actions' %}" hx-target="#objectCreateModalTarget"
-                        data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--secondary">
-                        <ion-icon name="add-outline"></ion-icon>
-                        {% trans 'Take An Action' %}
-                    </a>
-                </div>
-            </div>
-            {% endif %}
         </div>
     </form>
 </section>
@@ -115,20 +116,20 @@
     hx-target="#dynamicCreateModalBody">
 </span>
 {% if data %}
-<div class="oh-wrapper" id="actionContainer">
-    {% include 'disciplinary_actions/disciplinary_records.html' %}
-</div>
-{% else %}
-<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-
-    <div class="oh-wrapper">
-        <div class="oh-404">
-            <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/legal.png' %}"
-                class="oh-404__image mb-4" alt="Page not found. 404." />
-            <h5 class="oh-404__subtitle">{% trans "There are currently no disciplinary actions to consider." %}</h5>
-        </div>
+    <div class="oh-wrapper" id="actionContainer">
+        {% include 'disciplinary_actions/disciplinary_records.html' %}
     </div>
-</main>
+{% else %}
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+
+        <div class="oh-wrapper">
+            <div class="oh-404">
+                <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/legal.png' %}"
+                    class="oh-404__image mb-4" alt="Page not found. 404." />
+                <h5 class="oh-404__subtitle">{% trans "There are currently no disciplinary actions to consider." %}</h5>
+            </div>
+        </div>
+    </main>
 {% endif %}
 
 <script>

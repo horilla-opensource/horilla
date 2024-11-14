@@ -122,7 +122,7 @@ def delete_policies(request):
 
 
 @login_required
-@permission_required("employee.change_policy")
+@permission_required("employee.add_policymultiplefile")
 def add_attachment(request):
     """
     This method is used to add attachment to policy
@@ -142,7 +142,7 @@ def add_attachment(request):
 
 
 @login_required
-@permission_required("employee.delete_policy")
+@permission_required("employee.delete_policymultiplefile")
 def remove_attachment(request):
     """
     This method is used to remove the attachments
@@ -170,12 +170,16 @@ def disciplinary_actions(request):
     This method is used to view all Disciplinaryaction
     """
     employee = Employee.objects.filter(employee_user_id=request.user).first()
-    dis_actions = filtersubordinates(
-        request, DisciplinaryAction.objects.all(), "base.add_disciplinaryaction"
-    ).distinct()
-    dis_actions = (
-        dis_actions | DisciplinaryAction.objects.filter(employee_id=employee).distinct()
-    )
+    if request.user.has_perm("employee.view_disciplinaryaction"):
+        dis_actions = DisciplinaryAction.objects.all()
+    else:
+        dis_actions = filtersubordinates(
+            request, DisciplinaryAction.objects.all(), "base.add_disciplinaryaction"
+        ).distinct()
+        dis_actions = (
+            dis_actions
+            | DisciplinaryAction.objects.filter(employee_id=employee).distinct()
+        )
 
     form = DisciplinaryActionFilter(request.GET, queryset=dis_actions)
     page_number = request.GET.get("page")
