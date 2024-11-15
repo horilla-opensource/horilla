@@ -113,7 +113,7 @@ def asset_creation(request, asset_category_id):
     # Use request.GET to pre-fill the form with dynamic create batch number data if available
     form = (
         AssetForm(request.GET, initial=initial_data)
-        if request.GET
+        if request.GET.get("csrfmiddlewaretoken")
         else AssetForm(initial=initial_data)
     )
     if request.method == "POST":
@@ -168,7 +168,7 @@ def add_asset_report(request, asset_id=None):
 
 @login_required
 @hx_request_required
-@permission_required("asset.delete_asset")
+@permission_required("asset.change_asset")
 def asset_update(request, asset_id):
     """
     Updates an asset with the given ID.
@@ -561,7 +561,7 @@ def asset_request_creation(request):
 
 
 @login_required
-@manager_can_enter(perm="asset.add_asset")
+@permission_required(perm="asset.add_assetassignment")
 def asset_request_approve(request, req_id):
     """
     Approves an asset request with the given ID and updates the corresponding asset record
@@ -617,7 +617,7 @@ def asset_request_approve(request, req_id):
 
 
 @login_required
-@manager_can_enter(perm="asset.add_asset")
+@permission_required(perm="asset.add_assetassignment")
 def asset_request_reject(request, req_id):
     """
     View function to reject an asset request.
@@ -652,7 +652,7 @@ def asset_request_reject(request, req_id):
 
 
 @login_required
-@permission_required(perm="asset.add_asset")
+@permission_required(perm="asset.add_assetassignment")
 def asset_allocate_creation(request):
     """
     View function to create asset allocation.
@@ -726,6 +726,7 @@ def asset_allocate_return_request(request, asset_id):
 
 
 @login_required
+@permission_required(perm="asset.change_assetassignment")
 def asset_allocate_return(request, asset_id):
     """
     View function to return asset.
@@ -955,6 +956,7 @@ def asset_request_alloaction_view_search_filter(request):
 
 
 @login_required
+@hx_request_required
 def own_asset_individual_view(request, asset_id):
     """
     This function is responsible for view the individual own asset
@@ -980,6 +982,7 @@ def own_asset_individual_view(request, asset_id):
 
 
 @login_required
+@hx_request_required
 def asset_request_individual_view(request, asset_request_id):
     """
     Display the details of an individual asset request.
@@ -1011,6 +1014,7 @@ def asset_request_individual_view(request, asset_request_id):
 
 
 @login_required
+@hx_request_required
 def asset_allocation_individual_view(request, asset_allocation_id):
     """
     Display the details of an individual asset allocation.
@@ -1201,7 +1205,7 @@ def asset_excel(_request):
 
 
 @login_required
-@permission_required(perm="asset.add_asset")
+@permission_required("asset.view_assetcategory")
 def asset_export_excel(request):
     """asset export view"""
     asset_export_filter = AssetExportFilter(request.GET, queryset=Asset.objects.all())
@@ -1303,6 +1307,7 @@ def asset_export_excel(request):
 
 
 @login_required
+@permission_required(perm="asset.add_assetlot")
 def asset_batch_number_creation(request):
     """asset batch number creation view"""
     hx_vals = (

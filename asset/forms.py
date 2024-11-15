@@ -26,6 +26,7 @@ from base.forms import ModelForm
 from base.methods import reload_queryset
 from employee.forms import MultipleFileField
 from employee.models import Employee
+from horilla.horilla_middlewares import _thread_locals
 
 
 def set_date_field_initial(instance):
@@ -99,6 +100,7 @@ class AssetForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        request = getattr(_thread_locals, "request")
         instance = kwargs.get("instance")
         if instance:
             kwargs["initial"] = set_date_field_initial(instance)
@@ -109,15 +111,17 @@ class AssetForm(ModelForm):
             {"id": str(uuid.uuid4())}
         )
         self.fields["asset_status"].widget.attrs.update({"id": str(uuid.uuid4())})
-
-        batch_no_choices = [("", _("---Choose Batch No.---"))] + list(
-            self.fields["asset_lot_number_id"].queryset.values_list("id", "lot_number")
-        )
-        self.fields["asset_lot_number_id"].choices = batch_no_choices
-        if self.instance.pk is None:
-            self.fields["asset_lot_number_id"].choices += [
-                ("create", _("Create new batch number"))
-            ]
+        if request.user.has_perm("asset.add_assetlot"):
+            batch_no_choices = [("", _("---Choose Batch No.---"))] + list(
+                self.fields["asset_lot_number_id"].queryset.values_list(
+                    "id", "lot_number"
+                )
+            )
+            self.fields["asset_lot_number_id"].choices = batch_no_choices
+            if self.instance.pk is None:
+                self.fields["asset_lot_number_id"].choices += [
+                    ("create", _("Create new batch number"))
+                ]
 
     def clean(self):
         instance = self.instance

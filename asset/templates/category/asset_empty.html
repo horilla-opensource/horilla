@@ -40,12 +40,9 @@
         <div class="oh-main__titlebar oh-main__titlebar--right">
 
             <div class="oh-main__titlebar-button-container">
-                <a href="{% url 'asset-batch-view'%}">
-                    <button class="oh-btn ml-2"> <ion-icon name="list-outline" class="me-1"></ion-icon>{% trans "Batch No" %}</button>
-                </a>
+                {% if perms.asset.add_asset %}
                 <!-- import asset start  -->
                 <div class="oh-dropdown" >
-
                         <button class="ml-2" id="import-button" style='border:none'>
                             <a href="#" id="asset-info-import" class="button-link" onclick="return confirm('{% trans "Do you want to download template ?" %}')"><ion-icon name="arrow-down-outline" class="me-1"></ion-icon> {% trans "Import" %}</a>
                         </button>
@@ -69,6 +66,7 @@
                         </form>
                     </div>
                 </div>
+                {% endif %}
                 <!-- import asset end  -->
                 <div class="oh-btn-group ml-2">
                     {% if perms.asset.add_assetcategory %}

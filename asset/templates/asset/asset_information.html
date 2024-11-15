@@ -2,141 +2,156 @@
 
 <!-- start of messages -->
 {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+        <span class="oh-span__class" hx-trigger="load"
+            hx-get="{%url 'asset-list' cat_id=asset.asset_category_id.id %}?{{pd}}"
+            hx-target="#assetCategory{{asset.asset_category_id.id}}"></span>
     </div>
-  </div>
-  {% endfor %}
-
-  <span class="oh-span__class" hx-trigger="load"     hx-get="{%url 'asset-list' cat_id=asset.asset_category_id.id %}?{{pd}}"
-  hx-target="#assetCategory{{asset.asset_category_id.id}}"></span>
-</div>
 {% endif %}
 <!-- end of messages -->
 
 <div class="oh-modal__dialog-header">
-  <span class="oh-modal__dialog-title" id="assetModalLabel">{{asset.asset_name}}</span>
-  <button class="oh-modal__close" aria-label="Close" style="top:17px" >
-      <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <span class="oh-modal__dialog-title" id="assetModalLabel">{{asset.asset_name}}</span>
+    <button class="oh-modal__close" aria-label="Close" style="top:17px">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body oh-modal__dialog-relative">
-{% if request.GET.requests_ids %}
-<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button hx-get="{% url 'asset-information' previous %}?requests_ids={{requests_ids}}&asset_info=true" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev" data-action="previous">
-        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
-        aria-label="chevron back outline"></ion-icon>
-    </button>
+    {% if request.GET.requests_ids %}
+        <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+            <button hx-get="{% url 'asset-information' previous %}?requests_ids={{requests_ids}}&asset_info=true"
+                hx-target="#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev"
+                data-action="previous">
+                <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+                    aria-label="chevron back outline"></ion-icon>
+            </button>
 
-    <button hx-get="{% url 'asset-information' next %}?requests_ids={{requests_ids}}&asset_info=true" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next" data-action="next">
-        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
-        aria-label="chevron forward outline"></ion-icon>
-    </button>
-</div>
-{% endif %}
-
-<div class="row">
-  {% comment %} <div class="col-12 col-md-12 col-lg-12">
-    <div class="oh-modal__group mt-2">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Asset Name" %}</label>
-      <label class="oh-timeoff-modal__stat-count">{{asset.asset_name}}</label>
-    </div>
-  </div> {% endcomment %}
-  {% if asset.asset_description %}
-  <div class="col-12 col-md-12 col-lg-12 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Description" %}</label>
-      <div class="oh-modal__description">
-        {{asset.asset_description}}
-      </div>
-    </div>
-  </div>
-  {% endif %}
-
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Tracking Id" %}</label>
-      <label class="oh-timeoff-modal__stat-count">{{asset.asset_tracking_id}}</label>
-    </div>
-  </div>
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Purchase Date" %}</label>
-      <label class="oh-timeoff-modal__stat-count dateformat_changer">{{asset.asset_purchase_date}}</label>
-    </div>
-  </div>
-
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Cost" %}</label>
-      <label class="oh-timeoff-modal__stat-count">{{asset.asset_purchase_cost}}</label>
-    </div>
-  </div>
-
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Status" %}</label>
-      <label class="oh-timeoff-modal__stat-count">{{asset.get_asset_status_display}} {% if asset.asset_status == "In use" %}{% trans "by " %} {% with assigned=asset.assetassignment_set.last %} {{assigned.assigned_to_employee_id.get_full_name}} {% endwith %}{% endif %} </label>
-    </div>
-  </div>
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Batch No" %}</label>
-      <label class="oh-timeoff-modal__stat-count">{{asset.asset_lot_number_id}}</label>
-    </div>
-  </div>
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Category" %}</label>
-      <label class="oh-timeoff-modal__stat-count">{{asset.asset_category_id}}</label>
-    </div>
-  </div>
-
-  {% if asset.asset_report.all %}
-    <div class="oh-kanban__card-footer mt-3 bg-light" style="position:relative;padding-top:0">
-        <span
-            class="mb-2" style="font-weight:600;"
-            >{% trans "Reports" %}</span
-        >
-        <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Reports' %}"></button>
-        <div class="oh-kanban__card-content oh-kanban__card-content--hide mt-3">
-          {% for report in asset.asset_report.all %}
-            <li class="pt-2 ">
-              {{report.title}}
-              <div class="d-flex m-2">
-                {% for doc in report.documents.all %}
-                <a href="{{doc.file.url}}" rel="noopener noreferrer" target="_blank"><span class="oh-file-icon oh-file-icon--pdf" title="{{doc}}" ></span></a>
-              {% endfor %}
-              </div>
-
-            </li>
-          {% endfor %}
+            <button hx-get="{% url 'asset-information' next %}?requests_ids={{requests_ids}}&asset_info=true"
+                hx-target="#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next" data-action="next">
+                <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+                    aria-label="chevron forward outline"></ion-icon>
+            </button>
         </div>
-    </div>
-  {% endif %}
-  <div class="oh-modal__button-container text-center mt-3">
+    {% endif %}
 
-    <div class="oh-btn-group">
-      <a hx-get="{% url 'asset-update' asset_id=asset.id %}?{{pg}}&requests_ids={{requests_ids}}"
-        data-toggle="oh-modal-toggle"
-        data-target="#objectUpdateModal"
-        hx-target="#objectUpdateModalTarget"
-        class="oh-btn oh-btn--info"
-        style="width: 50%;"
-      >
-        <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>{% trans "Edit" %}
-      </a>
-      <form hx-confirm="{% trans 'Do you want to delete this asset?' %}"
-        hx-post="{% url 'asset-delete' asset.id %}?{{pg}}&requests_ids={{requests_ids}}"
-        hx-target="#objectDetailsModalTarget" onclick="event.stopPropagation()" class="w-50">
-        {% csrf_token %}
-        <button type='submit' class="oh-btn oh-btn--danger w-100" data-action="delete"><ion-icon name="trash-outline" role="img"
-                class="md hydrated" aria-label="create outline"></ion-icon>{% trans "Delete" %}</button>
-      </form>
+    <div class="row">
+        {% comment %}
+            <div class="col-12 col-md-12 col-lg-12">
+                <div class="oh-modal__group mt-2">
+                    <label class="oh-timeoff-modal__stat-title">{% trans "Asset Name" %}</label>
+                    <label class="oh-timeoff-modal__stat-count">{{asset.asset_name}}</label>
+                </div>
+            </div>
+        {% endcomment %}
+        {% if asset.asset_description %}
+            <div class="col-12 col-md-12 col-lg-12 mt-3">
+                <div class="oh-modal__group">
+                    <label class="oh-timeoff-modal__stat-title">{% trans "Description" %}</label>
+                    <div class="oh-modal__description">
+                        {{asset.asset_description}}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="col-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Tracking Id" %}</label>
+                <label class="oh-timeoff-modal__stat-count">{{asset.asset_tracking_id}}</label>
+            </div>
+        </div>
+        <div class="col-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Purchase Date" %}</label>
+                <label class="oh-timeoff-modal__stat-count dateformat_changer">{{asset.asset_purchase_date}}</label>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Cost" %}</label>
+                <label class="oh-timeoff-modal__stat-count">{{asset.asset_purchase_cost}}</label>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Status" %}</label>
+                <label class="oh-timeoff-modal__stat-count">{{asset.get_asset_status_display}}
+                    {% if asset.asset_status == "In use" %} {% trans "by " %}
+                        {% with assigned=asset.assetassignment_set.last %}
+                            {{assigned.assigned_to_employee_id.get_full_name}}
+                        {% endwith %}
+                    {% endif %}
+                </label>
+            </div>
+        </div>
+        <div class="col-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Batch No" %}</label>
+                <label class="oh-timeoff-modal__stat-count">{{asset.asset_lot_number_id}}</label>
+            </div>
+        </div>
+        <div class="col-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Category" %}</label>
+                <label class="oh-timeoff-modal__stat-count">{{asset.asset_category_id}}</label>
+            </div>
+        </div>
+
+        {% if asset.asset_report.all %}
+            <div class="oh-kanban__card-footer mt-3 bg-light" style="position:relative;padding-top:0">
+                <span class="mb-2" style="font-weight:600;">{% trans "Reports" %}</span>
+                <button
+                    onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')"
+                    class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options"
+                    title="{% trans 'Reports' %}"></button>
+                <div class="oh-kanban__card-content oh-kanban__card-content--hide mt-3">
+                    {% for report in asset.asset_report.all %}
+                        <li class="pt-2 ">
+                            {{report.title}}
+                            <div class="d-flex m-2">
+                                {% for doc in report.documents.all %}
+                                <a href="{{doc.file.url}}" rel="noopener noreferrer" target="_blank"><span
+                                        class="oh-file-icon oh-file-icon--pdf" title="{{doc}}"></span></a>
+                                {% endfor %}
+                            </div>
+
+                        </li>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        {% if perms.asset.change_asset or perms.asset.delete_asset %}
+            <div class="oh-modal__button-container text-center mt-3">
+                <div class="oh-btn-group">
+                    {% if perms.asset.change_asset %}
+                        <a hx-get="{% url 'asset-update' asset_id=asset.id %}?{{pg}}&requests_ids={{requests_ids}}"
+                            data-toggle="oh-modal-toggle" data-target="#objectUpdateModal" hx-target="#objectUpdateModalTarget"
+                            class="oh-btn oh-btn--info w-100">
+                            <ion-icon name="create-outline" role="img" class="md hydrated"
+                                aria-label="create outline"></ion-icon>{% trans "Edit" %}
+                        </a>
+                    {% endif %}
+                    {% if perms.asset.delete_asset %}
+                        <form hx-confirm="{% trans 'Do you want to delete this asset?' %}"
+                            hx-post="{% url 'asset-delete' asset.id %}?{{pg}}&requests_ids={{requests_ids}}"
+                            hx-target="#objectDetailsModalTarget" onclick="event.stopPropagation()" class="w-100">
+                            {% csrf_token %}
+                            <button type='submit' class="oh-btn oh-btn--danger w-100" data-action="delete"><ion-icon
+                                    name="trash-outline" role="img" class="md hydrated"
+                                    aria-label="create outline"></ion-icon>{% trans "Delete" %}</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
     </div>
-  </div>
-</div>
 </div>

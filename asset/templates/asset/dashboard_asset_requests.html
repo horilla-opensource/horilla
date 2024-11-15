@@ -7,7 +7,9 @@
                 <div class="oh-sticky-table__th">{% trans "Asset Category" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Request Date" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-                <div class="oh-sticky-table__th"></div>
+                {% if perms.asset.add_assetassignment %}
+                    <div class="oh-sticky-table__th"></div>
+                {% endif %}
             </div>
         </div>
         <div class="oh-sticky-table__tbody">
