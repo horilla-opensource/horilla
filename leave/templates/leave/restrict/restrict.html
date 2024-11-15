@@ -63,6 +63,7 @@
                         {% trans "Leave Types" %}
                     </div>
                     <div class="oh-sticky-table__th">{% trans "Description" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Company" %}</div>
                     {% if perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
                         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                     {% endif %}
@@ -113,6 +114,9 @@
                         </div>
                         <div class="oh-sticky-table__td">
                             {{day.description}}
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            {{day.company_id}}
                         </div>
                         {% if perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
                             <div class="oh-sticky-table__td">

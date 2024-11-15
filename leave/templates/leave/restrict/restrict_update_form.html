@@ -87,6 +87,14 @@
 
         <label class="oh-label d-block" for="{{ form.description.id_for_label }}">{% trans "Description" %}</label>
         {{form.description}} {{form.description.errors}}
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input__group">
+                    <label class="oh-label d-block" for="{{ form.company_id.id_for_label }}">{% trans "Company" %}</label>
+                    {{form.company_id}} {{form.company_id.errors}}
+                </div>
+            </div>
+        </div>
         <div class="oh-modal__dialog-footer p-0 pt-4">
             <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
                 {% trans "Save" %}
