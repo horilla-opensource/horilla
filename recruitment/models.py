@@ -86,6 +86,7 @@ class SurveyTemplate(HorillaModel):
         blank=True,
         verbose_name=_("Company"),
     )
+    objects = HorillaCompanyManager("company_id")
 
     def __str__(self) -> str:
         return self.title
@@ -935,6 +936,7 @@ class InterviewSchedule(HorillaModel):
     completed = models.BooleanField(
         default=False, verbose_name=_("Is Interview Completed")
     )
+    objects = HorillaCompanyManager("candidate_id__recruitment_id__company_id")
 
     def __str__(self) -> str:
         return f"{self.candidate_id} -Interview."
