@@ -370,8 +370,7 @@ class Attendance(HorillaModel):
             prev_state = Attendance.objects.get(pk=self.pk)
             prev_attendance_approved = prev_state.attendance_overtime_approve
 
-        # super().save(*args, **kwargs) commend this line, it take too much time to complete
-        self.first_save = False
+        # super().save(*args, **kwargs)  #commend this line, it take too much time to complete
         employee_ot = self.employee_id.employee_overtime.filter(
             month=self.attendance_date.strftime("%B").lower(),
             year=self.attendance_date.year,
@@ -398,6 +397,7 @@ class Attendance(HorillaModel):
         attendance_account.overtime = format_time(total_ot_seconds)
         attendance_account.save()
         super().save(*args, **kwargs)
+        self.first_save = False
 
     def serialize(self):
         """
