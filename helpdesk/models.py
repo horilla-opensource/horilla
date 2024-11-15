@@ -59,6 +59,7 @@ class DepartmentManager(HorillaModel):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
+    objects = HorillaCompanyManager("manager__employee_work_info__company_id")
 
     class Meta:
         unique_together = ("department", "manager")
@@ -112,7 +113,7 @@ class Ticket(HorillaModel):
         ],
     )
     objects = HorillaCompanyManager(
-        related_company_field="employee_id__employee__work_info__company_id"
+        related_company_field="employee_id__employee_work_info__company_id"
     )
 
     class Meta:

@@ -764,6 +764,11 @@ def ticket_filter(request):
     allocated_page_number = request.GET.get("allocated_page")
     tickets_items1 = Ticket.objects.none()
     tickets_items2 = Ticket.objects.none()
+    print("<<<<<<<<<>>>>>>>>>>>>>>")
+    print("<<<<<<<<<>>>>>>>>>>>>>>")
+    print(request.GET.get("view"))
+    print("<<<<<<<<<>>>>>>>>>>>>>>")
+    print("<<<<<<<<<>>>>>>>>>>>>>>")
 
     my_tickets = tickets.filter(employee_id=request.user.employee_get) | tickets.filter(
         created_by=request.user
@@ -793,6 +798,10 @@ def ticket_filter(request):
     tickets_items3 = ticket_list.filter(raised_on=user.id, assigning_type="individual")
 
     template = "helpdesk/ticket/ticket_list.html"
+    print("========================")
+    print(request.GET.get("view"))
+    print("========================")
+
     if request.GET.get("view") == "card":
         template = "helpdesk/ticket/ticket_card.html"
     allocated_tickets = (
