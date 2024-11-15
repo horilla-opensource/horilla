@@ -5430,7 +5430,15 @@ def audit_tag_update(request, tag_id):
 @permission_required("base.view_multipleapprovalcondition")
 def multiple_approval_condition(request):
     form = MultipleApproveConditionForm()
-    conditions = MultipleApprovalCondition.objects.all().order_by("department")[::-1]
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        conditions = MultipleApprovalCondition.objects.filter(
+            company_id=selected_company
+        ).order_by("department")[::-1]
+    else:
+        conditions = MultipleApprovalCondition.objects.all().order_by("department")[
+            ::-1
+        ]
     create = True
     return render(
         request,
@@ -5443,7 +5451,15 @@ def multiple_approval_condition(request):
 @hx_request_required
 @permission_required("base.view_multipleapprovalcondition")
 def hx_multiple_approval_condition(request):
-    conditions = MultipleApprovalCondition.objects.all().order_by("department")[::-1]
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        conditions = MultipleApprovalCondition.objects.filter(
+            company_id=selected_company
+        ).order_by("department")[::-1]
+    else:
+        conditions = MultipleApprovalCondition.objects.all().order_by("department")[
+            ::-1
+        ]
     return render(
         request,
         "multi_approval_condition/condition_table.html",
@@ -5532,7 +5548,9 @@ def multiple_level_approval_create(request):
         condition_value = request.POST.get("condition_value")
         condition_start_value = request.POST.get("condition_start_value")
         condition_end_value = request.POST.get("condition_end_value")
+        company_id = request.POST.get("company_id")
         condition_approval_managers = request.POST.getlist("multi_approval_manager")
+        company = Company.objects.get(id=company_id)
         department = Department.objects.get(id=dept_id)
         instance = MultipleApprovalCondition()
         if form.is_valid():
@@ -5541,12 +5559,14 @@ def multiple_level_approval_create(request):
                 instance.condition_field = condition_field
                 instance.condition_operator = condition_operator
                 instance.condition_value = condition_value
+                instance.company_id = company
             else:
                 instance.department = department
                 instance.condition_field = condition_field
                 instance.condition_operator = condition_operator
                 instance.condition_start_value = condition_start_value
                 instance.condition_end_value = condition_end_value
+                instance.company_id = company
             instance.save()
             sequence = 0
             for emp_id in condition_approval_managers:
@@ -5613,7 +5633,16 @@ def multiple_level_approval_edit(request, condition_id):
                         sequence=sequence,
                         employee_id=employee_id,
                     )
-    conditions = MultipleApprovalCondition.objects.all().order_by("department")[::-1]
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        conditions = MultipleApprovalCondition.objects.filter(
+            company_id=selected_company
+        ).order_by("department")[::-1]
+    else:
+        conditions = MultipleApprovalCondition.objects.all().order_by("department")[
+            ::-1
+        ]
+
     return render(
         request,
         "multi_approval_condition/condition_edit_form.html",

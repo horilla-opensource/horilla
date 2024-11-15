@@ -1146,6 +1146,7 @@ class HorillaMailTemplate(HorillaModel):
         on_delete=models.CASCADE,
         verbose_name=_("Company"),
     )
+    objects = HorillaCompanyManager(related_company_field="company_id")
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -1277,6 +1278,13 @@ class MultipleApprovalCondition(HorillaModel):
         verbose_name=_("Ending Value"),
     )
     objects = models.Manager()
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Company"),
+    )
 
     def __str__(self) -> str:
         return f"{self.condition_field} {self.condition_operator}"
@@ -1288,6 +1296,7 @@ class MultipleApprovalCondition(HorillaModel):
                 condition_field=self.condition_field,
                 condition_operator=self.condition_operator,
                 condition_value=self.condition_value,
+                company_id=self.company_id,
             ).exclude(id=self.pk)
             if instance:
                 raise ValidationError(

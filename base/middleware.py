@@ -7,9 +7,41 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import render
 
+from asset.models import AssetAssignment, AssetRequest
+from attendance.models import (
+    Attendance,
+    AttendanceActivity,
+    AttendanceOverTime,
+    WorkRecords,
+)
 from base.context_processors import AllCompany
 from base.horilla_company_manager import HorillaCompanyManager
-from base.models import Company
+from base.models import Company, ShiftRequest, WorkTypeRequest
+from employee.models import (
+    DisciplinaryAction,
+    Employee,
+    EmployeeBankDetails,
+    EmployeeWorkInformation,
+)
+from helpdesk.models import Ticket
+from horilla_documents.models import DocumentRequest
+from leave.models import (
+    AvailableLeave,
+    CompensatoryLeaveRequest,
+    LeaveAllocationRequest,
+    LeaveRequest,
+    RestrictLeave,
+)
+from offboarding.models import Offboarding
+from payroll.models.models import (
+    Contract,
+    LoanAccount,
+    Payslip,
+    Reimbursement,
+    WorkRecord,
+)
+from pms.models import EmployeeObjective
+from recruitment.models import Candidate, Recruitment
 
 
 class CompanyMiddleware:
@@ -76,29 +108,76 @@ class CompanyMiddleware:
                 for model in apps.get_models()
                 if model._meta.app_label in app_labels
             ]
+
+            company_models = [
+                ShiftRequest,
+                WorkTypeRequest,
+                Employee,
+                EmployeeWorkInformation,
+                EmployeeBankDetails,
+                DisciplinaryAction,
+                Recruitment,
+                Candidate,
+                LeaveRequest,
+                LeaveAllocationRequest,
+                CompensatoryLeaveRequest,
+                AssetRequest,
+                AssetAssignment,
+                AttendanceActivity,
+                Attendance,
+                WorkRecords,
+                Contract,
+                WorkRecord,
+                LoanAccount,
+                Reimbursement,
+                DocumentRequest,
+                Ticket,
+                Offboarding,
+                Payslip,
+                AvailableLeave,
+                RestrictLeave,
+                AttendanceOverTime,
+                EmployeeObjective,
+            ]
+
             # Add company filter to every query
             if company_id:
                 for (
                     model
                 ) in app_models:  # Replace YourModels with the actual models you have
-                    if getattr(model, "company_id", None):
-                        model.add_to_class(
-                            "company_filter",
-                            Q(company_id=company_id) | Q(company_id__isnull=True),
-                        )
-                    elif (
-                        isinstance(model.objects, HorillaCompanyManager)
-                        and model.objects.related_company_field
-                    ):
-                        model.add_to_class(
-                            "company_filter",
-                            Q(**{model.objects.related_company_field: company_id})
-                            | Q(
-                                **{
-                                    f"{model.objects.related_company_field}__isnull": True
-                                }
-                            ),
-                        )
+
+                    if model in company_models:
+                        if getattr(model, "company_id", None):
+                            model.add_to_class(
+                                "company_filter", Q(company_id=company_id)
+                            )
+                        elif (
+                            isinstance(model.objects, HorillaCompanyManager)
+                            and model.objects.related_company_field
+                        ):
+                            model.add_to_class(
+                                "company_filter",
+                                Q(**{model.objects.related_company_field: company_id}),
+                            )
+                    else:
+                        if getattr(model, "company_id", None):
+                            model.add_to_class(
+                                "company_filter",
+                                Q(company_id=company_id) | Q(company_id__isnull=True),
+                            )
+                        elif (
+                            isinstance(model.objects, HorillaCompanyManager)
+                            and model.objects.related_company_field
+                        ):
+                            model.add_to_class(
+                                "company_filter",
+                                Q(**{model.objects.related_company_field: company_id})
+                                | Q(
+                                    **{
+                                        f"{model.objects.related_company_field}__isnull": True
+                                    }
+                                ),
+                            )
 
         response = self.get_response(request)
         return response
