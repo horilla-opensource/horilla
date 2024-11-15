@@ -25,16 +25,16 @@
             <div class="d-block mb-0">
               <span class="oh-label oh-label--question">{{forloop.counter}}.{{q.question}}</span>
               <div class="oh-rate">
-                <input type="radio" id="star5" name="answer{{q.id}}" class="rating-radio" value="5"  >
-                <label for="star5" title="5 Stars">5 {% trans "Stars" %}</label>
-                <input type="radio" id="star4" name="answer{{q.id}}" class="rating-radio"  value="4" />
-                <label for="star4" title="4 Stars">4 {% trans "Stars" %}</label>
-                <input type="radio" id="star3" name="answer{{q.id}}" class="rating-radio" value="3" />
-                <label for="star3" title="3 Stars">3 {% trans "Stars" %}</label>
-                <input type="radio" id="star2" name="answer{{q.id}}" class="rating-radio" value="2" />
-                <label for="star2" title="2 Stars">2 {% trans "Stars" %}</label>
-                <input type="radio" id="star1" name="answer{{q.id}}" class="rating-radio" value="1" />
-                <label for="star1" title="1 Star">1 {% trans "Star" %}</label>
+                <input type="radio" id="star5{{q.id}}" name="answer{{q.id}}" class="rating-radio" value="5"  />
+                <label for="star5{{q.id}}" title="5 Stars">5 {% trans "Stars" %}</label>
+                <input type="radio" id="star4{{q.id}}" name="answer{{q.id}}" class="rating-radio"  value="4" />
+                <label for="star4{{q.id}}" title="4 Stars">4 {% trans "Stars" %}</label>
+                <input type="radio" id="star3{{q.id}}" name="answer{{q.id}}" class="rating-radio" value="3" />
+                <label for="star3{{q.id}}" title="3 Stars">3 {% trans "Stars" %}</label>
+                <input type="radio" id="star2{{q.id}}" name="answer{{q.id}}" class="rating-radio" value="2" />
+                <label for="star2{{q.id}}" title="2 Stars">2 {% trans "Stars" %}</label>
+                <input type="radio" id="star1{{q.id}}" name="answer{{q.id}}" class="rating-radio" value="1" />
+                <label for="star1{{q.id}}" title="1 Star">1 {% trans "Star" %}</label>
               </div>
               <span id="rating-radio-error"></span>
             </div>

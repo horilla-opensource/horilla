@@ -31,7 +31,7 @@ class Period(HorillaModel):
     start_date = models.DateField()
     end_date = models.DateField()
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
-    objects = HorillaCompanyManager()
+    objects = HorillaCompanyManager("company_id")
 
     def __str__(self):
         return self.period_name
@@ -128,7 +128,7 @@ class Objective(HorillaModel):
         verbose_name=_("Company"),
         on_delete=models.CASCADE,
     )
-    objects = HorillaCompanyManager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
         """
