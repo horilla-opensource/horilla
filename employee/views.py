@@ -929,11 +929,14 @@ def employee_view(request):
     view_type = request.GET.get("view")
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
+    selected_company = request.session.get("selected_company")
     error_message = request.session.pop("error_message", None)
     queryset = (
-        Employee.objects.filter(is_active=True)
-        if isinstance(request.GET, QueryDict) and not request.GET
-        else Employee.objects.all()
+        Employee.objects.filter(
+            is_active=True, employee_work_info__company_id=selected_company
+        )
+        if selected_company != "all"
+        else Employee.objects.filter(is_active=True)
     )
 
     filter_obj = EmployeeFilter(request.GET, queryset=queryset)
@@ -1631,9 +1634,15 @@ def employee_filter_view(request):
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
     queryset = Employee.objects.filter()
+    selected_company = request.session.get("selected_company")
     employees = EmployeeFilter(request.GET, queryset=queryset).qs
     if request.GET.get("is_active") != "False":
         employees = employees.filter(is_active=True)
+    if (
+        request.GET.get("employee_work_info__company_id") == None
+        and selected_company != "all"
+    ):
+        employees = employees.filter(employee_work_info__company_id=selected_company)
     page_number = request.GET.get("page")
     view = request.GET.get("view")
     data_dict = parse_qs(previous_data)
@@ -3250,9 +3259,19 @@ def organisation_chart(request):
     """
     This method is used to view oganisation chart
     """
-    reporting_managers = Employee.objects.filter(
-        reporting_manager__isnull=False
-    ).distinct()
+    selected_company = request.session.get("selected_company")
+    if (
+        request.GET.get("employee_work_info__company_id") == None
+        and selected_company != "all"
+    ):
+        reporting_managers = Employee.objects.filter(
+            reporting_manager__isnull=False,
+            employee_work_info__company_id=selected_company,
+        ).distinct()
+    else:
+        reporting_managers = Employee.objects.filter(
+            reporting_manager__isnull=False
+        ).distinct()
 
     # Iterate through the queryset and add reporting manager id and name to the dictionary
     result_dict = {item.id: item.get_full_name() for item in reporting_managers}
@@ -3304,12 +3323,31 @@ def organisation_chart(request):
                 )
         return nodes
 
+    selected_company = request.session.get("selected_company")
+    if (
+        request.GET.get("employee_work_info__company_id") == None
+        and selected_company != "all"
+    ):
+        reporting_managers = Employee.objects.filter(
+            reporting_manager__isnull=False,
+            employee_work_info__company_id=selected_company,
+        ).distinct()
+    else:
+        reporting_managers = Employee.objects.filter(
+            reporting_manager__isnull=False
+        ).distinct()
+
     manager = request.user.employee_get
-    new_dict = {manager.id: _("My view"), **result_dict}
+
+    if len(reporting_managers) == 0:
+        new_dict = {}
+    else:
+        new_dict = {reporting_managers[0].id: _("My view"), **result_dict}
     # POST method is used to change the reporting manager
     if request.method == "POST":
-        manager_id = int(request.POST.get("manager_id"))
-        manager = Employee.objects.get(id=manager_id)
+        if request.POST.get("manager_id"):
+            manager_id = int(request.POST.get("manager_id"))
+            manager = Employee.objects.get(id=manager_id)
         node = {
             "name": manager.get_full_name(),
             "title": getattr(manager.get_job_position(), "job_position", _("Not set")),

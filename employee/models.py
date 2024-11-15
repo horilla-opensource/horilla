@@ -763,7 +763,7 @@ class Policy(HorillaModel):
     attachments = models.ManyToManyField(PolicyMultipleFile, blank=True)
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
-    objects = HorillaCompanyManager()
+    objects = HorillaCompanyManager("company_id")
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
@@ -879,9 +879,7 @@ class DisciplinaryAction(HorillaModel):
     attachment = models.FileField(
         upload_to="employee/discipline", null=True, blank=True
     )
-    company_id = models.ManyToManyField(Company, blank=True)
-
-    objects = HorillaCompanyManager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self) -> str:
         return f"{self.action}"

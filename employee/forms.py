@@ -636,7 +636,7 @@ class DisciplinaryActionForm(ModelForm):
     class Meta:
         model = DisciplinaryAction
         fields = "__all__"
-        exclude = ["company_id", "objects", "is_active"]
+        exclude = ["objects", "is_active"]
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}),
         }
