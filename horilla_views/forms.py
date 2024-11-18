@@ -128,22 +128,33 @@ class DynamicBulkUpdateForm(forms.Form):
                         label=val.verbose_name.capitalize(),
                         required=False,
                     )
+                    self.fields[key].widget.option_template_name = (
+                        "horilla_widgets/select_option.html",
+                    )
                     continue
                 elif not getattribute(val, "related_model"):
                     if isinstance(val, models.models.CharField) and val.choices:
                         self.fields[key] = forms.ChoiceField(
-                            choices=val.choices,
+                            choices=[("", "--------")]
+                            + [choice for choice in val.choices if choice[0] != ""],
                             widget=forms.Select(
                                 attrs={"class": "oh-select oh-select-2 w-100"}
                             ),
                             label=val.verbose_name.capitalize(),
                             required=False,
                         )
+                        self.fields[key].widget.option_template_name = (
+                            "horilla_widgets/select_option.html",
+                        )
+                        print(self.fields[key].empty_values)
                         continue
                     self.fields[key] = field(
                         widget=widget,
                         label=val.verbose_name.capitalize(),
                         required=False,
+                    )
+                    self.fields[key].widget.option_template_name = (
+                        "horilla_widgets/select_option.html",
                     )
                     continue
                 queryset = val.related_model.objects.all()
@@ -152,6 +163,9 @@ class DynamicBulkUpdateForm(forms.Form):
                     queryset=queryset,
                     label=val.verbose_name,
                     required=False,
+                )
+                self.fields[key].widget.option_template_name = (
+                    "horilla_widgets/select_option.html",
                 )
 
     def save(self, *args, **kwargs):
