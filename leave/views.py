@@ -2014,7 +2014,10 @@ def user_leave_request(request, id):
                                 icon="people-circle",
                                 redirect=f"/leave/request-view?id={leave_request.id}",
                             )
-
+                    mail_thread = LeaveMailSendThread(
+                    request, leave_request, type="request"
+                    )
+                    mail_thread.start()
                     messages.success(request, _("Leave request created successfully.."))
                     with contextlib.suppress(Exception):
                         notify.send(
