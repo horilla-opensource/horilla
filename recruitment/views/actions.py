@@ -123,12 +123,16 @@ def note_delete(request, note_id):
         candidate_id = note.candidate_id.id
         note.delete()
         messages.success(request, _("Note deleted"))
+        script = ""
     except StageNote.DoesNotExist:
         messages.error(request, _("Note not found."))
+        script = "<script>window.location.reload()</script>"
     except ProtectedError:
         messages.error(request, _("You cannot delete this note."))
-
-    return redirect("view-note", cand_id=candidate_id)
+        script = f"""
+            <span hx-trigger='load' hx-get='/recruitment/view-note/{candidate_id}/' hx-target='#activitySidebar'></span>
+            """
+    return HttpResponse(script)
 
 
 @login_required
@@ -137,11 +141,11 @@ def note_delete_individual(request, note_id):
     """
     This method is used to delete the stage note
     """
+    script = ""
     note = StageNote.objects.get(id=note_id)
-    candidate_id = note.candidate_id.id
     note.delete()
     messages.success(request, _("Note deleted."))
-    return redirect(f"/recruitment/add-note/{candidate_id}/")
+    return HttpResponse(script)
 
 
 @login_required

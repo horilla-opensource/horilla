@@ -299,6 +299,10 @@ function initializeSummernote(candId,searchWords,) {
   .highlight-selected:hover{
     background-color: rgba(255, 68, 0, 0.1);
   }
+  .fade-me-out.htmx-swapping {
+		opacity: 0;
+		transition: opacity 1s ease-out;
+	}
 </style>
 <script>
   $("#sidebar").mouseover(function (e) {
