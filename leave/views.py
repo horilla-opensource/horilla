@@ -31,6 +31,7 @@ from base.methods import (
     filtersubordinates,
     get_key_instances,
     get_pagination,
+    is_reportingmanager,
     sortby,
 )
 from base.models import CompanyLeaves, Holidays, PenaltyAccounts
@@ -4118,13 +4119,22 @@ def delete_allocationrequest_comment(request, comment_id):
     """
     This method is used to delete Allocation request comments
     """
-    comment = LeaveallocationrequestComment.objects.filter(id=comment_id)
-    if not request.user.has_perm("leave.delete_leaveallocationrequestcomment"):
-        comment.filter(employee_id__employee_user_id=request.user)
-    request_id = comment.first().request_id.id
-    comment.delete()
-    messages.success(request, _("Comment deleted successfully!"))
-    return redirect("allocation-request-view-comment", leave_id=request_id)
+    script = ""
+    comment = LeaveallocationrequestComment.find(comment_id)
+    request_id = comment.request_id.id
+    if (
+        request.user.employee_get == comment.employee_id
+        or request.user.has_perm("leave.delete_leaveallocationrequestcomment")
+        or is_reportingmanager(request)
+    ):
+        comment.delete()
+        messages.success(request, _("Comment deleted successfully!"))
+    else:
+        script = f"""
+                    <span hx-get="/leave/allocation-request-view-comment/{request_id}/" hx-target="#commentContainer" hx-trigger="load"></span>
+                """
+        messages.warning(request, _("You don't have permission"))
+    return HttpResponse(script)
 
 
 @login_required
@@ -4132,26 +4142,24 @@ def delete_allocation_comment_file(request):
     """
     Used to delete attachment
     """
+    script = ""
     ids = request.GET.getlist("ids")
-    if request.user.has_perm("leave.delete_leaverequestfile"):
-        LeaverequestFile.objects.filter(id__in=ids).delete()
-    else:
-        LeaverequestFile.objects.filter(
-            id__in=ids, employee_id__employee_user_id=request.user
-        ).delete()
-
     leave_id = request.GET["leave_id"]
-    comments = LeaveallocationrequestComment.objects.filter(
-        request_id=leave_id
-    ).order_by("-created_at")
-    return render(
-        request,
-        "leave/leave_allocation_request/leave_allocation_comment.html",
-        {
-            "comments": comments,
-            "request_id": leave_id,
-        },
-    )
+    comment_id = request.GET["comment_id"]
+    comment = LeaveallocationrequestComment.find(comment_id)
+    if (
+        request.user.employee_get == comment.employee_id
+        or request.user.has_perm("leave.delete_leaverequestfile")
+        or is_reportingmanager(request)
+    ):
+        LeaverequestFile.objects.filter(id__in=ids).delete()
+        messages.success(request, _("File deleted successfully"))
+    else:
+        messages.warning(request, _("You don't have permission"))
+        script = f"""
+                <span hx-get='/leave/allocation-request-view-comment/{leave_id}/' hx-target='#commentContainer' hx-trigger='load'></span>
+                """
+    return HttpResponse(script)
 
 
 @login_required
@@ -4251,35 +4259,46 @@ def delete_leaverequest_comment(request, comment_id):
     """
     This method is used to delete Leave request comments
     """
-    comment = LeaverequestComment.objects.filter(id=comment_id)
-    if not request.user.has_perm("leave.delete_leaverequestcomment"):
-        comment = comment.filter(employee_id__employee_user_id=request.user)
-    redirect_url = "leave-request-view-comment"
-    leave_id = comment.first().request_id.id
-    comment.delete()
-    messages.success(request, _("Comment deleted successfully!"))
-    return redirect(redirect_url, leave_id)
+    script = ""
+    comment = LeaverequestComment.find(comment_id)
+    if (
+        request.user.employee_get == comment.employee_id
+        or request.user.has_perm("leave.delete_leaverequestcomment")
+        or is_reportingmanager(request)
+    ):
+        comment.delete()
+        messages.success(request, _("Comment deleted successfully!"))
+    else:
+        messages.warning(request, _("You don't have permission"))
+        script = f"""
+            <span hx-get="/leave/leave-request-view-comment/{comment.request_id.id}/?&amp;target=leaveRequest" hx-target="#commentContainer" hx-trigger="load"></span>
+        """
+    return HttpResponse(script)
 
 
 @login_required
-def delete_comment_file(request):
+def delete_leave_comment_file(request):
     """
     Used to delete attachment
     """
+    script = ""
     ids = request.GET.getlist("ids")
-    LeaverequestFile.objects.filter(id__in=ids).delete()
-    comments = LeaverequestComment.objects.all()
     leave_id = request.GET["leave_id"]
-    comments = comments.filter(request_id=leave_id).order_by("-created_at")
-    template = "leave/leave_request/leave_comment.html"
-    return render(
-        request,
-        template,
-        {
-            "comments": comments,
-            "request_id": leave_id,
-        },
-    )
+    comment_id = request.GET["comment_id"]
+    comment = LeaverequestComment.find(comment_id)
+    if (
+        request.user.employee_get == comment.employee_id
+        or request.user.has_perm("leave.delete_leaverequestfile")
+        or is_reportingmanager(request)
+    ):
+        LeaverequestFile.objects.filter(id__in=ids).delete()
+        messages.success(request, _("File deleted successfully"))
+    else:
+        messages.warning(request, _("You don't have permission"))
+        script = f"""
+            <span hx-get="/leave/leave-request-view-comment/{leave_id}/?&amp;target=leaveRequest" hx-target="#commentContainer" hx-trigger="load"></span>
+        """
+    return HttpResponse(script)
 
 
 if apps.is_installed("attendance"):
