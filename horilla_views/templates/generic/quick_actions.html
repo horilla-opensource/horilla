@@ -102,7 +102,10 @@
         hx-get="{{request.path}}?{{filter.urlencode}}"
         hx-target="#{{view_id|safe}}" hx-swap="outerHTML"
         >
-        <button class="oh-hover-btn" style="
+        <button
+        hx-get="{% url "last-applied-filter" %}?{{filter.urlencode}}"
+        hx-swap="none"
+        class="oh-hover-btn" style="
         cursor: pointer;
         border: solid 2px {{filter.color}};
         color: {{filter.color}} !important;
