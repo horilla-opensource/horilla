@@ -292,7 +292,7 @@ urlpatterns = [
     ),
     path(
         "delete-leave-comment-file/",
-        views.delete_comment_file,
+        views.delete_leave_comment_file,
         name="delete-leave-comment-file",
     ),
     path(

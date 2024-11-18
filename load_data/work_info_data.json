@@ -3308,8 +3308,7 @@
       "hours": "00:00",
       "start_date": "2024-09-21",
       "attachment": "",
-      "employee_id": [7, 4],
-      "company_id": []
+      "employee_id": [7, 4]
     }
   },
   {
@@ -3327,8 +3326,7 @@
       "hours": "00:00",
       "start_date": "2024-09-21",
       "attachment": "",
-      "employee_id": [23, 29],
-      "company_id": []
+      "employee_id": [23, 29]
     }
   }
 ]

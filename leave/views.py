@@ -2015,7 +2015,7 @@ def user_leave_request(request, id):
                                 redirect=f"/leave/request-view?id={leave_request.id}",
                             )
                     mail_thread = LeaveMailSendThread(
-                    request, leave_request, type="request"
+                        request, leave_request, type="request"
                     )
                     mail_thread.start()
                     messages.success(request, _("Leave request created successfully.."))
