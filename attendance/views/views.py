@@ -2199,12 +2199,11 @@ def delete_attendancerequest_comment(request, comment_id):
     """
     This method is used to delete Attendance request comments
     """
-
+    script = ""
     comment = AttendanceRequestComment.objects.get(id=comment_id)
-    attendance_id = comment.request_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return redirect("attendance-request-view-comment", attendance_id=attendance_id)
+    return HttpResponse(script)
 
 
 @login_required
@@ -2212,20 +2211,11 @@ def delete_comment_file(request):
     """
     Used to delete attachment
     """
+    script = ""
     ids = request.GET.getlist("ids")
     AttendanceRequestFile.objects.filter(id__in=ids).delete()
-    leave_id = request.GET["leave_id"]
-    comments = AttendanceRequestComment.objects.filter(request_id=leave_id).order_by(
-        "-created_at"
-    )
-    return render(
-        request,
-        "requests/attendance/attendance_comment.html",
-        {
-            "comments": comments,
-            "request_id": leave_id,
-        },
-    )
+    messages.success(request, _("File deleted successfully"))
+    return HttpResponse(script)
 
 
 @login_required
