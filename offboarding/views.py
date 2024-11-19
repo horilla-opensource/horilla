@@ -476,15 +476,16 @@ def offboarding_note_delete(request, note_id):
     """
     This method is used to delete the offboarding note
     """
+    script = ""
     try:
         note = OffboardingNote.objects.get(id=note_id)
-        employee = note.employee_id.id
         note.delete()
-        messages.success(request, _("Note deleted"))
+        messages.success(request, _("The note has been successfully deleted."))
     except OffboardingNote.DoesNotExist:
         messages.error(request, _("Note not found."))
+        script = "<script>window.location.reload()</script>"
 
-    return redirect("view-offboarding-note", employee_id=employee)
+    return HttpResponse(script)
 
 
 @login_required
@@ -493,17 +494,11 @@ def delete_attachment(request):
     """
     Used to delete attachment
     """
+    script = ""
     ids = request.GET.getlist("ids")
     OffboardingStageMultipleFile.objects.filter(id__in=ids).delete()
-    offboarding_employee_id = request.GET["employee_id"]
-    employee = OffboardingEmployee.objects.get(id=offboarding_employee_id)
-    return render(
-        request,
-        "offboarding/note/view_notes.html",
-        {
-            "employee": employee,
-        },
-    )
+    messages.success(request, _("File deleted successfully"))
+    return HttpResponse(script)
 
 
 @login_required
