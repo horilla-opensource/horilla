@@ -6450,7 +6450,7 @@ def generate_error_report(error_list, error_data, file_name):
 
 @login_required
 @hx_request_required
-@permission_required("leave.add_holiday")
+@permission_required("base.add_holidays")
 def holiday_creation(request):
     """
     function used to create holidays.
@@ -6775,7 +6775,7 @@ def holiday_filter(request):
 
 @login_required
 @hx_request_required
-@permission_required("base.change_holiday")
+@permission_required("base.change_holidays")
 def holiday_update(request, id):
     """
     function used to update holiday.
@@ -6809,7 +6809,7 @@ def holiday_update(request, id):
 
 @login_required
 @hx_request_required
-@permission_required("base.delete_holiday")
+@permission_required("base.delete_holidays")
 def holiday_delete(request, id):
     """
     function used to delete holiday.
@@ -6892,7 +6892,7 @@ def holiday_select_filter(request):
 
 @login_required
 @hx_request_required
-@permission_required("base.add_companyleave")
+@permission_required("base.add_companyleaves")
 def company_leave_creation(request):
     """
     function used to create company leave.
@@ -6981,7 +6981,7 @@ def company_leave_filter(request):
 
 @login_required
 @hx_request_required
-@permission_required("base.change_companyleave")
+@permission_required("base.change_companyleaves")
 def company_leave_update(request, id):
     """
     function used to update company leave.
@@ -7010,7 +7010,7 @@ def company_leave_update(request, id):
 
 @login_required
 @hx_request_required
-@permission_required("base.delete_companyleave")
+@permission_required("base.delete_companyleaves")
 def company_leave_delete(request, id):
     """
     function used to create company leave.

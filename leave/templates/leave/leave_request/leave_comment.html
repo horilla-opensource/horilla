@@ -18,25 +18,25 @@
 	</a>
 	<span class="oh-activity-sidebar__title"> {% trans "Comments" %} </span>
 </div>
+{% if request.user.employee_get == leave_request.employee_id or perms.leave.add_leaverequestcomment or request.user|is_reportingmanager %}
+	<form hx-target="#commentContainerList" hx-select=".oh-activity-sidebar__qa-list"
+		hx-on-htmx-after-request="reloadMessage(this);$('#commentInput').val('');$('#commentButton').hide();"
+		hx-post="{% url 'leave-request-add-comment' leave_request.id %}?{{pd}}" id="commentForm">
+		{% csrf_token %}
+		<div>
+			<input type="text" name="comment" id="commentInput" hx-on:keyup="toggleCommentButton(this);"
+				class="oh-input w-100" placeholder="Comment here">
+			<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+				style="display: none;">
+				{% trans "Comment" %}
+			</button>
+		</div>
+		<div class="oh-inner-sidebar-content__footer"></div>
+	</form>
+{% endif %}
 
-<form hx-target="#commentContainerList" hx-select=".oh-activity-sidebar__qa-list"
-	hx-on-htmx-after-request="reloadMessage(this);$('#commentInput').val('');$('#commentButton').hide();"
-	hx-post="{% url 'leave-request-add-comment' request_id %}?{{pd}}" id="commentForm">
-	{% csrf_token %}
-	<div>
-		<input type="text" name="comment" id="commentInput" hx-on:keyup="toggleCommentButton(this);"
-			class="oh-input w-100" placeholder="Comment here">
-		<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-			style="display: none;">
-			{% trans "Comment" %}
-		</button>
-	</div>
-	<div class="oh-inner-sidebar-content__footer"></div>
-</form>
-
-
-{% if comments %}
-	<ol class="oh-activity-sidebar__qa-list" role="list" id="commentContainerList">
+<ol class="oh-activity-sidebar__qa-list" role="list" id="commentContainerList">
+	{% if comments %}
 		{% for comment in comments %}
 			<li class="oh-activity-sidebar__qa-item" id="leaveReqCommentItem{{comment.id}}">
 				<span class="oh-activity-sidebar__q">{{ comment.comment }}
@@ -56,14 +56,14 @@
 							<span class="oh-file-icon oh-file-icon--pdf" onmouseover="enlargeImage('{{ file.file.url }}',$(this))" style="width: 40px; height: 40px">
 								{% if request.user.employee_get == comment.employee_id or perms.leave.delete_leaverequestfile or request.user|is_reportingmanager %}
 									<img src="{% static 'images/ui/minus-icon.png' %}" style="display: block; width: 50%; height: 50%"
-										hx-get="{% url 'delete-leave-comment-file' %}?ids={{ file.id }}&leave_id={{ request_id }}&comment_id={{comment.id}}"
+										hx-get="{% url 'delete-leave-comment-file' %}?ids={{ file.id }}&leave_id={{ leave_request.id }}&comment_id={{comment.id}}"
 										hx-on:click="setTimeout(() => {reloadMessage(this);},100);" hx-swap="outerHTML"
 										onclick="event.stopPropagation();event.preventDefault()" hx-target="#leaveReqCommentFile{{file.id}}"/>
 								{% endif %}
 							</span>
 						</a>
 					{% endfor %}
-					{% if request.user.employee_get == comment.employee_id or perms.base.add_leaverequestfile or request.user|is_reportingmanager %}
+					{% if request.user.employee_get == comment.employee_id or perms.leave.add_leaverequestfile or request.user|is_reportingmanager %}
 						<form hx-post="{% url 'leave-request-view-comment' comment.request_id.id %}?comment_id={{ comment.id }}"
 							class="add-files-form" hx-encoding="multipart/form-data" data-target="#leaveactivitySidebar"
 							hx-swap="innerHTML" hx-target="#commentContainer">
@@ -88,9 +88,7 @@
 				</div>
 			</li>
 		{% endfor %}
-	</ol>
-{% else %}
-	<ol class="oh-activity-sidebar__qa-list" role="list" id="commentContainerList">
+	{% else %}
 		<div class="oh-timeoff-modal__profile-content">
 			<div class="oh-404">
 				<div class="">
@@ -99,5 +97,5 @@
 				</div>
 			</div>
 		</div>
-	</ol>
-{% endif %}
+	{% endif %}
+</ol>

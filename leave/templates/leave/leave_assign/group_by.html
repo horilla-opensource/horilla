@@ -153,6 +153,7 @@
                         data-target="#objectUpdateModal"
                         hx-get="{% url 'available-leave-update' available_leave.id %}?{{pd}}"
                         hx-target="#objectUpdateModalTarget"
+                        hx-on:click="$('#objectUpdateModalTarget').css('max-width', '350px');"
                       >
                         <ion-icon name="create-outline"></ion-icon>
                       </button>

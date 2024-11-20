@@ -62,7 +62,7 @@
           {% trans "End Date" %}
         </div>
         <div class="oh-sticky-table__th">{% trans "Recurring" %}</div>
-        {% if perms.base.change_holiday or perms.base.delete_holiday %}
+        {% if perms.base.change_holidays or perms.base.delete_holidays %}
           <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
         {% endif %}
       </div>
@@ -94,10 +94,10 @@
             {% trans "No"%}
           {% endif %}
         </div>
-        {% if perms.base.change_holiday or perms.base.delete_holiday %}
+        {% if perms.base.change_holidays or perms.base.delete_holidays %}
         <div class="oh-sticky-table__td">
           <div class="oh-btn-group">
-            {% if perms.base.change_holiday %}
+            {% if perms.base.change_holidays %}
             <button
               class="oh-btn oh-btn--light-bkg w-100"
               title="{% trans 'Edit' %}"
@@ -108,7 +108,7 @@
             >
               <ion-icon name="create-outline"></ion-icon>
             </button>
-            {% endif %} {% if perms.base.delete_holiday %}
+            {% endif %} {% if perms.base.delete_holidays %}
             <a
               class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
               id="delete-link"

@@ -231,14 +231,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-12">
-                            <div class="oh-input-group oh-label__info">
-                                <label for="id_employee_id" class="oh-label">{% trans "Assign to Employees" %}</label>
-                                <span class=" oh-info me-3" title="{% trans 'Choose employees to assign this leave type' %}"></span>
-                            </div>
-                            {{form.employee_id}}
-                            {{form.employee_id.errors}}
-                    </div>
+                    {% if perms.leave.add_availableleave %}
+                        <div class="col-sm-12 col-md-12">
+                                <div class="oh-input-group oh-label__info">
+                                    <label for="id_employee_id" class="oh-label">{% trans "Assign to Employees" %}</label>
+                                    <span class=" oh-info me-3" title="{% trans 'Choose employees to assign this leave type' %}"></span>
+                                </div>
+                                {{form.employee_id}}
+                                {{form.employee_id.errors}}
+                        </div>
+                    {% endif %}
                     <div hidden>{{form.require_approval}}</div>
                     <div hidden>{{form.require_attachment}}</div>
                     <div hidden>{{form.exclude_company_leave}}</div>

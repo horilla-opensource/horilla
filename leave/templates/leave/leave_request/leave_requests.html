@@ -4,423 +4,445 @@
 {% load horillafilters %}
 {% include 'filter_tags.html' %}
 {% if not request.GET.dashboard %}
-
-{% if messages %}
-<div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated {{message.tags}}">
-            {{ message }}
+    {% if messages %}
+        <div class="oh-wrapper">
+            {% for message in messages %}
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated {{message.tags}}">
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
+    {% endif %}
 
-<div class="d-flex flex-row-reverse mb-2">
-    <span class="me-3 review_ongoing" onclick="$('[name=status]').val('rejected');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
-        <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
-        {% trans "Rejected" %}
-    </span>
-    <span class="me-3 review_ongoing" onclick="$('[name=status]').val('cancelled');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
-      <span class="oh-dot oh-dot--small me-1" style="background-color:grey"></span>
-      {% trans "Cancelled" %}
-    </span>
-    <span class="me-3 paid" onclick="$('[name=status]').val('approved');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
-      <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
-      {% trans "Approved" %}
-    </span>
-    <span class="me-3 confirmed" onclick="$('[name=status]').val('requested');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
-      <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
-      {% trans "Requested" %}
-    </span>
-  </div>
-  <!-- start of selection buttons -->
-  <div
-    class="oh-checkpoint-badge text-success mb-2"
-    id="selectAllLeaverequests"
-    style="cursor: pointer"
-    >
-      {% trans "Select All Requests" %}
+    <div class="d-flex flex-row-reverse mb-2">
+        <span class="me-3 review_ongoing"
+            onclick="$('[name=status]').val('rejected');$('[name=status]').first().change();$('.filterButton').click()"
+            style="cursor: pointer">
+            <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
+            {% trans "Rejected" %}
+        </span>
+        <span class="me-3 review_ongoing"
+            onclick="$('[name=status]').val('cancelled');$('[name=status]').first().change();$('.filterButton').click()"
+            style="cursor: pointer">
+            <span class="oh-dot oh-dot--small me-1" style="background-color:grey"></span>
+            {% trans "Cancelled" %}
+        </span>
+        <span class="me-3 paid"
+            onclick="$('[name=status]').val('approved');$('[name=status]').first().change();$('.filterButton').click()"
+            style="cursor: pointer">
+            <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+            {% trans "Approved" %}
+        </span>
+        <span class="me-3 confirmed"
+            onclick="$('[name=status]').val('requested');$('[name=status]').first().change();$('.filterButton').click()"
+            style="cursor: pointer">
+            <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
+            {% trans "Requested" %}
+        </span>
     </div>
-    <div
-    class="oh-checkpoint-badge text-secondary mb-2"
-    id="unselectAllLeaverequests"
-    style="cursor: pointer;display:none;"
-    >
-      {% trans "Unselect All Requests" %}
+    <!-- start of selection buttons -->
+    <div class="oh-checkpoint-badge text-success mb-2" id="selectAllLeaverequests" style="cursor: pointer">
+        {% trans "Select All Requests" %}
     </div>
-    <div
-    class="oh-checkpoint-badge text-info mb-2"
-    id="exportLeaverequests"
-    style="cursor: pointer; display: none"
-    >
-      {% trans "Export Requests" %}
+    <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllLeaverequests"
+        style="cursor: pointer;display:none;">
+        {% trans "Unselect All Requests" %}
     </div>
-<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowLeaverequests" style="display: none"></div>
-<!-- end of selection buttons -->
+    <div class="oh-checkpoint-badge text-info mb-2" id="exportLeaverequests" style="cursor: pointer; display: none">
+        {% trans "Export Requests" %}
+    </div>
+    <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowLeaverequests" style="display: none"></div>
+    <!-- end of selection buttons -->
 {% endif %}
 
 {% if leave_requests %}
-  <div class="oh-sticky-table">
-      <div class="oh-sticky-table__table ">
-          <div class="oh-sticky-table__thead">
-              <div class="oh-sticky-table__tr">
-                  {% if not request.GET.dashboard %}
-                      <div class="oh-sticky-table__th" style="width: 10px">
-                          <div class="centered-div">
-                              <input
-                              type="checkbox"
-                              title='{% trans "Select All" %}'
-                              class="oh-input oh-input__checkbox all-leave-requests"
-                              />
-                          </div>
-                      </div>
-                  {% endif %}
-                  <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#leaveRequest" >{% trans "Employee" %}</div>
-                  <div class="oh-sticky-table__th {% if request.sort_option.order == '-leave_type_id__name' %}arrow-up {% elif request.sort_option.order == 'leave_type_id__name' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=leave_type_id__name" hx-target="#leaveRequest" >{% trans "Leave Type" %}</div>
-                  <div class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=start_date" hx-target="#leaveRequest" >{% trans "Start Date" %}</div>
-                  <div class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=end_date" hx-target="#leaveRequest" >{% trans "End Date" %}</div>
-                  <div class="oh-sticky-table__th {% if request.sort_option.order == '-requested_days' %}arrow-up {% elif request.sort_option.order == 'requested_days' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=requested_days" hx-target="#leaveRequest" >{% trans "Requested Days" %}</div>
-                  <div class="oh-sticky-table__th" style="width:115px;">{% trans "Leave Clash" %}</div>
-                  <div class="oh-sticky-table__th {% if request.sort_option.order == '-status' %}arrow-up {% elif request.sort_option.order == 'status' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=status" hx-target="#leaveRequest" >{% trans "Status" %}</div>
-                  {% if  not dashboard %}
-                      <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
-                      {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager %}
-                        <div class="oh-sticky-table__th" style="width:200px">{% trans "Actions" %}</div>
-                      {% endif %}
-                      <div class="oh-sticky-table__th" >{% trans "Penalties" %}</div>
-                      <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
-                  {% endif %}
-              </div>
-          </div>
-          <div class="oh-sticky-table__tbody" id="leaveRequestTableBody">
-              {% for leave_request in leave_requests %}
-              <div class="oh-sticky-table__tr  {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}" draggable="true" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25"
-              hx-get="{% url 'one-request-view' leave_request.id %}?instances_ids={{requests_ids}}" hx-target="#objectDetailsModalW25Target">
-                  {% if not request.GET.dashboard %}
-                      <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--orange
-                              {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--gray
-                              {% elif leave_request.status == "rejected" %}row-status--red{% endif %}" onclick="event.stopPropagation()">
-                          <div class="centered-div">
-                              <input
-                              type="checkbox"
-                              id="{{leave_request.id}}"
-                              onchange="highlightRow($(this))"
-                              class="oh-input holiday-checkbox oh-input__checkbox all-leave-requests-row"
-                              />
-                          </div>
-                      </div>
-                  {% endif %}
-                  <div class="oh-sticky-table__td">
-                      <div class="oh-profile oh-profile--md">
-                          <div class="oh-profile__avatar mr-1">
-                              <img src="{{leave_request.employee_id.get_avatar}}" class="oh-profile__image"
-                                  alt="" />
-                          </div>
-                          <span class="oh-profile__name oh-text--dark">{{leave_request.employee_id}}</span>
-                          {% if leave_request in leave_requests_with_interview %}
-                            <span class="tooltip">
-                                <span class="material-symbols-outlined" style="flex-direction: row-reverse;color:#ff9146;">
-                                    warning
-                                </span>
-                                <span class="tooltiptext fw-bold">
-                                  {{leave_request.employee_id}}&nbsp {% trans "has an interview in this requested date range." %}
-                                </span>
-                            </span>
-                          {% endif %}
-                      </div>
-                  </div>
-                  <div class="oh-sticky-table__td">{{leave_request.leave_type_id}}</div>
-                  <div class="oh-sticky-table__td dateformat_changer">{{leave_request.start_date}}</div>
-                  <div class="oh-sticky-table__td dateformat_changer">{{leave_request.end_date}}</div>
-                  <div class="oh-sticky-table__td">{{leave_request.requested_days}}</div>
-                  <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-
-                    <div class="d-flex" style="justify-content:center;" data-target="#clashViewModal" data-toggle="oh-modal-toggle" hx-get="{% url 'view-clashes' leave_request.id  %}?leave_request_id={{leave_request.id}}" hx-target="#clashViewModalBody">
-                      <i class="material-icons" style="font-size:33px;">groups</i>
-                        <span
-                        class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-1"
-                        >
-                          {{ leave_request.leave_clashes_count }}
-                        </span>
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table ">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    {% if not request.GET.dashboard %}
+                        <div class="oh-sticky-table__th" style="width: 10px">
+                            <div class="centered-div">
+                                <input type="checkbox" title='{% trans "Select All" %}'
+                                    class="oh-input oh-input__checkbox all-leave-requests" />
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'request-filter' %}?{{pd}}&sortby=employee_id__employee_first_name"
+                        hx-target="#leaveRequest">
+                        {% trans "Employee" %}
                     </div>
-
-                  </div>
-
-                  <div class="oh-sticky-table__td">
-                    {% if leave_request.multiple_approvals and leave_request.status == "requested" %}
-                      <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" title="{% for manager in leave_request.multiple_approvals.managers %}{{ manager }}{% if not forloop.last %} , {% endif %}{% endfor %}">
-                        {{leave_request.multiple_approvals.approved|length}} / {{leave_request.multiple_approvals.managers|length}} {% trans "Approved" %}
-                      </div>
-                    {% else %}
-                      {{leave_request.get_status_display}}
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-leave_type_id__name' %}arrow-up {% elif request.sort_option.order == 'leave_type_id__name' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'request-filter' %}?{{pd}}&sortby=leave_type_id__name" hx-target="#leaveRequest">
+                        {% trans "Leave Type" %}
+                    </div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'request-filter' %}?{{pd}}&sortby=start_date" hx-target="#leaveRequest">
+                        {% trans "Start Date" %}
+                    </div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'request-filter' %}?{{pd}}&sortby=end_date" hx-target="#leaveRequest">
+                        {% trans "End Date" %}
+                    </div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-requested_days' %}arrow-up {% elif request.sort_option.order == 'requested_days' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'request-filter' %}?{{pd}}&sortby=requested_days" hx-target="#leaveRequest">
+                        {% trans "Requested Days" %}
+                    </div>
+                    <div class="oh-sticky-table__th" style="width:115px;">{% trans "Leave Clash" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-status' %}arrow-up {% elif request.sort_option.order == 'status' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'request-filter' %}?{{pd}}&sortby=status" hx-target="#leaveRequest">
+                        {% trans "Status" %}
+                    </div>
+                    {% if not dashboard %}
+                        <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
+                        {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager or perms.base.add_penaltyaccounts %}
+                            <div class="oh-sticky-table__th" style="width:200px">{% trans "Actions" %}</div>
+                        {% endif %}
+                        <div class="oh-sticky-table__th">{% trans "Penalties" %}</div>
+                        {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_leave_approval_manager%}
+                            <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
+                        {% endif %}
                     {% endif %}
-                  </div>
-                  {% if  not dashboard %}
-                  <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                      <button type="button" hx-get="{% url 'leave-request-view-comment' leave_request.id %}?{{pd}}&target=leaveRequest" hx-target="#commentContainer"
-                        data-target = '#leaveactivitySidebar' title='{% trans "Add / View Comment" %}'  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                        <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
-                      </button>
-                  </div>
-                  <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                      <div class="oh-btn-group">
-                          {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or request.user|is_leave_approval_manager %}
-                            <button
+                </div>
+            </div>
+            <div class="oh-sticky-table__tbody" id="leaveRequestTableBody">
+                {% for leave_request in leave_requests %}
+                    <div class="oh-sticky-table__tr  {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}"
+                        draggable="true" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25"
+                        hx-get="{% url 'one-request-view' leave_request.id %}?instances_ids={{requests_ids}}"
+                        hx-target="#objectDetailsModalW25Target">
+                        {% if not request.GET.dashboard %}
+                            <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange
+                                {% elif leave_request.status == "approved" %}row-status--yellow
+                                {% elif leave_request.status == "cancelled" %}row-status--gray
+                                {% elif leave_request.status == "rejected" %}row-status--red
+                                {% endif %}
+                                "
+                                onclick="event.stopPropagation()">
+                                <div class="centered-div">
+                                    <input type="checkbox" id="{{leave_request.id}}" onchange="highlightRow($(this))"
+                                        class="oh-input holiday-checkbox oh-input__checkbox all-leave-requests-row" />
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="oh-sticky-table__td">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="{{leave_request.employee_id.get_avatar}}" class="oh-profile__image" alt="" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">{{leave_request.employee_id}}</span>
+                                {% if leave_request in leave_requests_with_interview %}
+                                    <span class="tooltip">
+                                        <span class="material-symbols-outlined" style="flex-direction: row-reverse;color:#ff9146;">
+                                            warning
+                                        </span>
+                                        <span class="tooltiptext fw-bold">
+                                            {{leave_request.employee_id}}&nbsp {% trans "has an interview in this requested date range." %}
+                                        </span>
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="oh-sticky-table__td">{{leave_request.leave_type_id}}</div>
+                        <div class="oh-sticky-table__td dateformat_changer">{{leave_request.start_date}}</div>
+                        <div class="oh-sticky-table__td dateformat_changer">{{leave_request.end_date}}</div>
+                        <div class="oh-sticky-table__td">{{leave_request.requested_days}}</div>
+                        <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                            <div class="d-flex" style="justify-content:center;" data-target="#clashViewModal"
                                 data-toggle="oh-modal-toggle"
-                                data-target="#penaltyModal"
-                                hx-target="#penaltyModalBody"
-                                hx-get="{% url "leave-cut-penalty" leave_request.id %}?{{pd}}"
-                                type='submit'
-                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                title="{% trans 'Penalty' %}">
-                                <ion-icon name="information-circle-outline"></ion-icon>
-                            </button>
-                          {% endif %}
-                          {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager%}
-                            {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest or request.user|is_leave_approval_manager %}
-                              <button  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
-                                  data-target="#objectUpdateModal" hx-get="{% url 'request-update' leave_request.id %}"
-                                  hx-target="#objectUpdateModalTarget"><ion-icon name="create-outline"></ion-icon></button>
-                            {% endif %}
-                            {% if leave_request.status == 'requested' %}
-                              {% if request.user|is_reportingmanager or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager %}
-                                <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
-                                  hx-confirm="{% trans "Are you sure you want to delete ?" %}" hx-get="{% url 'request-delete' leave_request.id %}?{{pd}}" hx-target="#leaveRequest" title="{% trans 'Delete' %}">
-                                  <ion-icon name="trash-outline"></ion-icon></a>
-                              {% endif %}
+                                hx-get="{% url 'view-clashes' leave_request.id  %}?leave_request_id={{leave_request.id}}"
+                                hx-target="#clashViewModalBody">
+                                <i class="material-icons" style="font-size:33px;">groups</i>
+                                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-1">
+                                    {{ leave_request.leave_clashes_count }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="oh-sticky-table__td">
+                            {% if leave_request.multiple_approvals and leave_request.status == "requested" %}
+                                <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary"
+                                    title="{% for manager in leave_request.multiple_approvals.managers %}{{ manager }}{% if not forloop.last %} , {% endif %}{% endfor %}">
+                                    {{leave_request.multiple_approvals.approved|length}} / {{leave_request.multiple_approvals.managers|length}} {% trans "Approved" %}
+                                </div>
                             {% else %}
-                              <button class="oh-btn oh-btn--light-bkg w-50" disabled>
-                                <ion-icon name="trash-outline"></ion-icon>
-                              </button></td>
+                                {{leave_request.get_status_display}}
                             {% endif %}
-                          {% endif %}
-                      </div>
-                  </div>
-                  {% endif %}
-                  <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                    {% if leave_request.get_penalties_count %}
-                        <div data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?leave_request_id={{leave_request.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">{% trans "Penalties" %} :{{leave_request.get_penalties_count}}</div>
-                    {% endif %}
-                  </div>
-                <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
-                  <div class="oh-btn-group" >
-                    {% if leave_request.status == 'cancelled' %}
-                      {% if leave_request.end_date >= current_date %}
-                        <a type="submit" data-toggle="oh-modal-toggle"
-                            data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm"  title="{% trans 'Approve cancellation request' %}"
-                            class="oh-btn oh-btn--warning w-100";>
-                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                        </a>
-                      {% else %}
-                        <a type="submit" href="#" title="{% trans 'Approve cancellation request' %}"
-                            class="oh-btn oh-btn--secondary oh-btn--disabled
-                            w-100">
-                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                        </a>
-                      {% endif %}
-                    {% else %}
-                      {% if leave_request.is_approved and leave_request.status == 'requested' %}
-                        <a href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
-                            class="oh-btn oh-btn--success w-100" {% if leave_request.end_date.month > current_date.month %} onclick = "leaveRequestConfirm('This leave request is for the month of {{leave_request.start_date|date:'F'}}. Approval depends on the {{leave_request.employee_id.get_full_name}} having available leave days for this month.',event);" {% else %}  onclick = "return confirm('Do You really want to Approve this request?')"; {% endif %}>
-                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                        </a>
-                      {% else %}
-                        <a type="submit" href="#" title="{% trans 'Approve' %}"
-                            class="oh-btn oh-btn--success oh-btn--disabled
-                            w-100">
-                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                        </a>
-                      {% endif %}
-                      {% if leave_request.status != 'rejected' and leave_request.end_date >= current_date %}
-                        <a type="submit" data-toggle="oh-modal-toggle"
-                            data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm" title="{% trans 'Reject' %}"
-                            class="oh-btn oh-btn--danger w-100">
-                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                        </a>
-                      {% else %}
-                        <a type="submit" href="#" title="{% trans 'Reject' %}"
-                            class="oh-btn oh-btn--danger oh-btn--disabled w-100" >
-                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                        </a>
-                      {% endif %}
-                    {% endif %}
-                  </div>
-              </div>
-              </div>
-              {% endfor %}
-          </div>
-      </div>
-  </div>
+                        </div>
+                        {% if not dashboard %}
+                            <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
+                                {% if perms.leave.view_leaverequestcomment or request.user.employee_get == leave_request.employee_id %}
+                                    <button type="button"
+                                        hx-get="{% url 'leave-request-view-comment' leave_request.id %}?{{pd}}&target=leaveRequest"
+                                        hx-target="#commentContainer" data-target='#leaveactivitySidebar'
+                                        title="{% trans 'Add / View Comment' %}"
+                                        class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
+                                        style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
+                                        onclick="event.stopPropagation()">
+                                        <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
+                                    </button>
+                                {% endif %}
+                            </div>
+                            <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                                {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager or perms.base.add_penaltyaccounts %}
+                                    <div class="oh-btn-group">
+                                        {% if request.user|is_reportingmanager or perms.base.add_penaltyaccounts or request.user|is_leave_approval_manager %}
+                                            <button data-toggle="oh-modal-toggle" data-target="#penaltyModal" hx-target="#penaltyModalBody"
+                                                hx-get="{% url 'leave-cut-penalty' leave_request.id %}?{{pd}}" type='submit'
+                                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Penalty' %}">
+                                                <ion-icon name="information-circle-outline"></ion-icon>
+                                            </button>
+                                        {% endif %}
+                                        {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager%}
+                                            {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_leave_approval_manager %}
+                                            <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
+                                                data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+                                                hx-get="{% url 'request-update' leave_request.id %}"
+                                                hx-target="#objectUpdateModalTarget"><ion-icon name="create-outline"></ion-icon></button>
+                                            {% endif %}
+                                            {% if leave_request.status == 'requested' %}
+                                                {% if request.user|is_reportingmanager or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager %}
+                                                    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
+                                                        hx-confirm="{% trans " Are you sure you want to delete ?" %}"
+                                                        hx-get="{% url 'request-delete' leave_request.id %}?{{pd}}" hx-target="#leaveRequest"
+                                                        title="{% trans 'Delete' %}">
+                                                        <ion-icon name="trash-outline"></ion-icon>
+                                                    </a>
+                                                {% endif %}
+                                            {% else %}
+                                                <button class="oh-btn oh-btn--light-bkg w-50" disabled>
+                                                    <ion-icon name="trash-outline"></ion-icon>
+                                                </button></td>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                            {% if leave_request.get_penalties_count %}
+                                <div data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url 'view-penalties' %}?leave_request_id={{leave_request.id}}"
+                                    hx-target="#penaltyViewModalBody" align="center"
+                                    style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">
+                                    {% trans "Penalties" %} :{{leave_request.get_penalties_count}}</div>
+                            {% endif %}
+                        </div>
+                        {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_leave_approval_manager%}
+                            <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
+                                <div class="oh-btn-group">
+                                    {% if leave_request.status == 'cancelled' %}
+                                        {% if leave_request.end_date >= current_date %}
+                                            <a type="submit" data-toggle="oh-modal-toggle" data-target="#rejectModal"
+                                                hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm"
+                                                title="{% trans 'Approve cancellation request' %}" class="oh-btn oh-btn--warning w-100" ;>
+                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                            </a>
+                                        {% else %}
+                                            <a type="submit" href="#" title="{% trans 'Approve cancellation request' %}" class="oh-btn oh-btn--secondary oh-btn--disabled w-100">
+                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                            </a>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if leave_request.is_approved and leave_request.status == 'requested' %}
+                                            <a href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
+                                                class="oh-btn oh-btn--success w-100"
+                                                {% if leave_request.end_date.month > current_date.month %}
+                                                    onclick = "leaveRequestConfirm('This leave request is for the month of {{leave_request.start_date|date:'F'}}.
+                                                            Approval depends on the {{leave_request.employee_id.get_full_name}} having available leave days for
+                                                            this month.',event);"
+                                                {% else %}
+                                                    onclick = "return confirm('Do You really want to Approve this request?')";
+                                                {% endif %}
+                                                >
+                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                            </a>
+                                        {% else %}
+                                            <a type="submit" href="#" title="{% trans 'Approve' %}" class="oh-btn oh-btn--success oh-btn--disabled w-100">
+                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                            </a>
+                                        {% endif %}
+                                        {% if leave_request.status != 'rejected' and leave_request.end_date >= current_date %}
+                                            <a type="submit" data-toggle="oh-modal-toggle" data-target="#rejectModal"
+                                                hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm"
+                                                title="{% trans 'Reject' %}" class="oh-btn oh-btn--danger w-100">
+                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                            </a>
+                                        {% else %}
+                                            <a type="submit" href="#" title="{% trans 'Reject' %}"
+                                                class="oh-btn oh-btn--danger oh-btn--disabled w-100">
+                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% elif dashboard and request.GET.dashboard != 'card' %}
-  <div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
-    <div style="" class="">
-    <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="" alt=""/>
-    <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "You have No leave requests for this month." %}</h3>
+    <div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+        <div style="" class="">
+            <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}"
+                class="" alt="" />
+            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "You have No leave requests for this month." %}
+            </h3>
+        </div>
     </div>
-  </div>
 {% else %}
-  <div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="oh-404">
-    <div style="" class="">
-    <img style="display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="" alt=""/>
-    <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "You have No leave requests for this filter." %}</h3>
+    <div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="oh-404">
+        <div style="" class="">
+            <img style="display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}"
+                class="" alt="" />
+            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "You have No leave requests for this filter." %}
+            </h3>
+        </div>
     </div>
-  </div>
 {% endif %}
 
 <!-- End of Sticky Table -->
-{% if  not dashboard %}
-<div class="oh-pagination" data-pd="{{pd}}">
-    <span class="oh-pagination__page">
-        {% trans "Page" %} {{ leave_requests.number }} {% trans "of" %} {{ leave_requests.paginator.num_pages }}.
-    </span>
-    <nav class="oh-pagination__nav">
-        <div class="oh-pagination__input-container me-3">
-            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-            <input type="number" name="page" class="oh-pagination__input" value="{{leave_requests.number}}"
-                hx-get="{% url 'request-filter' %}?{{pd}}" hx-target="#leaveRequest" min="1" />
-            <span class="oh-pagination__label">{% trans "of" %} {{leave_requests.paginator.num_pages}}</span>
-        </div>
-        <ul class="oh-pagination__items">
-            {% if leave_requests.has_previous %}
-            <li class="oh-pagination__item oh-pagination__item--wide">
-                <a hx-target='#leaveRequest' hx-get="{% url 'request-filter' %}?{{pd}}&page=1"
-                    class="oh-pagination__link">{% trans "First" %}</a>
-            </li>
-            <li class="oh-pagination__item oh-pagination__item--wide">
-                <a hx-target='#leaveRequest'
-                    hx-get="{% url 'request-filter' %}?{{pd}}&page={{ leave_requests.previous_page_number }}"
-                    class="oh-pagination__link">{% trans "Previous" %}</a>
-            </li>
-            {% endif %}
-            {% if leave_requests.has_next %}
-            <li class="oh-pagination__item oh-pagination__item--wide">
-                <a hx-target='#leaveRequest'
-                    hx-get="{% url 'request-filter' %}?{{pd}}&page={{ leave_requests.next_page_number }}"
-                    class="oh-pagination__link">{% trans "Next" %}</a>
-            </li>
-            <li class="oh-pagination__item oh-pagination__item--wide">
-                <a hx-target='#leaveRequest'
-                    hx-get="{% url 'request-filter' %}?{{pd}}&page={{ leave_requests.paginator.num_pages }}"
-                    class="oh-pagination__link">{% trans "Last" %}</a>
-            </li>
-            {% endif %}
+{% if not dashboard %}
+    <div class="oh-pagination" data-pd="{{pd}}">
+        <span class="oh-pagination__page">
+            {% trans "Page" %} {{ leave_requests.number }} {% trans "of" %} {{ leave_requests.paginator.num_pages }}.
+        </span>
+        <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                <input type="number" name="page" class="oh-pagination__input" value="{{leave_requests.number}}"
+                    hx-get="{% url 'request-filter' %}?{{pd}}" hx-target="#leaveRequest" min="1" />
+                <span class="oh-pagination__label">{% trans "of" %} {{leave_requests.paginator.num_pages}}</span>
+            </div>
+            <ul class="oh-pagination__items">
+                {% if leave_requests.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target='#leaveRequest' hx-get="{% url 'request-filter' %}?{{pd}}&page=1"
+                        class="oh-pagination__link">{% trans "First" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target='#leaveRequest'
+                        hx-get="{% url 'request-filter' %}?{{pd}}&page={{ leave_requests.previous_page_number }}"
+                        class="oh-pagination__link">{% trans "Previous" %}</a>
+                </li>
+                {% endif %}
+                {% if leave_requests.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target='#leaveRequest'
+                        hx-get="{% url 'request-filter' %}?{{pd}}&page={{ leave_requests.next_page_number }}"
+                        class="oh-pagination__link">{% trans "Next" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target='#leaveRequest'
+                        hx-get="{% url 'request-filter' %}?{{pd}}&page={{ leave_requests.paginator.num_pages }}"
+                        class="oh-pagination__link">{% trans "Last" %}</a>
+                </li>
+                {% endif %}
 
-        </ul>
-    </nav>
-</div>
+            </ul>
+        </nav>
+    </div>
 {% endif %}
 
 <div class="oh-modal" id="penaltyModal" role="dialog" aria-hidden="true">
-  <div class="oh-modal__dialog" style="max-width: 596px" id="penaltyModalBody"></div>
+    <div class="oh-modal__dialog" style="max-width: 596px" id="penaltyModalBody"></div>
 </div>
 
 
 {% comment %} <div class="oh-modal" id="clashViewModal" role="dialog" aria-hidden="true" style="z-index:99;">
-  <div class="oh-modal__dialog" style="max-width: 900px;">
-    <div class="oh-modal__dialog-header">
-      <h3 class="oh-main__titlebar-title fw-bold ">{% trans "Clashed Leave Requests" %}</h3>
-      <button class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
-        <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
-      </button>
+    <div class="oh-modal__dialog" style="max-width: 900px;">
+        <div class="oh-modal__dialog-header">
+            <h3 class="oh-main__titlebar-title fw-bold ">{% trans "Clashed Leave Requests" %}</h3>
+            <button class="oh-modal__close--custom"
+                onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
+                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="clashViewModalBody" style="overflow-x:auto;"></div>
     </div>
-    <div class="oh-modal__dialog-body" id="clashViewModalBody" style="overflow-x:auto;"></div>
-  </div>
 </div> {% endcomment %}
 
 <div class="oh-modal" id="penaltyViewModal" role="dialog" aria-hidden="true">
-  <div class="oh-modal__dialog" style="max-width: 900px">
-    <div class="oh-modal__dialog-header">
-      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    <div class="oh-modal__dialog" style="max-width: 900px">
+        <div class="oh-modal__dialog-header">
+            <button type="button" class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="penaltyViewModalBody" style="overflow-x:auto;"></div>
     </div>
-    <div class="oh-modal__dialog-body" id="penaltyViewModalBody" style="overflow-x:auto;"></div>
-  </div>
 </div>
 
 <!-- start of comment modal -->
-<div
-	class="oh-modal"
-	id="requestcommentModal"
-	role="dialog"
-	aria-labelledby="emptagModal"
-	aria-hidden="true"
- >
-	<div class="oh-modal__dialog" id="requestCommentFormModal">
-	</div>
+<div class="oh-modal" id="requestcommentModal" role="dialog" aria-labelledby="emptagModal" aria-hidden="true">
+    <div class="oh-modal__dialog" id="requestCommentFormModal">
+    </div>
 </div>
 <!-- end of comment modal -->
 
-<div
-  class="oh-modal" style="z-index: 60;"
-  id="shiftRequestDetailModal"
-  role="dialog"
-  aria-labelledby="shiftRequestDetailModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2
-        class="oh-modal__dialog-title"
-        id=""
-      >
-        {% trans "Details" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
+<div class="oh-modal" style="z-index: 60;" id="shiftRequestDetailModal" role="dialog"
+    aria-labelledby="shiftRequestDetailModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="">
+                {% trans "Details" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body oh-modal__dialog-relative" id="shiftRequestDetailTarget"></div>
     </div>
-    <div
-      class="oh-modal__dialog-body oh-modal__dialog-relative"
-      id="shiftRequestDetailTarget"
-    ></div>
-  </div>
 </div>
 
 <script>
-  $(".all-leave-requests").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    if (is_checked) {
-      $(".all-leave-requests-row")
-        .prop("checked", true)
-        .closest(".oh-sticky-table__tr")
-        .addClass("highlight-selected");
-    } else {
-      $(".all-leave-requests-row")
-        .prop("checked", false)
-        .closest(".oh-sticky-table__tr")
-        .removeClass("highlight-selected");
-    }
-  });
-
-  $(document).ready(function () {
-    var pd = $(".oh-pagination").attr("data-pd");
-    var hxVals = JSON.stringify(pd);
-    $("#requestCreateButton").attr("hx-vals", `{"pd":${hxVals}}`);
-    tickLeaverequestsCheckboxes();
-    $(".all-leave-requests-row").change(function () {
-      var parentTable = $(this).closest(".oh-sticky-table");
-      var body = parentTable.find(".oh-sticky-table__tbody");
-      var parentCheckbox = parentTable.find(".all-leave-requests");
-      parentCheckbox.prop(
-        "checked",
-        body.find(".all-leave-requests-row:checked").length ===
-          body.find(".all-leave-requests-row").length
-      );
-      addingLeaverequestsIds();
+    $(".all-leave-requests").change(function (e) {
+        var is_checked = $(this).is(":checked");
+        if (is_checked) {
+            $(".all-leave-requests-row")
+                .prop("checked", true)
+                .closest(".oh-sticky-table__tr")
+                .addClass("highlight-selected");
+        } else {
+            $(".all-leave-requests-row")
+                .prop("checked", false)
+                .closest(".oh-sticky-table__tr")
+                .removeClass("highlight-selected");
+        }
     });
 
-    $(".all-leave-requests").change(function () {
-      addingLeaverequestsIds();
+    $(document).ready(function () {
+        var pd = $(".oh-pagination").attr("data-pd");
+        var hxVals = JSON.stringify(pd);
+        $("#requestCreateButton").attr("hx-vals", `{"pd":${hxVals}}`);
+        tickLeaverequestsCheckboxes();
+        $(".all-leave-requests-row").change(function () {
+            var parentTable = $(this).closest(".oh-sticky-table");
+            var body = parentTable.find(".oh-sticky-table__tbody");
+            var parentCheckbox = parentTable.find(".all-leave-requests");
+            parentCheckbox.prop(
+                "checked",
+                body.find(".all-leave-requests-row:checked").length ===
+                body.find(".all-leave-requests-row").length
+            );
+            addingLeaverequestsIds();
+        });
+
+        $(".all-leave-requests").change(function () {
+            addingLeaverequestsIds();
+        });
+        $("#selectAllLeaverequests").click(function () {
+            selectAllLeaverequests();
+        });
+        $("#unselectAllLeaverequests").click(function () {
+            unselectAllLeaverequests();
+        });
+        $("#exportLeaverequests").click(function (e) {
+            exportLeaverequests();
+        });
     });
-    $("#selectAllLeaverequests").click(function () {
-      selectAllLeaverequests();
-    });
-    $("#unselectAllLeaverequests").click(function () {
-      unselectAllLeaverequests();
-    });
-    $("#exportLeaverequests").click(function (e) {
-      exportLeaverequests();
-    });
-  });
 </script>

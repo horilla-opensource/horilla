@@ -79,7 +79,9 @@
                     {% if request.user|is_reportingmanager or perms.leave.change_availableleave %}
                         <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
                             data-target="#objectUpdateModal" hx-get="{% url 'available-leave-update' available_leave.id %}?{{pd}}"
-                            hx-target="#objectUpdateModalTarget"><ion-icon name="create-outline"></ion-icon></button>
+                            hx-target="#objectUpdateModalTarget"hx-on:click="$('#objectUpdateModalTarget').css('max-width', '350px');">
+                            <ion-icon name="create-outline"></ion-icon>
+                        </button>
                     {% endif %}
                     {% if request.user|is_reportingmanager or perms.leave.delete_availableleave %}
                     <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" hx-confirm="{% trans 'Are you sure you want to delete ?' %}"

@@ -11,14 +11,15 @@
             <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
         </a>
     </div>
-    <form  hx-get="{% url 'company-leave-filter' %}" hx-target="#companyLeave" id="filterForm" onsubmit="event.preventDefault()">
+    <form hx-get="{% url 'company-leave-filter' %}" hx-target="#companyLeave" id="filterForm" onsubmit="event.preventDefault()">
         <div class="oh-main__titlebar oh-main__titlebar--right">
             {% if company_leaves %}
-            <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
-                <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-                <input type="text" class="oh-input oh-input__icon" aria-label="Search Input"
-                    placeholder="{% trans 'Search' %}" name="search" onkeyup="$('.filterButton').click()" id="search" />
-            </div>
+                <div class="oh-input-group oh-input__search-group"
+                    :class="searchShow ? 'oh-input__search-group--show' : ''">
+                    <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+                    <input type="text" class="oh-input oh-input__icon" aria-label="Search Input"
+                        placeholder="{% trans 'Search' %}" name="search" onkeyup="$('.filterButton').click()" id="search" />
+                </div>
             <div class="oh-main__titlebar-button-container">
                 <div class="oh-dropdown" x-data="{open: false}">
                     <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
@@ -55,12 +56,13 @@
                     </div>
                 </div>
                 {% endif %}
-                {% if perms.base.add_companyleave %}
+                {% if perms.base.add_companyleaves %}
                     <div class="oh-btn-group ml-2">
                         <div class="oh-dropdown" x-data="{open: false}">
                             <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
                                 data-target="#objectCreateModal" hx-get="{% url 'company-leave-creation' %}"
-                                hx-target="#objectCreateModalTarget" id="companyLeaveCreate">
+                                hx-target="#objectCreateModalTarget" id="companyLeaveCreate"
+                                hx-on:click="$('#objectCreateModalTarget').css('max-width', '350px');">
                                 <ion-icon name="add-outline" class="me-1"></ion-icon>
                                 {% trans "Create" %}
                             </button>
@@ -76,24 +78,6 @@
 <div class="oh-wrapper" id="companyLeave">
     {% include 'company_leave/company_leave.html' %}
 </div>
-
-
-<script>
-
-    $(document).on('htmx:load','#companyLeave', function () {
-        // Create a new script element
-        var scriptElement = document.createElement("script");
-        // Set the source URL of the script file to be loaded
-        scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
-        // Append the script element to the head of the HTML document
-        document.head.appendChild(scriptElement);
-    });
-
-    $("#companyLeaveCreate").click(function (e) {
-        $("#objectCreateModalTarget").css("max-width", "350px");
-    });
-
-</script>
 
 <script src="{% static '/base/filter.js' %}"></script>
 

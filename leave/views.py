@@ -3917,6 +3917,7 @@ def create_leaverequest_comment(request, leave_id):
                     "comments": comments,
                     "no_comments": no_comments,
                     "request_id": leave_id,
+                    "leave_request": leave,
                 },
             )
     return render(
@@ -3928,6 +3929,7 @@ def create_leaverequest_comment(request, leave_id):
             "pd": previous_data,
             "target": target,
             "url": url,
+            "leave_request": leave,
         },
     )
 
@@ -3938,6 +3940,15 @@ def view_leaverequest_comment(request, leave_id):
     """
     This method is used to show Leave request comments
     """
+    leave_request = LeaveRequest.find(leave_id)
+    if not (
+        request.user.employee_get == leave_request.employee_id
+        or request.user.has_perm("leave.view_leaverequestcomment")
+        or is_reportingmanager(request)
+    ):
+        messages.warning(request, _("You don't have permission"))
+        return render(request, "decorator_404.html")
+
     comments = LeaverequestComment.objects.filter(request_id=leave_id).order_by(
         "-created_at"
     )
@@ -3960,7 +3971,11 @@ def view_leaverequest_comment(request, leave_id):
     return render(
         request,
         "leave/leave_request/leave_comment.html",
-        {"comments": comments, "no_comments": no_comments, "request_id": leave_id},
+        {
+            "comments": comments,
+            "no_comments": no_comments,
+            "leave_request": leave_request,
+        },
     )
 
 
@@ -4087,6 +4102,14 @@ def view_allocationrequest_comment(request, leave_id):
     """
     This method is used to show Allocation request comments
     """
+    leave_alloc_request = LeaveAllocationRequest.find(leave_id)
+    if not (
+        request.user.employee_get == leave_alloc_request.employee_id
+        or request.user.has_perm("leave.view_leaveallocationrequestcomment")
+        or is_reportingmanager(request)
+    ):
+        messages.warning(request, _("You don't have permission"))
+        return render(request, "decorator_404.html")
     comments = LeaveallocationrequestComment.objects.filter(
         request_id=leave_id
     ).order_by("-created_at")
@@ -4109,7 +4132,12 @@ def view_allocationrequest_comment(request, leave_id):
     return render(
         request,
         "leave/leave_allocation_request/leave_allocation_comment.html",
-        {"comments": comments, "no_comments": no_comments, "request_id": leave_id},
+        {
+            "comments": comments,
+            "no_comments": no_comments,
+            "request_id": leave_id,
+            "leave_alloc_request": leave_alloc_request,
+        },
     )
 
 

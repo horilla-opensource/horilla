@@ -20,24 +20,24 @@
 	</a>
 	<span class="oh-activity-sidebar__title"> {% trans "Comments" %} </span>
 </div>
+{% if request.user.employee_get == leave_alloc_request.employee_id or perms.leave.add_leaveallocationrequestcomment or request.user|is_reportingmanager %}
+	<form hx-target="#commentContainerList" hx-select=".oh-activity-sidebar__qa-list"
+		hx-on-htmx-after-request="reloadMessage(this);$('#commentInput').val('');$('#commentButton').hide();"
+		hx-post="{% url 'allocation-request-add-comment' request_id %}?{{pd}}" id="commentForm">
+		{% csrf_token %}
 
-<form method="post" hx-target="#commentContainerList" hx-select=".oh-activity-sidebar__qa-list"
-	hx-on-htmx-after-request="reloadMessage(this);$('#commentInput').val('');$('#commentButton').hide();"
-	hx-post="{% url 'allocation-request-add-comment' request_id %}?{{pd}}" id="commentForm">
-	{% csrf_token %}
+		<div>
+			<input type="text" name="comment" id="commentInput" class="oh-input w-100" placeholder="Comment here"
+				hx-on:keyup="toggleCommentButton(this);">
+			<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+				style="display: none;">
+				{% trans "Comment" %}
+			</button>
+		</div>
 
-	<div>
-		<input type="text" name="comment" id="commentInput" class="oh-input w-100" placeholder="Comment here"
-			hx-on:keyup="toggleCommentButton(this);">
-		<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-			style="display: none;">
-			{% trans "Comment" %}
-		</button>
-	</div>
-
-	<div class="oh-inner-sidebar-content__footer"></div>
-</form>
-
+		<div class="oh-inner-sidebar-content__footer"></div>
+	</form>
+{% endif %}
 
 {% if comments %}
 	<ol class="oh-activity-sidebar__qa-list" role="list" id="commentContainerList">
