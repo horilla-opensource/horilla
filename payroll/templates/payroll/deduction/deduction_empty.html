@@ -8,22 +8,24 @@
   <div class="oh-main__titlebar oh-main__titlebar--right">
     <div class="oh-main__titlebar-button-container">
       <div class="oh-btn-group ml-2">
-        <div>
-          <a
-            class="oh-btn oh-btn--secondary oh-btn--shadow"
-            data-toggle="oh-modal-toggle"
-            data-target="#deductionModal"
-            href="{% url 'create-deduction' %}"
-          >
-            <ion-icon
-              class="me-2 md hydrated"
-              name="add-outline"
-              role="img"
-              aria-label="add outline"
-            ></ion-icon
-            >{% trans "Create" %}</a
-          >
-        </div>
+        {% if perms.payroll.add_deduction %}
+          <div>
+            <a
+              class="oh-btn oh-btn--secondary oh-btn--shadow"
+              data-toggle="oh-modal-toggle"
+              data-target="#deductionModal"
+              href="{% url 'create-deduction' %}"
+            >
+              <ion-icon
+                class="me-2 md hydrated"
+                name="add-outline"
+                role="img"
+                aria-label="add outline"
+              ></ion-icon
+              >{% trans "Create" %}</a
+            >
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>

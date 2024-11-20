@@ -20,15 +20,17 @@
 
       <div class="oh-main__titlebar-button-container">
         <div class="oh-btn-group ml-2">
-          <div>
-            <a
-              class="oh-btn oh-btn--secondary oh-btn--shadow"
-              href="{% url 'contract-create' %}"
-            >
-              <ion-icon class="me-2" name="add-outline"></ion-icon>
-              {% trans "Create" %}
-            </a>
-          </div>
+          {% if perms.payroll.add_contract %}
+            <div>
+              <a
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                href="{% url 'contract-create' %}"
+              >
+                <ion-icon class="me-2" name="add-outline"></ion-icon>
+                {% trans "Create" %}
+              </a>
+            </div>
+          {% endif %}
         </div>
       </div>
     </div>

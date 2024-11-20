@@ -107,22 +107,26 @@
     </div>
     {% if perms.payroll.change_allowance or perms.payroll.delete_allowance %}
         <div class="oh-modal__button-container text-center">
-        <div class="oh-btn-group">
-            <a href="{% url 'update-allowance' allowance.id %}" class="oh-btn oh-btn--info" style="width: 50%;">
-            <ion-icon
-            name="create-outline"
-            role="img"
-            class="md hydrated"
-            aria-label="create outline"
-            ></ion-icon>{% trans "Edit" %}
-            </a>
-            <button class="oh-btn oh-btn--danger"style="width: 50%;" data-action="delete"
-                hx-confirm="{% trans 'Do you want to delete this Allowance?' %}"
-                hx-post="{% url 'delete-allowance' allowance.id %}?{{pd}}&instances_ids={{allowance_ids}}&view=card"
-                hx-target="#objectDetailsModalTarget" >
-                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
-                {% trans "Delete" %}
-            </button>
+            <div class="oh-btn-group">
+                {% if perms.payroll.change_allowance %}
+                    <a href="{% url 'update-allowance' allowance.id %}" class="oh-btn oh-btn--info" style="width: 100%;">
+                    <ion-icon
+                    name="create-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="create outline"
+                    ></ion-icon>{% trans "Edit" %}
+                    </a>
+                {% endif %}
+                {% if perms.payroll.delete_allowance %}
+                    <button class="oh-btn oh-btn--danger"style="width: 100%;" data-action="delete"
+                        hx-confirm="{% trans 'Do you want to delete this Allowance?' %}"
+                        hx-post="{% url 'delete-allowance' allowance.id %}?{{pd}}&instances_ids={{allowance_ids}}&view=card"
+                        hx-target="#objectDetailsModalTarget" >
+                        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                        {% trans "Delete" %}
+                    </button>
+                {% endif %}
             </div>
         </div>
     {% endif %}

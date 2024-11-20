@@ -1259,7 +1259,7 @@ def add_bonus(request):
 
 
 @login_required
-@permission_required("payroll.add_allowance")
+@permission_required("payroll.add_deduction")
 def add_deduction(request):
     employee_id = request.GET["employee_id"]
     payslip_id = request.GET.get("payslip_id")
@@ -1349,7 +1349,6 @@ def view_loans(request):
 
 @login_required
 @hx_request_required
-@permission_required("payroll.add_loanaccount")
 def create_loan(request):
     """
     This method is used to create and update the loan instance

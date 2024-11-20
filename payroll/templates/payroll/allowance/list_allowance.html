@@ -58,7 +58,9 @@
                         class="oh-sticky-table__th">{% trans "Based On" %}</div>
                     <div data-cell-index="9" data-cell-title="{% trans 'Rate' %}"
                         class="oh-sticky-table__th">{% trans "Rate" %}</div>
-                    <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
+                    {% if perms.payroll.change_allowance or perms.payroll.delete_allowance %}
+                        <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
+                    {% endif %}
                 </div>
             </div>
             {% for allowance in allowances %}
@@ -100,23 +102,29 @@
                     <div data-cell-index="9" class="oh-sticky-table__td ">
                         {% if allowance.rate %}{{allowance.rate}}{% endif %}
                     </div>
-                    <div class="oh-sticky-table__td oh-sticky-table__right">
-                        <div class="oh-btn-group">
-                            <a onclick="event.stopPropagation();" class="oh-btn oh-btn--light-bkg w-100"
-                                href="{% url 'update-allowance' allowance.id %}" title='{% trans "Update" %}'>
-                                <ion-icon name="create-outline" role="img" class="md hydrated" style="color: blue"
-                                    aria-label="create outline"></ion-icon>
-                            </a>
-                            <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                onclick="event.preventDefault();event.stopPropagation();"
-                                hx-confirm="{% trans 'Do you want to delete this Allowance?' %}"
-                                hx-post="{% url 'delete-allowance' allowance.id %}?{{pd}}&view=list"
-                                hx-target="#payroll-allowance-container" title="{% trans 'Delete' %}">
-                                <ion-icon name="trash-outline" role="img" class="md hydrated"
-                                    aria-label="trash outline"></ion-icon>
-                            </a>
+                    {% if perms.payroll.change_allowance or perms.payroll.delete_allowance %}
+                        <div class="oh-sticky-table__td oh-sticky-table__right">
+                            <div class="oh-btn-group">
+                                {% if perms.payroll.change_allowance %}
+                                    <a onclick="event.stopPropagation();" class="oh-btn oh-btn--light-bkg w-100"
+                                        href="{% url 'update-allowance' allowance.id %}" title='{% trans "Update" %}'>
+                                        <ion-icon name="create-outline" role="img" class="md hydrated" style="color: blue"
+                                            aria-label="create outline"></ion-icon>
+                                    </a>
+                                {% endif %}
+                                {% if perms.payroll.delete_allowance %}
+                                    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                        onclick="event.preventDefault();event.stopPropagation();"
+                                        hx-confirm="{% trans 'Do you want to delete this Allowance?' %}"
+                                        hx-post="{% url 'delete-allowance' allowance.id %}?{{pd}}&view=list"
+                                        hx-target="#payroll-allowance-container" title="{% trans 'Delete' %}">
+                                        <ion-icon name="trash-outline" role="img" class="md hydrated"
+                                            aria-label="trash outline"></ion-icon>
+                                    </a>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}

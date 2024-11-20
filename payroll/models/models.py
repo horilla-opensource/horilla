@@ -1754,7 +1754,7 @@ class Reimbursement(HorillaModel):
         )
 
         # Setting the created use if the used dont have the permission
-        has_perm = request.user.has_perm("payroll.add_reimbursement")
+        has_perm = request.user.has_perm("payroll.change_reimbursement")
         if not has_perm:
             self.employee_id = request.user.employee_get
         if self.type == "reimbursement" and self.attachment is None:

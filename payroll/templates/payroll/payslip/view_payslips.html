@@ -123,7 +123,7 @@
           </div>
         </div>
       {% endif %}
-      {% if perms.payroll.add_payslip %}
+      {% if perms.payroll.add_payslip or perms.payroll.delete_payslip or perms.payroll.change_payslip %}
         <div class="oh-dropdown" x-data="{open: false}">
           <button
             class="oh-btn oh-btn--dropdown ml-2 h-100"

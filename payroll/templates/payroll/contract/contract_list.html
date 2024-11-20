@@ -63,7 +63,9 @@
             >{% trans "Basic Salary" %}</div>
             <div data-cell-index="6" data-cell-title='{% trans "Filing Status" %}' class="oh-sticky-table__th">{% trans "Filing Status" %}</div>
             <div data-cell-index="7" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
-            <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
+            {% if perms.payroll.change_contract or perms.payroll.delete_contract %}
+              <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
+            {% endif %}
           </div>
         </div>
         <div class="oh-sticky-table__tbody">
@@ -103,47 +105,59 @@
                   </select>
                 </div>
             -->
-            <div data-cell-index="7" class="oh-sticky-table__td" onclick="event.stopPropagation();">
-              <select name="status" hx-trigger="change" hx-post="{% url 'update-contract-status' contract.id %}?{{pd}}" hx-target="#payroll-contract-container" hx-vals='{"view":"table"}' class="oh-table__editable-input w-100" >
-                {% for option in contract.CONTRACT_STATUS_CHOICES %}
-                <option value="{{option.0}}"{% if option.0 == contract.contract_status %}selected{% endif %}>{{option.1}}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="oh-sticky-table__td oh-sticky-table__right">
-              <div class="oh-btn-group">
-                <a
-                onclick="event.stopPropagation()"
-                  class="oh-btn oh-btn--light-bkg w-100"
-                  href="{% url 'update-contract' contract.id %}"
-                  title='{% trans "Update" %}'
-                >
-                  <ion-icon
-                    name="create-outline"
-                    role="img"
-                    class="md hydrated"
-                    style="color: blue"
-                    aria-label="create outline"
-                  ></ion-icon>
-                </a>
-                <a
-                  onclick = "event.preventDefault();event.stopPropagation();"
-                  class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                  hx-confirm="{% trans 'Do you want to delete this Contract?' %}"
-                  hx-post="{% url 'delete-contract' contract.id %}?{{pd}}"
-                  hx-target="#payroll-contract-container"
-                  hx-swap="innerHTML"
-                  title="{% trans 'Delete' %}"
-                >
-                  <ion-icon
-                    name="trash-outline"
-                    role="img"
-                    class="md hydrated"
-                    aria-label="trash outline"
-                  ></ion-icon>
-                </a>
+            {% if perms.payroll.change_contract %}
+              <div data-cell-index="7" class="oh-sticky-table__td" onclick="event.stopPropagation();">
+                <select name="status" hx-trigger="change" hx-post="{% url 'update-contract-status' contract.id %}?{{pd}}" hx-target="#payroll-contract-container" hx-vals='{"view":"table"}' class="oh-table__editable-input w-100" >
+                  {% for option in contract.CONTRACT_STATUS_CHOICES %}
+                  <option value="{{option.0}}"{% if option.0 == contract.contract_status %}selected{% endif %}>{{option.1}}</option>
+                  {% endfor %}
+                </select>
               </div>
-            </div>
+            {% else %}
+              <div class="oh-sticky-table__td">
+                {{ contract.get_contract_status_display}}
+              </div>
+            {% endif %}
+            {% if perms.payroll.change_contract or perms.payroll.delete_contract %}
+              <div class="oh-sticky-table__td oh-sticky-table__right">
+                <div class="oh-btn-group">
+                  {% if perms.payroll.change_contract %}
+                    <a
+                    onclick="event.stopPropagation()"
+                      class="oh-btn oh-btn--light-bkg w-100"
+                      href="{% url 'update-contract' contract.id %}"
+                      title='{% trans "Update" %}'
+                    >
+                      <ion-icon
+                        name="create-outline"
+                        role="img"
+                        class="md hydrated"
+                        style="color: blue"
+                        aria-label="create outline"
+                      ></ion-icon>
+                    </a>
+                  {% endif %}
+                  {% if perms.payroll.delete_contract %}
+                    <a
+                      onclick = "event.preventDefault();event.stopPropagation();"
+                      class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                      hx-confirm="{% trans 'Do you want to delete this Contract?' %}"
+                      hx-post="{% url 'delete-contract' contract.id %}?{{pd}}"
+                      hx-target="#payroll-contract-container"
+                      hx-swap="innerHTML"
+                      title="{% trans 'Delete' %}"
+                    >
+                      <ion-icon
+                        name="trash-outline"
+                        role="img"
+                        class="md hydrated"
+                        aria-label="trash outline"
+                      ></ion-icon>
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
           </div>
           {% endfor %}
         </div>

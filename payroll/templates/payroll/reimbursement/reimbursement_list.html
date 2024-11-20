@@ -113,7 +113,9 @@
                                     </div>
                                     <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
                                     <div class="oh-sticky-table__th"> {% trans "Actions" %} </div>
-                                    <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
+                                    {% if perms.payroll.change_reimbursement %}
+                                        <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="oh-sticky-table__tbody">
@@ -207,60 +209,62 @@
                                             </div>
                                         </div>
 
-                                        <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
-                                            <form
-                                                action="{% url 'approve-reimbursements' %}"
-                                            >
-                                                <div class="oh-btn-group" onclick="event.stopPropagation();">
+                                        {% if perms.payroll.change_reimbursement %}
+                                            <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
+                                                <form
+                                                    action="{% url 'approve-reimbursements' %}"
+                                                >
+                                                    <div class="oh-btn-group" onclick="event.stopPropagation();">
 
-                                                    {% if req.status == 'requested' %}
-                                                        <button
-                                                            type="button"
-                                                            onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
-                                                            class='oh-btn oh-btn--success w-100'
-                                                            title="{% trans 'Approve' %}"
-                                                        >
-                                                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                        </button>
+                                                        {% if req.status == 'requested' %}
+                                                            <button
+                                                                type="button"
+                                                                onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
+                                                                class='oh-btn oh-btn--success w-100'
+                                                                title="{% trans 'Approve' %}"
+                                                            >
+                                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                            </button>
 
-                                                    {% else %}
-                                                        <button class='oh-btn oh-btn--success w-100' disabled onclick="event.preventDefault();">
-                                                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                        </button>
-                                                    {% endif %}
-                                                    {% if req.status != 'rejected' %}
-                                                        <button
-                                                            type="button"
-                                                            onclick="event.preventDefault();$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
-                                                            class="oh-btn oh-btn--danger w-100"
-                                                            title="{% trans 'Reject' %}"
-                                                        >
-                                                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                                        </button>
-                                                    {% else %}
-                                                        <button class="oh-btn oh-btn--danger w-100" disabled onclick="event.preventDefault();">
-                                                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                                        </button>
-                                                    {% endif %}
-                                                </div>
-                                                <input type="hidden" name="ids" value="{{ req.id }}" />
-                                                <input type="hidden" name="status" />
-                                                <input
-                                                    {% comment %} onclick="event.stopPropagation()" {% endcomment %}
+                                                        {% else %}
+                                                            <button class='oh-btn oh-btn--success w-100' disabled onclick="event.preventDefault();">
+                                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                            </button>
+                                                        {% endif %}
+                                                        {% if req.status != 'rejected' %}
+                                                            <button
+                                                                type="button"
+                                                                onclick="event.preventDefault();$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
+                                                                class="oh-btn oh-btn--danger w-100"
+                                                                title="{% trans 'Reject' %}"
+                                                            >
+                                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                                            </button>
+                                                        {% else %}
+                                                            <button class="oh-btn oh-btn--danger w-100" disabled onclick="event.preventDefault();">
+                                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                                            </button>
+                                                        {% endif %}
+                                                    </div>
+                                                    <input type="hidden" name="ids" value="{{ req.id }}" />
+                                                    <input type="hidden" name="status" />
+                                                    <input
+                                                        {% comment %} onclick="event.stopPropagation()" {% endcomment %}
+                                                        type="submit"
+                                                        hidden
+                                                        id="requestCard{{ req.id }}Button"
+                                                    />
+                                                </form>
+
+                                                {% comment %} <input
+                                                    onclick="event.stopPropagation()"
                                                     type="submit"
                                                     hidden
                                                     id="requestCard{{ req.id }}Button"
-                                                />
-                                            </form>
+                                                /> {% endcomment %}
 
-                                            {% comment %} <input
-                                                onclick="event.stopPropagation()"
-                                                type="submit"
-                                                hidden
-                                                id="requestCard{{ req.id }}Button"
-                                            /> {% endcomment %}
-
-                                        </div>
+                                            </div>
+                                        {% endif %}
 
                                     {% comment %} </form> {% endcomment %}
                                 </div>
@@ -437,7 +441,9 @@
                                     </div>
                                     <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
                                     <div class="oh-sticky-table__th"> {% trans "Actions" %} </div>
-                                    <div class="oh-sticky-table__th oh-sticky-table__right" style="width:180px">{% trans "Confirmation" %}</div>
+                                    {% if perms.payroll.change_reimbursement %}
+                                        <div class="oh-sticky-table__th oh-sticky-table__right" style="width:180px">{% trans "Confirmation" %}</div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="oh-sticky-table__tbody">
@@ -541,56 +547,58 @@
                                                     {% endif %}
                                                 </div>
                                             </div>
-                                            <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
-                                                <form
-                                                    action="{% url 'approve-reimbursements' %}"
+                                            {% if perms.payroll.change_reimbursement %}
+                                                <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
+                                                    <form
+                                                        action="{% url 'approve-reimbursements' %}"
 
-                                                >
-                                                    <input type="hidden" name="ids" value="{{ req.id }}" />
-                                                    <input type="hidden" name="status" />
-                                                    <input type="hidden" name="amount" default="0" min="0" />
-                                                    <div class="oh-btn-group" onclick="event.stopPropagation()">
-                                                        {% if req.status == 'requested' %}
-                                                            <button
-                                                                type="button"
-                                                                title="{% trans 'Approve' %}"
-                                                                onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
-                                                                class="oh-btn oh-btn--success w-100"
-                                                            >
-                                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                            </button>
-                                                        {% else %}
-                                                            <button
-                                                                type="button"
-                                                                title="{% trans 'Approve' %}"
-                                                                class="oh-btn oh-btn--success oh-btn--disabled w-100"
-                                                            >
-                                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                            </button>
-                                                        {% endif %}
-                                                        {% if req.status != 'rejected' %}
-                                                            <button
-                                                                type="button"
-                                                                title="{% trans 'Reject' %}"
-                                                                onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
-                                                                class="oh-btn oh-btn--danger w-100"
-                                                            >
-                                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                                            </button>
-                                                        {% else %}
-                                                            <button class="oh-btn oh-btn--danger w-100" disabled onclick="event.preventDefault();">
-                                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                                            </button>
-                                                        {% endif %}
-                                                        <input
-                                                            type="submit"
-                                                            hidden
-                                                            id="requestCard{{ req.id }}Button"
-                                                        />
-                                                    </div>
+                                                    >
+                                                        <input type="hidden" name="ids" value="{{ req.id }}" />
+                                                        <input type="hidden" name="status" />
+                                                        <input type="hidden" name="amount" default="0" min="0" />
+                                                        <div class="oh-btn-group" onclick="event.stopPropagation()">
+                                                            {% if req.status == 'requested' %}
+                                                                <button
+                                                                    type="button"
+                                                                    title="{% trans 'Approve' %}"
+                                                                    onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
+                                                                    class="oh-btn oh-btn--success w-100"
+                                                                >
+                                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                                </button>
+                                                            {% else %}
+                                                                <button
+                                                                    type="button"
+                                                                    title="{% trans 'Approve' %}"
+                                                                    class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                                                                >
+                                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                                </button>
+                                                            {% endif %}
+                                                            {% if req.status != 'rejected' %}
+                                                                <button
+                                                                    type="button"
+                                                                    title="{% trans 'Reject' %}"
+                                                                    onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
+                                                                    class="oh-btn oh-btn--danger w-100"
+                                                                >
+                                                                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                                                </button>
+                                                            {% else %}
+                                                                <button class="oh-btn oh-btn--danger w-100" disabled onclick="event.preventDefault();">
+                                                                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                                                </button>
+                                                            {% endif %}
+                                                            <input
+                                                                type="submit"
+                                                                hidden
+                                                                id="requestCard{{ req.id }}Button"
+                                                            />
+                                                        </div>
 
-                                                </form>
-                                            </div>
+                                                    </form>
+                                                </div>
+                                            {% endif %}
                                     </div>
                                 {% endfor %}
                             </div>
@@ -760,7 +768,9 @@
                                     </div>
                                     <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
                                     <div class="oh-sticky-table__th"> {% trans "Actions" %} </div>
-                                    <div class="oh-sticky-table__th oh-sticky-table__right" style="width:180px"> {% trans "Confirmation" %} </div>
+                                    {% if perms.payroll.change_reimbursement %}
+                                        <div class="oh-sticky-table__th oh-sticky-table__right" style="width:180px"> {% trans "Confirmation" %} </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="oh-sticky-table__tbody">
@@ -861,56 +871,57 @@
                                                     {% endif %}
                                                 </div>
                                             </div>
-                                            <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
-                                                <form
-                                                    action="{% url 'approve-reimbursements' %}"
-                                                >
-                                                <input type="hidden" name="ids" value="{{ req.id }}" />
-                                                <input type="hidden" name="status" />
-                                                <input type="hidden" name="amount" default="0" min="0" />
-                                                <div class="oh-btn-group" onclick="event.stopPropagation()">
-                                                    {% if req.status == 'requested' %}
-                                                        <button
-                                                            type="button"
-                                                            title="{% trans 'Approve' %}"
-                                                            onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
-                                                            class="oh-btn oh-btn--success w-100"
-                                                        >
-                                                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                        </button>
-                                                    {% else %}
-                                                            <button
-                                                                title="{% trans 'Approve' %}"
-                                                                type="button"
-                                                                class="oh-btn oh-btn--success oh-btn--disabled w-100"
-                                                            >
-                                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                            </button>
-                                                    {% endif %}
-                                                    {% if req.status != 'rejected' %}
-                                                        <button
-                                                            type="button"
-                                                            onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
-                                                            class="oh-btn oh-btn--danger w-100"
-                                                        >
-                                                        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                            {% if perms.payroll.change_reimbursement %}
+                                                <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
+                                                    <form
+                                                        action="{% url 'approve-reimbursements' %}"
+                                                    >
+                                                        <input type="hidden" name="ids" value="{{ req.id }}" />
+                                                        <input type="hidden" name="status" />
+                                                        <input type="hidden" name="amount" default="0" min="0" />
+                                                        <div class="oh-btn-group" onclick="event.stopPropagation()">
+                                                            {% if req.status == 'requested' %}
+                                                                <button
+                                                                    type="button"
+                                                                    title="{% trans 'Approve' %}"
+                                                                    onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
+                                                                    class="oh-btn oh-btn--success w-100"
+                                                                >
+                                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                                </button>
+                                                            {% else %}
+                                                                    <button
+                                                                        title="{% trans 'Approve' %}"
+                                                                        type="button"
+                                                                        class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                                                                    >
+                                                                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                                    </button>
+                                                            {% endif %}
+                                                            {% if req.status != 'rejected' %}
+                                                                <button
+                                                                    type="button"
+                                                                    onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
+                                                                    class="oh-btn oh-btn--danger w-100"
+                                                                >
+                                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
 
-                                                        </button>
-                                                    {% else %}
-                                                        <button class="oh-btn oh-btn--danger w-100" disabled onclick="event.preventDefault();">
-                                                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                                        </button>
-                                                    {% endif %}
-                                                        <input
-                                                            type="submit"
-                                                            hidden
-                                                            id="requestCard{{ req.id }}Button"
-                                                        />
+                                                                </button>
+                                                            {% else %}
+                                                                <button class="oh-btn oh-btn--danger w-100" disabled onclick="event.preventDefault();">
+                                                                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                                                </button>
+                                                            {% endif %}
+                                                                <input
+                                                                    type="submit"
+                                                                    hidden
+                                                                    id="requestCard{{ req.id }}Button"
+                                                                />
+                                                        </div>
+
+                                                    </form>
                                                 </div>
-
-                                            </form>
-                                            </div>
-
+                                            {% endif %}
                                         </div>
                                 {% endfor %}
                             </div>
