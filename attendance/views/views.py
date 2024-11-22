@@ -31,6 +31,7 @@ import pandas as pd
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.core.validators import validate_ipv46_address
+from django.db import transaction
 from django.db.models import ProtectedError
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -501,57 +502,57 @@ def attendance_delete(request, obj_id):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
+@login_required
+@permission_required("attendance.delete_attendance")
 @require_http_methods(["POST"])
 def attendance_bulk_delete(request):
     """
-    This method is used to delete bulk of attendances
+    This method is used to delete a bulk of attendances
     """
-    ids = request.POST["ids"]
-    ids = json.loads(ids)
-    for attendance_id in ids:
-        try:
-            attendance = Attendance.objects.get(id=attendance_id)
-            month = attendance.attendance_date
-            month = month.strftime("%B").lower()
-            overtime = attendance.employee_id.employee_overtime.filter(
-                month=month
-            ).last()
-            if overtime is not None:
-                if attendance.attendance_overtime_approve:
-                    # Subtract overtime of this attendance
+    success_count = 0
+    error_messages = []
+    ids = request.POST.getlist("ids", "[]")
+    attendances = Attendance.objects.filter(id__in=ids)
+    employee_ids = attendances.values_list("employee_id", flat=True)
+    overtimes = AttendanceOverTime.objects.filter(
+        employee_id__in=employee_ids
+    ).in_bulk()
+
+    with transaction.atomic():
+        for attendance in attendances:
+            try:
+                month = attendance.attendance_date.strftime("%B").lower()
+                overtime = overtimes.get(attendance.employee_id.id)
+
+                if overtime and attendance.attendance_overtime_approve:
+                    # Calculate the new overtime
                     total_overtime = strtime_seconds(overtime.overtime)
                     attendance_overtime_seconds = strtime_seconds(
                         attendance.attendance_overtime
                     )
-                    if total_overtime > attendance_overtime_seconds:
-                        total_overtime = total_overtime - attendance_overtime_seconds
-                    else:
-                        total_overtime = attendance_overtime_seconds - total_overtime
+                    total_overtime = abs(total_overtime - attendance_overtime_seconds)
                     overtime.overtime = format_time(total_overtime)
                     overtime.save()
-                try:
-                    attendance.delete()
-                    messages.success(request, _("Attendance Deleted"))
 
-                except ProtectedError as e:
-                    model_verbose_names_set = set()
-                    for obj in e.protected_objects:
-                        model_verbose_names_set.add(
-                            __(obj._meta.verbose_name.capitalize())
-                        )
-                    model_names_str = ", ".join(model_verbose_names_set)
-                    messages.error(
-                        request,
-                        _(
-                            ("An attendance entry for {} already exists.").format(
-                                model_names_str
-                            )
-                        ),
-                    )
-        except Attendance.DoesNotExist:
-            messages.error(request, _("Attendance not found."))
+                attendance.delete()
+                success_count += 1
 
-    return JsonResponse({"message": "Success"})
+            except ProtectedError as e:
+                model_verbose_names_set = {
+                    __(obj._meta.verbose_name.capitalize())
+                    for obj in e.protected_objects
+                }
+                model_names_str = ", ".join(model_verbose_names_set)
+                error_messages.append(
+                    f"An attendance entry is protected by: {model_names_str}."
+                )
+
+    # Build response messages
+    if success_count:
+        messages.success(request, f"{success_count} attendances deleted successfully.")
+    for error in error_messages:
+        messages.error(request, error)
+    return redirect("/attendance/attendance-search")
 
 
 @login_required

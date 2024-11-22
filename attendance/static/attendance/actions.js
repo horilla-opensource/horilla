@@ -1170,20 +1170,9 @@ $("#bulkDelete").click(function (e) {
                     checkedRows.each(function () {
                         ids.push($(this).attr("id"));
                     });
-                    $.ajax({
-                        type: "POST",
-                        url: "/attendance/attendance-bulk-delete",
-                        data: {
-                            csrfmiddlewaretoken: getCookie("csrftoken"),
-                            ids: JSON.stringify(ids),
-                        },
-                        success: function (response, textStatus, jqXHR) {
-                            if (jqXHR.status === 200) {
-                                location.reload();
-                            } else {
-                            }
-                        },
-                    });
+                    var hxValue = JSON.stringify(ids);
+                    $("#bulkAttendanceDeleteSpan").attr("hx-vals", `{"ids":${hxValue}}`);
+                    $("#bulkAttendanceDeleteSpan").click();
                 }
             });
         }
