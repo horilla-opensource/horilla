@@ -1,0 +1,30 @@
+{% load i18n %}
+{% if messages %}
+    <span hx-get="/pms/filter-meeting" hx-target="#meeting_list" hx-trigger="load"
+        hx-on-htmx-after-request="setTimeout(() => { reloadMessage();$(this).closest('.oh-modal--show').removeClass('oh-modal--show');},100);">
+    </span>
+{% endif %}
+<div class="oh-modal__dialog-header pb-0">
+    <span class="oh-modal__dialog-title">
+        {% trans "Minutes of Meeting (MoM)" %}
+    </span>
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close"
+        data-toggle="oh-modal-toggle">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body" id="responseFormTaget">
+    <form hx-post="{% url 'add-response' meeting.id %}" hx-target="#objectCreateModalTarget" class="oh-profile-section">
+        {% csrf_token %}
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            <label class="oh-label">{% trans "Response" %}</label>
+            <textarea name="response" cols="40" data-summernote="" rows="4" class="p-4 oh-input w-100 d-none"
+                required="True" id="id_response{{meeting.id}}">{{meeting.response|default:""}}</textarea>
+        </div>
+        <div class="oh-modal__dialog-footer p-0">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow mt-3">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+</div>

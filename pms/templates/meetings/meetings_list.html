@@ -1,14 +1,15 @@
 {% load i18n static %}
 {% include 'filter_tags.html' %}
-    {% if meetings %}
+{% if meetings %}
     <div class="oh-card p-4">
         <div class="oh-card__body">
             <!-- start of column toggle button-->
             <div class="oh-table_sticky--wrapper">
-                <div class="oh-sticky-dropdown--header" style = "top: -1px;">
+                <div class="oh-sticky-dropdown--header" style="top: -1px;">
                     <div class="oh-dropdown" x-data="{open: false}">
-                        <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-                            role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+                        <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon
+                                name="ellipsis-vertical-sharp" role="img" class="md hydrated"
+                                aria-label="ellipsis vertical sharp"></ion-icon></button>
                         <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
                             <ul class="oh-dropdown__items" id="meetingCells">
                             </ul>
@@ -24,102 +25,90 @@
                         <div class="oh-sticky-table__thead">
                             <div class="oh-sticky-table__tr">
                                 <div class="oh-sticky-table__th">{% trans "Title" %}</div>
-                                <div data-cell-index="1" data-cell-title='{% trans "Employees" %}'
-                                    class="oh-sticky-table__th"
-                                >{% trans "Employees" %}</div>
-                                <div data-cell-index="2" data-cell-title='{% trans "Managers" %}'
-                                    class="oh-sticky-table__th"
-                                >{% trans "Managers" %}</div>
-                                <div data-cell-index="3" data-cell-title='{% trans "Date" %}'
-                                    class="oh-sticky-table__th"
-                                >{% trans "Date" %}</div>
-                                <div data-cell-index="4" data-cell-title='{% trans "MoM" %}'
-                                    class="oh-sticky-table__th"
-                                >{% trans "MoM" %}</div>
-                                <div class="oh-sticky-table__th oh-sticky-table__right" align="center" style="width: 220px;">{% trans "Actions" %}</div>
+                                <div data-cell-index="1" data-cell-title="{% trans 'Employees' %}"
+                                    class="oh-sticky-table__th">{% trans "Employees" %}</div>
+                                <div data-cell-index="2" data-cell-title="{% trans 'Managers' %}"
+                                    class="oh-sticky-table__th">{% trans "Managers" %}</div>
+                                <div data-cell-index="3" data-cell-title="{% trans 'Date' %}" class="oh-sticky-table__th">
+                                    {% trans "Date" %}</div>
+                                <div data-cell-index="4" data-cell-title="{% trans 'MoM' %}" class="oh-sticky-table__th">
+                                    {% trans "MoM" %}</div>
+                                <div class="oh-sticky-table__th oh-sticky-table__right" align="center"
+                                    style="width: 220px;">{% trans "Actions" %}</div>
                             </div>
                         </div>
                         <div class="oh-sticky-table__tbody">
                             {% for meeting in meetings %}
-                                <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed {% if request.user.employee_get in meeting.manager.all %}diff-cell {% endif %}"
-                                data-toggle="oh-modal-toggle"
-                                data-target="#objectDetailsModal"
-                                hx-get="{% url 'meeting-single-view' meeting.id %}?requests_ids={{requests_ids}}"
-                                hx-target = "#objectDetailsModalTarget"
-                                >
-                                    <div class="oh-sticky-table__sd oh-permission-table--toggle "
-                                        data-toggle-count
-                                    >
+                                <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed
+                                    {% if request.user.employee_get in meeting.manager.all %}diff-cell {% endif %}"
+                                    data-toggle="oh-modal-toggle" data-target="#objectDetailsModal"
+                                    hx-get="{% url 'meeting-single-view' meeting.id %}?requests_ids={{requests_ids}}"
+                                    hx-target="#objectDetailsModalTarget" id="pmsMeetingItem{{meeting.id}}">
+                                    <div class="oh-sticky-table__sd oh-permission-table--toggle " data-toggle-count>
                                         <div class="d-flex align-items-center">
                                             <button class="oh-permission-table__collapse me-2">
-                                                <span  title="{% trans "Reveal" %}"><ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline"></ion-icon></span>
-                                                <span  title="{% trans "Collapse" %}"><ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon></span>
+                                                <span title="{% trans " Reveal" %}"><ion-icon
+                                                        class="oh-permission-table__collapse-down"
+                                                        name="chevron-down-outline"></ion-icon></span>
+                                                <span title="{% trans " Collapse" %}"><ion-icon
+                                                        class="oh-permission-table__collapse-up"
+                                                        name="chevron-up-outline"></ion-icon></span>
                                             </button>
                                             <span class="oh-permission-table__user">{{meeting}} </span>
                                         </div>
                                     </div>
                                     <div data-cell-index="1" class="oh-sticky-table__td">
                                         {% for employee in meeting.employee_id.all %}
-                                        <div id="employeeContainer{{employee.id}}-{{meeting.id}}">
-                                            <span class="oh-user-panel oh-collapse-panel" data-type="user" >
-                                                <div class="oh-profile oh-profile--md">
-                                                    <div class="oh-profile__avatar mr-1">
-                                                        <img
-                                                        src="https://ui-avatars.com/api/?name={{employee.get_full_name}}&background=random"
-                                                        class="oh-profile__image"
-                                                        alt="Baby C."
-                                                        />
+                                            <div id="employeeContainer{{employee.id}}-{{meeting.id}}" class="meeting-employee-panel">
+                                                <span class="oh-user-panel oh-collapse-panel" data-type="user">
+                                                    <div class="oh-profile oh-profile--md">
+                                                        <div class="oh-profile__avatar mr-1">
+                                                            <img src="https://ui-avatars.com/api/?name={{employee.get_full_name}}&background=random"
+                                                                class="oh-profile__image" alt="Baby C." />
+                                                        </div>
+                                                        <span class="oh-profile__name oh-text--dark"
+                                                            title="{{employee.get_full_name}}">{{employee.get_full_name|truncatechars:15}}</span>
                                                     </div>
-                                                    <span class="oh-profile__name oh-text--dark" title="{{employee.get_full_name}}"
-                                                    >{{employee.get_full_name|truncatechars:15}}</span>
-                                                </div>
-                                                {% if perms.pms.change_meetings or request.user.employee_get in meeting.manager.all %}
-                                                <a
-                                                    hx-confirm="{% trans 'Are you sure to remove this employee?' %}"
-                                                    hx-post="{% url 'meeting-employee-remove' meeting.id employee.id %}"
-                                                    title="{% trans "Remove" %}" hx-swap="outerHTML"
-                                                    hx-target="#employeeContainer{{employee.id}}-{{meeting.id}}" class="oh-user-panel__remove"
-                                                    onclick="event.stopPropagation()"
-                                                >
-                                                    <ion-icon name="close-outline"></ion-icon>
-                                                </a>
-                                                {% endif %}
-                                            </span>
-                                        </div>
+                                                    {% if perms.pms.change_meetings or request.user.employee_get in meeting.manager.all %}
+                                                        <a hx-confirm="{% trans 'Are you sure to remove this employee?' %}"
+                                                            hx-post="{% url 'meeting-employee-remove' meeting.id employee.id %}"
+                                                            hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 100);"
+                                                            hx-swap="outerHTML" class="oh-user-panel__remove employee__remove{{meeting.id}}"
+                                                            hx-target="#employeeContainer{{employee.id}}-{{meeting.id}}"
+                                                            onclick="event.stopPropagation(); updateEmployeeCount($('.employee__remove{{meeting.id}}'));" >
+                                                            <ion-icon name="close-outline"></ion-icon>
+                                                        </a>
+                                                    {% endif %}
+                                                </span>
+                                            </div>
                                         {% endfor %}
                                         <span class="count-span">{{meeting.employee_id.all|length}} {% trans "Employees" %}</span>
-
                                     </div>
+
                                     <div data-cell-index="2" class="oh-sticky-table__td">
                                         {% for manager in meeting.manager.all %}
-                                        <div id="meetingManagerContainer{{manager.id}}-{{meeting.id}}">
-                                            <span class="oh-user-panel oh-collapse-panel" data-type="user" >
-                                                <div class="oh-profile oh-profile--md">
-                                                    <div class="oh-profile__avatar mr-1">
-                                                        <img
-                                                        src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
-                                                        class="oh-profile__image"
-                                                        alt="Baby C."
-                                                        />
+                                            <div id="meetingManagerContainer{{manager.id}}-{{meeting.id}}" class="meeting-manager-panel">
+                                                <span class="oh-user-panel oh-collapse-panel" data-type="user">
+                                                    <div class="oh-profile oh-profile--md">
+                                                        <div class="oh-profile__avatar mr-1">
+                                                            <img src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
+                                                                class="oh-profile__image" alt="Baby C." />
+                                                        </div>
+                                                        <span class="oh-profile__name oh-text--dark"
+                                                            title="{{manager.get_full_name}}">{{manager.get_full_name|truncatechars:15}}</span>
                                                     </div>
-                                                    <span class="oh-profile__name oh-text--dark" title="{{manager.get_full_name}}"
-                                                    >{{manager.get_full_name|truncatechars:15}}</span
-                                                    >
-                                                </div>
-                                                {% if perms.pms.add_meetings %}
-                                                <a
-                                                    hx-confirm="{% trans 'Are you sure to remove this manager?' %}"
-                                                    hx-post="{% url 'meeting-manager-remove' meeting.id manager.id %}"
-                                                    title="{% trans "Remove" %}" hx-swap="outerHTML"
-                                                    hx-target="#meetingManagerContainer{{manager.id}}-{{meeting.id}}"
-                                                    class="oh-user-panel__remove"
-                                                    onclick="event.stopPropagation()"
-                                                >
-                                                    <ion-icon name="close-outline"></ion-icon>
-                                                </a>
-                                                {% endif %}
-                                            </span>
-                                        </div>
+                                                    {% if perms.pms.add_meetings %}
+                                                    <a hx-confirm="{% trans 'Are you sure to remove this manager?' %}"
+                                                        hx-post="{% url 'meeting-manager-remove' meeting.id manager.id %}"
+                                                        hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 100);"
+                                                        hx-swap="outerHTML" class="oh-user-panel__remove manager__remove{{meeting.id}}"
+                                                        hx-target="#meetingManagerContainer{{manager.id}}-{{meeting.id}}"
+                                                        onclick="event.stopPropagation();updateManagerCount($('.manager__remove{{meeting.id}}'));">
+                                                        <ion-icon name="close-outline"></ion-icon>
+                                                    </a>
+                                                    {% endif %}
+                                                </span>
+                                            </div>
                                         {% endfor %}
                                         <span class="count-span">{{meeting.manager.all|length}} {% trans "Managers" %}</span>
                                     </div>
@@ -129,123 +118,91 @@
                                     <div data-cell-index="4" class="oh-sticky-table__td ">
                                         {{meeting.response|default:"-"|safe|truncatechars_html:30}}
                                     </div>
-                                        <div class="oh-sticky-table__td oh-sticky-table__right">
-                                            <div class="oh-btn-group" onclick="event.stopPropagation()">
-                                                {% if perms.pms.add_meetings or request.user.employee_get in meeting.manager.all %}
-                                                    <a
-                                                        onclick="event.preventDefault();event.stopPropagation()"
-                                                        hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target="#responseFormbody{{meeting.id}}"  class="oh-btn oh-btn--light-bkg w-100" title="Add MoM"
-                                                    ><ion-icon name="add-outline"></ion-icon></a>
-                                                {% endif %}
-                                                {% if request.user.employee_get in meeting.answer_employees.all or request.user.employee_get in meeting.manager.all %}
+                                    <div class="oh-sticky-table__td oh-sticky-table__right">
+                                        <div class="oh-btn-group" onclick="event.stopPropagation()">
+                                            {% if perms.pms.add_meetings or request.user.employee_get in meeting.manager.all %}
+                                                <a onclick="event.preventDefault();event.stopPropagation()"
+                                                    hx-get="{% url 'add-response' meeting.id %}" hx-target="#objectCreateModalTarget"
+                                                    data-toggle='oh-modal-toggle' data-target="#objectCreateModal"
+                                                    class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Add MoM' %}">
+                                                    <ion-icon name="add-outline"></ion-icon>
+                                                </a>
+                                            {% endif %}
+                                            {% if request.user.employee_get in meeting.answer_employees.all or request.user.employee_get in meeting.manager.all %}
                                                 {% if meeting.question_template %}
-                                                <a
-                                                    hx-get="{% url 'meeting-question-template-view' meeting.id %}"
-                                                    hx-target="#answerContainer"
-                                                    data-target="#activitySidebar"
-                                                    class="oh-btn oh-btn--light-bkg oh-activity-sidebar__open w-100 text-decoration-none"
-                                                    title="Answer"
-                                                >
-                                                    <i class="material-symbols-outlined fw-light" data-target="#activitySidebar" style="font-size:14px;">
-                                                        edit_document
-                                                    </i>
-                                                </a>
+                                                    <a hx-get="{% url 'meeting-question-template-view' meeting.id %}"
+                                                        hx-target="#answerContainer" data-target="#activitySidebar"
+                                                        class="oh-btn oh-btn--light-bkg oh-activity-sidebar__open w-100 text-decoration-none"
+                                                        title="Answer">
+                                                        <i class="material-symbols-outlined fw-light" data-target="#activitySidebar"
+                                                            style="font-size:14px;">
+                                                            edit_document
+                                                        </i>
+                                                    </a>
                                                 {% else %}
-                                                <a
-                                                    class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none"
-                                                >
+                                                    <a class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none">
+                                                        <i class="material-symbols-outlined fw-light" style="font-size:14px;">
+                                                            edit_document
+                                                        </i>
+                                                    </a>
+                                                {% endif %}
+                                            {% else %}
+                                                <a class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none">
                                                     <i class="material-symbols-outlined fw-light" style="font-size:14px;">
                                                         edit_document
                                                     </i>
                                                 </a>
-                                                {% endif %}
-                                                {% else %}
-                                                <a
-                                                    class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none"
-                                                >
-                                                    <i class="material-symbols-outlined fw-light" style="font-size:14px;">
-                                                        edit_document
-                                                    </i>
+                                            {% endif %}
+                                            {% if perms.pms.change_meetings or request.user.employee_get in meeting.manager.all %}
+                                                <a onclick="event.preventDefault();event.stopPropagation()"
+                                                    hx-get="{% url 'create-meeting' %}?instance_id={{meeting.id}}"
+                                                    hx-target='#objectCreateModalTarget' hx-swap='innerHTML'
+                                                    data-toggle='oh-modal-toggle' data-target='#objectCreateModal'
+                                                    class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}">
+                                                    <ion-icon name="create-outline"></ion-icon>
                                                 </a>
-                                                {% endif %}
-                                                {% if perms.pms.change_meetings or request.user.employee_get in meeting.manager.all %}
-                                                    <a
-                                                        onclick="event.preventDefault();event.stopPropagation()"
-                                                        hx-get="{% url "create-meeting" %}?instance_id={{meeting.id}}" hx-target='#objectCreateModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectCreateModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"
-                                                    ><ion-icon name="create-outline"></ion-icon></a>
-                                                {% endif %}
-                                                {% if perms.pms.delete_meetings %}
-                                                    {% if not meeting.is_active %}
-                                                            <form
-                                                                action='{% url "archive-meeting" meeting.id %}'
-                                                                onsubmit="return confirm('{% trans "Do you want to unarchive this meeting?" %}')"
-                                                                method="post"
-                                                                style="display: contents;width:100%">
-                                                                {% csrf_token %}
-                                                                <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Unarchive' %}">
-                                                                    <ion-icon name="archive"></ion-icon>
-                                                                </button>
-                                                            </form>
-                                                    {% else %}
-                                                            <form
-                                                                action="{% url 'archive-meeting' meeting.id %}"
-                                                                onsubmit="return confirm('{% trans "Do you want to archive this meeting?" %}')"
-                                                                method="post"
-                                                                style="display: contents;width:100%">
-                                                                {% csrf_token %}
-                                                                <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
-                                                                    <ion-icon name="archive"></ion-icon>
-                                                                </button>
-                                                            </form>
-                                                    {% endif %}
-                                                {% endif %}
-                                                {% if perms.pms.delete_meetings %}
-                                                    <form
-                                                        action="{% url 'meetings-delete' meeting.id %}"
-                                                        onsubmit="return confirm('{% trans "Are you sure to delete this meeting?" %}')"
-                                                        method="post"
+                                            {% endif %}
+                                            {% if perms.pms.change_meetings %}
+                                                {% if not meeting.is_active %}
+                                                    <form hx-confirm="{% trans 'Do you want to unarchive this meeting?' %}"
+                                                        hx-post="{% url 'archive-meeting' meeting.id %}"
+                                                        hx-target="#pmsMeetingItem{{meeting.id}}"
+                                                        hx-on-htmx-after-request="reloadMessage(this);"
                                                         style="display: contents;width:100%">
                                                         {% csrf_token %}
-                                                        <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
-                                                        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                                                        <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100"
+                                                            title="{% trans 'Unarchive' %}">
+                                                            <ion-icon name="archive"></ion-icon>
+                                                        </button>
+                                                    </form>
+                                                {% else %}
+                                                    <form hx-confirm="{% trans 'Do you want to archive this meeting?' %}"
+                                                        hx-post="{% url 'archive-meeting' meeting.id %}"
+                                                        hx-target="#pmsMeetingItem{{meeting.id}}"
+                                                        hx-on-htmx-after-request="reloadMessage(this);"
+                                                        style="display: contents;width:100%">
+                                                        {% csrf_token %}
+                                                        <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100"
+                                                            title="{% trans 'Archive' %}">
+                                                            <ion-icon name="archive"></ion-icon>
                                                         </button>
                                                     </form>
                                                 {% endif %}
-                                            </div>
-                                        </div>
-                                </div>
-                                <div
-                                    class="oh-modal"
-                                    id="responseFormbody{{meeting.id}}"
-                                    role="dialog"
-                                    aria-labelledby="AssetRequestModal"
-                                    aria-hidden="true"
-                                >
-                                    <div class="oh-modal__dialog" style="max-width: 550px">
-                                        <div class="oh-modal__dialog-header">
-                                            <h1> </h1>
-                                            <button type="button" class="oh-modal__close" aria-label="Close">
-                                                <ion-icon name="close-outline"></ion-icon>
-                                            </button>
-                                        </div>
-                                        <div
-                                            class="oh-modal__dialog-body"
-                                            id="responseFormTaget"
-                                        >
-                                            <form action="{% url 'add-response' meeting.id %}" method="post">
-                                                {% csrf_token %}
-                                                <div class="oh-general__tab-target oh-profile-section">
-                                                    <div class="col-sm-12 col-md-12 col-lg-12">
-                                                        <label class="oh-label">{% trans "Response" %}</label>
-                                                        <textarea name="response" cols="40" data-summernote="" rows="4" class="p-4 oh-input w-100 d-none" required="True" id="id_response{{meeting.id}}">{{meeting.response|default:""}}</textarea>
-                                                    </div>
-                                                    <div class="d-flex flex-row-reverse">
-                                                        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow mt-3">
-                                                            {% trans "Save" %}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </form>
+                                            {% endif %}
+                                            {% if perms.pms.delete_meetings %}
+                                                <form hx-confirm="{% trans 'Are you sure to delete this meeting?' %}"
+                                                    hx-post="{% url 'meetings-delete' meeting.id %}"
+                                                    hx-target="#pmsMeetingItem{{meeting.id}}"
+                                                    hx-on-htmx-after-request="reloadMessage(this);"
+                                                    style="display: contents;width:100%">
+                                                    {% csrf_token %}
+                                                    <button onclick="event.stopPropagation()"
+                                                        class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100"
+                                                        title="{% trans 'Delete' %}">
+                                                        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
@@ -256,7 +213,7 @@
                 </div>
             </div>
         </div>
-    <!-- start of pagination -->
+        <!-- start of pagination -->
         <div class="oh-pagination">
             <span class="oh-pagination__page">
                 {% trans "Page" %} {{ meetings.number }} {% trans "of" %} {{ meetings.paginator.num_pages }}.
@@ -264,61 +221,60 @@
             <nav class="oh-pagination__nav">
                 <div class="oh-pagination__input-container me-3">
                     <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-                    <input
-                    type="number"
-                    name="page"
-                    class="oh-pagination__input"
-                    value="{{meetings.number}}"
-                    hx-get="{% url 'filter-meeting' %}?{{pd}}"
-                    hx-target="#meeting_list"
-                    min="1"
-                    />
+                    <input type="number" name="page" class="oh-pagination__input" value="{{meetings.number}}"
+                        hx-get="{% url 'filter-meeting' %}?{{pd}}" hx-target="#meeting_list" min="1" />
                     <span class="oh-pagination__label">{% trans "of" %} {{meetings.paginator.num_pages}}</span>
                 </div>
                 <ul class="oh-pagination__items">
                     {% if meetings.has_previous %}
-                        <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a hx-target='#meeting_list' hx-get="{% url 'filter-meeting' %}?{{pd}}&page=1" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "First" %}</a>
-                        </li>
-                        <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a hx-target='#meeting_list' hx-get="{% url 'filter-meeting' %}?{{pd}}&page={{ meetings.previous_page_number }}" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Previous" %}</a>
-                        </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#meeting_list' hx-get="{% url 'filter-meeting' %}?{{pd}}&page=1"
+                            class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "First" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#meeting_list'
+                            hx-get="{% url 'filter-meeting' %}?{{pd}}&page={{ meetings.previous_page_number }}"
+                            class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Previous" %}</a>
+                    </li>
                     {% endif %}
                     {% if meetings.has_next %}
-                        <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a hx-target='#meeting_list' hx-get="{% url 'filter-meeting' %}?{{pd}}&page={{ meetings.next_page_number }}" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Next" %}</a>
-                        </li>
-                        <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a hx-target='#meeting_list' hx-get="{% url 'filter-meeting' %}?{{pd}}&page={{ meetings.paginator.num_pages }}" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Last" %}</a>
-                        </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#meeting_list'
+                            hx-get="{% url 'filter-meeting' %}?{{pd}}&page={{ meetings.next_page_number }}"
+                            class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Next" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#meeting_list'
+                            hx-get="{% url 'filter-meeting' %}?{{pd}}&page={{ meetings.paginator.num_pages }}"
+                            class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Last" %}</a>
+                    </li>
                     {% endif %}
                 </ul>
             </nav>
         </div>
     </div>
-    {% else %}
-        <div style="
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            "
-        >
-            <span class="material-symbols-outlined" style="font-size: 190px;">
-                groups
-            </span>
-            <h5 class="oh-404__subtitle">{% trans "There is no meetings has been created." %}</h5>
-        </div>
-    {% endif %}
+{% else %}
+    <div style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                ">
+        <span class="material-symbols-outlined" style="font-size: 190px;">
+            groups
+        </span>
+        <h5 class="oh-404__subtitle">{% trans "There is no meetings has been created." %}</h5>
+    </div>
+{% endif %}
 
-    <script>
-        // toggle columns //
-        toggleColumns("meeting-table", "meetingCells");
-        localStorageMeetingCells = localStorage.getItem(
-          "meeting_table"
-        );
-        if (!localStorageMeetingCells) {
-          $("#meetingCells").find("[type=checkbox]").prop("checked", true);
-        }
-        $("[type=checkbox]").change();
-      </script>
+<script>
+    // toggle columns //
+    toggleColumns("meeting-table", "meetingCells");
+    localStorageMeetingCells = localStorage.getItem(
+        "meeting_table"
+    );
+    if (!localStorageMeetingCells) {
+        $("#meetingCells").find("[type=checkbox]").prop("checked", true);
+    }
+    $("[type=checkbox]").change();
+</script>

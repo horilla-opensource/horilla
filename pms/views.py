@@ -2056,7 +2056,7 @@ def get_collegues(request):
         employee = Employee.objects.get(id=int(employee_id)) if employee_id else None
 
         if employee:
-            employees_queryset = []
+            employees_queryset = Employee.objects.none()
             reporting_manager = (
                 employee.employee_work_info.reporting_manager_id
                 if employee.employee_work_info
@@ -2071,28 +2071,24 @@ def get_collegues(request):
                     exclude_ids.append(reporting_manager.id)
 
                 # Get employees in the same department as the employee
-                employees_queryset = (
-                    Employee.objects.filter(
-                        is_active=True, employee_work_info__department_id=department
-                    )
-                    .exclude(id__in=exclude_ids)
-                    .values_list("id", "employee_first_name")
-                )
+                employees_queryset = Employee.objects.filter(
+                    is_active=True, employee_work_info__department_id=department
+                ).exclude(id__in=exclude_ids)
             elif request.GET.get("data") == "manager":
                 if reporting_manager:
                     employees_queryset = Employee.objects.filter(
                         id=reporting_manager.id
-                    ).values_list("id", "employee_first_name")
+                    )
             elif request.GET.get("data") == "subordinates":
                 employees_queryset = Employee.objects.filter(
                     is_active=True, employee_work_info__reporting_manager_id=employee
-                ).values_list("id", "employee_first_name")
+                )
             elif request.GET.get("data") == "keyresults":
                 employees_queryset = EmployeeKeyResult.objects.filter(
                     employee_objective_id__employee_id=employee
                 ).values_list("id", "key_result_id__title")
             # Convert QuerySets to a list
-            employees = list(employees_queryset)
+            employees = [(employee.id, employee) for employee in employees_queryset]
             context = {"employees": employees}
             employee_html = render_to_string("employee/employees_select.html", context)
             return HttpResponse(employee_html)
@@ -3380,7 +3376,6 @@ def create_meetings(request):
                 pass
 
             messages.success(request, _("Meeting added successfully"))
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "meetings/form.html",
@@ -3390,9 +3385,12 @@ def create_meetings(request):
     )
 
 
+from django.db.models import F
+
+
 @login_required
 @permission_required("pms.change_meetings")
-def archive_meetings(request, id):
+def archive_meetings(request, obj_id):
     """
     This view is used to archive and unarchive the meeting ,
     Args:
@@ -3401,11 +3399,16 @@ def archive_meetings(request, id):
     Returns:
         it will redirect to view_meetings.html .
     """
-    meeting = Meetings.objects.filter(id=id).first()
+    meeting = Meetings.find(obj_id)
     meeting.is_active = not meeting.is_active
     meeting.save()
-
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    message = (
+        _("Meeting unarchived successfully")
+        if meeting.is_active
+        else _("Meeting archived successfully")
+    )
+    messages.success(request, message)
+    return HttpResponse("")
 
 
 @login_required
@@ -3422,6 +3425,9 @@ def meeting_manager_remove(request, meet_id, manager_id):
     meeting = Meetings.objects.filter(id=meet_id).first()
     meeting.manager.remove(manager_id)
     meeting.save()
+    messages.success(
+        request, _("Manager has been successfully removed from the meeting.")
+    )
     return HttpResponse("")
 
 
@@ -3438,6 +3444,9 @@ def meeting_employee_remove(request, meet_id, employee_id):
     meeting = Meetings.objects.filter(id=meet_id).first()
     meeting.employee_id.remove(employee_id)
     meeting.save()
+    messages.success(
+        request, _("Employee has been successfully removed from the meeting.")
+    )
     return HttpResponse("")
 
 
@@ -3457,6 +3466,11 @@ def filter_meetings(request):
         filter_obj = filter_obj.filter(
             Q(employee_id=employee_id) | Q(manager=employee_id)
         ).distinct()
+    if (
+        request.GET.get("is_active") is None
+        or request.GET.get("is_active") == "unknown"
+    ):
+        filter_obj = filter_obj.filter(is_active=True)
     filter_obj = filter_obj.order_by("-id")
 
     filter_obj = sortby(request, filter_obj, "sortby")
@@ -3480,7 +3494,7 @@ def filter_meetings(request):
 
 @login_required
 @meeting_manager_can_enter("pms.change_meetings")
-def add_response(request, id):
+def add_response(request, obj_id):
     """
     This view is used to add the MoM to the meeting ,
     Args:
@@ -3488,12 +3502,15 @@ def add_response(request, id):
     Returns:
         it will redirect to view_meetings.html .
     """
-    meeting = Meetings.objects.filter(id=id).first()
+    meeting = Meetings.find(obj_id)
     if request.method == "POST":
         response = request.POST.get("response")
         meeting.response = response
         meeting.save()
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        messages.success(
+            request, _("Minutes of Meeting (MoM) have been created successfully")
+        )
+    return render(request, "meetings/mom_form.html", {"meeting": meeting})
 
 
 @login_required

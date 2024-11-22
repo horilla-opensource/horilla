@@ -353,7 +353,7 @@ urlpatterns = [
     ),
     path("get-keyresult-data", views.get_keyresult_data, name="get-keyresult-data"),
     path(
-        "view-meetings",
+        "view-meetings/",
         views.view_meetings,
         name="view-meetings",
     ),
@@ -366,10 +366,10 @@ urlpatterns = [
         "meetings-delete/<int:obj_id>/",
         object_delete,
         name="meetings-delete",
-        kwargs={"model": models.Meetings, "redirect": "/pms/view-meetings"},
+        kwargs={"model": models.Meetings, "HttpResponse": True},
     ),
     path(
-        "archive-meeting/<int:id>/",
+        "archive-meeting/<int:obj_id>/",
         views.archive_meetings,
         name="archive-meeting",
     ),
@@ -379,7 +379,7 @@ urlpatterns = [
         name="filter-meeting",
     ),
     path(
-        "add-response/<int:id>/",
+        "add-response/<int:obj_id>/",
         views.add_response,
         name="add-response",
     ),
