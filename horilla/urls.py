@@ -16,11 +16,17 @@ Including another URLconf
 
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import include, path, re_path
 
 import notifications.urls
 
 from . import settings
+
+
+def health_check(request):
+    return JsonResponse({"status": "ok"}, status=200)
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -36,6 +42,7 @@ urlpatterns = [
     ),
     path("i18n/", include("django.conf.urls.i18n")),
     path("api/", include("horilla_api.urls")),
+    path("health/", health_check),
 ]
 
 if settings.DEBUG:

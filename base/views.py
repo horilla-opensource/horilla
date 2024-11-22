@@ -164,6 +164,7 @@ from horilla.decorators import (
 )
 from horilla.group_by import group_by_queryset
 from horilla.horilla_settings import (
+    APPS,
     DB_INIT_PASSWORD,
     DYNAMIC_URL_PATTERNS,
     FILE_STORAGE,
@@ -934,21 +935,7 @@ def user_group_table(request):
     Group assign htmx view
     """
     permissions = []
-    apps = [
-        "base",
-        "recruitment",
-        "employee",
-        "leave",
-        "pms",
-        "onboarding",
-        "asset",
-        "attendance",
-        "payroll",
-        "auth",
-        "offboarding",
-        "horilla_documents",
-        "helpdesk",
-    ]
+    apps = APPS
     form = UserGroupForm()
     for app_name in apps:
         app_models = []
@@ -1015,21 +1002,7 @@ def user_group(request):
     """
     permissions = []
 
-    apps = [
-        "base",
-        "recruitment",
-        "employee",
-        "leave",
-        "pms",
-        "onboarding",
-        "asset",
-        "attendance",
-        "payroll",
-        "auth",
-        "offboarding",
-        "horilla_documents",
-        "helpdesk",
-    ]
+    apps = APPS
     form = UserGroupForm()
     for app_name in apps:
         app_models = []
@@ -1061,21 +1034,7 @@ def user_group_search(request):
     """
     permissions = []
 
-    apps = [
-        "base",
-        "recruitment",
-        "employee",
-        "leave",
-        "pms",
-        "onboarding",
-        "asset",
-        "attendance",
-        "payroll",
-        "auth",
-        "offboarding",
-        "horilla_documents",
-        "helpdesk",
-    ]
+    apps = APPS
     form = UserGroupForm()
     for app_name in apps:
         app_models = []
@@ -3121,21 +3080,7 @@ def employee_permission_assign(request):
         ).distinct()
         context["show_assign"] = True
     permissions = []
-    horilla_apps = [
-        "base",
-        "recruitment",
-        "employee",
-        "leave",
-        "pms",
-        "onboarding",
-        "asset",
-        "attendance",
-        "payroll",
-        "auth",
-        "offboarding",
-        "horilla_documents",
-        "helpdesk",
-    ]
+    horilla_apps = APPS
     installed_apps = [app for app in settings.INSTALLED_APPS if app in horilla_apps]
     for app_name in installed_apps:
         app_models = []
@@ -3176,21 +3121,7 @@ def employee_permission_search(request, codename=None, uid=None):
         ).distinct()
         context["show_assign"] = True
     permissions = []
-    apps = [
-        "base",
-        "recruitment",
-        "employee",
-        "leave",
-        "pms",
-        "onboarding",
-        "asset",
-        "attendance",
-        "payroll",
-        "auth",
-        "offboarding",
-        "horilla_documents",
-        "helpdesk",
-    ]
+    apps = APPS
     for app_name in apps:
         app_models = []
         for model in get_models_in_app(app_name):
@@ -3242,21 +3173,7 @@ def permission_table(request):
     This method is used to render the permission table
     """
     permissions = []
-    apps = [
-        "base",
-        "recruitment",
-        "employee",
-        "leave",
-        "pms",
-        "onboarding",
-        "asset",
-        "attendance",
-        "payroll",
-        "auth",
-        "offboarding",
-        "horilla_documents",
-        "helpdesk",
-    ]
+    apps = APPS
     form = AssignPermission()
     for app_name in apps:
         app_models = []

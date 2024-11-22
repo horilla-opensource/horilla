@@ -43,3 +43,19 @@ APP_URLS = [
     "base.urls",
     "employee.urls",
 ]
+
+APPS = [
+    "base",
+    "recruitment",
+    "employee",
+    "leave",
+    "pms",
+    "onboarding",
+    "asset",
+    "attendance",
+    "payroll",
+    "auth",
+    "offboarding",
+    "horilla_documents",
+    "helpdesk",
+]
