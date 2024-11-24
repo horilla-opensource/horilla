@@ -21,8 +21,8 @@ from base.forms import TagsForm
 from base.methods import (
     filtersubordinates,
     get_key_instances,
-    get_pagination,
     is_reportingmanager,
+    paginator_qry,
     sortby,
 )
 from base.models import Department, JobPosition, Tags
@@ -67,15 +67,6 @@ from notifications.signals import notify
 logger = logging.getLogger(__name__)
 
 # Create your views here.
-
-
-def paginator_qry(qryset, page_number):
-    """
-    This method is used to paginate query set
-    """
-    paginator = Paginator(qryset, get_pagination())
-    qryset = paginator.get_page(page_number)
-    return qryset
 
 
 @login_required

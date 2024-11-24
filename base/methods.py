@@ -9,6 +9,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, OneToOneField, Q
 from django.db.models.functions import Lower
@@ -656,6 +657,15 @@ def get_pagination():
     if page:
         count = page.pagination
     return count
+
+
+def paginator_qry(queryset, page_number):
+    """
+    Common paginator method
+    """
+    paginator = Paginator(queryset, get_pagination())
+    queryset = paginator.get_page(page_number)
+    return queryset
 
 
 def is_holiday(date):

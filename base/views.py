@@ -110,6 +110,7 @@ from base.methods import (
     get_key_instances,
     get_pagination,
     is_reportingmanager,
+    paginator_qry,
     sortby,
 )
 from base.models import (
@@ -197,15 +198,6 @@ def is_reportingmanger(request, instance):
     except Exception:
         return HttpResponse("This Employee Dont Have any work information")
     return manager == employee_work_info_manager
-
-
-def paginator_qry(queryset, page_number):
-    """
-    Common paginator method
-    """
-    paginator = Paginator(queryset, get_pagination())
-    queryset = paginator.get_page(page_number)
-    return queryset
 
 
 def initialize_database_condition():
