@@ -5113,7 +5113,7 @@ def leave_allocation_approve(request):
     allocation_reqests = filtersubordinates(
         request, allocation_reqests, "leave.view_leaveallocationrequest"
     )
-    # allocation_reqests = paginator_qry(allocation_reqests, page_number)
+    allocation_reqests = paginator_qry(allocation_reqests, page_number)
     allocation_reqests_ids = json.dumps(
         [instance.id for instance in allocation_reqests]
     )
