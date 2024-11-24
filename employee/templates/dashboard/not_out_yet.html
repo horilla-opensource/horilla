@@ -1,51 +1,42 @@
 {% load i18n %}
 {% load static %}
-<div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
-  <div class="oh-card-dashboard__header oh-card-dashboard__header--divider mb-0">
-    <span class="oh-card-dashboard__title">{% trans 'Online Employees' %}</span>
-	<span class="float-end chart_close_button fs-5" role="button" data-chart="online_employees" hx-post="{% url 'employee-charts' %}?chart_id=online_employees" hx-target="#notoutYetdd" hx-swap="outerHTML">
-		<i class="material-icons fw-lighter">close</i>
-	</span>
-  </div>
-  {% if employees %}
-    <div class="oh-card-dashboard__body">
-      <div class="oh-sticky-table" style="max-height:320px;">
+{% if employees %}
+    <div class="oh-sticky-table" style="height: 320px">
         <div class="oh-sticky-table__table oh-table--sortable">
-          <div class="oh-sticky-table__tbody">
-            {% for emp in employees %}
-              <div class="oh-sticky-table__tr" draggable="true">
-                <div class="oh-sticky-table__sd">
-                  <div class="oh-profile oh-profile--md">
-                    <div class="oh-profile__avatar mr-1">
-                      <img src="{{ emp.get_avatar }}" class="oh-profile__image" />
+            <div class="oh-sticky-table__tbody">
+                {% for emp in employees %}
+                    <div class="oh-sticky-table__tr" draggable="true">
+                        <div class="oh-sticky-table__sd">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="{{ emp.get_avatar }}" class="oh-profile__image" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">
+                                    {{ emp.get_full_name }}
+                                    <span class="oh-recuritment_tag" style="font-size: .5rem;">
+                                        {% trans "At work" %} {{ emp.get_forecasted_at_work.forecasted_at_work }}
+                                    </span>
+                                    <span class="oh-recuritment_tag" style="font-size: .5rem;">
+                                        {% trans "Pending" %} {{ emp.get_forecasted_at_work.forecasted_pending_hours }}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div hx-get='{% url "send-mail-employee" emp.id %}' class="oh-sticky-table__td"
+                            title="{% trans 'Send Mail' %}" hx-target="#mail-content" data-toggle="oh-modal-toggle"
+                            data-target="#sendMailModal" align="center" style="width: 50px;">
+                            <ion-icon name="mail-outline"></ion-icon>
+                        </div>
                     </div>
-                    <span class="oh-profile__name oh-text--dark">
-                      {{ emp.get_full_name }}
-                      <span class="oh-recuritment_tag" style="font-size: .5rem;">At work {{ emp.get_forecasted_at_work.forecasted_at_work }}</span>
-                      <span class="oh-recuritment_tag" style="font-size: .5rem;">Pending {{ emp.get_forecasted_at_work.forecasted_pending_hours }}</span>
-                    </span>
-                  </div>
-                </div>
-                <div
-                  hx-get='{% url "send-mail-employee" emp.id %}'
-                  class="oh-sticky-table__td" title="{% trans 'Send Mail' %}"
-                  hx-target="#mail-content" data-toggle="oh-modal-toggle"
-                  data-target="#sendMailModal" align="center" style="width: 50px;">
-                  <ion-icon name="mail-outline"></ion-icon>
-                </div>
-              </div>
-            {% endfor %}
-          </div>
+                {% endfor %}
+            </div>
         </div>
-      </div>
     </div>
-  {% else %}
-    <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
-      <div style="" class="">
-        <img style="display: block;width: 70px;margin: 20px auto ;" src="{% static "/images/ui/joiningchart.png" %}" class="" alt=""/>
-        <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No data Found..." %}</h3>
-      </div>
+{% else %}
+    <div class="oh-empty h-100">
+        <p class="oh-empty__message">
+            <img style="display: block;width: 70px;margin: 20px auto ;" src="{% static "/images/ui/no_records.svg" %}" class="" alt=""/>
+            {% trans "No records available at the moment." %}
+        </p>
     </div>
-  {% endif %}
-
-</div>
+{% endif %}
