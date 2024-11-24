@@ -30,10 +30,9 @@ from attendance.models import (
     AttendanceValidationCondition,
 )
 from attendance.views.views import strtime_seconds
-from base.methods import filtersubordinates
+from base.methods import filtersubordinates, paginator_qry
 from base.models import Department
 from employee.models import Employee
-from employee.not_in_out_dashboard import paginator_qry
 from horilla import settings
 from horilla.decorators import hx_request_required, login_required
 from horilla.methods import get_horilla_model_class
@@ -320,7 +319,7 @@ def dashboard_attendance(request):
     departments = Department.objects.all()
     for dept in departments:
         data_set.append(generate_data_set(request, start_date, type, end_date, dept))
-    message = _("No data Found...")
+    message = _("No records available at the moment.")
     data_set = list(filter(None, data_set))
     return JsonResponse({"dataSet": data_set, "labels": labels, "message": message})
 

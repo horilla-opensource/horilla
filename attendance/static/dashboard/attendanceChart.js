@@ -136,7 +136,7 @@ $(document).ready(function () {
       var noDataImage = new Image();
       noDataImage.src = departmentAttendanceChart.data.emptyImageSrc
         ? departmentAttendanceChart.data.emptyImageSrc
-        : staticUrl + "images/ui/joiningchart.png";
+        : staticUrl + "images/ui/no_records.svg";
 
       message = departmentAttendanceChart.data.message
         ? departmentAttendanceChart.data.message
