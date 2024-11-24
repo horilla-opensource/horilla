@@ -84,7 +84,7 @@ function emptyAssetAvialabeChart(assetAvailableChartChart, args, options) {
         var noDataImage = new Image();
         noDataImage.src = assetAvailableChartChart.data.emptyImageSrc
             ? assetAvailableChartChart.data.emptyImageSrc
-            : staticUrl + "images/ui/joiningchart.png";
+            : staticUrl + "images/ui/no_records.svg";
 
         message = assetAvailableChartChart.data.message
             ? assetAvailableChartChart.data.message

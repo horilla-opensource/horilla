@@ -184,9 +184,9 @@
                                                                 <form
                                                                     action="{% url 'asset-request-reject' req_id=asset_request.id %}"
                                                                     class="w-50" method="post"
-                                                                    onclick="event.stopPropagation(); return confirm('{% trans " Do you want to reject this request?" %}')">
+                                                                    onsubmit="return confirm('{% trans " Do you want to reject this request?" %}')">
                                                                     {% csrf_token %}
-                                                                    <button class="oh-btn oh-btn--danger w-100" title="{% trans 'Reject' %}">
+                                                                    <button class="oh-btn oh-btn--danger w-100" title="{% trans 'Reject' %}" onclick="event.stopPropagation();">
                                                                         <ion-icon name="close-outline"></ion-icon>
                                                                     </button>
                                                                 </form>

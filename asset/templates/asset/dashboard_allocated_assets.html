@@ -1,47 +1,41 @@
 {% load i18n %}
-
-<div class="oh-sticky-table">
-    <div class="oh-sticky-table__table">
-        <div class="oh-sticky-table__thead">
-            <div class="oh-sticky-table__tr">
-                <div class="oh-sticky-table__th">{% trans "Allocated User" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Asset" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
+{% load static %}
+{% if asset_allocations %}
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">{% trans "Allocated User" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Asset" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
+                </div>
             </div>
-        </div>
-        <div class="oh-sticky-table__tbody">
-            {% for asset_allocation in asset_allocations %}
-            <div class="oh-sticky-table__tr"
-            >
-                <div
-                    class="oh-sticky-table__sd"
-                >
-                    <div class="oh-profile oh-profile--md">
-                        <div class="oh-profile__avatar mr-1">
-                            <img
-                                src="{{asset_allocation.assigned_to_employee_id.get_avatar}}"
-                                class="oh-profile__image"
-                                alt=""
-                            />
+            <div class="oh-sticky-table__tbody">
+                {% for asset_allocation in asset_allocations %}
+                    <div class="oh-sticky-table__tr">
+                        <div class="oh-sticky-table__sd">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="{{asset_allocation.assigned_to_employee_id.get_avatar}}" class="oh-profile__image" alt="" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">{{asset_allocation.assigned_to_employee_id}}</span>
+                            </div>
                         </div>
-                        <span class="oh-profile__name oh-text--dark"
-                            >{{asset_allocation.assigned_to_employee_id}}</span
-                        >
+                        <div class="oh-sticky-table__td">
+                            {{asset_allocation.asset_id}}
+                        </div>
+                        <div class="oh-sticky-table__td dateformat_changer">
+                            {{asset_allocation.assigned_date}}
+                        </div>
                     </div>
-                </div>
-                <div
-                    class="oh-sticky-table__td"
-                >
-                    {{asset_allocation.asset_id}}
-                </div>
-                <div
-                    class="oh-sticky-table__td dateformat_changer"
-                >
-                    {{asset_allocation.assigned_date}}
-                </div>
+                {% endfor %}
             </div>
-
-            {% endfor %}
         </div>
     </div>
-</div>
+{% else %}
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+        <img style="display: block; width:10%; margin: 20px auto;" src="{% static 'images/ui/asset.png' %}" class=""
+            alt="Page not found. 404." />
+        <h5 class="oh-404__subtitle">{% trans "There is no asset allocation at this moment." %}</h5>
+    </div>
+{% endif %}

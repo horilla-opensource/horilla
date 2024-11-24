@@ -90,15 +90,9 @@
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                             <span class="oh-card-dashboard__title">{% trans "Asset Requests To Approve" %}</span>
                         </div>
-                        <div class="oh-card-dashboard__body" id="assetRequest" style="height:330px;overflow-y:auto">
-                            {% if asset_requests %}
-                                {% include "asset/dashboard_asset_requests.html" %}
-                            {% else %}
-                                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-                                    <img style="display: block; width: 8%; margin: 20px auto;" src="{% static 'images/ui/asset.png' %}" class="" alt="Page not found. 404." />
-                                    <h5 class="oh-404__subtitle">{% trans "There is no asset request to approve." %}</h5>
-                                </div>
-                            {% endif %}
+                        <div class="oh-card-dashboard__body" id="dashboardAssetRequests" style="height:330px;overflow-y:auto"
+                            hx-get="{% url 'asset-dashboard-requests' %}" hx-trigger="load">
+                            <div class="animated-background"></div>
                         </div>
                     </div>
                 </div>
@@ -119,16 +113,10 @@
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                             <span class="oh-card-dashboard__title">{% trans "Allocated Assets" %}</span>
                         </div>
-                        <div class="oh-card-dashboard__body" id="leaveRequest" style="height:350px;overflow-y:auto">
-                            {% if asset_allocations %}
-                                {% include "asset/dashboard_allocated_assets.html" %}
-                            {% else %}
-                                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-                                    <img style="display: block; width:10%; margin: 20px auto;" src="{% static 'images/ui/asset.png' %}" class="" alt="Page not found. 404." />
-                                    <h5 class="oh-404__subtitle">{% trans "There is no asset allocation at this moment." %}</h5>
-                                </div>
-
-                            {% endif %}
+                        <div class="oh-card-dashboard__body" id="dashboardAssetAllocates" style="height:350px;overflow-y:auto">
+                            <span hx-get="{% url 'asset-dashboard-allocates' %}" hx-trigger="load" hx-swap="outerHTML">
+                                <div class="animated-background"></div>
+                            </span>
                         </div>
                     </div>
                 </div>

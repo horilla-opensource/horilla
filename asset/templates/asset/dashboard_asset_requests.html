@@ -1,91 +1,105 @@
 {% load i18n %}
-<div class="oh-sticky-table">
-    <div class="oh-sticky-table__table">
-        <div class="oh-sticky-table__thead">
-            <div class="oh-sticky-table__tr">
-                <div class="oh-sticky-table__th">{% trans "Request User" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Asset Category" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Request Date" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-                {% if perms.asset.add_assetassignment %}
-                    <div class="oh-sticky-table__th"></div>
-                {% endif %}
-            </div>
-        </div>
-        <div class="oh-sticky-table__tbody">
-            <div id="assetRequestAllocationTarget"></div>
-            {% for asset_request in asset_requests %}
-            <!-- asset request looping -->
-            <div
-                class="oh-sticky-table__tr"
-                draggable="true"
-                data-toggle="oh-modal-toggle"
-                data-target="#objectDetailsModalW25"
-                hx-get="{% url 'asset-request-individual-view' asset_request.id %}?requests_ids={{requests_ids}}"
-                hx-target="#objectDetailsModalW25Target"
-            >
-                <div class="oh-sticky-table__sd">
-                    <div class="oh-profile oh-profile--md">
-                        <div class="oh-profile__avatar mr-1">
-                            <img
-                                src="{{asset_request.requested_employee_id.get_avatar}}"
-                                class="oh-profile__image"
-                                alt="Mary Magdalene"
-                            />
-                        </div>
-                        <span class="oh-profile__name oh-text--dark"
-                            >{{asset_request.requested_employee_id}}
-                        </span>
-                    </div>
-                </div>
-                <div class="oh-sticky-table__td">
-                    {{asset_request.asset_category_id}}
-                </div>
-                <div class="oh-sticky-table__td dateformat_changer">
-                    {{ asset_request.asset_request_date }}
-                </div>
-                <div class="oh-sticky-table__td">
-                    <div class="d-flex align-items-center">
-                        <span
-                            class="oh-dot oh-dot--small me-1 oh-dot--color {% if asset_request.asset_request_status == 'Approved' %} oh-dot--success {% elif asset_request.asset_request_status == 'Rejected' %} oh-dot--danger {% elif asset_request.asset_request_status == 'Requested' %} oh-dot--info {% endif %}"
-                        ></span
-                        ><span
-                            class="{% if asset_request.asset_request_status == 'Approved' %} link-success {% elif asset_request.asset_request_status == 'Rejected' %} link-danger {% elif asset_request.asset_request_status == 'Requested' %} link-info {% endif %}"
-                            >{% trans asset_request.asset_request_status %}</span
-                        >
-                    </div>
-                </div>
-                {% if perms.asset.add_assetassignment %}
-                    {% if asset_request.asset_request_status == 'Requested' %}
-                        <div class="oh-sticky-table__td">
-                            <div class="oh-btn-group">
-                                <a
-                                    class="oh-btn oh-btn--success w-50"
-                                    role="button"
-                                    onclick="event.stopPropagation()"
-                                    data-toggle="oh-modal-toggle"
-                                    data-target="#objectCreateModal"
-                                    hx-get="{% url 'asset-request-approve' req_id=asset_request.id %}"
-                                    hx-target="#objectCreateModalTarget"
-                                    title="Approve request"
-                                >
-                                    <ion-icon name="checkmark-outline"></ion-icon>
-                                </a>
-                                <form action="{% url 'asset-request-reject' req_id=asset_request.id %}"
-                                    onsubmit="event.stopPropagation();return confirm('{% trans "Do you want to reject this request?" %}')"
-                                    method="post" title="{% trans 'Reject request' %}" class="w-50"
-                                    >
-                                    {% csrf_token %}
-                                    <button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation()">
-                                        <ion-icon name="close-circle-outline"></ion-icon>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+{% load static %}
+{% if messages %}
+    <script>reloadMessage();</script>
+{% endif %}
+{% if asset_requests %}
+    <div class="oh-sticky-table h-100">
+        <div class="oh-sticky-table__table">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">{% trans "Request User" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Asset Category" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Request Date" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                    {% if perms.asset.add_assetassignment %}
+                        <div class="oh-sticky-table__th"></div>
                     {% endif %}
-                {% endif %}
+                </div>
             </div>
-            {% endfor %}
+            <div class="oh-sticky-table__tbody">
+                <div id="assetRequestAllocationTarget"></div>
+                {% for asset_request in asset_requests %}
+                <!-- asset request looping -->
+                <div
+                    class="oh-sticky-table__tr"
+                    draggable="true"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectDetailsModalW25"
+                    hx-get="{% url 'asset-request-individual-view' asset_request.id %}?requests_ids={{requests_ids}}"
+                    hx-target="#objectDetailsModalW25Target"
+                >
+                    <div class="oh-sticky-table__sd">
+                        <div class="oh-profile oh-profile--md">
+                            <div class="oh-profile__avatar mr-1">
+                                <img
+                                    src="{{asset_request.requested_employee_id.get_avatar}}"
+                                    class="oh-profile__image"
+                                    alt="Mary Magdalene"
+                                />
+                            </div>
+                            <span class="oh-profile__name oh-text--dark"
+                                >{{asset_request.requested_employee_id}}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__td">
+                        {{asset_request.asset_category_id}}
+                    </div>
+                    <div class="oh-sticky-table__td dateformat_changer">
+                        {{ asset_request.asset_request_date }}
+                    </div>
+                    <div class="oh-sticky-table__td">
+                        <div class="d-flex align-items-center">
+                            <span
+                                class="oh-dot oh-dot--small me-1 oh-dot--color {% if asset_request.asset_request_status == 'Approved' %} oh-dot--success {% elif asset_request.asset_request_status == 'Rejected' %} oh-dot--danger {% elif asset_request.asset_request_status == 'Requested' %} oh-dot--info {% endif %}"
+                            ></span
+                            ><span
+                                class="{% if asset_request.asset_request_status == 'Approved' %} link-success {% elif asset_request.asset_request_status == 'Rejected' %} link-danger {% elif asset_request.asset_request_status == 'Requested' %} link-info {% endif %}"
+                                >{% trans asset_request.asset_request_status %}</span
+                            >
+                        </div>
+                    </div>
+                    {% if perms.asset.add_assetassignment %}
+                        {% if asset_request.asset_request_status == 'Requested' %}
+                            <div class="oh-sticky-table__td">
+                                <div class="oh-btn-group">
+                                    <a
+                                        class="oh-btn oh-btn--success w-50"
+                                        role="button"
+                                        onclick="event.stopPropagation()"
+                                        data-toggle="oh-modal-toggle"
+                                        data-target="#objectCreateModal"
+                                        hx-get="{% url 'asset-request-approve' req_id=asset_request.id %}"
+                                        hx-target="#objectCreateModalTarget"
+                                        title="Approve request"
+                                    >
+                                        <ion-icon name="checkmark-outline"></ion-icon>
+                                    </a>
+                                    <form hx-confirm="{% trans 'Do you want to reject this request?' %}"
+                                        hx-post="{% url 'asset-request-reject' req_id=asset_request.id %}"
+                                        hx-target="#dashboardAssetRequests"
+                                        class="w-50"
+                                        >
+                                        {% csrf_token %}
+                                        <button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation()">
+                                            <ion-icon name="close-circle-outline"></ion-icon>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
-</div>
+{% else %}
+    <div class="oh-empty h-100">
+        <p class="oh-empty__message">
+            <img style="display: block;width: 70px;margin: 20px auto ;" src="{% static "/images/ui/no_records.svg" %}" class="" alt=""/>
+            {% trans "No records available at the moment." %}
+        </p>
+    </div>
+{% endif %}

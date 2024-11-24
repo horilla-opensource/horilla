@@ -55,10 +55,10 @@ from base.methods import (
     filtersubordinates,
     get_key_instances,
     get_pagination,
+    paginator_qry,
     sortby,
 )
 from base.models import Company
-from base.views import paginator_qry
 from employee.models import Employee, EmployeeWorkInformation
 from horilla import settings
 from horilla.decorators import (
@@ -634,7 +634,7 @@ def asset_request_reject(request, req_id):
     asset_request = AssetRequest.objects.get(id=req_id)
     asset_request.asset_request_status = "Rejected"
     asset_request.save()
-    messages.info(request, _("Asset request rejected"))
+    messages.info(request, _("Asset request has been rejected."))
     notify.send(
         request.user.employee_get,
         recipient=asset_request.requested_employee_id.employee_user_id,
@@ -648,6 +648,27 @@ def asset_request_reject(request, req_id):
         &asset_request_status={asset_request.asset_request_status}",
         icon="bag-check",
     )
+    if request.META.get("HTTP_HX_REQUEST"):
+        if request.META.get("HTTP_HX_TARGET") == "objectDetailsModalW25Target":
+            requests_ids_json = request.GET.get("requests_ids", "[]")
+            try:
+                requests_ids = json.loads(requests_ids_json)
+            except json.JSONDecodeError:
+                requests_ids = []
+            return redirect(
+                reverse(
+                    "asset-request-individual-view", kwargs={"asset_request_id": req_id}
+                )
+                + f"?requests_ids={requests_ids}"
+            )
+
+        referrer = request.META.get("HTTP_REFERER", "")
+        referrer = "/" + "/".join(referrer.split("/")[3:])
+
+        if referrer.endswith("/asset/dashboard/") or referrer == "/":
+            return redirect(reverse("asset-dashboard-requests"))
+
+        return redirect("asset-request-allocation-view-search-filter")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -999,9 +1020,13 @@ def asset_request_individual_view(request, asset_request_id):
     Returns:
         HttpResponse: The rendered 'individual_request.html' template with the context data.
     """
+    dashboard = not request.META.get("HTTP_HX_CURRENT_URL", "").endswith(
+        "asset-request-allocation-view/"
+    )
     asset_request = AssetRequest.objects.get(id=asset_request_id)
     context = {
         "asset_request": asset_request,
+        "dashboard": dashboard,
     }
     requests_ids_json = request.GET.get("requests_ids")
     if requests_ids_json:
@@ -1491,21 +1516,47 @@ def asset_dashboard(request):
     """
     assets = Asset.objects.all()
     asset_in_use = Asset.objects.filter(asset_status="In use")
+
+    context = {
+        "assets": assets,
+        "asset_in_use": asset_in_use,
+    }
+    return render(request, "asset/dashboard.html", context)
+
+
+@login_required
+@permission_required(perm="asset.view_assetrequest")
+def asset_dashboard_requests(request):
+    """
+    Handles the asset request approval dashboard view.
+
+    This view fetches and filters asset requests that are currently in the
+    "Requested" status and belong to employees who are active.
+
+    The filtered asset requests are then passed to the template for rendering,
+    along with a JSON-encoded list of the request IDs.
+    """
     asset_requests = AssetRequest.objects.filter(
         asset_request_status="Requested", requested_employee_id__is_active=True
     )
     requests_ids = json.dumps([instance.id for instance in asset_requests])
+    context = {
+        "asset_requests": asset_requests,
+        "requests_ids": requests_ids,
+    }
+    return render(request, "asset/dashboard_asset_requests.html", context)
+
+
+@login_required
+@permission_required(perm="asset.view_assetassignment")
+def asset_dashboard_allocates(request):
     asset_allocations = AssetAssignment.objects.filter(
         asset_id__asset_status="In use", assigned_to_employee_id__is_active=True
     )
     context = {
-        "assets": assets,
-        "asset_requests": asset_requests,
-        "requests_ids": requests_ids,
-        "asset_in_use": asset_in_use,
         "asset_allocations": asset_allocations,
     }
-    return render(request, "asset/dashboard.html", context)
+    return render(request, "asset/dashboard_allocated_assets.html", context)
 
 
 @login_required
@@ -1746,38 +1797,3 @@ def asset_request_tab(request, emp_id):
     assets_requests = employee.requested_employee.all()
     context = {"asset_requests": assets_requests, "emp_id": emp_id}
     return render(request, "tabs/asset-request-tab.html", context=context)
-
-
-@login_required
-def dashboard_asset_request_approve(request):
-    """
-    Handles the asset request approval dashboard view.
-
-    This view fetches and filters asset requests that are currently in the
-    "Requested" status and belong to employees who are active. It further filters
-    the asset requests based on the subordinates of the logged-in user and the
-    specific permission 'asset.change_assetrequest'.
-
-    The filtered asset requests are then passed to the template for rendering,
-    along with a JSON-encoded list of the request IDs.
-    """
-
-    asset_requests = AssetRequest.objects.filter(
-        asset_request_status="Requested", requested_employee_id__is_active=True
-    )
-    asset_requests = filtersubordinates(
-        request,
-        asset_requests,
-        "asset.change_assetrequest",
-        field="requested_employee_id",
-    )
-    requests_ids = json.dumps([instance.id for instance in asset_requests])
-
-    return render(
-        request,
-        "request_and_approve/asset_requests_approve.html",
-        {
-            "asset_requests": asset_requests,
-            "requests_ids": requests_ids,
-        },
-    )

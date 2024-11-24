@@ -237,9 +237,11 @@
 														<ion-icon name="checkmark-outline"></ion-icon>
 
 													</a>
-													<form onsubmit="return confirm('{% trans "Do you want to reject this asset request?" %}')"
-														action="{% url 'asset-request-reject' req_id=asset_request.id %}"
-														method="post" title="{% trans 'Reject' %}" class='w-50'>
+													<form hx-confirm="{% trans 'Do you want to reject this asset request?' %}"
+														hx-post="{% url 'asset-request-reject' req_id=asset_request.id %}"
+														hx-target="#asset_request_allocation_list"
+														class='w-50'
+														title="{% trans 'Reject' %}">
 														{% csrf_token %}
 														<button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation();">
 															<ion-icon name="close-outline"></ion-icon>
@@ -480,21 +482,20 @@
 	<script>
 		$(document).ready(function () {
 			var activeTab = localStorage.getItem("activeTabAsset");
-			if (activeTab != null) {
-				var tab = $(`[data-target="${activeTab}"]`);
-				var tabContent = $(activeTab);
-				$(tab).attr("class", "oh-tabs__tab oh-tabs__tab--active");
-				$(tabContent).attr(
-					"class",
-					"oh-tabs__content oh-tabs__content--active"
-				);
+			var tab, tabContent;
+
+			if (activeTab) {
+			    tab = $(`[data-target="${activeTab}"]`);
+			    tabContent = $(activeTab);
 			} else {
-				$('[data-target="#tab_1"]').attr(
-					"class",
-					"oh-tabs__tab oh-tabs__tab--active"
-				);
-				$("#tab_1").attr("class", "oh-tabs__content oh-tabs__content--active");
+			    tab = $('[data-target="#tab_1"]');
+			    tabContent = $("#tab_1");
 			}
+
+			setTimeout(function() {
+    			tab.addClass("oh-tabs__tab--active");
+    			tabContent.addClass("oh-tabs__content--active");
+			}, 50);
 			$(".oh-tabs__tab").click(function (e) {
 				var activeTab = $(this).attr("data-target");
 				localStorage.setItem("activeTabAsset", activeTab);
