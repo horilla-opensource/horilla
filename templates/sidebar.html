@@ -374,7 +374,7 @@ function initializeSummernote(candId,searchWords,) {
     ar: "...لم يتم العثور على بيانات",
     de: "Keine Daten gefunden...",
     es: "No se encontraron datos...",
-    en: "No data Found...",
+    en: "No records available at the moment.",
     fr: "Aucune donnée trouvée...",
   };
 
@@ -406,7 +406,7 @@ function initializeSummernote(candId,searchWords,) {
       var noDataImage = new Image();
       noDataImage.src = chart.data.emptyImageSrc
         ? chart.data.emptyImageSrc
-        : "{% static '/images/ui/joiningchart.png' %}";
+        : "{% static '/images/ui/no_records.svg' %}";
 
       message = chart.data.message
         ? chart.data.message
