@@ -25,8 +25,13 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from base.methods import closest_numbers, get_key_instances, get_pagination, sortby
-from base.views import paginator_qry
+from base.methods import (
+    closest_numbers,
+    get_key_instances,
+    get_pagination,
+    paginator_qry,
+    sortby,
+)
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
     hx_request_required,
@@ -2611,7 +2616,7 @@ def dashboard_objective_status(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         objective_status = EmployeeObjective.STATUS_CHOICES
-        data = {"message": _("No data Found...")}
+        data = {"message": _("No records available at the moment.")}
         for status in objective_status:
             objectives = EmployeeObjective.objects.filter(
                 status=status[0], archive=False
@@ -2631,7 +2636,7 @@ def dashboard_key_result_status(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         key_result_status = EmployeeKeyResult.STATUS_CHOICES
-        data = {"message": _("No data Found...")}
+        data = {"message": _("No records available at the moment.")}
         for i in key_result_status:
             key_results = EmployeeKeyResult.objects.filter(status=i[0])
             key_results_count = filtersubordinates(
@@ -2652,7 +2657,7 @@ def dashboard_feedback_status(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         feedback_status = Feedback.STATUS_CHOICES
-        data = {"message": _("No data Found...")}
+        data = {"message": _("No records available at the moment.")}
         for i in feedback_status:
             feedbacks = Feedback.objects.filter(status=i[0])
             feedback_count = filtersubordinates(
@@ -3671,6 +3676,8 @@ def performance_tab(request, emp_id):
 
 @login_required
 def dashboard_feedback_answer(request):
+    previous_data = request.GET.urlencode()
+    page_number = request.GET.get("page")
     employee = request.user.employee_get
     feedback_requested = Feedback.objects.filter(
         Q(manager_id=employee, manager_id__is_active=True)
@@ -3678,11 +3685,15 @@ def dashboard_feedback_answer(request):
         | Q(subordinate_id=employee, subordinate_id__is_active=True)
     ).distinct()
     feedbacks = feedback_requested.exclude(feedback_answer__employee_id=employee)
-
+    feedbacks = paginator_qry(feedbacks, page_number)
     return render(
         request,
         "request_and_approve/feedback_answer.html",
-        {"feedbacks": feedbacks, "current_date": datetime.date.today()},
+        {
+            "feedbacks": feedbacks,
+            "pd": previous_data,
+            "current_date": datetime.date.today(),
+        },
     )
 
 
