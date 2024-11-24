@@ -132,18 +132,20 @@
                                 class="oh-card__footer--border-top pt-1"
                                 style="display: block"
                             >
-                                <div class="mb-2">
-                                    <i
-                                        ><a
-                                            hx-get="{% url 'payroll-request-view-comment' req.id %}"
-                                            hx-target="#commentContainer"
-                                            data-target = '#activitySidebar'
-                                            class="text-primary fw-bold oh-activity-sidebar__open w-100"
-                                            style="cursor: pointer"
-                                            >{% trans 'Comments' %}</a
-                                        ></i
-                                    >
-                                </div>
+                                {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
+                                    <div class="mb-2">
+                                        <i
+                                            ><a
+                                                hx-get="{% url 'payroll-request-view-comment' req.id %}"
+                                                hx-target="#commentContainer"
+                                                data-target = '#activitySidebar'
+                                                class="text-primary fw-bold oh-activity-sidebar__open w-100"
+                                                style="cursor: pointer"
+                                                >{% trans 'Comments' %}</a
+                                            ></i
+                                        >
+                                    </div>
+                                {% endif %}
 
                                 <i style="color: hsl(0, 0%, 45%)"
                                     >{% trans 'Allowance on' %}</i
@@ -420,19 +422,20 @@
                                 class="oh-card__footer--border-top pt-1"
                                 style="display: block"
                             >
-                                <div class="mb-2">
-                                    <i
-                                        ><a
-                                            hx-target="#commentContainer"
-                                            hx-get="{% url 'payroll-request-view-comment' req.id %}"
-                                            class="text-primary fw-bold oh-activity-sidebar__open w-100"
-                                            data-target = '#activitySidebar'
-                                            style="cursor: pointer"
-                                            >{% trans 'Comments' %}</a
-                                        ></i
-                                    >
-                                </div>
-
+                                {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
+                                    <div class="mb-2">
+                                        <i
+                                            ><a
+                                                hx-target="#commentContainer"
+                                                hx-get="{% url 'payroll-request-view-comment' req.id %}"
+                                                class="text-primary fw-bold oh-activity-sidebar__open w-100"
+                                                data-target = '#activitySidebar'
+                                                style="cursor: pointer"
+                                                >{% trans 'Comments' %}</a
+                                            ></i
+                                        >
+                                    </div>
+                                {% endif %}
                                 <i style="color: hsl(0, 0%, 45%)"
                                     >{% trans 'Allowance on' %}</i
                                 >
@@ -704,18 +707,20 @@
                                 class="oh-card__footer--border-top pt-1"
                                 style="display: block"
                             >
-                                <div class="mb-2">
-                                    <i
-                                        ><a
-                                            hx-target="#commentContainer"
-                                            hx-get="{% url 'payroll-request-view-comment' req.id %}"
-                                            class="text-primary fw-bold oh-activity-sidebar__open w-100"
-                                            data-target = '#activitySidebar'
-                                            style="cursor: pointer"
-                                            >{% trans 'Comments' %}</a
-                                        ></i
-                                    >
-                                </div>
+                                {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
+                                    <div class="mb-2">
+                                        <i
+                                            ><a
+                                                hx-target="#commentContainer"
+                                                hx-get="{% url 'payroll-request-view-comment' req.id %}"
+                                                class="text-primary fw-bold oh-activity-sidebar__open w-100"
+                                                data-target = '#activitySidebar'
+                                                style="cursor: pointer"
+                                                >{% trans 'Comments' %}</a
+                                            ></i
+                                        >
+                                    </div>
+                                {% endif %}
 
                                 <i style="color: hsl(0, 0%, 45%)"
                                     >{% trans 'Allowance on' %}</i

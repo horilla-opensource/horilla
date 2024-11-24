@@ -1614,6 +1614,7 @@ def view_payrollrequest_comment(request, payroll_id):
         request_id=payroll_id
     ).order_by("-created_at")
 
+    req = Reimbursement.objects.get(id=payroll_id)
     no_comments = False
     if not comments.exists():
         no_comments = True
@@ -1636,6 +1637,7 @@ def view_payrollrequest_comment(request, payroll_id):
             "comments": comments,
             "no_comments": no_comments,
             "request_id": payroll_id,
+            "req": req,
         },
     )
 

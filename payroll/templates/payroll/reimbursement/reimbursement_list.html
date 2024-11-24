@@ -170,10 +170,12 @@
                                         {{req.description}}
                                         </div>
                                         <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                                            <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
-                                                    data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                                                    <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
-                                            </button>
+                                            {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
+                                                <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
+                                                        data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+                                                        <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
+                                                </button>
+                                            {% endif %}
                                         </div>
                                         <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                             <div class="oh-btn-group"  >
@@ -508,10 +510,12 @@
                                                 {{req.description}}
                                             </div>
                                             <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                                                <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
-                                                        data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                                                        <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
-                                                </button>
+                                                {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
+                                                    <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
+                                                            data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+                                                            <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
+                                                    </button>
+                                                {% endif %}
                                             </div>
 
                                             <div class="oh-sticky-table__td" onclick="event.stopPropagation()" >
@@ -833,10 +837,12 @@
                                                 {{req.description}}
                                             </div>
                                             <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                                                <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
-                                                        data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                                                        <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
-                                                </button>
+                                                {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
+                                                    <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
+                                                            data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+                                                            <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
+                                                    </button>
+                                                {% endif %}
                                             </div>
                                             <div onclick="event.stopPropagation()" class="oh-sticky-table__td">
                                                 <div class="oh-btn-group">
