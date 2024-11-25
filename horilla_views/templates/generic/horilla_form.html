@@ -43,6 +43,7 @@
       values = $(this).val();
       if (values == "dynamic_create") {
         $("#modalButton{{field_tuple.0}}").click()
+        $(this).val("")
       }else if (values.includes("dynamic_create")) {
         let index = values.indexOf("dynamic_create");
         values.splice(index, 1);

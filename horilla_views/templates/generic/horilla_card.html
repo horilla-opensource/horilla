@@ -2,7 +2,7 @@
 <div id="{{view_id|safe}}">
   <script>
     if (!$(".HTV").length) {
-      $("#reloadMessagesButton").click()
+        reloadMessage(null);
     }
   </script>
   <div class="d-flex justify-content-between mb-2">
@@ -66,7 +66,7 @@
       {% endif %}
       <div class="oh-kanban-card__details">
         <span class="oh-kanban-card__title">{{details.title|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}</span>
-        <span class="oh-kanban-card__subtitle">{{details.subtitle|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}</span>
+        <div class="" style="display: grid;">{{details.subtitle|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}</div>
       </div>
       {% if actions %}
       <div class="oh-kanban-card__dots" onclick="event.stopPropagation()">
@@ -121,6 +121,7 @@
           hx-get="{{search_url}}?{{request.GET.urlencode}}&filter_applied=on"
           hx-swap="outerHTML"
           hx-target="#{{view_id|safe}}"
+          hx-on-htmx-before-request="htmxLoadIndicator(this);"
         />
         <span class="oh-pagination__label"
           >{% trans "of" %} {{queryset.paginator.num_pages}}</span
@@ -134,6 +135,7 @@
             hx-get="{{search_url}}?{{request.GET.urlencode}}&page=1&filter_applied=on"
             hx-swap="outerHTML"
             hx-target="#{{view_id|safe}}"
+            hx-on:click="htmxLoadIndicator(this);"
             class="oh-pagination__link"
             >{% trans "First" %}</a
           >
@@ -143,6 +145,7 @@
             hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.previous_page_number }}&filter_applied=on"
             hx-swap="outerHTML"
             hx-target="#{{view_id|safe}}"
+            hx-on:click="htmxLoadIndicator(this);"
             class="oh-pagination__link"
             >{% trans "Previous" %}</a
           >
@@ -153,6 +156,7 @@
             hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.next_page_number }}&filter_applied=on"
             hx-swap="outerHTML"
             hx-target="#{{view_id|safe}}"
+            hx-on:click="htmxLoadIndicator(this);"
             class="oh-pagination__link"
             >{% trans "Next" %}</a
           >
@@ -162,6 +166,7 @@
             hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.paginator.num_pages }}&filter_applied=on"
             hx-swap="outerHTML"
             hx-target="#{{view_id|safe}}"
+            hx-on:click="htmxLoadIndicator(this);"
             class="oh-pagination__link"
             >{% trans "Last" %}</a
           >

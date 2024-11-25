@@ -12,7 +12,7 @@
   {% include "generic/export_fields_modal.html" %}
   <script>
     if (!$(".HTV").length) {
-      $("#reloadMessagesButton").click()
+      reloadMessage(null);
     }
   </script>
   <button class="reload-record" id="{{view_id|safe}}Reload" hidden hx-get="{{request.path}}?{{saved_filters.urlencode}}" hx-target="#{{view_id|safe}}" hx-swap="outerHTML" hx-on:click="htmxLoadIndicator(this);">
@@ -226,7 +226,7 @@
           hx-get="{{search_url}}?{{saved_filters.urlencode}}&filter_applied=on"
           hx-swap="outerHTML"
           hx-target="#{{view_id|safe}}"
-          hx-on:click="htmxLoadIndicator(this);"
+          hx-on-htmx-before-request="htmxLoadIndicator(this);"
         />
         <span class="oh-pagination__label"
           >{% trans "of" %} {{queryset.paginator.num_pages}}</span

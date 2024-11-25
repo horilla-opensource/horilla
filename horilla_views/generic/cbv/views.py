@@ -961,6 +961,9 @@ class HorillaFormView(FormView):
                         label=form.fields[field].label,
                         required=form.fields[field].required,
                     )
+                    form.fields[field].widget.option_template_name = (
+                        "horilla_widgets/select_option.html",
+                    )
                     form.fields[field].widget.attrs = attrs
                     form.initial[field] = value
             if pk:

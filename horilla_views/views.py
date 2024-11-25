@@ -88,6 +88,9 @@ class ReloadField(View):
             label=field.label,
             required=field.required,
         )
+        parent_form.fields[cache_field].widget.option_template_name = (
+            "horilla_widgets/select_option.html",
+        )
         dynamic_initial = request.GET.get("dynamic_initial", [])
         parent_form.fields[cache_field].widget.attrs = field.widget.attrs
         parent_form.fields[cache_field].initial = eval(

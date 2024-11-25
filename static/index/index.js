@@ -302,6 +302,27 @@ function reloadMessage(e) {
     $('#reloadMessagesButton').click();
 }
 
+function htmxLoadIndicator(e) {
+    var target = $(e).attr('hx-target');
+    var table = $(target).find('table');
+    var card = $(target).find('.oh-card__body');
+    var kanban = $(target).find('.oh-kanban-card');
+
+    if (table.length) {
+        table.addClass('is-loading');
+        table.find('th, td').empty();
+    }
+    if (card.length) {
+        card.addClass('is-loading');
+    }
+    if (kanban.length) {
+        kanban.addClass('is-loading');
+    }
+    if (!table.length && !card.length && !kanban.length) {
+        $(target).html(`<div class="animated-background"></div>`);
+    }
+}
+
 function ajaxWithResponseHandler(event) {
     $(event.target).each(function () {
         $.each(this.attributes, function () {
@@ -422,13 +443,7 @@ $(document).on("htmx:beforeRequest", function (event, data) {
         }
     }
 });
-function htmxLoadIndicator(e) {
-    var target = $(e).attr('hx-target');
-    $(target).find('th').empty();
-    $(target).find('th').addClass('skeleton');
-    $(target).find('td').empty();
-    $(target).find('td').addClass('skeleton');
-}
+
 
 $(document).on('keydown', function (event) {
     // Check if the cursor is not focused on an input field
@@ -515,4 +530,39 @@ function updateUserPanelCount(e) {
         $permissionCountSpan.text(newText);
 
     }, 100);
+}
+
+
+
+function enlargeImage(src, $element) {
+    $(".enlargeImageContainer").empty()
+    var enlargeImageContainer = $element.parents().closest("li").find(".enlargeImageContainer")
+    enlargeImageContainer.empty()
+    style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
+    var enlargedImage = $('<iframe>').attr({ src: src, style: style })
+    var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
+    enlargeImageContainer.append(enlargedImage)
+    enlargeImageContainer.append(name)
+    setTimeout(function () {
+        enlargeImageContainer.show()
+
+        const iframe = document.querySelector('iframe').contentWindow
+        var iframe_document = iframe.document
+        iframe_image = iframe_document.getElementsByTagName('img')[0]
+        $(iframe_image).attr('style', 'width:100%; height:100%;')
+    }, 100)
+}
+
+function hideEnlargeImage() {
+    var enlargeImageContainer = $('.enlargeImageContainer')
+    enlargeImageContainer.empty()
+}
+
+$(document).on('click', function (event) {
+    if (!$(event.target).closest('#enlargeImageContainer').length) {
+        hideEnlargeImage()
+    }
+})
+function submitForm(elem) {
+    $(elem).siblings(".add_more_submit").click();
 }
