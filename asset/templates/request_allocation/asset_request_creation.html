@@ -1,42 +1,54 @@
 {% load i18n %}
+{% if messages %}
+    <script>setTimeout(() => {reloadMessage(this); $('.oh-modal__close').click(); }, 160);</script>
+    {% if hx_url %}
+        <span hx-trigger="load" hx-target="#{{hx_target}}" hx-get="{{hx_url}}"></span>
+    {% endif %}
+{% endif %}
 
-<div class="oh-modal__dialog-header">
-    <button type="button" class="oh-modal__close" aria-label="Close">
-      <ion-icon name="close-outline"></ion-icon>
+
+<div class="oh-modal__dialog-header pb-0">
+    <span class="oh-modal__dialog-title" id="createModalLabel">
+        {% trans "Asset Request" %}
+    </span>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
-
-  <!-- htmx form -->
-<div
-class="oh-modal__dialog-body"
->
-    <h5 >{% trans "Asset Request" %}</h5>
+<!-- htmx form -->
+<div class="oh-modal__dialog-body">
     {% if asset_request_form.errors %}
-    <div class="oh-wrapper">
-        {% for error in asset_request_form.non_field_errors %}
-        <div class="oh-alert-container">
-            <div class="oh-alert oh-alert--animated oh-alert--danger">
-            {{ error }}
-            </div>
+        <div class="oh-wrapper">
+            {% for error in asset_request_form.non_field_errors %}
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated oh-alert--danger">
+                        {{ error }}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-        {% endif %}
+    {% endif %}
     <form hx-post="{%url 'asset-request-creation' %}" hx-target="#objectCreateModalTarget">
         {% csrf_token %}
         <div class="oh-general__tab-target oh-profile-section">
             <div class="oh-input__group {% if not perms.asset.add_assetrequest %}d-none {% endif %}">
-                <label class="oh-input__label" for="{{asset_request_form.requested_employee_id.id_for_label}}">{% trans "Requesting User" %}</label>
+                <label class="oh-input__label" for="{{asset_request_form.requested_employee_id.id_for_label}}">
+                    {% trans "Requesting User" %}
+                </label>
                 {{asset_request_form.requested_employee_id}}
                 {{asset_request_form.requested_employee_id.errors}}
             </div>
             <div class="oh-input__group ">
-                <label class="oh-input__label" for="{{asset_request_form.asset_category_id.id_for_label}}">{% trans "Asset Category" %}</label>
+                <label class="oh-input__label" for="{{asset_request_form.asset_category_id.id_for_label}}">
+                    {% trans "Asset Category" %}
+                </label>
                 {{asset_request_form.asset_category_id}}
                 {{asset_request_form.asset_category_id.errors}}
             </div>
             <div class="oh-input__group ">
-                <label class="oh-input__label" for="{{asset_request_form.description.id_for_label}}">{% trans "Description" %}</label>
+                <label class="oh-input__label" for="{{asset_request_form.description.id_for_label}}">
+                    {% trans "Description" %}
+                </label>
                 {{asset_request_form.description}}
                 {{asset_request_form.description.errors}}
             </div>
