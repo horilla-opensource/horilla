@@ -2442,7 +2442,10 @@ def work_info_import(request):
         success_lists = []
         error_occured = False
         file = request.FILES["file"]
-        data_frame = pd.read_excel(file)
+        file_extension = file.name.split(".")[-1].lower()
+        data_frame = (
+            pd.read_csv(file) if file_extension == "csv" else pd.read_excel(file)
+        )
         work_info_dicts = data_frame.to_dict("records")
         existing_badge_ids = set(Employee.objects.values_list("badge_id", flat=True))
         existing_usernames = set(User.objects.values_list("username", flat=True))
