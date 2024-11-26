@@ -19,6 +19,9 @@ INSTALLED_APPS.append("auditlog")
 INSTALLED_APPS.append("biometric")
 INSTALLED_APPS.append("helpdesk")
 INSTALLED_APPS.append("offboarding")
+INSTALLED_APPS.append("horilla_backup")
+if settings.env("AWS_ACCESS_KEY_ID") and "storages" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("storages")
 
 
 AUDITLOG_INCLUDE_ALL_MODELS = True
