@@ -138,7 +138,6 @@ def request_new(request):
             form = BulkAttendanceRequestForm(request.POST)
             form.instance.attendance_clock_in_date = request.POST.get("from_date")
             form.instance.attendance_date = request.POST.get("from_date")
-
             if form.is_valid():
                 instance = form.save(commit=False)
                 messages.success(request, _("Attendance request created"))

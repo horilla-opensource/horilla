@@ -90,6 +90,7 @@ from attendance.models import (
     AttendanceRequestComment,
     AttendanceRequestFile,
     AttendanceValidationCondition,
+    BatchAttendance,
     GraceTime,
     WorkRecords,
 )
@@ -1474,6 +1475,42 @@ def approve_bulk_overtime(request):
         except (Attendance.DoesNotExist, OverflowError, ValueError):
             messages.error(request, _("Attendance not found"))
     return JsonResponse({"message": "Success"})
+
+
+@login_required
+# @manager_can_enter("attendance.change_attendance")
+def attendance_add_to_batch(request):
+    """
+    This method is used to add attendance to a batch
+    """
+    batches = BatchAttendance.objects.all()
+    ids = request.GET.getlist("ids")
+    if request.method == "POST":
+        ids = request.GET["ids"]
+        # Remove brackets and quotes, then split and convert to integers
+        int_ids = [int(x.strip().strip("'")) for x in ids.strip("[]").split(",")]
+        batch_id = request.POST.get("batch_attendance_id")
+        if batch_id:
+            batch = BatchAttendance.objects.filter(id=batch_id).first()
+            for id in int_ids:
+                try:
+                    attendance_req = Attendance.objects.filter(id=id).first()
+                    attendance_req.batch_attendance_id = batch
+                    attendance_req.save()
+                except Exception as e:
+                    logger.error(e)
+                    messages.error(request, _("Something went wrong."))
+                    return HttpResponse("<script>window.location.reload()</script>")
+            messages.success(request, _(f"Attendances added to {batch}."))
+            return HttpResponse("<script>window.location.reload()</script>")
+        else:
+            messages.error(request, _("Something went wrong."))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "attendance/attendance/attendance_add_batch.html",
+        {"batches": batches, "ids": ids},
+    )
 
 
 @login_required

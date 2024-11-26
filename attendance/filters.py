@@ -476,6 +476,7 @@ class AttendanceFilters(FilterSet):
             "department",
             "month",
             "year",
+            "batch_attendance_id",
         ]
 
         widgets = {
@@ -569,6 +570,7 @@ class AttendanceReGroup:
     fields = [
         ("", "Select"),
         ("employee_id", "Employee"),
+        ("batch_attendance_id", "Batch"),
         ("attendance_date", "Attendance Date"),
         ("shift_id", "Shift"),
         ("work_type_id", "Work Type"),
@@ -634,6 +636,7 @@ class AttendanceRequestReGroup:
     fields = [
         ("", "Select"),
         ("employee_id", "Employee"),
+        ("batch_attendance_id", "Batch"),
         ("attendance_day", "Attendance Date"),
         ("attendance_clock_in_date", "In Date"),
         ("attendance_clock_out_date", "Out Date"),

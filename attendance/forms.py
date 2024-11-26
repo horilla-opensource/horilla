@@ -46,6 +46,7 @@ from attendance.models import (
     AttendanceOverTime,
     AttendanceRequestComment,
     AttendanceValidationCondition,
+    BatchAttendance,
     GraceTime,
     WorkRecords,
     attendance_date_validate,
@@ -1089,7 +1090,6 @@ class BulkAttendanceRequestForm(ModelForm):
             }
         ),
     )
-
     from_date = forms.DateField(
         required=False,
         label=_("From Date"),
@@ -1099,6 +1099,20 @@ class BulkAttendanceRequestForm(ModelForm):
         required=False,
         label=_("To Date"),
         widget=forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+    )
+    create_batch = forms.BooleanField(
+        required=False,
+        initial=True,
+        label=_("Create Batch Request"),
+        help_text=_("Check this for create requests as a batch"),
+        widget=forms.CheckboxInput(
+            attrs={"class": "oh-checkbox", "onchange": "toggleBatchTitle()"}
+        ),
+    )
+    batch_title = forms.CharField(
+        max_length=100,
+        required=False,
+        label="Batch name",
     )
 
     class Meta:
@@ -1194,6 +1208,10 @@ class BulkAttendanceRequestForm(ModelForm):
                     "There is no valid date to create attendance request between this date range"
                 )
             )
+        if cleaned_data.get("create_batch") and (
+            not cleaned_data.get("batch_title") or cleaned_data.get("batch_title") == ""
+        ):
+            raise ValidationError(_("Please enter a batch name"))
         return cleaned_data
 
     def save(self, commit=True):
@@ -1210,6 +1228,9 @@ class BulkAttendanceRequestForm(ModelForm):
         minimum_hour = cleaned_data.get("minimum_hour")
         work_type_id = employee_id.employee_work_info.work_type_id
         date_list = get_date_list(employee_id, from_date, to_date)
+        batch_title = (
+            cleaned_data.get("batch_title") if cleaned_data.get("batch_title") else None
+        )
         # Prepare initial data for the form
         initial_data = {
             "employee_id": employee_id,
@@ -1223,6 +1244,8 @@ class BulkAttendanceRequestForm(ModelForm):
             "request_description": request_description,
         }
         # Iterate over the dates and create attendance requests
+        if batch_title:
+            batch = BatchAttendance.objects.create(title=batch_title)
         for date in date_list:
             initial_data.update(
                 {
@@ -1238,6 +1261,8 @@ class BulkAttendanceRequestForm(ModelForm):
                 instance.employee_id = employee_id
                 instance.request_type = "create_request"
                 instance.is_bulk_request = True
+                if batch_title:
+                    instance.batch_attendance_id = batch
                 instance.save()
             else:
                 logger(form.errors)

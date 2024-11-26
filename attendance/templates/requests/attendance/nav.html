@@ -110,6 +110,12 @@
                         </button>
                         <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
                             <ul class="oh-dropdown__items">
+                                <li class="oh-dropdown__item">
+                                    <a href="#" class="oh-dropdown__link" onclick="event.preventDefault();event.stopPropagation()" id="attendanceAddToBatch">{% trans "Add to batch" %}</a>
+                                    <span data-toggle="oh-modal-toggle" id="attendanceAddToBatchButton"
+                                        data-target="#objectDetailsModal" hx-get="{% url 'attendance-add-to-batch' %}"
+                                        hx-target="#objectDetailsModalTarget" hx-vals="">
+                                </li>
                                 {% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager %}
                                     <li class="oh-dropdown__item">
                                         <a href="#" class="oh-dropdown__link" id="reqAttendanceBulkApprove"

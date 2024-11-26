@@ -218,6 +218,11 @@ urlpatterns = [
         name="approve-bulk-overtime",
     ),
     path(
+        "attendance-add-to-batch",
+        views.attendance_add_to_batch,
+        name="attendance-add-to-batch",
+    ),
+    path(
         "dashboard", attendance.views.dashboard.dashboard, name="attendance-dashboard"
     ),
     path(

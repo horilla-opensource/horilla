@@ -100,6 +100,17 @@ class AttendanceActivity(HorillaModel):
         return time_difference.total_seconds()
 
 
+class BatchAttendance(HorillaModel):
+    """
+    Batch attendance model
+    """
+
+    title = models.CharField(max_length=150)
+
+    def __str__(self):
+        return f"{self.title}-{self.id}"
+
+
 class Attendance(HorillaModel):
     """
     Attendance model
@@ -142,6 +153,13 @@ class Attendance(HorillaModel):
         on_delete=models.DO_NOTHING,
         null=True,
         verbose_name=_("Attendance day"),
+    )
+    batch_attendance_id = models.ForeignKey(
+        BatchAttendance,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Batch Attendance"),
     )
     attendance_clock_in_date = models.DateField(
         null=True, verbose_name=_("Check-In Date")
