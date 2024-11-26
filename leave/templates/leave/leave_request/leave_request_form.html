@@ -22,8 +22,8 @@
         class="oh-modal__close"
         aria-label="Close"
         {% if messages %}
-            hx-get="{% url 'request-filter' %}?{{pd}}"
-            hx-target="#leaveRequest"
+            hx-get="{{hx_url}}"
+            hx-target="{{hx_target}}"
         {% endif %}
     >
         <ion-icon name="close-outline"></ion-icon>

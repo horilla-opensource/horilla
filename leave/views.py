@@ -490,13 +490,22 @@ def leave_request_creation(request, type_id=None, emp_id=None):
             leave_requests = LeaveRequest.objects.all()
             if len(leave_requests) == 1:
                 return HttpResponse("<script>window.location.reload()</script>")
-
+    referrer = request.META.get("HTTP_REFERER", "")
+    referrer = "/" + "/".join(referrer.split("/")[3:])
+    if referrer == "/":
+        hx_url = reverse("leave-request-and-approve")
+        hx_target = "#leaveApproveCardBody"
+    else:
+        hx_url = "/leave/request-filter?"
+        hx_target = "#leaveRequest"
     return render(
         request,
         "leave/leave_request/leave_request_form.html",
         {
             "form": form,
             "pd": previous_data,
+            "hx_url": hx_url,
+            "hx_target": hx_target,
         },
     )
 

@@ -31,17 +31,10 @@
     </ul>
 </div>
 {% else %}
-<div style="margin-top: 30%">
-    <div class="oh-404" style="position: revert; transform: none">
-        <img
-            style="width: 80px; height: 80px; margin-bottom: 20px"
-            src="{% static 'images/ui/attendance.png' %}"
-            class="oh-404__image"
-            alt="Page not found. 404."
-        />
-        <h5 class="oh-404__subtitle">
-            {% trans "No Leave request for today." %}
-        </h5>
+    <div class="oh-empty h-100">
+        <p class="oh-empty__message">
+            <img style="display: block;width: 70px;margin: 20px auto ;" src="{% static 'images/ui/attendance.png' %}" class="" alt=""/>
+            {% trans "No employees have taken leave today." %}
+        </p>
     </div>
-</div>
 {% endif %}
