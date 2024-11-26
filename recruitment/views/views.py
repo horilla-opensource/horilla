@@ -43,7 +43,13 @@ from base.backends import ConfiguredEmailBackend
 from base.context_processors import check_candidate_self_tracking
 from base.countries import country_arr, s_a, states
 from base.forms import MailTemplateForm
-from base.methods import export_data, generate_pdf, get_key_instances, sortby
+from base.methods import (
+    eval_validate,
+    export_data,
+    generate_pdf,
+    get_key_instances,
+    sortby,
+)
 from base.models import EmailLog, HorillaMailTemplate, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
 from horilla import settings
@@ -1718,7 +1724,7 @@ def form_send_mail(request, cand_id=None):
     candidate_obj = None
     stage_id = None
     if request.GET.get("stage_id"):
-        stage_id = eval(request.GET.get("stage_id"))
+        stage_id = eval_validate(request.GET.get("stage_id"))
     if cand_id:
         candidate_obj = Candidate.objects.get(id=cand_id)
     candidates = Candidate.objects.all()
@@ -2627,7 +2633,7 @@ def create_reject_reason(request):
     """
     This method is used to create/update the reject reasons
     """
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     if instance_id:
         instance = RejectReason.objects.get(id=instance_id)
@@ -2856,7 +2862,7 @@ def create_skills(request):
     """
     This method is used to create the skills
     """
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     dynamic = request.GET.get("dynamic")
     hx_vals = request.GET.get("data")
     instance = None
@@ -2920,7 +2926,7 @@ def view_bulk_resumes(request):
     """
     This function returns the bulk_resume.html page to the modal
     """
-    rec_id = eval(str(request.GET.get("rec_id")))
+    rec_id = eval_validate(str(request.GET.get("rec_id")))
     resumes = Resume.objects.filter(recruitment_id=rec_id)
 
     return render(
@@ -2935,7 +2941,7 @@ def add_bulk_resumes(request):
     """
     This function is used to create bulk resume
     """
-    rec_id = eval(str(request.GET.get("rec_id")))
+    rec_id = eval_validate(str(request.GET.get("rec_id")))
     recruitment = Recruitment.objects.get(id=rec_id)
     if request.method == "POST":
         files = request.FILES.getlist("files")

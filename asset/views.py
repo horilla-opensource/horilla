@@ -52,6 +52,7 @@ from asset.models import (
 )
 from base.methods import (
     closest_numbers,
+    eval_validate,
     filtersubordinates,
     get_key_instances,
     get_pagination,
@@ -301,7 +302,7 @@ def asset_delete(request, asset_id):
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
     instances_ids = request.GET.get("requests_ids", "[]")
-    instances_list = eval(instances_ids)
+    instances_list = eval_validate(instances_ids)
     if status == "In use":
         messages.info(request, _("Asset is in use"))
         return redirect(
@@ -314,7 +315,7 @@ def asset_delete(request, asset_id):
         )
     else:
         asset_del(request, asset)
-        if len(eval(instances_ids)) <= 1:
+        if len(eval_validate(instances_ids)) <= 1:
             return HttpResponse("<script>window.location.reload();</script>")
 
         if Asset.find(asset.id):
@@ -533,6 +534,38 @@ def asset_category_view_search_filter(request):
     return render(request, "category/asset_category.html", context)
 
 
+def request_creation_hx_returns(referer, user):
+    """
+    Determines the hx_url and hx_target based on the referer path
+    for asset request creation
+    """
+    referer = "/" + "/".join(referer.split("/")[3:])
+    # Map referer paths to corresponding URLs and targets
+    hx_map = {
+        "/": ("asset-dashboard-requests", "dashboardAssetRequests"),
+        "/asset/dashboard/": ("asset-dashboard-requests", "dashboardAssetRequests"),
+        "/asset/asset-request-allocation-view/": (
+            "asset-request-allocation-view-search-filter",
+            "asset_request_allocation_list",
+        ),
+        "/employee/employee-profile/": (
+            "profile-asset-tab",
+            "asset_target",
+        ),
+    }
+
+    hx_url, hx_target = hx_map.get(
+        referer, (None, None)
+    )  # Default to None if not in map
+
+    if hx_url == "profile-asset-tab":
+        hx_url = reverse(hx_url, kwargs={"emp_id": user.employee_get.id})
+    else:
+        hx_url = reverse(hx_url) if hx_url else None
+
+    return hx_url, hx_target
+
+
 @login_required
 def asset_request_creation(request):
     """
@@ -547,14 +580,16 @@ def asset_request_creation(request):
     messages displayed.
     """
     # intitial  = {'requested_employee_id':request.user.employee_get}
+
+    referer = request.META.get("HTTP_REFERER", "/")
+    hx_url, hx_target = request_creation_hx_returns(referer, request.user)
     form = AssetRequestForm(user=request.user)
-    context = {"asset_request_form": form}
+    context = {"asset_request_form": form, "hx_url": hx_url, "hx_target": hx_target}
     if request.method == "POST":
         form = AssetRequestForm(request.POST, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, _("Asset request created!"))
-            return HttpResponse("<script>window.location.reload()</script>")
         context["asset_request_form"] = form
 
     return render(request, "request_allocation/asset_request_creation.html", context)

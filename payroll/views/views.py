@@ -21,6 +21,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.methods import (
     closest_numbers,
+    eval_validate,
     export_data,
     generate_colors,
     generate_pdf,
@@ -188,7 +189,7 @@ def contract_status_update(request, contract_id):
 @permission_required("payroll.change_contract")
 def bulk_contract_status_update(request):
     status = request.POST.get("status")
-    ids = eval(request.POST.get("ids"))
+    ids = eval_validate(request.POST.get("ids"))
     all_contracts = Contract.objects.all()
     contracts = all_contracts.filter(id__in=ids)
 
@@ -1675,7 +1676,7 @@ def initial_notice_period(request):
     """
     This method is used to set initial value notice period
     """
-    notice_period = eval(request.GET["notice_period"])
+    notice_period = eval_validate(request.GET["notice_period"])
     settings = PayrollGeneralSetting.objects.first()
     settings = settings if settings else PayrollGeneralSetting()
     settings.notice_period = max(notice_period, 0)

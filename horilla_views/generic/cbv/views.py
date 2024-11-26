@@ -18,7 +18,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _trans
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
-from base.methods import closest_numbers, get_key_instances
+from base.methods import closest_numbers, eval_validate, get_key_instances
 from horilla.filters import FilterSet
 from horilla.group_by import group_by_queryset
 from horilla.horilla_middlewares import _thread_locals
@@ -142,7 +142,7 @@ class HorillaListView(ListView):
         form = self.get_bulk_form()
         form.verbose_name = (
             form.verbose_name
-            + f" ({len((eval(request.GET.get('instance_ids','[]'))))} {_trans('Records')})"
+            + f" ({len((eval_validate(request.GET.get('instance_ids','[]'))))} {_trans('Records')})"
         )
         return render(
             request,
@@ -158,7 +158,7 @@ class HorillaListView(ListView):
             return HttpResponse("You dont have permission")
 
         instance_ids = request.GET.get("instance_ids", "[]")
-        instance_ids = eval(instance_ids)
+        instance_ids = eval_validate(instance_ids)
         form = DynamicBulkUpdateForm(
             request.POST,
             request.FILES,
@@ -168,6 +168,7 @@ class HorillaListView(ListView):
         )
         if instance_ids and form.is_valid():
             form.save()
+            messages.success(request, _trans("Selected Records updated"))
 
             script_id = get_short_uuid(length=3, prefix="bulk")
             return HttpResponse(
@@ -219,7 +220,7 @@ class HorillaListView(ListView):
                     is_default=True,
                 ).first()
                 if not bool(query_dict) and default_filter:
-                    data = eval(default_filter.filter)
+                    data = eval_validate(default_filter.filter)
                     query_dict = QueryDict("", mutable=True)
                     for key, value in data.items():
                         query_dict[key] = value
@@ -395,8 +396,8 @@ class HorillaListView(ListView):
         from import_export import fields, resources
 
         request = getattr(_thread_locals, "request", None)
-        ids = eval(request.GET["ids"])
-        _columns = eval(request.GET["columns"])
+        ids = eval_validate(request.GET["ids"])
+        _columns = eval_validate(request.GET["columns"])
         queryset = self.model.objects.filter(id__in=ids)
 
         _model = self.model
@@ -515,7 +516,7 @@ class HorillaDetailedView(DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
-        instance_ids = eval(str(self.request.GET.get(self.ids_key)))
+        instance_ids = eval_validate(str(self.request.GET.get(self.ids_key)))
 
         pk = context["object"].pk
         if instance_ids:
@@ -663,7 +664,7 @@ class HorillaCardView(ListView):
                     is_default=True,
                 ).first()
                 if not bool(query_dict) and default_filter:
-                    data = eval(default_filter.filter)
+                    data = eval_validate(default_filter.filter)
                     query_dict = QueryDict("", mutable=True)
                     for key, value in data.items():
                         query_dict[key] = value
@@ -866,7 +867,7 @@ class HorillaFormView(FormView):
             pk = self.form.instance.pk
         # next/previous option in the forms
         if pk and self.request.GET.get(self.ids_key):
-            instance_ids = eval(str(self.request.GET.get(self.ids_key)))
+            instance_ids = eval_validate(str(self.request.GET.get(self.ids_key)))
             url = resolve(self.request.path)
             key = list(url.kwargs.keys())[0]
             url_name = url.url_name
@@ -1140,7 +1141,7 @@ class HorillaProfileView(DetailView):
         instance_ids_str = self.request.GET.get("instance_ids")
         if not instance_ids_str:
             instance_ids_str = "[]"
-        instance_ids = eval(instance_ids_str)
+        instance_ids = eval_validate(instance_ids_str)
         if instance_ids:
             CACHE.set(
                 f"{self.request.session.session_key}hpv-instance-ids", instance_ids

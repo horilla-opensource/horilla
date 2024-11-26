@@ -5,9 +5,9 @@ horilla_views/forms.py
 import os
 
 from django import forms
-from django.contrib import messages
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.db import transaction
 from django.template.loader import render_to_string
 from django.utils.safestring import SafeText
 from django.utils.translation import gettext_lazy as _trans
@@ -20,7 +20,6 @@ from horilla_views.cbv_methods import (
     MODEL_FORM_FIELD_MAP,
     get_field_class_map,
     structured,
-    value_to_field,
 )
 from horilla_views.templatetags.generic_template_filters import getattribute
 
@@ -105,7 +104,7 @@ class DynamicBulkUpdateForm(forms.Form):
         root_model: models.models.Model = None,
         bulk_update_fields: list = [],
         ids: list = [],
-        **kwargs
+        **kwargs,
     ):
         self.ids = ids
         self.root_model = root_model
@@ -146,7 +145,6 @@ class DynamicBulkUpdateForm(forms.Form):
                         self.fields[key].widget.option_template_name = (
                             "horilla_widgets/select_option.html",
                         )
-                        print(self.fields[key].empty_values)
                         continue
                     self.fields[key] = field(
                         widget=widget,
@@ -167,6 +165,21 @@ class DynamicBulkUpdateForm(forms.Form):
                 self.fields[key].widget.option_template_name = (
                     "horilla_widgets/select_option.html",
                 )
+
+    def is_valid(self):
+        valid = True
+        try:
+            with transaction.atomic():
+                # Perform bulk update
+                self.save()
+                # Simulate error check
+                raise Exception("no_errors")
+        except Exception as e:
+            # Handle errors or validation issues
+            if not "no_errors" in str(e):
+                valid = False
+                self.add_error(None, f"Form not valid: {str(e)}")
+        return valid
 
     def save(self, *args, **kwargs):
         """
@@ -243,5 +256,3 @@ class DynamicBulkUpdateForm(forms.Form):
                 for field, file in files.items():
                     file_path = os.path.join(field.upload_to, file.name)
                     default_storage.save(file_path, ContentFile(file.read()))
-
-        messages.success(self.request, _trans("Selected Records updated"))

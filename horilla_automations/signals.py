@@ -333,7 +333,7 @@ def send_mail(request, automation, instance):
     mail sending method
     """
     from base.backends import ConfiguredEmailBackend
-    from base.methods import generate_pdf
+    from base.methods import eval_validate, generate_pdf
     from horilla_automations.methods.methods import (
         get_model_class,
         get_related_field_model,
@@ -346,7 +346,7 @@ def send_mail(request, automation, instance):
     model_class = get_related_field_model(model_class, automation.mail_details)
     mail_to_instance = model_class.objects.filter(pk=pk).first()
     tos = []
-    for mapping in eval(automation.mail_to):
+    for mapping in eval_validate(automation.mail_to):
         result = getattribute(mail_to_instance, mapping)
         if isinstance(result, list):
             tos = tos + result

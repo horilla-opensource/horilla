@@ -104,6 +104,7 @@ from base.forms import (
 from base.methods import (
     choosesubordinates,
     closest_numbers,
+    eval_validate,
     export_data,
     filtersubordinates,
     get_key_instances,
@@ -1902,7 +1903,7 @@ def create_grace_time(request):
     Returns:
     GET : return grace time form template
     """
-    is_default = eval(request.GET.get("default"))
+    is_default = eval_validate(request.GET.get("default"))
     form = GraceTimeForm(initial={"is_default": is_default})
     if request.method == "POST":
         form = GraceTimeForm(request.POST)
@@ -2694,7 +2695,7 @@ def delete_allowed_ips(request):
         allowed_ips = AttendanceAllowedIP.objects.first()
         ips = allowed_ips.additional_data["allowed_ips"]
         for id in ids:
-            ips.pop(eval(id))
+            ips.pop(eval_validate(id))
 
         allowed_ips.additional_data["allowed_ips"] = ips
         allowed_ips.save()

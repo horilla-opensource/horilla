@@ -34,7 +34,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
 
-from base.methods import reload_queryset
+from base.methods import eval_validate, reload_queryset
 from employee.models import (
     Actiontype,
     BonusPoint,
@@ -228,7 +228,7 @@ class EmployeeForm(ModelForm):
                         item = item[total_zero_leads:]
                     if isinstance(item, list):
                         item = item[-1]
-                    if not incremented and isinstance(eval(str(item)), int):
+                    if not incremented and isinstance(eval_validate(str(item)), int):
                         item = int(item) + 1
                         incremented = True
                     if isinstance(item, int):

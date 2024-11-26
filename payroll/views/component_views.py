@@ -29,6 +29,7 @@ import payroll.models.models
 from base.backends import ConfiguredEmailBackend
 from base.methods import (
     closest_numbers,
+    eval_validate,
     filter_own_records,
     get_key_instances,
     get_next_month_same_date,
@@ -1353,7 +1354,7 @@ def create_loan(request):
     """
     This method is used to create and update the loan instance
     """
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = LoanAccount.objects.filter(id=instance_id).first()
     form = forms.LoanAccountForm(instance=instance)
     if request.method == "POST":
@@ -1593,7 +1594,7 @@ def create_reimbursement(request):
     """
     This method is used to create reimbursement
     """
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     if instance_id:
         instance = Reimbursement.objects.filter(id=instance_id).first()
@@ -1694,7 +1695,9 @@ def approve_reimbursements(request):
     status = request.GET["status"]
     if status == "canceled":
         status = "rejected"
-    amount = eval(request.GET.get("amount")) if request.GET.get("amount") else 0
+    amount = (
+        eval_validate(request.GET.get("amount")) if request.GET.get("amount") else 0
+    )
     amount = max(0, amount)
     reimbursements = Reimbursement.objects.filter(id__in=ids)
     if status and len(status):

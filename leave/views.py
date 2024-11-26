@@ -27,6 +27,7 @@ from base.forms import PenaltyAccountForm
 from base.methods import (
     choosesubordinates,
     closest_numbers,
+    eval_validate,
     export_data,
     filtersubordinates,
     get_key_instances,
@@ -4736,7 +4737,7 @@ if apps.is_installed("attendance"):
         comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_leave_id)
         context = {
             "comp_leave_req": comp_leave_req,
-            "my_request": eval(request.GET.get("my_request")),
+            "my_request": eval_validate(request.GET.get("my_request")),
             "instances_ids": requests_ids_json,
             "previous": previous_id,
             "next": next_id,

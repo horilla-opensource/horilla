@@ -39,4 +39,9 @@ urlpatterns = [
         views.LastAppliedFilter.as_view(),
         name="last-applied-filter",
     ),
+    path(
+        "generic-delete",
+        views.HorillaDeleteConfirmationView.as_view(),
+        name="generic-delete",
+    ),
 ]

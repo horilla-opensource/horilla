@@ -27,6 +27,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.methods import (
     closest_numbers,
+    eval_validate,
     get_key_instances,
     get_pagination,
     paginator_qry,
@@ -3221,8 +3222,8 @@ def key_result_current_value_update(request):
     This method is used to update keyresult current value
     """
     try:
-        current_value = eval(request.POST.get("current_value"))
-        emp_kr_id = eval(request.POST.get("emp_key_result_id"))
+        current_value = eval_validate(request.POST.get("current_value"))
+        emp_kr_id = eval_validate(request.POST.get("emp_key_result_id"))
         emp_kr = EmployeeKeyResult.objects.get(id=emp_kr_id)
         if current_value <= emp_kr.target_value:
             emp_kr.current_value = current_value
@@ -3309,7 +3310,7 @@ def create_meetings(request):
         Post:
             it will redirect to view_meetings.html .
     """
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     initial = {"manager": request.user.employee_get, "employee_id": None}
     if instance_id and isinstance(instance_id, int):

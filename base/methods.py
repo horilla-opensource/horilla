@@ -1,3 +1,4 @@
+import ast
 import calendar
 import json
 import os
@@ -866,3 +867,11 @@ def format_date(date_str):
         except ValueError:
             continue
     raise ValueError(f"Invalid date format: {date_str}")
+
+
+def eval_validate(value):
+    """
+    Method to validate the dynamic value
+    """
+    value = ast.literal_eval(value)
+    return value

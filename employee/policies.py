@@ -15,7 +15,12 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 
-from base.methods import filtersubordinates, get_key_instances, paginator_qry
+from base.methods import (
+    eval_validate,
+    filtersubordinates,
+    get_key_instances,
+    paginator_qry,
+)
 from employee.filters import DisciplinaryActionFilter, PolicyFilter
 from employee.forms import DisciplinaryActionForm, PolicyForm
 from employee.models import (
@@ -53,7 +58,7 @@ def create_policy(request):
     """
     instance_id = request.GET.get("instance_id")
     instance = None
-    if isinstance(eval(str(instance_id)), int):
+    if isinstance(eval_validate(str(instance_id)), int):
         instance = Policy.objects.filter(id=instance_id).first()
     form = PolicyForm(instance=instance)
     if request.method == "POST":

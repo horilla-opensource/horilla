@@ -11,8 +11,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from base.context_processors import intial_notice_period
-from base.methods import closest_numbers, sortby
-from base.views import paginator_qry
+from base.methods import closest_numbers, eval_validate, paginator_qry, sortby
 from employee.models import Employee
 from horilla.decorators import (
     hx_request_required,
@@ -178,7 +177,7 @@ def create_offboarding(request):
     """
     Create offboarding view
     """
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     if instance_id and isinstance(instance_id, int):
         instance = Offboarding.objects.filter(id=instance_id).first()
@@ -236,7 +235,7 @@ def create_stage(request):
     This method is used to create stages for offboardings
     """
     offboarding_id = request.GET["offboarding_id"]
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     if instance_id and isinstance(instance_id, int):
         instance = OffboardingStage.objects.get(id=instance_id)
@@ -280,7 +279,7 @@ def add_employee(request):
     )
     end_date = datetime.today() + timedelta(days=default_notice_period)
     stage_id = request.GET["stage_id"]
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     if instance_id and isinstance(instance_id, int):
         instance = OffboardingEmployee.objects.get(id=instance_id)
@@ -508,7 +507,7 @@ def add_task(request):
     This method is used to add offboarding tasks
     """
     stage_id = request.GET.get("stage_id")
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     employees = OffboardingEmployee.objects.filter(stage_id=stage_id)
     instance = None
     if instance_id:
@@ -807,7 +806,7 @@ def create_resignation_request(request):
     """
     This method is used to render form to create resignation requests
     """
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     if instance_id:
         instance = ResignationLetter.objects.get(id=instance_id)

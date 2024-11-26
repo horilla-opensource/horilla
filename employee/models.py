@@ -568,7 +568,7 @@ class EmployeeWorkInformation(models.Model):
     )
     reporting_manager_id = models.ForeignKey(
         Employee,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="reporting_manager",

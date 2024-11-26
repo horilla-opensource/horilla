@@ -30,6 +30,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _trans
 
+from base.methods import eval_validate
 from horilla import settings
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views.templatetags.generic_template_filters import getattribute
@@ -487,5 +488,24 @@ def value_to_field(field: object, value: list) -> Any:
     ):
         value = value[0]
         return value
-    value = eval(str(value[0]))
+    value = eval_validate(str(value[0]))
     return value
+
+
+def merge_dicts(dict1, dict2):
+    """
+    Method to merge two dicts
+    """
+    merged_dict = dict1.copy()
+
+    for key, value in dict2.items():
+        if key in merged_dict:
+            for model_class, instances in value.items():
+                if model_class in merged_dict[key]:
+                    merged_dict[key][model_class].extend(instances)
+                else:
+                    merged_dict[key][model_class] = instances
+        else:
+            merged_dict[key] = value
+
+    return merged_dict

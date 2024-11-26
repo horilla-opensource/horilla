@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _trans
 
+from base.methods import eval_validate
 from base.models import HorillaMailTemplate
 from horilla.models import HorillaModel
 from horilla_views.cbv_methods import render_template
@@ -73,7 +74,7 @@ class MailAutomation(HorillaModel):
         method that returns the display value for `mail_to`
         field
         """
-        mail_to = eval(self.mail_to)
+        mail_to = eval_validate(self.mail_to)
         mappings = []
         for mapping in mail_to:
             mapping = mapping.split("__")
