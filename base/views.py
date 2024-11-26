@@ -794,44 +794,55 @@ def home(request):
             and user.employee_get.dob.day == today.day
         )
 
-    announcements = Announcement.objects.all()
-    general_expire = AnnouncementExpire.objects.all().first()
-    general_expire_date = 30 if not general_expire else general_expire.days
-
-    for announcement in announcements.filter(expire_date__isnull=True):
-        calculated_expire_date = announcement.created_at + timedelta(
-            days=general_expire_date
-        )
-        announcement.expire_date = calculated_expire_date
-        announcement.save()
-
-        # Check if the user has viewed the announcement
-        announcement_view = AnnouncementView.objects.filter(
-            announcement=announcement, user=request.user
-        ).first()
-        announcement.has_viewed = (
-            announcement_view is not None and announcement_view.viewed
-        )
-
-    announcements = announcements.exclude(
-        expire_date__lt=datetime.today().date()
-    ).order_by("-created_at")
-
-    announcement_list = announcements.filter(employees=request.user.employee_get)
-    announcement_list = announcement_list | announcements.filter(employees__isnull=True)
-    if request.user.has_perm("base.view_announcement"):
-        announcement_list = announcements
-
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
-        "announcement": announcement_list,
-        "general_expire_date": general_expire_date,
         "charts": employee_charts.charts,
         "is_birthday": is_birthday,
     }
 
     return render(request, "index.html", context)
+
+
+@login_required
+def announcement_list(request):
+    general_expire_date = (
+        AnnouncementExpire.objects.values_list("days", flat=True).first() or 30
+    )
+    announcements = Announcement.objects.all()
+    announcements_to_update = []
+
+    for announcement in announcements.filter(expire_date__isnull=True):
+        announcement.expire_date = announcement.created_at + timedelta(
+            days=general_expire_date
+        )
+        announcements_to_update.append(announcement)
+
+    if announcements_to_update:
+        Announcement.objects.bulk_update(announcements_to_update, ["expire_date"])
+
+    announcements = announcements.filter(expire_date__gte=datetime.today().date())
+
+    if request.user.has_perm("base.view_announcement"):
+        announcement_list = announcements
+    else:
+        announcement_list = announcements.filter(
+            Q(employees=request.user.employee_get) | Q(employees__isnull=True)
+        )
+
+    announcement_list = announcement_list.prefetch_related(
+        "announcementview_set"
+    ).order_by("-created_at")
+    for announcement in announcement_list:
+        announcement.has_viewed = announcement.announcementview_set.filter(
+            user=request.user, viewed=True
+        ).exists()
+
+    context = {
+        "announcement": announcement_list,
+        "general_expire_date": general_expire_date,
+    }
+    return render(request, "announcements_list.html", context)
 
 
 @login_required
@@ -3347,7 +3358,10 @@ def work_type_request(request):
     HTTP_REFERER = request.META.get("HTTP_REFERER", None)
     context["close_hx_url"] = ""
     context["close_hx_target"] = ""
-    if HTTP_REFERER and HTTP_REFERER.endswith("work-type-request-view/"):
+    if "/" + "/".join(HTTP_REFERER.split("/")[3:]) == "/":
+        context["close_hx_url"] = f"{reverse('dashboard-work-type-request')}"
+        context["close_hx_target"] = "#WorkTypeRequestApproveBody"
+    elif HTTP_REFERER and HTTP_REFERER.endswith("work-type-request-view/"):
         context["close_hx_url"] = f"/work-type-request-search?{previous_data}"
         context["close_hx_target"] = "#view-container"
     elif HTTP_REFERER and HTTP_REFERER.endswith("employee-profile/"):
