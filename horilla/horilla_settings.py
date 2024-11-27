@@ -60,8 +60,7 @@ APPS = [
     "horilla_documents",
     "helpdesk",
 ]
-
-if settings.env("AWS_ACCESS_KEY_ID"):
+if settings.env("AWS_ACCESS_KEY_ID", default=None):
     AWS_ACCESS_KEY_ID = settings.env("AWS_ACCESS_KEY_ID")
     AWS_SECRET_ACCESS_KEY = settings.env("AWS_SECRET_ACCESS_KEY")
     AWS_STORAGE_BUCKET_NAME = settings.env("AWS_STORAGE_BUCKET_NAME")
@@ -77,6 +76,6 @@ if settings.env("AWS_ACCESS_KEY_ID"):
     settings.AWS_S3_ADDRESSING_STYLE = AWS_S3_ADDRESSING_STYLE
 
 
-if settings.env("AWS_ACCESS_KEY_ID") and "storages" in INSTALLED_APPS:
+if settings.env("AWS_ACCESS_KEY_ID", default=None) and "storages" in INSTALLED_APPS:
     settings.MEDIA_URL = settings.env("MEDIA_URL")
     settings.MEDIA_ROOT = settings.env("MEDIA_ROOT")
