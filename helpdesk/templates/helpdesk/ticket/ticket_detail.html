@@ -253,20 +253,24 @@
                               <textarea class="bg-transparent border-0 w-100 comment_input" data-comment-id = "{{item.comment.id}}" >{{item.comment.comment}}</textarea>
                               <p class="">{{item.comment.comment}}</p>
                               <div class="oh-btn-group" style="border:none">
+                              {% if request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_comment or request.user.employee_get == item.comment.employee_id %}
                                 <a
                                   class="oh-btn p-3 edit_comment"
                                   title="{% trans 'Edit' %}"
 
                                 >
-                                  <ion-icon name="pencil-outline"></ion-icon>
-                              </a>
+                                    <ion-icon name="pencil-outline"></ion-icon>
+                                </a>
+                              {% endif %}
+                              {% if perms.helpdesk.delete_comment %}
                                 <a
                                   href="{% url "comment-delete" item.comment.id %}"
-                                  type="button" title="{% trans 'View' %}"
+                                  type="button" title="{% trans 'Delete' %}"
                                   class="oh-btn p-3"
                                 >
                                   <ion-icon name="trash-outline"></ion-icon>
                                 </a>
+                              {% endif %}
                               </div>
                             </div>
                             <div class="oh-scrollable-container">
@@ -336,45 +340,47 @@
                 </div>
               </div>
               <!-- start of comment box. -->
-              <div class="oh-helpdesk__chatbox">
-                <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST" enctype="multipart/form-data" class="oh-chat oh-chat__input-wrapper">
-                  {% csrf_token %}
-                  <input name="file" multiple="True" type="file" id="fileUpload" class="d-none" />
-                  <label
-                    aria-role="button"
-                    for="fileUpload"
-                    aria-label="Attach Files"
-                    class="oh-btn oh-btn--chat oh-btn--chat-attachments"
-                  >
-                    <!-- The file count badge -->
-                    <span id="fileCount" style="
-                      position: absolute;
-                      top: -6px;   /* Adjust the top position */
-                      right: -6px; /* Adjust the right position */
-                      background-color: red;
-                      color: white;
-                      font-size: 12px;
-                      border-radius: 50%;
-                      padding: 2px 6px;
-                      min-width: 16px;
-                      text-align: center;
-                      display: none; /* Initially hidden */
-                    ">
-                    </span>
-                  </label>
+              {% if perms.helpdesk.add_comment or request.user.employee_get == ticket.employee_id %}
+                <div class="oh-helpdesk__chatbox">
+                  <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST" enctype="multipart/form-data" class="oh-chat oh-chat__input-wrapper">
+                    {% csrf_token %}
+                    <input name="file" multiple="True" type="file" id="fileUpload" class="d-none" />
+                    <label
+                      aria-role="button"
+                      for="fileUpload"
+                      aria-label="Attach Files"
+                      class="oh-btn oh-btn--chat oh-btn--chat-attachments"
+                    >
+                      <!-- The file count badge -->
+                      <span id="fileCount" style="
+                        position: absolute;
+                        top: -6px;   /* Adjust the top position */
+                        right: -6px; /* Adjust the right position */
+                        background-color: red;
+                        color: white;
+                        font-size: 12px;
+                        border-radius: 50%;
+                        padding: 2px 6px;
+                        min-width: 16px;
+                        text-align: center;
+                        display: none; /* Initially hidden */
+                      ">
+                      </span>
+                    </label>
 
-                  <textarea
-                    name="comment"
-                    class="oh-helpdesk__chat-input oh-chat__main-input ps-5"
-                    placeholder="Type something..."
-                  ></textarea>
-                  <button
-                    class="oh-btn oh-btn--chat oh-btn--chat-send"
-                    type="submit"
-                    onclick="validateComment(event)"
-                    aria-label="Send Message"></button>
-                </form>
-              </div>
+                    <textarea
+                      name="comment"
+                      class="oh-helpdesk__chat-input oh-chat__main-input ps-5"
+                      placeholder="Type something..."
+                    ></textarea>
+                    <button
+                      class="oh-btn oh-btn--chat oh-btn--chat-send"
+                      type="submit"
+                      onclick="validateComment(event)"
+                      aria-label="Send Message"></button>
+                  </form>
+                </div>
+              {% endif %}
               <!-- end of comment box. -->
             </div>
             <!-- start of right side contents. -->
@@ -488,35 +494,36 @@
                     </div>
 
                     <div class="oh-helpdesk__subcard">
-                      <div class="oh-helpdesk__subcard-header">
-                        <span class="oh-helpdesk__subcard-title">{% trans "Assigned to" %}</span>
-                        {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
-                        <div class="oh-btn-group">
+                      {% if perms.helpdesk.view_claimrequest or perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
+                        <div class="oh-helpdesk__subcard-header">
+                          <span class="oh-helpdesk__subcard-title">{% trans "Assigned to" %}</span>
+                          {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
+                          <div class="oh-btn-group">
 
-                          <button
-                              hx-get = "{% url "view-ticket-claim-request" ticket.id %}"
-                              hx-target="#objectDetailsModalTarget"
-                              data-toggle="oh-modal-toggle"
-                              data-target="#objectDetailsModal"
-                              class="oh-btn oh-btn--info p-3 w-100"
-                              title = "{% trans "Claim Requests" %}"
-                            >
-                            <ion-icon name="eye-outline"></ion-icon>
+                            <button
+                                hx-get = "{% url "view-ticket-claim-request" ticket.id %}"
+                                hx-target="#objectDetailsModalTarget"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#objectDetailsModal"
+                                class="oh-btn oh-btn--info p-3 w-100"
+                                title = "{% trans "Claim Requests" %}"
+                              >
+                              <ion-icon name="eye-outline"></ion-icon>
 
+                            </button>
+                            <button
+                              class="oh-btn oh-btn--light-bkg p-3 w-100"
+                              hx-get="{% url 'ticket-change-assignees' ticket.id %}"
+                              data-target ="#addTagModal"
+                              hx-target="#addTagTarget"
+                              title="{% trans 'Edit' %}"
+
+                            ><ion-icon name="create-outline"></ion-icon>
                           </button>
-                          <button
-														class="oh-btn oh-btn--light-bkg p-3 w-100"
-                            hx-get="{% url 'ticket-change-assignees' ticket.id %}"
-                            data-target ="#addTagModal"
-                            hx-target="#addTagTarget"
-														title="{% trans 'Edit' %}"
+                          </div>
+                          {% endif %}
 
-                          ><ion-icon name="create-outline"></ion-icon>
-                        </button>
                         </div>
-                        {% endif %}
-
-                      </div>
                           <div class="align-items-center d-flex" style="min-height: 40px;">
                           <div class="d-flex justify-content-between custom-scroll">
                             <div class="avatars" id="avatarsContainer">
@@ -531,6 +538,8 @@
                             </div>
                           </div>
                         </div>
+                      {% endif %}
+
                     </div>
                   </div>
                 </div>

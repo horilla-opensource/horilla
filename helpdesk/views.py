@@ -89,7 +89,7 @@ def faq_category_view(request):
 
 @login_required
 @hx_request_required
-@permission_required("helpdesk_addfaqcategory")
+@permission_required("helpdesk.add_faqcategory")
 def faq_category_create(request):
     """
     This function is responsible for creating the FAQ Category.
@@ -117,7 +117,7 @@ def faq_category_create(request):
 
 @login_required
 @hx_request_required
-@permission_required("helpdesk_changefaqcategory")
+@permission_required("helpdesk.change_faqcategory")
 def faq_category_update(request, id):
     """
     This function is responsible for updating the FAQ.
@@ -137,7 +137,7 @@ def faq_category_update(request, id):
         form = FAQCategoryForm(request.POST, instance=faq_category)
         if form.is_valid():
             form.save()
-            messages.info(request, _("The FAQ category updated successfully."))
+            messages.success(request, _("The FAQ category updated successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
     context = {
         "form": form,
@@ -147,7 +147,7 @@ def faq_category_update(request, id):
 
 
 @login_required
-@permission_required("helpdesk_deletefaq")
+@permission_required("helpdesk.delete_faqcategory")
 def faq_category_delete(request, id):
     try:
         faq = FAQCategory.objects.get(id=id)
@@ -208,7 +208,7 @@ def faq_view(request, cat_id, **kwargs):
 
 @login_required
 @hx_request_required
-@permission_required("helpdesk_addfaq")
+@permission_required("helpdesk.add_faq")
 def create_faq(request, cat_id):
     """
     This function is responsible for creating the FAQ.
@@ -237,7 +237,7 @@ def create_faq(request, cat_id):
 
 @login_required
 @hx_request_required
-@permission_required("helpdesk_changefaq")
+@permission_required("helpdesk.change_faq")
 def faq_update(request, id):
     """
     This function is responsible for updating the FAQ.
@@ -257,7 +257,7 @@ def faq_update(request, id):
         form = FAQForm(request.POST, instance=faq)
         if form.is_valid():
             form.save()
-            messages.info(request, _("The FAQ updated successfully."))
+            messages.success(request, _("The FAQ updated successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
     context = {
         "form": form,
@@ -355,7 +355,7 @@ def faq_suggestion(request):
 
 
 @login_required
-@permission_required("helpdesk_deletefaq")
+@permission_required("helpdesk.delete_faq")
 def faq_delete(request, id):
     try:
         faq = FAQ.objects.get(id=id)
@@ -389,8 +389,10 @@ def ticket_view(request):
         created_by=request.user
     )
     all_tickets = []
-    if is_reportingmanager(request) or request.user.has_perm("helpdesk.view_ticket"):
+    if is_reportingmanager(request):
         all_tickets = filtersubordinates(request, tickets, "helpdesk.view_ticket")
+    if request.user.has_perm("helpdesk.view_ticket"):
+        all_tickets = tickets
     allocated_tickets = []
     ticket_list = tickets.filter(is_active=True)
     user = request.user.employee_get
@@ -558,7 +560,7 @@ def ticket_archive(request, ticket_id):
 
     # Check if the user has permission or is the employee or their reporting manager
     if (
-        request.user.has_perm("helpdesk.delete_ticket")
+        request.user.has_perm("helpdesk.change_ticket")
         or ticket.employee_id == request.user.employee_get
         or is_department_manager(request, ticket)
     ):
@@ -755,11 +757,6 @@ def ticket_filter(request):
     allocated_page_number = request.GET.get("allocated_page")
     tickets_items1 = Ticket.objects.none()
     tickets_items2 = Ticket.objects.none()
-    print("<<<<<<<<<>>>>>>>>>>>>>>")
-    print("<<<<<<<<<>>>>>>>>>>>>>>")
-    print(request.GET.get("view"))
-    print("<<<<<<<<<>>>>>>>>>>>>>>")
-    print("<<<<<<<<<>>>>>>>>>>>>>>")
 
     my_tickets = tickets.filter(employee_id=request.user.employee_get) | tickets.filter(
         created_by=request.user
@@ -767,6 +764,8 @@ def ticket_filter(request):
 
     all_tickets = tickets.filter(is_active=True)
     all_tickets = filtersubordinates(request, tickets, "helpdesk.add_tickets")
+    if request.user.has_perm("helpdesk.view_ticket"):
+        all_tickets = tickets
 
     allocated_tickets = Ticket.objects.none()
     user = request.user.employee_get
@@ -789,9 +788,6 @@ def ticket_filter(request):
     tickets_items3 = ticket_list.filter(raised_on=user.id, assigning_type="individual")
 
     template = "helpdesk/ticket/ticket_list.html"
-    print("========================")
-    print(request.GET.get("view"))
-    print("========================")
 
     if request.GET.get("view") == "card":
         template = "helpdesk/ticket/ticket_card.html"
@@ -939,8 +935,10 @@ def ticket_individual_view(request, ticket_id):
 @login_required
 def view_ticket_claim_request(request, ticket_id):
     ticket = Ticket.objects.filter(id=ticket_id).first()
-    if request.user.has_perm("helpdesk.change_ticket") or is_department_manager(
-        request, ticket
+    if (
+        request.user.has_perm("helpdesk.change_claimrequest")
+        or request.user.has_perm("helpdesk.change_ticket")
+        or is_department_manager(request, ticket)
     ):
         claim_requests = ticket.claimrequest_set.all()
         context = {
@@ -1226,11 +1224,10 @@ def comment_edit(request):
 
 
 @login_required
+@permission_required("helpdesk.delete_comment")
 def comment_delete(request, comment_id):
     comment = Comment.objects.filter(id=comment_id).first()
     employee = comment.employee_id
-    if not request.user.has_perm("helpdesk.delete_comment"):
-        comment = comment.filter(employee_id__employee_user_id=request.user)
     comment.delete()
     messages.success(
         request, _("{}'s comment has been deleted successfully.").format(employee)

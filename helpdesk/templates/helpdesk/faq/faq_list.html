@@ -14,42 +14,44 @@
 							{% endfor %}
 						</ul>
 					</div>
-					{% if perms.helpdesk.change_faq %}
 					<div class="oh-faq__item-header__right">
-						<button
-							class="oh-btn oh-btn--sq oh-btn--transparent"
-							title="{% trans 'Edit' %}"
-							data-toggle="oh-modal-toggle"
-							data-target="#objectCreateModal"
-							hx-get="{% url 'faq-update' faq.id %}"
-							hx-target="#objectCreateModalTarget"
-							onclick='event.stopPropagation()'
-						>
-							<ion-icon name="create-outline"></ion-icon>
-						</button>
-						<form
-							action="{% url 'faq-delete' faq.id %}"
-							class="w-50"
-							onsubmit="return confirm('{% trans "Are you sure you want to delete	this FAQ?" %}');"
-							method="post"
-							onclick="event.stopPropagation()"
-						>
-							{% csrf_token %}
+						{% if perms.helpdesk.change_faq %}
 							<button
-								type="submit"
-								class="oh-btn oh-btn--sq oh-btn--danger-text oh-btn--transparent"
-								title="{% trans 'Delete' %}"
+								class="oh-btn oh-btn--sq oh-btn--transparent"
+								title="{% trans 'Edit' %}"
+								data-toggle="oh-modal-toggle"
+								data-target="#objectCreateModal"
+								hx-get="{% url 'faq-update' faq.id %}"
+								hx-target="#objectCreateModalTarget"
+								onclick='event.stopPropagation()'
 							>
-								<ion-icon
-									class="me-1 md hydrated"
-									name="trash-outline"
-									role="img"
-									aria-label="trash outline"
-								></ion-icon>
+								<ion-icon name="create-outline"></ion-icon>
 							</button>
-						</form>
+						{% endif %}
+						{% if perms.helpdesk.delete_faq %}
+							<form
+								action="{% url 'faq-delete' faq.id %}"
+								class="w-50"
+								onsubmit="return confirm('{% trans "Are you sure you want to delete	this FAQ?" %}');"
+								method="post"
+								onclick="event.stopPropagation()"
+							>
+								{% csrf_token %}
+								<button
+									type="submit"
+									class="oh-btn oh-btn--sq oh-btn--danger-text oh-btn--transparent"
+									title="{% trans 'Delete' %}"
+								>
+									<ion-icon
+										class="me-1 md hydrated"
+										name="trash-outline"
+										role="img"
+										aria-label="trash outline"
+									></ion-icon>
+								</button>
+							</form>
+						{% endif %}
 					</div>
-					{% endif %}
 				</div>
 				<div class="oh-faq__item-body">{{faq.answer}}</div>
 			</li>
