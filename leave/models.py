@@ -453,7 +453,7 @@ class AvailableLeave(HorillaModel):
             status="approved",
         ).aggregate(total_sum=Sum("requested_days"))
 
-        return int(leave_taken["total_sum"]) if leave_taken["total_sum"] else 0
+        return leave_taken["total_sum"] if leave_taken["total_sum"] else 0
 
     # Setting the expiration date for carryforward leaves
     def set_expired_date(self, available_leave, assigned_date):
