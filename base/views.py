@@ -6025,8 +6025,8 @@ def action_type_create(request):
     This method renders form and template to create Action Type
     """
     form = ActiontypeForm()
+    previous_data = request.GET.urlencode()
     dynamic = request.GET.get("dynamic")
-    hx_vals = request.GET.get("data")
     if request.method == "POST":
         form = ActiontypeForm(request.POST)
         if form.is_valid():
@@ -6045,8 +6045,7 @@ def action_type_create(request):
         "base/action_type/action_type_form.html",
         {
             "form": form,
-            "dynamic": dynamic,
-            "hx_vals": hx_vals,
+            "pd": previous_data,
         },
     )
 
