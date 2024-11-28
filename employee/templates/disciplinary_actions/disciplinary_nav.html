@@ -113,7 +113,7 @@
 </div>
 <span name="" id="dynamicActionType" style="display: none" data-toggle="oh-modal-toggle"
     data-target="#dynamicCreateModal" hx-get="{% url 'action-type-create' %}?dynamic=employee"
-    hx-target="#dynamicCreateModalBody">
+    hx-target="#dynamicCreateModalBody" hx-include="#disciplinaryActionForm">
 </span>
 {% if data %}
     <div class="oh-wrapper" id="actionContainer">
@@ -174,9 +174,6 @@
                 },
             });
         } else {
-            let dynamicActionType = $("#dynamicActionType");
-            var view = parentForm.serialize();
-            dynamicActionType.attr("hx-vals", `{"data":"${view}"}`);
             dynamicActionType.click();
         }
     }

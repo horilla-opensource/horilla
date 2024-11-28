@@ -192,10 +192,6 @@ def employee_profile(request):
     This method is used to view own profile of employee.
     """
     employee = request.user.employee_get
-    # interviews = InterviewSchedule.objects.filter(employee_id=employee).order_by(
-    #     "-interview_date"
-    # )
-    interviews = None
     today = datetime.today()
     now = timezone.now()
     return render(
@@ -203,10 +199,7 @@ def employee_profile(request):
         "employee/profile/profile_view.html",
         {
             "employee": employee,
-            "user_leaves": None,
-            "leave_request_ids": json.dumps([]),
             "current_date": today,
-            "interviews": interviews,
             "now": now,
         },
     )
