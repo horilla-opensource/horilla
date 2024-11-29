@@ -4,9 +4,11 @@ decorators.py
 Custom decorators for permission and manager checks in the application.
 """
 
+from functools import wraps
+
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from employee.models import Employee
 from recruitment.models import Recruitment, Stage
@@ -130,7 +132,6 @@ def recruitment_manager_can_enter(function, perm):
 
         Returns:
             HttpResponse: The response from the decorated function.
-
         """
         user = request.user
         employee = Employee.objects.filter(employee_user_id=user).first()
@@ -146,3 +147,17 @@ def recruitment_manager_can_enter(function, perm):
         return HttpResponse(script)
 
     return _function
+
+
+def candidate_login_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+
+        if request.user.has_perm("recruitment.view_candidate"):
+            return view_func(request, *args, **kwargs)
+
+        if "candidate_id" in request.session:
+            return view_func(request, *args, **kwargs)
+        return redirect("candidate-login")
+
+    return _wrapped_view

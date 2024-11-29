@@ -18,11 +18,11 @@ import json
 import os
 import random
 import re
-from datetime import datetime
+from datetime import date, datetime
 from itertools import chain
 from urllib.parse import parse_qs
 
-import fitz
+import fitz  # type: ignore
 from django import template
 from django.conf import settings
 from django.contrib import messages
@@ -31,7 +31,7 @@ from django.core import serializers
 from django.core.cache import cache as CACHE
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
-from django.db.models import ProtectedError, Q
+from django.db.models import Case, IntegerField, ProtectedError, Q, When
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -50,8 +50,9 @@ from base.methods import (
     get_key_instances,
     sortby,
 )
-from base.models import EmailLog, HorillaMailTemplate, JobPosition
+from base.models import EmailLog, HorillaMailTemplate, JobPosition, clear_messages
 from employee.models import Employee, EmployeeWorkInformation
+from employee.views import get_content_type
 from horilla import settings
 from horilla.decorators import (
     hx_request_required,
@@ -61,7 +62,12 @@ from horilla.decorators import (
 )
 from horilla.group_by import group_by_queryset
 from notifications.signals import notify
-from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
+from recruitment.auth import CandidateAuthenticationBackend
+from recruitment.decorators import (
+    candidate_login_required,
+    manager_can_enter,
+    recruitment_manager_can_enter,
+)
 from recruitment.filters import (
     CandidateFilter,
     CandidateReGroup,
@@ -74,6 +80,10 @@ from recruitment.filters import (
 from recruitment.forms import (
     AddCandidateForm,
     CandidateCreationForm,
+    CandidateDocumentForm,
+    CandidateDocumentRejectForm,
+    CandidateDocumentRequestForm,
+    CandidateDocumentUpdateForm,
     CandidateExportForm,
     RecruitmentCreationForm,
     RejectReasonForm,
@@ -90,6 +100,7 @@ from recruitment.forms import (
 from recruitment.methods import recruitment_manages
 from recruitment.models import (
     Candidate,
+    CandidateDocument,
     CandidateRating,
     InterviewSchedule,
     Recruitment,
@@ -1087,6 +1098,17 @@ def delete_individual_note_file(request, id):
 
 
 @login_required
+@hx_request_required
+@manager_can_enter(perm="recruitment.add_stagenote")
+def candidate_can_view_note(request, id):
+    note = StageNote.objects.filter(id=id)
+    note.update(candidate_can_view=not note.first().candidate_can_view)
+
+    messages.success(request, _("Candidate view status updated"))
+    return redirect("view-note", cand_id=note.first().candidate_id.id)
+
+
+@login_required
 @permission_required(perm="recruitment.change_candidate")
 def candidate_schedule_date_update(request):
     """
@@ -1535,6 +1557,7 @@ def candidate_view_individual(request, cand_id, **kwargs):
         User.objects.filter(username__in=mails).values_list("email", flat=True)
     )
     ratings = candidate_obj.candidate_rating.all()
+    documents = CandidateDocument.objects.filter(candidate_id=cand_id)
     rating_list = []
     avg_rate = 0
     for rating in ratings:
@@ -1580,6 +1603,7 @@ def candidate_view_individual(request, cand_id, **kwargs):
             "requests_ids": requests_ids,
             "emp_list": existing_emails,
             "average_rate": avg_rate,
+            "documents": documents,
             "now": now,
         },
     )
@@ -2603,6 +2627,36 @@ def candidate_self_tracking_rating_option(request):
     return HttpResponse("success")
 
 
+def candidate_login(request):
+    if request.method == "POST":
+        email = request.POST["email"]
+        mobile = request.POST["phone"]
+
+        backend = CandidateAuthenticationBackend()
+        candidate = backend.authenticate(request, username=email, password=mobile)
+
+        if candidate is not None:
+            request.session["candidate_id"] = candidate.id
+            request.session["candidate_email"] = candidate.email
+            return redirect("candidate-self-status-tracking")
+        else:
+            return render(
+                request, "candidate/self_login.html", {"error": "Invalid credentials"}
+            )
+
+    return render(request, "candidate/self_login.html")
+
+
+def candidate_logout(request):
+    """Logs out the candidate by clearing session data."""
+
+    request.session.pop("candidate_id", None)
+    request.session.pop("candidate_email", None)
+    messages.success(request, "You have been logged out.")
+    return redirect("candidate_login")
+
+
+@candidate_login_required
 def candidate_self_status_tracking(request):
     """
     This method is accessed by the candidates
@@ -2611,18 +2665,65 @@ def candidate_self_status_tracking(request):
         "check_candidate_self_tracking"
     ]
     if self_tracking_feature:
-        if request.method == "POST":
-            email = request.POST["email"]
-            phone = request.POST["phone"]
-            candidate = Candidate.objects.filter(
-                email=email, mobile=phone, is_active=True
-            ).first()
-            if candidate:
-                return render(
-                    request, "candidate/self_tracking.html", {"candidate": candidate}
-                )
-            messages.info(request, "No matching record")
-        return render(request, "candidate/self_login.html")
+        candidate_id = request.session.get("candidate_id")
+
+        if not candidate_id:
+            return redirect("candidate-login")
+
+        candidate = Candidate.objects.get(pk=candidate_id)
+        interviews = candidate.candidate_interview.annotate(
+            is_today=Case(
+                When(interview_date=date.today(), then=0),
+                default=1,
+                output_field=IntegerField(),
+            )
+        ).order_by("is_today", "-interview_date", "interview_time")
+        return render(
+            request,
+            "candidate/candidate_self_tracking.html",
+            {"candidate": candidate, "interviews": interviews},
+        )
+    return render(request, "404.html")
+
+
+@login_required
+@manager_can_enter("recruitment.add_candidate")
+def candidate_self_status_tracking_managers_view(request, cand_id):
+    """
+    This method is accessed by the candidates
+    """
+    self_tracking_feature = check_candidate_self_tracking(request)[
+        "check_candidate_self_tracking"
+    ]
+    if self_tracking_feature:
+        candidate_id = request.session.get("candidate_id")
+        if (
+            request.user.has_perm("recruitment.view_candidate")
+            or request.user.employee_get.recruitment_set.filter(
+                candidate__id=cand_id
+            ).exists()
+            or request.user.employee_get.stage_set.filter(candidate=cand_id).exists()
+        ):
+            request.session["candidate_id"] = cand_id
+            candidate_id = cand_id
+
+        if not candidate_id:
+            return redirect("candidate-login")
+
+        candidate = Candidate.objects.get(pk=candidate_id)
+        interviews = candidate.candidate_interview.annotate(
+            is_today=Case(
+                When(interview_date=date.today(), then=0),
+                default=1,
+                output_field=IntegerField(),
+            )
+        ).order_by("is_today", "-interview_date", "interview_time")
+
+        return render(
+            request,
+            "candidate/candidate_self_tracking.html",
+            {"candidate": candidate, "interviews": interviews},
+        )
     return render(request, "404.html")
 
 
@@ -3112,3 +3213,342 @@ def hired_candidate_chart(request):
         },
         safe=False,
     )
+
+
+@login_required
+def candidate_document_request(request):
+    """
+    This function is used to create document requests of an employee in employee requests view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns: return document_request_create_form template
+    """
+    candidate_id = (
+        request.GET.get("candidate_id") if request.GET.get("candidate_id") else None
+    )
+    form = CandidateDocumentRequestForm(initial={"candidate_id": candidate_id})
+    if request.method == "POST":
+        form = CandidateDocumentRequestForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Document request created successfully"))
+            return HttpResponse("<script>window.location.reload();</script>")
+
+    context = {
+        "form": form,
+    }
+    return render(
+        request, "documents/document_request_create_form.html", context=context
+    )
+
+
+@login_required
+@hx_request_required
+def document_create(request, id):
+    """
+    This function is used to create documents from employee individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee
+
+    Returns: return document_tab template
+    """
+    candidate_id = Candidate.objects.get(id=id)
+    form = CandidateDocumentForm(initial={"candidate_id": candidate_id})
+    if request.method == "POST":
+        form = CandidateDocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Document created successfully."))
+            return HttpResponse("<script>window.location.reload();</script>")
+
+    context = {
+        "form": form,
+        "candidate_id": candidate_id,
+    }
+    return render(request, "candidate/document_create_form.html", context=context)
+
+
+@login_required
+def update_document_title(request, id):
+    """
+    This function is used to create documents from employee individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns: return document_tab template
+    """
+    document = get_object_or_404(CandidateDocument, id=id)
+    name = request.POST.get("title")
+    if request.method == "POST":
+        document.title = name
+        document.save()
+
+        return JsonResponse(
+            {"success": True, "message": "Document title updated successfully"}
+        )
+    else:
+        return JsonResponse(
+            {"success": False, "message": "Invalid request"}, status=400
+        )
+
+
+@login_required
+@hx_request_required
+def document_delete(request, id):
+    """
+    Handle the deletion of a document, with permissions and error handling.
+
+    This view function attempts to delete a document specified by its ID.
+    If the user does not have the "delete_document" permission, it restricts
+    deletion to documents owned by the user. It provides appropriate success
+    or error messages based on the outcome. If the document is protected and
+    cannot be deleted, it handles the exception and informs the user.
+    """
+    try:
+        document = CandidateDocument.objects.filter(id=id)
+        # users can delete own documents
+        if not request.user.has_perm("horilla_documents.delete_document"):
+            document = document.filter(employee_id__employee_user_id=request.user)
+        if document:
+            document.delete()
+            messages.success(
+                request,
+                _(
+                    f"Document request {document.first()} for {document.first().employee_id} deleted successfully"
+                ),
+            )
+        else:
+            messages.error(request, _("Document not found"))
+
+    except ProtectedError:
+        messages.error(request, _("You cannot delete this document."))
+
+    if "HTTP_HX_TARGET" in request.META and request.META.get(
+        "HTTP_HX_TARGET"
+    ).startswith("document"):
+        clear_messages(request)
+        return HttpResponse()
+    else:
+        return HttpResponse("<script>window.location.reload();</script>")
+
+
+@candidate_login_required
+@hx_request_required
+def file_upload(request, id):
+    """
+    This function is used to upload documents of an employee in employee individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    id (int): The id of the document.
+
+    Returns: return document_form template
+    """
+    candidate_id = request.session.get("candidate_id")
+    if not candidate_id:
+        return redirect("candidate-login")
+
+    document_item = CandidateDocument.objects.get(id=id)
+    form = CandidateDocumentUpdateForm(instance=document_item)
+    if request.method == "POST":
+        form = CandidateDocumentUpdateForm(
+            request.POST, request.FILES, instance=document_item
+        )
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Document uploaded successfully"))
+            return HttpResponse("<script>window.location.reload();</script>")
+
+    context = {
+        "form": form,
+        "document": document_item,
+    }
+    return render(request, "candidate/document_form.html", context=context)
+
+
+@candidate_login_required
+@hx_request_required
+def view_file(request, id):
+    """
+    This function used to view the uploaded document in the modal.
+    Parameters:
+
+    request (HttpRequest): The HTTP request object.
+    id (int): The id of the document.
+
+    Returns: return view_file template
+    """
+    candidate_id = request.session.get("candidate_id")
+    if not candidate_id:
+        return redirect("candidate-login")
+
+    document_obj = CandidateDocument.objects.filter(id=id).first()
+    context = {
+        "document": document_obj,
+    }
+    if document_obj.document:
+        file_path = document_obj.document.path
+        file_extension = os.path.splitext(file_path)[1][1:].lower()
+
+        content_type = get_content_type(file_extension)
+
+        try:
+            with open(file_path, "rb") as file:
+                file_content = file.read()
+        except:
+            file_content = None
+
+        context["file_content"] = file_content
+        context["file_extension"] = file_extension
+        context["content_type"] = content_type
+
+    return render(request, "candidate/view_file.html", context)
+
+
+@login_required
+@hx_request_required
+@manager_can_enter("horilla_documents.add_document")
+def document_approve(request, id):
+    """
+    This function used to view the approve uploaded document.
+    Parameters:
+
+    request (HttpRequest): The HTTP request object.
+    id (int): The id of the document.
+
+    Returns:
+    """
+    document_obj = get_object_or_404(CandidateDocument, id=id)
+    if document_obj.document:
+        document_obj.status = "approved"
+        document_obj.save()
+        messages.success(request, _("Document request approved"))
+    else:
+        messages.error(request, _("No document uploaded"))
+
+    return HttpResponse("<script>window.location.reload();</script>")
+
+
+@login_required
+@hx_request_required
+@manager_can_enter("horilla_documents.add_document")
+def document_reject(request, id):
+    """
+    This function used to view the reject uploaded document.
+    Parameters:
+
+    request (HttpRequest): The HTTP request object.
+    id (int): The id of the document.
+
+    Returns:
+    """
+    document_obj = get_object_or_404(CandidateDocument, id=id)
+    form = CandidateDocumentRejectForm()
+    if document_obj.document:
+        if request.method == "POST":
+            form = CandidateDocumentRejectForm(request.POST, instance=document_obj)
+            if form.is_valid():
+                instance = form.save(commit=False)
+                document_obj.reject_reason = instance.reject_reason
+                document_obj.status = "rejected"
+                document_obj.save()
+                messages.error(request, _("Document request rejected"))
+
+                return HttpResponse("<script>window.location.reload();</script>")
+    else:
+        messages.error(request, _("No document uploaded"))
+        return HttpResponse("<script>window.location.reload();</script>")
+
+    return render(
+        request,
+        "candidate/reject_form.html",
+        {"form": form, "document_obj": document_obj},
+    )
+
+
+@candidate_login_required
+def candidate_add_notes(request, cand_id):
+    """
+    This method renders template component to add candidate remark
+    """
+
+    candidate_id = request.session.get("candidate_id")
+    if not candidate_id:
+        return redirect("candidate-login")
+
+    candidate = Candidate.objects.get(id=cand_id)
+    updated_by = request.user.employee_get if request.user.is_authenticated else None
+    label = (
+        request.user.employee_get.get_full_name()
+        if request.user.is_authenticated
+        else candidate.name
+    )
+
+    form = StageNoteForm(initial={"candidate_id": cand_id})
+    if request.method == "POST":
+        form = StageNoteForm(
+            request.POST,
+            request.FILES,
+        )
+        if form.is_valid():
+            note, attachment_ids = form.save(commit=False)
+            note.candidate_id = candidate
+            note.stage_id = candidate.stage_id
+            note.updated_by = updated_by
+            note.candidate_can_view = True
+            note.save()
+            note.stage_files.set(attachment_ids)
+            messages.success(request, _("Note added successfully.."))
+            with contextlib.suppress(Exception):
+                managers = candidate.recruitment_id.recruitment_managers.all()
+                stage_managers = candidate.stage_id.stage_managers.all()
+
+                all_managers = managers | stage_managers
+                users = [
+                    employee.employee_user_id for employee in all_managers.distinct()
+                ]
+
+                notify.send(
+                    candidate,
+                    label=label,
+                    recipient=users,
+                    verb=f"{label} has added a note on the candidate {candidate}",
+                    verb_ar=f"أضاف {label} ملاحظة حول المرشح {candidate}",
+                    verb_de=f"{label} hat dem {candidate} eine Notiz hinzugefügt.",
+                    verb_es=f"{label} agregó una nota al {candidate}.",
+                    verb_fr=f"{label} a ajouté une note à {candidate}.",
+                    icon="people-circle",
+                    redirect=reverse(
+                        "candidate-view-individual", kwargs={"cand_id": cand_id}
+                    ),
+                )
+
+    return render(
+        request,
+        "candidate/candidate_self_tracking.html",
+        {
+            "candidate": candidate,
+            "note_form": form,
+        },
+    )
+
+
+@login_required
+@hx_request_required
+def employee_profile_interview_tab(request):
+    employee = request.user.employee_get
+
+    interviews = employee.interviewschedule_set.annotate(
+        is_today=Case(
+            When(interview_date=date.today(), then=0),
+            default=1,
+            output_field=IntegerField(),
+        )
+    ).order_by("is_today", "-interview_date", "interview_time")
+
+    return render(request, "tabs/scheduled_interview.html", {"interviews": interviews})

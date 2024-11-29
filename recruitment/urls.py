@@ -181,6 +181,11 @@ urlpatterns = [
         recruitment.views.actions.note_delete_individual,
         name="note-delete-individual",
     ),
+    path(
+        "candidate-can-view-note/<int:id>/",
+        views.candidate_can_view_note,
+        name="candidate-can-view-note",
+    ),
     path("send-mail/<int:cand_id>/", views.form_send_mail, name="send-mail"),
     path("send-mail/", views.form_send_mail, name="send-mail"),
     path(
@@ -524,6 +529,16 @@ urlpatterns = [
         name="candidate-self-status-tracking",
     ),
     path(
+        "candidate-self-status-tracking/<int:cand_id>",
+        views.candidate_self_status_tracking_managers_view,
+        name="candidate-self-status-tracking",
+    ),
+    path(
+        "candidate-login",
+        views.candidate_login,
+        name="candidate-login",
+    ),
+    path(
         "create-reject-reason", views.create_reject_reason, name="create-reject-reason"
     ),
     path(
@@ -595,5 +610,51 @@ urlpatterns = [
         "self-tracking-feature/",
         views.self_tracking_feature,
         name="self-tracking-feature",
+    ),
+    path(
+        "candidate-document-request/",
+        views.candidate_document_request,
+        name="candidate-document-request",
+    ),
+    path(
+        "candidate-file-upload/<int:id>",
+        views.file_upload,
+        name="candidate-file-upload",
+    ),
+    path("candidate-view-file/<int:id>", views.view_file, name="candidate-view-file"),
+    path(
+        "candidate-document-create/<int:id>",
+        views.document_create,
+        name="candidate-document-create",
+    ),
+    path(
+        "candidate-update-document-title/<int:id>",
+        views.update_document_title,
+        name="candidate-update-document-title",
+    ),
+    path(
+        "candidate-document-approve/<int:id>",
+        views.document_approve,
+        name="candidate-document-approve",
+    ),
+    path(
+        "candidate-document-reject/<int:id>",
+        views.document_reject,
+        name="candidate-document-reject",
+    ),
+    path(
+        "candidate-document-delete/<int:id>/",
+        views.document_delete,
+        name="candidate-document-delete",
+    ),
+    path(
+        "candidate-add-notes/<int:cand_id>",
+        views.candidate_add_notes,
+        name="candidate-add-notes",
+    ),
+    path(
+        "employee-interview-tab",
+        views.employee_profile_interview_tab,
+        name="employee-interview-tab",
     ),
 ]
