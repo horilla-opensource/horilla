@@ -10,17 +10,22 @@
 <div class="oh-modal__dialog-body">
   <form
     id="file-form"
-    {% if document_request%}
+    {% if document_request %}
       hx-post="{% url 'document-request-update' document_request.id %}"
     {% else %}
-      hx-post="{% url 'document-request-create' %}"
+      {% if form.candidate_id %}
+        hx-post = "{% url 'candidate-document-request' %}"
+      {% else %}
+        hx-post="{% url 'document-request-create' %}"
+      {% endif %}
     {% endif %}
     hx-target="#objectCreateModalTarget"
     hx-encoding="multipart/form-data"
     class="oh-profile-section pt-3"
   >
+  {{form.errors}}
     <div class="row">
-      <div class="col-sm-12 col-md-12 col-lg-6">
+      <div class="col-sm-12 col-md-12 col-lg-12">
         <div class="oh-input-group">
           <label class="oh-label" for="{{form.title.id_for_label}}"
             >{% trans "Title" %}</label
@@ -28,14 +33,26 @@
           {{form.title}}
         </div>
       </div>
-      <div class="col-sm-12 col-md-12 col-lg-6">
+      {% if form.employee_id %}
+      <div class="col-sm-12 col-md-12 col-lg-12">
         <div class="oh-input-group">
           <label class="oh-label" for="{{form.employee_id.id_for_label}}"
-            >{% trans "Employees" %}</label
+          >{% trans "Employees" %}</label
           >
           {{form.employee_id}}
         </div>
       </div>
+      {% elif form.candidate_id %}
+          <div class="col-sm-12 col-md-12 col-lg-12 {% if form.candidate_id.initial %}d-none{% endif %}">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{form.candidate_id.id_for_label}}"
+                >{% trans "candidate" %}</label
+              >
+              {{form.candidate_id}}
+            </div>
+          </div>
+
+      {% endif %}
     </div>
     <div class="row">
       <div class="col-sm-12 col-md-12 col-lg-6">

@@ -55,13 +55,8 @@ class DocumentRequest(HorillaModel):
         return self.title
 
 
-@receiver(post_save, sender=DocumentRequest)
-def doc_request_post_save(sender, instance, **kwargs):
-    document_create(instance)
-
-
 @receiver(m2m_changed, sender=DocumentRequest.employee_id.through)
-def your_model_m2m_changed(sender, instance, action, **kwargs):
+def document_request_m2m_changed(sender, instance, action, **kwargs):
     if action == "post_add":
         document_create(instance)
 

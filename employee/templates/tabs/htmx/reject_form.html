@@ -1,9 +1,8 @@
 {% load i18n %}
 <form
   id="file-form"
-  hx-confirm="{% trans 'Do you want to reject this request' %}"
   hx-post="{% url 'document-reject' document_obj.id %}"
-  hx-target="#uploadFileForm"
+  hx-target="#rejectFileForm"
   hx-encoding="multipart/form-data"
   class="oh-profile-section pt-3"
 >
