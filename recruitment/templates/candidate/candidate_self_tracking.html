@@ -343,15 +343,15 @@
                                     <div
                                         class="oh-rate"
                                     >
-                                        {% for i in "54321" %} 
+                                        {% for i in "54321" %}
                                         <input
                                             type="radio"
                                             id="star{{i}}{{candidate.id}}"
                                             name="rating" class="rating-radio"
-                                            value="{{i}}" disabled 
+                                            value="{{i}}" disabled
                                             {% if candidate.candidate_rating.all|avg_rating:candidate == i %}
                                             checked
-                                            {% endif %} 
+                                            {% endif %}
                                         />
                                         <label for="star{{i}}{{candidate.id}}"
                                             >5</label
@@ -365,7 +365,7 @@
                         </div>
                         <div class="mb-3 d-flex justify-content-between">
                             <h5 class="text-secondary">
-                                {{ candidate.recruitment_id.title }} / 
+                                {{ candidate.recruitment_id.title }} /
                                 {{ candidate.stage_id.stage }}
                             </h5>
                             <div class="oh-recuritment_tag">
@@ -429,8 +429,8 @@
                                                 >
                                             {% endif %}
                                         {% else %}
-                                             <button 
-                                                class="btn oh-btn--secondary border-0 px-3 py-1 small" 
+                                             <button
+                                                class="btn oh-btn--secondary border-0 px-3 py-1 small"
                                                 hx-get="{% url 'candidate-file-upload' document.id %}"
                                                 hx-target="#objectCreateModalTarget"
                                                 data-document-id="{{ document.id }}"
@@ -582,11 +582,11 @@
                                 {% if note.candidate_can_view %}
                                     <div class="note-card card">
                                         {% if request.user.is_authenticated or note.updated_user == candidate %}
-                                            <button class="note-close-btn" 
+                                            <button class="note-close-btn"
                                                 aria-label="Close note"
-                                                hx-get="{% url 'note-delete-individual' note.id %}" 
-                                                title="delete" hx-swap="delete" 
-                                                hx-target="closest .card" 
+                                                hx-get="{% url 'note-delete-individual' note.id %}"
+                                                title="delete" hx-swap="delete"
+                                                hx-target="closest .card"
                                                 hx-on:click="setTimeout(() => {reloadMessage(this);},250);"
                                             >
                                                 <ion-icon name="close-outline" style="font-size: 24px;color:red;" role="img" class="md hydrated" aria-label="close outline"></ion-icon>

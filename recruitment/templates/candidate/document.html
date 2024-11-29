@@ -1,6 +1,6 @@
 {% load i18n static recruitmentfilters %}
 <style>
-	
+
 	.custom-dialog {
 		max-width: 1000px;
 		max-height: 800px;
@@ -62,13 +62,13 @@
 <div class="mt-2">
 	{% for document in documents %}
 		<div id="document{{document.id}}">
-			<div class="oh-user_permission-list_item accordion exclude-accordion-style" 
+			<div class="oh-user_permission-list_item accordion exclude-accordion-style"
 				hx-get="{% url 'candidate-view-file' document.id %}"
 				hx-target="#viewFile" data-toggle="oh-modal-toggle" data-target="#viewFileModal"
 			>
-				<div class="oh-user_permission-list_profile 
+				<div class="oh-user_permission-list_profile
 					{% if document.status == "approved" %}row-status--yellow
-					{% elif document.status == 'rejected' %}row-status--red 
+					{% elif document.status == 'rejected' %}row-status--red
 					{% elif document.status == 'requested' %}row-status--blue
 					{% endif %}"
 				>

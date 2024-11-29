@@ -1,4 +1,4 @@
-{% load static i18n %}
+{% load static i18n recruitmentfilters %}
 <style>
     .interview-item {
         border-bottom: 1px solid #e9ecef;
@@ -72,7 +72,7 @@
 </div>
 {% endif %}
 
-<div class="tracking-card"> 
+<div class="tracking-card">
     <div class="interview-list">
         <ol class="oh-activity-sidebar__qa-list" role="list">
             {% for interview in candidate.candidate_interview.all %}

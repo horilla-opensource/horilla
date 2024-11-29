@@ -1,6 +1,8 @@
 from django.contrib.auth.backends import BaseBackend
-from .models import Candidate
 from django.contrib.auth.models import AnonymousUser
+
+from .models import Candidate
+
 
 class CandidateAuthenticationBackend(BaseBackend):
     def authenticate(self, request, username=None, password=None):

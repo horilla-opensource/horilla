@@ -6,8 +6,8 @@
   hx-encoding="multipart/form-data"
   class="oh-profile-section pt-3"
 >
-  {% csrf_token %} {{form.non_field_errors}} 
-  
+  {% csrf_token %} {{form.non_field_errors}}
+
   <div class="oh-input__group">
     <label class="oh-input__label" for="{{form.reject_reason.id_for_label}}"
       >{% trans "Reason" %}</label
