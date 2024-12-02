@@ -10,7 +10,7 @@
             <ul class="oh-dropdown__items">
                 {% for company in all_companies %}
                     <li class="oh-dropdown__item">
-                        <a hx-get="{% url 'update-selected-company' %}?company_id={{company.0}}"class="oh-dropdown__link">
+                        <a hx-get="{% url 'update-selected-company' %}?company_id={{company.0}}&next={{ request.path }}"class="oh-dropdown__link">
                             <img src="{{company.2}}" class="oh-dropdown__lang-icon" style="border-radius: 50%;" />
                             {{company.1}}
                             {% if company.3 %}

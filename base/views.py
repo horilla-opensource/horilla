@@ -3083,17 +3083,73 @@ def employee_permission_assign(request):
         ).distinct()
         context["show_assign"] = True
     permissions = []
-    horilla_apps = APPS
+    horilla_apps = [
+        "base",
+        "recruitment",
+        "employee",
+        "leave",
+        "pms",
+        "onboarding",
+        "asset",
+        "attendance",
+        "payroll",
+        "auth",
+        "offboarding",
+        "horilla_documents",
+        "helpdesk",
+    ]
     installed_apps = [app for app in settings.INSTALLED_APPS if app in horilla_apps]
+
+    no_permission_models = [
+        "historicalbonuspoint",
+        "assetreport",
+        "assetdocuments",
+        "returnimages",
+        "holiday",
+        "companyleave",
+        "historicalavailableleave",
+        "historicalleaverequest",
+        "historicalleaveallocationrequest",
+        "leaverequestconditionapproval",
+        "historicalcompensatoryleaverequest",
+        "employeepastleaverestrict",
+        "overrideleaverequests",
+        "historicalrotatingworktypeassign",
+        "employeeshiftday",
+        "historicalrotatingshiftassign",
+        "historicalworktyperequest",
+        "historicalshiftrequest",
+        "multipleapprovalmanagers",
+        "attachment",
+        "announcementview",
+        "emaillog",
+        "driverviewed",
+        "dashboardemployeecharts",
+        "attendanceallowedip",
+        "tracklatecomeearlyout",
+        "historicalcontract",
+        "overrideattendance",
+        "overrideleaverequest",
+        "overrideworkinfo",
+        "multiplecondition",
+        "historicalpayslip",
+        "reimbursementmultipleattachment",
+        "historicalcontract",
+        "overrideattendance",
+        "overrideleaverequest",
+        "workrecord",
+        "historicalticket",
+    ]
     for app_name in installed_apps:
         app_models = []
         for model in get_models_in_app(app_name):
-            app_models.append(
-                {
-                    "verbose_name": model._meta.verbose_name.capitalize(),
-                    "model_name": model._meta.model_name,
-                }
-            )
+            if model._meta.model_name not in no_permission_models:
+                app_models.append(
+                    {
+                        "verbose_name": model._meta.verbose_name.capitalize(),
+                        "model_name": model._meta.model_name,
+                    }
+                )
         permissions.append(
             {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
         )
@@ -3178,15 +3234,58 @@ def permission_table(request):
     permissions = []
     apps = APPS
     form = AssignPermission()
+
+    no_permission_models = [
+        "historicalbonuspoint",
+        "assetreport",
+        "assetdocuments",
+        "returnimages",
+        "holiday",
+        "companyleave",
+        "historicalavailableleave",
+        "historicalleaverequest",
+        "historicalleaveallocationrequest",
+        "leaverequestconditionapproval",
+        "historicalcompensatoryleaverequest",
+        "employeepastleaverestrict",
+        "overrideleaverequests",
+        "historicalrotatingworktypeassign",
+        "employeeshiftday",
+        "historicalrotatingshiftassign",
+        "historicalworktyperequest",
+        "historicalshiftrequest",
+        "multipleapprovalmanagers",
+        "attachment",
+        "announcementview",
+        "emaillog",
+        "driverviewed",
+        "dashboardemployeecharts",
+        "attendanceallowedip",
+        "tracklatecomeearlyout",
+        "historicalcontract",
+        "overrideattendance",
+        "overrideleaverequest",
+        "overrideworkinfo",
+        "multiplecondition",
+        "historicalpayslip",
+        "reimbursementmultipleattachment",
+        "historicalcontract",
+        "overrideattendance",
+        "overrideleaverequest",
+        "workrecord",
+        "historicalticket",
+    ]
+
     for app_name in apps:
         app_models = []
         for model in get_models_in_app(app_name):
-            app_models.append(
-                {
-                    "verbose_name": model._meta.verbose_name.capitalize(),
-                    "model_name": model._meta.model_name,
-                }
-            )
+            if model not in no_permission_models:
+                app_models.append(
+                    {
+                        "verbose_name": model._meta.verbose_name.capitalize(),
+                        "model_name": model._meta.model_name,
+                    }
+                )
         permissions.append({"app": app_name.capitalize(), "app_models": app_models})
     if request.method == "POST":
         form = AssignPermission(request.POST)
