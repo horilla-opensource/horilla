@@ -1001,7 +1001,9 @@ class CandidateDocumentRequest(HorillaModel):
 
 class CandidateDocument(HorillaModel):
     title = models.CharField(max_length=250)
-    candidate_id = models.ForeignKey(Candidate, on_delete=models.PROTECT)
+    candidate_id = models.ForeignKey(
+        Candidate, on_delete=models.PROTECT, verbose_name="Candidate"
+    )
     document_request_id = models.ForeignKey(
         CandidateDocumentRequest, on_delete=models.PROTECT, null=True
     )
