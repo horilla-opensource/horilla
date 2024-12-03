@@ -214,7 +214,13 @@ def attendance_create(request):
     """
     This method is used to render attendance create form and save if it is valid
     """
-    form = AttendanceForm()
+    if request.GET.get("previous_url"):
+        data = request.GET.dict()
+        employee_list = request.GET.getlist("employee_id")
+        data["employee_id"] = employee_list
+        form = AttendanceForm(initial=data)
+    else:
+        form = AttendanceForm()
     form = choosesubordinates(request, form, "attendance.add_attendance")
     if request.method == "POST":
         form = AttendanceForm(request.POST)
@@ -427,9 +433,12 @@ def attendance_update(request, obj_id):
         obj_id : attendance id
     """
     attendance = Attendance.objects.get(id=obj_id)
-    form = AttendanceUpdateForm(
-        instance=attendance,
-    )
+    if request.GET.get("previous_url"):
+        form = AttendanceUpdateForm(initial=request.GET.dict())
+    else:
+        form = AttendanceUpdateForm(
+            instance=attendance,
+        )
     form = choosesubordinates(request, form, "attendance.change_attendance")
     if request.method == "POST":
         form = AttendanceUpdateForm(request.POST, instance=attendance)
@@ -449,10 +458,7 @@ def attendance_update(request, obj_id):
     return render(
         request,
         "attendance/attendance/update_form.html",
-        {
-            "form": form,
-            "urlencode": request.GET.urlencode(),
-        },
+        {"form": form, "urlencode": request.GET.urlencode(), "obj_id": obj_id},
     )
 
 
@@ -2286,9 +2292,8 @@ def work_records_change_month(request):
 
     schedules = list(EmployeeShiftSchedule.objects.all())
     employees = list(Employee.objects.filter(is_active=True))
-    if request.method == "POST":
-        employee_filter_form = EmployeeFilter(request.POST)
-        employees = list(employee_filter_form.qs)
+    employee_filter_form = EmployeeFilter(request.GET)
+    employees = list(employee_filter_form.qs)
     data = []
     month_matrix = calendar.monthcalendar(year, month)
 
