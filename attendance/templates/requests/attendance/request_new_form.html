@@ -66,18 +66,6 @@
                 $(".leave-message").hide()
                 $(this).closest("select")[0].dispatchEvent(new Event("change"));
             });
-            // Initially set the visibility of the batch title based on the checkbox state
-            toggleBatchTitle();
         });
-        // Function to toggle the visibility of the batch title
-        function toggleBatchTitle() {
-            if ($('#id_create_batch').is(':checked')) {
-                $('#id_batch_title_parent_div').removeClass('d-none');
-                $('#id_batch_title').prop('required', true);
-            } else {
-                $('#id_batch_title_parent_div').addClass('d-none');
-                $('#id_batch_title').prop('required', false);
-            }
-        }
     </script>
 </div>

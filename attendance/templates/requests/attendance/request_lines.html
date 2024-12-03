@@ -455,7 +455,14 @@
             <div class="oh-modal__dialog-body oh-modal__dialog-relative" id="shiftRequestDetailTarget"></div>
         </div>
     </div>
-
+    <span
+        id = "dynamicCreateBatchAttendanceSpan"
+        hx-get="{% url "create-batch-attendance" %}"
+        data-target = "#dynamicCreateModal"
+        data-toggle="oh-modal-toggle"
+        hx-target="#dynamicCreateModalTarget"
+        hx-include = "#attendanceRequestForm"
+    ></span>
     <script>
         requestedAttendanceTickCheckboxes()
         $(document).ready(function () {

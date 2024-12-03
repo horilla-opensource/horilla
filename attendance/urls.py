@@ -301,6 +301,18 @@ urlpatterns = [
         name="request-new-attendance",
     ),
     path(
+        "create-batch-attendance",
+        attendance.views.requests.create_batch_attendance,
+        name="create-batch-attendance",
+    ),
+    path("get-batches", attendance.views.requests.get_batches, name="get-batches"),
+    path("update-title", attendance.views.requests.update_title, name="update-title"),
+    path(
+        "delete-batch/<int:batch_id>",
+        attendance.views.requests.delete_batch,
+        name="delete-batch",
+    ),
+    path(
         "employee-widget-filter",
         attendance.views.search.widget_filter,
         name="attendance-widget-filter",
