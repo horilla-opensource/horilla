@@ -246,7 +246,8 @@ class EmployeeForm(ModelForm):
         """
         badge_id = self.cleaned_data["badge_id"]
         if badge_id:
-            queryset = Employee.objects.filter(badge_id=badge_id).exclude(
+            all_employees = Employee.objects.get_all()
+            queryset = all_employees.filter(badge_id=badge_id).exclude(
                 pk=self.instance.pk if self.instance else None
             )
             if queryset.exists():

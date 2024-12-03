@@ -42,7 +42,7 @@
             </div>
             <div class="oh-modal__dialog-body" id="uploadPhotoModalBody">
                 <div class="oh-profile-section__image-container">
-                    <form hx-post="{% url 'update-profile-image' form.instance.id %}" hx-target="#uploadPhotoModalBody"
+                    <form hx-post="{% url 'update-profile-image' obj_id %}" hx-target="#uploadPhotoModalBody"
                         hx-encoding="multipart/form-data" id="file-form">
                         <div class="oh-profile-section__modal-avatar ">
                             <img src="{{form.instance.get_avatar}}" class="oh-profile-section__modal-image preview"
@@ -53,7 +53,7 @@
                         {% csrf_token %}
                         <div class="d-flex justify-content-between w-100 align-items-center mt-4">
                             <button class="oh-btn oh-btn--light-danger mr-1"
-                                hx-delete="{% url 'remove-profile-image' form.instance.id %}"
+                                hx-delete="{% url 'remove-profile-image' obj_id %}"
                                 hx-target="#personalMessage">
                                 <ion-icon class="me-1" name="trash-outline"></ion-icon>
                                 {% trans "Delete Image" %}
