@@ -950,6 +950,11 @@ urlpatterns = [
         name="announcement-single-view",
     ),
     path(
+        "announcement-single-view/",
+        announcement.announcement_single_view,
+        name="announcement-single-view",
+    ),
+    path(
         "announcement-delete-comment/<int:comment_id>/",
         announcement.delete_announcement_comment,
         name="announcement-delete-comment",

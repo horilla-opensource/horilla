@@ -837,10 +837,11 @@ def announcement_list(request):
         announcement.has_viewed = announcement.announcementview_set.filter(
             user=request.user, viewed=True
         ).exists()
-
+    instance_ids = json.dumps([instance.id for instance in announcement_list])
     context = {
-        "announcement": announcement_list,
+        "announcements": announcement_list,
         "general_expire_date": general_expire_date,
+        "instance_ids": instance_ids,
     }
     return render(request, "announcements_list.html", context)
 
@@ -6886,23 +6887,17 @@ def holiday_delete(request, id):
     return redirect(f"/holiday-filter?{query_string}")
 
 
+@login_required
 @require_http_methods(["POST"])
 @permission_required("base.delete_holiday")
 def bulk_holiday_delete(request):
     """
-    This method is used to delete bulk of holidays
+    Deletes multiple holidays based on IDs passed in the POST request.
     """
     ids = request.POST.getlist("ids")
-    del_ids = []
-    for holiday_id in ids:
-        try:
-            holiday = Holidays.objects.get(id=holiday_id)
-            holiday.delete()
-            del_ids.append(holiday_id)
-        except Exception as e:
-            messages.error(request, _("Holidays not found."))
+    deleted_count = Holidays.objects.filter(id__in=ids).delete()[0]
     messages.success(
-        request, _("{} Holidays have been successfully deleted.".format(len(del_ids)))
+        request, _("{} Holidays have been successfully deleted.".format(deleted_count))
     )
     return redirect("holiday-filter")
 

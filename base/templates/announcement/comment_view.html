@@ -5,14 +5,9 @@
 {% if messages %}
     <div class="oh-alert-container">
       {% for message in messages %}
-      <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+        <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
       {% endfor %}
     </div>
-<script>
-    setTimeout(() => {
-        $(".oh-modal__close").click();
-    }, 1000);
-</script>
 {% endif %}
 
 	<div class="oh-activity-sidebar__header">

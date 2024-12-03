@@ -166,6 +166,13 @@ urlpatterns = [
     path("work-info-export", views.work_info_export, name="work-info-export"),
     path("get-birthday", views.get_employees_birthday, name="get-birthday"),
     path("dashboard", views.dashboard, name="dashboard"),
+    path(
+        "total-employees-count",
+        views.total_employees_count,
+        name="total-employees-count",
+    ),
+    path("joining-today-count", views.joining_today_count, name="joining-today-count"),
+    path("joining-week-count", views.joining_week_count, name="joining-week-count"),
     path("dashboard-employee", views.dashboard_employee, name="dashboard-employee"),
     path(
         "dashboard-employee-gender",
@@ -176,11 +183,6 @@ urlpatterns = [
         "dashboard-employee-department",
         views.dashboard_employee_department,
         name="dashboard-employee-department",
-    ),
-    path(
-        "dashboard-employee-count",
-        views.dashboard_employee_tiles,
-        name="dashboard-employee-count",
     ),
     path("employee-widget-filter", views.widget_filter, name="employee-widget-filter"),
     path("note-tab/<int:emp_id>", views.note_tab, name="note-tab"),
