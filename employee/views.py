@@ -1292,6 +1292,7 @@ def employee_view_update(request, obj_id, **kwargs):
     """
     This method is used to render update form for employee.
     """
+    company = request.session["selected_company"]
     user = Employee.objects.filter(employee_user_id=request.user).first()
     work_info = HistoryTrackingFields.objects.first()
     work_info_history = False
@@ -1299,6 +1300,18 @@ def employee_view_update(request, obj_id, **kwargs):
         work_info_history = True
 
     employee = Employee.objects.filter(id=obj_id).first()
+    all_employees = Employee.objects.get_all()
+    emp = all_employees.filter(id=obj_id).first()
+    if employee is None:
+        employee = emp
+        all_work_info = EmployeeWorkInformation.objects.get_all()
+        cmpny = Company.objects.get(id=company)
+        work = all_work_info.filter(employee_id=employee).first()
+        if company != "all":
+            work.company_id = cmpny
+            work.save()
+        employee.save()
+
     if (
         user
         and user.reporting_manager.filter(employee_id=employee).exists()
@@ -1366,6 +1379,7 @@ def employee_view_update(request, obj_id, **kwargs):
             request,
             "employee/update_form/form_view.html",
             {
+                "obj_id": obj_id,
                 "form": form,
                 "work_form": work_form,
                 "bank_form": bank_form,
@@ -2704,44 +2718,40 @@ def birthday():
 
 
 @login_required
-def get_employees_birthday(_):
+def get_employees_birthday(request):
     """
-    This method is used to render all upcoming birthday employee details to fill the dashboard.
+    Render all upcoming birthday employee details for the dashboard.
     """
     employees = birthday()
-    birthdays = []
-    for emp in employees:
-        name = f"{emp.employee_first_name} {emp.employee_last_name}"
-        dob = emp.dob.strftime("%d %b %Y")
-        days_till_birthday = emp.days_until_birthday
-        if days_till_birthday == 0:
-            days_till_birthday = "Today"
-        elif days_till_birthday == 1:
-            days_till_birthday = "Tomorrow"
-        else:
-            days_till_birthday = f"In {days_till_birthday} Days"
-        try:
-            path = emp.get_avatar()
-        except:
-            path = f"https://ui-avatars.com/api/?\
-                name={emp.employee_first_name}+{emp.employee_last_name}&background=random"
-        birthdays.append(
-            {
-                "profile": path,
-                "name": name,
-                "dob": dob,
-                "daysUntilBirthday": days_till_birthday,
-                "department": (
-                    emp.get_department().department if emp.get_department() else ""
-                ),
-                "job_position": (
-                    emp.get_job_position().job_position
-                    if emp.get_job_position()
-                    else ""
-                ),
-            }
-        )
-    return JsonResponse({"birthdays": birthdays})
+    default_avatar_url = "https://ui-avatars.com/api/?background=random&name="
+    birthdays = [
+        {
+            "profile": (
+                emp.get_avatar()
+                if hasattr(emp, "get_avatar")
+                else f"{default_avatar_url}{emp.employee_first_name}+{emp.employee_last_name}"
+            ),
+            "name": f"{emp.employee_first_name} {emp.employee_last_name}",
+            "dob": emp.dob.strftime("%d %b %Y"),
+            "daysUntilBirthday": (
+                _("Today")
+                if emp.days_until_birthday == 0
+                else (
+                    _("Tomorrow")
+                    if emp.days_until_birthday == 1
+                    else f"In {emp.days_until_birthday} Days"
+                )
+            ),
+            "department": (
+                emp.get_department().department if emp.get_department() else ""
+            ),
+            "job_position": (
+                emp.get_job_position().job_position if emp.get_job_position() else ""
+            ),
+        }
+        for emp in employees
+    ]
+    return render(request, "birthdays_container.html", {"birthdays": birthdays})
 
 
 @login_required
@@ -2773,6 +2783,40 @@ def dashboard(request):
             "inactive_ratio": inactive_ratio,
         },
     )
+
+
+@login_required
+def total_employees_count(request):
+    employees = Employee.objects.filter().count()
+    return HttpResponse(employees)
+
+
+@login_required
+def joining_today_count(request):
+    newbies_today = 0
+    if apps.is_installed("recruitment"):
+        Candidate = get_horilla_model_class(app_label="recruitment", model="candidate")
+        newbies_today = Candidate.objects.filter(
+            joining_date__range=[date.today(), date.today() + timedelta(days=1)],
+            is_active=True,
+        ).count()
+    return HttpResponse(newbies_today)
+
+
+@login_required
+def joining_week_count(request):
+    newbies_week = 0
+    if apps.is_installed("recruitment"):
+        Candidate = get_horilla_model_class(app_label="recruitment", model="candidate")
+        newbies_week = Candidate.objects.filter(
+            joining_date__range=[
+                date.today() - timedelta(days=date.today().weekday()),
+                date.today() + timedelta(days=6 - date.today().weekday()),
+            ],
+            is_active=True,
+            hired=True,
+        ).count()
+    return HttpResponse(newbies_week)
 
 
 @login_required
@@ -2853,33 +2897,6 @@ def dashboard_employee_department(request):
         "message": _("No Data Found..."),
     }
     return JsonResponse(response)
-
-
-@login_required
-def dashboard_employee_tiles(request):
-    """
-    This method returns json response.
-    """
-    data = {}
-    # # active employees count
-    data["total_employees"] = Employee.objects.filter(is_active=True).count()
-    # # filtering newbies
-    if apps.is_installed("recruitment"):
-        Candidate = get_horilla_model_class(app_label="recruitment", model="candidate")
-        data["newbies_today"] = Candidate.objects.filter(
-            joining_date__range=[date.today(), date.today() + timedelta(days=1)],
-            is_active=True,
-        ).count()
-        # filtering newbies on this week
-        data["newbies_week"] = Candidate.objects.filter(
-            joining_date__range=[
-                date.today() - timedelta(days=date.today().weekday()),
-                date.today() + timedelta(days=6 - date.today().weekday()),
-            ],
-            is_active=True,
-            hired=True,
-        ).count()
-    return JsonResponse(data)
 
 
 @login_required
