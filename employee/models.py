@@ -490,8 +490,10 @@ class Employee(models.Model):
             username = self.email
             
             password = self.phone
+
+            is_new_employee_flag = not employee.employee_user_id.is_new_employee if employee.employee_user_id else True
             user = User.objects.create_user(
-                username=username, email=username, password=password
+                username=username, email=username, password=password, is_new_employee=is_new_employee_flag
             )
             self.employee_user_id = user
             # default permissions
