@@ -488,6 +488,7 @@ class Employee(models.Model):
         if employee.employee_user_id is None:
             # Create user if no corresponding user exists
             username = self.email
+            
             password = self.phone
             user = User.objects.create_user(
                 username=username, email=username, password=password
