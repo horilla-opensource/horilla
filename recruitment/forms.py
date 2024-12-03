@@ -1275,7 +1275,7 @@ class CandidateDocumentUpdateForm(ModelForm):
     class Meta:
         model = CandidateDocument
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = ["is_active", "document_request_id"]
 
 
 class CandidateDocumentRejectForm(ModelForm):
