@@ -20,8 +20,8 @@
     </div>
     <ul class="oh-dashboard__events-nav" id="birthdayDots">
         {% for birthday in birthdays %}
-            <li onclick="moveSlider(event)" 
-                class="oh-dashboard__events-nav-item {% if forloop.first %}oh-dashboard__events-nav-item--active{% endif %}" 
+            <li onclick="moveSlider(event)"
+                class="oh-dashboard__events-nav-item {% if forloop.first %}oh-dashboard__events-nav-item--active{% endif %}"
                 data-target="{{ forloop.counter0 }}">
             </li>
         {% endfor %}

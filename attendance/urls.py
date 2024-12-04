@@ -226,14 +226,24 @@ urlpatterns = [
         "dashboard", attendance.views.dashboard.dashboard, name="attendance-dashboard"
     ),
     path(
+        "on-break-employees",
+        attendance.views.dashboard.on_break_employees,
+        name="on-break-employees",
+    ),
+    path(
+        "dashboard-approve-overtimes",
+        attendance.views.dashboard.dashboard_approve_overtimes,
+        name="dashboard-approve-overtimes",
+    ),
+    path(
+        "dashboard-validate-attendances",
+        attendance.views.dashboard.dashboard_validate_attendances,
+        name="dashboard-validate-attendances",
+    ),
+    path(
         "department-overtime-chart",
         attendance.views.dashboard.department_overtime_chart,
         name="department-overtime-chart",
-    ),
-    path(
-        "attendance-validate-table/",
-        attendance.views.dashboard.validated_attendances_table,
-        name="attendance-validate-table",
     ),
     path(
         "dashboard-attendance/",
@@ -439,16 +449,6 @@ urlpatterns = [
         "cut-penalty/<int:instance_id>/",
         attendance.views.penalty.cut_available_leave,
         name="cut-penalty",
-    ),
-    path(
-        "dashboard-overtime-approve",
-        attendance.views.dashboard.dashboard_overtime_approve,
-        name="dashboard-overtime-approve",
-    ),
-    path(
-        "dashboard-attendance-validate",
-        attendance.views.dashboard.dashboard_attendance_validate,
-        name="dashboard-attendance-validate",
     ),
     path(
         "attendance-settings-view/",

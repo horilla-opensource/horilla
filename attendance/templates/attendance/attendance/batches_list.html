@@ -48,7 +48,7 @@
                         >
                             <div class="oh-sticky-table__sd">
                                 {% if batch.created_by == request.user %}
-                                    <input name="title" value="{{batch.title}}" 
+                                    <input name="title" value="{{batch.title}}"
                                     data-id = "{{batch.id}}"
                                     style = "width: -webkit-fill-available;"
                                     onchange = "batchTitleChange(this)"
@@ -61,8 +61,8 @@
 
                             <div class="oh-sticky-table__td">
                                 <div class="oh-btn-group" onclick="event.stopPropagation()">
-                                    {% if perms.attendance.delete_batchattendance %} 
-                                        <form 
+                                    {% if perms.attendance.delete_batchattendance %}
+                                        <form
                                             hx-post="{% url 'delete-batch' batch.id %}"
                                             hx-confirm="{%trans "Are you sure want to delete this batch?" %}"
                                             hx-target="#objectDetailsModalTarget" class='w-100'>

@@ -354,7 +354,7 @@
                     </span>
                 </div>
                 <div class="oh-card-dashboard__body" id="OTApproveBody" style="height: 75%"
-                    hx-get="{% url 'dashboard-overtime-approve' %}" hx-trigger="load">
+                    hx-get="{% url 'dashboard-approve-overtimes' %}" hx-trigger="load">
                     <div class="animated-background"></div>
                 </div>
             </div>
@@ -377,7 +377,7 @@
                     </span>
                 </div>
                 <div class="oh-card-dashboard__body" style="height: 75%" id="attendanceValidateCardBody"
-                    hx-get="{% url 'dashboard-attendance-validate' %}" hx-trigger="load">
+                    hx-get="{% url 'dashboard-validate-attendances' %}" hx-trigger="load">
                     <div class="animated-background"></div>
                 </div>
             </div>
@@ -445,7 +445,7 @@
     </div>
 {% endif %}
 {% if "asset"|app_installed and not 'asset_request_approve' in charts %}
-    {% if perms.asset.change_assetrequest or request.user|is_reportingmanager %}
+    {% if perms.asset.view_assetrequest %}
         <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart"
             id="assetRequestApprove">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px">
