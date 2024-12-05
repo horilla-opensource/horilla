@@ -70,3 +70,4 @@ XlsxWriter
 gunicorn
 psycopg2-binary
 whitenoise
+django-allauth
