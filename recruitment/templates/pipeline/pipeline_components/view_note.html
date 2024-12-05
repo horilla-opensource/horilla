@@ -1,89 +1,186 @@
-{% load i18n static %}
+{% load i18n static recruitmentfilters %}
 <style>
-	#enlargeImageContainer {
-		position: absolute;
-		left: -300px;
-		top: 100px;
-		height: 200px;
-		width: 300px;
+    #enlargeImageContainer {
+        position: absolute;
+        left: 100px;
+        top: 100px;
+        height: 200px;
+        width: 300px;
+		z-index:1000;
+    }
+	.diff-cell{
+	  background: rgba(255, 166, 0, 0.158);
 	}
 </style>
 
-<div class="oh-activity-sidebar__header mt-2">
-	<a style="cursor: pointer;" onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');">
-		<ion-icon name="chevron-forward-outline"
-			class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
-			data-target="#activitySidebar"></ion-icon>
-	</a>
-	<span class="oh-activity-sidebar__title">{{cand}}'s {% trans "Notes" %}</span>
-</div>
+{% if messages %}
+    <div class="oh-alert-container">
+      {% for message in messages %}
+      <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+      {% endfor %}
+    </div>
+<script>
+    setTimeout(() => {
+        $(".oh-modal__close").click();
+    }, 1000);
+</script>
+{% endif %}
 
-<form hx-target="#noteContainerList" hx-select=".oh-activity-sidebar__qa-list" hx-post="{% url 'create-note' cand.id %}" id="commentForm"
-	hx-on-htmx-after-request="reloadMessage(this);$('#commentInput').val('');$('#commentButton').hide();">
-	{% csrf_token %}
-	<div>
-		<input type="text" name="description" id="commentInput" class="oh-input w-100" placeholder="{% trans 'Add notes' %}"
-		hx-on:keyup="toggleCommentButton(this);">
-		<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-			style="display: none;">
-			{% trans "Add" %}
-		</button>
+	<div class="oh-activity-sidebar__header mt-5">
+		<a
+		style="cursor: pointer;"
+		onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');">
+		<ion-icon
+		name="chevron-forward-outline"
+		class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+		data-target="#activitySidebar"
+		></ion-icon>
+		</a>
+		<span class="oh-activity-sidebar__title fw-bold">{{cand}}'s {% trans "Notes" %}</span>
 	</div>
 
-	<div class="oh-inner-sidebar-content__footer"></div>
-</form>
+{% if perms.recruitment.add_stagenote or request.user|is_stagemanager %}
+	<form hx-target="#noteContainerList" hx-select=".oh-activity-sidebar__qa-list" hx-post="{% url 'create-note' cand.id %}" id="commentForm"
+		hx-on-htmx-after-request="reloadMessage(this);$('#commentInput').val('');$('#commentButton').hide();">
+		{% csrf_token %}
+		<div>
+			<input type="text" name="description" id="commentInput" class="oh-input w-100" placeholder="{% trans 'Add notes' %}"
+			hx-on:keyup="toggleCommentButton(this);">
+			<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+				style="display: none;">
+				{% trans "Add" %}
+			</button>
+		</div>
+
+		<div class="oh-inner-sidebar-content__footer"></div>
+	</form>
+{% endif %}
 
 {% if notes %}
 	<ol class="oh-activity-sidebar__qa-list" role="list" id="noteContainerList">
 		{% for note in notes %}
-		<li class="oh-activity-sidebar__qa-item fade-me-out" id="candidateNoteItem{{note.id}}">
-			<span class="oh-activity-sidebar__q">{{ note.description }}
-				<span class="float-end" hx-get="{% url 'note-delete' note.id %}"
-					hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
-					hx-swap="outerHTML swap:1s" hx-target="#candidateNoteItem{{note.id}}">
-					<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
-				</span>
-			</span>
-
-			<div class="d-flex mt-2 mb-2">
-				{% for file in note.stage_files.all %}
-					<a href="{{ file.files.url }}" rel="noopener noreferrer" target="_blank" id="candidateNoteFile{{file.id}}" class="fade-me-out">
-						<span class="oh-file-icon oh-file-icon--pdf" onmouseover="enlargeImage('{{ file.files.url }}',$(this))" style="width: 40px; height: 40px">
-							<img src="{% static 'images/ui/minus-icon.png' %}" style="display: block; width: 50%; height: 50%"
-								hx-get="{% url 'delete-stage-note-file' file.id %}" hx-target="#candidateNoteFile{{file.id}}"
-								hx-swap="outerHTML" hx-on:click="$('#enlargeImageContainer').empty();setTimeout(() => {reloadMessage(this);},100);"
-								onclick="event.stopPropagation();event.preventDefault()" />
+			<li id="candidateNoteItem{{note.id}}"
+				class="oh-activity-sidebar__qa-item fade-me-out list-group-item position-relative py-3 px-3
+				{% if note.candidate_can_view %}row-status--blue{% endif %}
+				{% if not note.updated_by %}diff-cell{% endif %}"
+			>
+				{% if perms.recruitment.delete_stagenote or request.user|is_stagemanager %}
+					<div class="position-absolute top-0 end-0 p-4">
+						<span
+							hx-get="{% url 'note-delete' note.id %}"
+							data-target="#activitySidebar"
+							hx-swap="outerHTML swap:1s"
+							hx-target="#candidateNoteItem{{note.id}}"
+							hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
+							class="text-danger cursor-pointer"
+							role="button"
+						>
+							<ion-icon name="close-outline" style="font-size: 1.5rem;"></ion-icon>
 						</span>
-					</a>
-				{% endfor %}
+					</div>
+				{% endif %}
 
-				<form hx-post="{% url 'add-more-files' note.id %}" class="add-files-form" hx-encoding="multipart/form-data"
-					data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#activitySidebar">
-					{% csrf_token %}
-					<label for="addFile_{{note.id}}" title="Add Files"><ion-icon name="add-outline" style="font-size: 24px"
-							role="img" class="md hydrated" aria-label="add outline"></ion-icon></label>
-					<input type="file" name="files" class="d-none" multiple="true" id="addFile_{{note.id}}"
-						onchange="submitForm(this)" />
-					<input type="submit" class="d-none add_more_submit" value="save" />
-				</form>
-			</div>
-			<span class="oh-activity-sidebar__a">
-				{% trans 'by' %}
-				<img src="{{ note.note_by.get_avatar }}" style="width: 1.5em; border-radius: 100%" />
-				{{ note.updated_by }} @ {{note.stage_id }}
-				{% trans "stage" %}
-			</span>
-			<div style="width: 50%">
-				<div id="enlargeImageContainer" class="enlargeImageContainer"></div>
-			</div>
-		</li>
+				<div class="pe-4">
+					<p class="mb-3">{{ note.description }}</p>
+
+					{% if perms.recruitment.change_candidate or request.user|is_stagemanager %}
+						<div class="position-absolute bottom-0 end-0 p-4">
+							<form
+								class="form-check form-switch m-0 oh-switch"
+								hx-post="{% url 'candidate-can-view-note' note.id %}"
+								hx-swap = "outerHTML swap:.2s"
+								hx-select="ol li:nth-child({{forloop.counter}})"
+								hx-target="closest li"
+							>
+								<input
+									type="checkbox"
+									class="form-check-input oh-switch__checkbox"
+									role="switch"
+									name="enable_block_account"
+									onchange="$(this).closest('form').find('input[type=submit]').click()"
+									{% if note.candidate_can_view %}
+										title="Candidate can view this note" checked
+									{% else %}
+										title="Candidate can't view this note"
+									{% endif %}
+								/>
+								<input type="submit" hidden/>
+							</form>
+						</div>
+					{% endif %}
+				</div>
+
+				<div class="d-flex mt-2 mb-2">
+					{% for file in note.stage_files.all %}
+						<a href="{{ file.files.url }}" rel="noopener noreferrer" target="_blank" id="candidateNoteFile{{file.id}}" class="fade-me-out">
+							<span class="oh-file-icon oh-file-icon--pdf"
+								onmouseover="enlargeImage('{{ file.files.url }}',$(this))"
+								style="width: 40px; height: 40px"
+							>
+								<img src="{% static 'images/ui/minus-icon.png' %}"
+									style="display: block; width: 50%; height: 50%"
+									hx-get="{% url 'delete-stage-note-file' file.id %}"
+									hx-target="#candidateNoteFile{{file.id}}"
+									hx-swap="outerHTML"
+									hx-on:click="$('#enlargeImageContainer').empty();setTimeout(() => {reloadMessage(this);},100);"
+									onclick="event.stopPropagation();event.preventDefault()"
+								/>
+							</span>
+						</a>
+					{% endfor %}
+
+					<form
+						hx-post="{% url 'add-more-files' note.id %}"
+						class="add-files-form"
+						hx-encoding="multipart/form-data"
+						data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#activitySidebar,#note"
+
+						>
+						{% csrf_token %}
+						<label for="addFile_{{note.id}}" title="Add Files"
+							><ion-icon
+								name="add-outline"
+								style="font-size: 24px"
+								role="img"
+								class="md hydrated"
+								aria-label="add outline"
+							></ion-icon
+						></label>
+						<input
+							type="file"
+							name="files"
+							class="d-none"
+							multiple="true"
+							id="addFile_{{note.id}}"
+							onchange="submitForm(this)"
+						/>
+						<input
+							type="submit"
+							class="d-none add_more_submit"
+							value="save"
+						/>
+					</form>
+				</div>
+				<span class="oh-activity-sidebar__a">
+					{% trans 'by' %}
+					<img
+						src="{{ note.note_by.get_avatar }}"
+						style="width: 1.5em; border-radius: 100%"
+					/>
+					{{ note.updated_user }} @ {{note.stage_id }}
+					{% trans "stage" %}
+				</span>
+				<div style="width: 50%">
+					<div id="enlargeImageContainer" class="enlargeImageContainer"></div>
+				</div>
+			</li>
 
 		{% endfor %}
 	</ol>
 {% else %}
 	<ol class="oh-activity-sidebar__qa-list" role="list" id="noteContainerList">
 		<div class="oh-timeoff-modal__profile-content">
-			<div class="oh-404">
+			<div class="d-flex justify-content-center align-items-center" style="height: 40vh;">
 				<div class="">
 					<span class="oh-timeoff-title fw-bold" style="display: block">{% trans "No notes have been added for this candidate" %}</span>
 					<img style="display: block; width: 100px; margin: 20px auto" src="{% static '/images/ui/no_notes.png' %}"

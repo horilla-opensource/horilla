@@ -82,8 +82,9 @@
                             <ul class="oh-dropdown__items">
                                 {% if perms.leave.add_availableleave and not leave_type.is_compensatory_leave %}
                                     <li class="oh-dropdown__item">
-                                        <a href="#" class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#editModal"
-                                            hx-get="{% url 'assign-one' leave_type.id %}" hx-target="#leaveForm">
+                                        <a class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                            hx-get="{% url 'assign-one' leave_type.id %}" hx-target="#objectCreateModalTarget"
+                                            hx-on:click="$('#objectCreateModalTarget').css('max-width', '410px');">
                                             {% trans "Assign Leave" %}
                                         </a>
                                     </li>

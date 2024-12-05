@@ -4,13 +4,17 @@ context_processor.py
 This module is used to register context processor`
 """
 
+import re
+
 from django.apps import apps
+from django.contrib import messages
 from django.http import HttpResponse
-from django.urls import path
+from django.urls import path, reverse
+from django.utils.translation import gettext_lazy as _
 
 from base.models import Company, TrackLateComeEarlyOut
 from base.urls import urlpatterns
-from employee.models import EmployeeGeneralSetting
+from employee.models import Employee, EmployeeGeneralSetting, EmployeeWorkInformation
 from horilla import horilla_apps
 from horilla.decorators import hx_request_required, login_required, permission_required
 from horilla.methods import get_horilla_model_class
@@ -28,6 +32,15 @@ class AllCompany:
     icon = Urls()
     text = "All companies"
     id = None
+
+
+def get_last_section(path):
+    # Remove any trailing slash and split the path
+    segments = path.strip("/").split("/")
+
+    # Get the last section (the ID)
+    last_section = segments[-1] if segments else None
+    return last_section
 
 
 def get_companies(request):
@@ -77,6 +90,44 @@ def update_selected_company(request):
             else AllCompany()
         )
     )
+    previous_path = request.GET.get("next", "/")
+    # Define the regex pattern for the path
+    pattern = r"^/employee/employee-view/\d+/$"
+    # Check if the previous path matches the pattern
+    if company_id != "all":
+        if re.match(pattern, previous_path):
+            employee_id = get_last_section(previous_path)
+            employee = Employee.objects.filter(id=employee_id).first()
+
+            if (
+                not EmployeeWorkInformation.objects.filter(
+                    employee_id=employee_id
+                ).exists()
+                or employee.employee_work_info.company_id != company
+            ):
+                text = "Other Company"
+                if (
+                    company_id
+                    == request.user.employee_get.employee_work_info.company_id
+                ):
+                    text = "My Company"
+                if company_id == "all":
+                    text = "All companies"
+                company = {
+                    "company": company.company,
+                    "icon": company.icon.url,
+                    "text": text,
+                    "id": company.id,
+                }
+                messages.error(
+                    request, _("Employee is not working in the selected company.")
+                )
+                request.session["selected_company_instance"] = company
+                return HttpResponse(
+                    f"""
+                    <script>window.location.href = `{reverse("employee-view")}`</script>
+                """
+                )
 
     text = "Other Company"
     if company_id == request.user.employee_get.employee_work_info.company_id:

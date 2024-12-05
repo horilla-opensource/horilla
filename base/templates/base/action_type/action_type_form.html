@@ -25,7 +25,7 @@
   	  		hx-post="{% url 'action-type-update' act_id %}"
 			hx-target="#objectUpdateModalTarget"
   	  	{% else %}
-  	  		hx-post="{% url 'action-type-create' %}?dynamic={{dynamic}}&{{hx_vals}}"
+  	  		hx-post="{% url 'action-type-create' %}?{{pd}}"
 			hx-target="#objectCreateModalTarget"
   	  	{% endif %}
 		class="oh-profile-section"

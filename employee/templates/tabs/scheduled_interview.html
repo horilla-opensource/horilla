@@ -1,60 +1,188 @@
 {% load static %}{% load i18n %} {% load horillafilters %}
 
-        {% if interviews %}
-          <div class="mt-4 d-flex">
-            <span class="oh-activity-sidebar__title fw-bold">{{employee}}'s {% trans "Scheduled Interviews" %}</span>
-          </div>
+<style>
 
-            <ol class="oh-activity-sidebar__qa-list" role="list">
-              {% for interview_schedule in interviews %}
-                <li class="oh-activity-sidebar__qa-item" onclick="window.location.href = '{% url 'candidate-view-individual' interview_schedule.candidate_id.id %}'">
-                  <span class="oh-activity-sidebar__q" style="font-size:16px;">
+    .interview-item {
+        border-bottom: 1px solid #e9ecef;
+        padding: 1rem 0;
+    }
 
-                    {{forloop.counter}}.<span class="ms-1 mb-2"> {% trans "Date" %} :</span> <span class="ms-2 dateformat_changer">{{ interview_schedule.interview_date }}</span>
-                    <span class="d-flex ms-3 mb-2 mt-2">{% trans "Time" %} : <span class=" ms-2 timeformat_changer">{{ interview_schedule.interview_time }}</span></span>
-                    <span class="ms-3">{% trans "Interviewer" %} :</span>
-                      {% for interviewer in  interview_schedule.employee_id.all %}
-                        &nbsp<i id="fabIcon" style="font-size:12px;" class="material-icons">radio_button_checked</i> {{ interviewer }}
-                      {% endfor %}
-                    <span class="d-flex ms-3 mt-2">{% trans "Candidate" %} : <span class=" ms-2">{{ interview_schedule.candidate_id }}</span></span>
-                    {% if interview_schedule.description %}
-                      <span class="d-flex ms-3 mb-2 mt-2">{% trans "Description" %} : <span class=" ms-2">{{ interview_schedule.description }}</span>
-                    {% endif %}
+    .interview-item:last-child {
+        border-bottom: none;
+    }
 
+    .interview-date,
+    .interview-time,
+    .interview-interviewer {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+
+    .interview-description {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+        padding-left: 0.75rem;
+        border-left: 3px solid #e9ecef;
+    }
+
+    .interviewer-chip {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        background-color: #e9ecef;
+        border-radius: 12px;
+        margin-right: 0.25rem;
+        margin-bottom: 0.25rem;
+        font-size: 0.8125rem;
+        white-space: nowrap;
+    }
+
+    .status-completed {
+        color: #28a745;
+    }
+
+    .status-expired {
+        color: #dc3545;
+    }
+
+    .status-upcoming {
+        color: #ffc107;
+    }
+
+    .status-today {
+        color: #007bff;
+    }
+</style>
+
+{% now "Y-m-d" as now %}
+
+<div class="mt-4">
+    <span class="oh-activity-sidebar__title fw-bold"
+        >{{request.user.employee_get.get_full_name}}'s
+        {% trans "Scheduled Interviews" %}</span
+    >
+</div>
+
+<div class="tracking-card">
+    <div class="interview-list">
+        <ol class="oh-activity-sidebar__qa-list" role="list">
+            {% for interview in interviews %}
+                <li class="oh-activity-sidebar__qa-item">
+                    <span
+                        class="float-end"
+                        title="{% trans 'delete' %}"
+                        hx-get="{% url 'delete-interview' interview.id %}?view=false"
+                        data-target="#activitySidebar"
+                        hx-swap="innerHTML"
+                        hx-target="#interview"
+                    >
+                        <ion-icon
+                            name="close-outline"
+                            style="font-size: 24px"
+                            role="img"
+                            class="md hydrated"
+                            aria-label="close outline"
+                        ></ion-icon>
                     </span>
-                  {% if interview_schedule.completed %}
-                      <div class="d-flex" style="color:green;">
-                          <i id="fabIcon" style="font-size:18px;" class="material-icons ms-3 mt-2">check_circle</i>
-                          <span class="oh-activity-sidebar__q mt-2">{% trans "Interview Completed" %}</span>
-                      </div>
-                  {% elif interview_schedule.interview_date|date:"Y-m-d" < now|date:"Y-m-d" %}
-                      <div class="d-flex" style="color:red;">
-                          <i id="fabIcon" style="font-size:18px" class="material-icons ms-3 mt-2">dangerous</i>
-                          <span class="oh-activity-sidebar__q mt-2">{% trans "Expired Interview" %}</span>
-                      </div>
-                  {% elif interview_schedule.interview_date|date:"Y-m-d" > now|date:"Y-m-d" %}
-                      <div class="d-flex" style="color:orange;">
-                          <i id="fabIcon" title="{{interview_schedule.interview_date|timeuntil}}" style="font-size:18px;" class="material-icons ms-3 mt-2">schedule</i>
-                          <span class="oh-activity-sidebar__q mt-2">{% trans "Upcoming Interview" %}</span>
-                      </div>
-                  {% elif interview_schedule.interview_date|date:"Y-m-d" == now|date:"Y-m-d" and not interview_schedule.completed %}
-                      <div class="d-flex" style="color:blue;">
-                          <i id="fabIcon" style="font-size:18px;" class="material-symbols-outlined ms-3 mt-2">today</i>
-                          <span class="oh-activity-sidebar__q mt-2">{% trans "Interview Today" %}</span>
-                      </div>
-                  {% endif %}
-
+                    {% if perms.recruitment.add_interview or request.user|is_stagemanager %}
+                        <span
+                            class="float-end"
+                            title="{% trans 'edit' %}"
+                            hx-get="{% url 'edit-interview' interview.id %}?view=false"
+                            data-target="#createModal"
+                            hx-swap="innerHTML"
+                            hx-target="#createTarget"
+                            data-toggle="oh-modal-toggle"
+                        >
+                            <ion-icon
+                                name="create-outline"
+                                style="font-size: 19px"
+                                role="img"
+                                class="md hydrated"
+                                aria-label="create outline"
+                            ></ion-icon>
+                        </span>
+                    {% endif %}
+                    <div class="interview-item row">
+                        <div class="interview-date">
+                            {% trans "Date" %}: {{ interview.interview_date }}
+                        </div>
+                        <div class="interview-time">
+                            {% trans "Time" %}: {{ interview.interview_time }}
+                        </div>
+                        <div class="interview-interviewer">
+                            {% trans "Interviewer" %}:
+                            <div class="mt-1">
+                                {% for interviewer in interview.employee_id.all %}
+                                <span class="interviewer-chip">
+                                    <ion-icon name="person-outline"></ion-icon>
+                                    {{ interviewer }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="interview-description">
+                            {{ interview.description }}
+                        </div>
+                        {% if interview.completed %}
+                        <div
+                            class="d-flex align-items-center mt-2 status-completed"
+                        >
+                            <ion-icon name="checkmark-outline"></ion-icon>
+                            {% trans "Interview Completed" %}
+                        </div>
+                        {% elif interview.interview_date|date:"Y-m-d" < now %}
+                        <div
+                            class="d-flex align-items-center mt-2 status-completed text-danger"
+                        >
+                            <ion-icon name="close-outline"></ion-icon>
+                            {% trans "Expired Interview" %}
+                        </div>
+                        {% elif interview.interview_date|date:"Y-m-d" > now %}
+                        <div class="d-flex align-items-center mt-2 status-upcoming">
+                            <ion-icon name="time-outline"></ion-icon>
+                            {% trans "Upcoming Interview" %}
+                        </div>
+                        {% elif interview.interview_date|date:"Y-m-d" == now and not interview.completed %}
+                        <div class="d-flex align-items-center mt-2 status-today">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            {% trans "Interview Today" %}
+                        </div>
+                        {% endif %}
+                    </div>
                 </li>
-
-              {% endfor %}
-            </ol>
-          {% else %}
-            <div class="mt-4 d-flex">
-              <span class="oh-activity-sidebar__title fw-bold">{{employee}}'s {% trans "Scheduled Interviews" %}</span>
+            {% empty %}
+            <div
+                class="d-flex justify-content-center align-items-center"
+                style="height: 40vh"
+            >
+                <div>
+                    <div
+                        style="width: 30%; margin: 10% auto"
+                        class="oh-tracking-card"
+                    >
+                        <img
+                            style="width: 100%"
+                            src="{% static 'images/ui/interview.png' %}"
+                        />
+                    </div>
+                    <h5 class="oh-404__subtitle mt-4 ml-2">
+                        {% trans "No interviews are scheduled for this candidate" %}
+                    </h5>
+                </div>
             </div>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
 
-              <div class='d-flex mt-5' style='margin-left:30%;'>
-                <img style="width: 80px;height: 90px;" src="{% static 'images/ui/interview.png' %}"/>
-                <h5 class="oh-404__subtitle mt-4 ml-2">{% trans "No interviews are scheduled for this candidate" %}</h5>
-              </div>
-          {% endif %}
+<div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+        <div class="oh-modal__dialog-header">
+        <button onclick="$(this).closest('#createModal').removeClass('oh-modal--show');" type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+
+        <div class="oh-modal__dialog-body" id="createTarget"></div>
+    </div>
+  </div>

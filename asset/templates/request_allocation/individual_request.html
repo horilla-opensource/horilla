@@ -112,7 +112,7 @@
                     data-toggle="oh-modal-toggle"
                     data-target="#objectCreateModal"
                     hx-get="{% url 'asset-request-approve' req_id=asset_request.id %}"
-                    hx-target="##objectDetailsModalW25Target"
+                    hx-target="#objectCreateModalTarget"
                 >
                     <ion-icon name="checkmark-outline"></ion-icon>{% trans 'Approve' %}
                 </a>

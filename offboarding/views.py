@@ -5,6 +5,7 @@ from urllib.parse import parse_qs
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -110,6 +111,15 @@ def pipeline_grouper(filters={}, offboardings=[]):
     return groups
 
 
+def paginator_qry_offboarding_limited(qryset, page_number):
+    """
+    This method is used to generate common paginator limit.
+    """
+    paginator = Paginator(qryset, 3)
+    qryset = paginator.get_page(page_number)
+    return qryset
+
+
 @login_required
 @any_manager_can_enter(
     "offboarding.view_offboarding", offboarding_employee_can_enter=True
@@ -118,12 +128,20 @@ def pipeline(request):
     """
     Offboarding pipeline view
     """
+    # Apply filters and pagination
     offboardings = PipelineFilter().qs
-    groups = pipeline_grouper({}, offboardings)
+    paginated_offboardings = paginator_qry_offboarding_limited(
+        offboardings, request.GET.get("page")
+    )
+
+    # Group data after pagination
+    groups = pipeline_grouper({}, paginated_offboardings)
+
     for item in groups:
         setattr(item["offboarding"], "stages", item["stages"])
+
     stage_forms = {}
-    for offboarding in offboardings:
+    for offboarding in paginated_offboardings:
         stage_forms[str(offboarding.id)] = StageSelectForm(offboarding=offboarding)
 
     filter_dict = parse_qs(request.GET.urlencode())
@@ -132,7 +150,8 @@ def pipeline(request):
         request,
         "offboarding/pipeline/pipeline.html",
         {
-            "offboardings": groups,
+            "offboardings": groups,  # Grouped data
+            "paginated_offboardings": paginated_offboardings,  # Original paginated object
             "employee_filter": PipelineEmployeeFilter(),
             "pipeline_filter": PipelineFilter(),
             "stage_filter": PipelineStageFilter(),
@@ -153,17 +172,22 @@ def filter_pipeline(request):
     This method is used filter offboarding process
     """
     offboardings = PipelineFilter(request.GET).qs
-    groups = pipeline_grouper(request.GET, offboardings)
+    paginated_offboardings = paginator_qry_offboarding_limited(
+        offboardings, request.GET.get("page")
+    )
+
+    groups = pipeline_grouper(request.GET, paginated_offboardings)
     for item in groups:
         setattr(item["offboarding"], "stages", item["stages"])
     stage_forms = {}
-    for offboarding in offboardings:
+    for offboarding in paginated_offboardings:
         stage_forms[str(offboarding.id)] = StageSelectForm(offboarding=offboarding)
     return render(
         request,
         "offboarding/pipeline/offboardings.html",
         {
             "offboardings": groups,
+            "paginated_offboardings": paginated_offboardings,
             "stage_forms": stage_forms,
             "filter_dict": parse_qs(request.GET.urlencode()),
         },
@@ -356,7 +380,7 @@ def delete_stage(request):
             messages.error(request, _("Stage not found"))
     except OverflowError:
         messages.error(request, _("Stage not found"))
-    return redirect(filter_pipeline)
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required

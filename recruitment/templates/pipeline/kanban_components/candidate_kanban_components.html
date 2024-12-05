@@ -134,6 +134,21 @@
                     >
                 </li>
                 {% endif %}
+                {% if check_candidate_self_tracking %}
+                    {% if perms.recruitment.add_candidate or request.user|is_stagemanager %}
+                        <li class="oh-dropdown__item">
+                            <a
+                                hx-get="{% url 'candidate-document-request' %}?candidate_id={{cand.id}}"
+                                class="oh-dropdown__link"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#objectCreateModal"
+                                hx-target="#objectCreateModalTarget"
+                            >
+                                {% trans "Request Document" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endif %}
                 {% if onboarding|app_installed %}
                     {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
                     <li class="oh-dropdown__item">

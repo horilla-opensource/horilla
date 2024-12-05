@@ -489,9 +489,11 @@ class Employee(models.Model):
             # Create user if no corresponding user exists
             username = self.email
             password = self.phone
-            user = User.objects.create_user(
-                username=username, email=username, password=password
-            )
+            user = User.objects.filter(username=username).first()
+            if not user:
+                user = User.objects.create_user(
+                    username=username, email=username, password=password
+                )
             self.employee_user_id = user
             # default permissions
             change_ownprofile = Permission.objects.get(codename="change_ownprofile")

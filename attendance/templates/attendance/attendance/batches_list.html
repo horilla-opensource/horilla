@@ -1,0 +1,108 @@
+{% load static %}{% load i18n %}
+<script>
+    $("#reloadMessagesButton").click()
+</script>
+<div class="oh-card">
+    <div class="oh-modal__dialog-header">
+        <button
+        type="button"
+        class="oh-modal__close"
+        data-dismiss="oh-modal"
+        aria-label="Close"
+        >
+        <ion-icon name="close-outline"></ion-icon>
+        </button>
+        <span class="oh-modal__dialog-title ml-5">
+        <h5>{% trans "Attendance Batches" %}</h5>
+        </span>
+    </div>
+    {% if batches %}
+        <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
+            <div class="oh-sticky-table">
+                <div class="oh-sticky-table__table">
+                    <div class="oh-sticky-table__thead">
+                        <div class="oh-sticky-table__tr">
+                            <div
+                                class="oh-sticky-table__th"
+                            >
+                                {% trans "Batch" %}
+                            </div>
+                            <div
+                                class="oh-sticky-table__th"
+                            >
+                                {% trans "No of Attendances" %}
+                            </div>
+                            {% if perms.attendance.delete_batchattendance %}
+                                <div
+                                    class="oh-sticky-table__th"
+                                >
+                                    {% trans "Action" %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__tbody">
+                        {% for batch in batches %}
+                        <div
+                            class="oh-sticky-table__tr"
+                        >
+                            <div class="oh-sticky-table__sd">
+                                {% if batch.created_by == request.user %}
+                                    <input name="title" value="{{batch.title}}"
+                                    data-id = "{{batch.id}}"
+                                    style = "width: -webkit-fill-available;"
+                                    onchange = "batchTitleChange(this)"
+                                />
+                                {% else %}
+                                    {{batch.title}}
+                                {% endif %}
+                            </div>
+                            <div class="oh-sticky-table__td"> {{batch.attendance_set.all.count}}</div>
+
+                            <div class="oh-sticky-table__td">
+                                <div class="oh-btn-group" onclick="event.stopPropagation()">
+                                    {% if perms.attendance.delete_batchattendance %}
+                                        <form
+                                            hx-post="{% url 'delete-batch' batch.id %}"
+                                            hx-confirm="{%trans "Are you sure want to delete this batch?" %}"
+                                            hx-target="#objectDetailsModalTarget" class='w-100'>
+                                            <button
+                                                type="submit"
+                                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                            >
+                                                <ion-icon name="trash-outline"></ion-icon>
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div
+            style="
+                height: 70vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            "
+            class=""
+        >
+            <div style="" class="oh-404">
+                <img
+                    style="display: block; width: 150px; height: 150px; margin: 10px auto"
+                    src="{% static 'images/ui/attendances.svg' %}"
+                    class="mb-4"
+                    alt=""
+                />
+                <h3 style="font-size: 20px" class="oh-404__subtitle">
+                    {% trans "There are no batches at the moment." %}
+                </h3>
+            </div>
+        </div>
+    {% endif %}
+</div>

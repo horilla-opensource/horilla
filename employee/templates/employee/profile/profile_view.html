@@ -352,6 +352,8 @@
 									<a
 									href="#"
 									class="oh-general__tab-link"
+									hx-get= "{% url 'employee-interview-tab' %}"
+									hx-target = "#interview"
 									data-action="general-tab"
 									data-target="#interview"
 									>{% trans "Scheduled Interview" %}</a
@@ -391,7 +393,6 @@
 
 						{% if "recruitment"|app_installed %}
 							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="interview">
-								{% include 'tabs/scheduled_interview.html' %}
 							</div>
 						{% endif %}
 

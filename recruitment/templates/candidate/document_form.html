@@ -1,0 +1,70 @@
+{% load static i18n %}
+<div class="oh-modal__dialog-header pb-0">
+    <span class="oh-modal__dialog-title" id="uploadFileModalLabel"
+        >{% trans "Upload File" %}</span
+    >
+    <button
+        class="oh-modal__close--custom"
+        aria-label="Close"
+        onclick="event.stopPropagation();event.preventDefault();$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
+    >
+        <ion-icon
+            name="close-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="close outline"
+        ></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <form
+        id="file-form"
+        hx-post="{% url 'candidate-file-upload' document.id %}"
+        hx-target="#objectCreateModalTarget"
+        hx-encoding="multipart/form-data"
+        class="oh-profile-section pt-3"
+    >
+        {% csrf_token %}
+        <input
+            type="hidden"
+            name="candidate_id"
+            value="{{form.candidate_id.value}}"
+        />
+        <input type="hidden" name="status" value="requested" />
+        <input type="hidden" name="title" value="{{form.instance.title}}" />
+        <input
+            type="hidden"
+            name="rejection_reason"
+            value="{{form.rejection_reason.value}}"
+        />
+        <input
+            type="hidden"
+            name="document_request_id"
+            value="{{form.document_request_id.value}}"
+        />
+        {{form.non_field_errors}} {{form.document}} {{form.document.errors}}
+
+        <div class="file-validation mt-3">
+            <ul class="m-0">
+                <li style="list-style: disc">
+                    {% trans "Upload " %}<b
+                        >{{form.instance.document_request_id.format}}</b
+                    >
+                    {% trans "file" %}
+                </li>
+                <li style="list-style: disc">
+                    {% trans "Max size of the file" %}
+                    {{form.instance.document_request_id.max_size}} MB
+                </li>
+            </ul>
+        </div>
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button
+                type="submit"
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+            >
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+</div>

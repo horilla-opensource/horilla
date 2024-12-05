@@ -257,9 +257,10 @@
         {% if not leave_type.is_compensatory_leave %}
         <a
           data-toggle="oh-modal-toggle"
-          data-target="#editModal"
+          data-target="#objectCreateModal"
+          hx-on:click="$('#objectCreateModalTarget').css('max-width', '410px');"
           hx-get="{% url 'assign-one' leave_type.id %}"
-          hx-target="#leaveForm"
+          hx-target="#objectCreateModalTarget"
           class="oh-btn oh-btn--success w-50"
         >
           <ion-icon class="me-1" name="checkmark-outline"></ion-icon>

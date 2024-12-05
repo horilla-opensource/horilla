@@ -41,11 +41,11 @@
                     onclick="event.stopPropagation();"
                 >
                     <div class="oh-btn-group float-end">
-                        <a
-                            href="/work-type-request-approve/{{work_type.id}}/"
-							onclick="return confirm('{% trans "Do you want to approve this work type request?" %}')"
+                        <a  hx-confirm="{% trans 'Do you want to approve this request?' %}"
+                            hx-post="/work-type-request-approve/{{work_type.id}}/"
+                            hx-target="#WorkTypeRequestApproveBody"
+                            hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 100);"
                             class="oh-btn oh-btn--success"
-                            title="Approve"
                             ><ion-icon name="checkmark-outline"></ion-icon
                         ></a>
 
@@ -53,7 +53,6 @@
                             href="/work-type-request-cancel/{{work_type.id}}/"
 							onclick="return confirm('{% trans "Do you want to cancel this request?" %}')"
                             class="oh-btn oh-btn--danger"
-                            title="cancel"
                             ><ion-icon name="close-circle-outline"></ion-icon
                         ></a>
                     </div>

@@ -1,5 +1,5 @@
 {% load i18n %}
-<form hx-post="{% url 'attendance-update' form.instance.id %}?{{urlencode}}" hx-swap="#updateAttendanceModalBody" id="attendanceUpdateForm">
+<form hx-post="{% url 'attendance-update' obj_id %}?{{urlencode}}" hx-swap="#updateAttendanceModalBody" id="attendanceUpdateForm" data-url="{% url 'attendance-update' obj_id %}">
     {{form.as_p}}
     <script>
         $(document).ready(function () {

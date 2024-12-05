@@ -132,6 +132,57 @@
         {% endif %}
       {% endfor %}
     </div>
+
+    <div class="oh-wrapper mb-5">
+    <!-- Paginator Section -->
+      <div class="oh-pagination">
+        <span
+          class="oh-pagination__page"
+          data-toggle="modal"
+          data-target="#addEmployeeModal"
+          >
+          {% trans "Page" %} {{ paginated_offboardings.number }} {% trans "of" %} {{ paginated_offboardings.paginator.num_pages }}.
+          </span
+        >
+
+        <nav class="oh-pagination__nav">
+          <div class="oh-pagination__input-container me-3">
+            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+
+            <input
+              type="number"
+              name="page"
+              class="oh-pagination__input"
+              value="{{paginated_offboardings.number}}"
+              hx-get="{% url 'offboarding-pipeline-filter' %}?{{pd}}" hx-target="#offboardingContainer"
+              min="1"
+            />
+            <span class="oh-pagination__label">{% trans "of" %} {{paginated_offboardings.paginator.num_pages}}</span>
+          </div>
+
+          <ul class="oh-pagination__items">
+            {% if paginated_offboardings.has_previous %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a href="{% url 'offboarding-pipeline' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a href="{% url 'offboarding-pipeline' %}?{{pd}}&page={{ paginated_offboardings.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+            </li>
+            {% endif %}
+            {% if paginated_offboardings.has_next %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a href="{% url 'offboarding-pipeline' %}?{{pd}}&page={{ paginated_offboardings.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a href="{% url 'offboarding-pipeline' %}?{{pd}}&page={{ paginated_offboardings.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+            </li>
+            {% endif %}
+
+          </ul>
+        </nav>
+      </div>
+    </div>
+
     {% else %}
       <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
           <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/no-results.png' %}" class="" alt="Page not found. 404." />
@@ -142,14 +193,65 @@
 </div>
 
 <script>
-  let activeTab = localStorage.getItem("activeTabOffboarding")
-  if (activeTab) {
-    $(`.oh-tabs__tab[data-target="${activeTab}"]`).addClass("oh-tabs__tab--active")
-    $(`${activeTab}`).addClass("oh-tabs__content--active")
-  }
-  function myFunction(val) {
-    var selects = $("[data-selected-stage]").val(val)
-    selects.siblings('[type=submit]').click()
 
-}
+  $(document).ready(function () {
+
+    // Function to apply the active tab
+    function applyActiveTab() {
+      // Retrieve the active tab from localStorage
+      let activeTab = localStorage.getItem("activeTabOffboarding");
+
+      // Check if the active tab exists in the current DOM
+      if (activeTab && $(`.oh-tabs__tab[data-target="${activeTab}"]`).length > 0) {
+        console.log("Active Tab exists. Activating it.");
+        // Remove active classes from all tabs and content
+        $(".oh-tabs__tab").removeClass("oh-tabs__tab--active fw-bold");
+        $(".oh-tabs__content").removeClass("oh-tabs__content--active fw-bold");
+
+        // Activate the saved tab and its content
+        $(`.oh-tabs__tab[data-target="${activeTab}"]`).addClass("oh-tabs__tab--active fw-bold");
+        $(`${activeTab}`).addClass("oh-tabs__content--active fw-bold");
+      } else {
+        console.log("Active Tab not found. Activating default tab.");
+        // Fallback: Activate the first tab if no valid active tab is found
+        $(".oh-tabs__tab").first().addClass("oh-tabs__tab--active fw-bold");
+        $(".oh-tabs__content").first().addClass("oh-tabs__content--active fw-bold");
+
+        // Save the default tab to localStorage
+        const firstTabTarget = $(".oh-tabs__tab").first().data("target");
+        localStorage.setItem("activeTabOffboarding", firstTabTarget);
+      }
+    }
+
+    // Initial application of the active tab
+    applyActiveTab();
+
+    // Add click event listener to dynamically update the active tab
+    $(".oh-tabs__tab").on("click", function () {
+
+      // Remove active classes from all tabs and content
+      $(".oh-tabs__tab").removeClass("oh-tabs__tab--active fw-bold");
+      $(".oh-tabs__content").removeClass("oh-tabs__content--active fw-bold");
+
+      // Add active class to the clicked tab and corresponding content
+      $(this).addClass("oh-tabs__tab--active fw-bold");
+      const target = $(this).data("target");
+      $(target).addClass("oh-tabs__content--active fw-bold");
+
+      // Update the active tab in localStorage
+      localStorage.setItem("activeTabOffboarding", target);
+
+    });
+
+    // Reapply active tab after pagination (dynamic content update or reload)
+    $(document).on("htmx:afterSwap", function () {
+      applyActiveTab();
+    });
+
+    // Fallback for form submission or full page reload
+    $(window).on("load", function () {
+      applyActiveTab();
+    });
+  });
+
 </script>

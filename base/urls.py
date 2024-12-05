@@ -600,7 +600,7 @@ urlpatterns = [
         name="work-type-request-delete",
     ),
     path(
-        "work-type-request-single-view/<int:work_type_request_id>/",
+        "work-type-request-single-view/<int:obj_id>/",
         views.work_type_request_single_view,
         name="work-type-request-single-view",
     ),
@@ -946,6 +946,11 @@ urlpatterns = [
     ),
     path(
         "announcement-single-view/<int:anoun_id>",
+        announcement.announcement_single_view,
+        name="announcement-single-view",
+    ),
+    path(
+        "announcement-single-view/",
         announcement.announcement_single_view,
         name="announcement-single-view",
     ),

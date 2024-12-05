@@ -32,9 +32,12 @@ class Offboarding(HorillaModel):
     managers = models.ManyToManyField(Employee)
     status = models.CharField(max_length=10, default="ongoing", choices=statuses)
     company_id = models.ForeignKey(
-        Company, on_delete=models.CASCADE, null=True, editable=False
+        Company,
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name="Company",
     )
-    objects = HorillaCompanyManager()
+    objects = HorillaCompanyManager("company_id")
 
     def __str__(self):
         return self.title

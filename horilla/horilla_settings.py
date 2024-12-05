@@ -77,5 +77,5 @@ if settings.env("AWS_ACCESS_KEY_ID", default=None):
 
 
 if settings.env("AWS_ACCESS_KEY_ID", default=None) and "storages" in INSTALLED_APPS:
-    settings.MEDIA_URL = settings.env("MEDIA_URL")
-    settings.MEDIA_ROOT = settings.env("MEDIA_ROOT")
+    settings.MEDIA_URL = f"{settings.env('MEDIA_URL')}/{settings.env('NAMESPACE')}/"
+    settings.MEDIA_ROOT = f"{settings.env('MEDIA_ROOT')}/{settings.env('NAMESPACE')}/"

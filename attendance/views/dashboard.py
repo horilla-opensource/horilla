@@ -8,7 +8,6 @@ import json
 from datetime import date, datetime
 
 from django.apps import apps
-from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
@@ -75,12 +74,6 @@ def dashboard(request):
     """
     This method is used to render individual dashboard for attendance module
     """
-    page_number = request.GET.get("page")
-    previous_data = request.GET.urlencode()
-    employees = Employee.objects.filter(
-        is_active=True,
-    ).filter(~Q(employee_work_info__shift_id=None))
-    total_employees = len(employees)
 
     today = datetime.today()
     week_day = today.strftime("%A").lower()
@@ -101,10 +94,61 @@ def dashboard(request):
         marked_attendances_ratio = (
             f"{(marked_attendances / expected_attendances) * 100:.2f}"
         )
+
+    return render(
+        request,
+        "attendance/dashboard/dashboard.html",
+        {
+            "on_time": on_time,
+            "on_time_ratio": on_time_ratio,
+            "late_come": late_come_obj,
+            "late_come_ratio": late_come_ratio,
+            "expected_attendances": expected_attendances,
+            "marked_attendances": marked_attendances,
+            "marked_attendances_ratio": marked_attendances_ratio,
+        },
+    )
+
+
+@login_required
+@hx_request_required
+def on_break_employees(request):
+    """
+    Fetches and displays employees who left early (early outs) for the current day.
+
+    This view retrieves all records from the `AttendanceLateComeEarlyOut` model
+    where the type is "early_out" and the associated attendance date matches the current date.
+    The results are passed to the template `on_break_employees.html` for rendering
+    """
+    today = datetime.today()
     early_outs = AttendanceLateComeEarlyOut.objects.filter(
         type="early_out", attendance_id__attendance_date=today
     )
+    context = {
+        "on_break": early_outs,
+    }
+    return render(request, "attendance/dashboard/on_break_employees.html", context)
 
+
+@login_required
+@hx_request_required
+def dashboard_approve_overtimes(request):
+    """
+    Displays and validates employee overtime records for the dashboard.
+
+    This view retrieves a paginated list of employee attendance records with
+    overtime that meets or exceeds a specified minimum threshold, which is defined
+    in the `AttendanceValidationCondition` model. Only records that are validated
+    but not yet approved are included, and the results are filtered based on the
+    user's subordinate permissions.
+    """
+    main_dashboard = None
+    referer = request.META.get("HTTP_REFERER", "/")
+    referer = "/" + "/".join(referer.split("/")[3:])
+    if referer == "/":
+        main_dashboard = True
+
+    page_number = request.GET.get("page")
     condition = AttendanceValidationCondition.objects.first()
     min_ot = strtime_seconds("00:00")
     if condition is not None and condition.minimum_overtime_to_approve is not None:
@@ -121,6 +165,33 @@ def dashboard(request):
         queryset=ot_attendances,
     )
 
+    id_list = [ot.id for ot in ot_attendances]
+    ot_attendances_ids = json.dumps(list(id_list))
+    ot_attendances = paginator_qry(ot_attendances, page_number)
+    context = {
+        "overtime_attendances": ot_attendances,
+        "ot_attendances_ids": ot_attendances_ids,
+        "main_dashboard": main_dashboard,
+    }
+    return render(request, "attendance/dashboard/overtime_table.html", context)
+
+
+@login_required
+@hx_request_required
+def dashboard_validate_attendances(request):
+    """
+    Displays and validates employee attendance records for the dashboard.
+
+    This view retrieves a paginated list of attendance records that have not yet
+    been validated. Only records belonging to active employees and accessible
+    subordinates, as determined by the user's permissions, are included in the results.
+    """
+    main_dashboard = None
+    referer = request.META.get("HTTP_REFERER", "/")
+    referer = "/" + "/".join(referer.split("/")[3:])
+    if referer == "/":
+        main_dashboard = True
+    page_number = request.GET.get("page")
     validate_attendances = Attendance.objects.filter(
         attendance_validated=False, employee_id__is_active=True
     )
@@ -130,52 +201,16 @@ def dashboard(request):
         perm="attendance.change_overtime",
         queryset=validate_attendances,
     )
-    validate_attendances = paginator_qry(validate_attendances, page_number)
-    id_list = [ot.id for ot in ot_attendances]
+
     validate_id_list = [val.id for val in validate_attendances]
-    ot_attendances_ids = json.dumps(list(id_list))
     validate_attendances_ids = json.dumps(list(validate_id_list))
-    return render(
-        request,
-        "attendance/dashboard/dashboard.html",
-        {
-            "total_employees": total_employees,
-            "on_time": on_time,
-            "on_time_ratio": on_time_ratio,
-            "late_come": late_come_obj,
-            "late_come_ratio": late_come_ratio,
-            "expected_attendances": expected_attendances,
-            "marked_attendances": marked_attendances,
-            "marked_attendances_ratio": marked_attendances_ratio,
-            "on_break": early_outs,
-            "overtime_attendances": ot_attendances,
-            "validate_attendances": validate_attendances,
-            "pd": previous_data,
-            "ot_attendances_ids": ot_attendances_ids,
-            "validate_attendances_ids": validate_attendances_ids,
-        },
-    )
 
-
-@login_required
-@hx_request_required
-def validated_attendances_table(request):
-    page_number = request.GET.get("page")
-    previous_data = request.GET.urlencode()
-    validate_attendances = Attendance.objects.filter(
-        attendance_validated=False, employee_id__is_active=True
-    )
-    validate_attendances = filtersubordinates(
-        request=request,
-        perm="attendance.change_attendance",
-        queryset=validate_attendances,
-    )
-
+    validate_attendances = paginator_qry(validate_attendances, page_number)
     context = {
-        "validate_attendances": paginator_qry(validate_attendances, page_number),
-        "pd": previous_data,
+        "validate_attendances": validate_attendances,
+        "validate_attendances_ids": validate_attendances_ids,
+        "main_dashboard": main_dashboard,
     }
-
     return render(request, "attendance/dashboard/to_validate_table.html", context)
 
 
@@ -417,63 +452,3 @@ def department_overtime_chart(request):
     }
 
     return JsonResponse(response)
-
-
-@login_required
-def dashboard_overtime_approve(request):
-    previous_data = request.GET.urlencode()
-    page_number = request.GET.get("page")
-    min_ot = strtime_seconds("00:00")
-    if apps.is_installed("attendance"):
-        from attendance.models import Attendance, AttendanceValidationCondition
-
-        condition = AttendanceValidationCondition.objects.first()
-        if condition is not None and condition.minimum_overtime_to_approve is not None:
-            min_ot = strtime_seconds(condition.minimum_overtime_to_approve)
-        ot_attendances = Attendance.objects.filter(
-            overtime_second__gte=min_ot,
-            attendance_validated=True,
-            employee_id__is_active=True,
-            attendance_overtime_approve=False,
-        )
-    else:
-        ot_attendances = None
-    ot_attendances = filtersubordinates(
-        request, ot_attendances, "attendance.change_attendance"
-    )
-    ot_attendances = paginator_qry(ot_attendances, page_number)
-    ot_attendances_ids = json.dumps([instance.id for instance in ot_attendances])
-    return render(
-        request,
-        "request_and_approve/overtime_approve.html",
-        {
-            "overtime_attendances": ot_attendances,
-            "ot_attendances_ids": ot_attendances_ids,
-            "pd": previous_data,
-        },
-    )
-
-
-@login_required
-def dashboard_attendance_validate(request):
-    previous_data = request.GET.urlencode()
-    page_number = request.GET.get("page")
-    validate_attendances = Attendance.objects.filter(
-        attendance_validated=False, employee_id__is_active=True
-    )
-    validate_attendances = filtersubordinates(
-        request, validate_attendances, "attendance.change_attendance"
-    )
-    validate_attendances = paginator_qry(validate_attendances, page_number)
-    validate_attendances_ids = json.dumps(
-        [instance.id for instance in validate_attendances]
-    )
-    return render(
-        request,
-        "request_and_approve/attendance_validate.html",
-        {
-            "validate_attendances": validate_attendances,
-            "validate_attendances_ids": validate_attendances_ids,
-            "pd": previous_data,
-        },
-    )

@@ -1500,6 +1500,7 @@ class AnnouncementComment(HorillaModel):
     announcement_id = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
+    objects = models.Manager()
 
 
 class AnnouncementView(models.Model):
@@ -1511,6 +1512,7 @@ class AnnouncementView(models.Model):
     announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     viewed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
+    objects = models.Manager()
 
 
 class EmailLog(models.Model):
