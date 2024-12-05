@@ -883,15 +883,24 @@ class SkillZoneCandidate(HorillaModel):
         related_company_field="candidate_id__recruitment_id__company_id"
     )
 
-    class Meta:
-        """
-        Meta class to add the additional info
-        """
-
-        unique_together = (
-            "skill_zone_id",
-            "candidate_id",
+    def clean(self):
+        # Check for duplicate entries in the database
+        duplicate_exists = (
+            SkillZoneCandidate.objects.filter(
+                candidate_id=self.candidate_id, skill_zone_id=self.skill_zone_id
+            )
+            .exclude(pk=self.pk)
+            .exists()
         )
+
+        if duplicate_exists:
+            raise ValidationError(
+                _(
+                    f"Candidate {self.candidate_id} already exists in Skill Zone {self.skill_zone_id}."
+                )
+            )
+
+        super().clean()
 
     def __str__(self) -> str:
         return str(self.candidate_id.get_full_name())
