@@ -845,6 +845,7 @@ def payslip_export(request):
             "id", flat=True
         )
     )
+    # print(contributions)
     department = []
     total_amount = 0
 
@@ -868,8 +869,6 @@ def payslip_export(request):
     if status:
         employee_payslip_list = employee_payslip_list.filter(status=status)
 
-    emp = request.user.employee_get
-
     for employ in contributions:
         payslips = Payslip.objects.filter(employee_id__id=employ)
         if end_date:
@@ -883,7 +882,7 @@ def payslip_export(request):
             if end_date:
                 payslips = payslips.filter(end_date__lte=end_date)
         pay_heads = payslips.values_list("pay_head_data", flat=True)
-        contribution_deductions = []
+        # contribution_deductions = []
         deductions = []
         for head in pay_heads:
             for deduction in head["gross_pay_deductions"]:
@@ -921,23 +920,24 @@ def payslip_export(request):
                 employer_contribution = 0
             total_contribution = employee_contribution + employer_contribution
             if employer_contribution > 0:
-                contribution_deductions.append(
-                    {
-                        "deduction_id": deduction_id,
-                        "title": title,
-                        "employee_contribution": employee_contribution,
-                        "employer_contribution": employer_contribution,
-                        "total_contribution": total_contribution,
-                    }
-                )
+                # contribution_deductions.append(
+                #     {
+                #         "deduction_id": deduction_id,
+                #         "title": title,
+                #         "employee_contribution": employee_contribution,
+                #         "employer_contribution": employer_contribution,
+                #         "total_contribution": total_contribution,
+                #     }
+                # )
                 table5_data.append(
                     {
-                        "Employee": Employee.objects.get(id=emp.id),
+                        "Employee": Employee.objects.get(id=employ),
                         "Employer Contribution": employer_contribution,
                         "Employee Contribution": employee_contribution,
                     }
                 )
 
+    emp = request.user.employee_get
     if employee_payslip_list:
         for payslip in employee_payslip_list:
             # Taking the company_name of the user

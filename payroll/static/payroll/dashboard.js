@@ -252,7 +252,7 @@ $(document).ready(function () {
           $("#department_total_empty").hide();
           $.each(department_total, function (key, value) {
             $("#department_total").append(
-              `<li class='m-3 department' style = 'cursor: pointer;''><span class='department_item'>${value["department"]}</span>: <span> ${value["amount"]}</span></li>`
+              `<li class='m-3 department' style = 'cursor: pointer;''><span class='department_item'>${value["department"]}</span>: <span> ${value["amount"].toFixed(2)}</span></li>`
             );
           });
         } else {
