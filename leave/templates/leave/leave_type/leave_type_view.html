@@ -76,19 +76,6 @@
     <!-- end of quick filters  -->
     <div id="leaveTypes">{% include 'leave/leave_type/leave_types.html' %}</div>
 </div>
-
-<div class="oh-modal" id="editModal" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
-    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
-        <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Assign Leave" %}</span>
-            <button class="oh-modal_close--custom" onclick="$('#editModal').removeClass('oh-modal--show');"
-                aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-        <div id="leaveForm"></div>
-    </div>
-</div>
 <script src="{% static '/base/filter.js' %}"></script>
 
 {% endblock %}

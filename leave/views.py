@@ -663,7 +663,6 @@ def leave_request_filter(request):
 
     field = request.GET.get("field")
     multiple_approvals = filter_conditional_leave_request(request)
-
     queryset = filtersubordinates(request, queryset, "leave.view_leaverequest")
 
     if not request.user.is_superuser:
@@ -678,6 +677,9 @@ def leave_request_filter(request):
 
         # Convert the list of IDs back to a queryset
         queryset = LeaveRequest.objects.filter(id__in=queryset)
+
+    queryset = queryset.distinct()
+    multiple_approvals = multiple_approvals.distinct()
 
     queryset = queryset | multiple_approvals
     leave_request_filter = LeaveRequestFilter(request.GET, queryset).qs
@@ -2564,18 +2566,17 @@ def employee_leave(request):
     Returns:
     GET : return Json response of employee
     """
-    today = date.today()
-    leaves = []
-    leave_requests = LeaveRequest.objects.filter(status="approved")
-    requests_ids = []
-
-    for leave_request in leave_requests:
-        if today in leave_request.requested_dates():
-            leaves.append(leave_request)
-            requests_ids.append(leave_request.employee_id.id)
-
+    leaves = LeaveRequest.employees_on_leave_today(status="approved")
+    requests_ids = list(leaves.values_list("id", flat=True))
+    today_holidays = Holidays.today_holidays()
     return render(
-        request, "leave/on_leave.html", {"leaves": leaves, "requests_ids": requests_ids}
+        request,
+        "leave/on_leave.html",
+        {
+            "leaves": leaves,
+            "requests_ids": requests_ids,
+            "today_holidays": today_holidays,
+        },
     )
 
 
@@ -2617,9 +2618,7 @@ def dashboard(request):
     Returns:
     GET : return Admin dasboard template.
     """
-    requests_ids = []
     today = date.today()
-    leave_requests = LeaveRequest.objects.filter(start_date__month=today.month)
     requested = LeaveRequest.objects.filter(start_date__gte=today, status="requested")
     approved = LeaveRequest.objects.filter(
         status="approved", start_date__month=today.month
@@ -2628,40 +2627,19 @@ def dashboard(request):
         status="rejected", start_date__month=today.month
     )
     holidays = Holidays.objects.filter(start_date__gte=today)
-    next_holiday = (
-        holidays.order_by("start_date").first() if holidays.exists() else None
-    )
-    holidays = holidays.filter(
-        start_date__gte=today,
-        start_date__month=today.month,
-        start_date__year=today.year,
-    ).order_by("start_date")[1:]
-
-    leave_today = LeaveRequest.objects.filter(
-        employee_id__is_active=True,
-        status="approved",
-        start_date__lte=today,
-        end_date__gte=today,
-    )
-
-    for item in leave_today:
-        requests_ids.append(item.id)
+    next_holiday = holidays.order_by("start_date").first() if holidays else None
 
     context = {
-        "leave_requests": leave_requests,
         "requested": requested,
         "approved": approved,
         "rejected": rejected,
         "next_holiday": next_holiday,
-        "holidays": holidays,
-        "leave_today_employees": leave_today,
         "dashboard": "dashboard",
         "today": today,
         "first_day": today.replace(day=1).strftime("%Y-%m-%d"),
         "last_day": date(
             today.year, today.month, calendar.monthrange(today.year, today.month)[1]
         ).strftime("%Y-%m-%d"),
-        "requests_ids": requests_ids,
     }
     return render(request, "leave/dashboard.html", context)
 
@@ -2688,24 +2666,14 @@ def employee_dashboard(request):
     next_holiday = (
         holidays.order_by("start_date").first() if holidays.exists() else None
     )
-    holidays = holidays.filter(
-        start_date__gte=today,
-        start_date__month=today.month,
-        start_date__year=today.year,
-    ).order_by("start_date")[1:]
-    leave_requests = leave_requests.filter(
-        start_date__month=today.month, start_date__year=today.year
-    )
-    requests_ids = [request.id for request in leave_requests]
+
     context = {
         "leave_requests": leave_requests,
         "requested": requested,
         "approved": approved,
         "rejected": rejected,
         "next_holiday": next_holiday,
-        "holidays": holidays,
         "dashboard": "dashboard",
-        "requests_ids": requests_ids,
     }
     return render(request, "leave/employee_dashboard.html", context)
 
@@ -2721,16 +2689,23 @@ def dashboard_leave_request(request):
     Returns:
     GET : return leave requests table.
     """
-    user = Employee.objects.get(employee_user_id=request.user)
+    requests_ids = []
+    today = date.today()
     day = request.GET.get("date")
+    employee = request.user.employee_get
+    leave_requests = LeaveRequest.objects.filter(employee_id=employee)
+
     if day:
         day = datetime.strptime(day, "%Y-%m")
-        leave_requests = LeaveRequest.objects.filter(
-            employee_id=user, start_date__month=day.month, start_date__year=day.year
+        leave_requests = leave_requests.filter(
+            start_date__month=day.month, start_date__year=day.year
         )
-        requests_ids = [request.id for request in leave_requests]
     else:
-        leave_requests = []
+        leave_requests = leave_requests.filter(
+            start_date__month=today.month, start_date__year=today.year
+        )
+
+    requests_ids = [request.id for request in leave_requests]
     context = {
         "leave_requests": leave_requests,
         "dashboard": "dashboard",
