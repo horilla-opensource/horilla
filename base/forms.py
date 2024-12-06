@@ -2624,6 +2624,15 @@ class CompanyLeaveForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
 
+    def __init__(self, *args, **kwargs):
+        """
+        Custom initialization to configure the 'based_on' field.
+        """
+        super().__init__(*args, **kwargs)
+        self.fields["based_on_week"].widget.option_template_name = (
+            "horilla_widgets/select_option.html"
+        )
+
 
 class PenaltyAccountForm(ModelForm):
     """
