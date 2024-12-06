@@ -32,6 +32,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.html import strip_tags
+from django.utils.timezone import localdate
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -107,10 +108,12 @@ from base.methods import (
     filtersubordinates,
     filtersubordinatesemployeemodel,
     format_date,
+    generate_colors,
     get_key_instances,
     get_pagination,
     is_reportingmanager,
     paginator_qry,
+    random_color_generator,
     sortby,
 )
 from base.models import (
@@ -6499,6 +6502,25 @@ def generate_error_report(error_list, error_data, file_name):
     DYNAMIC_URL_PATTERNS.append(path_info)
 
     return path_info
+
+
+@login_required
+@hx_request_required
+def get_upcoming_holidays(request):
+    """
+    Retrieve and display a list of upcoming holidays for the current month and year.
+    """
+    today = localdate()  # This accounts for timezone-aware dates
+    current_month = today.month
+    current_year = today.year
+    holidays = Holidays.objects.filter(
+        Q(start_date__month=current_month, start_date__year=current_year)
+        & Q(start_date__gte=today)
+    )
+    colors = generate_colors(len(holidays))
+    for i, holiday in enumerate(holidays):
+        holiday.background_color = colors[i]
+    return render(request, "holiday/upcoming_holidays.html", {"holidays": holidays})
 
 
 @login_required

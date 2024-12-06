@@ -1,0 +1,23 @@
+{% load static %}
+{% load i18n %}
+<ul class="oh-card-dashboard__user-list">
+    {% if holidays %}
+        {% for holiday in holidays %}
+            <li class="oh-card-dashboard__user-item oh-dashboard__event" style="background-color: {{holiday.background_color}};">
+                <div class="">
+                    <span class="oh-profile__name oh-text--white">{{holiday.name}}</span> <br />
+                    <span class="oh-dashboard__event-date oh-text--white dateformat_changer">{{holiday.start_date}}</span>
+                </div>
+            </li>
+        {% endfor %}
+    {% else %}
+        <div style="height: 350px; display:flex;align-items: center;justify-content: center;" class="">
+            <div style="" class="">
+                <img style="display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}"
+                    class="" alt="" />
+                <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No more holidays scheduled for this month." %}
+                </h3>
+            </div>
+        </div>
+    {% endif %}
+</ul>

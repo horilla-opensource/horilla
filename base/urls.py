@@ -995,6 +995,11 @@ urlpatterns = [
         "holidays-info-import", views.holidays_info_import, name="holidays-info-import"
     ),
     path("holiday-info-export", views.holiday_info_export, name="holiday-info-export"),
+    path(
+        "get-upcoming-holidays",
+        views.get_upcoming_holidays,
+        name="get-upcoming-holidays",
+    ),
     path("holiday-creation", views.holiday_creation, name="holiday-creation"),
     path("holiday-update/<int:id>", views.holiday_update, name="holiday-update"),
     path("holiday-delete/<int:id>", views.holiday_delete, name="holiday-delete"),
