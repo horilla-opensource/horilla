@@ -855,6 +855,7 @@ class QuestionTemplateForm(ModelForm):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        self.fields["company_id"].required = True
         self.fields["company_id"].widget.attrs.update(
             {
                 "class": "oh-select oh-select-2 w-100",
@@ -1018,6 +1019,7 @@ class PeriodForm(ModelForm):
             kwargs["initial"] = set_date_field_initial(instance)
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        self.fields["company_id"].required = True
         self.fields["company_id"].widget.attrs.update(
             {
                 "class": "oh-select oh-select-2 w-100",
