@@ -6538,16 +6538,13 @@ def holiday_creation(request):
     POST : return holiday view template
     """
 
-    query_string = request.GET.urlencode()
-    if query_string.startswith("pd="):
-        previous_data = unquote(query_string[len("pd=") :])
-    else:
-        previous_data = unquote(query_string)
+    previous_data = request.GET.urlencode()
     form = HolidayForm()
     if request.method == "POST":
         form = HolidayForm(request.POST)
         if form.is_valid():
             form.save()
+            form = HolidayForm()
             messages.success(request, _("New holiday created successfully.."))
             if Holidays.objects.filter().count() == 1:
                 return HttpResponse("<script>window.location.reload();</script>")
@@ -6851,7 +6848,7 @@ def holiday_filter(request):
 @login_required
 @hx_request_required
 @permission_required("base.change_holidays")
-def holiday_update(request, id):
+def holiday_update(request, obj_id):
     """
     function used to update holiday.
 
@@ -6868,7 +6865,7 @@ def holiday_update(request, id):
         previous_data = unquote(query_string[len("pd=") :])
     else:
         previous_data = unquote(query_string)
-    holiday = Holidays.objects.get(id=id)
+    holiday = Holidays.objects.get(id=obj_id)
     form = HolidayForm(instance=holiday)
     if request.method == "POST":
         form = HolidayForm(request.POST, instance=holiday)
@@ -6878,14 +6875,14 @@ def holiday_update(request, id):
     return render(
         request,
         "holiday/holiday_update_form.html",
-        {"form": form, "id": id, "pd": previous_data},
+        {"form": form, "id": obj_id, "pd": previous_data},
     )
 
 
 @login_required
 @hx_request_required
 @permission_required("base.delete_holidays")
-def holiday_delete(request, id):
+def holiday_delete(request, obj_id):
     """
     function used to delete holiday.
 
@@ -6898,7 +6895,7 @@ def holiday_delete(request, id):
     """
     query_string = request.GET.urlencode()
     try:
-        Holidays.objects.get(id=id).delete()
+        Holidays.objects.get(id=obj_id).delete()
         messages.success(request, _("Holidays deleted successfully.."))
     except Holidays.DoesNotExist:
         messages.error(request, _("Holidays not found."))

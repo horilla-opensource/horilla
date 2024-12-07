@@ -1001,8 +1001,8 @@ urlpatterns = [
         name="get-upcoming-holidays",
     ),
     path("holiday-creation", views.holiday_creation, name="holiday-creation"),
-    path("holiday-update/<int:id>", views.holiday_update, name="holiday-update"),
-    path("holiday-delete/<int:id>", views.holiday_delete, name="holiday-delete"),
+    path("holiday-update/<int:obj_id>", views.holiday_update, name="holiday-update"),
+    path("holiday-delete/<int:obj_id>", views.holiday_delete, name="holiday-delete"),
     path(
         "holidays-bulk-delete", views.bulk_holiday_delete, name="holidays-bulk-delete"
     ),
