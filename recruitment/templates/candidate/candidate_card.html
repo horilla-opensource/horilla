@@ -23,6 +23,8 @@
                 row-status--red
             {% elif cand.hired == True %}
                 row-status--yellow
+            {% elif cand.converted == True %}
+                row-status--blue
             {% elif cand.hired == False %}
                 row-status--purple
             {% endif %}
@@ -38,6 +40,27 @@
             href="{% url 'candidate-view-individual' cand.id %}"
             style="color: inherit; text-decoration: none; display: flex"
         >
+
+            {% if cand.email in emp_list %}
+                <!-- Angled Banner Styled to Fit the Card -->
+                <div
+                    class="banner-container fw-bold"
+                    style=" position: absolute;
+                            top: 15px;
+                            right: -8px;
+                            transform: rotate(48deg);
+                            background-color: #40ac40;
+                            color: white;
+                            padding: 13px 38px;
+                            font-size: 12px;
+                            z-index: 2;
+                            clip-path: polygon(28% 0, 117% 0, 91% 101%, 0 100%);
+                            text-align: center;"
+                    >
+                    <span style="font-weight: bold;">{% trans "Converted" %}</span>
+                </div>
+            {% endif %}
+
             <div class="oh-kanban-card__avatar">
                 <div class="oh-kanban-card__profile-container">
                     <img

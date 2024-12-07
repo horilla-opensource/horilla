@@ -130,6 +130,7 @@ class CandidateFilter(FilterSet):
             "gender",
             "start_onboard",
             "hired",
+            "converted",
             "canceled",
             "is_active",
             "recruitment_id__company_id",

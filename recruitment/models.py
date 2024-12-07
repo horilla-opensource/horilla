@@ -425,6 +425,7 @@ class Candidate(HorillaModel):
     start_onboard = models.BooleanField(default=False, verbose_name=_("Start Onboard"))
     hired = models.BooleanField(default=False, verbose_name=_("Hired"))
     canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
+    converted = models.BooleanField(default=False, verbose_name=_("Converted"))
     joining_date = models.DateField(
         blank=True, null=True, verbose_name=_("Joining Date")
     )
@@ -590,6 +591,10 @@ class Candidate(HorillaModel):
             .exists()
         ):
             raise ValidationError(_("Employee is uniques for candidate"))
+
+        if self.converted:
+            self.hired = False
+            self.canceled = False
 
         super().save(*args, **kwargs)
 
