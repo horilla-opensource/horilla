@@ -910,7 +910,6 @@ def payslip_export(request):
         }
 
         for deduction_id, group in grouped_deductions.items():
-            title = group[0]["title"]
             employee_contribution = sum(item["amount"] for item in group)
             try:
                 employer_contribution = sum(
@@ -918,17 +917,7 @@ def payslip_export(request):
                 )
             except:
                 employer_contribution = 0
-            total_contribution = employee_contribution + employer_contribution
             if employer_contribution > 0:
-                # contribution_deductions.append(
-                #     {
-                #         "deduction_id": deduction_id,
-                #         "title": title,
-                #         "employee_contribution": employee_contribution,
-                #         "employer_contribution": employer_contribution,
-                #         "total_contribution": total_contribution,
-                #     }
-                # )
                 table5_data.append(
                     {
                         "Employee": Employee.objects.get(id=employ),
