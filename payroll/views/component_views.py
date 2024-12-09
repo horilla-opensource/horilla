@@ -77,6 +77,7 @@ from payroll.methods.payslip_calc import (
 from payroll.methods.tax_calc import calculate_taxable_amount
 from payroll.models.models import (
     Allowance,
+    Contract,
     Deduction,
     LoanAccount,
     Payslip,
@@ -384,9 +385,7 @@ def view_allowance(request):
     """
     This method is used render template to view all the allowance instances
     """
-    allowances = payroll.models.models.Allowance.objects.exclude(
-        only_show_under_employee=True
-    )
+    allowances = Allowance.objects.exclude(only_show_under_employee=True)
     allowance_filter = AllowanceFilter(request.GET)
     allowances = paginator_qry(allowances, request.GET.get("page"))
     allowance_ids = json.dumps([instance.id for instance in allowances.object_list])
@@ -408,7 +407,7 @@ def view_single_allowance(request, allowance_id):
     This method is used render template to view the selected allowance instances
     """
     previous_data = get_urlencode(request)
-    allowance = payroll.models.models.Allowance.find(allowance_id)
+    allowance = Allowance.find(allowance_id)
     allowance_ids_json = request.GET.get("instances_ids")
     context = {
         "allowance": allowance,
@@ -466,7 +465,7 @@ def update_allowance(request, allowance_id, **kwargs):
     Args:
         id : allowance instance id
     """
-    instance = payroll.models.models.Allowance.objects.get(id=allowance_id)
+    instance = Allowance.objects.get(id=allowance_id)
     form = forms.AllowanceForm(instance=instance)
     if request.method == "POST":
         form = forms.AllowanceForm(request.POST, instance=instance)
@@ -486,9 +485,7 @@ def delete_allowance(request, allowance_id):
     """
     previous_data = get_urlencode(request)
     try:
-        allowance = payroll.models.models.Allowance.objects.filter(
-            id=allowance_id
-        ).first()
+        allowance = Allowance.objects.filter(id=allowance_id).first()
         if allowance:
             allowance.delete()
             messages.success(request, _("Allowance deleted successfully"))
@@ -500,7 +497,7 @@ def delete_allowance(request, allowance_id):
 
     if (
         request.path.split("/")[2] == "delete-employee-allowance"
-        or not payroll.models.models.Allowance.objects.exists()
+        or not Allowance.objects.exists()
     ):
         return HttpResponse("<script>window.location.reload();</script>")
 
@@ -540,9 +537,7 @@ def view_deduction(request):
     This method is used render template to view all the deduction instances
     """
 
-    deductions = payroll.models.models.Deduction.objects.exclude(
-        only_show_under_employee=True
-    )
+    deductions = Deduction.objects.exclude(only_show_under_employee=True)
     deduction_filter = DeductionFilter(request.GET)
     deductions = paginator_qry(deductions, request.GET.get("page"))
     deduction_ids = json.dumps([instance.id for instance in deductions.object_list])
@@ -564,7 +559,7 @@ def view_single_deduction(request, deduction_id):
     Render template to view a single deduction instance with navigation.
     """
     previous_data = get_urlencode(request)
-    deduction = payroll.models.models.Deduction.objects.filter(id=deduction_id).first()
+    deduction = Deduction.objects.filter(id=deduction_id).first()
     context = {"deduction": deduction, "pd": previous_data}
 
     # Handle deduction IDs and navigation
@@ -647,7 +642,7 @@ def update_deduction(request, deduction_id, **kwargs):
     """
     This method is used to update the deduction instance
     """
-    instance = payroll.models.models.Deduction.objects.get(id=deduction_id)
+    instance = Deduction.objects.get(id=deduction_id)
     form = forms.DeductionForm(instance=instance)
     if request.method == "POST":
         form = forms.DeductionForm(request.POST, instance=instance)
@@ -730,7 +725,7 @@ def generate_payslip(request):
             end_date = form.cleaned_data["end_date"]
             group_name = form.cleaned_data["group_name"]
             for employee in employees:
-                contract = payroll.models.models.Contract.objects.filter(
+                contract = Contract.objects.filter(
                     employee_id=employee, contract_status="active"
                 ).first()
                 if start_date < contract.contract_start_date:
@@ -786,7 +781,7 @@ def check_contract_start_date(request):
     employee_id = request.GET.get("employee_id")
     start_date = request.GET.get("start_date")
 
-    contract = payroll.models.models.Contract.objects.filter(
+    contract = Contract.objects.filter(
         employee_id=employee_id, contract_status="active"
     ).first()
 
@@ -844,7 +839,7 @@ def create_payslip(request, new_post_data=None):
         )
 
         if employee_id and start_date:
-            contract = payroll.models.models.Contract.objects.filter(
+            contract = Contract.objects.filter(
                 employee_id=employee_id, contract_status="active"
             ).first()
 
@@ -857,7 +852,7 @@ def create_payslip(request, new_post_data=None):
             employee = form.cleaned_data["employee_id"]
             start_date = form.cleaned_data["start_date"]
             end_date = form.cleaned_data["end_date"]
-            payslip = payroll.models.models.Payslip.objects.filter(
+            payslip = Payslip.objects.filter(
                 employee_id=employee, start_date=start_date, end_date=end_date
             ).first()
 
@@ -929,7 +924,7 @@ def validate_start_date(request):
     error_message = ""
     response = {"valid": True, "message": error_message}
     for emp_id in employee_id:
-        contract = payroll.models.models.Contract.objects.filter(
+        contract = Contract.objects.filter(
             employee_id__id=emp_id, contract_status="active"
         ).first()
 
@@ -978,11 +973,9 @@ def view_payslip(request):
     This method is used to render the template for viewing a payslip.
     """
     if request.user.has_perm("payroll.view_payslip"):
-        payslips = payroll.models.models.Payslip.objects.all()
+        payslips = Payslip.objects.all()
     else:
-        payslips = payroll.models.models.Payslip.objects.filter(
-            employee_id__employee_user_id=request.user
-        )
+        payslips = Payslip.objects.filter(employee_id__employee_user_id=request.user)
     export_column = forms.PayslipExportColumnForm()
     filter_form = PayslipFilter(request.GET, payslips)
     payslips = filter_form.qs
@@ -1112,28 +1105,9 @@ def payslip_export(request):
                 data = choices_mapping.get(value, "")
 
             if type(value) == date:
-                user = request.user
-                employee = user.employee_get
-
-                # Taking the company_name of the user
-                info = EmployeeWorkInformation.objects.filter(employee_id=employee)
-                if info.exists():
-                    for i in info:
-                        employee_company = i.company_id
-                    company_name = Company.objects.filter(company=employee_company)
-                    emp_company = company_name.first()
-
-                    # Access the date_format attribute directly
-                    date_format = (
-                        emp_company.date_format if emp_company else "MMM. D, YYYY"
-                    )
-                else:
-                    date_format = "MMM. D, YYYY"
-
-                # Convert the string to a datetime.date object
+                date_format = request.user.employee_get.get_date_format()
                 start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
-                # The formatted date for each format
                 for format_name, format_string in HORILLA_DATE_FORMATS.items():
                     if format_name == date_format:
                         data = start_date.strftime(format_string)
@@ -1217,7 +1191,7 @@ def add_bonus(request):
         form = forms.BonusForm(initial={"employee_id": employee_id})
     if request.method == "POST":
         form = forms.BonusForm(request.POST, initial={"employee_id": employee_id})
-        contract = payroll.models.models.Contract.objects.filter(
+        contract = Contract.objects.filter(
             employee_id=employee_id, contract_status="active"
         ).first()
         employee = Employee.objects.filter(id=employee_id).first()
@@ -1893,9 +1867,12 @@ def all_deductions(pay_head):
     extracted_items = []
 
     potential_lists = [
+        "basic_pay_deductions",
+        "gross_pay_deductions",
         "pretax_deductions",
         "post_tax_deductions",
         "tax_deductions",
+        "net_deductions",
     ]
 
     for list_name in potential_lists:
@@ -1922,8 +1899,6 @@ def payslip_detailed_export_data(request):
     payslips_data = []
     totals = {}
     payslips = PayslipFilter(request.GET).qs
-    today_date = date.today().strftime("%Y-%m-%d")
-    file_name = f"Payslip_excel_{today_date}.xlsx"
     selected_fields = request.GET.getlist("selected_fields")
     form = forms.PayslipExportColumnForm()
 
@@ -1934,8 +1909,8 @@ def payslip_detailed_export_data(request):
         selected_fields = form.fields["selected_fields"].initial
 
     for field in forms.excel_columns:
-        value = field[0]
-        key = field[1]
+        value, key = field
+
         if value in selected_fields:
             selected_columns.append((value, key))
 
@@ -1994,7 +1969,8 @@ def payslip_detailed_export_data(request):
     totals.update(allowance_totals)
     totals.update(deduction_totals)
     totals.update(other_totals)
-
+    print(payslips[0].employee_id)
+    print(json.dumps(payslips[0].pay_head_data, indent=2))
     for payslip in payslips:
         payslip_data = {}
         other_allowances_sum = 0
@@ -2043,21 +2019,7 @@ def payslip_detailed_export_data(request):
                 data = choices_mapping.get(value, "")
 
             if isinstance(value, date):
-                user = request.user
-                employee = user.employee_get
-                info = EmployeeWorkInformation.objects.filter(employee_id=employee)
-                if info.exists():
-                    for i in info:
-                        employee_company = i.company_id
-                    company_name = Company.objects.filter(company=employee_company)
-                    emp_company = company_name.first()
-
-                    date_format = (
-                        emp_company.date_format if emp_company else "MMM. D, YYYY"
-                    )
-                else:
-                    date_format = "MMM. D, YYYY"
-
+                date_format = request.user.employee_get.get_date_format()
                 start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
                 for format_name, format_string in HORILLA_DATE_FORMATS.items():
@@ -2066,6 +2028,7 @@ def payslip_detailed_export_data(request):
             else:
                 data = str(value) if value is not None else ""
 
+            # print(allos)
             if allos:
                 for allowance in allos:
                     if str(allowance["title"]) == str(column_name):
@@ -2170,6 +2133,8 @@ def payslip_detailed_export(request):
     selected_columns = export_data["selected_columns"]
     allowances = export_data["allowances"]
     deductions = export_data["deductions"]
+    today_date = date.today().strftime("%Y-%m-%d")
+    file_name = f"Payslip_excel_{today_date}.xlsx"
 
     thin_border = Border(
         left=Side(style="thin"),
@@ -2268,7 +2233,7 @@ def payslip_detailed_export(request):
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response["Content-Disposition"] = "attachment; filename=Payslip_excel.xlsx"
+    response["Content-Disposition"] = f"attachment; filename={file_name}.xlsx"
     wb.save(response)
 
     return response
