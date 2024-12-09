@@ -36,6 +36,7 @@ class HorillaMultiSelectWidget(forms.Widget):
         instance=None,
         required=False,
         form=None,
+        help_text=None,
         **kwargs
     ) -> None:
         self.filter_route_name = filter_route_name
@@ -45,6 +46,7 @@ class HorillaMultiSelectWidget(forms.Widget):
         self.filter_template_path = filter_template_path
         self.instance = instance
         self.form = form
+        self.help_text = help_text
         super().__init__()
 
     template_name = "horilla_widgets/horilla_multiselect_widget.html"
@@ -73,6 +75,7 @@ class HorillaMultiSelectWidget(forms.Widget):
         context["filter_template_path"] = self.filter_template_path
         context["filter_route_name"] = self.filter_route_name
         context["required"] = self.required
+        context["help_text"] = self.help_text
         self.attrs["id"] = (
             ("id_" + name) if self.attrs.get("id") is None else self.attrs.get("id")
         )

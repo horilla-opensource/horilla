@@ -1,0 +1,10 @@
+{% load i18n %}
+{% if employees %}
+    <ol>
+        {% for employee in employees %}
+        <li>{{employee}}</li>
+        {% endfor %}
+    </ol>
+{% else %}
+    {% trans "Not Added" %}
+{% endif %}
