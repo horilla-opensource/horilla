@@ -139,6 +139,16 @@ class Employee(models.Model):
         """
         return getattr(getattr(self, "employee_work_info", None), "company_id", None)
 
+    def get_date_format(self):
+        company = self.get_company()
+
+        if company:
+            date_format = company.date_format
+
+            return date_format if date_format else "MMM. D, YYYY"
+
+        return "MMM. D, YYYY"
+
     def get_job_position(self):
         """
         This method is used to return the job position of the employee
