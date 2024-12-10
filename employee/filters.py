@@ -11,10 +11,11 @@ from django import forms
 from django.utils.translation import gettext as _
 from django_filters import CharFilter
 
-from employee.models import DisciplinaryAction, Employee, Policy
-
 # from attendance.models import Attendance
+from accessibility.models import DefaultAccessibility
+from employee.models import DisciplinaryAction, Employee, Policy
 from horilla.filters import FilterSet, HorillaFilterSet, filter_by_name
+from horilla.horilla_middlewares import _thread_locals
 from horilla_documents.models import Document
 from horilla_views.templatetags.generic_template_filters import getattribute
 
@@ -164,10 +165,23 @@ class EmployeeFilter(HorillaFilterSet):
 
     def filter_queryset(self, queryset):
         """
-        Override the default filtering behavior to handle None option.
+        Override the default filtering behavior to handle None option and filter queryset for reporting manager.
         """
         from django.db.models import Q
 
+        # Handle default accessibility and filter based on reporting manager
+        accessibility = DefaultAccessibility.objects.filter(
+            feature="employee_view"
+        ).first()
+        if accessibility and accessibility.exclude_all:
+            request = getattr(_thread_locals, "request", None)
+            employee = getattr(request.user, "employee_get", None)
+            if employee and employee.reporting_manager.exists():
+                queryset = queryset.filter(
+                    employee_work_info__reporting_manager_id=employee
+                )
+
+        # Handle 'not_set' values in the cleaned data
         data = self.form.cleaned_data
         not_set_dict = {}
         for key, value in data.items():
