@@ -151,11 +151,12 @@ from base.models import (
     WorkTypeRequestComment,
 )
 from employee.filters import EmployeeFilter
-from employee.forms import ActiontypeForm
+from employee.forms import ActiontypeForm, EmployeeGeneralSettingPrefixForm
 from employee.models import (
     Actiontype,
     DisciplinaryAction,
     Employee,
+    EmployeeGeneralSetting,
     EmployeeWorkInformation,
 )
 from horilla.decorators import (
@@ -4961,6 +4962,16 @@ def general_settings(request):
         encashment_form = None
         currency_form = None
 
+    selected_company_id = request.session.get("selected_company")
+
+    if selected_company_id == "all" or not selected_company_id:
+        companies = Company.objects.all()
+    else:
+        companies = Company.objects.filter(id=selected_company_id)
+
+    # Fetch or create EmployeeGeneralSetting instance
+    prefix_instance = EmployeeGeneralSetting.objects.first()
+    prefix_form = EmployeeGeneralSettingPrefixForm(instance=prefix_instance)
     instance = AnnouncementExpire.objects.first()
     form = AnnouncementExpireForm(instance=instance)
     enabled_block_unblock = (
@@ -4999,6 +5010,9 @@ def general_settings(request):
             "history_fields_form": history_fields_form,
             "history_tracking_instance": history_tracking_instance,
             "enabled_block_unblock": enabled_block_unblock,
+            "prefix_form": prefix_form,
+            "companies": companies,
+            "selected_company_id": selected_company_id,
         },
     )
 
