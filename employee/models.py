@@ -906,8 +906,8 @@ class EmployeeGeneralSetting(HorillaModel):
     """
 
     badge_id_prefix = models.CharField(max_length=5, default="PEP")
-    objects = models.Manager()
     company_id = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)
+    objects = HorillaCompanyManager("company_id")
 
 
 from accessibility.accessibility import ACCESSBILITY_FEATURE

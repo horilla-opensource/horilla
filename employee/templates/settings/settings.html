@@ -1,18 +1,54 @@
 {% load i18n %}
-{% csrf_token %}
 <div class="oh-inner-sidebar-content__header mt-4">
     <h2 class="oh-inner-sidebar-content__title">{% trans 'Badge Prefix' %}</h2>
 </div>
-<form  action="{% url 'initial-prefix' %}" method="post">
-    {% csrf_token %}
-  <div class="oh-label__info" for="application_tracking">
-    <label class="oh-label" for="application_tracking">{% trans "Prefix" %}</label>
-    <span class="oh-info mr-2" title="{% trans "Set intial badge-id" %}">
-    </span>
+<form action="{% url 'initial-prefix' %}" method="post">
+  {% csrf_token %}
+  <div>
+    <div class="row">
+
+      <div class="col-sm-12 col-md-12 col-lg-3">
+        <div class="oh-input-group">
+          <div class="d-flex align-items-center mb-2">
+            <label class="oh-label mb-0" for="{{ prefix_form.badge_id_prefix.id_for_label }}">
+              {% trans "Prefix" %}
+            </label>
+            <span class="oh-info mt-2" title="{% trans 'Set initial badge-id' %}">
+            </span>
+          </div>
+          {{ prefix_form.badge_id_prefix }}
+          {% if prefix_form.badge_id_prefix.errors %}
+            <div class="text-danger">
+              {{ prefix_form.badge_id_prefix.errors|join:", " }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-12 col-lg-3">
+        <div class="oh-input-group">
+            <div class="d-flex align-items-center">
+                <label class="oh-label" for="id_company_id">
+                    {% trans "Company" %}
+                </label>
+                <span class="oh-info mt-1" title="{% trans 'Select the company.' %}"></span>
+            </div>
+            <select name="company_id" id="id_company_id" class="oh-select oh-select-2 w-100">
+                {% for company in companies %}
+                    <option value="{{ company.id }}" {% if company.id == selected_company_id %}selected{% endif %}>
+                        {{ company.company }}
+                    </option>
+                {% endfor %}
+            </select>
+          </div>
+      </div>
+
+      <div class="d-flex align-items-end col-sm-12 col-md-12 col-lg-3">
+        <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
+          {% trans 'Save Changes' %}
+        </button>
+      </div>
+    </div>
   </div>
-    <input type="text" class="oh-input w-25" name="initial_prefix" value="{{get_initial_prefix}}"{% if enabled_resignation_request %} checked{% endif %} />
-    <button style="display: inline;margin-left: 10px;" type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
-        {% trans "Save Changes" %}
-    </button>
 </form>
 <div class="oh-inner-sidebar-content__footer"></div>

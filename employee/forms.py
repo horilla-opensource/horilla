@@ -41,6 +41,7 @@ from employee.models import (
     DisciplinaryAction,
     Employee,
     EmployeeBankDetails,
+    EmployeeGeneralSetting,
     EmployeeNote,
     EmployeeTag,
     EmployeeWorkInformation,
@@ -701,3 +702,15 @@ class EmployeeTagForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
         widgets = {"color": TextInput(attrs={"type": "color", "style": "height:50px"})}
+
+
+class EmployeeGeneralSettingPrefixForm(forms.ModelForm):
+
+    class Meta:
+
+        model = EmployeeGeneralSetting
+        exclude = ["objects"]
+        widgets = {
+            "badge_id_prefix": forms.TextInput(attrs={"class": "oh-input w-100"}),
+            "company_id": forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
+        }

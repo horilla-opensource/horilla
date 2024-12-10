@@ -71,6 +71,7 @@ from employee.forms import (
     EmployeeBankDetailsUpdateForm,
     EmployeeExportExcelForm,
     EmployeeForm,
+    EmployeeGeneralSettingPrefixForm,
     EmployeeNoteForm,
     EmployeeTagForm,
     EmployeeWorkInformationForm,
@@ -3426,14 +3427,24 @@ def encashment_condition_create(request):
 @permission_required("employee.add_employeegeneralsetting")
 def initial_prefix(request):
     """
-    This method is used to set initial prefix
+    This method is used to set the initial prefix using a form.
     """
-    instance = EmployeeGeneralSetting.objects.first()
-    instance = instance if instance else EmployeeGeneralSetting()
-    instance.badge_id_prefix = request.POST["initial_prefix"]
-    instance.save()
-    messages.success(request, "Initial prefix update")
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    instance = EmployeeGeneralSetting.objects.first()  # Get the first instance or None
+    if not instance:
+        instance = EmployeeGeneralSetting()  # Create a new instance if none exists
+
+    if request.method == "POST":
+        form = EmployeeGeneralSettingPrefixForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Initial prefix updated successfully.")
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        else:
+            messages.error(request, "There was an error updating the prefix.")
+    else:
+        form = EmployeeGeneralSettingPrefixForm(instance=instance)
+
+    return render(request, "settings/settings.html", {"prefix_form": form})
 
 
 @login_required
