@@ -81,7 +81,8 @@
                             <button id="holidayCreateButton" class="oh-btn oh-btn--secondary oh-btn--shadow"
                                 data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
                                 hx-get="{% url 'holiday-creation' %}" hx-target="#objectCreateModalTarget"
-                                onclick="createHolidayHxValue();">
+                                hx-include="#filterForm"
+                                >
                                 <ion-icon name="add-outline" class="me-1"></ion-icon>
                                 {% trans "Create" %}
                             </button>
@@ -178,23 +179,6 @@
     </div>
 <!-- end of holiday export modal -->
 
-<script>
-    $(document).on("htmx:load", "#holidays", function () {
-        // Create a new script element
-        var scriptElement = document.createElement("script");
-        // Set the source URL of the script file to be loaded
-        scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
-        // Append the script element to the head of the HTML document
-        document.head.appendChild(scriptElement);
-    });
-</script>
-
 <script src="{% static '/base/filter.js' %}"></script>
 <script src="{% static '/holiday/action.js' %}"></script>
-<script>
-    $(document).ready(function () {
-        $("[name=recurring]").select2;
-    });
-</script>
-
 {% endblock %}

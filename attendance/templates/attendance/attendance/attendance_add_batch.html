@@ -7,7 +7,7 @@
             </h2>
             <button class="oh-modal__close" aria-label="Close">
                 <ion-icon name="close-outline"></ion-icon>
-            </button> 
+            </button>
         </div>
         <div class="oh-modal__dialog-body" id="addBatchModalBody">
           <form id="add-batch-form" hx-post="{% url 'attendance-add-to-batch' %}?ids={{ids}}" hx-target="#objectDetailsModalTarget">
@@ -18,12 +18,11 @@
                       <div class="oh-input__group">
                         <label class="oh-input__label" for="">{% trans 'Batch' %}</label>
                         <select name="batch_attendance_id" class="oh-select oh-select-2 w-100 form-control select2-hidden-accessible" style="height:50px;border-radius:0;" required>
-                          <option value="" selected="" disabled="" data-select2-id="23">---Choose Shift---</option>
-
+                          <option value="" selected="">---Choose Shift---</option>
                           {% for batch in batches  %}
                           <option value={{batch.id}} >{{batch}}</option>
                           {% endfor %}
-                        
+                          <option value="dynamic_create">{% trans "Dynamic create" %}</option>
                         </select>
                       </div>
                     </div>
@@ -33,6 +32,5 @@
                   </div>
                 </div>
               </form>
-        </div> 
+        </div>
     </div>
-

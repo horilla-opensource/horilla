@@ -591,7 +591,7 @@ def ticket_archive(request, ticket_id):
 
 
 @login_required
-@ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
+# @ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def change_ticket_status(request, ticket_id):
     """
     This function is responsible for changing the Ticket status.

@@ -32,6 +32,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.html import strip_tags
+from django.utils.timezone import localdate
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -107,10 +108,12 @@ from base.methods import (
     filtersubordinates,
     filtersubordinatesemployeemodel,
     format_date,
+    generate_colors,
     get_key_instances,
     get_pagination,
     is_reportingmanager,
     paginator_qry,
+    random_color_generator,
     sortby,
 )
 from base.models import (
@@ -148,11 +151,12 @@ from base.models import (
     WorkTypeRequestComment,
 )
 from employee.filters import EmployeeFilter
-from employee.forms import ActiontypeForm
+from employee.forms import ActiontypeForm, EmployeeGeneralSettingPrefixForm
 from employee.models import (
     Actiontype,
     DisciplinaryAction,
     Employee,
+    EmployeeGeneralSetting,
     EmployeeWorkInformation,
 )
 from horilla.decorators import (
@@ -837,10 +841,11 @@ def announcement_list(request):
         announcement.has_viewed = announcement.announcementview_set.filter(
             user=request.user, viewed=True
         ).exists()
-
+    instance_ids = json.dumps([instance.id for instance in announcement_list])
     context = {
-        "announcement": announcement_list,
+        "announcements": announcement_list,
         "general_expire_date": general_expire_date,
+        "instance_ids": instance_ids,
     }
     return render(request, "announcements_list.html", context)
 
@@ -4957,6 +4962,16 @@ def general_settings(request):
         encashment_form = None
         currency_form = None
 
+    selected_company_id = request.session.get("selected_company")
+
+    if selected_company_id == "all" or not selected_company_id:
+        companies = Company.objects.all()
+    else:
+        companies = Company.objects.filter(id=selected_company_id)
+
+    # Fetch or create EmployeeGeneralSetting instance
+    prefix_instance = EmployeeGeneralSetting.objects.first()
+    prefix_form = EmployeeGeneralSettingPrefixForm(instance=prefix_instance)
     instance = AnnouncementExpire.objects.first()
     form = AnnouncementExpireForm(instance=instance)
     enabled_block_unblock = (
@@ -4995,6 +5010,9 @@ def general_settings(request):
             "history_fields_form": history_fields_form,
             "history_tracking_instance": history_tracking_instance,
             "enabled_block_unblock": enabled_block_unblock,
+            "prefix_form": prefix_form,
+            "companies": companies,
+            "selected_company_id": selected_company_id,
         },
     )
 
@@ -6502,6 +6520,25 @@ def generate_error_report(error_list, error_data, file_name):
 
 @login_required
 @hx_request_required
+def get_upcoming_holidays(request):
+    """
+    Retrieve and display a list of upcoming holidays for the current month and year.
+    """
+    today = localdate()  # This accounts for timezone-aware dates
+    current_month = today.month
+    current_year = today.year
+    holidays = Holidays.objects.filter(
+        Q(start_date__month=current_month, start_date__year=current_year)
+        & Q(start_date__gte=today)
+    )
+    colors = generate_colors(len(holidays))
+    for i, holiday in enumerate(holidays):
+        holiday.background_color = colors[i]
+    return render(request, "holiday/upcoming_holidays.html", {"holidays": holidays})
+
+
+@login_required
+@hx_request_required
 @permission_required("base.add_holidays")
 def holiday_creation(request):
     """
@@ -6515,16 +6552,13 @@ def holiday_creation(request):
     POST : return holiday view template
     """
 
-    query_string = request.GET.urlencode()
-    if query_string.startswith("pd="):
-        previous_data = unquote(query_string[len("pd=") :])
-    else:
-        previous_data = unquote(query_string)
+    previous_data = request.GET.urlencode()
     form = HolidayForm()
     if request.method == "POST":
         form = HolidayForm(request.POST)
         if form.is_valid():
             form.save()
+            form = HolidayForm()
             messages.success(request, _("New holiday created successfully.."))
             if Holidays.objects.filter().count() == 1:
                 return HttpResponse("<script>window.location.reload();</script>")
@@ -6828,7 +6862,7 @@ def holiday_filter(request):
 @login_required
 @hx_request_required
 @permission_required("base.change_holidays")
-def holiday_update(request, id):
+def holiday_update(request, obj_id):
     """
     function used to update holiday.
 
@@ -6845,7 +6879,7 @@ def holiday_update(request, id):
         previous_data = unquote(query_string[len("pd=") :])
     else:
         previous_data = unquote(query_string)
-    holiday = Holidays.objects.get(id=id)
+    holiday = Holidays.objects.get(id=obj_id)
     form = HolidayForm(instance=holiday)
     if request.method == "POST":
         form = HolidayForm(request.POST, instance=holiday)
@@ -6855,14 +6889,14 @@ def holiday_update(request, id):
     return render(
         request,
         "holiday/holiday_update_form.html",
-        {"form": form, "id": id, "pd": previous_data},
+        {"form": form, "id": obj_id, "pd": previous_data},
     )
 
 
 @login_required
 @hx_request_required
 @permission_required("base.delete_holidays")
-def holiday_delete(request, id):
+def holiday_delete(request, obj_id):
     """
     function used to delete holiday.
 
@@ -6875,7 +6909,7 @@ def holiday_delete(request, id):
     """
     query_string = request.GET.urlencode()
     try:
-        Holidays.objects.get(id=id).delete()
+        Holidays.objects.get(id=obj_id).delete()
         messages.success(request, _("Holidays deleted successfully.."))
     except Holidays.DoesNotExist:
         messages.error(request, _("Holidays not found."))
@@ -6886,23 +6920,17 @@ def holiday_delete(request, id):
     return redirect(f"/holiday-filter?{query_string}")
 
 
+@login_required
 @require_http_methods(["POST"])
 @permission_required("base.delete_holiday")
 def bulk_holiday_delete(request):
     """
-    This method is used to delete bulk of holidays
+    Deletes multiple holidays based on IDs passed in the POST request.
     """
     ids = request.POST.getlist("ids")
-    del_ids = []
-    for holiday_id in ids:
-        try:
-            holiday = Holidays.objects.get(id=holiday_id)
-            holiday.delete()
-            del_ids.append(holiday_id)
-        except Exception as e:
-            messages.error(request, _("Holidays not found."))
+    deleted_count = Holidays.objects.filter(id__in=ids).delete()[0]
     messages.success(
-        request, _("{} Holidays have been successfully deleted.".format(len(del_ids)))
+        request, _("{} Holidays have been successfully deleted.".format(deleted_count))
     )
     return redirect("holiday-filter")
 

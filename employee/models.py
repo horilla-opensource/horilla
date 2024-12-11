@@ -139,6 +139,16 @@ class Employee(models.Model):
         """
         return getattr(getattr(self, "employee_work_info", None), "company_id", None)
 
+    def get_date_format(self):
+        company = self.get_company()
+
+        if company:
+            date_format = company.date_format
+
+            return date_format if date_format else "MMM. D, YYYY"
+
+        return "MMM. D, YYYY"
+
     def get_job_position(self):
         """
         This method is used to return the job position of the employee
@@ -489,9 +499,11 @@ class Employee(models.Model):
             # Create user if no corresponding user exists
             username = self.email
             password = self.phone
-            user = User.objects.create_user(
-                username=username, email=username, password=password
-            )
+            user = User.objects.filter(username=username).first()
+            if not user:
+                user = User.objects.create_user(
+                    username=username, email=username, password=password
+                )
             self.employee_user_id = user
             # default permissions
             change_ownprofile = Permission.objects.get(codename="change_ownprofile")
@@ -894,8 +906,8 @@ class EmployeeGeneralSetting(HorillaModel):
     """
 
     badge_id_prefix = models.CharField(max_length=5, default="PEP")
-    objects = models.Manager()
     company_id = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)
+    objects = HorillaCompanyManager("company_id")
 
 
 from accessibility.accessibility import ACCESSBILITY_FEATURE

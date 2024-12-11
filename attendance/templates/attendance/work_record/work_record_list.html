@@ -20,7 +20,7 @@
                 style="display: none"
             >
                 <form
-                    hx-post="{% url 'work-records-change-month' %}?{{pd}}"
+                    hx-get="{% url 'work-records-change-month' %}?{{pd}}"
                     hx-target="#workRecordTable"
                 >
                     {% include 'employee_filters.html' %}
@@ -187,3 +187,22 @@
         </ul>
     </nav>
 </div>
+<span data-hx-vals="{{pd}}"></span>
+<script>
+    $(document).ready(function(){
+        $(document).on("htmx:afterSettle", function () {
+            var hxVals = $("[data-hx-vals]").data("hx-vals");
+            var queryParams = {};
+            var pairs = hxVals.split("&");
+
+            pairs.forEach(function(pair) {
+                var [key, value] = pair.split("=");
+                if (key != "month"){
+                    queryParams[key] = value;
+                }
+            });
+
+            $("#monthYearField").attr("hx-vals", JSON.stringify(queryParams));
+        })
+    })
+</script>

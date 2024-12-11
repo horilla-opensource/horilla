@@ -68,7 +68,7 @@ urlpatterns = [
     path("user-request/<int:id>", views.user_leave_request, name="user-request"),
     path("request-filter", views.leave_request_filter, name="request-filter"),
     path("assign", views.leave_assign, name="assign"),
-    path("assign-one/<int:id>", views.leave_assign_one, name="assign-one"),
+    path("assign-one/<int:obj_id>", views.leave_assign_one, name="assign-one"),
     path("assign-view/", views.leave_assign_view, name="assign-view"),
     path(
         "available-leave-single-view/<int:obj_id>/",

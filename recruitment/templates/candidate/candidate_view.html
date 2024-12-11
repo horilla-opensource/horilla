@@ -49,6 +49,10 @@
       <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
       {% trans "Hired" %}
     </span>
+    <span class="m-1" onclick="$('[name=converted]').val('true');$('[name=hired]').val('unknown'); $('[name=converted]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 5px;">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:blue"></span>
+      {% trans "Converted" %}
+    </span>
   </div>
 
   <div id="section" hx-target="#section" hx-swap="innerHTML">

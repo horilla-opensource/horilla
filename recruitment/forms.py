@@ -1054,8 +1054,8 @@ class SkillZoneCandidateForm(ModelForm):
         if commit:
             cand = self.instance
             for id in other_candidates:
-                cand.pk = None
-                cand.id = None
+                cand.pk = cand.pk + 1
+                cand.id = cand.pk
                 cand.candidate_id = Candidate.objects.get(id=id)
                 try:
                     super(SkillZoneCandidate, cand).save()
@@ -1275,7 +1275,7 @@ class CandidateDocumentUpdateForm(ModelForm):
     class Meta:
         model = CandidateDocument
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = ["is_active", "document_request_id"]
 
 
 class CandidateDocumentRejectForm(ModelForm):

@@ -47,7 +47,7 @@
                 {% if perms.offboarding.delete_offboarding %}
                   <li class="oh-dropdown__item">
                     <a hx-confirm='{% trans "Are you sure want to delete this stage?" %}' hx-post="{% url "delete-offboarding-stage" %}?ids={{stage.grouper.id}}"
-                    hx-target="#offboardingContainer"
+                    hx-target="#objectDetailsModalTarget"
                     class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</a>
                   </li>
                 {% endif %}

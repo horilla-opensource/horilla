@@ -155,6 +155,7 @@
             <div class="oh-btn-group ml-2">
                 <div class="oh-dropdown" x-data="{open: false}">
                     <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                        hx-on:click="$('#objectCreateModalTarget').css('max-width', '410px');"
                         data-target="#objectCreateModal" hx-get="{% url 'assign' %}" hx-target="#objectCreateModalTarget">
                         {% trans "Assign" %}
                     </button>

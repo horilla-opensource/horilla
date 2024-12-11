@@ -147,7 +147,9 @@
                                 </div>
                                 <div class="oh-card-dashboard__body">
                                     <div class="oh-card-dashboard__counts">
-                                        <span class="oh-card-dashboard__count" id="newbieToday"></span>
+                                        <span class="oh-card-dashboard__count" hx-get="{% url 'joining-today-count' %}" hx-trigger="load">
+                                            <div style="height: 67px;"></div>
+                                        </span>
                                     </div>
                                 </div>
                             </a>
@@ -162,7 +164,9 @@
                                 </div>
                                 <div class="oh-card-dashboard__body">
                                     <div class="oh-card-dashboard__counts">
-                                        <span class="oh-card-dashboard__count" id="newbie"></span>
+                                        <span class="oh-card-dashboard__count" hx-get="{% url 'joining-week-count' %}" hx-trigger="load">
+                                            <div style="height: 67px;"></div>
+                                        </span>
                                     </div>
                                 </div>
                             </a>
@@ -177,7 +181,9 @@
                                 </div>
                                 <div class="oh-card-dashboard__body">
                                     <div class="oh-card-dashboard__counts">
-                                        <span class="oh-card-dashboard__count" id="totalEmployeesCount"></span>
+                                        <span class="oh-card-dashboard__count" hx-get="{% url 'total-employees-count' %}" hx-trigger="load">
+                                            <div style="height: 67px;"></div>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -190,12 +196,7 @@
                 </div>
             </div>
             <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
-                <div class="oh-dashboard__events">
-                    <div class="oh-dashbaord__events-reel w-100" id="birthdayContainer"></div>
-                    <ul class="oh-dashboard__events-nav" id="birthdayDots">
-                    </ul>
-                </div>
-
+                <div class="oh-dashboard__events" hx-get="{% url 'get-birthday' %}" hx-trigger="load"> </div>
                 <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3">
                     <div style="display: flex;align-items:center;justify-content:space-between;margin-right:20px">
                         <span class="oh-card-dashboard__title">{% trans "Announcements" %}</span>
@@ -210,7 +211,7 @@
                         height: 28px;" class="oh-btn oh-btn--secondary-outline float-end ms-3"
                                 hx-get="{% url 'create-announcement' %}" hx-target="#objectCreateModalTarget"
                                 hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
-                                title='{% trans "Create Announcement." %}'>
+                                title="{% trans 'Create Announcement' %}">
                                 <ion-icon name="add-outline" class="m-0"></ion-icon>
                             </button>
                         </span>
@@ -219,7 +220,7 @@
 
                     <hr>
 
-                    <div class="oh-card-dashboard__body" hx-get="{% url 'announcement-list' %}" hx-trigger="load">
+                    <div class="oh-card-dashboard__body" hx-get="{% url 'announcement-list' %}" hx-trigger="load" id="announcementListCard">
                         <div class="animated-background"></div>
                     </div>
                 </div>

@@ -1500,6 +1500,7 @@ class AnnouncementComment(HorillaModel):
     announcement_id = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
+    objects = models.Manager()
 
 
 class AnnouncementView(models.Model):
@@ -1511,6 +1512,7 @@ class AnnouncementView(models.Model):
     announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     viewed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
+    objects = models.Manager()
 
 
 class EmailLog(models.Model):
@@ -1644,6 +1646,20 @@ class Holidays(HorillaModel):
 
     def __str__(self):
         return self.name
+
+    def today_holidays(today=None) -> models.QuerySet:
+        """
+        Retrieve holidays that overlap with the given date (default is today).
+
+        Args:
+            today (date, optional): The date to check for holidays. Defaults to the current date.
+
+        Returns:
+            QuerySet: A queryset of `Holidays` instances where the given date falls between
+                    `start_date` and `end_date` (inclusive).
+        """
+        today = today or date.today()
+        return Holidays.objects.filter(start_date__lte=today, end_date__gte=today)
 
 
 class CompanyLeaves(HorillaModel):

@@ -1708,7 +1708,6 @@ def candidate_conversion(request, cand_id, **kwargs):
             emp_document_list.append(emp_document)
 
         if emp_document_list:
-            print(emp_document_list)
             Document.objects.bulk_create(emp_document_list)
     else:
         messages.info(request, "A employee with this mail already exists")
@@ -3364,10 +3363,6 @@ def file_upload(request, id):
 
     Returns: return document_form template
     """
-    candidate_id = request.session.get("candidate_id")
-    if not candidate_id:
-        return redirect("candidate-login")
-
     document_item = CandidateDocument.objects.get(id=id)
     form = CandidateDocumentUpdateForm(instance=document_item)
     if request.method == "POST":
@@ -3398,10 +3393,6 @@ def view_file(request, id):
 
     Returns: return view_file template
     """
-    candidate_id = request.session.get("candidate_id")
-    if not candidate_id:
-        return redirect("candidate-login")
-
     document_obj = CandidateDocument.objects.filter(id=id).first()
     context = {
         "document": document_obj,
@@ -3491,10 +3482,6 @@ def candidate_add_notes(request, cand_id):
     """
     This method renders template component to add candidate remark
     """
-
-    candidate_id = request.session.get("candidate_id")
-    if not candidate_id:
-        return redirect("candidate-login")
 
     candidate = Candidate.objects.get(id=cand_id)
     updated_by = request.user.employee_get if request.user.is_authenticated else None

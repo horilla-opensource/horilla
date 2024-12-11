@@ -22,7 +22,9 @@ function getCookie(name) {
             const cookie = cookies[i].trim();
             // Does this cookie string begin with the name we want?
             if (cookie.substring(0, name.length + 1) === name + "=") {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                cookieValue = decodeURIComponent(
+                    cookie.substring(name.length + 1)
+                );
                 break;
             }
         }
@@ -31,78 +33,77 @@ function getCookie(name) {
 }
 
 function addToSelectedId(newIds, storeKey) {
+    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
 
-    ids = JSON.parse(
-        $(`#${storeKey}`).attr("data-ids") || "[]"
-    );
-
-    ids = [...ids, ...newIds.map(String)]
+    ids = [...ids, ...newIds.map(String)];
     ids = Array.from(new Set(ids));
-    $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids))
+    $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids));
 }
 
 function attendanceDateChange(selectElement) {
-    var selectedDate = selectElement.val()
-    let parentForm = selectElement.parents().closest("form")
-    var shiftId = parentForm.find("[name=shift_id]").val()
+    var selectedDate = selectElement.val();
+    let parentForm = selectElement.parents().closest("form");
+    var shiftId = parentForm.find("[name=shift_id]").val();
 
     $.ajax({
         type: "post",
         url: "/attendance/update-date-details",
         data: {
             csrfmiddlewaretoken: getCookie("csrftoken"),
-            "attendance_date": selectedDate,
-            "shift_id": shiftId
+            attendance_date: selectedDate,
+            shift_id: shiftId,
         },
         success: function (response) {
-            parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
-
-        }
+            parentForm.find("[name=minimum_hour]").val(response.minimum_hour);
+        },
     });
 }
 
 function getAssignedLeave(employeeElement) {
-    var employeeId = employeeElement.val()
+    var employeeId = employeeElement.val();
     $.ajax({
         type: "get",
         url: "/payroll/get-assigned-leaves",
-        data: { "employeeId": employeeId },
+        data: { employeeId: employeeId },
         dataType: "json",
         success: function (response) {
-            let rows = ""
+            let rows = "";
             for (let index = 0; index < response.length; index++) {
                 const element = response[index];
-                rows = rows + `<tr class="toggle-highlight"><td>${element.leave_type_id__name
-                    }</td><td>${element.available_days}</td><td>${element.carryforward_days}</td></tr>`
+                rows =
+                    rows +
+                    `<tr class="toggle-highlight"><td>${element.leave_type_id__name}</td><td>${element.available_days}</td><td>${element.carryforward_days}</td></tr>`;
             }
-            $("#availableTableBody").html($(rows))
-            let newLeaves = ""
+            $("#availableTableBody").html($(rows));
+            let newLeaves = "";
             for (let index = 0; index < response.length; index++) {
                 const leave = response[index];
-                newLeaves = newLeaves + `<option value="${leave.leave_type_id__id
-                    }">${leave.leave_type_id__name}</option>`
+                newLeaves =
+                    newLeaves +
+                    `<option value="${leave.leave_type_id__id}">${leave.leave_type_id__name}</option>`;
             }
-            $('#id_leave_type_id').html(newLeaves)
-            removeHighlight()
-        }
+            $("#id_leave_type_id").html(newLeaves);
+            removeHighlight();
+        },
     });
 }
 function selectSelected(viewId, storeKey = "selectedInstances") {
-
-    ids = JSON.parse(
-        $(`#${storeKey}`).attr("data-ids") || "[]"
-    );
+    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
     $.each(ids, function (indexInArray, valueOfElement) {
-        $(`${viewId} .oh-sticky-table__tbody .list-table-row[value=${valueOfElement}]`).prop("checked", true).change()
-        $(`${viewId} tbody .list-table-row[value=${valueOfElement}]`).prop("checked", true).change()
+        $(
+            `${viewId} .oh-sticky-table__tbody .list-table-row[value=${valueOfElement}]`
+        )
+            .prop("checked", true)
+            .change();
+        $(`${viewId} tbody .list-table-row[value=${valueOfElement}]`)
+            .prop("checked", true)
+            .change();
     });
-    $(`${viewId} .oh-sticky-table__tbody .list-table-row,${viewId} tbody .list-table-row`,).change(function (
-        e
-    ) {
-        id = $(this).val()
-        ids = JSON.parse(
-            $(`#${storeKey}`).attr("data-ids") || "[]"
-        );
+    $(
+        `${viewId} .oh-sticky-table__tbody .list-table-row,${viewId} tbody .list-table-row`
+    ).change(function (e) {
+        id = $(this).val();
+        ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
         ids = Array.from(new Set(ids));
         let index = ids.indexOf(id);
         if (!ids.includes(id)) {
@@ -113,12 +114,10 @@ function selectSelected(viewId, storeKey = "selectedInstances") {
             }
         }
         $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids));
-    }
-    );
+    });
     if (viewId) {
         reloadSelectedCount($(`#count_${viewId}`), storeKey);
     }
-
 }
 
 // Switch General Tab
@@ -141,78 +140,123 @@ function switchGeneralTab(e) {
 }
 
 function toggleReimbursmentType(element) {
-    if (element.val() == 'reimbursement') {
-        $('#objectCreateModalTarget [name=attachment]').parent().show()
-        $('#objectCreateModalTarget [name=attachment]').attr("required", true)
-        $('#objectCreateModalTarget [name=leave_type_id]').parent().hide().attr("required", false)
-        $('#objectCreateModalTarget [name=cfd_to_encash]').parent().hide().attr("required", false)
-        $('#objectCreateModalTarget [name=ad_to_encash]').parent().hide().attr("required", false)
-        $('#objectCreateModalTarget [name=amount]').parent().show().attr("required", true)
-        $('#objectCreateModalTarget #availableTable').hide().attr("required", false)
-        $('#objectCreateModalTarget [name=bonus_to_encash]').parent().hide().attr("required", false)
-
-    } else if (element.val() == 'leave_encashment') {
-        $('#objectCreateModalTarget [name=attachment]').parent().hide()
-        $('#objectCreateModalTarget [name=attachment]').attr("required", false)
-        $('#objectCreateModalTarget [name=leave_type_id]').parent().show().attr("required", true)
-        $('#objectCreateModalTarget [name=cfd_to_encash]').parent().show().attr("required", true)
-        $('#objectCreateModalTarget [name=ad_to_encash]').parent().show().attr("required", true)
-        $('#objectCreateModalTarget [name=amount]').parent().hide().attr("required", false)
-        $('#objectCreateModalTarget #availableTable').show().attr("required", true)
-        $('#objectCreateModalTarget [name=bonus_to_encash]').parent().hide().attr("required", false)
-
-    } else if (element.val() == 'bonus_encashment') {
-        $('#objectCreateModalTarget [name=attachment]').parent().hide()
-        $('#objectCreateModalTarget [name=attachment]').attr("required", false)
-        $('#objectCreateModalTarget [name=leave_type_id]').parent().hide().attr("required", false)
-        $('#objectCreateModalTarget [name=cfd_to_encash]').parent().hide().attr("required", false)
-        $('#objectCreateModalTarget [name=ad_to_encash]').parent().hide().attr("required", false)
-        $('#objectCreateModalTarget [name=amount]').parent().hide().attr("required", false)
-        $('#objectCreateModalTarget #availableTable').hide().attr("required", false)
-        $('#objectCreateModalTarget [name=bonus_to_encash]').parent().show().attr("required", true)
-
-
+    if (element.val() == "reimbursement") {
+        $("#objectCreateModalTarget [name=attachment]").parent().show();
+        $("#objectCreateModalTarget [name=attachment]").attr("required", true);
+        $("#objectCreateModalTarget [name=leave_type_id]")
+            .parent()
+            .hide()
+            .attr("required", false);
+        $("#objectCreateModalTarget [name=cfd_to_encash]")
+            .parent()
+            .hide()
+            .attr("required", false);
+        $("#objectCreateModalTarget [name=ad_to_encash]")
+            .parent()
+            .hide()
+            .attr("required", false);
+        $("#objectCreateModalTarget [name=amount]")
+            .parent()
+            .show()
+            .attr("required", true);
+        $("#objectCreateModalTarget #availableTable")
+            .hide()
+            .attr("required", false);
+        $("#objectCreateModalTarget [name=bonus_to_encash]")
+            .parent()
+            .hide()
+            .attr("required", false);
+    } else if (element.val() == "leave_encashment") {
+        $("#objectCreateModalTarget [name=attachment]").parent().hide();
+        $("#objectCreateModalTarget [name=attachment]").attr("required", false);
+        $("#objectCreateModalTarget [name=leave_type_id]")
+            .parent()
+            .show()
+            .attr("required", true);
+        $("#objectCreateModalTarget [name=cfd_to_encash]")
+            .parent()
+            .show()
+            .attr("required", true);
+        $("#objectCreateModalTarget [name=ad_to_encash]")
+            .parent()
+            .show()
+            .attr("required", true);
+        $("#objectCreateModalTarget [name=amount]")
+            .parent()
+            .hide()
+            .attr("required", false);
+        $("#objectCreateModalTarget #availableTable")
+            .show()
+            .attr("required", true);
+        $("#objectCreateModalTarget [name=bonus_to_encash]")
+            .parent()
+            .hide()
+            .attr("required", false);
+    } else if (element.val() == "bonus_encashment") {
+        $("#objectCreateModalTarget [name=attachment]").parent().hide();
+        $("#objectCreateModalTarget [name=attachment]").attr("required", false);
+        $("#objectCreateModalTarget [name=leave_type_id]")
+            .parent()
+            .hide()
+            .attr("required", false);
+        $("#objectCreateModalTarget [name=cfd_to_encash]")
+            .parent()
+            .hide()
+            .attr("required", false);
+        $("#objectCreateModalTarget [name=ad_to_encash]")
+            .parent()
+            .hide()
+            .attr("required", false);
+        $("#objectCreateModalTarget [name=amount]")
+            .parent()
+            .hide()
+            .attr("required", false);
+        $("#objectCreateModalTarget #availableTable")
+            .hide()
+            .attr("required", false);
+        $("#objectCreateModalTarget [name=bonus_to_encash]")
+            .parent()
+            .show()
+            .attr("required", true);
     }
 }
 
 function reloadSelectedCount(targetElement, storeKey = "selectedInstances") {
-    var count = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]").length
-    id = targetElement.attr("id")
+    var count = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]").length;
+    id = targetElement.attr("id");
     if (id) {
-        id = id.split("count_")[1]
+        id = id.split("count_")[1];
     }
     if (count) {
-        targetElement.html(count)
+        targetElement.html(count);
         targetElement.parent().removeClass("d-none");
-        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).removeClass("d-none");
-
-
+        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).removeClass(
+            "d-none"
+        );
     } else {
-        targetElement.parent().addClass("d-none")
-        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).addClass("d-none")
-
+        targetElement.parent().addClass("d-none");
+        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).addClass(
+            "d-none"
+        );
     }
 }
 
-
-
 function removeHighlight() {
     setTimeout(function () {
-        $(".toggle-highlight").removeClass("toggle-highlight")
+        $(".toggle-highlight").removeClass("toggle-highlight");
     }, 200);
 }
 
 function removeId(element, storeKey = "selectedInstances") {
     id = element.val();
-    viewId = element.attr("data-view-id")
-    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]")
+    viewId = element.attr("data-view-id");
+    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
     let elementToRemove = 5;
     if (ids[ids.length - 1] === id) {
         ids.pop();
     }
-    ids = JSON.stringify(ids)
+    ids = JSON.stringify(ids);
     $(`#${storeKey}`).attr("data-ids", ids);
-
 }
 function bulkStageUpdate(canIds, stageId, preStageId) {
     $.ajax({
@@ -232,8 +276,8 @@ function bulkStageUpdate(canIds, stageId, preStageId) {
                 Swal.fire({
                     title: response.message,
                     text: `Total vacancy is ${response.vacancy}.`, // Using template literals
-                    icon: 'info',
-                    confirmButtonText: 'Ok',
+                    icon: "info",
+                    confirmButtonText: "Ok",
                 });
             }
         },
@@ -258,8 +302,8 @@ function updateCandStage(canIds, stageId, preStageId) {
                 Swal.fire({
                     title: response.message,
                     text: `Total vacancy is ${response.vacancy}.`, // Using template literals
-                    icon: 'info',
-                    confirmButtonText: 'Ok',
+                    icon: "info",
+                    confirmButtonText: "Ok",
                 });
             }
         },
@@ -267,56 +311,59 @@ function updateCandStage(canIds, stageId, preStageId) {
 }
 
 function checkSequence(element) {
-    var preStageId = $(element).data("stage_id")
-    var canIds = $(element).data("cand_id")
-    var stageOrderJson = $(element).attr("data-stage_order")
-    var stageId = $(element).val()
+    var preStageId = $(element).data("stage_id");
+    var canIds = $(element).data("cand_id");
+    var stageOrderJson = $(element).attr("data-stage_order");
+    var stageId = $(element).val();
 
     var parsedStageOrder = JSON.parse(stageOrderJson);
 
-    var stage = parsedStageOrder.find(stage => stage.id == stageId);
-    var preStage = parsedStageOrder.find(stage => stage.id == preStageId);
-    var stageOrder = parsedStageOrder.map(stage => stage.id);
+    var stage = parsedStageOrder.find((stage) => stage.id == stageId);
+    var preStage = parsedStageOrder.find((stage) => stage.id == preStageId);
+    var stageOrder = parsedStageOrder.map((stage) => stage.id);
 
-    if (stageOrder.indexOf(parseInt(stageId)) != stageOrder.indexOf(parseInt(preStageId)) + 1 && stage.type != "cancelled") {
+    if (
+        stageOrder.indexOf(parseInt(stageId)) !=
+            stageOrder.indexOf(parseInt(preStageId)) + 1 &&
+        stage.type != "cancelled"
+    ) {
         Swal.fire({
             title: "Confirm",
             text: `Are you sure to change the candidate from ${preStage.stage} stage to ${stage.stage} stage`,
-            icon: 'info',
+            icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
             cancelButtonColor: "#d33",
             confirmButtonText: "Confirm",
         }).then(function (result) {
             if (result.isConfirmed) {
-                updateCandStage(canIds, stageId, preStageId)
+                updateCandStage(canIds, stageId, preStageId);
             }
         });
-    }
-    else {
-        updateCandStage(canIds, stageId, preStageId)
+    } else {
+        updateCandStage(canIds, stageId, preStageId);
     }
 }
 
 function reloadMessage(e) {
-    $('#reloadMessagesButton').click();
+    $("#reloadMessagesButton").click();
 }
 
 function htmxLoadIndicator(e) {
-    var target = $(e).attr('hx-target');
-    var table = $(target).find('table');
-    var card = $(target).find('.oh-card__body');
-    var kanban = $(target).find('.oh-kanban-card');
+    var target = $(e).attr("hx-target");
+    var table = $(target).find("table");
+    var card = $(target).find(".oh-card__body");
+    var kanban = $(target).find(".oh-kanban-card");
 
     if (table.length) {
-        table.addClass('is-loading');
-        table.find('th, td').empty();
+        table.addClass("is-loading");
+        table.find("th, td").empty();
     }
     if (card.length) {
-        card.addClass('is-loading');
+        card.addClass("is-loading");
     }
     if (kanban.length) {
-        kanban.addClass('is-loading');
+        kanban.addClass("is-loading");
     }
     if (!table.length && !card.length && !kanban.length) {
         $(target).html(`<div class="animated-background"></div>`);
@@ -326,7 +373,7 @@ function htmxLoadIndicator(e) {
 function ajaxWithResponseHandler(event) {
     $(event.target).each(function () {
         $.each(this.attributes, function () {
-            if (this.specified && this.name === 'hx-on-htmx-after-request') {
+            if (this.specified && this.name === "hx-on-htmx-after-request") {
                 eval(this.value);
             }
         });
@@ -358,25 +405,36 @@ window.confirm = function (message) {
             var path = event.target["htmx-internal-data"]?.path;
             var verb = event.target["htmx-internal-data"]?.verb;
             var hxTarget = $(event.target).attr("hx-target");
-            var hxVals = $(event.target).attr("hx-vals") ? JSON.parse($(event.target).attr("hx-vals")) : {};
+            var hxVals = $(event.target).attr("hx-vals")
+                ? JSON.parse($(event.target).attr("hx-vals"))
+                : {};
             var hxSwap = $(event.target).attr("hx-swap");
             $(event.target).each(function () {
                 $.each(this.attributes, function () {
-                    if (this.specified && this.name === 'hx-on-htmx-before-request') {
+                    if (
+                        this.specified &&
+                        this.name === "hx-on-htmx-before-request"
+                    ) {
                         eval(this.value);
-
                     }
                 });
             });
             if (event.target.tagName.toLowerCase() === "form") {
                 if (path && verb) {
                     if (verb === "post") {
-                        htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals })
-                            .then(response => {
-                                ajaxWithResponseHandler(event);
-                            });
+                        htmx.ajax("POST", path, {
+                            target: hxTarget,
+                            swap: hxSwap,
+                            values: hxVals,
+                        }).then((response) => {
+                            ajaxWithResponseHandler(event);
+                        });
                     } else {
-                        htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals }).then(response => {
+                        htmx.ajax("GET", path, {
+                            target: hxTarget,
+                            swap: hxSwap,
+                            values: hxVals,
+                        }).then((response) => {
                             ajaxWithResponseHandler(event);
                         });
                     }
@@ -388,22 +446,38 @@ window.confirm = function (message) {
                     window.location.href = event.target.href;
                 } else {
                     if (verb === "post") {
-                        htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals }).then(response => {
+                        htmx.ajax("POST", path, {
+                            target: hxTarget,
+                            swap: hxSwap,
+                            values: hxVals,
+                        }).then((response) => {
                             ajaxWithResponseHandler(event);
                         });
                     } else {
-                        htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals }).then(response => {
+                        htmx.ajax("GET", path, {
+                            target: hxTarget,
+                            swap: hxSwap,
+                            values: hxVals,
+                        }).then((response) => {
                             ajaxWithResponseHandler(event);
                         });
                     }
                 }
             } else {
                 if (verb === "post") {
-                    htmx.ajax("POST", path, { target: hxTarget, swap: hxSwap, values: hxVals }).then(response => {
+                    htmx.ajax("POST", path, {
+                        target: hxTarget,
+                        swap: hxSwap,
+                        values: hxVals,
+                    }).then((response) => {
                         ajaxWithResponseHandler(event);
                     });
                 } else {
-                    htmx.ajax("GET", path, { target: hxTarget, swap: hxSwap, values: hxVals }).then(response => {
+                    htmx.ajax("GET", path, {
+                        target: hxTarget,
+                        swap: hxSwap,
+                        values: hxVals,
+                    }).then((response) => {
                         ajaxWithResponseHandler(event);
                     });
                 }
@@ -412,14 +486,18 @@ window.confirm = function (message) {
     });
 };
 
-setTimeout(() => { $("[name='search']").focus() }, 100);
+var excludeIds = "#employeeSearch";
+// To exclude more elements, add their IDs (prefixed with '#') or class names (prefixed with '.'), separated by commas to 'excludeIds'.
+setTimeout(() => {
+    $("[name='search']").not(excludeIds).focus();
+}, 100);
 
 $("#close").attr(
     "class",
     "oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"
 );
 
-$('body').on('click', '.select2-search__field', function (e) {
+$("body").on("click", ".select2-search__field", function (e) {
     //When click on Select2 fields in filter form,Auto close issue
     e.stopPropagation();
 });
@@ -434,25 +512,39 @@ nav.after(
 );
 
 $(document).on("htmx:beforeRequest", function (event, data) {
-    if (!Array.from(event.target.getAttributeNames()).some(attr => attr.startsWith('hx-on'))) {
+    if (
+        !Array.from(event.target.getAttributeNames()).some((attr) =>
+            attr.startsWith("hx-on")
+        )
+    ) {
         var response = event.detail.xhr.response;
         var target = $(event.detail.elt.getAttribute("hx-target"));
-        var avoid_target = ["BiometricDeviceTestFormTarget", "reloadMessages", "infinite"];
-        if (!target.closest("form").length && avoid_target.indexOf(target.attr("id")) === -1) {
+        var avoid_target = [
+            "BiometricDeviceTestFormTarget",
+            "reloadMessages",
+            "infinite",
+        ];
+        if (
+            !target.closest("form").length &&
+            avoid_target.indexOf(target.attr("id")) === -1
+        ) {
             target.html(`<div class="animated-background"></div>`);
         }
     }
 });
 
-
-$(document).on('keydown', function (event) {
+$(document).on("keydown", function (event) {
     // Check if the cursor is not focused on an input field
-    var isInputFocused = $(document.activeElement).is('input, textarea, select');
+    var isInputFocused = $(document.activeElement).is(
+        "input, textarea, select"
+    );
 
     if (event.keyCode === 27) {
         // Key code 27 for Esc in keypad
-        $('.oh-modal--show').removeClass('oh-modal--show');
-        $('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show')
+        $(".oh-modal--show").removeClass("oh-modal--show");
+        $(".oh-activity-sidebar--show").removeClass(
+            "oh-activity-sidebar--show"
+        );
     }
 
     if (event.keyCode === 46) {
@@ -460,37 +552,42 @@ $(document).on('keydown', function (event) {
         // If there have any objectDetailsModal with oh-modal--show
         // take delete button inside that else take the delete button from navbar Actions
         if (!isInputFocused) {
-            var $modal = $('.oh-modal--show');
-            var $deleteButton = $modal.length ? $modal.find('[data-action="delete"]') : $('.oh-dropdown').find('[data-action="delete"]');
+            var $modal = $(".oh-modal--show");
+            var $deleteButton = $modal.length
+                ? $modal.find('[data-action="delete"]')
+                : $(".oh-dropdown").find('[data-action="delete"]');
             if ($deleteButton.length) {
                 $deleteButton.click();
                 $deleteButton[0].click();
             }
         }
-    }
-    else if (event.keyCode === 107) { // Key code for the + key on the numeric keypad
+    } else if (event.keyCode === 107) {
+        // Key code for the + key on the numeric keypad
         if (!isInputFocused) {
             // Click the create option from navbar of current page
             $('[data-action="create"]').click();
         }
-    }
-    else if (event.keyCode === 39) { // Key code for the right arrow key
+    } else if (event.keyCode === 39) {
+        // Key code for the right arrow key
         if (!isInputFocused) {
-            var $modal = $('.oh-modal--show');
-            var $nextButton = $modal.length ? $modal.find('[data-action="next"]') : $('[data-action="next"]');  // Click on the next button in detail view modal
+            var $modal = $(".oh-modal--show");
+            var $nextButton = $modal.length
+                ? $modal.find('[data-action="next"]')
+                : $('[data-action="next"]'); // Click on the next button in detail view modal
             if ($nextButton.length) {
-                $nextButton[0].click()
+                $nextButton[0].click();
             }
         }
-    }
-    else if (event.keyCode === 37) { // Key code for the left arrow key
+    } else if (event.keyCode === 37) {
+        // Key code for the left arrow key
         if (!isInputFocused) {
             // Click on the previous button in detail view modal
-            var $modal = $('.oh-modal--show');
-            var $previousButton = $modal.length ? $modal.find('[data-action="previous"]') : $('[data-action="previous"]');
+            var $modal = $(".oh-modal--show");
+            var $previousButton = $modal.length
+                ? $modal.find('[data-action="previous"]')
+                : $('[data-action="previous"]');
             if ($previousButton.length) {
                 $previousButton[0].click();
-
             }
         }
     }
@@ -500,69 +597,75 @@ function handleDownloadAndRefresh(event, url) {
     event.preventDefault();
 
     // Create a temporary hidden iframe to trigger the download
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
     iframe.src = url;
     document.body.appendChild(iframe);
 
     // Refresh the page after a short delay
     setTimeout(function () {
-        document.body.removeChild(iframe);  // Clean up the iframe
-        window.location.reload();  // Refresh the page
-    }, 500);  // Adjust the delay as needed
+        document.body.removeChild(iframe); // Clean up the iframe
+        window.location.reload(); // Refresh the page
+    }, 500); // Adjust the delay as needed
 }
 
 function toggleCommentButton(e) {
-    const $button = $(e).closest('form').find('#commentButton');
-    $button.toggle($(e).val().trim() !== '');
+    const $button = $(e).closest("form").find("#commentButton");
+    $button.toggle($(e).val().trim() !== "");
 }
 
 function updateUserPanelCount(e) {
-    var count = $(e).closest('.oh-sticky-table__tr').find('.oh-user-panel').length;
+    var count = $(e)
+        .closest(".oh-sticky-table__tr")
+        .find(".oh-user-panel").length;
     setTimeout(() => {
-        var $permissionCountSpan = $(e).closest('.oh-permission-table--toggle').parent().find('.oh-permission-count');
+        var $permissionCountSpan = $(e)
+            .closest(".oh-permission-table--toggle")
+            .parent()
+            .find(".oh-permission-count");
         var currentText = $permissionCountSpan.text();
 
-        var firstSpaceIndex = currentText.indexOf(' ');
+        var firstSpaceIndex = currentText.indexOf(" ");
         var textAfterNumber = currentText.slice(firstSpaceIndex + 1);
-        var newText = count + ' ' + textAfterNumber;
+        var newText = count + " " + textAfterNumber;
 
         $permissionCountSpan.text(newText);
-
     }, 100);
 }
 
-
-
 function enlargeImage(src, $element) {
-    $(".enlargeImageContainer").empty()
-    var enlargeImageContainer = $element.parents().closest("li").find(".enlargeImageContainer")
-    enlargeImageContainer.empty()
-    style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
-    var enlargedImage = $('<iframe>').attr({ src: src, style: style })
-    var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
-    enlargeImageContainer.append(enlargedImage)
-    enlargeImageContainer.append(name)
+    $(".enlargeImageContainer").empty();
+    var enlargeImageContainer = $element
+        .parents()
+        .closest("li")
+        .find(".enlargeImageContainer");
+    enlargeImageContainer.empty();
+    style =
+        "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white";
+    var enlargedImage = $("<iframe>").attr({ src: src, style: style });
+    var name = $("<span>").text(src.split("/").pop().replace(/_/g, " "));
+    enlargeImageContainer.append(enlargedImage);
+    enlargeImageContainer.append(name);
     setTimeout(function () {
-        enlargeImageContainer.show()
+        enlargeImageContainer.show();
 
-        const iframe = document.querySelector('iframe').contentWindow
-        var iframe_document = iframe.document
-        iframe_image = iframe_document.getElementsByTagName('img')[0]
-        $(iframe_image).attr('style', 'width:100%; height:100%;')
-    }, 100)
+        const iframe = document.querySelector("iframe").contentWindow;
+        var iframe_document = iframe.document;
+        iframe_image = iframe_document.getElementsByTagName("img")[0];
+        $(iframe_image).attr("style", "width:100%; height:100%;");
+    }, 100);
 }
 
 function hideEnlargeImage() {
-    var enlargeImageContainer = $('.enlargeImageContainer')
-    enlargeImageContainer.empty()
+    var enlargeImageContainer = $(".enlargeImageContainer");
+    enlargeImageContainer.empty();
 }
 
-$(document).on('click', function (event) {
-    if (!$(event.target).closest('#enlargeImageContainer').length) {
-        hideEnlargeImage()
+$(document).on("click", function (event) {
+    if (!$(event.target).closest("#enlargeImageContainer").length) {
+        hideEnlargeImage();
     }
-})
+});
 function submitForm(elem) {
     $(elem).siblings(".add_more_submit").click();
 }

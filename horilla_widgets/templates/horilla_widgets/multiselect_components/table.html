@@ -200,7 +200,7 @@
       });
     });
     {% if initial %}
-      $('#{{section_id}} #slectContainer{{self.attrs.id}}').find("[name={{field_name}}]").val({{initial|safe}}).change()
+      $('#{{section_id}} #selectContainer{{self.attrs.id}}').find("[name={{field_name}}]").val({{initial|safe}}).change()
     {% endif %}
   });
   $("#{{section_id}} #choose-all-user").click(function (e) {

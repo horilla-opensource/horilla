@@ -1,0 +1,30 @@
+{% load i18n %}
+{% if birthdays %}
+<div class="oh-dashboard__events">
+    <div class="oh-dashbaord__events-reel w-100" id="birthdayContainer" style="transform: translateX(0%);">
+        {% for birthday in birthdays %}
+            <div class="oh-dashboard__event" style="background-color: rgb(231, 76, 60);">
+                <div class="oh-dasboard__event-photo">
+                    <img onload="autoSlider()" src="{{birthday.profile}}"
+                        style="width: 100%;height: 100%;object-fit: cover;">
+                </div>
+                <div class="oh-dasboard__event-details">
+                    <span class="oh-dashboard__event-title">{% trans "Birthday" %}</span>
+                    <span class="oh-dashboard__event-main">{{birthday.name}}</span>
+                    <span class="oh-dashboard__event-date">{{birthday.dob}}, {{birthday.daysUntilBirthday}}</span>
+                    <span class="oh-dashboard__event-date"
+                        style="font-size:10px;">{{birthday.job_position}}, {{birthday.department}}</span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <ul class="oh-dashboard__events-nav" id="birthdayDots">
+        {% for birthday in birthdays %}
+            <li onclick="moveSlider(event)"
+                class="oh-dashboard__events-nav-item {% if forloop.first %}oh-dashboard__events-nav-item--active{% endif %}"
+                data-target="{{ forloop.counter0 }}">
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}

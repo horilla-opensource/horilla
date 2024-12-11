@@ -6,35 +6,37 @@
 
 {% now "Y-m-d" as current_date %}
 <style>
+    .oh-dashboard__right {
+        display: flex;
+        flex-direction: column;
+    }
+
     .oh-card-dashboard {
-        cursor : default;
+        flex: 1;
+        height: 100%;
+        cursor: default;
     }
+
     .pointer {
-        cursor : pointer;
+        cursor: pointer;
     }
+
     .dash-card {
-        padding-bottom:30px;
+        padding-bottom: 30px;
     }
 </style>
-<div class="oh-wrapper">
+<div class="oh-wrapper mb-4">
     <div class="d-none mt-5" id="back_button" style="width:10%">
-        <a href=""
-          class="oh-btn oh-btn--secondary oh-btn--shadow ms-3"
-        >
-          <ion-icon
-            class="me-2 md hydrated"
-            name="arrow-back-outline"
-            role="img"
-            aria-label="arrow-back-outline"
-          ></ion-icon
-          >{% trans "Back" %}</a
-        >
+        <a href="" class="oh-btn oh-btn--secondary oh-btn--shadow ms-3">
+            <ion-icon class="me-2 md hydrated" name="arrow-back-outline" role="img"
+                aria-label="arrow-back-outline"></ion-icon>{% trans "Back" %}</a>
     </div>
     <div class="oh-dashboard row" id="dashboard">
         <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
             <div class="oh-dashboard__cards row">
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer dash-card" id="requestedLeaves" >
+                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer dash-card"
+                        id="requestedLeaves">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "Requests to Approve" %}</span>
                         </div>
@@ -46,7 +48,8 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--success filter pointer dash-card" id="approvedLeaves">
+                    <div class="oh-card-dashboard oh-card-dashboard--success filter pointer dash-card"
+                        id="approvedLeaves">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "Approved Leaves In This Month" %}</span>
                         </div>
@@ -58,7 +61,8 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--danger filter pointer dash-card" id="rejectedLeaves">
+                    <div class="oh-card-dashboard oh-card-dashboard--danger filter pointer dash-card"
+                        id="rejectedLeaves">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "Rejected Leaves In This Month" %}</span>
                         </div>
@@ -73,11 +77,15 @@
 
             <div class="oh-dashboard__movable-cards row mt-4">
                 <div class="col-12 col-sm-12 col-md-12 col-lg-8 mt-2">
-                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent h-100">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title pointer" id="employee-previous" title="{% trans "Previous" %}"><ion-icon name="caret-back-outline"></ion-icon></span>
+                            <span class="oh-card-dashboard__title pointer" id="employee-previous" title="{% trans 'Previous' %}">
+                                <ion-icon name="caret-back-outline"></ion-icon>
+                            </span>
                             <span class="oh-card-dashboard__title">{% trans "Employee Leaves" %}</span>
-                            <span class="oh-card-dashboard__title float-end pointer" id="employee-next" title="{% trans "next" %}"><ion-icon name="caret-forward"></ion-icon></span>
+                            <span class="oh-card-dashboard__title float-end pointer" id="employee-next" title="{% trans 'next' %}">
+                                <ion-icon name="caret-forward"></ion-icon>
+                            </span>
                         </div>
                         <div class="d-flex flex-row-reverse">
                             <input type="month" class="mb-2 float-end pointer" name="" id="dash_month" />
@@ -87,43 +95,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-2" style = "height:400px">
-                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-2">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                             <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
                         </div>
-                        {% if leave_today_employees %}
-                        <div class="oh-card-dashboard__body">
-                            <ul class="oh-card-dashboard__user-list" style="height: 380px;overflow-y:auto">
-                                {% for leave_today_employee in leave_today_employees %}
-                                    <li class="oh-card-dashboard__user-item pointer" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25"
-                                    hx-get="{% url 'one-request-view' leave_today_employee.id %}?instances_ids={{requests_ids}}" hx-target="#objectDetailsModalW25Target">
-                                        <div class="oh-profile oh-profile--md">
-                                            <div class="oh-profile__avatar mr-1">
-                                                <img src="{{leave_today_employee.employee_id.get_avatar}}"
-                                                    class="oh-profile__image" alt="" />
-                                            </div>
-                                            <span class="oh-profile__name oh-text--dark">{{leave_today_employee.employee_id}}</span>
-                                        </div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
+                        <div class="oh-card-dashboard__body" hx-get="{% url 'employee-leave' %}" hx-trigger="load"
+                            id="onLeaveListCard">
+                            <div class="animated-background"></div>
                         </div>
-                        {% elif current_date == next_holiday.start_date|date:"Y-m-d" %}
-                        <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
-                            <div style="" class="">
-                              <img style="    display: block;width: 70px;margin: 20px auto ;" src="{% static 'images/ui/sunbed outline.png' %}" class="" alt=""/>
-                              <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today is a holiday." %}</h3>
-                            </div>
-                        </div>
-                        {% else %}
-                        <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
-                            <div style="" class="">
-                              <img style="display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="" alt=""/>
-                              <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No leave requests for today." %}</h3>
-                            </div>
-                        </div>
-                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -133,21 +113,14 @@
                 <div class="w-100">
                     <div class="w-100 mb-1" id="back_button">
                         <a href="{% url 'leave-employee-dashboard' %}?dashboard=true"
-                        class="oh-btn oh-btn--secondary oh-btn--shadow"
-                        >{% trans "View Personal Dashboard" %}
-                        <ion-icon
-                            class="me-2 md hydrated"
-                            name="arrow-forward-outline"
-                            role="img"
-                            aria-label="arrow-back-outline"
-                        ></ion-icon
-                        ></a
-                        >
+                            class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans "View Personal Dashboard" %}
+                            <ion-icon class="me-2 md hydrated" name="arrow-forward-outline" role="img"
+                                aria-label="arrow-back-outline"></ion-icon></a>
                     </div>
 
-                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2" style="padding-bottom:1rem">
+                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2" style="padding-bottom:0.75rem">
                         <div class="oh-dasboard__event-photo" style="background-color:white">
-                            <img src="{% static "/images/ui/sunbed.png" %}" class="oh-dashboard__event-userphoto" />
+                            <img src="{% static '/images/ui/sunbed.png' %}" class="oh-dashboard__event-userphoto" />
                         </div>
                         <div class="oh-dasboard__event-details">
                             <span class="oh-dashboard__event-title">{% trans "Next Holiday" %}</span>
@@ -157,30 +130,14 @@
                     </div>
                 </div>
             </div>
-            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3 mb-3" style="height:480px;overflow-y:auto">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-4"
+                style="">
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Upcoming holidays" %}</span>
                 </div>
-                <div class="oh-card-dashboard__body">
-                    <ul class="oh-card-dashboard__user-list">
-                        {% if holidays %}
-                            {% for holiday in holidays %}
-                                <li class="oh-card-dashboard__user-item oh-dashboard__event">
-                                    <div class="">
-                                    <span class="oh-profile__name oh-text--white">{{holiday.name}}</span> <br/>
-                                    <span class="dateformat_changer oh-dashboard__event-date oh-text--white">{{holiday.start_date}}</span>
-                                    </div>
-                                </li>
-                            {% endfor %}
-                        {% else %}
-                            <div style="height: 350px; display:flex;align-items: center;justify-content: center;" class="">
-                                <div style="" class="">
-                                <img style="display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="" alt=""/>
-                                <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No more holidays scheduled for this month." %}</h3>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </ul>
+                <div class="oh-card-dashboard__body" hx-get="{% url 'get-upcoming-holidays' %}" hx-trigger="load"
+                    id="upcomingHolidaysList">
+                    <div class="animated-background"></div>
                 </div>
             </div>
         </div>
@@ -193,17 +150,18 @@
                     {% if current_date == next_holiday.start_date|date:"Y-m-d" %}
                     <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
                         <div style="" class="">
-                            <img style="    display: block;width: 70px;margin: 20px auto ;" src="{% static 'images/ui/sunbed outline.png' %}" class="" alt=""/>
+                            <img style="    display: block;width: 70px;margin: 20px auto ;"
+                                src="{% static 'images/ui/sunbed outline.png' %}" class="" alt="" />
                             <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today is a holiday." %}</h3>
                         </div>
                     </div>
                     {% else %}
-                        <div class="d-flex flex-row-reverse">
-                            <input type="month" class="mb-2 pointer" name="" id="dash_department_month" />
-                        </div>
-                        <div class="oh-card-dashboard__body" id="department_leave_canvas">
-                            <canvas id="departmentLeave" class="pointer"></canvas>
-                        </div>
+                    <div class="d-flex flex-row-reverse">
+                        <input type="month" class="mb-2 pointer" name="" id="dash_department_month" />
+                    </div>
+                    <div class="oh-card-dashboard__body" id="department_leave_canvas">
+                        <canvas id="departmentLeave" class="pointer"></canvas>
+                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -214,12 +172,12 @@
                     <span class="oh-card-dashboard__title">{% trans "Leave Type - Count of leaves" %}</span>
                 </div>
                 <div class="oh-card-dashboard__body">
-                        <div class="d-flex flex-row-reverse">
-                            <input type="month" class="mb-2 pointer" name="" id="dash_leave_type_month" />
-                        </div>
-                        <div class="oh-card-dashboard__body" id="leave_type_canvas">
-                            <canvas id="leaveType" class="pointer"></canvas>
-                        </div>
+                    <div class="d-flex flex-row-reverse">
+                        <input type="month" class="mb-2 pointer" name="" id="dash_leave_type_month" />
+                    </div>
+                    <div class="oh-card-dashboard__body" id="leave_type_canvas">
+                        <canvas id="leaveType" class="pointer"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -251,19 +209,19 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="{% static "dashboard/dashboard.js" %}"></script>
+<script src="{% static 'dashboard/dashboard.js' %}"></script>
 <script>
-$(document).ready(function() {
-    $("#requestedLeaves").on("click", function(){
-        window.location.href='{% url "request-view" %}?status=requested&from_date={{today}}'
+    $(document).ready(function () {
+        $("#requestedLeaves").on("click", function () {
+            window.location.href = '{% url "request-view" %}?status=requested&from_date={{today}}'
+        })
+        $("#approvedLeaves").on("click", function () {
+            window.location.href = '{% url "request-view" %}?status=approved&from_date={{first_day}}&to_date={{last_day}}'
+        })
+        $("#rejectedLeaves").on("click", function () {
+            window.location.href = '{% url "request-view" %}?status=rejected&from_date={{first_day}}&to_date={{last_day}}'
+        })
     })
-    $("#approvedLeaves").on("click", function(){
-        window.location.href='{% url "request-view" %}?status=approved&from_date={{first_day}}&to_date={{last_day}}'
-    })
-    $("#rejectedLeaves").on("click", function(){
-        window.location.href='{% url "request-view" %}?status=rejected&from_date={{first_day}}&to_date={{last_day}}'
-    })
-})
 
 </script>
 {% endblock %}

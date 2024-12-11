@@ -10,8 +10,9 @@ from datetime import date, datetime, time
 from urllib.parse import parse_qs
 
 from django.contrib import messages
+from django.db.models import ProtectedError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -19,6 +20,7 @@ from django.utils.translation import gettext_lazy as _
 from attendance.filters import AttendanceFilters, AttendanceRequestReGroup
 from attendance.forms import (
     AttendanceRequestForm,
+    BatchAttendanceForm,
     BulkAttendanceRequestForm,
     NewRequestForm,
 )
@@ -28,7 +30,12 @@ from attendance.methods.utils import (
     paginator_qry,
     shift_schedule_today,
 )
-from attendance.models import Attendance, AttendanceActivity, AttendanceLateComeEarlyOut
+from attendance.models import (
+    Attendance,
+    AttendanceActivity,
+    AttendanceLateComeEarlyOut,
+    BatchAttendance,
+)
 from attendance.views.clock_in_out import early_out, late_come
 from base.methods import (
     choosesubordinates,
@@ -40,7 +47,12 @@ from base.methods import (
 )
 from base.models import EmployeeShift, EmployeeShiftDay
 from employee.models import Employee
-from horilla.decorators import hx_request_required, login_required, manager_can_enter
+from horilla.decorators import (
+    hx_request_required,
+    login_required,
+    manager_can_enter,
+    permission_required,
+)
 from notifications.signals import notify
 
 
@@ -49,7 +61,10 @@ def request_attendance(request):
     """
     This method is used to render template to register new attendance for a normal user
     """
-    form = AttendanceRequestForm()
+    if request.GET.get("previous_url"):
+        form = AttendanceRequestForm(initial=request.GET.dict())
+    else:
+        form = AttendanceRequestForm()
     if request.method == "POST":
         form = AttendanceRequestForm(request.POST)
         if form.is_valid():
@@ -134,7 +149,10 @@ def request_new(request):
 
     if request.GET.get("bulk") and eval_validate(request.GET.get("bulk")):
         employee = request.user.employee_get
-        form = BulkAttendanceRequestForm(initial={"employee_id": employee})
+        if request.GET.get("employee_id"):
+            form = BulkAttendanceRequestForm(initial=request.GET)
+        else:
+            form = BulkAttendanceRequestForm(initial={"employee_id": employee})
         if request.method == "POST":
             form = BulkAttendanceRequestForm(request.POST)
             form.instance.attendance_clock_in_date = request.POST.get("from_date")
@@ -155,7 +173,10 @@ def request_new(request):
             "requests/attendance/request_new_form.html",
             {"form": form, "bulk": True},
         )
-    form = NewRequestForm()
+    if request.GET.get("employee_id"):
+        form = NewRequestForm(initial=request.GET.dict())
+    else:
+        form = NewRequestForm()
     form = choosesubordinates(request, form, "attendance.change_attendance")
     form.fields["employee_id"].queryset = form.fields[
         "employee_id"
@@ -196,24 +217,112 @@ def request_new(request):
 
 
 @login_required
+def create_batch_attendance(request):
+    form = BatchAttendanceForm()
+    previous_form_data = request.GET.urlencode()
+    previous_url = request.GET.get("previous_url")
+    # Split the string at "?" and extract the first part, then reattach the "?"
+    previous_url = previous_url.split("?")[0] + "?"
+    if "attendance-update" in previous_url:
+        hx_target = "#updateAttendanceModalBody"
+    elif "edit-validate-attendance" in previous_url:
+        hx_target = "#editValidateAttendanceRequestModalBody"
+    elif "request-attendance" in previous_url:
+        hx_target = "#objectUpdateModalTarget"
+    elif "attendance-create" in previous_url:
+        hx_target = "#addAttendanceModalBody"
+    else:
+        hx_target = "#objectCreateModalTarget"
+    if request.method == "POST":
+        form = BatchAttendanceForm(request.POST)
+        if form.is_valid():
+            batch = form.save()
+            messages.success(request, _("Attendance batch created successfully."))
+            previous_form_data += f"&batch_attendance_id={batch.id}"
+    return render(
+        request,
+        "attendance/attendance/batch_attendance_form.html",
+        {
+            "form": form,
+            "previous_form_data": previous_form_data,
+            "previous_url": previous_url,
+            "hx_target": hx_target,
+        },
+    )
+
+
+@login_required
+def get_batches(request):
+    batches = BatchAttendance.objects.all()
+    return render(
+        request, "attendance/attendance/batches_list.html", {"batches": batches}
+    )
+
+
+@login_required
+def update_title(request):
+    batch_id = request.POST.get("batch_id")
+    try:
+        batch = BatchAttendance.objects.filter(id=batch_id).first()
+        if batch.created_by == request.user:
+            title = request.POST.get("title")
+            batch.title = title
+            batch.save()
+            messages.success(request, _("Batch attendance title updated sucessfully."))
+        else:
+            messages.info(request, _("You don't have permission."))
+    except:
+        messages.error(request, _("Something went wrong."))
+    return redirect(reverse("get-batches"))
+
+
+@login_required
+@permission_required("attendance.delete_batchattendance")
+def delete_batch(request, batch_id):
+    try:
+        batch_name = BatchAttendance.objects.filter(id=batch_id).first().__str__()
+        BatchAttendance.objects.filter(id=batch_id).first().delete()
+        messages.success(
+            request, _(f"{batch_name} - batch has been deleted sucessfully")
+        )
+    except ProtectedError as e:
+        model_verbose_names_set = set()
+        for obj in e.protected_objects:
+            # Convert the lazy translation proxy to a string.
+            model_verbose_names_set.add(str(_(obj._meta.verbose_name.capitalize())))
+        model_names_str = ", ".join(model_verbose_names_set)
+        messages.error(
+            request,
+            _("This {} is already in use for {}.").format(batch_name, model_names_str),
+        ),
+    except:
+        messages.error(request, _("Something went wrong."))
+
+    return redirect(reverse("get-batches"))
+
+
+@login_required
 def attendance_request_changes(request, attendance_id):
     """
     This method is used to store the requested changes to the instance
     """
     attendance = Attendance.objects.get(id=attendance_id)
-    form = AttendanceRequestForm(instance=attendance)
-    form.fields["work_type_id"].widget.attrs.update(
-        {
-            "class": "w-100",
-            "style": "height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)",
-        }
-    )
-    form.fields["shift_id"].widget.attrs.update(
-        {
-            "class": "w-100",
-            "style": "height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)",
-        }
-    )
+    if request.GET.get("previous_url"):
+        form = AttendanceRequestForm(initial=request.GET.dict())
+    else:
+        form = AttendanceRequestForm(instance=attendance)
+        # form.fields["work_type_id"].widget.attrs.update(
+        #     {
+        #         "class": "w-100",
+        #         "style": "height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)",
+        #     }
+        # )
+        # form.fields["shift_id"].widget.attrs.update(
+        #     {
+        #         "class": "w-100",
+        #         "style": "height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)",
+        #     }
+        # )
     if request.method == "POST":
         form = AttendanceRequestForm(request.POST, instance=copy.copy(attendance))
         form.fields["work_type_id"].widget.attrs.update(
@@ -277,11 +386,17 @@ def attendance_request_changes(request, attendance_id):
                 )
             return HttpResponse(
                 render(
-                    request, "requests/attendance/form.html", {"form": form}
+                    request,
+                    "requests/attendance/form.html",
+                    {"form": form, "attendance_id": attendance_id},
                 ).content.decode("utf-8")
                 + "<script>location.reload();</script>"
             )
-    return render(request, "requests/attendance/form.html", {"form": form})
+    return render(
+        request,
+        "requests/attendance/form.html",
+        {"form": form, "attendance_id": attendance_id},
+    )
 
 
 @login_required
@@ -303,6 +418,7 @@ def validate_attendance_request(request, attendance_id):
         "shift_id": None,
         "work_type_id": None,
         "attendance_worked_hour": None,
+        "batch_attendance_id": None,
     }
     if attendance.request_type == "create_request":
         other_dict = first_dict
@@ -701,9 +817,12 @@ def edit_validate_attendance(request, attendance_id):
     """
     attendance = Attendance.objects.get(id=attendance_id)
     initial = attendance.serialize()
-    if attendance.request_type != "create_request":
-        initial = json.loads(attendance.requested_data)
-    initial["request_description"] = attendance.request_description
+    if request.GET.get("previous_url"):
+        initial = request.GET.dict()
+    else:
+        if attendance.request_type != "create_request":
+            initial = json.loads(attendance.requested_data)
+        initial["request_description"] = attendance.request_description
     form = AttendanceRequestForm(initial=initial)
     form.instance.id = attendance.id
     hx_target = request.META.get("HTTP_HX_TARGET")

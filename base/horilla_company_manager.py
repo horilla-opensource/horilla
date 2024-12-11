@@ -103,3 +103,10 @@ class HorillaCompanyManager(models.Manager):
         queryset = super().filter(*args, **kwargs)
         setattr(_thread_locals, "queryset_filter", queryset)
         return queryset
+
+    def get_all(self):
+        """
+        Fetch all datas from a model without applying any company filter.
+        """
+        queryset = super().get_queryset()
+        return queryset  # No filtering applied

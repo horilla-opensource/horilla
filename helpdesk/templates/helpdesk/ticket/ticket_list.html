@@ -367,7 +367,10 @@
 								<div class="oh-sticky-table__tbody">
 									{% for ticket in allocated_tickets %}
 										<div class="oh-sticky-table__tr"
-											{% if request.user.employee_get in ticket.assigned_to.all or perms.helpdesk.view_ticket or request.user.employee_get|is_department_manager:ticket %}
+											{% if request.user.employee_get in ticket.assigned_to.all %}
+												style = "background-color: lightgreen;"
+												onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
+											{% elif perms.helpdesk.view_ticket or request.user.employee_get|is_department_manager:ticket %}
 												onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
 											{% else %}
 												hx-get = "{% url 'ticket-individual-view' ticket.id %}"

@@ -44,9 +44,6 @@ class MyModelAdmin(admin.ModelAdmin):
 
     def get_deleted_objects(self, objs, request):
         response = super().get_deleted_objects(objs, request)
-        print("+++++++++++++++")
-        print(response)
-        print("+++++++++++++++")
         return response
 
 

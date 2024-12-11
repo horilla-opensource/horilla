@@ -1,12 +1,19 @@
+"""
+Module for managing announcements, including creation, updates, comments, and views.
+"""
+
+import json
+
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from base.forms import AnnouncementCommentForm, AnnouncementForm
-from base.methods import filter_own_records
+from base.methods import closest_numbers, filter_own_records
 from base.models import Announcement, AnnouncementComment, AnnouncementView
 from employee.models import Employee
 from horilla.decorators import login_required, permission_required
@@ -98,26 +105,35 @@ def create_announcement(request):
                 redirect="/",
                 icon="chatbox-ellipses",
             )
-
-            response = render(
-                request, "announcement/announcement_form.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            form = AnnouncementForm()
     return render(request, "announcement/announcement_form.html", {"form": form})
 
 
 @login_required
 def delete_announcement(request, anoun_id):
     """
-    This method is used to delete announcemnts.
+    This method is used to delete announcements.
     """
+    announcement = Announcement.find(anoun_id)
+    if announcement:
+        announcement.delete()
+        messages.success(request, _("Announcement deleted successfully."))
 
-    announcement = Announcement.objects.filter(id=anoun_id)
-    announcement.delete()
-    messages.success(request, _("Announcement deleted successfully."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    instance_ids = request.GET.get("instance_ids")
+    instance_ids_list = json.loads(instance_ids)
+    __, next_instance_id = (
+        closest_numbers(instance_ids_list, anoun_id)
+        if instance_ids_list
+        else (None, None)
+    )
+
+    if anoun_id in instance_ids_list:
+        instance_ids_list.remove(anoun_id)
+
+    if next_instance_id and next_instance_id != anoun_id:
+        url = reverse("announcement-single-view", kwargs={"anoun_id": next_instance_id})
+        return redirect(f"{url}?instance_ids={json.dumps(instance_ids_list)}")
+    return redirect(announcement_single_view)
 
 
 @login_required
@@ -128,7 +144,7 @@ def update_announcement(request, anoun_id):
 
     announcement = Announcement.objects.get(id=anoun_id)
     form = AnnouncementForm(instance=announcement)
-
+    instance_ids = request.GET.get("instance_ids")
     if request.method == "POST":
         form = AnnouncementForm(request.POST, request.FILES, instance=announcement)
         if form.is_valid():
@@ -179,14 +195,11 @@ def update_announcement(request, anoun_id):
                 redirect="/",
                 icon="chatbox-ellipses",
             )
-
-            response = render(
-                request, "announcement/announcement_update_form.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
-    return render(request, "announcement/announcement_update_form.html", {"form": form})
+    return render(
+        request,
+        "announcement/announcement_update_form.html",
+        {"form": form, "instance_ids": instance_ids},
+    )
 
 
 @login_required
@@ -200,9 +213,6 @@ def create_announcement_comment(request, anoun_id):
         initial={"employee_id": emp.id, "request_id": anoun_id}
     )
     comments = AnnouncementComment.objects.filter(announcement_id=anoun_id)
-    no_comments = False
-    if not comments.exists():
-        no_comments = True
     commentators = []
     if comments:
         for i in comments:
@@ -271,36 +281,39 @@ def delete_announcement_comment(request, comment_id):
     This method is used to delete announcement comments
     """
     comment = AnnouncementComment.objects.get(id=comment_id)
-    anoun_id = comment.announcement_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
     return HttpResponse()
 
 
 @login_required
-def announcement_single_view(request, anoun_id):
+def announcement_single_view(request, anoun_id=None):
     """
-    This method is used to render single announcemnts.
+    This method is used to render single announcements.
     """
-
-    announcement = Announcement.objects.filter(id=anoun_id)
-
-    for i in announcement:
-        # Taking the announcement instance
-        announcement_instance = get_object_or_404(Announcement, id=i.id)
-
-        # Check if the user has viewed the announcement
-        announcement_view, created = AnnouncementView.objects.get_or_create(
+    announcement_instance = Announcement.find(anoun_id)
+    instance_ids = request.GET.get("instance_ids")
+    instance_ids_list = json.loads(instance_ids) if instance_ids else []
+    previous_instance_id, next_instance_id = (
+        closest_numbers(instance_ids_list, anoun_id)
+        if instance_ids_list
+        else (None, None)
+    )
+    if announcement_instance:
+        announcement_view_obj, _ = AnnouncementView.objects.get_or_create(
             user=request.user, announcement=announcement_instance
         )
+        announcement_view_obj.viewed = True
+        announcement_view_obj.save()
 
-        # Update the viewed status
-        announcement_view.viewed = True
-        announcement_view.save()
+    context = {
+        "announcement": announcement_instance,
+        "instance_ids": instance_ids,
+        "previous_instance_id": previous_instance_id,
+        "next_instance_id": next_instance_id,
+    }
 
-    return render(
-        request, "announcement/announcement_one.html", {"announcements": announcement}
-    )
+    return render(request, "announcement/announcement_one.html", context)
 
 
 @login_required
@@ -310,7 +323,7 @@ def viewed_by(request):
     This method is used to view the employees
     """
     announcement_id = request.GET.get("announcement_id")
-    viewed_by = AnnouncementView.objects.filter(
+    viewed_users = AnnouncementView.objects.filter(
         announcement_id__id=announcement_id, viewed=True
     )
-    return render(request, "announcement/viewed_by.html", {"viewed_by": viewed_by})
+    return render(request, "announcement/viewed_by.html", {"viewed_by": viewed_users})
