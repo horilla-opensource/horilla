@@ -1,7 +1,11 @@
-{% extends 'settings.html' %} {% block settings %}{% load i18n %} {% load horillafilters %}
+{% extends 'settings.html' %} {% block settings %} {% load i18n %} {% load horillafilters %}
 
 {% if perms.base.change_announcementexpire %}
 {% include "announcement/expiry_day.html" %}
+{% endif %}
+
+{% if user.is_superuser %}
+    {% include "base/auth/domain_settings.html" %}
 {% endif %}
 
 {% if perms.base.view_dynamicpagination %}
@@ -11,7 +15,6 @@
 {% if perms.horilla_audit.view_accountblockunblock %}
     {% include "base/audit_tag/employee_account_block_unblock.html" %}
 {% endif %}
-
 
 {% if "offboarding"|app_installed and perms.offboarding.change_offboardinggeneralsetting %}
     {% include "offboarding/settings/settings.html" %}
@@ -29,7 +32,6 @@
     {% include "settings/settings.html" %}
 {% endif %}
 
-
 {% if "payroll"|app_installed %}
     {% if perms.payroll.change_encashmentgeneralsetting %}
         {% include "settings/encashment_settings.html" %}
@@ -43,6 +45,5 @@
 {% if "payroll"|app_installed and perms.payroll.view_payrollsettings %}
     {% include "payroll/settings/payroll_settings.html" %}
 {% endif %}
-
 
 {% endblock settings %}

@@ -1,0 +1,31 @@
+{% load static %} {% load i18n %}
+<div id="domain_container">
+  <div class="oh-inner-sidebar-content__header mt-4">
+    <h2 class="oh-inner-sidebar-content__title">{% trans 'Authentication' %}</h2>
+  </div>
+
+  <form id="domain-form" action="{% url 'domain-name-settings' %}" method="post" class="settings-label mb-1">
+    {% csrf_token %}
+    <div class="oh-label__info domain-title">
+      <label class="oh-label">{% trans "Allowed Domains" %}</label>
+      <span class="oh-info mr-2" title="{% trans "Type the domains that the user is allowed to use" %}"></span>
+      <div class="invalid-domain"><span>Only valid domains are allowed!</span></div>
+    </div>
+
+    <div class="oh-label__info">
+      <div class="chip-input-container col-sm-12 col-md-12 col-lg-3 w-25">
+        <div class="chips"></div>
+        <input type="text" name="domains" class="chip-input oh-input w-100" placeholder="{% trans 'Add a space separated domains' %}">
+      </div>
+
+      <div class="col-sm-12 col-md-12 col-lg-3">
+        <button style="display: inline; margin-left: 10px;" type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp domain-save-btn">
+        {% trans "Save Changes" %}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script src="{% static 'auth.js' %}"></script>
+<link rel="stylesheet" href="{% static 'auth.css' %}">
