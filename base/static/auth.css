@@ -1,0 +1,53 @@
+.domain-title {
+    align-items: baseline;
+}
+
+.invalid-domain {
+    display: none;
+    color: red;
+}
+
+.chip-input-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    border: 1px solid hsl(213, 22%, 84%);
+    cursor: text;
+    color: hsl(0, 0%, 11%);
+    position: relative;
+}
+
+.chip-input-container input {
+    padding: 0.8rem 1.25rem;
+    border: none;
+    outline: none;
+    min-width: 50px;
+    white-space: wrap;
+}
+
+.chips {
+    display: inline-flex;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    margin: 5px;
+    color: white;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    padding: 5px;
+    font-weight: 600;
+}
+
+.chip .chip-remove {
+    margin-left: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+input:focus::placeholder {
+    visibility: hidden;
+}
