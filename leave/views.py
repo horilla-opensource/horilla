@@ -3624,27 +3624,32 @@ def assigned_leave_select_filter(request):
 @manager_can_enter("leave.delete_leaverequest")
 def leave_request_bulk_delete(request):
     """
-    This method is used to delete bulk of leaves requests
+    This method is used to delete a bulk of leave requests.
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
+    count = 0  # To track the number of successfully deleted requests
     for leave_request_id in ids:
         try:
             leave_request = LeaveRequest.objects.get(id=leave_request_id)
             employee = leave_request.employee_id
             if leave_request.status == "requested":
                 leave_request.delete()
-                messages.success(
-                    request,
-                    _("{}'s leave request deleted.".format(employee)),
-                )
+                count += 1
             else:
                 messages.error(
                     request,
                     _("{}'s leave request cannot be deleted.".format(employee)),
                 )
         except Exception as e:
-            messages.error(request, _("Leave request not found."))
+            messages.error(request, _("An error occurred: {}.".format(str(e))))
+
+    if count > 0:
+        messages.success(
+            request,
+            _("{count}  leave request(s) successfully deleted.".format(count=count)),
+        )
+
     return JsonResponse({"message": "Success"})
 
 
@@ -4253,11 +4258,16 @@ def view_clashes(request, leave_request_id):
     else:
         overlapping_requests = (
             LeaveRequest.objects.filter(
-                Q(
-                    employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
+                (
+                    Q(
+                        employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
+                    )
+                    | Q(
+                        employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
+                    )
                 )
-                | Q(
-                    employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
+                & Q(
+                    employee_id__employee_work_info__company_id=record.employee_id.employee_work_info.company_id
                 ),
                 start_date__lte=record.end_date,
                 end_date__gte=record.start_date,

@@ -900,20 +900,13 @@ class LeaveRequest(HorillaModel):
                 return True
 
     def delete(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-
         if self.status == "requested":
-            """
-            Override the delete method to update the leave clashes count of related leave requests.
-            """
-            leave_request = self
-
             super().delete(*args, **kwargs)
 
-            clash_thread = LeaveClashThread(leave_request)
-            clash_thread.start()
-
+            # Update the leave clashes count for all relevant leave requests
+            self.update_leave_clashes_count()
         else:
+            request = getattr(horilla_middlewares._thread_locals, "request", None)
             if request:
                 clear_messages(request)
                 messages.warning(
@@ -947,11 +940,16 @@ class LeaveRequest(HorillaModel):
             overlapping_requests = (
                 LeaveRequest.objects.exclude(id=self.id)
                 .filter(
-                    Q(
-                        employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+                    (
+                        Q(
+                            employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+                        )
+                        | Q(
+                            employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
+                        )
                     )
-                    | Q(
-                        employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
+                    & Q(
+                        employee_id__employee_work_info__company_id=self.employee_id.employee_work_info.company_id
                     ),
                     start_date__lte=self.end_date,
                     end_date__gte=self.start_date,
