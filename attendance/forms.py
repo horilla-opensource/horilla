@@ -1307,7 +1307,7 @@ class WorkRecordsForm(ModelForm):
 
 class BatchAttendanceForm(ModelForm):
     """
-    WorkRecordForm
+    BatchAttendanceForm
     """
 
     verbose_name = _("Create attendance batch")
