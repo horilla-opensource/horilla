@@ -64,8 +64,8 @@
                     </div>
                     <div class="oh-sticky-table__th">{% trans "Description" %}</div>
                     <div class="oh-sticky-table__th">{% trans "Company" %}</div>
-                    {% if perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
-                        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    {% if perms.leave.add_restrictleave or perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
+                        <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 250px;">{% trans "Actions" %}</div>
                     {% endif %}
                 </div>
             </div>
@@ -118,8 +118,8 @@
                         <div class="oh-sticky-table__td">
                             {{day.company_id}}
                         </div>
-                        {% if perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
-                            <div class="oh-sticky-table__td">
+                        {% if perms.leave.add_restrictleave or perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
+                            <div class="oh-sticky-table__td oh-sticky-table__right">
                                 <div class="oh-btn-group">
                                     {% if perms.leave.change_restrictleave %}
                                         <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
@@ -128,11 +128,18 @@
                                             <ion-icon name="create-outline"></ion-icon>
                                         </button>
                                     {% endif %}
+                                    {% if perms.leave.add_restrictleave %}
+                                        <a hx-get="{% url 'duplicate-restrict-leave' day.id %}" hx-target="#objectCreateModalTarget"
+                                            data-toggle="oh-modal-toggle" data-target="#objectCreateModal" title="{% trans 'Duplicate' %}"
+                                            style="cursor: pointer;" class="oh-btn oh-btn--light-bkg w-100">
+                                            <ion-icon name="copy-outline"></ion-icon>
+                                        </a>
+                                    {% endif %}
                                     {% if perms.leave.delete_restrictleave %}
                                         <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
                                             hx-confirm="{% trans 'Are you sure you want to delete?' %}"
                                             hx-post="{% url 'restrict-delete' day.id %}?{{pd}}" hx-target="#restrictDays"
-                                            title="{% trans 'Delete' %}">
+                                            >
                                             <ion-icon name="trash-outline"></ion-icon>
                                         </a>
                                     {% endif %}
