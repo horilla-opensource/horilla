@@ -104,8 +104,7 @@
                     <div data-cell-index="1" class="oh-sticky-table__td">{{ i.action }}</div>
                     {% endif %}
                     <div data-cell-index="5" class="oh-sticky-table__td">
-                        {% if i.action.block_option %} {% trans "Yes" %}
-                        {% else %}{% trans "No" %}{% endif %}
+                        {{ i.action.block_option|yes_no }}
                     </div>
                     {% if i.action.action_type == 'suspension' and i.unit_in == "days" %}
                     <div data-cell-index="2" class="oh-sticky-table__td">
