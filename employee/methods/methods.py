@@ -392,7 +392,9 @@ def create_contracts_in_thread(new_work_info_list, update_work_info_list):
         Contract(
             contract_name=f"{work_info.employee_id}'s Contract",
             employee_id=work_info.employee_id,
-            contract_start_date=datetime.today(),
+            contract_start_date=(
+                work_info.date_joining if work_info.date_joining else datetime.today()
+            ),
             department=get_or_none(work_info.department_id),
             job_position=get_or_none(work_info.job_position_id),
             job_role=get_or_none(work_info.job_role_id),
