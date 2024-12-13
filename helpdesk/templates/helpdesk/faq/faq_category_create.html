@@ -1,10 +1,19 @@
 {% load i18n %}
+{% if messages %}
+	<script>
+		setTimeout(() => { reloadMessage(this); $('.oh-modal__close').click(); }, 250);
+	</script>
+
+	<span hx-get="{% url 'faq-category-search' %}" hx-trigger="load" {% if faq_category %}
+		hx-target="#faqCategoryItem{{faq_category.id}}" hx-select="#faqCategoryItem{{faq_category.id}}" hx-swap="outerHTML"
+		{% else %} hx-target="#faqCategoryList" {% endif %}></span>
+{% endif %}
 <div class="oh-modal__dialog">
-	<div class="oh-modal__dialog-header">
+	<div class="oh-modal__dialog-header pb-0">
 		<h2 class="oh-modal__dialog-title" id="faqCreateModalLabel">
 			{% if faq_category %}
 				{% trans "FAQ category Update" %}
-				{% else %}
+			{% else %}
 				{% trans "FAQ category Create" %}
 			{% endif %}
 		</h2>
@@ -13,21 +22,13 @@
 		</button>
 	</div>
 	<div class="oh-modal__dialog-body" id="faqCategoryCreateForm">
-		<form
-			id="add-form"
+		<form id="add-form" class="oh-profile-section"
 			hx-post="{% if faq_category %}{% url 'faq-category-update' faq_category.id %}{% else %}{% url 'faq-category-create' %}{% endif %} "
-			hx-target="#faqCategoryCreate"
-			hx-swap="innerHTML"
-			method="post"
-			hx-encoding="multipart/form-data"
-		>
+			hx-target="#faqCategoryCreate" hx-swap="innerHTML" method="post" hx-encoding="multipart/form-data">
 			{{form.as_p}}
 			<div class="d-flex flex-row-reverse">
-				<input
-					type="submit"
-					value='{% trans "Save" %}'
-					class="oh-btn oh-btn--secondary oh-btn--shadow pl-5 pr-5"
-				/>
+				<input type="submit" value="{% trans 'Save' %}"
+					class="oh-btn oh-btn--secondary oh-btn--shadow pl-5 pr-5" />
 			</div>
 		</form>
 	</div>

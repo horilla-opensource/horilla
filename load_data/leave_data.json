@@ -3264,6 +3264,7 @@
       "department": 1,
       "include_all": true,
       "description": "Horilla Project Installation",
+      "company_id": 1,
       "job_position": [],
       "spesific_leave_types": [],
       "exclued_leave_types": []
@@ -3283,6 +3284,7 @@
       "department": 2,
       "include_all": true,
       "description": "Luanch Horilla",
+      "company_id": 1,
       "job_position": [],
       "spesific_leave_types": [],
       "exclued_leave_types": []
@@ -3302,6 +3304,27 @@
       "department": 2,
       "include_all": true,
       "description": "Chirstmas Sales",
+      "company_id": 1,
+      "job_position": [],
+      "spesific_leave_types": [],
+      "exclued_leave_types": [3]
+    }
+  },
+  {
+    "model": "leave.restrictleave",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-12-12T10:25:21.388Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "S/W Dept. Restriction",
+      "start_date": "2024-12-01",
+      "end_date": "2024-12-30",
+      "department": 1,
+      "include_all": true,
+      "description": "Description",
+      "company_id": 1,
       "job_position": [],
       "spesific_leave_types": [],
       "exclued_leave_types": [3]
