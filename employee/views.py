@@ -705,30 +705,67 @@ def view_file(request, id):
 
     Returns: return view_file template
     """
+    CDN = os.getenv("CDN")
+    if not CDN:    
+        document_obj = Document.objects.filter(id=id).first()
+        context = {
+            "document": document_obj,
+        }
+        if document_obj.document:       
+            file_path = document_obj.document.path
+            file_extension = os.path.splitext(file_path)[1][
+                1:
+            ].lower()  # Get the lowercase file extension
 
-    document_obj = Document.objects.filter(id=id).first()
-    context = {
-        "document": document_obj,
-    }
-    if document_obj.document:
-        file_path = document_obj.document.path
-        file_extension = os.path.splitext(file_path)[1][
-            1:
-        ].lower()  # Get the lowercase file extension
+            content_type = get_content_type(file_extension)
 
-        content_type = get_content_type(file_extension)
+            try:
+                with open(file_path, "rb") as file:
+                    file_content = file.read()  # Decode the binary content for display
+            except Exception as e:
+                logger.error(f"Error while opening file: {e}")
+                file_content = None
+            context["file_content"] = file_content
+            context["file_extension"] = file_extension
+            context["content_type"] = content_type
 
-        try:
-            with open(file_path, "rb") as file:
-                file_content = file.read()  # Decode the binary content for display
-        except:
-            file_content = None
+    if CDN:
+        document = get_object_or_404(Document, id=id)
+        file = document.document
+        file_extension = None
+        context = {'document': document}
+        try: 
+            # Use the storage backend to open the file
+            try:
+                with default_storage.open(file.name, 'rb') as f:
+                    file_content = f.read()
+                    
+            except Exception as e:
+                # Handle exceptions, such as file not found
+                logger.error(f"Error while opening file: {e}")
+                file_content = None
 
-        context["file_content"] = file_content
-        context["file_extension"] = file_extension
-        context["content_type"] = content_type
+            # Determine the content type based on the file extension
+            content_type, encoding = mimetypes.guess_type(file.name)
+            if content_type is None:
+                content_type = 'application/octet-stream'  # Default
+            file_extension = file.name.split('.')[-1].lower()
+
+            context["file_content"] = file_content
+            context["file_extension"] = file_extension
+            context["content_type"] = content_type
+        except Exception as e:
+            logger.error("##################################")
+            logger.error("Error while fetching file from CDN")
+            logger.error(f"Exception: {e}", exc_info=True)
+            logger.error(f"Document ID: {id}")
+            logger.error(f"file: {file}")
+            logger.error(f"file.url: {file.url}")
+            logger.error(f'file_extension: {file_extension}')
+
 
     return render(request, "tabs/htmx/view_file.html", context)
+
 
 
 def get_content_type(file_extension):

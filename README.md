@@ -310,6 +310,29 @@ python manage.py migrate
 For more details:
 [Django Oracle Database](https://docs.djangoproject.com/en/4.2/ref/databases/#oracle-notes)
 
+### **CDN Setup**
+
+The environment variable `CDN` is a boolean that is set to `False` by default in the `settings.py`. If set to `False` (default), the static files will be served from the local static directories (`/staticfiles` and `/media`). If set to `True`, the static files will be served from a CDN. 
+
+To use a CDN for static file hosting, following environment variables are required:
+| Environment Variable | Type | Description |
+|----------------------|------|-------------|
+| `CDN` | Boolean | Set to `True` to use CDN for static file hosting. |
+| `ACCESS_KEY_ID` | String | Access key ID for the CDN. |
+| `SECRET_ACCESS_KEY` | String | Secret access key for the CDN. |
+| `STORAGE_BUCKET_NAME` | String | Name of the storage bucket. |
+| `ENDPOINT_URL` | String | Endpoint URL for the CDN. |
+| `CDN_ENDPOINT_URL` | String | Endpoint URL for the CDN. |
+
+Digital Ocean Spaces example:
+```bash
+CDN=True
+ACCESS_KEY_ID=DO00H8DXXXXXXXXXX
+SECRET_ACCESS_KEY=ecixxxxxxxxxxxxxxxxxxxxxxh24I
+STORAGE_BUCKET_NAME=horilla
+ENDPOINT_URL=https://sfo2.digitaloceanspaces.com
+CDN_ENDPOINT_URL=https://horilla.sfo2.cdn.digitaloceanspaces.com
+```
 
 ###  **Features**
 
