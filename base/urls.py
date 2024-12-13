@@ -739,6 +739,11 @@ urlpatterns = [
         name="history-field-settings",
     ),
     path(
+        "save-domains",
+        views.save_domains,
+        name="save-domains",
+    ),
+    path(
         "enable-account-block-unblock",
         views.enable_account_block_unblock,
         name="enable-account-block-unblock",

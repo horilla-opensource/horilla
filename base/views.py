@@ -24,7 +24,6 @@ from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetVie
 from django.core.files.base import ContentFile
 from django.core.mail import EmailMultiAlternatives
 from django.core.management import call_command
-from django.core.paginator import Paginator
 from django.db.models import ProtectedError, Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -99,6 +98,7 @@ from base.forms import (
     WorkTypeRequestColumnForm,
     WorkTypeRequestCommentForm,
     WorkTypeRequestForm,
+    DomainForm,
 )
 from base.methods import (
     choosesubordinates,
@@ -108,7 +108,6 @@ from base.methods import (
     filtersubordinatesemployeemodel,
     format_date,
     get_key_instances,
-    get_pagination,
     is_reportingmanager,
     paginator_qry,
     sortby,
@@ -118,7 +117,6 @@ from base.models import (
     WEEKS,
     Announcement,
     AnnouncementExpire,
-    AnnouncementView,
     BaserequestFile,
     BiometricAttendance,
     Company,
@@ -128,7 +126,6 @@ from base.models import (
     DynamicEmailConfiguration,
     DynamicPagination,
     EmployeeShift,
-    EmployeeShiftDay,
     EmployeeShiftSchedule,
     EmployeeType,
     Holidays,
@@ -145,7 +142,7 @@ from base.models import (
     Tags,
     WorkType,
     WorkTypeRequest,
-    WorkTypeRequestComment,
+    WorkTypeRequestComment, AllowedDomains,
 )
 from employee.filters import EmployeeFilter
 from employee.forms import ActiontypeForm
@@ -5163,6 +5160,29 @@ def history_field_settings(request):
 
     return redirect(general_settings)
 
+
+@login_required
+def save_domains(request):
+    if request.method == 'POST':
+        form = DomainForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            existing_instance = AllowedDomains.objects.first()
+            if not instance.domains:
+                if existing_instance:
+                    existing_instance.domains = None
+                    existing_instance.save(update_fields=["domains"])
+                messages.success(request, _("Domains have been cleared"))
+            else:
+                if existing_instance:
+                    existing_instance.domains = instance.domains
+                    existing_instance.save(update_fields=["domains"])
+                else:
+                    instance.save()
+                messages.success(request, _("Saved"))
+        else:
+            messages.error(request, _("An error occured while storing the domains"))
+    return redirect(general_settings)
 
 def enable_account_block_unblock(request):
     if request.method == "POST":
