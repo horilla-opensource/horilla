@@ -142,7 +142,8 @@ from base.models import (
     Tags,
     WorkType,
     WorkTypeRequest,
-    WorkTypeRequestComment, AllowedDomains,
+    WorkTypeRequestComment,
+    AllowedDomains,
 )
 from employee.filters import EmployeeFilter
 from employee.forms import ActiontypeForm
@@ -5160,30 +5161,6 @@ def history_field_settings(request):
 
     return redirect(general_settings)
 
-
-@login_required
-def save_domains(request):
-    if request.method == 'POST':
-        form = DomainForm(request.POST)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            existing_instance = AllowedDomains.objects.first()
-            if not instance.domains:
-                if existing_instance:
-                    existing_instance.domains = None
-                    existing_instance.save(update_fields=["domains"])
-                messages.success(request, _("Domains have been cleared"))
-            else:
-                if existing_instance:
-                    existing_instance.domains = instance.domains
-                    existing_instance.save(update_fields=["domains"])
-                else:
-                    instance.save()
-                messages.success(request, _("Saved"))
-        else:
-            messages.error(request, _("An error occured while storing the domains"))
-    return redirect(general_settings)
-
 def enable_account_block_unblock(request):
     if request.method == "POST":
         enabled = request.POST.get("enable_block_account")
@@ -7110,3 +7087,32 @@ def view_penalties(request):
     """
     records = PenaltyFilter(request.GET).qs
     return render(request, "penalty/penalty_view.html", {"records": records})
+
+@login_required
+def save_domains(request):
+    if request.method == 'POST':
+        form = DomainForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            existing_instance = AllowedDomains.objects.first()
+            if not instance.domains:
+                if existing_instance:
+                    existing_instance.domains = None
+                    existing_instance.save(update_fields=["domains"])
+                messages.success(request, _("Domains have been cleared"))
+            else:
+                if existing_instance:
+                    existing_instance.domains = instance.domains
+                    existing_instance.save(update_fields=["domains"])
+                else:
+                    instance.save()
+                messages.success(request, _("Saved"))
+        else:
+            messages.error(request, _("An error occured while storing the domains"))
+    return redirect(general_settings)
+
+@login_required
+def get_domains(request):
+    if request.method == 'GET':
+        domains = AllowedDomains.objects.values_list('domains', flat=True).first()
+        return JsonResponse({"domains": domains}, status=200)

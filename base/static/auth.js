@@ -52,6 +52,22 @@ const createChip = ((inputText, isValid) => {
   chipInput.value = '';
 });
 
+const getExistingDomains = (async () => {
+  try {
+    const response = await fetch('/api/domains');
+    if (!response.ok) {
+      throw new Error(`HTTP error with status: ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.domains) {
+      data.domains.split(',').map(domain => createChip(domain, true));
+    }
+  } catch (error) {
+      invalidDomainMessage.textContent = `${error.message}`;
+      invalidDomainMessage.style.display = 'block';
+  }
+});
+
 chipInput.addEventListener('keydown', (event) => {
   if (event.key === ' ' || event.key === 'Enter') {
     event.preventDefault();
@@ -66,3 +82,7 @@ domainSaveButton.addEventListener('click', () => {
 });
 
 chipInputContainer.addEventListener('click', () => chipInput.focus());
+
+window.addEventListener('load', async function() {
+  await getExistingDomains();
+});
