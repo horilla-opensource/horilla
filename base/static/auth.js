@@ -16,14 +16,19 @@ const processInput = ((inputText) => {
 
 const setChipInputState = ((inputText, chip, isValid) => {
   if (isValid) {
-    chip.style.backgroundColor = 'green';
     domains.push(inputText);
   } else {
-    chip.style.backgroundColor = 'red';
+    setInvalidChipStyle(chip);
     invalidDomainMessage.style.display = 'block';
     chipInput.setAttribute("readonly", true);
     domainSaveButton.disabled = true;
   }
+});
+
+const setInvalidChipStyle = ((chip) => {
+  chip.style.backgroundColor = 'red';
+  chip.style.color = 'white';
+  chip.style.fontWeight = '600';
 });
 
 const createChip = ((inputText, isValid) => {
@@ -31,11 +36,12 @@ const createChip = ((inputText, isValid) => {
   chip.className = 'chip';
   chip.innerHTML = `
         <span>${inputText}</span>
-        <span class="chip-remove">&times;</span>
+        <ion-button class="chip-remove">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
     `;
-
   setChipInputState(inputText, chip, isValid);
-
+  chipInputContainer.style.display = 'block';
   chipsContainer.appendChild(chip);
 
   chip.querySelector('.chip-remove').addEventListener('click', () => {
@@ -48,6 +54,9 @@ const createChip = ((inputText, isValid) => {
       chipInput.value = '';
     }
     domains = domains.filter(item => item === inputText ? false : true);
+    if (domains.length === 0) {
+      chipInputContainer.style.display = 'none';
+    }
   });
   chipInput.value = '';
 });
@@ -81,8 +90,7 @@ domainSaveButton.addEventListener('click', () => {
   chipInput.style.visibility = 'hidden';
 });
 
-chipInputContainer.addEventListener('click', () => chipInput.focus());
-
 window.addEventListener('load', async function() {
-  await getExistingDomains();
+  const fetchedDomains = await getExistingDomains();
+  if (fetchedDomains) chipInputContainer.style.display = 'block';
 });
