@@ -8,6 +8,7 @@ import ipaddress
 from datetime import date, datetime, timedelta
 from typing import Iterable
 
+from django.contrib.auth.models import AbstractUser
 import django
 from django.apps import apps
 from django.contrib import messages
@@ -1794,3 +1795,6 @@ def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
                 )
 
             available.save()
+
+
+User.add_to_class('is_new_employee', models.BooleanField(default=False))
