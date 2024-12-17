@@ -50,6 +50,6 @@
     border: none;
 }
 
-.chip .chip-remove {
+.chip .chip-remove-button {
     cursor: pointer;
 }
