@@ -30,6 +30,7 @@ from base.models import (
     WorkType,
     WorkTypeRequest,
 )
+from base.views import get_domains
 from horilla_audit.models import AuditTag
 
 urlpatterns = [
@@ -1032,4 +1033,6 @@ urlpatterns = [
         "company-leave-filter", views.company_leave_filter, name="company-leave-filter"
     ),
     path("view-penalties", views.view_penalties, name="view-penalties"),
+    path("save-domains", views.save_domains, name="save-domains",),
+    path('api/domains/', get_domains, name='get_domains'),
 ]

@@ -5,8 +5,7 @@ This module is used to register django models
 """
 
 import ipaddress
-from datetime import date, datetime, timedelta
-from typing import Iterable
+from datetime import datetime
 
 import django
 from django.apps import apps
@@ -1780,3 +1779,8 @@ def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
                 )
 
             available.save()
+
+class AllowedDomains(models.Model):
+    domains = models.TextField(null=True, blank=True)
+    class Meta:
+        db_table = 'auth_allowed_domains'

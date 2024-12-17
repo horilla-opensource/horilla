@@ -1,0 +1,55 @@
+.domain-title {
+    align-items: baseline;
+}
+
+.invalid-domain {
+    display: none;
+    color: red;
+}
+
+.chip-parent-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.chip-input-container {
+    display: none;
+    border: 1px solid hsl(213, 22%, 84%);
+    align-items: center;
+    cursor: text;
+    color: hsl(0, 0%, 11%);
+    position: relative;
+    margin-bottom: 5px;
+    min-width: 200px;
+}
+
+.chip-input {
+    min-width: 200px;
+}
+
+.chips {
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.chip {
+    display: flex;
+    border-bottom: 1px solid hsl(213, 22%, 84%);;
+    align-items: center;
+    margin: 5px;
+    font-size: 0.9rem;
+    padding: 5px;
+    font-weight: 500;
+}
+
+.chip span:first-child {
+    flex: 1;
+}
+
+.chip:last-child {
+    border: none;
+}
+
+.chip .chip-remove {
+    cursor: pointer;
+}

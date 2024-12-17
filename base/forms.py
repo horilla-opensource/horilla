@@ -66,6 +66,7 @@ from base.models import (
     WorkType,
     WorkTypeRequest,
     WorkTypeRequestComment,
+    AllowedDomains,
 )
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
@@ -2645,3 +2646,8 @@ class PenaltyAccountForm(ModelForm):
                 id__in=available_leaves.values_list("leave_type_id", flat=True)
             )
             self.fields["leave_type_id"].queryset = assigned_leave_types
+
+class DomainForm(forms.ModelForm):
+    class Meta:
+        model = AllowedDomains
+        fields = ['domains']
