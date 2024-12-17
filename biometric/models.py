@@ -59,6 +59,7 @@ class BiometricDevices(HorillaModel):
     )
     machine_ip = models.CharField(max_length=15, null=True, blank=True, default="")
     port = models.IntegerField(null=True, blank=True)
+    zk_password = models.CharField(max_length=100, null=True, blank=True, default="0")
     cosec_username = models.CharField(max_length=100, null=True, blank=True, default="")
     cosec_password = models.CharField(max_length=100, null=True, blank=True)
     anviz_request_id = models.CharField(max_length=200, null=True, blank=True)
@@ -102,6 +103,26 @@ class BiometricDevices(HorillaModel):
                 raise ValidationError(
                     {"port": _("The Port No is required for ZKTeco Biometric")}
                 )
+        if self.machine_type == "zk":
+            if not self.zk_password:
+                raise ValidationError(
+                    {
+                        "zk_password": _(
+                            "The password is required for ZKTeco Biometric Device"
+                        )
+                    }
+                )
+            try:
+                int(self.zk_password)
+            except ValueError:
+                raise ValidationError(
+                    {
+                        "zk_password": _(
+                            "The password must be an integer (numeric) value for ZKTeco Biometric Device"
+                        )
+                    }
+                )
+
         if self.machine_type == "cosec":
             if not self.cosec_username:
                 raise ValidationError(
@@ -221,7 +242,7 @@ class BiometricEmployees(models.Model):
         null=True, blank=True, validators=[MaxValueValidator(99999999)]
     )
     user_id = models.CharField(max_length=100)
-    employee_id = models.ForeignKey(Employee, on_delete=models.DO_NOTHING)
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     device_id = models.ForeignKey(
         BiometricDevices, on_delete=models.CASCADE, null=True, blank=True
     )

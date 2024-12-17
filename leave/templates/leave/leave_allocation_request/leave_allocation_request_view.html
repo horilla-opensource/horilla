@@ -271,7 +271,7 @@
 			<li class="oh-tabs__tab oh-tabs__tab--active" data-target="#tab_1">
 				{% trans "My leave allocation request" %}
 			</li>
-			{% if request.user|is_reportingmanager or perms.leave.change_leaveallocationrequest %}
+			{% if request.user|is_reportingmanager or perms.leave.view_leaveallocationrequest %}
 			<li class="oh-tabs__tab" data-target="#tab_2">
 				{% trans "Leave allocation requests" %}
 			</li>

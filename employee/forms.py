@@ -34,13 +34,14 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
 
-from base.methods import reload_queryset
+from base.methods import eval_validate, reload_queryset
 from employee.models import (
     Actiontype,
     BonusPoint,
     DisciplinaryAction,
     Employee,
     EmployeeBankDetails,
+    EmployeeGeneralSetting,
     EmployeeNote,
     EmployeeTag,
     EmployeeWorkInformation,
@@ -228,7 +229,7 @@ class EmployeeForm(ModelForm):
                         item = item[total_zero_leads:]
                     if isinstance(item, list):
                         item = item[-1]
-                    if not incremented and isinstance(eval(str(item)), int):
+                    if not incremented and isinstance(eval_validate(str(item)), int):
                         item = int(item) + 1
                         incremented = True
                     if isinstance(item, int):
@@ -246,7 +247,8 @@ class EmployeeForm(ModelForm):
         """
         badge_id = self.cleaned_data["badge_id"]
         if badge_id:
-            queryset = Employee.objects.filter(badge_id=badge_id).exclude(
+            all_employees = Employee.objects.get_all()
+            queryset = all_employees.filter(badge_id=badge_id).exclude(
                 pk=self.instance.pk if self.instance else None
             )
             if queryset.exists():
@@ -636,7 +638,7 @@ class DisciplinaryActionForm(ModelForm):
     class Meta:
         model = DisciplinaryAction
         fields = "__all__"
-        exclude = ["company_id", "objects", "is_active"]
+        exclude = ["objects", "is_active"]
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}),
         }
@@ -700,3 +702,15 @@ class EmployeeTagForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
         widgets = {"color": TextInput(attrs={"type": "color", "style": "height:50px"})}
+
+
+class EmployeeGeneralSettingPrefixForm(forms.ModelForm):
+
+    class Meta:
+
+        model = EmployeeGeneralSetting
+        exclude = ["objects"]
+        widgets = {
+            "badge_id_prefix": forms.TextInput(attrs={"class": "oh-input w-100"}),
+            "company_id": forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
+        }

@@ -15,8 +15,12 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 
-from base.methods import filtersubordinates, get_key_instances
-from base.views import paginator_qry
+from base.methods import (
+    eval_validate,
+    filtersubordinates,
+    get_key_instances,
+    paginator_qry,
+)
 from employee.filters import DisciplinaryActionFilter, PolicyFilter
 from employee.forms import DisciplinaryActionForm, PolicyForm
 from employee.models import (
@@ -54,7 +58,7 @@ def create_policy(request):
     """
     instance_id = request.GET.get("instance_id")
     instance = None
-    if isinstance(eval(str(instance_id)), int):
+    if isinstance(eval_validate(str(instance_id)), int):
         instance = Policy.objects.filter(id=instance_id).first()
     form = PolicyForm(instance=instance)
     if request.method == "POST":
@@ -62,7 +66,8 @@ def create_policy(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Policy saved")
-            return HttpResponse("<script>window.location.reload()</script>")
+            form = PolicyForm()
+            # return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "policies/form.html", {"form": form})
 
 
@@ -121,7 +126,7 @@ def delete_policies(request):
 
 
 @login_required
-@permission_required("employee.change_policy")
+@permission_required("employee.add_policymultiplefile")
 def add_attachment(request):
     """
     This method is used to add attachment to policy
@@ -141,7 +146,7 @@ def add_attachment(request):
 
 
 @login_required
-@permission_required("employee.delete_policy")
+@permission_required("employee.delete_policymultiplefile")
 def remove_attachment(request):
     """
     This method is used to remove the attachments
@@ -169,12 +174,16 @@ def disciplinary_actions(request):
     This method is used to view all Disciplinaryaction
     """
     employee = Employee.objects.filter(employee_user_id=request.user).first()
-    dis_actions = filtersubordinates(
-        request, DisciplinaryAction.objects.all(), "base.add_disciplinaryaction"
-    ).distinct()
-    dis_actions = (
-        dis_actions | DisciplinaryAction.objects.filter(employee_id=employee).distinct()
-    )
+    if request.user.has_perm("employee.view_disciplinaryaction"):
+        dis_actions = DisciplinaryAction.objects.all()
+    else:
+        dis_actions = filtersubordinates(
+            request, DisciplinaryAction.objects.all(), "base.add_disciplinaryaction"
+        ).distinct()
+        dis_actions = (
+            dis_actions
+            | DisciplinaryAction.objects.filter(employee_id=employee).distinct()
+        )
 
     form = DisciplinaryActionFilter(request.GET, queryset=dis_actions)
     page_number = request.GET.get("page")

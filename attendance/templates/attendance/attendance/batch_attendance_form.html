@@ -1,0 +1,35 @@
+{% load widget_tweaks %}
+{% load i18n %}
+{% if messages %}
+    <script>
+        reloadMessage()
+    </script>
+    {% if previous_url %}
+        <span hx-on-htmx-after-request="setTimeout(() => {$('#dynamicCreateBatchAttendanceSpan').removeAttr('hx-vals');$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show');}, 500);"
+        hx-target="{{hx_target}}" hx-trigger="load"
+        hx-get="{{previous_url}}&{{previous_form_data}}"></span>
+    {% endif %}
+
+{% endif %}
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <button
+                type="button"
+                class="oh-modal_close--custom"
+                onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show');$('#dynamicCreateBatchAttendanceSpan').removeAttr('hx-vals');"
+            >
+                <ion-icon
+                    name="close-outline"
+                    role="img"
+                    aria-label="close outline"
+                    class="md hydrated"
+                ></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="addBatchModalBody">
+            <form hx-post="{% url 'create-batch-attendance' %}?{{previous_form_data}}" hx-target="#dynamicCreateModalTarget" id="attendanceBatchForm"
+            data-url="objective-creation/?data=">
+                {{form.as_p}}
+            </form>
+        </div>
+    </div>

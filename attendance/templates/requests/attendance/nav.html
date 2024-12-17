@@ -102,7 +102,6 @@
                         </div>
                     </div>
                 </div>
-                {% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager or perms.attendance.delete_attendanceovertime %}
                     <div class="oh-dropdown" x-data="{open: false}">
                         <button class="oh-btn oh-btn--dropdown ml-2" @click="open = !open" @click.outside="open = false"
                             onclick="event.preventDefault()">
@@ -110,6 +109,18 @@
                         </button>
                         <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
                             <ul class="oh-dropdown__items">
+                                <li class="oh-dropdown__item">
+                                    <a href="#" class="oh-dropdown__link" onclick="event.preventDefault();event.stopPropagation()" id="attendanceAddToBatch">{% trans "Add to batch" %}</a>
+                                    <span data-toggle="oh-modal-toggle" id="attendanceAddToBatchButton"
+                                        data-target="#objectDetailsModal" hx-get="{% url 'attendance-add-to-batch' %}"
+                                        hx-target="#objectDetailsModalTarget" hx-vals="">
+                                </li>
+                                <li class="oh-dropdown__item">
+                                    <a class="oh-dropdown__link" onclick="event.preventDefault();event.stopPropagation()" id="attendanceAddToBatch"
+                                        data-toggle="oh-modal-toggle"
+                                        data-target="#objectDetailsModal" hx-get="{% url 'get-batches' %}"
+                                        hx-target="#objectDetailsModalTarget">{% trans "Batches" %}</a>
+                                </li>
                                 {% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager %}
                                     <li class="oh-dropdown__item">
                                         <a href="#" class="oh-dropdown__link" id="reqAttendanceBulkApprove"
@@ -125,7 +136,6 @@
                             </ul>
                         </div>
                     </div>
-                {% endif %}
             </div>
 
 

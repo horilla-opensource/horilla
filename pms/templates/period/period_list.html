@@ -16,8 +16,9 @@
         <div class="oh-sticky-table__th">{% trans "Title" %}</div>
         <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
         <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Company" %}</div>
         {% if perms.pms.change_period or perms.pms.delete_period or request.user|filtersubordinates %}
-            <div class="oh-sticky-table__th"></div>
+            <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
         {% endif %}
       </div>
     </div>
@@ -36,6 +37,15 @@
         </div>
         <div class="oh-sticky-table__td dateformat_changer">
           {{period.end_date}}
+        </div>
+        <div class="oh-sticky-table__td">
+          {% for p in period.company_id.all %}
+            {% if p.company %}
+              {{p.company}} ,
+            {% endif %}
+          {% empty %}
+            {% trans "None." %}
+          {% endfor %}
         </div>
         {% if perms.pms.change_period or perms.pms.delete_period or request.user|filtersubordinates %}
         <div class="oh-sticky-table__td">

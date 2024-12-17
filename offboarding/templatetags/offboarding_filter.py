@@ -185,3 +185,16 @@ def is_employee_tasks(employee_tasks, task):
         return False
     except:
         return False
+
+
+@register.filter("is_manager_for_any_task")
+def is_manager_for_any_task(employee, tasks):
+    """
+    Returns True if the employee is a manager for any task in the list of tasks.
+    """
+    for task in tasks:
+        if employee in task.managers.all():
+            is_manager = True
+        else:
+            is_manager = False
+    return is_manager

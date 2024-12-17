@@ -24,6 +24,7 @@ class AssetCategory(HorillaModel):
     asset_category_description = models.TextField(max_length=255)
     objects = models.Manager()
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+    objects = HorillaCompanyManager("company_id")
 
     def __str__(self):
         return f"{self.asset_category_name}"
@@ -38,6 +39,14 @@ class AssetLot(HorillaModel):
     lot_description = models.TextField(null=True, blank=True, max_length=255)
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
+
+    class Meta:
+        """
+        Meta class to add additional options
+        """
+
+        verbose_name = _("Asset Batch")
+        verbose_name_plural = _("Asset Batches")
 
     def __str__(self):
         return f"{self.lot_number}"
@@ -182,6 +191,9 @@ class AssetAssignment(HorillaModel):
     )
     assign_images = models.ManyToManyField(
         ReturnImages, blank=True, related_name="assign_images"
+    )
+    objects = HorillaCompanyManager(
+        "assigned_to_employee_id__employee_work_info__company_id"
     )
 
     class Meta:

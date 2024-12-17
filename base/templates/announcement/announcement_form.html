@@ -1,6 +1,10 @@
 {% load i18n %}
+{% if messages %}
+<script>reloadMessage();</script>
+<span hx-get="{% url 'announcement-list' %}" hx-trigger="load" hx-target="#announcementListCard"
+    hx-on-htmx-after-request="setTimeout(() => {$('.oh-modal__close').click();}, 500);"></span>
+{% endif %}
 {% if form.errors %}
-<!-- form errors  -->
 <div class="oh-wrapper">
     <div class="oh-alert-container">
         {% for error in form.non_field_errors %}

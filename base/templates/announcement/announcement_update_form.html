@@ -1,4 +1,10 @@
 {% load i18n %}
+{% if messages %}
+    <script>reloadMessage();</script>
+    <span hx-get="{% url 'announcement-single-view' form.instance.id %}?instance_ids={{instance_ids}}" hx-target="#objectDetailsModalTarget" hx-trigger="load">
+    <span hx-get="{% url 'announcement-list' %}" hx-trigger="load" hx-target="#announcementListCard"
+        hx-on-htmx-after-request="setTimeout(() => {$('.oh-modal_close--custom').click();}, 500);"></span>
+{% endif %}
 {% if form.errors %}
 <!-- form errors  -->
 <div class="oh-wrapper">
@@ -20,7 +26,7 @@
 </div>
 <div class="oh-modal__dialog-body">
 
-    <form hx-post="{% url 'update-announcement' form.instance.id %}" hx-target="#objectUpdateModalTarget"
+    <form hx-post="{% url 'update-announcement' form.instance.id %}?instance_ids={{instance_ids}}" hx-target="#objectUpdateModalTarget"
         hx-encoding="multipart/form-data" class="oh-profile-section">
         {% csrf_token %}
         {{form.as_p}}

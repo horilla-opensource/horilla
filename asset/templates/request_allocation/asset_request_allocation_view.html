@@ -238,12 +238,14 @@
 				{% if perms.asset.view_assetassignment %}
 				<li class="oh-tabs__tab" data-target="#tab_2">
 					{% trans "Asset Allocation" %}
-					<a class="oh-btn oh-btn--secondary-outline" role="button" data-toggle="oh-modal-toggle"
-						onclick="event.stopPropagation()" data-target="#objectCreateModal"
-						hx-get="{% url 'asset-allocate-creation' %}" hx-target="#objectCreateModalTarget"
-						title="{% trans 'Create allocation' %}">
-						<ion-icon name="add-outline" role="img" class="md hydrated" aria-label="add outline"></ion-icon>
-					</a>
+					{% if perms.asset.add_assetassignment %}
+						<a class="oh-btn oh-btn--secondary-outline" role="button" data-toggle="oh-modal-toggle"
+							onclick="event.stopPropagation()" data-target="#objectCreateModal"
+							hx-get="{% url 'asset-allocate-creation' %}" hx-target="#objectCreateModalTarget"
+							title="{% trans 'Create allocation' %}">
+							<ion-icon name="add-outline" role="img" class="md hydrated" aria-label="add outline"></ion-icon>
+						</a>
+					{% endif %}
 				</li>
 				{% endif %}
 			</ul>

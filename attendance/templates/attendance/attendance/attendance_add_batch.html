@@ -1,0 +1,36 @@
+{% load widget_tweaks %}
+{% load i18n %}
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="addBatchModalLabel">
+                {% trans "Add to batch" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="addBatchModalBody">
+          <form id="add-batch-form" hx-post="{% url 'attendance-add-to-batch' %}?ids={{ids}}" hx-target="#objectDetailsModalTarget">
+            {% csrf_token %}
+                <div class="oh-profile-section pt-0">
+                  <div class="row">
+                    <div class="mb-2">
+                      <div class="oh-input__group">
+                        <label class="oh-input__label" for="">{% trans 'Batch' %}</label>
+                        <select name="batch_attendance_id" class="oh-select oh-select-2 w-100 form-control select2-hidden-accessible" style="height:50px;border-radius:0;" required>
+                          <option value="" selected="">---Choose Shift---</option>
+                          {% for batch in batches  %}
+                          <option value={{batch.id}} >{{batch}}</option>
+                          {% endfor %}
+                          <option value="dynamic_create">{% trans "Dynamic create" %}</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="oh-modal__dialog-footer p-0">
+                    <input type="submit" value="{% trans 'Save' %}" class="oh-btn oh-btn--secondary oh-btn--shadow pl-5 pr-5" />
+                  </div>
+                </div>
+              </form>
+        </div>
+    </div>

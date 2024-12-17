@@ -168,6 +168,18 @@ x-data="{searchShow: false}"
                 >
               </li>
               {% endif %}
+              {% if check_candidate_self_tracking and perms.recruitment.add_candidate %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    data-toggle="oh-modal-toggle"
+                    class="oh-dropdown__link "
+                    data-target="#objectCreateModal"
+                    hx-get="{% url 'candidate-document-request' %}"
+                    hx-target="#objectCreateModalTarget"
+                  >{% trans "Create document request" %}</a>
+                </li>
+              {% endif %}
               {% if perms.recruitment.add_candidate or request.user|recruitment_manages:rec %}
                 <li class="oh-dropdown__item">
                   <a

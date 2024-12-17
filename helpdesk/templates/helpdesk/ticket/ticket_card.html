@@ -464,7 +464,7 @@
                                                                     >
                                                                 </li>
                                                             {% endif %}
-                                                            {% if perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket %}
+                                                            {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
                                                                 {% if ticket.is_active %}
                                                                     <li
                                                                         class="oh-dropdown__item"
@@ -788,7 +788,7 @@
                                                                     >
                                                                 </li>
                                                             {% endif %}
-                                                            {% if perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket %}
+                                                            {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
                                                                 {% if ticket.is_active %}
                                                                     <li
                                                                         class="oh-dropdown__item"

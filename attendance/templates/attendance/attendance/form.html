@@ -1,5 +1,7 @@
 {% load i18n %}
-<form hx-post="{% url 'attendance-create' %}" hx-target="#addAttendanceModalBody" id="attendanceCreateForm">
+<form hx-post="{% url 'attendance-create' %}" hx-target="#addAttendanceModalBody" id="attendanceCreateForm"
+    data-url = "{% url 'attendance-create' %}"
+>
     {{form.as_p}}
 </form>
 <script>

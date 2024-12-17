@@ -633,7 +633,9 @@ class OverrideWorkInfo(EmployeeWorkInformation):
                 contract = Contract()
                 contract.contract_name = f"{active_employee}'s Contract"
                 contract.employee_id = active_employee
-                contract.contract_start_date = datetime.today()
+                contract.contract_start_date = (
+                    instance.date_joining if instance.date_joining else datetime.today()
+                )
                 contract.wage = (
                     instance.basic_salary if instance.basic_salary is not None else 0
                 )
@@ -1754,7 +1756,7 @@ class Reimbursement(HorillaModel):
         )
 
         # Setting the created use if the used dont have the permission
-        has_perm = request.user.has_perm("payroll.add_reimbursement")
+        has_perm = request.user.has_perm("payroll.change_reimbursement")
         if not has_perm:
             self.employee_id = request.user.employee_get
         if self.type == "reimbursement" and self.attachment is None:

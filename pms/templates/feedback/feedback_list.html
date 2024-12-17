@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load basefilters %}
+{% load mathfilters %}
 {% load static %}
 {% if messages %}
     <ul class="messages">
@@ -96,7 +97,8 @@
             <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
             <div class="oh-sticky-table__th">{% trans "Title" %}</div>
             <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Due In" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Due On" %}</div>
             <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
           </div>
         </div>
@@ -136,7 +138,17 @@
               <span>{% trans feedback.status %}</span>
             </div>
             <div class="oh-sticky-table__td">
-              {{ current_date|timesince:feedback.end_date }}
+              {{feedback.start_date}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{feedback.end_date}}
+              <span title = 'due {% if feedback.end_date == current_date %} {{current_date}} {% else %}in {{feedback.end_date|sub:current_date}}{% endif %}'>
+                  <ion-icon
+                      class="text-{% if feedback.end_date < current_date %}danger {% elif feedback.end_date == current_date %}warning {% else %}success{% endif %}"
+                      name="time-sharp"
+                  >
+                  </ion-icon>
+              </span>
             </div>
             <div class="oh-sticky-table__td"
               onclick="event.stopPropagation()"
@@ -248,7 +260,8 @@
             <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
             <div class="oh-sticky-table__th">{% trans "Title" %}</div>
             <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Due In" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Due On" %}</div>
             <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 
           </div>
@@ -284,7 +297,19 @@
               <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
               <span>{% trans feedback.status %}</span>
             </div>
-            <div class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</div>
+            <div class="oh-sticky-table__td">
+              {{feedback.start_date}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{feedback.end_date}}
+              <span title = 'due {% if feedback.end_date == current_date %} {{current_date}} {% else %}in {{feedback.end_date|sub:current_date}}{% endif %}'>
+                  <ion-icon
+                      class="text-{% if feedback.end_date < current_date %}danger {% elif feedback.end_date == current_date %}warning {% else %}success{% endif %}"
+                      name="time-sharp"
+                  >
+                  </ion-icon>
+              </span>
+            </div>
             <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
               <div class="oh-btn-group">
                 <a class="oh-btn w-100" style="height:10px" href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><img width="25px" height="25px" src="{% static 'images/ui/writing.png' %}"></a>
@@ -371,7 +396,8 @@
             <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
             <div class="oh-sticky-table__th">{% trans "Title" %}</div>
             <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Due In" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Due On" %}</div>
             {% if perms.pms.delete_feedback or request.user|is_reportingmanager %}
             <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
             {% endif %}
@@ -410,7 +436,19 @@
               <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
               <span>{% trans feedback.status %}</span>
             </div>
-            <div class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</div>
+            <div class="oh-sticky-table__td">
+              {{feedback.start_date}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{feedback.end_date}}
+              <span title = 'due {% if feedback.end_date == current_date %} {{current_date}} {% else %} in {{feedback.end_date|sub:current_date}}{% endif %}'>
+                  <ion-icon
+                      class="text-{% if feedback.end_date < current_date %}danger {% elif feedback.end_date == current_date %}warning {% else %}success{% endif %}"
+                      name="time-sharp"
+                  >
+                  </ion-icon>
+              </span>
+            </div>
             {% if perms.pms.delete_feedback or request.user|is_reportingmanager %}
               <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                 <div class="oh-btn-group">

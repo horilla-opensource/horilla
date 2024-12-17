@@ -47,10 +47,10 @@
                 <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
                 <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Status" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Gross Pay" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Deduction" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Net Pay" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Status" %}</div>
                 <div class="oh-sticky-table__th" style="width: 251px !important;">{% trans "Actions" %}</div>
               </div>
             </div>
@@ -91,21 +91,27 @@
                   {{payslip.end_date}}
                 </div>
                 <div class="oh-sticky-table__td">
-                  <select name="pay_status" data-instance-id="{{payslip.id}}">
-                    {% for opt in payslip.status_choices %}
-                    <option value="{{opt.0}}"{% if opt.0 == payslip.status %}selected{% endif %}>{{opt.1}}</option>
-                    {% endfor %}
-                  </select>
+                  {{payslip.gross_pay|floatformat:2|currency_symbol_position}}
                 </div>
+                <div class="oh-sticky-table__td">
+                  {{payslip.deduction|floatformat:2|currency_symbol_position}}
+                </div>
+                <div class="oh-sticky-table__td">
+                  {{payslip.net_pay|floatformat:2|currency_symbol_position}}
+                </div>
+                {% if perms.payroll.change_payslip %}
                   <div class="oh-sticky-table__td">
-                    {{payslip.gross_pay|floatformat:2|currency_symbol_position}}
+                    <select name="pay_status" data-instance-id="{{payslip.id}}">
+                      {% for opt in payslip.status_choices %}
+                      <option value="{{opt.0}}"{% if opt.0 == payslip.status %}selected{% endif %}>{{opt.1}}</option>
+                      {% endfor %}
+                    </select>
                   </div>
-                  <div class="oh-sticky-table__td">
-                    {{payslip.deduction|floatformat:2|currency_symbol_position}}
+                {% else %}
+                  <div data-cell-index="3" class="oh-sticky-table__td">
+                    {{payslip.get_status_display}}
                   </div>
-                  <div class="oh-sticky-table__td">
-                    {{payslip.net_pay|floatformat:2|currency_symbol_position}}
-                  </div>
+                {% endif %}
                 <div class="oh-sticky-table__td">
                   <div class="oh-btn-group">
                     <a href="{% url 'view-created-payslip' payslip.id %}" type="button" title="{% trans 'View' %}" class="oh-btn oh-btn--light-bkg w-50"> <ion-icon name="eye-outline"></ion-icon></a>

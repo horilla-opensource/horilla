@@ -1,92 +1,104 @@
 {% load i18n static %}
 {% if overtime_attendances %}
-<div class="oh-sticky-table h-100">
-    <div class="oh-sticky-table__table oh-table--sortable">
-        <div class="oh-sticky-table__thead">
-            <div class="oh-sticky-table__tr">
-                <div
-                  class="oh-sticky-table__th"
-                  >
-                  {% trans "Employee" %}
+    <div class="oh-sticky-table h-100">
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">
+                        {% trans "Employee" %}
+                    </div>
+                    {% if not main_dashboard %}
+                        <div class="oh-sticky-table__th">{% trans "Check-In" %}</div>
+                        <div class="oh-sticky-table__th">
+                            {% trans "In Date" %}
+                        </div>
+                        <div class="oh-sticky-table__th">{% trans "Check-Out" %}</div>
+                        <div class="oh-sticky-table__th">
+                            {% trans "Out Date" %}
+                        </div>
+                    {% endif %}
+                    <div class="oh-sticky-table__th">
+                        {% trans "Overtime" %}
+                    </div>
+                    <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                 </div>
-                <div class="oh-sticky-table__th">{% trans "Check-In" %}</div>
-                <div
-                  class="oh-sticky-table__th"
-                  >
-                  {% trans "In Date" %}
-                </div>
-                <div class="oh-sticky-table__th">{% trans "Check-Out" %}</div>
-                <div
-                  class="oh-sticky-table__th"
-                  >
-                  {% trans "Out Date" %}
-                </div>
-                <div
-                  class="oh-sticky-table__th"
-                  >
-                  {% trans "Overtime" %}
-                </div>
-                <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
             </div>
-        </div>
-        {% for attendance in overtime_attendances %}
-            <div class="oh-sticky-table__tbody">
-                <div
-                  class="oh-sticky-table__tr"
-                  draggable="false"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#objectDetailsModalW25"
-                  hx-target="#objectDetailsModalW25Target"
-                  hx-get="{% url 'user-request-one-view' attendance.id %}?ot=true&instances_ids={{ot_attendances_ids}}"
-                  >
-                    <div class="oh-sticky-table__sd">
-                        <div class="oh-profile oh-profile--md">
-                            <div class="oh-profile__avatar mr-1">
-                              <img
-                              src="{{attendance.employee_id.get_avatar}}"
-                                class="oh-profile__image"
-                                alt=""
-                              />
+            {% for attendance in overtime_attendances %}
+                <div class="oh-sticky-table__tbody">
+                    <div class="oh-sticky-table__tr" draggable="false" data-toggle="oh-modal-toggle"
+                        data-target="#objectDetailsModalW25" hx-target="#objectDetailsModalW25Target"
+                        hx-get="{% url 'user-request-one-view' attendance.id %}?ot=true&instances_ids={{ot_attendances_ids}}">
+                        <div class="oh-sticky-table__sd">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="{{attendance.employee_id.get_avatar}}" class="oh-profile__image" alt="" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">{{attendance.employee_id}}</span>
                             </div>
-                            <span class="oh-profile__name oh-text--dark"
-                              >{{attendance.employee_id}}</span
-                            >
+                        </div>
+                        {% if not main_dashboard %}
+                            <div class="oh-sticky-table__td timeformat_changer">
+                                {{attendance.attendance_clock_in}}
+                            </div>
+                            <div class="oh-sticky-table__td dateformat_changer">
+                                {{attendance.attendance_clock_in_date}}
+                            </div>
+                            <div class="oh-sticky-table__td timeformat_changer">
+                                {{attendance.attendance_clock_out}}
+                            </div>
+                            <div class="oh-sticky-table__td dateformat_changer">
+                                {{attendance.attendance_clock_out_date}}
+                            </div>
+                        {% endif %}
+
+                        <div class="oh-sticky-table__td">
+                            {{attendance.attendance_overtime}}
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            <a href="{% url 'approve-overtime' attendance.id %}" onclick="event.stopPropagation()"
+                                class="oh-btn oh-btn oh-btn--success w-100" title="{% trans 'Approve Overtime' %}">
+                                <ion-icon class="me-1 md hydrated" name="checkmark-outline" role="img" aria-label="checkmark outline"></ion-icon>
+                            </a>
                         </div>
                     </div>
-                    <div class="oh-sticky-table__td timeformat_changer">
-                      {{attendance.attendance_clock_in}}
-                    </div>
-                    <div class="oh-sticky-table__td dateformat_changer">
-                      {{attendance.attendance_clock_in_date}}
-                    </div>
-                    <div class="oh-sticky-table__td timeformat_changer">
-                      {{attendance.attendance_clock_out}}
-                    </div>
-                    <div class="oh-sticky-table__td dateformat_changer">
-                      {{attendance.attendance_clock_out_date}}
-                    </div>
-                    <div class="oh-sticky-table__td">
-                      {{attendance.attendance_overtime}}
-                    </div>
-                    <div class="oh-sticky-table__td">
-                        <a
-                            href="{% url 'approve-overtime' attendance.id %}"
-                            onclick="event.stopPropagation()"
-                            class="oh-btn oh-btn--info"
-                            >
-                            {% trans "Approve" %}
-                        </a>
-                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% else %}
-<div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
-  <div style="" class="">
-  <img style="display: block;width: 70px;margin: 20px auto ;" src="{% static "/images/ui/overtime-icon.png" %}" class="" alt=""/>
-  <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No Overtime to Validate...." %}</h3>
-  </div>
-</div>
+    <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+        <div style="" class="">
+            <img style="display: block;width: 70px;margin: 20px auto ;" src="{% static '/images/ui/overtime-icon.png' %}"
+                class="" alt="" />
+            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No Overtime to Validate...." %}</h3>
+        </div>
+    </div>
+{% endif %}
+{% if overtime_attendances.has_previous or overtime_attendances.has_next %}
+    <div class="float-end mt-2">
+        {% if overtime_attendances.has_previous %}
+            <span class="oh-card-dashboard__title" style="cursor: pointer"
+                hx-target="#OTApproveBody"
+                hx-get="{% url 'dashboard-approve-overtimes' %}?page={{ overtime_attendances.previous_page_number }}"
+                hx-trigger="click delay:0.3s">
+                <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+            </span>
+        {% endif %}
+        {% if overtime_attendances.has_next %}
+            <span class="oh-card-dashboard__title ms-2 float-end" style="cursor: pointer"
+                hx-target="#OTApproveBody"
+                hx-get="{% url 'dashboard-approve-overtimes' %}?page={{ overtime_attendances.next_page_number }}"
+                hx-trigger="click delay:0.3s">
+                <ion-icon name="caret-forward-outline" role="img" class="md hydrated"
+                    aria-label="caret back outline"></ion-icon>
+            </span>
+        {% endif %}
+        {% if overtime_attendances.has_previous or overtime_attendances.has_next %}
+            <span class="oh-pagination__page mt-1 fw-bold">
+                {% trans "Page" %} {{ overtime_attendances.number }} {%trans "of" %}
+                {{overtime_attendances.paginator.num_pages }}
+            </span>
+        {% endif %}
+    </div>
 {% endif %}

@@ -5,6 +5,7 @@ from django.apps import apps
 from django.shortcuts import redirect
 from django.urls import Resolver404, path, resolve, reverse
 
+from base.context_processors import white_labelling_company
 from employee.models import Employee
 from horilla.urls import urlpatterns
 
@@ -162,11 +163,12 @@ user_breadcrumbs = {}
 
 def breadcrumbs(request):
     base_url = request.build_absolute_uri("/")
+    company = white_labelling_company(request)["white_label_company_name"]
 
     # Initialize breadcrumbs in the session if not already present
     if "breadcrumbs" not in request.session:
         request.session["breadcrumbs"] = [
-            {"url": base_url, "name": "Horilla", "found": True}
+            {"url": base_url, "name": company, "found": True}
         ]
 
     try:
@@ -229,7 +231,7 @@ def breadcrumbs(request):
 
         if len(parts) == 0:
             request.session["breadcrumbs"].clear()
-            breadcrumbs.append({"url": base_url, "name": "Horilla", "found": True})
+            breadcrumbs.append({"url": base_url, "name": company, "found": True})
 
         if len(parts) > 1:
             last_path = parts[-1]
@@ -294,7 +296,7 @@ def breadcrumbs(request):
 
     except Exception as e:
         request.session["breadcrumbs"] = [
-            {"url": base_url, "name": "Horilla", "found": True}
+            {"url": base_url, "name": company, "found": True}
         ]
     return {"breadcrumbs": request.session["breadcrumbs"]}
 

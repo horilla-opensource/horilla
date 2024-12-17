@@ -121,7 +121,7 @@
 												{% endif %}
 											</div>
 											<div class="oh-input-group">
-												{% if perms.base.view_dynamicemailconfiguration %}
+												{% if perms.horilla_backup.view_googledrivebackup %}
 													<a
 														id="date"
 														{% comment %} href="{% url 'gdrive' %}" {% endcomment %}
@@ -311,7 +311,7 @@
 												{% endif %}
 											</div>
 											<div class="oh-input-group">
-												{% if perms.base.view_actiontype %}
+												{% if perms.employee.view_actiontype %}
 													<a
 														id="date"
 														href="{% url 'action-type' %}"
@@ -321,7 +321,7 @@
 												{% endif %}
 											</div>
 											<div class="oh-input-group">
-												{% if perms.employee.view_emplyeetag %}
+												{% if perms.employee.view_employeetag %}
 													<a
 														id="ticket_type"
 														href="{% url 'employee-tag-view' %}"

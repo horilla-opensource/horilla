@@ -1,0 +1,405 @@
+{% load static i18n generic_template_filters %}
+
+<div id="{{view_id|safe}}">
+  <div
+    class="oh-modal"
+    id="bulkUpdateModal{{view_id|safe}}"
+    role="dialog"
+    aria-labelledby="bulkUpdateModal{{view_id|safe}}"
+    aria-hidden="true"
+  >
+    <div class="oh-modal__dialog" id="bulkUpdateModalBody{{view_id|safe}}"></div>
+  </div>
+  {% include "generic/export_fields_modal.html" %}
+  <script>
+    if (!$(".HTV").length) {
+      $("#reloadMessagesButton").click()
+    }
+  </script>
+  {% if bulk_select_option and queryset|length %}
+  {% include "generic/quick_actions.html" %}
+  {% endif %}
+  <button class="reload-record" id="{{view_id|safe}}Reload" hidden hx-get="{{request.path}}?{{request.GET.urlencode}}" hx-target="#{{view_id|safe}}" hx-swap="outerHTML" hx-on:click="htmxLoadIndicator(this);">
+  </button>
+  {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
+  <div class="oh-card">
+    {% if not groups.paginator.count %}
+    <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
+      <div align="center">
+        <img src="{% static "images/ui/search.svg" %}" class="oh-404__image" alt="Page not found. 404.">
+        <h1 class="oh-404__title">{% trans "No Records found" %}</h1>
+        <p class="oh-404__subtitle">
+          {% trans "No records found." %}
+        </p>
+      </div>
+    </div>
+    {% endif %}
+    {% for group in groups %}
+    <div class="oh-accordion-meta">
+      <div class="oh-accordion-meta__item">
+        <div class="oh-accordion-meta__header"
+          data-field="{{saved_filters.field}}"
+          data-path="{{request.path}}"
+          data-group="{{forloop.counter}}"
+          data-open=false
+          onclick="
+            event.stopPropagation()
+            $(this).parent().find('.oh-accordion-meta__body').toggleClass('d-none')
+          "
+          >
+          <span class="oh-accordion-meta__title p-2">
+            <span class="oh-accordion-meta__title pt-3 pb-3">
+              <div class="oh-tabs__input-badge-container">
+                <span
+                  class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+                  title="{{group.list.paginator.count}} {% trans "Records" %}"
+                >
+                  {{group.list.paginator.count}}
+                </span>
+                {{group.grouper|capfirst}}
+              </div>
+            </span>
+          </span>
+        </div>
+        <div class="oh-accordion-meta__body d-none">
+          <div class="table-wrapper">
+            <table class="fixed-table">
+              <thead>
+                <tr>
+                  {% if bulk_select_option %}
+                  <th>
+                    <div class="centered-div" align="center">
+                      <input
+                        type="checkbox"
+                        class="oh-input oh-input__checkbox bulk-list-table-row"
+                        onchange="
+                        $(this).closest('.fixed-table').find('.list-table-row').prop('checked',$(this).is(':checked')).change();
+                        $(document).ready(function () {
+                          reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                          reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                        });
+                        "
+                        title="Select All"
+                      />
+                    </div>
+                  </th>
+                  {% endif %}
+                  {% for cell in columns %}
+                  {% with cell_attr=header_attrs|get_item:cell.1 %}
+                  <th {% if cell.2 and not cell_attr %}style="width:220px!important;"{% endif %} {{cell_attr|safe}} id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header">
+                    <div
+                      {% for sort_map in sortby_mapping %}
+                      {% if sort_map.0 == cell.0 %}
+                      hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
+                      hx-target="#{{view_id}}"
+                      class="
+                        {% if request.sort_order == "asc" and request.sort_key == sort_map.1 %}
+                          arrow-up
+                          {% elif request.sort_order == "desc" and request.sort_key == sort_map.1 %}
+                          arrow-down
+                          {% else %}
+                          arrow-up-down
+                        {% endif %}
+                        "
+                      {% endif %}
+                      {% endfor %}
+                      >
+                        {{cell.0}}
+                      </div>
+                  </th>
+                  {% endwith %}
+                  {% endfor %}
+                  {% if options or option_method%}
+                  <th {{header_attrs.option|safe}}>
+                    {% trans "Options" %}
+                  </th>
+                  {% endif %}
+                  {% if actions or action_method %}
+                  <th class="lastTh" {{header_attrs.action|safe}}>
+                    {% trans "Actions" %}
+                  </th>
+                  {% endif %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for instance in group.list %}
+                <tr
+                 data-instance-id="{{instance.id}}"
+                 {{row_attrs|format:instance|safe}}
+                >
+                  {% if bulk_select_option %}
+                  <td class="p-0" onclick="event.stopPropagation()">
+                    <div class="{{row_status_class|format:instance|safe}} centered-div" align="center">
+                      <input
+                        type="checkbox"
+                        data-view-id="{{view_id|safe}}"
+                        class="oh-input oh-input__checkbox list-table-row"
+                        onchange="
+                        element = $(this)
+                        highlightRow(element);
+                        $(document).ready(function () {
+                          if (!element.is(':checked')) {
+                            removeId(element)
+                          }
+                          reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                          reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                        });
+                        "
+                        title="{% trans "Select Row" %}"
+                        value = "{{instance.pk}}"
+                      />
+                    </div>
+                  </td>
+                  {% endif %}
+                  {% for cell in columns %}
+                  {% with attribute=cell.1 index=forloop.counter %}
+                  <td>
+                    {% if not cell.2 %}
+                    {{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
+                    {% else %}
+                    <div class="oh-profile oh-profile--md">
+                      <div class="oh-profile__avatar mr-1">
+                        <img
+                          src="{{instance|getattribute:cell.2}}"
+                          class="oh-profile__image"
+                        />
+                      </div>
+                      <span class="oh-profile__name oh-text--dark">
+                        {{instance|getattribute:attribute}}
+                      </span>
+                    </div>
+                    {% endif %}
+                  </td>
+                  {% endwith %}
+                  {% endfor %}
+                  {% if options or option_method %}
+                  <td onclick="event.stopPropagation()">
+                    {% if not option_method %}
+                    <div class="oh-btn-group">
+                      {% for option in options %}
+                        {% if option.accessibility|accessibility:instance %}
+                        <a
+                          href="#"
+                          title="{{option.option|safe}}"
+                          {{option.attrs|format:instance|safe}}
+                        >
+                          <ion-icon name="{{option.icon}}"></ion-icon>
+                        </a>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                    {% else %} {{instance|getattribute:option_method|safe}} {% endif %}
+                  </td>
+                  {% endif %}
+                  {% if actions or action_method %}
+                  <td class="lastTd" onclick="event.stopPropagation()">
+                    {% if not action_method %}
+                    <div class="oh-btn-group">
+                      {% for action in actions %}
+                        {% if action.accessibility|accessibility:instance %}
+                        <button
+                          href="#"
+                          title="{{action.action|safe}}"
+                          {{action.attrs|format:instance|safe}}
+                        >
+                          <ion-icon name="{{action.icon}}"></ion-icon>
+                    </button>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                    {% else %} {{instance|getattribute:action_method|safe}} {% endif %}
+                  </td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <script>
+              $(document).ready(function () {
+                attrAction =`{{header_attrs.action|safe}}`
+                if (!attrAction){
+                let thWidth = 0;
+                const widths = [];
+
+                $('#{{view_id}} .lastTd').each(function () {
+                  widths.push(this.scrollWidth);
+                  $(this).css('overflow', 'hidden');
+                });
+
+                widths.sort().reverse();
+
+                if (widths.length) {
+                  thWidth = widths[0];
+                }
+                if (!thWidth) {
+                  thWidth = 180
+                }
+
+                $('#{{view_id}} .lastTh').css("width", `${thWidth}px`);
+              }
+              });
+            </script>
+          </div>
+          <div class="oh-pagination">
+            <span class="oh-pagination__page">
+              {% trans "Page" %} {{ group.list.number }}
+              {% trans "of" %} {{ group.list.paginator.num_pages }}.
+            </span>
+            <nav class="oh-pagination__nav">
+              <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1"
+                  >{% trans "Page" %}</span
+                >
+                <input
+                  type="number"
+                  name="{{group.dynamic_name}}"
+                  class="oh-pagination__input"
+                  value="{{group.list.number}}"
+                  hx-get="{{search_url}}?{{request.GET.urlencode}}"
+                  hx-target="#{{view_id}}" hx-on:click="htmxLoadIndicator(this);"
+                  min="1"
+                />
+                <span class="oh-pagination__label"
+                  >{% trans "of" %}
+                  {{group.list.paginator.num_pages}}</span
+                >
+              </div>
+              <ul class="oh-pagination__items">
+                {% if group.list.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#{{view_id}}"
+                    hx-get="{{search_url}}?{{request.GET.urlencode}}&{{group.dynamic_name}}=1"
+                    class="oh-pagination__link" hx-on:click="htmxLoadIndicator(this);"
+                    >{% trans "First" %}</a
+                  >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#{{view_id}}"
+                    hx-get="{{search_url}}?{{request.GET.urlencode}}&{{group.dynamic_name}}={{ group.list.previous_page_number }}"
+                    class="oh-pagination__link" hx-on:click="htmxLoadIndicator(this);"
+                    >{% trans "Previous" %}</a
+                  >
+                </li>
+                {% endif %} {% if group.list.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#{{view_id}}"
+                    hx-get="{{search_url}}?{{request.GET.urlencode}}&{{group.dynamic_name}}={{ group.list.next_page_number }}"
+                    class="oh-pagination__link" hx-on:click="htmxLoadIndicator(this);"
+                    >{% trans "Next" %}</a
+                  >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#{{view_id}}"
+                    hx-get="{{search_url}}?{{request.GET.urlencode}}&{{group.dynamic_name}}={{ group.list.paginator.num_pages }}"
+                    class="oh-pagination__link" hx-on:click="htmxLoadIndicator(this);"
+                    >{% trans "Last" %}</a
+                  >
+                </li>
+                {% endif %}
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    </div>
+    {% if groups.paginator.count %}
+    <div class="oh-pagination">
+      <span
+        class="oh-pagination__page"
+        data-toggle="modal"
+        data-target="#addEmployeeModal"
+        >{% trans "Page" %} {{groups.number}} {% trans "of" %} {{groups.paginator.num_pages}}</span
+      >
+
+      <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+
+          <input
+            type="number"
+            class="oh-pagination__input"
+            value="{{groups.number}}"
+            min="1"
+            name="page"
+            hx-get="{{search_url}}?{{request.GET.urlencode}}"
+            hx-swap="outerHTML"
+            hx-target="#{{view_id|safe}}"
+          />
+          <span class="oh-pagination__label">{% trans "of" %} {{groups.paginator.num_pages}}</span>
+        </div>
+
+        <ul class="oh-pagination__items">
+          {% if groups.has_previous %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{{search_url}}?{{request.GET.urlencode}}&page=1" hx-swap="outerHTML" hx-target="#{{view_id|safe}}" class="oh-pagination__link">{% trans "First" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ groups.previous_page_number }}" hx-swap="outerHTML" hx-target="#{{view_id|safe}}" class="oh-pagination__link">{% trans "Previous" %}</a>
+          </li>
+          {% endif %}
+          {% if groups.has_next %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ groups.next_page_number }}" hx-swap="outerHTML" hx-target="#{{view_id|safe}}" class="oh-pagination__link">{% trans "Next" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ groups.paginator.num_pages }}" hx-swap="outerHTML" hx-target="#{{view_id|safe}}" class="oh-pagination__link">{% trans "Last" %}</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    <script>
+      reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+      reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+      var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id")
+      var badge = $(`#badge-${tabId}`)
+      var count = "{{queryset.paginator.count}}"
+      var label = badge.attr("data-badge-label") || ""
+      var title = count + " " + label
+      badge.html(count)
+      badge.attr("title",title)
+    </script>
+    {% if bulk_select_option %}
+    <script>
+      selectSelected("#{{view_id|safe}}",'{{selected_instances_key_id}}')
+    </script>
+    {% endif %}
+    {% endif %}
+
+<script>
+  $(".oh-accordion-meta__header").click(function (e) {
+    var open = $(this).attr("data-open");
+    open = JSON.parse(open)
+    if (!$(this).parent().parent().find(".oh-accordion-meta__body.d-none").length && !$(this).find(".oh-accordion-meta__header--show").length) {
+      $(this).removeClass("oh-accordion-meta__header--show");
+    }else{
+      $(this).addClass("oh-accordion-meta__header--show");
+    }
+    $(this).attr("data-open", !open);
+    var field =  $(this).attr("data-field");
+    var groupIndex = $(this).attr("data-group");
+    var target = `[data-group="${groupIndex}"][data-field="${field}"][data-path="{{request.path}}"][data-open="${open}"]`;
+    e.preventDefault();
+    $.ajax({
+      type: "get",
+      url: "{% url 'cbv-active-group' %}",
+      data: {
+        "path":"{{request.path}}",
+        "target":target,
+        "field":field,
+      },
+      success: function (response) {
+      }
+    });
+  });
+  {% if active_target %}
+  $("#{{view_id|safe}}").find(`{{active_target|safe}}`).click();
+  {% endif %}
+</script>
+</div>

@@ -156,6 +156,16 @@ urlpatterns = [
     ),
     path("dashboard/", views.asset_dashboard, name="asset-dashboard"),
     path(
+        "asset-dashboard-requests/",
+        views.asset_dashboard_requests,
+        name="asset-dashboard-requests",
+    ),
+    path(
+        "asset-dashboard-allocates/",
+        views.asset_dashboard_allocates,
+        name="asset-dashboard-allocates",
+    ),
+    path(
         "asset-available-chart/",
         views.asset_available_chart,
         name="asset-available-chart",
@@ -190,8 +200,8 @@ urlpatterns = [
         name="asset-request-tab",
     ),
     path(
-        "dashboard-asset-request-approve",
-        views.dashboard_asset_request_approve,
-        name="dashboard-asset-request-approve",
+        "main-dashboard-asset-requests",
+        views.asset_dashboard_requests,
+        name="main-dashboard-asset-requests",
     ),
 ]

@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from base.backends import ConfiguredEmailBackend
+from base.methods import eval_validate
 from payroll.filters import (
     AllowanceFilter,
     ContractFilter,
@@ -331,7 +332,11 @@ class ReimbusementApproveRejectView(APIView):
     def post(self, request, pk):
         status = request.data.get("status", None)
         amount = request.data.get("amount", None)
-        amount = eval(request.data.get("amount")) if request.data.get("amount") else 0
+        amount = (
+            eval_validate(request.data.get("amount"))
+            if request.data.get("amount")
+            else 0
+        )
         amount = max(0, amount)
         reimbursement = Reimbursement.objects.filter(id=pk)
         if amount:

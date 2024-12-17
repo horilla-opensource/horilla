@@ -1,198 +1,159 @@
 {% load i18n %} {% include 'filter_tags.html' %}
 {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
     </div>
-  </div>
-  {% endfor %}
-</div>
 {% endif %}
 <style>
-  .oh-modal_close--custom {
-    border: none;
-    background: none;
-    font-size: 1.5rem;
-    opacity: 0.7;
-    position: absolute;
-    top: 25px;
-    right: 15px;
-  }
-  .oh-timeoff-card__stat-container,
-  .oh-timeoff-modal__stats-container {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-  .oh-timeoff-modal__stat-title {
-    margin-top: 10px;
-  }
+    .oh-modal_close--custom {
+        border: none;
+        background: none;
+        font-size: 1.5rem;
+        opacity: 0.7;
+        position: absolute;
+        top: 25px;
+        right: 15px;
+    }
+
+    .oh-timeoff-card__stat-container,
+    .oh-timeoff-modal__stats-container {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .oh-timeoff-modal__stat-title {
+        margin-top: 10px;
+    }
 </style>
 
 <div class="oh-layout--grid-3">
-  {% for leave_type in leave_types %}
-  <div
-    class="oh-kanban-card {% if leave_type.payment == 'paid' %} row-status--yellow {% else %} row-status--orange {% endif %}"
-    data-toggle="oh-modal-toggle"
-    data-target="#objectDetailsModal"
-    hx-get="{% url 'leave-type-individual-view' leave_type.id %}?instances_ids={{requests_ids}}"
-    hx-target="#objectDetailsModalTarget"
-  >
-    <div class="oh-kanban-card__avatar">
-      <div class="oh-kanban-card__profile-container">
-        <img
-          src="{{leave_type.get_avatar}}"
-          class="oh-kanban-card__profile-image"
-          alt="Username"
-        />
-      </div>
-    </div>
+    {% for leave_type in leave_types %}
+        <div class="oh-kanban-card {% if leave_type.payment == 'paid' %} row-status--yellow {% else %} row-status--orange {% endif %}"
+            data-toggle="oh-modal-toggle" data-target="#objectDetailsModal"
+            hx-get="{% url 'leave-type-individual-view' leave_type.id %}?instances_ids={{requests_ids}}"
+            hx-target="#objectDetailsModalTarget">
+            <div class="oh-kanban-card__avatar">
+                <div class="oh-kanban-card__profile-container">
+                    <img src="{{leave_type.get_avatar}}" class="oh-kanban-card__profile-image" alt="Username" />
+                </div>
+            </div>
 
-    <div class="oh-kanban-card__details">
+            <div class="oh-kanban-card__details">
+                <div style="width: 95%; overflow: hidden;">
+                    <span class="oh-card__title oh-card__title--sm fw-bold"
+                        style="font-size: 18px; word-break: break-word;">
+                        {{leave_type.name}}
+                    </span>
+                </div>
 
-      <div style="width: 95%; overflow: hidden;">
-        <span
-          class="oh-card__title oh-card__title--sm fw-bold"
-          style="font-size: 18px; word-break: break-word;"
-        >
-          {{leave_type.name}}
-        </span>
-      </div>
+                <div class="oh-timeoff-modal__stats-container mb-1">
+                    <div class="oh-timeoff-modal__stat mt-1">
+                        <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Payment" %}</span>
+                        <span class="oh-timeoff-modal__stat-title">{{leave_type.get_payment_display}}</span>
+                    </div>
+                    <div class="oh-timeoff-modal__stat mt-1">
+                        <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Total Days" %}</span>
+                        <span class="oh-timeoff-modal__stat-title">
+                            {% if leave_type.limit_leave %}
+                                {{leave_type.count}}
+                            {% else %}
+                                {% trans "No Limit" %}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
 
-      <div class="oh-timeoff-modal__stats-container mb-1">
-        <div class="oh-timeoff-modal__stat mt-1">
-          <span class="oh-timeoff-modal__stat-title fw-bold text-dark"
-            >{% trans "Payment" %}</span
-          >
-          <span class="oh-timeoff-modal__stat-title"
-            >{{leave_type.get_payment_display}}</span
-          >
-        </div>
-        <div class="oh-timeoff-modal__stat mt-1">
-          <span class="oh-timeoff-modal__stat-title fw-bold text-dark"
-            >{% trans "Total Days" %}</span
-          >
-          <span class="oh-timeoff-modal__stat-title"
-            >{% if leave_type.limit_leave %}{{leave_type.count}}{% else %}{% trans "No Limit" %}{% endif %}</span
-          >
-        </div>
-      </div>
-    </div>
-
-    {% if perms.leave.change_leavetype or perms.leave.delete_leavetype %}
-    <div class="oh-kanban-card__dots" onclick="event.stopPropagation()">
-      <div class="oh-dropdown" x-data="{show: false}">
-        <button
-          class="oh-btn oh-btn--transparent text-muted p-3"
-          @click="show = !show"
-        >
-          <span title='{% trans "Actions" %}'>
-            <ion-icon name="ellipsis-vertical-sharp"></ion-icon
-          ></span>
-        </button>
-        <div
-          class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right"
-          x-show="show"
-          style="display: none"
-          @click.outside="show = false"
-        >
-          <ul class="oh-dropdown__items">
-            {% if perms.leave.add_availableleave and not leave_type.is_compensatory_leave %}
-            <li class="oh-dropdown__item">
-              <a
-                href="#"
-                class="oh-dropdown__link"
-                data-toggle="oh-modal-toggle"
-                data-target="#editModal"
-                hx-get="{% url 'assign-one' leave_type.id %}"
-                hx-target="#leaveForm"
-                >{% trans "Assign Leave" %}</a
-              >
-            </li>
-            {% endif %} {% if perms.leave.change_leavetype %}
-            <li class="oh-dropdown__item">
-              <a
-                href="{% url 'type-update' leave_type.id %}"
-                class="oh-dropdown__link"
-                >{% trans "Edit" %}</a
-              >
-            </li>
-            {% endif %} {% if perms.leave.delete_leavetype %}
-            <li class="oh-dropdown__item">
-              <a
-                hx-confirm="{% trans 'Do you really want to delete this leave type?' %}"
-                hx-post="{% url 'type-delete' leave_type.id %}?{{pd}}"
-                hx-target="#leaveTypes"
-                class="oh-dropdown__link"
-                >{% trans "Delete" %}</a
-              >
-            </li>
+            {% if perms.leave.change_leavetype or perms.leave.delete_leavetype %}
+                <div class="oh-kanban-card__dots" onclick="event.stopPropagation()">
+                    <div class="oh-dropdown" x-data="{show: false}">
+                        <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show">
+                            <span title='{% trans "Actions" %}'>
+                                <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
+                            </span>
+                        </button>
+                        <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show"
+                            style="display: none" @click.outside="show = false">
+                            <ul class="oh-dropdown__items">
+                                {% if perms.leave.add_availableleave and not leave_type.is_compensatory_leave %}
+                                    <li class="oh-dropdown__item">
+                                        <a class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                            hx-get="{% url 'assign-one' leave_type.id %}" hx-target="#objectCreateModalTarget"
+                                            hx-on:click="$('#objectCreateModalTarget').css('max-width', '410px');">
+                                            {% trans "Assign Leave" %}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                {% if perms.leave.change_leavetype %}
+                                    <li class="oh-dropdown__item">
+                                        <a href="{% url 'type-update' leave_type.id %}" class="oh-dropdown__link">
+                                            {% trans "Edit" %}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                {% if perms.leave.delete_leavetype %}
+                                    <li class="oh-dropdown__item">
+                                        <a hx-confirm="{% trans 'Do you really want to delete this leave type?' %}"
+                                            hx-post="{% url 'type-delete' leave_type.id %}?{{pd}}" hx-target="#leaveTypes"
+                                            class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             {% endif %}
-          </ul>
         </div>
-      </div>
-    </div>
-    {% endif %}
-  </div>
-  {% endfor %}
+    {% endfor %}
 </div>
 <div class="oh-pagination">
-  <span class="oh-pagination__page">
-    {% trans "Page" %} {{ leave_types.number }}
-    {% trans "of" %} {{ leave_types.paginator.num_pages }}.
-  </span>
-  <nav class="oh-pagination__nav">
-    <div class="oh-pagination__input-container me-3">
-      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-      <input
-        type="number"
-        name="page"
-        class="oh-pagination__input"
-        value="{{leave_types.number}}"
-        hx-get="{% url 'type-filter' %}?{{pd}}"
-        hx-target="#leaveTypes"
-        min="1"
-      />
-      <span class="oh-pagination__label"
-        >{% trans "of" %} {{leave_types.paginator.num_pages}}</span
-      >
-    </div>
-    <ul class="oh-pagination__items">
-      {% if leave_types.has_previous %}
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#leaveTypes"
-          hx-get="{% url 'type-filter' %}?{{pd}}&page=1"
-          class="oh-pagination__link"
-          >{% trans "First" %}</a
-        >
-      </li>
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#leaveTypes"
-          hx-get="{% url 'type-filter' %}?{{pd}}&page={{ leave_types.previous_page_number }}"
-          class="oh-pagination__link"
-          >{% trans "Previous" %}</a
-        >
-      </li>
-      {% endif %} {% if leave_types.has_next %}
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#leaveTypes"
-          hx-get="{% url 'type-filter' %}?{{pd}}&page={{ leave_types.next_page_number }}"
-          class="oh-pagination__link"
-          >{% trans "Next" %}</a
-        >
-      </li>
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#leaveTypes"
-          hx-get="{% url 'type-filter' %}?{{pd}}&page={{ leave_types.paginator.num_pages }}"
-          class="oh-pagination__link"
-          >{% trans "Last" %}</a
-        >
-      </li>
-      {% endif %}
-    </ul>
-  </nav>
+    <span class="oh-pagination__page">
+        {% trans "Page" %} {{ leave_types.number }}
+        {% trans "of" %} {{ leave_types.paginator.num_pages }}.
+    </span>
+    <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+            <input type="number" name="page" class="oh-pagination__input" value="{{leave_types.number}}"
+                hx-get="{% url 'type-filter' %}?{{pd}}" hx-target="#leaveTypes" min="1" />
+            <span class="oh-pagination__label">{% trans "of" %} {{leave_types.paginator.num_pages}}</span>
+        </div>
+        <ul class="oh-pagination__items">
+            {% if leave_types.has_previous %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target="#leaveTypes" hx-get="{% url 'type-filter' %}?{{pd}}&page=1" class="oh-pagination__link">
+                    {% trans "First" %}
+                </a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target="#leaveTypes"
+                    hx-get="{% url 'type-filter' %}?{{pd}}&page={{ leave_types.previous_page_number }}"
+                    class="oh-pagination__link">
+                    {% trans "Previous" %}
+                </a>
+            </li>
+            {% endif %} {% if leave_types.has_next %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target="#leaveTypes"
+                    hx-get="{% url 'type-filter' %}?{{pd}}&page={{ leave_types.next_page_number }}"
+                    class="oh-pagination__link">
+                    {% trans "Next" %}
+                </a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target="#leaveTypes"
+                    hx-get="{% url 'type-filter' %}?{{pd}}&page={{ leave_types.paginator.num_pages }}"
+                    class="oh-pagination__link">
+                    {% trans "Last" %}
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>

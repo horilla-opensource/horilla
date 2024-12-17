@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
   </head>
   <body>
-    <form action="{% url 'candidate-self-status-tracking' %}" method="post">
+    <form action="{% url 'candidate-login' %}" method="post">
       {% csrf_token %}
       <div align="center">
         <div class="oh-kanban-card oh-joblist_card w-50 mt-5">

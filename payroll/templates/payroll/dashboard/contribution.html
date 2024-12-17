@@ -1,5 +1,6 @@
 {% load i18n static horillafilters %}
 <div class="oh-sticky-table" style="height: 250px;">
+  {% if contribution_deductions %}
   <div class="oh-sticky-table__table oh-table--sortable">
     <div class="oh-sticky-table__thead">
       <div class="oh-sticky-table__tr">
@@ -29,11 +30,12 @@
           <div class="oh-sticky-table__td">{{ deduction.employer_contribution|floatformat:2|currency_symbol_position }}</div>
         </div>
       {% endfor %}
-      {% if not contribution_deductions %}
-        <div align="center" style="width: 720px">
-          <img width="100px" class="mt-5" src="{% static 'images/ui/joiningchart.png' %}" alt="" srcset="" />
-        </div>
-      {% endif %}
     </div>
+    {% else %}
+    <div align="center" style="width: 720px">
+      <img width="100px" class="mt-5" src="{% static 'images/ui/no_records.svg' %}" alt="" />
+      <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No records available." %}</h3>
+    </div>
+  {% endif %}
   </div>
 </div>

@@ -31,6 +31,7 @@ import pandas as pd
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.core.validators import validate_ipv46_address
+from django.db import transaction
 from django.db.models import ProtectedError
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -89,6 +90,7 @@ from attendance.models import (
     AttendanceRequestComment,
     AttendanceRequestFile,
     AttendanceValidationCondition,
+    BatchAttendance,
     GraceTime,
     WorkRecords,
 )
@@ -102,6 +104,7 @@ from base.forms import (
 from base.methods import (
     choosesubordinates,
     closest_numbers,
+    eval_validate,
     export_data,
     filtersubordinates,
     get_key_instances,
@@ -211,7 +214,13 @@ def attendance_create(request):
     """
     This method is used to render attendance create form and save if it is valid
     """
-    form = AttendanceForm()
+    if request.GET.get("previous_url"):
+        data = request.GET.dict()
+        employee_list = request.GET.getlist("employee_id")
+        data["employee_id"] = employee_list
+        form = AttendanceForm(initial=data)
+    else:
+        form = AttendanceForm()
     form = choosesubordinates(request, form, "attendance.add_attendance")
     if request.method == "POST":
         form = AttendanceForm(request.POST)
@@ -259,6 +268,8 @@ def attendance_excel(_request):
         return HttpResponse(exception)
 
 
+@login_required
+@permission_required("attendance.add_attendance")
 def attendance_import(request):
     """
     Save the import of attendance data from an uploaded Excel file, validate the data,
@@ -422,9 +433,12 @@ def attendance_update(request, obj_id):
         obj_id : attendance id
     """
     attendance = Attendance.objects.get(id=obj_id)
-    form = AttendanceUpdateForm(
-        instance=attendance,
-    )
+    if request.GET.get("previous_url"):
+        form = AttendanceUpdateForm(initial=request.GET.dict())
+    else:
+        form = AttendanceUpdateForm(
+            instance=attendance,
+        )
     form = choosesubordinates(request, form, "attendance.change_attendance")
     if request.method == "POST":
         form = AttendanceUpdateForm(request.POST, instance=attendance)
@@ -444,10 +458,7 @@ def attendance_update(request, obj_id):
     return render(
         request,
         "attendance/attendance/update_form.html",
-        {
-            "form": form,
-            "urlencode": request.GET.urlencode(),
-        },
+        {"form": form, "urlencode": request.GET.urlencode(), "obj_id": obj_id},
     )
 
 
@@ -499,57 +510,57 @@ def attendance_delete(request, obj_id):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
+@login_required
+@permission_required("attendance.delete_attendance")
 @require_http_methods(["POST"])
 def attendance_bulk_delete(request):
     """
-    This method is used to delete bulk of attendances
+    This method is used to delete a bulk of attendances
     """
-    ids = request.POST["ids"]
-    ids = json.loads(ids)
-    for attendance_id in ids:
-        try:
-            attendance = Attendance.objects.get(id=attendance_id)
-            month = attendance.attendance_date
-            month = month.strftime("%B").lower()
-            overtime = attendance.employee_id.employee_overtime.filter(
-                month=month
-            ).last()
-            if overtime is not None:
-                if attendance.attendance_overtime_approve:
-                    # Subtract overtime of this attendance
+    success_count = 0
+    error_messages = []
+    ids = request.POST.getlist("ids", "[]")
+    attendances = Attendance.objects.filter(id__in=ids)
+    employee_ids = attendances.values_list("employee_id", flat=True)
+    overtimes = AttendanceOverTime.objects.filter(
+        employee_id__in=employee_ids
+    ).in_bulk()
+
+    with transaction.atomic():
+        for attendance in attendances:
+            try:
+                month = attendance.attendance_date.strftime("%B").lower()
+                overtime = overtimes.get(attendance.employee_id.id)
+
+                if overtime and attendance.attendance_overtime_approve:
+                    # Calculate the new overtime
                     total_overtime = strtime_seconds(overtime.overtime)
                     attendance_overtime_seconds = strtime_seconds(
                         attendance.attendance_overtime
                     )
-                    if total_overtime > attendance_overtime_seconds:
-                        total_overtime = total_overtime - attendance_overtime_seconds
-                    else:
-                        total_overtime = attendance_overtime_seconds - total_overtime
+                    total_overtime = abs(total_overtime - attendance_overtime_seconds)
                     overtime.overtime = format_time(total_overtime)
                     overtime.save()
-                try:
-                    attendance.delete()
-                    messages.success(request, _("Attendance Deleted"))
 
-                except ProtectedError as e:
-                    model_verbose_names_set = set()
-                    for obj in e.protected_objects:
-                        model_verbose_names_set.add(
-                            __(obj._meta.verbose_name.capitalize())
-                        )
-                    model_names_str = ", ".join(model_verbose_names_set)
-                    messages.error(
-                        request,
-                        _(
-                            ("An attendance entry for {} already exists.").format(
-                                model_names_str
-                            )
-                        ),
-                    )
-        except Attendance.DoesNotExist:
-            messages.error(request, _("Attendance not found."))
+                attendance.delete()
+                success_count += 1
 
-    return JsonResponse({"message": "Success"})
+            except ProtectedError as e:
+                model_verbose_names_set = {
+                    __(obj._meta.verbose_name.capitalize())
+                    for obj in e.protected_objects
+                }
+                model_names_str = ", ".join(model_verbose_names_set)
+                error_messages.append(
+                    f"An attendance entry is protected by: {model_names_str}."
+                )
+
+    # Build response messages
+    if success_count:
+        messages.success(request, f"{success_count} attendances deleted successfully.")
+    for error in error_messages:
+        messages.error(request, error)
+    return redirect("/attendance/attendance-search")
 
 
 @login_required
@@ -1474,6 +1485,42 @@ def approve_bulk_overtime(request):
 
 
 @login_required
+# @manager_can_enter("attendance.change_attendance")
+def attendance_add_to_batch(request):
+    """
+    This method is used to add attendance to a batch
+    """
+    batches = BatchAttendance.objects.all()
+    ids = request.GET.getlist("ids")
+    if request.method == "POST":
+        ids = request.GET["ids"]
+        # Remove brackets and quotes, then split and convert to integers
+        int_ids = [int(x.strip().strip("'")) for x in ids.strip("[]").split(",")]
+        batch_id = request.POST.get("batch_attendance_id")
+        if batch_id:
+            batch = BatchAttendance.objects.filter(id=batch_id).first()
+            for id in int_ids:
+                try:
+                    attendance_req = Attendance.objects.filter(id=id).first()
+                    attendance_req.batch_attendance_id = batch
+                    attendance_req.save()
+                except Exception as e:
+                    logger.error(e)
+                    messages.error(request, _("Something went wrong."))
+                    return HttpResponse("<script>window.location.reload()</script>")
+            messages.success(request, _(f"Attendances added to {batch}."))
+            return HttpResponse("<script>window.location.reload()</script>")
+        else:
+            messages.error(request, _("Something went wrong."))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "attendance/attendance/attendance_add_batch.html",
+        {"batches": batches, "ids": ids},
+    )
+
+
+@login_required
 @hx_request_required
 def update_fields_based_shift(request):
     shift_id = request.GET.get("shift_id")
@@ -1862,7 +1909,7 @@ def create_grace_time(request):
     Returns:
     GET : return grace time form template
     """
-    is_default = eval(request.GET.get("default"))
+    is_default = eval_validate(request.GET.get("default"))
     form = GraceTimeForm(initial={"is_default": is_default})
     if request.method == "POST":
         form = GraceTimeForm(request.POST)
@@ -2197,12 +2244,11 @@ def delete_attendancerequest_comment(request, comment_id):
     """
     This method is used to delete Attendance request comments
     """
-
+    script = ""
     comment = AttendanceRequestComment.objects.get(id=comment_id)
-    attendance_id = comment.request_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return redirect("attendance-request-view-comment", attendance_id=attendance_id)
+    return HttpResponse(script)
 
 
 @login_required
@@ -2210,20 +2256,11 @@ def delete_comment_file(request):
     """
     Used to delete attachment
     """
+    script = ""
     ids = request.GET.getlist("ids")
     AttendanceRequestFile.objects.filter(id__in=ids).delete()
-    leave_id = request.GET["leave_id"]
-    comments = AttendanceRequestComment.objects.filter(request_id=leave_id).order_by(
-        "-created_at"
-    )
-    return render(
-        request,
-        "requests/attendance/attendance_comment.html",
-        {
-            "comments": comments,
-            "request_id": leave_id,
-        },
-    )
+    messages.success(request, _("File deleted successfully"))
+    return HttpResponse(script)
 
 
 @login_required
@@ -2255,9 +2292,8 @@ def work_records_change_month(request):
 
     schedules = list(EmployeeShiftSchedule.objects.all())
     employees = list(Employee.objects.filter(is_active=True))
-    if request.method == "POST":
-        employee_filter_form = EmployeeFilter(request.POST)
-        employees = list(employee_filter_form.qs)
+    employee_filter_form = EmployeeFilter(request.GET)
+    employees = list(employee_filter_form.qs)
     data = []
     month_matrix = calendar.monthcalendar(year, month)
 
@@ -2664,7 +2700,7 @@ def delete_allowed_ips(request):
         allowed_ips = AttendanceAllowedIP.objects.first()
         ips = allowed_ips.additional_data["allowed_ips"]
         for id in ids:
-            ips.pop(eval(id))
+            ips.pop(eval_validate(id))
 
         allowed_ips.additional_data["allowed_ips"] = ips
         allowed_ips.save()

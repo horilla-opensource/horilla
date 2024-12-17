@@ -1,0 +1,237 @@
+{% load generic_template_filters i18n %}
+<script>
+  $("#reloadMessagesButton").click()
+</script>
+<button hidden class="reload-record" hx-get="{% url "generic-delete" %}?{{request.GET.urlencode}}" hx-target="#{{confirmation_target}}">{{request.GET.urlencode}}</button>
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="deleteConfirmationLabel">{% trans "Delete Confirmation" %}</span>
+  <button class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')" aria-label="Close"><ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon></button>
+</div>
+
+<div class="oh-modal__dialog-body oh-modal__dialog-relative" style="padding-bottom: 0px">
+  <div class="">
+
+    <div class="oh-card">
+      <div class="row">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+          <ul class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-2">
+            <li class="oh-general__tab">
+              <a href="#" class="oh-general__tab-link" data-action="general-tab" data-target="#summary">{% trans "Summary" %}</a>
+            </li>
+            {% for key in model_map.keys %}
+            <li class="oh-general__tab">
+              <a href="#" class="oh-general__tab-link" data-action="general-tab" data-target="#{{key}}">{{key}}</a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="oh-general__tab-target oh-profile__info-tab" id="summary">
+          <style>
+            .check-list {
+              margin: 0;
+              padding-left: 1.2rem;
+            }
+
+            .check-list li {
+              position: relative;
+              list-style-type: none;
+              padding-left: 2.5rem;
+              margin-bottom: 0.5rem;
+              cursor: pointer;
+            }
+            .check-list li:hover {
+              background-color: #e5ffff;
+            }
+            .oh-inner-sidebar__link{
+              cursor: pointer;
+            }
+
+            /* Checkmark styling */
+            .check-list li:not(li.x-marked):before {
+              content: '';
+              display: block;
+              position: absolute;
+              left: 0;
+              top: -2px;
+              width: 5px;
+              height: 11px;
+              border-width: 0 2px 2px 0;
+              border-style: solid;
+              border-color: #00a8a8;
+              transform-origin: bottom left;
+              transform: rotate(45deg);
+            }
+
+            /* X-mark styling */
+            .check-list .x-marked:before {
+              content: '';
+              display: block;
+              position: absolute;
+              left: 0;
+              top: -1px;
+              width: 10px;
+              height: 10px;
+              background: linear-gradient(
+                45deg,
+                transparent 46%,
+                red 46%,
+                red 54%,
+                transparent 54%
+              ),
+              linear-gradient(
+                -45deg,
+                transparent 46%,
+                red 46%,
+                red 54%,
+                transparent 54%
+              );
+            }
+          </style>
+
+          <div>
+            <h5 class="mt-3 mb-2">
+              {% trans "Deleting the record" %} '{{delete_object}}' {% trans "would require managing the following related objects:" %}
+            </h5>
+            <h6>
+              {% trans "Protected Records" %} ({{protected|length}})
+            </h6>
+            <ul class="check-list">
+              {% for summary in protected_objects_count.items %}
+              <li
+              onclick="
+              {% if "-" not in summary.0 %}
+              $(`#{{summary.0|get_id|slice:":-1"}}`).click()
+              {% else %}
+              $(`#{{summary.0|get_id}}`).click()
+              {% endif %}
+              "
+              >{{summary.0|capfirst}} : {{summary.1|capfirst}}</li>
+              {% endfor %}
+            </ul>
+            <h6>
+              {% trans "Other Related Records" %} ({{model_count_sum}})
+            </h6>
+            <ul class="check-list">
+              {% for summary in related_objects_count.items %}
+              <li
+              onclick="
+              {% if "-" not in summary.0 %}
+              $(`#{{summary.0|get_id|slice:":-1"}}`).click()
+              {% else %}
+              $(`#{{summary.0|get_id}}`).click()
+              {% endif %}
+              "
+              >{{summary.0|capfirst}} : {{summary.1|capfirst}}</li>
+              {% endfor %}
+            </ul>
+            <form hx-post="{% url "generic-delete" %}?{{request.GET.urlencode}}" hx-target="#deleteConfirmationBody">
+              <div class="d-flex justify-content-end">
+                <div>
+                  <div class="mt-2">
+                    <input type="checkbox" required id="action">
+                    <label for="action">
+                      {% trans "I Have took manual action for the protected records" %}
+                    </label>
+                  </div>
+                  <div class="mt-2">
+                      <input type="checkbox" required id="revert">
+                      <label for="revert">
+                        {% trans "I acknowledge, I wont be able to revert this " %}
+                      </label>
+                  </div>
+                  <div class="mt-2">
+                    <input type="checkbox" required id="confirm">
+                    <label for="confirm">
+                      {% trans "Confirming to delete the related and protected records" %}
+                    </label>
+                  </div>
+                </div>
+                <div style="margin-top: 30px;">
+                  <button type="submit" class="oh-btn oh-btn--secondary m-2">{% trans "Delete" %}</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+        </div>
+        {% for key in model_map.keys %}
+        <div class="oh-general__tab-target oh-profile__info-tab" id="{{key}}">
+            <div class="row">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-3" style="width: 35% !important;">
+                    <div class="oh-inner-sidebar oh-resp-hidden--lg" id="mobileMenu">
+                        <ul class="oh-inner-sidebar__items">
+                        {% with models_dict=model_map|get_item:key %}
+                            {% for item in models_dict.items %}
+                            <li class="oh-inner-sidebar__item" id="{{item.0.verbose_name|lower}}item" onclick="
+                            localStorage.setItem('DeletenavItem','#'+$(this).attr('id'))
+                            ">
+                                <a
+                                 id="{{item.0.verbose_name|lower}}"
+                                 onclick="$(`[data-target='#{{key}}']`).click();$(this).parent().find('button').click()"
+                                 class="oh-inner-sidebar__link">{{item.0.verbose_name}}</a>
+                                 <button
+                                 hidden
+                                 hx-get="/{{dynamic_list_path|get_item:item.0.verbose_name}}"
+                                 hx-target="#dynamicRelatedLists{{key}}"
+                                 ></button>
+                                <div id="storedIds{{key}}{{item.0.verbose_name}}" data-ids="[]"></div>
+
+                            </li>
+                            {% endfor %}
+                        {% endwith %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-9" style="width: 65% !important;">
+                    <div class="oh-inner-sidebar-content">
+                        <div class="oh-inner-sidebar-content__header mt-3">
+                        <h2 class="oh-inner-sidebar-content__title">{% trans "Action Required" %}⚠️</h2>
+                        </div>
+                        <div class="oh-inner-sidebar-content__body">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 col lg-12" id="dynamicRelatedLists{{key}}">
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="oh-modal__dialog-footer"></div>
+
+<script>
+    $(".oh-general__tab-link").click(function (e) {
+        e.preventDefault();
+        $("#deleteConfirmationBody .oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
+        $(this).addClass("oh-general__tab-link--active");
+        var target = $(this).attr("data-target");
+        $('#deleteConfirmationBody .oh-profile__info-tab').addClass("d-none");
+        $(`#deleteConfirmationBody ${target}`).removeClass("d-none");
+        localStorage.setItem("deleteConfirmation",target)
+    });
+    $(".oh-inner-sidebar__link").click(function (e) {
+        e.preventDefault();
+        $(this).closest("ul").find(".oh-inner-sidebar__link--active").removeClass("oh-inner-sidebar__link--active");
+        $(this).addClass("oh-inner-sidebar__link--active");
+    });
+    target = localStorage.getItem("deleteConfirmation",null)
+    navTarget = localStorage.getItem("DeletenavItem",null)
+    if(target && $(`#deleteConfirmationBody .oh-general__tab-link[data-target='${target}']`).length){
+      $(`#deleteConfirmationBody .oh-general__tab-link[data-target='${target}']`).click();
+      if(navTarget){
+        setTimeout(() => {
+          $(`${navTarget}`).addClass('oh-inner-sidebar__link--active');
+          $(`${navTarget} a`).addClass('oh-inner-sidebar__link--active');
+          $(`${navTarget} button`).click();
+        }, 100);
+      }
+    }
+    if(!$("#deleteConfirmationBody .oh-general__tab-link--active:first").length){
+      $(`#deleteConfirmationBody .oh-general__tab-link:first`).click();
+    }
+</script>

@@ -20,6 +20,7 @@
         <div class="oh-sticky-table__th">{% trans "Condition Operator" %}</div>
         <div class="oh-sticky-table__th">{% trans "Condition Value" %}</div>
         <div class="oh-sticky-table__th">{% trans "Approval Managers" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Company" %}</div>
         {% if perms.base.change_multipleapprovalcondition or perms.base.delete_multipleapprovalcondition or request.user|is_reportingmanager %}
             <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
         {% endif %}
@@ -46,6 +47,9 @@
             {% for manager in condition.approval_managers %}
                 {{ forloop.counter}}. {{ manager }}<br />
             {% endfor %}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{ condition.company_id }}
           </div>
           {% if perms.base.change_multipleapprovalcondition or perms.base.delete_multipleapprovalcondition or request.user|is_reportingmanager %}
               <div class="oh-sticky-table__td">

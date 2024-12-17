@@ -1,0 +1,467 @@
+{% load static basefilters horillafilters employee_filter i18n %} {% load tz %} {% now "Y-m-d" as current_date %}
+{% load accessibility_filters %}
+{% if "attendance"|app_installed %}
+    {% if not 'offline_employees' in charts %}
+        {% if perms.employee.view_employee or request.user|is_reportingmanager %}
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart" id="notInYetId">
+                <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="min-height: 425px">
+                    <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                        <span class="oh-card-dashboard__title">{% trans 'Offline Employees' %}
+                        </span>
+                        <span class="float-end chart_close_button" role="button" data-chart="offline_employees"
+                            hx-post="{% url 'employee-charts' %}?chart_id=offline_employees" hx-target="#notInYetId"
+                            hx-swap="outerHTML">
+                            <i class="material-icons fw-lighter fs-5">close</i>
+                        </span>
+                    </div>
+
+                    <div class="oh-card-dashboard__body" hx-get="{% url 'not-in-yet' %}" hx-trigger="load" id="notInYetIdCardBody" style="height: 310px;">
+                        <div class="animated-background"></div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+    {% if not 'online_employees' in charts %}
+        {% if perms.employee.view_employee or request.user|is_reportingmanager %}
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart" id="notoutYetId">
+                <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px">
+                    <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                        <span class="oh-card-dashboard__title">{% trans 'Online Employees' %}</span>
+                        <span class="float-end chart_close_button fs-5" role="button" data-chart="online_employees"
+                            hx-post="{% url 'employee-charts' %}?chart_id=online_employees" hx-target="#notoutYetId"
+                            hx-swap="outerHTML">
+                            <i class="material-icons fw-lighter">close</i>
+                        </span>
+                    </div>
+                    <div class="oh-card-dashboard__body" hx-get="{% url 'not-out-yet' %}" hx-trigger="load " id="notoutYetIdCardBody" style="height: 80%;">
+                        <div class="animated-background"></div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endif %}
+{% if "leave"|app_installed and not 'overall_leave_chart' in charts %}
+    {% if perms.leave.view_leaverequest %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable dashboardChart" id="movable1">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Overall Leave" %}</span>
+                    <span class="float-end chart_close_button ms-3" role="button" data-chart="overall_leave_chart"
+                        hx-post="{% url 'employee-charts' %}?chart_id=overall_leave_chart" hx-target="#movable1"
+                        hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                    <select class="oh-select oh-select--sm float-end" name="" id="overAllLeaveSelect">
+                        <option value="today" selected>{% trans "Today" %}</option>
+                        <option value="week">{% trans "This Week" %}</option>
+                        <option value="month">{% trans "This Month" %}</option>
+                        <option value="year">{% trans "This Year" %}</option>
+                    </select>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <canvas id="overAllLeave" style="cursor: pointer" height='300' width="350"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if "recruitment"|app_installed and perms.recruitment.view_candidate or request.user|is_stagemanager %}
+    {% if not 'hired_candidates' in charts %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart" id="movable2">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Hired Candidates" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="hired_candidates"
+                        hx-post="{% url 'employee-charts' %}?chart_id=hired_candidates" hx-target="#movable2"
+                        hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <canvas id="hiredCandidate" style="cursor: pointer"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if "onboarding"|app_installed and not 'onboarding_candidates' in charts %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart" id="movable3">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Candidates Started Onboarding" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="onboarding_candidates"
+                        hx-post="{% url 'employee-charts' %}?chart_id=onboarding_candidates" hx-target="#movable3"
+                        hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <canvas id="onboardCandidate" style="cursor: pointer"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if "recruitment"|app_installed and not 'recruitment_analytics' in charts %}
+    {% if request.user|is_stagemanager or perms.recruitment.view_recruitment %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart" id="movable8">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Recruitment Analytics" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="recruitment_analytics"
+                        hx-post="{% url 'employee-charts' %}?chart_id=recruitment_analytics" hx-target="#movable8"
+                        hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <canvas id="recruitmentChart1" style="cursor: pointer"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if "attendance"|app_installed and not 'attendance_analytic' in charts %}
+    {% if request.user|is_reportingmanager or perms.attendance.view_attendance %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart" id="movable4">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider" id="attendance_header">
+                    <div class="oh-card-dashboard__title mb-2">
+                        {% trans "Attendance Analytics" %}
+                        <span class="float-end chart_close_button " role="button" data-chart="attendance_analytic"
+                            hx-post="{% url 'employee-charts' %}?chart_id=attendance_analytic" hx-target="#movable4"
+                            hx-swap="outerHTML">
+                            <i class="material-icons fw-lighter fs-5">close</i>
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <select id="type" class="oh-select" name="type" onchange="changeView(this)"
+                            style="width: 150px; padding: 3px; color: #5e5c5c">
+                            <option value="day">{% trans "Day" %}</option>
+                            <option value="weekly">{% trans "Weekly" %}</option>
+                            <option value="monthly">{% trans "Monthly" %}</option>
+                            <option value="date_range">{% trans "Date range" %}</option>
+                        </select>
+                        <span id="day_input">
+                            <input type="date" class="mb-2 float-end pointer oh-select" id="attendance_month"
+                                onchange="changeMonth()" style="width: 100px; color: #5e5c5c" />
+                        </span>
+                    </div>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <canvas id="dailyAnalytic" style="cursor: pointer"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if "attendance"|app_installed and not 'hours_chart' in charts %}
+    {% if request.user|is_reportingmanager or perms.attendance.view_attendance %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart" id="pendingHours">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider mb-0" id="pendingHoursHeader">
+                    <div class="oh-card-dashboard__title mb-2">
+                        {% trans "Hours Chart" %}
+                        <span class="float-end chart_close_button " role="button" data-chart="hours_chart"
+                            hx-post="{% url 'employee-charts' %}?chart_id=hours_chart" hx-target="#pendingHours"
+                            hx-swap="outerHTML">
+                            <i class="material-icons fw-lighter fs-5">close</i>
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <input type="month" class="mb-2 float-end pointer oh-select" id="hourAccountMonth"
+                            onchange="dynamicMonth($(this))" style="width: 100px; color: #5e5c5c" />
+                    </div>
+                    <div class="oh-card-dashboard__body" style="height:300px">
+                        <canvas id="pendingHoursCanvas" style="cursor: pointer"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if not 'employees_chart' in charts %}
+    {% if 'employees_chart'|feature_is_accessible:request or perms.employee.view_employee or request.user|is_reportingmanager %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable dashboardChart" id="movable5">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Employees Chart" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="employees_chart"
+                        hx-post="{% url 'employee-charts' %}?chart_id=employees_chart" hx-target="#movable5"
+                        hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <canvas id="totalEmployees" style="cursor: pointer"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if not 'department_chart' in charts %}
+    {% if 'department_chart'|feature_is_accessible:request or perms.employee.view_employee or request.user|is_reportingmanager %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable dashboardChart" id="movable6">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Department Chart" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="department_chart"
+                        hx-post="{% url 'employee-charts' %}?chart_id=department_chart" hx-target="#movable6"
+                        hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <canvas id="departmentChart" style="cursor: pointer"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if not 'gender_chart' in charts %}
+    {% if 'gender_chart'|feature_is_accessible:request or perms.employee.view_employee or request.user|is_reportingmanager %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable dashboardChart" id="movable7">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Gender Chart" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="gender_chart"
+                        hx-post="{% url 'employee-charts' %}?chart_id=gender_chart" hx-target="#movable7"
+                        hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <canvas id="genderChart" style="cursor: pointer"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if not 'objective_status' in charts and "pms"|app_installed %}
+    <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable dashboardChart" id="movable9">
+        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                <span class="oh-card-dashboard__title">{% trans "Objective Status" %}</span>
+                <span class="float-end chart_close_button " role="button" data-chart="objective_status"
+                    hx-post="{% url 'employee-charts' %}?chart_id=objective_status" hx-target="#movable9"
+                    hx-swap="outerHTML">
+                    <i class="material-icons fw-lighter fs-5">close</i>
+                </span>
+            </div>
+            <div class="oh-card-dashboard__body">
+                <canvas id="objectiveChart" style="cursor: pointer"></canvas>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% if "pms"|app_installed and not 'key_result_status' in charts %}
+    {% if perms.pms.view_employeekeyresult or request.user|is_reportingmanager %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable dashboardChart" id="movable10">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Key Result Status" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="key_result_status"
+                        hx-post="{% url 'employee-charts' %}?chart_id=key_result_status" hx-target="#movable10"
+                        hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <canvas id="keyResultChart" style="cursor: pointer"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if "pms"|app_installed and not 'feedback_status' in charts %}
+    {% if perms.pms.view_feedback or request.user|is_reportingmanager %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable dashboardChart" id="movable11">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Feedback Status" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="feedback_status"
+                        hx-post="{% url 'employee-charts' %}?chart_id=feedback_status" hx-target="#movable11"
+                        hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <div class="oh-card-dashboard__body">
+                        <canvas id="feedbackChart" style="cursor: pointer"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if not 'shift_request_approve' in charts %}
+    {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart"
+            id="shiftRequestApprove">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Shift Requests To Approve" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="shift_request_approve"
+                        hx-post="{% url 'employee-charts' %}?chart_id=shift_request_approve"
+                        hx-target="#shiftRequestApprove" hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body" id="shiftRequestApproveBody" style="height:80%"
+                    hx-get="{% url 'dashboard-shift-request' %}" hx-trigger="load">
+                    <div class="animated-background"></div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if not 'work_type_request_approve' in charts %}
+    {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart"
+            id="WorkTypeRequestApprove">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Work Type Requests To Approve" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="work_type_request_approve"
+                        hx-post="{% url 'employee-charts' %}?chart_id=work_type_request_approve"
+                        hx-target="#WorkTypeRequestApprove" hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body" id="WorkTypeRequestApproveBody" style="height:80%"
+                    hx-get="{% url 'dashboard-work-type-request' %}" hx-trigger="load"
+                    >
+                    <div class="animated-background"></div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if "attendance"|app_installed and not 'overtime_approve' in charts %}
+    {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart" id="OTApprove">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px"
+                id="OTApproveTarget">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">
+                        {% trans 'Overtime To Approve' %}
+                    </span>
+                    <span class="float-end chart_close_button " role="button" data-chart="overtime_approve"
+                        hx-post="{% url 'employee-charts' %}?chart_id=overtime_approve" hx-target="#OTApprove"
+                        hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body" id="OTApproveBody" style="height: 75%"
+                    hx-get="{% url 'dashboard-approve-overtimes' %}" hx-trigger="load">
+                    <div class="animated-background"></div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if "attendance"|app_installed %}
+    {% if not 'attendance_validate' in charts %}
+        {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart" id="AttendanceValidate">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">
+                        {% trans 'Attendance To Validate' %}
+                    </span>
+                    <span class="float-end chart_close_button " role="button" data-chart="attendance_validate"
+                        hx-post="{% url 'employee-charts' %}?chart_id=attendance_validate" hx-target="#AttendanceValidate"
+                        hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body" style="height: 75%" id="attendanceValidateCardBody"
+                    hx-get="{% url 'dashboard-validate-attendances' %}" hx-trigger="load">
+                    <div class="animated-background"></div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+{% endif %}
+{% if "leave"|app_installed and not 'leave_request_approve' in charts %}
+    {% if perms.leave.change_leaverequest or request.user|is_reportingmanager %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart" id="LeaveApprove">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Leave Requests To Approve" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="leave_request_approve"
+                        hx-post="{% url 'employee-charts' %}?chart_id=leave_request_approve" hx-target="#LeaveApprove"
+                        hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body" id="leaveApproveCardBody" style="height:80%"
+                    hx-get="{% url 'leave-request-and-approve' %}" hx-trigger="load">
+                    <div class="animated-background"></div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if "leave"|app_installed and not 'leave_allocation_approve' in charts %}
+    {% if perms.leave.change_leaveallocationrequest or request.user|is_reportingmanager %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart"
+            id="LeaveAllocationApprove">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Leave Allocation Request To Approve" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="leave_allocation_approve"
+                        hx-post="{% url 'employee-charts' %}?chart_id=leave_allocation_approve"
+                        hx-target="#LeaveAllocationApprove" hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body" id="leaveAllocationApproveBody" style="height:80%"
+                    hx-get="{% url 'leave-allocation-approve' %}" hx-trigger="load">
+                    <div class="animated-background"></div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% if "pms"|app_installed and not 'feedback_answer' in charts %}
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart" id="feedbackAnswer">
+        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px">
+            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                <span class="oh-card-dashboard__title">{% trans "Feedback To Answers" %}</span>
+                <span class="float-end chart_close_button " role="button" data-chart="feedback_answer"
+                    hx-post="{% url 'employee-charts' %}?chart_id=feedback_answer" hx-target="#feedbackAnswer"
+                    hx-swap="outerHTML">
+                    <i class="material-icons fw-lighter fs-5">close</i>
+                </span>
+            </div>
+            <div class="oh-card-dashboard__body" id="feedbackAnswerCardBody" style="height:80%"
+                hx-get="{% url 'dashboard-feedback-answer' %}" hx-trigger="load">
+                <div class="animated-background"></div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% if "asset"|app_installed and not 'asset_request_approve' in charts %}
+    {% if perms.asset.view_assetrequest %}
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable dashboardChart"
+            id="assetRequestApprove">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">{% trans "Asset Requests To Approve" %}</span>
+                    <span class="float-end chart_close_button " role="button" data-chart="asset_request_approve"
+                        hx-post="{% url 'employee-charts' %}?chart_id=asset_request_approve"
+                        hx-target="#assetRequestApprove" hx-swap="outerHTML">
+                        <i class="material-icons fw-lighter fs-5">close</i>
+                    </span>
+                </div>
+                <div class="oh-card-dashboard__body" id="dashboardAssetRequests" style="height:80%"
+                    hx-get="{% url 'asset-dashboard-requests' %}" hx-trigger="load">
+                    <div class="animated-background"></div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}

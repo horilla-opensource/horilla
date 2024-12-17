@@ -1,3 +1,4 @@
+import ast
 import calendar
 import json
 import os
@@ -9,6 +10,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, OneToOneField, Q
 from django.db.models.functions import Lower
@@ -658,6 +660,15 @@ def get_pagination():
     return count
 
 
+def paginator_qry(queryset, page_number):
+    """
+    Common paginator method
+    """
+    paginator = Paginator(queryset, get_pagination())
+    queryset = paginator.get_page(page_number)
+    return queryset
+
+
 def is_holiday(date):
     """
     Check if the given date is a holiday.
@@ -845,3 +856,22 @@ def get_next_month_same_date(date_obj):
     total_days_in_month = calendar.monthrange(year, month)[1]
     day = min(day, total_days_in_month)
     return date(day=day, month=month, year=year)
+
+
+def format_date(date_str):
+    # List of possible date formats to try
+
+    for format_name, format_string in HORILLA_DATE_FORMATS.items():
+        try:
+            return datetime.strptime(date_str, format_string).strftime("%Y-%m-%d")
+        except ValueError:
+            continue
+    raise ValueError(f"Invalid date format: {date_str}")
+
+
+def eval_validate(value):
+    """
+    Method to validate the dynamic value
+    """
+    value = ast.literal_eval(value)
+    return value

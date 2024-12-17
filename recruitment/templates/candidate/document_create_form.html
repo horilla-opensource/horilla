@@ -1,0 +1,12 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header pb-0">
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <form id="add-form" hx-post="{% url 'candidate-document-create' candidate_id.id %}" hx-target="#objectCreateModalTarget"
+        hx-swap="innerHTML" method="post" hx-encoding="multipart/form-data">
+        {{form.errors}} {{form.as_p}}
+    </form>
+</div>

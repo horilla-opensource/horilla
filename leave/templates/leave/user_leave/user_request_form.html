@@ -21,15 +21,6 @@
     <button
         class="oh-modal__close"
         aria-label="Close"
-        {%
-        if
-        messages
-        %}
-        hx-get="{% url 'user-request-filter' %}?{{pd}}"
-        hx-target="#userRequest"
-        {%
-        endif
-        %}
     >
         <ion-icon name="close-outline"></ion-icon>
     </button>

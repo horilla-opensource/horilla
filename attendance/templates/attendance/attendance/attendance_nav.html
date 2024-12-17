@@ -227,11 +227,22 @@
                                 hx-target="#attendanceExportModalBody">{% trans "Export" %}</a>
                         </li>
                     {% endif %}
-
+                    <li class="oh-dropdown__item">
+                        <a href="#" class="oh-dropdown__link" id="attendanceAddToBatch">{% trans "Add to batch" %}</a>
+                        <span data-toggle="oh-modal-toggle" id="attendanceAddToBatchButton"
+                            data-target="#objectDetailsModal" hx-get="{% url 'attendance-add-to-batch' %}"
+                            hx-target="#objectDetailsModalTarget" hx-vals="">
+                    </li>
+                    <li class="oh-dropdown__item">
+                        <a class="oh-dropdown__link" onclick="event.preventDefault();event.stopPropagation()"
+                            data-toggle="oh-modal-toggle" id="attendanceAddToBatchButton"
+                            data-target="#objectDetailsModal" hx-get="{% url 'get-batches' %}"
+                            hx-target="#objectDetailsModalTarget">{% trans "Batches" %}</a>
+                    </li>
                     {% if perms.attendance.delete_attendance %}
                         <li class="oh-dropdown__item">
-                            <a href="#" id="bulkDelete" data-action="delete"
-                                class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</a>
+                            <a href="#" id="bulkDelete" data-action="delete" class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</a>
+                            <span hx-post="{% url 'attendance-bulk-delete' %}" hx-target="#tab_contents" id="bulkAttendanceDeleteSpan" hx-vals="">
                         </li>
                     {% endif %}
                 </ul>

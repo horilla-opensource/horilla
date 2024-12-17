@@ -11,6 +11,7 @@ from django.http import QueryDict
 from base.templatetags.horillafilters import app_installed
 from employee.models import Employee
 from horilla.models import HorillaModel
+from horilla_views.templatetags.generic_template_filters import getattribute
 
 recruitment_installed = False
 if app_installed("recruitment"):
@@ -40,35 +41,36 @@ def generate_choices(model_path):
     mail_details_choice = []
 
     for field in list(model_class._meta.fields) + list(model_class._meta.many_to_many):
-        related_model = field.related_model
-        models = [Employee]
-        if recruitment_installed:
-            models.append(Candidate)
-        if related_model in models:
-            email_field = (
-                f"{field.name}__get_email",
-                f"{field.verbose_name.capitalize().replace(' id','')} mail field ",
-            )
-            mail_detail = (
-                f"{field.name}__pk",
-                field.verbose_name.capitalize().replace(" id", ""),
-            )
-            if field.related_model == Employee:
-                to_fields.append(
-                    (
-                        f"{field.name}__employee_work_info__reporting_manager_id__get_email",
-                        f"{field.verbose_name.capitalize().replace(' id','')}'s reporting manager",
-                    )
+        if not getattr(field, "exclude_from_automation", False):
+            related_model = field.related_model
+            models = [Employee]
+            if recruitment_installed:
+                models.append(Candidate)
+            if related_model in models:
+                email_field = (
+                    f"{field.name}__get_email",
+                    f"{field.verbose_name.capitalize().replace(' id','')} mail field ",
                 )
-                mail_details_choice.append(
-                    (
-                        f"{field.name}__employee_work_info__reporting_manager_id__pk",
-                        f"{field.verbose_name.capitalize().replace(' id','')}'s reporting manager",
-                    )
+                mail_detail = (
+                    f"{field.name}__pk",
+                    field.verbose_name.capitalize().replace(" id", ""),
                 )
+                if field.related_model == Employee:
+                    to_fields.append(
+                        (
+                            f"{field.name}__employee_work_info__reporting_manager_id__get_email",
+                            f"{field.verbose_name.capitalize().replace(' id','')}'s reporting manager",
+                        )
+                    )
+                    mail_details_choice.append(
+                        (
+                            f"{field.name}__employee_work_info__reporting_manager_id__pk",
+                            f"{field.verbose_name.capitalize().replace(' id','')}'s reporting manager",
+                        )
+                    )
 
-            to_fields.append(email_field)
-            mail_details_choice.append(mail_detail)
+                to_fields.append(email_field)
+                mail_details_choice.append(mail_detail)
     models = [Employee]
     if recruitment_installed:
         models.append(Candidate)
@@ -79,6 +81,8 @@ def generate_choices(model_path):
                 f"{model_class.__name__}'s mail",
             )
         )
+        mail_to_related_fields = getattr(model_class, "mail_to_related_fields", [])
+        to_fields = to_fields + mail_to_related_fields
         mail_details_choice.append(("pk", model_class.__name__))
 
     to_fields = list(set(to_fields))

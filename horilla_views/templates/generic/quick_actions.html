@@ -14,7 +14,7 @@
         addToSelectedId({{select_all_ids|safe}},'{{selected_instances_key_id}}');
         selectSelected('#{{view_id|safe}}','{{selected_instances_key_id}}');
         reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
-        reloadSelectedCount($('.count_{{view_id|safe}}'));
+        reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
         "
         style="cursor: pointer;">
         <span class="label"
@@ -33,7 +33,7 @@
         $('#{{selected_instances_key_id}}').attr('data-ids',JSON.stringify([]));
         selectSelected('#{{view_id|safe}}','{{selected_instances_key_id}}');
         reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
-        reloadSelectedCount($('.count_{{view_id|safe}}'));
+        reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
         $('#{{view_id}} .list-table-row').prop('checked',false);
         $('#{{view_id}} .highlight-selected').removeClass('highlight-selected');
         $('#{{view_id}} .bulk-list-table-row').prop('checked',false);
@@ -102,7 +102,10 @@
         hx-get="{{request.path}}?{{filter.urlencode}}"
         hx-target="#{{view_id|safe}}" hx-swap="outerHTML"
         >
-        <button class="oh-hover-btn" style="
+        <button
+        hx-get="{% url "last-applied-filter" %}?{{filter.urlencode}}"
+        hx-swap="none"
+        class="oh-hover-btn" style="
         cursor: pointer;
         border: solid 2px {{filter.color}};
         color: {{filter.color}} !important;

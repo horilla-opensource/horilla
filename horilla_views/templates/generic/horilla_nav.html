@@ -15,7 +15,16 @@
     </a>
   </div>
   {% if search_url %}
-  <form autocomplete="off" id="filterForm" onsubmit="event.preventDefault()" hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}" hx-replace-url="true" hx-target="{{search_swap_target}}" class="oh-main__titlebar oh-main__titlebar--right">
+  <form autocomplete="off"
+    id="filterForm"
+    onsubmit="event.preventDefault()"
+    hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}"
+    hx-replace-url="false"
+    hx-target="{{search_swap_target}}"
+    hx-on:submit="htmxLoadIndicator(this);"
+    class="oh-main__titlebar oh-main__titlebar--right"
+  >
+    <input type="text" name="nav_url" value="{{request.path}}" hidden>
     <div class="oh-input-group oh-input__search-group" id="searchGroup">
       <ion-icon
         name="search-outline"
@@ -55,7 +64,7 @@
       />
       {% if search_in %}
       <input type="text" hidden name="search_field">
-      <div class="custom-dropdown" id="dropdown">
+      <div class="custom-dropdown" id="dropdown" style="z-index: 1000 !important;">
         <ul class="search_content">
           {% for option in search_in %}
           <li>
@@ -82,10 +91,8 @@
           {% if active_view.type == type.type %}
           <script>
             $("form#filterForm.oh-main__titlebar oh-main__titlebar--right").attr('hx-get','{{type.url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}');
-            setTimeout(() => {
-              $(".oh-view-types .oh-view-type[data-type={{type.type}}]").click()
-              $(".oh-view-types .oh-view-type[data-type={{type.type}}] a").addClass("oh-btn--view-active")
-            }, 10);
+            $(".oh-view-types .oh-view-type[data-type={{type.type}}] a").addClass("oh-btn--view-active")
+
           </script>
           {% endif %}
         </li>
@@ -110,7 +117,31 @@
             <button
              type="submit"
              id="applyFilter"
-             onclick="filterCountUpdate('filterForm')"
+             onclick="
+             filterCountUpdate('filterForm');
+              // if (event.isTrusted) {
+                var formData = new FormData($('#filterForm')[0]);
+                var filterData = {};
+                formData.forEach((value, key) => {
+                    if (filterData[key]) {
+                        filterData[key] = [].concat(filterData[key], value);
+                    } else {
+                        filterData[key] = value;
+                    }
+                });
+                console.log(filterData)
+                $.ajax({
+                  type: 'get',
+                  url: `{% url 'last-applied-filter' %}`,
+                  data: filterData,
+                  traditional:true,
+                  success: function (response) {
+
+                  }
+                });
+
+              // }
+             "
              class="oh-btn oh-btn--secondary oh-btn--small w-100">
               {% trans "Filter" %}
             </button>
@@ -202,6 +233,34 @@
 
   </div>
   <script>
+    var form = $('#filterForm')[0];
+    var data ={{last_filter|safe}}
+    for (const key in data) {
+      const field = form.elements[key];
+      if ({{empty_inputs|safe}}.includes(key)) {
+        continue
+      }
+      const value = data[key][0];  // Get the first element in the array
+
+      if (field) {
+        if (field.type === 'checkbox') {
+          field.checked = value === 'on';
+        } else if (field.type === 'select-multiple') {
+          // Handle multiple select fields
+          Array.from(field.options).forEach(option => {
+            option.selected = data[key].includes(option.value);
+          });
+        } else {
+          field.value = value;  // Set the value for other input types
+        }
+      }
+    }
+    setTimeout(() => {
+      $(".oh-btn--view-active").click();
+      if (!$(".oh-btn--view-active").length) {
+        $("#applyFilter").click()
+      }
+    }, 100);
     $(".oh-btn--view").click(function (e) {
       e.preventDefault();
       $(".oh-btn--view-active").removeClass("oh-btn--view-active");
@@ -227,7 +286,6 @@
 <script>
   filterCountUpdate("filterForm")
   $(document).ready(function () {
-    $("#filterForm select").select2("destroy")
     $("#filterForm select").parent().find("span").remove()
     $("#filterForm select").select2()
   });

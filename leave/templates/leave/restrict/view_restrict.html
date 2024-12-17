@@ -36,7 +36,7 @@
                 </div>
                 <!-- end of filter -->
                 <!-- start of Actions -->
-                {% if perms.leave.add_restrictleave or perms.leave.delete_restrictleave %}
+                {% if perms.leave.delete_restrictleave %}
                     <div class="oh-dropdown ml-2" x-data="{open: false}">
                         <button class="oh-btn oh-btn--dropdown" @click="open = !open" @click.outside="open = false">
                             {% trans "Actions" %}

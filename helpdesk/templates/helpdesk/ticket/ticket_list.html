@@ -359,13 +359,18 @@
 										<div data-cell-index="16" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
 										<div data-cell-index="17" data-cell-title='{% trans "Priority" %}' class="oh-sticky-table__th">{% trans "Priority" %}</div>
 										<div data-cell-index="18" data-cell-title='{% trans "Tags" %}' class="oh-sticky-table__th">{% trans "Tags" %}</div>
-										<div class="oh-sticky-table__th oh-sticky-table__right" style="width:200px;">{% trans "Actions" %}</div>
+										{% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
+											<div class="oh-sticky-table__th oh-sticky-table__right" style="width:200px;">{% trans "Actions" %}</div>
+										{% endif %}
 									</div>
 								</div>
 								<div class="oh-sticky-table__tbody">
 									{% for ticket in allocated_tickets %}
 										<div class="oh-sticky-table__tr"
-											{% if request.user.employee_get in ticket.assigned_to.all or perms.helpdesk.view_ticket or request.user.employee_get|is_department_manager:ticket %}
+											{% if request.user.employee_get in ticket.assigned_to.all %}
+												style = "background-color: lightgreen;"
+												onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
+											{% elif perms.helpdesk.view_ticket or request.user.employee_get|is_department_manager:ticket %}
 												onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
 											{% else %}
 												hx-get = "{% url 'ticket-individual-view' ticket.id %}"
@@ -492,111 +497,126 @@
 												{% endif %}
 											</div>
 											<div data-cell-index="18" class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
-											<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
-												<div class="oh-btn-group" style="border:none">
-													{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
-														<button
-															hx-get = "{% url "view-ticket-claim-request" ticket.id %}"
-															hx-target="#objectDetailsModalTarget"
-															data-toggle="oh-modal-toggle"
-                                    						data-target="#objectDetailsModal"
-															class="oh-btn oh-btn--light-bkg p-3 w-100"
-															title = "{% trans "Claim Requests" %}"
-														>
-														<ion-icon name="eye-outline"></ion-icon>
-
-														</button>
-													{% else %}
-														{% if ticket|calim_request_exists:request.user.employee_get or request.user.employee_get in ticket.assigned_to.all %}
-															<a
-															{% if request.user.employee_get in ticket.assigned_to.all %}
-																style="background-color:rgb(74, 238, 60);"
-															{% endif %}
-											 					href="#"
-																class="oh-btn oh-btn--info w-100 oh-btn--disabled"
-																title="{% trans 'Claim' %}"
-																>
-																<ion-icon name="checkmark-done-outline"></ion-icon>
-															</a>
-														{% else %}
-															<a
-																type="submit"
-																href = "{% url 'claim-ticket' ticket.id %}"
-																class="oh-btn oh-btn--info w-100"
-																title="{% trans 'Claim' %}"
-																>
-																<ion-icon name="checkmark-done-outline"></ion-icon>
-															</a>
-														{% endif %}
-													{% endif %}
-													{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
-														<button
-															class="oh-btn oh-btn--light-bkg p-3 w-50"
-															title="{% trans 'Edit' %}"
-															data-toggle="oh-modal-toggle"
-															data-target="#objectCreateModal"
-															hx-get="{% url 'ticket-update' ticket.id %}"
-															hx-target="#objectCreateModalTarget"
-														>
-															<ion-icon name="create-outline"></ion-icon>
-														</button>
-													{% endif %}
-													{% if perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket %}
-														{% if ticket.is_active %}
-															<form
-															action="{% url 'ticket-archive' ticket.id %}"
-															class="w-50"
-															onsubmit="event.stopPropagation();return confirm('{% trans "Do you want to archive this ticket?" %}');"
-																method="post"
-																style="display: contents"
+											{% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
+												<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
+													<div class="oh-btn-group" style="border:none">
+														{% if perms.helpdesk.change_ticket or perms.helpdesk.change_claimrequest or request.user.employee_get|is_department_manager:ticket %}
+															<button
+																hx-get = "{% url "view-ticket-claim-request" ticket.id %}"
+																hx-target="#objectDetailsModalTarget"
+																data-toggle="oh-modal-toggle"
+																data-target="#objectDetailsModal"
+																class="oh-btn oh-btn--light-bkg p-3 w-100"
+																title = "{% trans "Claim Requests" %}"
 															>
-																{% csrf_token %}
-																<button
-																class="oh-btn oh-btn--danger-outline p-3 w-50"
-																title="{% trans 'Archive' %}"
-																>
-																<ion-icon
-																	name="archive-sharp"
-																	role="img"
-																	class="md hydrated"
-																	aria-label="archive sharp"
-																></ion-icon>
-																</button>
-															</form>
+															<ion-icon name="eye-outline"></ion-icon>
+
+															</button>
 														{% else %}
-															<form
+															{% if ticket|calim_request_exists:request.user.employee_get or request.user.employee_get in ticket.assigned_to.all %}
+																<a
+																{% if request.user.employee_get in ticket.assigned_to.all %}
+																	style="background-color:rgb(74, 238, 60);"
+																{% endif %}
+																	href="#"
+																	class="oh-btn oh-btn--info w-100 oh-btn--disabled"
+																	title="{% trans 'Claim' %}"
+																	>
+																	<ion-icon name="checkmark-done-outline"></ion-icon>
+																</a>
+															{% else %}
+																<a
+																	type="submit"
+																	href = "{% url 'claim-ticket' ticket.id %}"
+																	class="oh-btn oh-btn--info w-100"
+																	title="{% trans 'Claim' %}"
+																	>
+																	<ion-icon name="checkmark-done-outline"></ion-icon>
+																</a>
+															{% endif %}
+														{% endif %}
+														{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
+															<button
+																class="oh-btn oh-btn--light-bkg p-3 w-50"
+																title="{% trans 'Edit' %}"
+																data-toggle="oh-modal-toggle"
+																data-target="#objectCreateModal"
+																hx-get="{% url 'ticket-update' ticket.id %}"
+																hx-target="#objectCreateModalTarget"
+															>
+																<ion-icon name="create-outline"></ion-icon>
+															</button>
+														{% endif %}
+														{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
+															{% if ticket.is_active %}
+																<form
 																action="{% url 'ticket-archive' ticket.id %}"
 																class="w-50"
-																onsubmit="event.stopPropagation();return confirm('{% trans "Do you want to un-archive this ticket?" %}');"
-																method="post"
-																style="display: contents"
-															>
-																{% csrf_token %}
-																<button
-																class="oh-btn oh-btn--danger-outline p-3 w-50"
-																title="{% trans 'Un-archive' %}"
+																onsubmit="event.stopPropagation();return confirm('{% trans "Do you want to archive this ticket?" %}');"
+																	method="post"
+																	style="display: contents"
 																>
-																<ion-icon
-																	name="archive-sharp"
-																	role="img"
-																	class="md hydrated"
-																	aria-label="archive sharp"
-																></ion-icon>
-																</button>
-															</form>
+																	{% csrf_token %}
+																	<button
+																	class="oh-btn oh-btn--danger-outline p-3 w-50"
+																	title="{% trans 'Archive' %}"
+																	>
+																	<ion-icon
+																		name="archive-sharp"
+																		role="img"
+																		class="md hydrated"
+																		aria-label="archive sharp"
+																	></ion-icon>
+																	</button>
+																</form>
+															{% else %}
+																<form
+																	action="{% url 'ticket-archive' ticket.id %}"
+																	class="w-50"
+																	onsubmit="event.stopPropagation();return confirm('{% trans "Do you want to un-archive this ticket?" %}');"
+																	method="post"
+																	style="display: contents"
+																>
+																	{% csrf_token %}
+																	<button
+																	class="oh-btn oh-btn--danger-outline p-3 w-50"
+																	title="{% trans 'Un-archive' %}"
+																	>
+																	<ion-icon
+																		name="archive-sharp"
+																		role="img"
+																		class="md hydrated"
+																		aria-label="archive sharp"
+																	></ion-icon>
+																	</button>
+																</form>
+															{% endif %}
 														{% endif %}
-													{% endif %}
-													{% if perms.helpdesk.delete_ticket %}
-														{% if ticket.status == 'new' %}
-															<form
-																action="{% url 'ticket-delete' ticket.id %}"
-																class="w-50"
-																onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?' %}');"
-																method='post' onclick="event.stopPropagation()" >
-																{% csrf_token %}
+														{% if perms.helpdesk.delete_ticket %}
+															{% if ticket.status == 'new' %}
+																<form
+																	action="{% url 'ticket-delete' ticket.id %}"
+																	class="w-50"
+																	onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?' %}');"
+																	method='post' onclick="event.stopPropagation()" >
+																	{% csrf_token %}
+																	<button
+																		type="submit"
+																		class="oh-btn oh-btn--danger-outline oh-btn--light-bkg p-3 w-100"
+																		title="{% trans 'Delete' %}"
+																	>
+																		<ion-icon
+																			class="me-1 md hydrated"
+																			name="trash-outline"
+																			role="img"
+																			aria-label="trash outline"
+																		></ion-icon>
+																	</button>
+																</form>
+															{% else %}
 																<button
-																	type="submit"
 																	class="oh-btn oh-btn--danger-outline oh-btn--light-bkg p-3 w-100"
+																	disabled
 																	title="{% trans 'Delete' %}"
 																>
 																	<ion-icon
@@ -606,24 +626,11 @@
 																		aria-label="trash outline"
 																	></ion-icon>
 																</button>
-															</form>
-														{% else %}
-															<button
-																class="oh-btn oh-btn--danger-outline oh-btn--light-bkg p-3 w-100"
-																disabled
-																title="{% trans 'Delete' %}"
-															>
-																<ion-icon
-																	class="me-1 md hydrated"
-																	name="trash-outline"
-																	role="img"
-																	aria-label="trash outline"
-																></ion-icon>
-															</button>
+															{% endif %}
 														{% endif %}
-													{% endif %}
+													</div>
 												</div>
-											</div>
+											{% endif %}
 										</div>
 									{% endfor %}
 								</div>
@@ -747,7 +754,7 @@
 									<div data-cell-index="26" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
 									<div data-cell-index="27" data-cell-title='{% trans "Priority" %}' class="oh-sticky-table__th">{% trans "Priority" %}</div>
 									<div data-cell-index="28" data-cell-title='{% trans "Tags" %}' class="oh-sticky-table__th">{% trans "Tags" %}</div>
-									{% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket %}
+									{% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
 										<div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
 									{% endif %}
 
@@ -874,10 +881,10 @@
 											{% endif %}
 										</div>
 										<div data-cell-index="28" class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
-										{% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket %}
+										{% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
 											<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
 												<div class="oh-btn-group">
-													{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
+													{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
 														<button
 																hx-get = "{% url "view-ticket-claim-request" ticket.id %}"
 																hx-target="#objectDetailsModalTarget"
@@ -902,7 +909,7 @@
 															<ion-icon name="create-outline"></ion-icon>
 														</button>
 													{% endif %}
-													{% if perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket %}
+													{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
 														{% if ticket.is_active %}
 															<form
 															action="{% url 'ticket-archive' ticket.id %}"

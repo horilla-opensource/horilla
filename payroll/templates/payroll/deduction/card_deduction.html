@@ -66,28 +66,34 @@
                 </div>
 
             </div>
-            <div class="oh-kanban-card__dots">
-                <div class="oh-dropdown" x-data="{show: false}" onclick="event.stopPropagation()">
-                    <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show"
-                        title='{% trans "Actions" %}'>
-                        <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
-                    </button>
-                    <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show"
-                        @click.outside="show = false">
-                        <ul class="oh-dropdown__items">
-                            <li class="oh-dropdown__item">
-                                <a onclick="event.stopPropagation();" href="{% url 'update-deduction' deduction.id %}">{% trans "Edit" %}</a>
-                            </li>
-                            <li class="oh-dropdown__item">
-                                <a class="text-danger" onclick="event.preventDefault();event.stopPropagation();"
-                                    hx-confirm="{% trans 'Do you want to delete this deduction?' %}"
-                                    hx-post="{% url 'delete-deduction' deduction.id %}?{{pd}}"
-                                    hx-target="#payroll-deduction-container">{% trans "Delete" %}</a>
-                            </li>
-                        </ul>
+            {% if perms.payroll.change_deduction or perms.payroll.delete_deduction %}
+                <div class="oh-kanban-card__dots">
+                    <div class="oh-dropdown" x-data="{show: false}" onclick="event.stopPropagation()">
+                        <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show"
+                            title='{% trans "Actions" %}'>
+                            <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
+                        </button>
+                        <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show"
+                            @click.outside="show = false">
+                            <ul class="oh-dropdown__items">
+                                {% if perms.payroll.change_deduction %}
+                                    <li class="oh-dropdown__item">
+                                        <a onclick="event.stopPropagation();" href="{% url 'update-deduction' deduction.id %}">{% trans "Edit" %}</a>
+                                    </li>
+                                {% endif %}
+                                {% if perms.payroll.delete_deduction %}
+                                    <li class="oh-dropdown__item">
+                                        <a class="text-danger" onclick="event.preventDefault();event.stopPropagation();"
+                                            hx-confirm="{% trans 'Do you want to delete this deduction?' %}"
+                                            hx-post="{% url 'delete-deduction' deduction.id %}?{{pd}}"
+                                            hx-target="#payroll-deduction-container">{% trans "Delete" %}</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
         {% endfor %}
     </div>

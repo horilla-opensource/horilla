@@ -1,5 +1,6 @@
 import re
 
+from base.methods import eval_validate
 from base.models import *
 from employee.models import *
 
@@ -41,7 +42,7 @@ def get_next_badge_id():
                     item = item[total_zero_leads:]
                 if isinstance(item, list):
                     item = item[-1]
-                if not incremented and isinstance(eval(str(item)), int):
+                if not incremented and isinstance(eval_validate(str(item)), int):
                     item = int(item) + 1
                     incremented = True
                 if isinstance(item, int):

@@ -44,6 +44,8 @@ from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from recruitment import widgets
 from recruitment.models import (
     Candidate,
+    CandidateDocument,
+    CandidateDocumentRequest,
     InterviewSchedule,
     JobPosition,
     Recruitment,
@@ -1052,8 +1054,8 @@ class SkillZoneCandidateForm(ModelForm):
         if commit:
             cand = self.instance
             for id in other_candidates:
-                cand.pk = None
-                cand.id = None
+                cand.pk = cand.pk + 1
+                cand.id = cand.pk
                 cand.candidate_id = Candidate.objects.get(id=id)
                 try:
                     super(SkillZoneCandidate, cand).save()
@@ -1256,3 +1258,55 @@ class ResumeForm(ModelForm):
                 "onchange": "submitForm($(this))",
             }
         )
+
+
+class CandidateDocumentRequestForm(ModelForm):
+    class Meta:
+        model = CandidateDocumentRequest
+        fields = "__all__"
+        exclude = ["is_active"]
+
+
+class CandidateDocumentUpdateForm(ModelForm):
+    """form to Update a Document"""
+
+    verbose_name = "CandidateDocument"
+
+    class Meta:
+        model = CandidateDocument
+        fields = "__all__"
+        exclude = ["is_active", "document_request_id"]
+
+
+class CandidateDocumentRejectForm(ModelForm):
+    """form to add rejection reason while rejecting a Document"""
+
+    class Meta:
+        model = CandidateDocument
+        fields = ["reject_reason"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["reject_reason"].widget.attrs["required"] = True
+
+
+class CandidateDocumentForm(ModelForm):
+    """form to create a new Document"""
+
+    verbose_name = "Document"
+
+    class Meta:
+        model = CandidateDocument
+        fields = "__all__"
+        exclude = ["document_request_id", "status", "reject_reason", "is_active"]
+        widgets = {
+            "employee_id": forms.HiddenInput(),
+        }
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html

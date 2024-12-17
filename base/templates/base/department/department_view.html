@@ -23,8 +23,8 @@
 										<ion-icon name="create-outline"></ion-icon></a>
 								{% endif %}
 								{% if perms.base.delete_deaprtment %}
-									<form hx-confirm="{% trans 'Are you sure you want to delete this department?' %}" hx-swap="delete"
-										hx-post="{% url 'department-delete' dep.id %}" hx-target="#departmentTr{{dep.id}}" class="w-50">
+									<form hx-confirm="{% trans 'Are you sure you want to delete this department?' %}" hx-swap="outerHTML"
+										hx-post="{% url 'department-delete' dep.id %}" hx-target="#departmentTr{{dep.id}}" class="w-50" hx-on-htmx-after-request="reloadMessage(this);">
 										{% csrf_token %}
 										<button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
 											title="{% trans 'Remove' %}">

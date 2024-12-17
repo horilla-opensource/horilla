@@ -19,8 +19,7 @@
 <div class="oh-modal__dialog-body">
   <p class="oh-card__footer--border-top"></p>
   {{ policy.body|safe }}
-  <div id="attachmentContainer" class="d-flex" hx-get="{% url 'get-attachments-policy' %}?policy_id={{ policy.id }}"
-    hx-trigger="load"></div>
+  <div id="attachmentContainer" class="d-flex" hx-get="{% url 'get-attachments-policy' %}?policy_id={{ policy.id }}" hx-trigger="load"></div>
 
   <div id="enlargeImageContainer"></div>
 </div>

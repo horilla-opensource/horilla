@@ -40,12 +40,6 @@ function makeListUnique(list) {
   return Array.from(new Set(list));
 }
 
-function createHolidayHxValue() {
-  var pd = $(".oh-pagination").attr("data-pd");
-  var hxValue = JSON.stringify(pd);
-  $("#holidayCreateButton").attr("hx-vals", `{"pd":${hxValue}}`);
-}
-
 tickHolidayCheckboxes();
 function makeHolidayListUnique(list) {
   return Array.from(new Set(list));
@@ -97,7 +91,7 @@ function tickHolidayCheckboxes() {
       $("#selectedShowHolidays").css("display", "inline-flex");
       $("#selectedShowHolidays").text(selectedCount + " -" + message);
     } else {
-      $("#unselectAllHolidays").css("display", "none  ");
+      $("#unselectAllHolidays").css("display", "none");
       $("#selectedShowHolidays").css("display", "none");
       $("#exportHolidays").css("display", "none");
     }
@@ -321,20 +315,10 @@ $("#bulkHolidaysDelete").click(function (e) {
           ids = [];
           ids.push($("#selectedHolidays").attr("data-ids"));
           ids = JSON.parse($("#selectedHolidays").attr("data-ids"));
-          $.ajax({
-            type: "POST",
-            url: "/holidays-bulk-delete",
-            data: {
-              csrfmiddlewaretoken: getCookie("csrftoken"),
-              ids: JSON.stringify(ids),
-            },
-            success: function (response, textStatus, jqXHR) {
-              if (jqXHR.status === 200) {
-                location.reload();
-              } else {
-              }
-            },
-          });
+          var hxValue = JSON.stringify(ids);
+          $("#bulkHolidaysDeleteSpan").attr("hx-vals", `{"ids":${hxValue}}`);
+          $('#unselectAllHolidays').click();
+          $("#bulkHolidaysDeleteSpan").click();
         }
       });
     }

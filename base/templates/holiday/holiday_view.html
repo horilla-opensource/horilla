@@ -39,48 +39,50 @@
                 {% endif %}
 
                 <!-- start of Actions -->
-                {% if perms.base.add_holiday or perms.base.delete_holiday%}
-                    <div class="oh-dropdown ml-2" x-data="{open: false}">
-                        <button class="oh-btn oh-btn--dropdown" @click="open = !open" @click.outside="open = false">
-                            {% trans "Actions" %}
-                        </button>
-                        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
-                            <ul class="oh-dropdown__items">
-                                {% if perms.base.add_holiday %}
+                {% if perms.base.add_holidays or perms.base.delete_holidays %}
+                <div class="oh-dropdown ml-2" x-data="{open: false}">
+                    <button class="oh-btn oh-btn--dropdown" @click="open = !open" @click.outside="open = false">
+                        {% trans "Actions" %}
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
+                        <ul class="oh-dropdown__items">
+                            {% if perms.base.add_holidays %}
+                                <li class="oh-dropdown__item">
+                                    <a href="#" class="oh-dropdown__link holidaysInfoImport" data-toggle="oh-modal-toggle"
+                                        data-target="#holidayImport">{% trans "Import" %}</a>
+                                </li>
+                            {% endif %}
+                            {% if holidays %}
+                                {% if perms.base.add_holidays %}
                                     <li class="oh-dropdown__item">
-                                        <a href="#" class="oh-dropdown__link holidaysInfoImport" data-toggle="oh-modal-toggle"
-                                            data-target="#holidayImport">{% trans "Import" %}</a>
+                                        <a href="#" class="oh-dropdown__link" id="holidays-export" data-toggle="oh-modal-toggle"
+                                            data-target="#holidayExportModal" hx-target="#holidayExportModalTarget"
+                                            hx-get="{% url 'holiday-info-export' %}">{% trans "Export" %}</a>
                                     </li>
                                 {% endif %}
-                                {% if holidays %}
-                                    {% if perms.base.add_holiday %}
-                                        <li class="oh-dropdown__item">
-                                            <a href="#" class="oh-dropdown__link" id="holidays-export" data-toggle="oh-modal-toggle"
-                                                data-target="#holidayExportModal" hx-target="#holidayExportModalTarget"
-                                                hx-get="{% url 'holiday-info-export' %}">{% trans "Export" %}</a>
-                                        </li>
-                                    {% endif %}
-                                    {% if perms.base.delete_holiday %}
-                                        <li class="oh-dropdown__item">
-                                            <a href="#" id="bulkHolidaysDelete" class="oh-dropdown__link oh-dropdown__link--danger"
-                                                data-action="delete">{% trans "Delete" %}</a>
-                                        </li>
-                                    {% endif %}
+                                {% if perms.base.delete_holidays %}
+                                    <li class="oh-dropdown__item">
+                                        <a href="#" id="bulkHolidaysDelete" class="oh-dropdown__link oh-dropdown__link--danger"
+                                            data-action="delete">{% trans "Delete" %}</a>
+                                    </li>
+                                    <span id="bulkHolidaysDeleteSpan" hx-vals="" hx-post="{% url 'holidays-bulk-delete' %}" hx-target="#holidays"></span>
                                 {% endif %}
-                            </ul>
-                        </div>
+                            {% endif %}
+                        </ul>
                     </div>
+                </div>
                 {% endif %}
                 <!-- end of actions -->
 
                 <!-- start of create -->
-                {% if perms.base.add_holiday %}
+                {% if perms.base.add_holidays %}
                     <div class="oh-btn-group ml-2">
                         <div class="oh-dropdown" x-data="{open: false}">
                             <button id="holidayCreateButton" class="oh-btn oh-btn--secondary oh-btn--shadow"
                                 data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
                                 hx-get="{% url 'holiday-creation' %}" hx-target="#objectCreateModalTarget"
-                                onclick="createHolidayHxValue();">
+                                hx-include="#filterForm"
+                                >
                                 <ion-icon name="add-outline" class="me-1"></ion-icon>
                                 {% trans "Create" %}
                             </button>
@@ -159,9 +161,8 @@
                             </a>
                         </div>
                     </div>
-                    <button onclick="
-              validateFile($(this),'importHoliday');
-            " type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3">
+                    <button onclick="validateFile($(this),'importHoliday');"
+                        type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3">
                         {% trans "Upload" %}
                     </button>
                 </form>
@@ -178,23 +179,6 @@
     </div>
 <!-- end of holiday export modal -->
 
-<script>
-    $(document).on("htmx:load", "#holidays", function () {
-        // Create a new script element
-        var scriptElement = document.createElement("script");
-        // Set the source URL of the script file to be loaded
-        scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
-        // Append the script element to the head of the HTML document
-        document.head.appendChild(scriptElement);
-    });
-</script>
-
 <script src="{% static '/base/filter.js' %}"></script>
 <script src="{% static '/holiday/action.js' %}"></script>
-<script>
-    $(document).ready(function () {
-        $("[name=recurring]").select2;
-    });
-</script>
-
 {% endblock %}

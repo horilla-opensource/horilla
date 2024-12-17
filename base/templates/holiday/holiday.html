@@ -1,262 +1,207 @@
-{% load i18n %} {% load static %} {% include 'filter_tags.html' %}
+{% load i18n %} {% load static %} {% load horillafilters %} {% include 'filter_tags.html' %}
 {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{ message.tags }}">
-      {{ message }}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+        <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated {{ message.tags }}">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
     </div>
-  </div>
-  {% endfor %}
-</div>
-{% endif %} {% if holidays %}
-<div class="oh-checkpoint-badge text-success mb-2"
-    id="selectAllHolidays" style="cursor: pointer"
-  >
-    {% trans "Select All Holidays" %}
-</div>
-<div class="oh-checkpoint-badge text-secondary mb-2"
-  id="unselectAllHolidays" style="cursor: pointer"
-  >
-  {% trans "Unselect All Holidays" %}
-</div>
-<div class="oh-checkpoint-badge text-info mb-2"
-  id="exportHolidays" style="cursor: pointer; display: none"
-  >
-  {% trans "Export Holidays" %}
-</div>
-<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowHolidays" style="display: none"></div>
+{% endif %}
+{% if holidays %}
+    <div class="oh-checkpoint-badge text-success mb-2" id="selectAllHolidays" style="cursor: pointer">
+        {% trans "Select All Holidays" %}
+    </div>
+    <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllHolidays" style="cursor: pointer">
+        {% trans "Unselect All Holidays" %}
+    </div>
+    <div class="oh-checkpoint-badge text-info mb-2" id="exportHolidays" style="cursor: pointer; display: none">
+        {% trans "Export Holidays" %}
+    </div>
+    <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowHolidays" style="display: none"></div>
 <!-- end of selection buttons -->
-<div class="oh-sticky-table">
-  <div class="oh-sticky-table__table">
-    <div class="oh-sticky-table__thead">
-      <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th" style="width: 10px">
-          <div class="centered-div">
-            <input
-              type="checkbox"
-              title='{% trans "Select All" %}'
-              class="oh-input oh-input__checkbox all-holidays"
-            />
-          </div>
-        </div>
-        <div
-          class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %}arrow-up-down {% endif %}"
-          hx-get="{% url 'holiday-filter' %}?{{pd}}&sortby=name"
-          hx-target="#holidays"
-        >
-          {% trans "Holiday Name" %}
-        </div>
-        <div
-          class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-          hx-get="{% url 'holiday-filter' %}?{{pd}}&sortby=start_date"
-          hx-target="#holidays"
-        >
-          {% trans "Start Date" %}
-        </div>
-        <div
-          class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-          hx-get="{% url 'holiday-filter' %}?{{pd}}&sortby=end_date"
-          hx-target="#holidays"
-        >
-          {% trans "End Date" %}
-        </div>
-        <div class="oh-sticky-table__th">{% trans "Recurring" %}</div>
-        {% if perms.base.change_holiday or perms.base.delete_holiday %}
-          <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-        {% endif %}
-      </div>
-    </div>
-    <div class="oh-sticky-table__tbody">
-      {% for holiday in holidays %}
-      <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__sd">
-          <div class="centered-div">
-            <input
-              type="checkbox"
-              id="{{holiday.id}}"
-              onchange="highlightRow($(this))"
-              class="oh-input holiday-checkbox oh-input__checkbox all-holidays-row"
-            />
-          </div>
-        </div>
-        <div class="oh-sticky-table__td ps-4">{{holiday.name}}</div>
-        <div class="oh-sticky-table__td dateformat_changer">
-          {{holiday.start_date}}
-        </div>
-        <div class="oh-sticky-table__td dateformat_changer">
-          {{holiday.end_date}}
-        </div>
-        <div class="oh-sticky-table__td">
-          {% if holiday.recurring %}
-            {% trans "Yes" %}
-          {% else %}
-            {% trans "No"%}
-          {% endif %}
-        </div>
-        {% if perms.base.change_holiday or perms.base.delete_holiday %}
-        <div class="oh-sticky-table__td">
-          <div class="oh-btn-group">
-            {% if perms.base.change_holiday %}
-            <button
-              class="oh-btn oh-btn--light-bkg w-100"
-              title="{% trans 'Edit' %}"
-              data-toggle="oh-modal-toggle"
-              data-target="#objectUpdateModal"
-              hx-get="{% url 'holiday-update' holiday.id %}?{{pd}}"
-              hx-target="#objectUpdateModalTarget"
-            >
-              <ion-icon name="create-outline"></ion-icon>
-            </button>
-            {% endif %} {% if perms.base.delete_holiday %}
-            <a
-              class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-              id="delete-link"
-              hx-confirm="{% trans 'Are you sure you want to delete?' %}"
-              hx-post="{% url 'holiday-delete' holiday.id %}?{{pd}}"
-              hx-target="#holidays"
-              title="{% trans 'Delete' %}"
-            >
-              <ion-icon name="trash-outline"></ion-icon>
-            </a>
-            {% endif %}
-          </div>
-        </div>
-        {% endif %}
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-</div>
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th" style="width: 10px">
+                        <div class="centered-div">
+                            <input type="checkbox" title='{% trans "Select All" %}'
+                                class="oh-input oh-input__checkbox all-holidays" />
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'holiday-filter' %}?{{pd}}&sortby=name" hx-target="#holidays">
+                        {% trans "Holiday Name" %}
+                    </div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'holiday-filter' %}?{{pd}}&sortby=start_date" hx-target="#holidays">
+                        {% trans "Start Date" %}
+                    </div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'holiday-filter' %}?{{pd}}&sortby=end_date" hx-target="#holidays">
+                        {% trans "End Date" %}
+                    </div>
+                    <div class="oh-sticky-table__th">{% trans "Recurring" %}</div>
+                    {% if perms.base.add_holidays or perms.base.change_holidays or perms.base.delete_holidays %}
+                        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="oh-sticky-table__tbody">
+                {% for holiday in holidays %}
+                    <div class="oh-sticky-table__tr">
+                        <div class="oh-sticky-table__sd">
+                            <div class="centered-div">
+                                <input type="checkbox" id="{{holiday.id}}" onchange="highlightRow($(this))"
+                                    class="oh-input holiday-checkbox oh-input__checkbox all-holidays-row" />
+                            </div>
+                        </div>
+                        <div class="oh-sticky-table__td ps-4">{{holiday.name}}</div>
+                        <div class="oh-sticky-table__td dateformat_changer">
+                            {{holiday.start_date}}
+                        </div>
+                        <div class="oh-sticky-table__td dateformat_changer">
+                            {{holiday.end_date}}
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            {{holiday.recurring|yes_no}}
+                        </div>
+                        {% if perms.base.add_holidays or perms.base.change_holidays or perms.base.delete_holidays %}
+                        <div class="oh-sticky-table__td">
+                            <div class="oh-btn-group">
+                                {% if perms.base.change_holidays %}
+                                    <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
+                                        data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+                                        hx-get="{% url 'holiday-update' holiday.id %}?{{pd}}" hx-target="#objectUpdateModalTarget">
+                                        <ion-icon name="create-outline"></ion-icon>
+                                    </button>
+                                {% endif %}
 
-<div class="oh-pagination" data-pd="{{pd}}">
-  <span class="oh-pagination__page">
-    {% trans "Page" %} {{ holidays.number }}
-    {% trans "of" %} {{ holidays.paginator.num_pages }}.
-  </span>
-  <nav class="oh-pagination__nav">
-    <div class="oh-pagination__input-container me-3">
-      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-      <input
-        type="number"
-        name="page"
-        class="oh-pagination__input"
-        value="{{holidays.number}}"
-        hx-get="{% url 'holiday-filter' %}?{{pd}}"
-        hx-target="#holidays"
-        min="1"
-      />
-      <span class="oh-pagination__label"
-        >{% trans "of" %} {{holidays.paginator.num_pages}}</span
-      >
+                                {% if perms.leave.add_holidays %}
+                                    <a hx-get="{% url 'duplicate-holiday' holiday.id %}" hx-target="#objectCreateModalTarget"
+                                        data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                        title="{% trans 'Duplicate' %}" style="cursor: pointer;"
+                                        class="oh-btn oh-btn--light-bkg w-100">
+                                        <ion-icon name="copy-outline"></ion-icon>
+                                    </a>
+                                {% endif %}
+                                {% if perms.base.delete_holidays %}
+                                    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
+                                        hx-confirm="{% trans 'Are you sure you want to delete this holiday?' %}"
+                                        hx-post="{% url 'holiday-delete' holiday.id %}?{{pd}}" hx-target="#holidays">
+                                        <ion-icon name="trash-outline"></ion-icon>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-    <ul class="oh-pagination__items">
-      {% if holidays.has_previous %}
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#holidays"
-          hx-get="{% url 'holiday-filter' %}?{{pd}}&page=1"
-          class="oh-pagination__link"
-          >{% trans "First" %}</a
-        >
-      </li>
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#holidays"
-          hx-get="{% url 'holiday-filter' %}?{{pd}}&page={{ holidays.previous_page_number }}"
-          class="oh-pagination__link"
-          >{% trans "Previous" %}</a
-        >
-      </li>
-      {% endif %} {% if holidays.has_next %}
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#holidays"
-          hx-get="{% url 'holiday-filter' %}?{{pd}}&page={{ holidays.next_page_number }}"
-          class="oh-pagination__link"
-          >{% trans "Next" %}</a
-        >
-      </li>
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#holidays"
-          hx-get="{% url 'holiday-filter' %}?{{pd}}&page={{ holidays.paginator.num_pages }}"
-          class="oh-pagination__link"
-          >{% trans "Last" %}</a
-        >
-      </li>
-      {% endif %}
-    </ul>
-  </nav>
-</div>
+
+    <div class="oh-pagination" data-pd="{{pd}}">
+        <span class="oh-pagination__page">
+            {% trans "Page" %} {{ holidays.number }}
+            {% trans "of" %} {{ holidays.paginator.num_pages }}.
+        </span>
+        <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                <input type="number" name="page" class="oh-pagination__input" value="{{holidays.number}}"
+                    hx-get="{% url 'holiday-filter' %}?{{pd}}" hx-target="#holidays" min="1" />
+                <span class="oh-pagination__label">{% trans "of" %} {{holidays.paginator.num_pages}}</span>
+            </div>
+            <ul class="oh-pagination__items">
+                {% if holidays.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target="#holidays" hx-get="{% url 'holiday-filter' %}?{{pd}}&page=1"
+                        class="oh-pagination__link">{% trans "First" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target="#holidays"
+                        hx-get="{% url 'holiday-filter' %}?{{pd}}&page={{ holidays.previous_page_number }}"
+                        class="oh-pagination__link">{% trans "Previous" %}</a>
+                </li>
+                {% endif %} {% if holidays.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target="#holidays" hx-get="{% url 'holiday-filter' %}?{{pd}}&page={{ holidays.next_page_number }}"
+                        class="oh-pagination__link">{% trans "Next" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target="#holidays"
+                        hx-get="{% url 'holiday-filter' %}?{{pd}}&page={{ holidays.paginator.num_pages }}"
+                        class="oh-pagination__link">{% trans "Last" %}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
 {% else %}
-<!--start of empty page  -->
-<div
-  style="
-    height: 70vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  "
-  class=""
->
-  <div style="" class="oh-404">
-    <img
-      style="display: block; width: 150px; height: 150px; margin: 10px auto"
-      src="{% static 'images/ui/leave_types.png' %}"
-      class="mb-4"
-      alt=""
-    />
-    <h3 style="font-size: 20px" class="oh-404__subtitle">
-      {% trans "There are no holidays at the moments." %}
-    </h3>
-  </div>
-</div>
-<!-- end of empty page -->
+    <!--start of empty page  -->
+    <div style="
+        height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    " class="">
+        <div style="" class="oh-404">
+            <img style="display: block; width: 150px; height: 150px; margin: 10px auto"
+                src="{% static 'images/ui/leave_types.png' %}" class="mb-4" alt="" />
+            <h3 style="font-size: 20px" class="oh-404__subtitle">
+                {% trans "There are no holidays at the moments." %}
+            </h3>
+        </div>
+    </div>
+    <!-- end of empty page -->
 {% endif %}
 
 <script>
-  $(".all-holidays").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    if (is_checked) {
-      $(".all-holidays-row")
-        .prop("checked", true)
-        .closest(".oh-sticky-table__tr")
-        .addClass("highlight-selected");
-    } else {
-      $(".all-holidays-row")
-        .prop("checked", false)
-        .closest(".oh-sticky-table__tr")
-        .removeClass("highlight-selected");
-    }
-  });
-
-  $(document).ready(function () {
-    tickHolidayCheckboxes();
-    $(".all-holidays-row").change(function () {
-      var parentTable = $(this).closest(".oh-sticky-table");
-      var body = parentTable.find(".oh-sticky-table__tbody");
-      var parentCheckbox = parentTable.find(".all-holidays");
-      parentCheckbox.prop(
-        "checked",
-        body.find(".all-holidays-row:checked").length ===
-          body.find(".all-holidays-row").length
-      );
-      addingHolidayIds();
+    $(".all-holidays").change(function (e) {
+        var is_checked = $(this).is(":checked");
+        if (is_checked) {
+            $(".all-holidays-row")
+                .prop("checked", true)
+                .closest(".oh-sticky-table__tr")
+                .addClass("highlight-selected");
+        } else {
+            $(".all-holidays-row")
+                .prop("checked", false)
+                .closest(".oh-sticky-table__tr")
+                .removeClass("highlight-selected");
+        }
     });
 
-    $(".all-holidays").change(function () {
-      addingHolidayIds();
+    $(document).ready(function () {
+        tickHolidayCheckboxes();
+        $(".all-holidays-row").change(function () {
+            var parentTable = $(this).closest(".oh-sticky-table");
+            var body = parentTable.find(".oh-sticky-table__tbody");
+            var parentCheckbox = parentTable.find(".all-holidays");
+            parentCheckbox.prop(
+                "checked",
+                body.find(".all-holidays-row:checked").length ===
+                body.find(".all-holidays-row").length
+            );
+            addingHolidayIds();
+        });
+
+        $(".all-holidays").change(function () {
+            addingHolidayIds();
+        });
+        $("#selectAllHolidays").click(function () {
+            selectAllHolidays();
+        });
+        $("#unselectAllHolidays").click(function () {
+            unselectAllHolidays();
+        });
+        $("#exportHolidays").click(function (e) {
+            exportHolidays();
+        });
     });
-    $("#selectAllHolidays").click(function () {
-      selectAllHolidays();
-    });
-    $("#unselectAllHolidays").click(function () {
-      unselectAllHolidays();
-    });
-    $("#exportHolidays").click(function (e) {
-      exportHolidays();
-    });
-  });
 </script>
 <script src="{% static '/holiday/action.js' %}"></script>

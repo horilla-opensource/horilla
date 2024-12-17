@@ -69,7 +69,7 @@ class FAQForm(ModelForm):
             "tags": forms.SelectMultiple(
                 attrs={
                     "class": "oh-select oh-select-2 select2-hidden-accessible",
-                    "onchange": "updateTag()",
+                    "onchange": "updateTag(this)",
                 }
             ),
         }

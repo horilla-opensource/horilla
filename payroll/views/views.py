@@ -21,6 +21,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.methods import (
     closest_numbers,
+    eval_validate,
     export_data,
     generate_colors,
     generate_pdf,
@@ -188,7 +189,7 @@ def contract_status_update(request, contract_id):
 @permission_required("payroll.change_contract")
 def bulk_contract_status_update(request):
     status = request.POST.get("status")
-    ids = eval(request.POST.get("ids"))
+    ids = eval_validate(request.POST.get("ids"))
     all_contracts = Contract.objects.all()
     contracts = all_contracts.filter(id__in=ids)
 
@@ -844,6 +845,7 @@ def payslip_export(request):
             "id", flat=True
         )
     )
+    # print(contributions)
     department = []
     total_amount = 0
 
@@ -867,8 +869,6 @@ def payslip_export(request):
     if status:
         employee_payslip_list = employee_payslip_list.filter(status=status)
 
-    emp = request.user.employee_get
-
     for employ in contributions:
         payslips = Payslip.objects.filter(employee_id__id=employ)
         if end_date:
@@ -882,7 +882,7 @@ def payslip_export(request):
             if end_date:
                 payslips = payslips.filter(end_date__lte=end_date)
         pay_heads = payslips.values_list("pay_head_data", flat=True)
-        contribution_deductions = []
+        # contribution_deductions = []
         deductions = []
         for head in pay_heads:
             for deduction in head["gross_pay_deductions"]:
@@ -910,7 +910,6 @@ def payslip_export(request):
         }
 
         for deduction_id, group in grouped_deductions.items():
-            title = group[0]["title"]
             employee_contribution = sum(item["amount"] for item in group)
             try:
                 employer_contribution = sum(
@@ -918,25 +917,16 @@ def payslip_export(request):
                 )
             except:
                 employer_contribution = 0
-            total_contribution = employee_contribution + employer_contribution
             if employer_contribution > 0:
-                contribution_deductions.append(
-                    {
-                        "deduction_id": deduction_id,
-                        "title": title,
-                        "employee_contribution": employee_contribution,
-                        "employer_contribution": employer_contribution,
-                        "total_contribution": total_contribution,
-                    }
-                )
                 table5_data.append(
                     {
-                        "Employee": Employee.objects.get(id=emp.id),
+                        "Employee": Employee.objects.get(id=employ),
                         "Employer Contribution": employer_contribution,
                         "Employee Contribution": employee_contribution,
                     }
                 )
 
+    emp = request.user.employee_get
     if employee_payslip_list:
         for payslip in employee_payslip_list:
             # Taking the company_name of the user
@@ -1614,6 +1604,7 @@ def view_payrollrequest_comment(request, payroll_id):
         request_id=payroll_id
     ).order_by("-created_at")
 
+    req = Reimbursement.objects.get(id=payroll_id)
     no_comments = False
     if not comments.exists():
         no_comments = True
@@ -1636,6 +1627,7 @@ def view_payrollrequest_comment(request, payroll_id):
             "comments": comments,
             "no_comments": no_comments,
             "request_id": payroll_id,
+            "req": req,
         },
     )
 
@@ -1645,14 +1637,11 @@ def delete_payrollrequest_comment(request, comment_id):
     """
     This method is used to delete Reimbursement request comments
     """
+    script = ""
     comment = ReimbursementrequestComment.objects.filter(id=comment_id)
-    if not request.user.has_perm("delete_reimbursementrequestcomment"):
-        comment = comment.filter(employee_id__employee_user_id=request.user)
-    reimbursementrequest = comment.first().request_id.id
     comment.delete()
-
     messages.success(request, _("Comment deleted successfully!"))
-    return redirect("payroll-request-view-comment", payroll_id=reimbursementrequest)
+    return HttpResponse(script)
 
 
 @login_required
@@ -1660,25 +1649,14 @@ def delete_reimbursement_comment_file(request):
     """
     Used to delete attachment
     """
+    script = ""
     ids = request.GET.getlist("ids")
     records = ReimbursementFile.objects.filter(id__in=ids)
     if not request.user.has_perm("payroll.delete_reimbursmentfile"):
         records = records.filter(employee_id__employee_user_id=request.user)
-
     records.delete()
-
-    payroll_id = request.GET["payroll_id"]
-    comments = ReimbursementrequestComment.objects.filter(
-        request_id=payroll_id
-    ).order_by("-created_at")
-    return render(
-        request,
-        "payroll/reimbursement/reimbursement_comment.html",
-        {
-            "comments": comments,
-            "request_id": payroll_id,
-        },
-    )
+    messages.success(request, _("File deleted successfully"))
+    return HttpResponse(script)
 
 
 @login_required
@@ -1687,7 +1665,7 @@ def initial_notice_period(request):
     """
     This method is used to set initial value notice period
     """
-    notice_period = eval(request.GET["notice_period"])
+    notice_period = eval_validate(request.GET["notice_period"])
     settings = PayrollGeneralSetting.objects.first()
     settings = settings if settings else PayrollGeneralSetting()
     settings.notice_period = max(notice_period, 0)

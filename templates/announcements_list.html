@@ -1,0 +1,44 @@
+{% load static %}
+{% load i18n %}
+<div class="oh-sticky-table" style="height:400px; border:none;">
+    <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__tbody">
+            {% if not announcements %}
+                <div style="margin-top:30%">
+                    <div class="oh-404" style="position:revert; transform:none">
+                        <img style="width: 80px;height: 80px; margin-bottom:20px"
+                            src="{% static 'images/ui/no-announcement.svg' %}" class="oh-404__image"
+                            alt="Page not found. 404." />
+                        <h5 class="oh-404__subtitle">{% trans "No Announcements to show." %}</h5>
+                    </div>
+                </div>
+            {% else %}
+                {% for announcement in announcements %}
+                    <div class="oh-sticky-table__tr" draggable="true">
+                        <div class="announcement_title">
+                            <a class="oh-profile oh-profile--md" style="text-decoration:none;"
+                                hx-on:click="$('#objectDetailsModal').addClass('oh-modal--show');"
+                                hx-get="{% url 'announcement-single-view' announcement.id %}?instance_ids={{instance_ids}}"
+                                hx-target="#objectDetailsModalTarget" onclick="closeNew(this)">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="https://ui-avatars.com/api/?name={{announcement.title}}&background=random"
+                                        class="oh-profile__image" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark fw-bold">
+                                    {{announcement.title}}
+                                </span>
+                                {% if announcement.created_at|date:"Y-m-d" == current_date and request.user not in announcement.viewed_by %}
+                                    <span class="oh-profile__info-value ms-2" id="newTab"
+                                        style="background-color: hsl(8,77%,56%); color:white;
+                                                font-size: 0.7rem; padding: 3px 8px; border-radius: 15px; font-weight: 800; width:auto;">
+                                        {% trans "NEW" %}
+                                    </span>
+                                {% endif %}
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>

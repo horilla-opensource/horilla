@@ -38,7 +38,7 @@
                 <div data-cell-index="2" data-cell-title="{% trans "Leave Type" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-leave_type_id' %}arrow-up {% elif request.sort_option.order == 'leave_type_id' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=leave_type_id"  >{% trans "Leave Type" %}</div>
                 <div data-cell-index="3" data-cell-title="{% trans "Available Days" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-available_days' %}arrow-up {% elif request.sort_option.order == 'available_days' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=available_days"  >{% trans "Available Days" %}</div>
                 <div data-cell-index="4" data-cell-title="{% trans "Carryforward Days" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-carryforward_days' %}arrow-up {% elif request.sort_option.order == 'carryforward_days' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=carryforward_days"  >{% trans "Carryforward Days" %}</div>
-                <div data-cell-index="5" data-cell-title="{% trans "Leave Days" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-total_leave_days' %}arrow-up {% elif request.sort_option.order == 'total_leave_days' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=total_leave_days"  >{% trans "Total Leave Days" %}</div>
+                <div data-cell-index="5" data-cell-title="{% trans "Total Leave Days" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-total_leave_days' %}arrow-up {% elif request.sort_option.order == 'total_leave_days' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=total_leave_days"  >{% trans "Total Leave Days" %}</div>
                 <div data-cell-index="6" data-cell-title="{% trans "Used Leave Days" %}" class="oh-sticky-table__th" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=total_leave_days"  >{% trans "Used Leave Days" %}</div>
                 <div data-cell-index="7" data-cell-title="{% trans "Assigned Date" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_date' %}arrow-up {% elif request.sort_option.order == 'assigned_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&sortby=assigned_date"  >{% trans "Assigned Date" %}</div>
                 {% if perms.leave.change_availableleave or perms.leave.delete_availableleave or request.user|is_reportingmanager %}
@@ -68,9 +68,9 @@
                 </div>
             </div>
             <div data-cell-index="2" class="oh-sticky-table__td">{{available_leave.leave_type_id}}</div>
-            <div data-cell-index="3" class="oh-sticky-table__td">{% if available_leave.leave_type_id.limit_leave %} {{available_leave.total_leave_days}}{% else %}{% trans "No Limit" %}{% endif %}</div>
+            <div data-cell-index="3" class="oh-sticky-table__td">{% if available_leave.leave_type_id.limit_leave %} {{available_leave.available_days}}{% else %}{% trans "No Limit" %}{% endif %}</div>
             <div data-cell-index="4" class="oh-sticky-table__td">{{available_leave.carryforward_days}}</div>
-            <div data-cell-index="5" class="oh-sticky-table__td">{% if available_leave.leave_type_id.limit_leave %} {{available_leave.total_leave_days}}{% else %}{% trans "No Limit" %}{% endif %}</div>
+            <div data-cell-index="5" class="oh-sticky-table__td">{% if available_leave.leave_type_id.limit_leave %} {{available_leave.available_days}}{% else %}{% trans "No Limit" %}{% endif %}</div>
             <div data-cell-index="6" class="oh-sticky-table__td">{{available_leave.leave_taken}}</div>
             <div data-cell-index="7" class="oh-sticky-table__td dateformat_changer">{{available_leave.assigned_date}}</div>
             {% if perms.leave.change_availableleave or perms.leave.delete_availableleave or request.user|is_reportingmanager %}
@@ -79,7 +79,9 @@
                     {% if request.user|is_reportingmanager or perms.leave.change_availableleave %}
                         <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
                             data-target="#objectUpdateModal" hx-get="{% url 'available-leave-update' available_leave.id %}?{{pd}}"
-                            hx-target="#objectUpdateModalTarget"><ion-icon name="create-outline"></ion-icon></button>
+                            hx-target="#objectUpdateModalTarget"hx-on:click="$('#objectUpdateModalTarget').css('max-width', '350px');">
+                            <ion-icon name="create-outline"></ion-icon>
+                        </button>
                     {% endif %}
                     {% if request.user|is_reportingmanager or perms.leave.delete_availableleave %}
                     <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" hx-confirm="{% trans 'Are you sure you want to delete ?' %}"

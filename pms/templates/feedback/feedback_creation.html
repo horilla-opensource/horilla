@@ -29,6 +29,7 @@
 <main class="oh-onboarding">
     <div class="oh-onboarding-card oh-profile-section" style="max-width: 868px;">
         <form action="{%url 'feedback-creation' %}" id="feedbackCreationForm" method="post">
+        {{feedback_form.non_field_errors}}
             {% csrf_token %}
             <div class="oh-onboarding-card__address-group">
                 <h2 class="oh-onboarding-card__section-title">{% trans "Feedback" %}</h2>
@@ -158,7 +159,6 @@
             <div class="w-100 d-flex align-items-center justify-content-end">
                 <button
                     type="submit"
-                    onclick="validateFeedBack(event)"
                     class="oh-btn oh-btn--secondary oh-btn--w-100-resp"
                 >
                     {% trans "Save" %}

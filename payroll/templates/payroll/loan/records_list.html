@@ -89,7 +89,9 @@
                                     >
                                         {% trans "Description" %}
                                     </div>
-                                    <div class="oh-sticky-table__th"> {% trans "Actions" %} </div>
+                                    {% if perms.payroll.change_loanaccount or perms.payroll.delete_loanaccount %}
+                                        <div class="oh-sticky-table__th"> {% trans "Actions" %} </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="oh-sticky-table__tbody">
@@ -135,19 +137,20 @@
                                         <div data-cell-index="6" class="oh-sticky-table__td">
                                         {{req.description}}
                                         </div>
-                                        <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                                            <div class="oh-btn-group">
-                                                {% if perms.payroll.change_loanaccount or request.user %}
-                                                    <a class="oh-btn oh-btn--light-bkg w-100" hx-get="{% url 'create-loan' %}?instance_id={{ req.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" title="{% trans 'Edit' %}">
-                                                        <ion-icon class="text-dark" name="create-outline"></ion-icon></a>
-                                                {% endif %}
-                                                {% if perms.payroll.delete_loanaccount %}
-                                                    <a class="oh-btn oh-btn--light-bkg w-100" href="{% url 'delete-loan' %}?ids={{ req.id }}" onclick="return confirm('Do you want to delete this record?')" title='{% trans "Delete" %}'>
-                                                        <ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
-                                                {% endif %}
+                                        {% if perms.payroll.change_loanaccount or perms.payroll.delete_loanaccount %}
+                                            <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                                                <div class="oh-btn-group">
+                                                    {% if perms.payroll.change_loanaccount %}
+                                                        <a class="oh-btn oh-btn--light-bkg w-100" hx-get="{% url 'create-loan' %}?instance_id={{ req.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" title="{% trans 'Edit' %}">
+                                                            <ion-icon class="text-dark" name="create-outline"></ion-icon></a>
+                                                    {% endif %}
+                                                    {% if perms.payroll.delete_loanaccount %}
+                                                        <a class="oh-btn oh-btn--light-bkg w-100" href="{% url 'delete-loan' %}?ids={{ req.id }}" onclick="return confirm('Do you want to delete this record?')" title='{% trans "Delete" %}'>
+                                                            <ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
+                                                    {% endif %}
+                                                </div>
                                             </div>
-                                        </div>
-
+                                        {% endif %}
                                     </div>
                                 {% endfor %}
                             </div>
@@ -326,7 +329,9 @@
                                     >
                                         {% trans "Description" %}
                                     </div>
-                                    <div class="oh-sticky-table__th"> {% trans "Actions" %} </div>
+                                    {% if perms.payroll.change_loanaccount or perms.payroll.delete_loanaccount %}
+                                        <div class="oh-sticky-table__th"> {% trans "Actions" %} </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="oh-sticky-table__tbody">
@@ -372,19 +377,20 @@
                                         <div data-cell-index="6" class="oh-sticky-table__td">
                                         {{req.description}}
                                         </div>
-                                        <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                                            <div class="oh-btn-group">
-                                                {% if perms.payroll.change_loanaccount or request.user %}
-                                                    <a class="oh-btn oh-btn--light-bkg w-100" hx-get="{% url 'create-loan' %}?instance_id={{ req.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" title="{% trans 'Edit' %}">
-                                                        <ion-icon class="text-dark" name="create-outline"></ion-icon></a>
-                                                {% endif %}
-                                                {% if perms.payroll.delete_loanaccount %}
-                                                    <a class="oh-btn oh-btn--light-bkg w-100" href="{% url 'delete-loan' %}?ids={{ req.id }}" onclick="return confirm('Do you want to delete this record?')" title="{% trans 'Delete' %}">
-                                                        <ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
-                                                {% endif %}
+                                        {% if perms.payroll.change_loanaccount or perms.payroll.delete_loanaccount %}
+                                            <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                                                <div class="oh-btn-group">
+                                                    {% if perms.payroll.change_loanaccount %}
+                                                        <a class="oh-btn oh-btn--light-bkg w-100" hx-get="{% url 'create-loan' %}?instance_id={{ req.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" title="{% trans 'Edit' %}">
+                                                            <ion-icon class="text-dark" name="create-outline"></ion-icon></a>
+                                                    {% endif %}
+                                                    {% if perms.payroll.delete_loanaccount %}
+                                                        <a class="oh-btn oh-btn--light-bkg w-100" href="{% url 'delete-loan' %}?ids={{ req.id }}" onclick="return confirm('Do you want to delete this record?')" title="{% trans 'Delete' %}">
+                                                            <ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
+                                                    {% endif %}
+                                                </div>
                                             </div>
-                                        </div>
-
+                                        {% endif %}
                                     </div>
                                 {% endfor %}
                             </div>
@@ -563,7 +569,9 @@
                                     >
                                         {% trans "Description" %}
                                     </div>
-                                    <div class="oh-sticky-table__th"> {% trans "Actions" %} </div>
+                                    {% if perms.payroll.change_loanaccount or perms.payroll.delete_loanaccount %}
+                                        <div class="oh-sticky-table__th"> {% trans "Actions" %} </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="oh-sticky-table__tbody">
@@ -609,19 +617,20 @@
                                         <div data-cell-index="6" class="oh-sticky-table__td">
                                         {{req.description}}
                                         </div>
-                                        <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                                            <div class="oh-btn-group">
-                                                {% if perms.payroll.change_loanaccount or request.user %}
-                                                    <a class="oh-btn oh-btn--light-bkg w-100" hx-get="{% url 'create-loan' %}?instance_id={{ req.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" title="{% trans 'Edit' %}">
-                                                        <ion-icon class="text-dark" name="create-outline"></ion-icon></a>
-                                                {% endif %}
-                                                {% if perms.payroll.delete_loanaccount %}
-                                                    <a class="oh-btn oh-btn--light-bkg w-100" href="{% url 'delete-loan' %}?ids={{ req.id }}" onclick="return confirm('Do you want to delete this record?')" title="{% trans 'Delete' %}">
-                                                        <ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
-                                                {% endif %}
+                                        {% if perms.payroll.change_loanaccount or perms.payroll.delete_loanaccount %}
+                                            <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                                                <div class="oh-btn-group">
+                                                    {% if perms.payroll.change_loanaccount %}
+                                                        <a class="oh-btn oh-btn--light-bkg w-100" hx-get="{% url 'create-loan' %}?instance_id={{ req.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" title="{% trans 'Edit' %}">
+                                                            <ion-icon class="text-dark" name="create-outline"></ion-icon></a>
+                                                    {% endif %}
+                                                    {% if perms.payroll.delete_loanaccount %}
+                                                        <a class="oh-btn oh-btn--light-bkg w-100" href="{% url 'delete-loan' %}?ids={{ req.id }}" onclick="return confirm('Do you want to delete this record?')" title="{% trans 'Delete' %}">
+                                                            <ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
+                                                    {% endif %}
+                                                </div>
                                             </div>
-                                        </div>
-
+                                        {% endif %}
                                     </div>
                                 {% endfor %}
                             </div>

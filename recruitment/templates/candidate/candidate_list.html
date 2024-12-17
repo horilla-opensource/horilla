@@ -72,6 +72,7 @@
           <div class="oh-sticky-table__tr ui-sortable-handle">
             <div class="oh-sticky-table__sd {% if cand.canceled %} row-status--red
             {% elif cand.hired %} row-status--yellow
+            {% elif cand.converted %} row-status--blue
             {% else %} row-status--purple
             {% endif %}">
               <div class="centered-div">
@@ -142,8 +143,11 @@
                     style="padding:0.8rem 1rem"
                   >
                     <ion-icon name="person-circle-outline"></ion-icon></a>
-              {% else %}
+              {% elif cand.email in emp_list %}
                 <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Converted " %}' style="opacity: 30%; padding:0.8rem 1rem" disabled>
+                  <ion-icon name="person-circle-outline"></ion-icon></button>
+              {% else %}
+                <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate in Onboarding " %}' style="opacity: 30%; padding:0.8rem 1rem" disabled>
                   <ion-icon name="person-circle-outline"></ion-icon></button>
               {% endif %}
               {% if cand.email in emp_list %}

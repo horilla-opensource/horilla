@@ -2,7 +2,9 @@ from django import views
 from django.apps import apps
 from django.urls import path
 
+from base.views import object_duplicate
 from employee.models import Employee
+from leave.forms import RestrictLeaveForm
 
 from . import models, views
 
@@ -68,7 +70,7 @@ urlpatterns = [
     path("user-request/<int:id>", views.user_leave_request, name="user-request"),
     path("request-filter", views.leave_request_filter, name="request-filter"),
     path("assign", views.leave_assign, name="assign"),
-    path("assign-one/<int:id>", views.leave_assign_one, name="assign-one"),
+    path("assign-one/<int:obj_id>", views.leave_assign_one, name="assign-one"),
     path("assign-view/", views.leave_assign_view, name="assign-view"),
     path(
         "available-leave-single-view/<int:obj_id>/",
@@ -292,7 +294,7 @@ urlpatterns = [
     ),
     path(
         "delete-leave-comment-file/",
-        views.delete_comment_file,
+        views.delete_leave_comment_file,
         name="delete-leave-comment-file",
     ),
     path(
@@ -353,6 +355,16 @@ urlpatterns = [
         "cut-penalty/<int:instance_id>/",
         views.cut_available_leave,
         name="leave-cut-penalty",
+    ),
+    path(
+        "duplicate-restrict-leave/<int:obj_id>/",
+        object_duplicate,
+        name="duplicate-restrict-leave",
+        kwargs={
+            "model": models.RestrictLeave,
+            "form": RestrictLeaveForm,
+            "template": "leave/restrict/restrict_form.html",
+        },
     ),
 ]
 

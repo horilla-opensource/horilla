@@ -3,14 +3,23 @@
 {% block content %}
 {% load i18n %}
 <style>
+    .oh-dashboard__right {
+        display: flex;
+        flex-direction: column;
+    }
+
     .oh-card-dashboard {
-        cursor : default !important;
+        flex: 1;
+        height: 100%;
+        cursor: default !important;
     }
+
     .pointer {
-        cursor : pointer !important;
+        cursor: pointer !important;
     }
+
     .dash-card {
-        padding-bottom:30px;
+        padding-bottom: 30px;
     }
 </style>
 <div class="oh-wrapper">
@@ -18,7 +27,8 @@
         <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
             <div class="oh-dashboard__cards row">
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer dash-card"id="requestedLeaves" >
+                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer dash-card"
+                        id="requestedLeaves">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "New Requests" %}</span>
                         </div>
@@ -32,7 +42,8 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--success filter pointer dash-card" id="approvedLeaves">
+                    <div class="oh-card-dashboard oh-card-dashboard--success filter pointer dash-card"
+                        id="approvedLeaves">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "Approved Requests" %}</span>
                         </div>
@@ -44,13 +55,14 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--danger filter pointer dash-card" id="rejectedLeaves">
+                    <div class="oh-card-dashboard oh-card-dashboard--danger filter pointer dash-card"
+                        id="rejectedLeaves">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "Rejected Requests" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body">
                             <div class="oh-card-dashboard__counts">
-                               <span class="oh-card-dashboard__count">{{rejected|length}}</span>
+                                <span class="oh-card-dashboard__count">{{rejected|length}}</span>
                             </div>
                         </div>
                     </div>
@@ -61,50 +73,43 @@
                 <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-2">
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title" >{% trans "Available Leaves" %}</span>
+                            <span class="oh-card-dashboard__title">{% trans "Available Leaves" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body" id="availableLeaveContainer">
-                            <canvas id="availableLeave" ></canvas>
+                            <canvas id="availableLeave"></canvas>
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-8">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-8 mt-2">
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                             <span class="oh-card-dashboard__title">{% trans "Total Leave Requests" %}</span>
-                            <input type="month" hx-trigger="change delay:100ms" class="float-end month" hx-get="{% url 'dashboard-leave-requests' %}" hx-target="#leaveRequest">
+                            <input type="month" hx-trigger="change delay:100ms" class="float-end month"
+                                hx-get="{% url 'dashboard-leave-requests' %}" hx-target="#leaveRequest">
                         </div>
-                        <div class="oh-card-dashboard__body" id="leaveRequest" style="height:35vh;overflow-y:auto">
-                            {% include 'leave/leave_request/dashboard_leave_requests.html' %}
+                        <div class="oh-card-dashboard__body" id="leaveRequest"
+                            hx-get="{% url 'dashboard-leave-requests' %}" hx-trigger="load">
+                            <div class="animated-background"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-
-
         <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
             <div class="oh-dashboard__events">
                 <div class="w-100">
                     {% if perms.leave.view_leaverequest %}
                     <div class="w-100 mb-1" id="back_button">
-                        <a href="{% url 'leave-dashboard' %}"
-                        class="oh-btn oh-btn--secondary oh-btn--shadow"
-                        >{% trans "View Admin Dashboard" %}
-                        <ion-icon
-                            class="me-2 md hydrated"
-                            name="arrow-forward-outline"
-                            role="img"
-                            aria-label="arrow-back-outline"
-                        ></ion-icon
-                        ></a
-                        >
+                        <a href="{% url 'leave-dashboard' %}" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                            {% trans "View Admin Dashboard" %}
+                            <ion-icon class="me-2 md hydrated" name="arrow-forward-outline" role="img"
+                                aria-label="arrow-back-outline"></ion-icon></a>
                     </div>
                     {% endif %}
-                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2"  style="padding-bottom:1rem">
+                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2" style="padding-bottom:1rem">
                         <div class="oh-dasboard__event-photo" style="background-color:white">
-                            <img src="{% static "/images/ui/sunbed.png" %}" class="oh-dashboard__event-userphoto" />
+                            <img src="{% static '/images/ui/sunbed.png' %}" class="oh-dashboard__event-userphoto" />
                         </div>
                         <div class="oh-dasboard__event-details">
                             <span class="oh-dashboard__event-title">{% trans "Next Holiday" %}</span>
@@ -119,45 +124,26 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Upcoming holidays" %}</span>
                 </div>
-                <div class="oh-card-dashboard__body">
-                    <ul class="oh-card-dashboard__user-list">
-                        {% if holidays %}
-                            {% for holiday in holidays %}
-                                <li class="oh-card-dashboard__user-item oh-dashboard__event">
-                                    <div class="">
-                                    <span class="oh-profile__name oh-text--white">{{holiday.name}}</span> <br/>
-                                    <span class="oh-dashboard__event-date oh-text--white dateformat_changer">{{holiday.start_date}}</span>
-                                    </div>
-                                </li>
-                            {% endfor %}
-
-                        {% else %}
-                            <div style="height: 350px; display:flex;align-items: center;justify-content: center;" class="">
-                                <div style="" class="">
-                                <img style="display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="" alt=""/>
-                                <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No more holidays scheduled for this month." %}</h3>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </ul>
+                <div class="oh-card-dashboard__body" hx-get="{% url 'get-upcoming-holidays' %}" hx-trigger="load"
+                    id="upcomingHolidaysList">
+                    <div class="animated-background"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script src="{% static "dashboard/dashboard.js" %}"></script>
+<script src="{% static 'dashboard/dashboard.js' %}"></script>
 <script>
-    $(document).ready(function() {
-        $("#requestedLeaves").on("click", function(){
-            window.location.href='{% url "user-request-view" %}?status=requested'
+    $(document).ready(function () {
+        $("#requestedLeaves").on("click", function () {
+            window.location.href = '{% url "user-request-view" %}?status=requested'
         })
-        $("#approvedLeaves").on("click", function(){
-            window.location.href='{% url "user-request-view" %}?status=approved'
+        $("#approvedLeaves").on("click", function () {
+            window.location.href = '{% url "user-request-view" %}?status=approved'
         })
-        $("#rejectedLeaves").on("click", function(){
-            window.location.href='{% url "user-request-view" %}?status=rejected'
+        $("#rejectedLeaves").on("click", function () {
+            window.location.href = '{% url "user-request-view" %}?status=rejected'
         })
     })
 

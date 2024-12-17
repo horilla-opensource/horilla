@@ -24,7 +24,25 @@ def recruitment_close():
                 rec.save()
 
 
+def candidate_convert():
+
+    from django.contrib.auth.models import User
+
+    from recruitment.models import Candidate
+
+    candidates = Candidate.objects.filter(is_active=True)
+    mails = list(Candidate.objects.values_list("email", flat=True))
+    existing_emails = list(
+        User.objects.filter(username__in=mails).values_list("email", flat=True)
+    )
+    for cand in candidates:
+        if cand.email in existing_emails:
+            cand.converted = True
+            cand.save()
+
+
 scheduler = BackgroundScheduler()
+scheduler.add_job(candidate_convert, "interval", seconds=10)
 scheduler.add_job(recruitment_close, "interval", hours=1)
 
 scheduler.start()

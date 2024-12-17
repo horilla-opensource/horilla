@@ -49,7 +49,7 @@
 
     .orgchart.l2r {
         position: absolute;
-        transform: rotate(-90deg) rotateY(180deg) translate(-50%);
+        transform: rotate(-90deg) rotateY(180deg) translate(-25%);
         transform-origin: left top;
         text-align: center;
         left: 0;
@@ -205,7 +205,7 @@
 
     .orgchart.l2r .node,
     .orgchart.r2l .node {
-        width: 50px;
+        width: 70px;
         height: 140px;
     }
 
@@ -217,7 +217,8 @@
     }
 
     .orgchart .node.focused {
-        background-color: rgba(238, 217, 54, 0.5);
+        /* background-color: rgba(238, 217, 54, 0.5); */
+        width: 70px;
     }
 
     .orgchart .ghost-node {
@@ -305,7 +306,7 @@
     .orgchart .node .content {
         box-sizing: border-box;
         width: 130px;
-        height: 20px;
+        height: auto;
         line-height: 20px;
         font-size: 10px;
         border: 1px solid rgba(217, 83, 79, 0.8);
@@ -327,6 +328,7 @@
         transform: rotate(-90deg) translate(-45px, -45px) rotateY(180deg);
         transform-origin: top center;
         width: 130px;
+        text-wrap: auto;
     }
 
     .orgchart.r2l .node .content {

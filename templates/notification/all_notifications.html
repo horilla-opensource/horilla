@@ -1,23 +1,22 @@
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
 {% if messages %}
-    <div class="oh-alert-container">
-        {% for message in messages %}
-        <div class="oh-alert oh-alert--animated {{message.tags}}">
-              {{ message }}
-        </div>
-        {% endfor %}
+<div class="oh-alert-container">
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+        {{ message }}
     </div>
-    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
 <ol class="oh-activity-sidebar__qa-list" role="list">
     {% for notification in notifications %}
-    <li class="oh-activity-sidebar__qa-item">
+    <li class="oh-activity-sidebar__qa-item" id="notificationBodyItem{{notification.id}}">
         <div class="d-flex justify-content-between">
-
             <span class="oh-activity-sidebar__q">
                 {{forloop.counter}}.
                 {% if notification.unread %}
-                <span style="width: 10px;height: 10px;border-radius: 100%; background-color: hsl(8deg,77%,56%);display: inline-block;right: 5px;"></span>
+                    <span style="width: 10px;height: 10px;border-radius: 100%; background-color: hsl(8deg,77%,56%);display: inline-block;right: 5px;"></span>
                 {% endif %}
                 {% if LANGUAGE_CODE == 'ar' %}
                     <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_ar }}</p>
@@ -31,25 +30,28 @@
                     <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.verb }}</p>
                 {% endif %}
             </span>
-        <div hx-target="#allNotificationBody" hx-post="{% url 'delete-notifications' notification.id %}">
-            <ion-icon name="close-outline"role="img" aria-label="close outline"></ion-icon>
-        </div>
+            <div hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
+                hx-target="#notificationBodyItem{{notification.id}}"
+                hx-post="{% url 'delete-notifications' notification.id %}" hx-swap="outerHTML">
+                <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
 
-    </div>
+            </div>
+        </div>
         <span class="oh-activity-sidebar__a">
-        {{ notification.timesince }} {% trans "ago by" %}<img src="https://ui-avatars.com/api/?name={{notification.actor}}&amp;background=random" style="width: 1.5em; border-radius: 100%;" alt="User"> {{notification.actor}}
-    </span>
+            {{ notification.timesince }} {% trans "ago by" %}<img
+                src="https://ui-avatars.com/api/?name={{notification.actor}}&amp;background=random"
+                style="width: 1.5em; border-radius: 100%;" alt="User"> {{notification.actor}}
+        </span>
     </li>
     {% endfor %}
-
 </ol>
 
 <script>
     $(document).ready(function () {
-      $('#notificationClose').attr('class', 'oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated');
+        $('#notificationClose').attr('class', 'oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated');
     });
     $('#notificationClose').click(function (e) {
-      $('#allNotifications').removeClass('oh-activity-sidebar--show');
+        $('#allNotifications').removeClass('oh-activity-sidebar--show');
     });
 
-  </script>
+</script>

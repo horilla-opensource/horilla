@@ -453,7 +453,7 @@ class AvailableLeave(HorillaModel):
             status="approved",
         ).aggregate(total_sum=Sum("requested_days"))
 
-        return int(leave_taken["total_sum"]) if leave_taken["total_sum"] else 0
+        return leave_taken["total_sum"] if leave_taken["total_sum"] else 0
 
     # Setting the expiration date for carryforward leaves
     def set_expired_date(self, available_leave, assigned_date):
@@ -579,6 +579,28 @@ class LeaveRequest(HorillaModel):
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id} | {self.status}"
 
+    def employees_on_leave_today(today=None, status=None):
+        """
+        Retrieve employees who are on leave on a given date (default is today).
+
+        Args:
+            today (date, optional): The date to check. Defaults to the current date
+                                    in the server's local timezone.
+            status (str, optional): The status to filter leave requests. If None, no filtering by status is applied.
+
+        Returns:
+            QuerySet: A queryset of LeaveRequest instances where employees are on leave on the specified date.
+        """
+        today = date.today() if today is None else today
+        queryset = LeaveRequest.objects.filter(
+            start_date__lte=today, end_date__gte=today
+        )
+
+        if status is not None:
+            queryset = queryset.filter(status=status)
+
+        return queryset
+
     def get_penalties_count(self):
         """
         This method is used to return the total penalties in the late early instance
@@ -693,11 +715,12 @@ class LeaveRequest(HorillaModel):
         conditions = None
         if work_info.exists():
             department_id = self.employee_id.employee_work_info.department_id
+            emp_comp_id = self.employee_id.employee_work_info.company_id
         requested_days = self.requested_days
         applicable_condition = False
-        if department_id != None:
+        if department_id != None and emp_comp_id != None:
             conditions = MultipleApprovalCondition.objects.filter(
-                department=department_id
+                department=department_id, company_id=emp_comp_id
             ).order_by("condition_value")
         if conditions != None:
             for condition in conditions:
@@ -877,20 +900,13 @@ class LeaveRequest(HorillaModel):
                 return True
 
     def delete(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-
         if self.status == "requested":
-            """
-            Override the delete method to update the leave clashes count of related leave requests.
-            """
-            leave_request = self
-
             super().delete(*args, **kwargs)
 
-            clash_thread = LeaveClashThread(leave_request)
-            clash_thread.start()
-
+            # Update the leave clashes count for all relevant leave requests
+            self.update_leave_clashes_count()
         else:
+            request = getattr(horilla_middlewares._thread_locals, "request", None)
             if request:
                 clear_messages(request)
                 messages.warning(
@@ -924,11 +940,16 @@ class LeaveRequest(HorillaModel):
             overlapping_requests = (
                 LeaveRequest.objects.exclude(id=self.id)
                 .filter(
-                    Q(
-                        employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+                    (
+                        Q(
+                            employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+                        )
+                        | Q(
+                            employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
+                        )
                     )
-                    | Q(
-                        employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
+                    & Q(
+                        employee_id__employee_work_info__company_id=self.employee_id.employee_work_info.company_id
                     ),
                     start_date__lte=self.end_date,
                     end_date__gte=self.start_date,
@@ -1075,6 +1096,14 @@ class RestrictLeave(HorillaModel):
     description = models.TextField(
         null=True, verbose_name=_("Description"), max_length=255
     )
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Company"),
+    )
+    objects = HorillaCompanyManager(related_company_field="company_id")
 
     def __str__(self) -> str:
         return f"{self.title}"

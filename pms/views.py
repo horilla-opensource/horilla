@@ -25,8 +25,14 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from base.methods import closest_numbers, get_key_instances, get_pagination, sortby
-from base.views import paginator_qry
+from base.methods import (
+    closest_numbers,
+    eval_validate,
+    get_key_instances,
+    get_pagination,
+    paginator_qry,
+    sortby,
+)
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
     hx_request_required,
@@ -862,6 +868,7 @@ def kr_table_view(request, emp_objective_id):
         "key_result_status": EmployeeKeyResult.STATUS_CHOICES,
         "emp_objective": emp_objective,
         "pd": previous_data,
+        "today": datetime.datetime.today().date(),
     }
     template = "okr/kr_list.html"
     return render(request, template, context)
@@ -1468,43 +1475,43 @@ def feedback_creation(request):
     return render(request, "feedback/feedback_creation.html", context)
 
 
-@login_required
-@manager_can_enter(perm="pms.add_feedback")
-def feedback_creation_ajax(request):
-    """
-    This view is used to create feedback object.
-    Returns:
-        it will return feedback creation html.
-    """
-    # this ajax request is used to get the Key result and manager of the choosen employee
-    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
-    if is_ajax:
-        if request.method == "POST":
-            employee_id = request.POST.get("employee_id")
-            key_results = EmployeeKeyResult.objects.filter(
-                employee_objective_id__employee_id=employee_id
-            ).values()
-            employee_work_info = EmployeeWorkInformation.objects.filter(
-                employee_id__id=employee_id
-            ).first()
-            reporting_manager_id = employee_work_info.reporting_manager_id
-            if reporting_manager_id:
-                reporting_manager = {
-                    "id": reporting_manager_id.id or None,
-                    "employee_first_name": reporting_manager_id.employee_first_name
-                    or None,
-                    "employee_last_name": reporting_manager_id.employee_last_name
-                    or None,
-                }
-            else:
-                reporting_manager = None
-            return JsonResponse(
-                {
-                    "key_results": list(key_results),
-                    "reporting_manager": reporting_manager,
-                }
-            )
-        return JsonResponse({"status": "Invalid request"}, status=400)
+# @login_required
+# @manager_can_enter(perm="pms.add_feedback")
+# def feedback_creation_ajax(request):
+#     """
+#     This view is used to create feedback object.
+#     Returns:
+#         it will return feedback creation html.
+#     """
+#     # this ajax request is used to get the Key result and manager of the choosen employee
+#     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+#     if is_ajax:
+#         if request.method == "POST":
+#             employee_id = request.POST.get("employee_id")
+#             key_results = EmployeeKeyResult.objects.filter(
+#                 employee_objective_id__employee_id=employee_id
+#             ).values()
+#             employee_work_info = EmployeeWorkInformation.objects.filter(
+#                 employee_id__id=employee_id
+#             ).first()
+#             reporting_manager_id = employee_work_info.reporting_manager_id
+#             if reporting_manager_id:
+#                 reporting_manager = {
+#                     "id": reporting_manager_id.id or None,
+#                     "employee_first_name": reporting_manager_id.employee_first_name
+#                     or None,
+#                     "employee_last_name": reporting_manager_id.employee_last_name
+#                     or None,
+#                 }
+#             else:
+#                 reporting_manager = None
+#             return JsonResponse(
+#                 {
+#                     "key_results": list(key_results),
+#                     "reporting_manager": reporting_manager,
+#                 }
+#             )
+#         return JsonResponse({"status": "Invalid request"}, status=400)
 
 
 @login_required
@@ -1593,7 +1600,7 @@ def filter_pagination_feedback(
     feedbacks_own = feedback_paginator_own.get_page(page_number)
     feedbacks_requested = feedback_paginator_requested.get_page(page_number)
     feedbacks_all = feedback_paginator_all.get_page(page_number)
-    now = datetime.datetime.now()
+    now = datetime.datetime.today().date()
     data_dict = parse_qs(previous_data)
     get_key_instances(Feedback, data_dict)
     context = {
@@ -1964,19 +1971,21 @@ def feedback_detailed_view_status(request, id):
     answer = Answer.objects.filter(feedback_id=feedback)
     if status == "Not Started" and answer:
         messages.warning(request, _("Feedback is already started"))
-        return render(request, "messages.html")
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
     feedback.status = status
     feedback.save()
     if (feedback.status) == status:
-        messages.info(
+        messages.success(
             request, _("Feedback status updated to  %(status)s") % {"status": _(status)}
         )
-        return render(request, "messages.html")
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
     messages.info(
         request,
         _("Error occurred during status update to %(status)s") % {"status": _(status)},
     )
-    return render(request, "message.html")
+    return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
 
 @login_required
@@ -2053,7 +2062,7 @@ def get_collegues(request):
         employee = Employee.objects.get(id=int(employee_id)) if employee_id else None
 
         if employee:
-            employees_queryset = []
+            employees_queryset = Employee.objects.none()
             reporting_manager = (
                 employee.employee_work_info.reporting_manager_id
                 if employee.employee_work_info
@@ -2068,28 +2077,24 @@ def get_collegues(request):
                     exclude_ids.append(reporting_manager.id)
 
                 # Get employees in the same department as the employee
-                employees_queryset = (
-                    Employee.objects.filter(
-                        is_active=True, employee_work_info__department_id=department
-                    )
-                    .exclude(id__in=exclude_ids)
-                    .values_list("id", "employee_first_name")
-                )
+                employees_queryset = Employee.objects.filter(
+                    is_active=True, employee_work_info__department_id=department
+                ).exclude(id__in=exclude_ids)
             elif request.GET.get("data") == "manager":
                 if reporting_manager:
                     employees_queryset = Employee.objects.filter(
                         id=reporting_manager.id
-                    ).values_list("id", "employee_first_name")
+                    )
             elif request.GET.get("data") == "subordinates":
                 employees_queryset = Employee.objects.filter(
                     is_active=True, employee_work_info__reporting_manager_id=employee
-                ).values_list("id", "employee_first_name")
+                )
             elif request.GET.get("data") == "keyresults":
                 employees_queryset = EmployeeKeyResult.objects.filter(
                     employee_objective_id__employee_id=employee
                 ).values_list("id", "key_result_id__title")
             # Convert QuerySets to a list
-            employees = list(employees_queryset)
+            employees = [(employee.id, employee) for employee in employees_queryset]
             context = {"employees": employees}
             employee_html = render_to_string("employee/employees_select.html", context)
             return HttpResponse(employee_html)
@@ -2612,7 +2617,7 @@ def dashboard_objective_status(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         objective_status = EmployeeObjective.STATUS_CHOICES
-        data = {"message": _("No data Found...")}
+        data = {"message": _("No records available at the moment.")}
         for status in objective_status:
             objectives = EmployeeObjective.objects.filter(
                 status=status[0], archive=False
@@ -2632,7 +2637,7 @@ def dashboard_key_result_status(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         key_result_status = EmployeeKeyResult.STATUS_CHOICES
-        data = {"message": _("No data Found...")}
+        data = {"message": _("No records available at the moment.")}
         for i in key_result_status:
             key_results = EmployeeKeyResult.objects.filter(status=i[0])
             key_results_count = filtersubordinates(
@@ -2653,7 +2658,7 @@ def dashboard_feedback_status(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         feedback_status = Feedback.STATUS_CHOICES
-        data = {"message": _("No data Found...")}
+        data = {"message": _("No records available at the moment.")}
         for i in feedback_status:
             feedbacks = Feedback.objects.filter(status=i[0])
             feedback_count = filtersubordinates(
@@ -3217,8 +3222,8 @@ def key_result_current_value_update(request):
     This method is used to update keyresult current value
     """
     try:
-        current_value = eval(request.POST.get("current_value"))
-        emp_kr_id = eval(request.POST.get("emp_key_result_id"))
+        current_value = eval_validate(request.POST.get("current_value"))
+        emp_kr_id = eval_validate(request.POST.get("emp_key_result_id"))
         emp_kr = EmployeeKeyResult.objects.get(id=emp_kr_id)
         if current_value <= emp_kr.target_value:
             emp_kr.current_value = current_value
@@ -3305,7 +3310,7 @@ def create_meetings(request):
         Post:
             it will redirect to view_meetings.html .
     """
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     initial = {"manager": request.user.employee_get, "employee_id": None}
     if instance_id and isinstance(instance_id, int):
@@ -3377,7 +3382,6 @@ def create_meetings(request):
                 pass
 
             messages.success(request, _("Meeting added successfully"))
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "meetings/form.html",
@@ -3387,9 +3391,12 @@ def create_meetings(request):
     )
 
 
+from django.db.models import F
+
+
 @login_required
 @permission_required("pms.change_meetings")
-def archive_meetings(request, id):
+def archive_meetings(request, obj_id):
     """
     This view is used to archive and unarchive the meeting ,
     Args:
@@ -3398,11 +3405,16 @@ def archive_meetings(request, id):
     Returns:
         it will redirect to view_meetings.html .
     """
-    meeting = Meetings.objects.filter(id=id).first()
+    meeting = Meetings.find(obj_id)
     meeting.is_active = not meeting.is_active
     meeting.save()
-
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    message = (
+        _("Meeting unarchived successfully")
+        if meeting.is_active
+        else _("Meeting archived successfully")
+    )
+    messages.success(request, message)
+    return HttpResponse("")
 
 
 @login_required
@@ -3419,6 +3431,9 @@ def meeting_manager_remove(request, meet_id, manager_id):
     meeting = Meetings.objects.filter(id=meet_id).first()
     meeting.manager.remove(manager_id)
     meeting.save()
+    messages.success(
+        request, _("Manager has been successfully removed from the meeting.")
+    )
     return HttpResponse("")
 
 
@@ -3435,6 +3450,9 @@ def meeting_employee_remove(request, meet_id, employee_id):
     meeting = Meetings.objects.filter(id=meet_id).first()
     meeting.employee_id.remove(employee_id)
     meeting.save()
+    messages.success(
+        request, _("Employee has been successfully removed from the meeting.")
+    )
     return HttpResponse("")
 
 
@@ -3454,6 +3472,11 @@ def filter_meetings(request):
         filter_obj = filter_obj.filter(
             Q(employee_id=employee_id) | Q(manager=employee_id)
         ).distinct()
+    if (
+        request.GET.get("is_active") is None
+        or request.GET.get("is_active") == "unknown"
+    ):
+        filter_obj = filter_obj.filter(is_active=True)
     filter_obj = filter_obj.order_by("-id")
 
     filter_obj = sortby(request, filter_obj, "sortby")
@@ -3477,7 +3500,7 @@ def filter_meetings(request):
 
 @login_required
 @meeting_manager_can_enter("pms.change_meetings")
-def add_response(request, id):
+def add_response(request, obj_id):
     """
     This view is used to add the MoM to the meeting ,
     Args:
@@ -3485,12 +3508,15 @@ def add_response(request, id):
     Returns:
         it will redirect to view_meetings.html .
     """
-    meeting = Meetings.objects.filter(id=id).first()
+    meeting = Meetings.find(obj_id)
     if request.method == "POST":
         response = request.POST.get("response")
         meeting.response = response
         meeting.save()
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        messages.success(
+            request, _("Minutes of Meeting (MoM) have been created successfully")
+        )
+    return render(request, "meetings/mom_form.html", {"meeting": meeting})
 
 
 @login_required
@@ -3651,6 +3677,8 @@ def performance_tab(request, emp_id):
 
 @login_required
 def dashboard_feedback_answer(request):
+    previous_data = request.GET.urlencode()
+    page_number = request.GET.get("page")
     employee = request.user.employee_get
     feedback_requested = Feedback.objects.filter(
         Q(manager_id=employee, manager_id__is_active=True)
@@ -3658,11 +3686,15 @@ def dashboard_feedback_answer(request):
         | Q(subordinate_id=employee, subordinate_id__is_active=True)
     ).distinct()
     feedbacks = feedback_requested.exclude(feedback_answer__employee_id=employee)
-
+    feedbacks = paginator_qry(feedbacks, page_number)
     return render(
         request,
         "request_and_approve/feedback_answer.html",
-        {"feedbacks": feedbacks, "current_date": datetime.date.today()},
+        {
+            "feedbacks": feedbacks,
+            "pd": previous_data,
+            "current_date": datetime.date.today(),
+        },
     )
 
 

@@ -1439,7 +1439,7 @@ def onboard_candidate_chart(request):
             "data": data,
             "background_color": background_color,
             "border_color": border_color,
-            "message": _("No data Found..."),
+            "message": _("No records available at the moment."),
         },
         safe=False,
     )

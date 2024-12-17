@@ -105,13 +105,18 @@
                 <span class="oh-timeoff-modal__stat-count">{{at_work}}</span>
             </div>
         </div>
-
         <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Overtime" %}</span>
                 <span class="oh-timeoff-modal__stat-count">{{over_time}}</span>
             </div>
-            <div class="oh-timeoff-modal__stat" style="margin-left: 20px; cursor: pointer;">
+            <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Batch" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{{attendance_request.batch_attendance_id}}</span>
+            </div>
+        </div>
+        <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+            <div class="oh-timeoff-modal__stat" style="cursor: pointer;">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Activities" %}</span>
                 <span data-target="#objectCreateModal" data-toggle="oh-modal-toggle" hx-get="{% url 'get-attendance-activities' attendance_request.id  %}"
                     hx-target="#objectCreateModalTarget" class="oh-timeoff-modal__stat-count" style="display: flex;" title="{% trans 'View Activities' %}">

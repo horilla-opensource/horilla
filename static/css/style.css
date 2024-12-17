@@ -26,22 +26,22 @@
     font-style: normal;
     font-weight: 400;
     src: url("../fonts/material_icons_outlined.woff2") format('woff2');
-  }
+}
 
 .material-symbols-outlined {
-font-family: 'Material Symbols Outlined';
-font-weight: normal;
-font-style: normal;
-font-size: 24px;
-line-height: 1;
-letter-spacing: normal;
-text-transform: none;
-display: inline-block;
-white-space: nowrap;
-word-wrap: normal;
-direction: ltr;
--webkit-font-feature-settings: 'liga';
--webkit-font-smoothing: antialiased;
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
 }
 
 .note-modal-backdrop {
@@ -58,9 +58,6 @@ direction: ltr;
     max-height: calc(110% - 90px) !important;
 }
 
-#main-section {
-    padding-top: 60px !important;
-}
 
 #mainNav {
     padding: 0 !important;
@@ -476,18 +473,19 @@ form label {
 
 @keyframes placeHolderShimmer {
     0% {
-      background-position: -800px 0
+        background-position: -800px 0
     }
-    100% {
-      background-position: 800px 0
-    }
-  }
 
-.d-inline{
+    100% {
+        background-position: 800px 0
+    }
+}
+
+.d-inline {
     display: inline !important;
 }
 
-.d-none{
+.d-none {
     display: none !important;
 }
 
@@ -501,4 +499,35 @@ form label {
 
 .note-modal-backdrop {
     display: none !important;
+}
+
+.lastTh {
+    position: sticky;
+    right: 0;
+    background-color: #ffff !important;
+    z-index: 2;
+    width: 160px;
+
+    @media (max-width: 768px) {
+        position: unset;
+    }
+}
+
+.fixed-table td {
+    line-height: 1;
+}
+
+
+.lastTd {
+    position: sticky;
+    right: 0;
+    z-index: 2;
+    width: 160px;
+    overflow: scroll;
+    scrollbar-width: none !important;
+    padding: 4px !important;
+
+    @media (max-width: 768px) {
+        position: unset;
+    }
 }

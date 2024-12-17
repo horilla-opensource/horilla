@@ -97,7 +97,7 @@
               {% if  perms.pms.change_feedback or request.user|is_reportingmanager %}
                 <select id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="Status"
                     hx-post="{%url 'feedback-detailed-view-status'  id=feedback.id %}"
-                    hx-trigger="change" hx-target="#message">
+                    hx-trigger="change" hx-swap="afterend" >
                       <option value="{{feedback.status}}" selected>
                           {% trans feedback.get_status_display %}
                       </option>
@@ -149,6 +149,10 @@
             </div>
         </div>
         <div class="align-items-center d-flex" style="min-height: 40px;">
+          <span class="oh-profile__info-label ">{% trans "Start date: " %}</span>
+          <span class="oh-profile__info-value">{{feedback.start_date}}</span>
+        </div>
+        <div class="align-items-center d-flex" style="min-height: 40px;">
           <span class="oh-profile__info-label ">{% trans "Due on: " %}</span>
           <span class="oh-profile__info-value">{{feedback.end_date}}</span>
           <span class='d-flex justify-content-between align-items-center ml-1 mb-2'
@@ -192,6 +196,22 @@
             </div>
           </div>
         </div>
+        {% if perms.pms.view_feedback %}
+          {% if feedback.cyclic_feedback %}
+            <div class="align-items-center d-flex" style="min-height: 40px;">
+              <span class="oh-profile__info-label ">{% trans "Cyclic feedback period: " %}</span>
+              <span class="oh-profile__info-value">
+                {{feedback.cyclic_feedback_days_count}} {{feedback.get_cyclic_feedback_period_display}}
+              </span>
+            </div>
+            <div class="align-items-center d-flex" style="min-height: 40px;">
+              <span class="oh-profile__info-label ">{% trans "Next feedback on: " %}</span>
+              <span class="oh-profile__info-value">
+                {{feedback.cyclic_next_start_date}}-{{feedback.cyclic_next_end_date}}
+              </span>
+            </div>
+          {% endif %}
+        {% endif %}
 
 
       <!-- checking userlevel   -->
@@ -505,6 +525,17 @@
       } else {
           console.error('Invalid employee_id');
       }
+  }
+  function changeCyclicFeedback(element) {
+    if (element.checked) {
+        $("#cyclic_feedback_period").show();
+        $("#id_cyclic_feedback_days_count").attr("required", true);
+        $("#id_cyclic_feedback_period").attr("required", true);
+    } else {
+        $("#cyclic_feedback_period").hide();
+        $("#id_cyclic_feedback_days_count").attr("required", false);
+        $("#id_cyclic_feedback_period").attr("required", false);
+    }
   }
 </script>
 

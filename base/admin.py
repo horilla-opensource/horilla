@@ -24,6 +24,7 @@ from base.models import (
     Holidays,
     JobPosition,
     JobRole,
+    MultipleApprovalCondition,
     MultipleApprovalManagers,
     PenaltyAccounts,
     RotatingShift,
@@ -68,3 +69,4 @@ admin.site.register(DashboardEmployeeCharts)
 admin.site.register(Holidays)
 admin.site.register(CompanyLeaves)
 admin.site.register(PenaltyAccounts)
+admin.site.register(MultipleApprovalCondition)

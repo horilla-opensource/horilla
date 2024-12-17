@@ -1,378 +1,245 @@
-{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+{% load i18n %}
 {% load basefilters %}
-<div
-  class="oh-modal"
-  id="assignLeaveTypeImport"
-  role="dialog"
-  aria-labelledby="assignLeaveTypeImport"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="assignLeaveTypeImportLavel">
-        {% trans "Import Assigned Leaves" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-      <div
-        class="oh-modal__dialog-body p-0 pt-2"
-        id="assignLeaveTypeImportModalBody"
-      >
-        <form
-          hx-post="{% url 'assign-leave-type-info-import' %}"
-          hx-encoding="multipart/form-data"
-          hx-target="#assignLeaveTypeImport"
-          id="assignLeaveTypeImportForm"
-        >
-          {% csrf_token %}
-          <div
-            class="oh-modal__dialog-body mr-5"
-            id="uploading"
-            style="display: none"
-          >
-            <div class="loader-container">
-              <div class="loader"></div>
-              <div class="loader-text">{% trans "Uploading..." %}</div>
+<div class="oh-modal" id="assignLeaveTypeImport" role="dialog" aria-labelledby="assignLeaveTypeImport"
+    aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="assignLeaveTypeImportLavel">
+                {% trans "Import Assigned Leaves" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+            <div class="oh-modal__dialog-body p-0 pt-2" id="assignLeaveTypeImportModalBody">
+                <form hx-post="{% url 'assign-leave-type-info-import' %}" hx-encoding="multipart/form-data"
+                    hx-target="#assignLeaveTypeImport" id="assignLeaveTypeImportForm">
+                    {% csrf_token %}
+                    <div class="oh-modal__dialog-body mr-5" id="uploading" style="display: none">
+                        <div class="loader-container">
+                            <div class="loader"></div>
+                            <div class="loader-text">{% trans "Uploading..." %}</div>
+                        </div>
+                    </div>
+                    <div id="uploadContainer">
+                        <label class="oh-dropdown__import-label" for="uploadFile">
+                            <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
+                            <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
+                            <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
+                        </label>
+                        <input type="file" name="assign_leave_type_import" id="assignedLeaveFile" required />
+                        <div class="d-inline float-end">
+                            <a href="#" style="text-decoration:none; display: inline-block;"
+                                class="oh-dropdown__link assign-leave-type-info-import" data-toggle="oh-modal-toggle"
+                                data-target="#assignLeaveTypeImport">
+                                <ion-icon name="cloud-download-outline"
+                                    style="font-size:20px; vertical-align: middle;"></ion-icon>
+                                <span>{% trans "Download Template" %}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <button onclick="validateFile($(this),'assignedLeaveFile');" type="submit"
+                        class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3">
+                        {% trans "Upload" %}
+                    </button>
+                </form>
             </div>
-          </div>
-          <div id="uploadContainer">
-            <label class="oh-dropdown__import-label" for="uploadFile">
-              <ion-icon
-                name="cloud-upload"
-                class="oh-dropdown__import-form-icon"
-              ></ion-icon>
-              <span class="oh-dropdown__import-form-title"
-                >{% trans "Upload a File" %}</span
-              >
-              <span class="oh-dropdown__import-form-text"
-                >{% trans "Drag and drop files here" %}</span
-              >
-            </label>
-            <input
-              type="file"
-              name="assign_leave_type_import"
-              id="assignedLeaveFile"
-              required
-            />
-            <div class="d-inline float-end">
-              <a
-                href="#"
-                style="text-decoration:none; display: inline-block;"
-                class="oh-dropdown__link assign-leave-type-info-import"
-                data-toggle="oh-modal-toggle"
-                data-target="#assignLeaveTypeImport"
-              >
-                <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;"></ion-icon>
-                <span>{% trans "Download Template" %}</span>
-              </a>
-            </div>
-          </div>
-          <button
-            onclick="validateFile($(this),'assignedLeaveFile');"
-            type="submit"
-            class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
-          >
-            {% trans "Upload" %}
-          </button>
-        </form>
-      </div>
+        </div>
     </div>
-  </div>
 </div>
 
-<div
-  class="oh-modal"
-  id="assignedLeavesExportModal"
-  role="dialog"
-  aria-labelledby="assignedLeavesExport"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog" id="assignedLeavesExportModalTarget"></div>
+<div class="oh-modal" id="assignedLeavesExportModal" role="dialog" aria-labelledby="assignedLeavesExport"
+    aria-hidden="true">
+    <div class="oh-modal__dialog" id="assignedLeavesExportModalTarget"></div>
 </div>
 
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-  <div class="oh-main__titlebar oh-main__titlebar--left">
-    <h1 class="oh-main__titlebar-title fw-bold">
-      {% trans "All Assigned Leaves" %}
-    </h1>
-    <a
-      class="oh-main__titlebar-search-toggle"
-      role="button"
-      aria-label="Toggle Search"
-      @click="searchShow = !searchShow"
-      >
-      <ion-icon
-        name="search-outline"
-        class="oh-main__titlebar-serach-icon"
-      ></ion-icon>
-    </a>
-  </div>
-  <div class="oh-main__titlebar oh-main__titlebar--right">
-    <form
-      hx-get="{% url 'assign-filter' %}"
-      hx-target="#assignedLeaves"
-      id="filterForm"
-      class="d-flex"
-      onsubmit="event.preventDefault()"
-      >
-      {% if available_leaves %}
-        <div
-          class="oh-input-group oh-input__search-group"
-          :class="searchShow ? 'oh-input__search-group--show' : ''"
-          >
-          <ion-icon
-            name="search-outline"
-            class="oh-input-group__icon oh-input-group__icon--left"
-          ></ion-icon>
-          <input
-            type="text"
-            class="oh-input oh-input__icon"
-            aria-label="Search Input"
-            placeholder="{% trans 'Search' %}"
-            name="search"
-            onkeyup="$('.filterButton')[0].click()"
-          />
-        </div>
-      {% endif %}
-      <div class="oh-main__titlebar-button-container">
-        {% if available_leaves %}
-          <div class="oh-dropdown" x-data="{open: false}">
-            <button
-              class="oh-btn ml-2"
-              @click="open = !open"
-              onclick="event.preventDefault()"
-              >
-              <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-              <div id="filterCount"></div>
-            </button>
-            {% include "leave/leave_assign/assigned_leaves_filter.html" %}
-          </div>
-          <div class="oh-dropdown" x-data="{open: false}">
-            <button
-              class="oh-btn ml-2"
-              @click="open = !open"
-              onclick="event.preventDefault()"
-              >
-              <ion-icon name="library-outline" class="mr-1"></ion-icon>
-              {% trans "Group By" %}
-              <div id="filterCount"></div>
-            </button>
-            <div
-              class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-              x-show="open"
-              @click.outside="open = false"
-              style="display: none"
-              >
-              <div class="oh-accordion">
-                <label>{% trans "Group By" %}</label>
-                <div class="row">
-                  <div class="col-sm-12 col-md-12 col-lg-6">
-                    <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Field" %}</label>
-                    </div>
-                  </div>
-                  <div class="col-sm-12 col-md-12 col-lg-6">
-                    <div class="oh-input-group">
-                      <select
-                        class="oh-select mt-1 w-100"
-                        id="id_field"
-                        name="field"
-                        class="select2-selection select2-selection--single"
-                      >
-                        {% for field in gp_fields %}
-				  	  	          <option value="{{ field.0 }}" {% if field.0 == "leave_type_id" %}selected{% endif %}>{% trans field.1 %}</option>
-				  	            {% endfor %}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        {% endif %}
-        <div class="oh-dropdown ml-2" x-data="{open: false}">
-          <button
-            class="oh-btn oh-btn--dropdown"
-            @click="open = !open"
-            @click.outside="open = false"
-            onclick="event.preventDefault()"
-            >
-            {% trans "Actions" %}
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right"
-            x-show="open"
-            style="display: none"
-            >
-            <ul class="oh-dropdown__items">
-              <li class="oh-dropdown__item">
-                <a
-                  href="#"
-                  class="oh-dropdown__link assign-leave-type-info-import"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#assignLeaveTypeImport"
-                  >{% trans "Import" %}</a
-                >
-              </li>
-              {% if available_leaves %}
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link"
-                    id="assign-leave-type-export"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#assignedLeavesExportModal"
-                    hx-get="{% url 'assigned-leaves-info-export' %}"
-                    hx-target="#assignedLeavesExportModalTarget"
-                    >{% trans "Export" %}</a
-                  >
-                </li>
-                {% if perms.leave.delete_availableleave or request.user|is_reportingmanager %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      href="#"
-                      id="bulkAssignedLeavesDelete"
-                      data-action="delete"
-                      class="oh-dropdown__link oh-dropdown__link--danger"
-                      >{% trans "Delete" %}</a
-                    >
-                  </li>
-                {% endif %}
-              {% endif %}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </form>
-    <div class="oh-btn-group ml-2">
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button
-          class="oh-btn oh-btn--secondary oh-btn--shadow"
-          data-toggle="oh-modal-toggle"
-          data-target="#objectCreateModal"
-          hx-get="{% url 'assign' %}"
-          hx-target="#objectCreateModalTarget"
-          >
-          {% trans "Assign" %}
-        </button>
-      </div>
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">
+            {% trans "All Assigned Leaves" %}
+        </h1>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+        </a>
     </div>
-  </div>
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+        <form hx-get="{% url 'assign-filter' %}" hx-target="#assignedLeaves" id="filterForm" class="d-flex"
+            onsubmit="event.preventDefault()">
+            {% if available_leaves %}
+                <div class="oh-input-group oh-input__search-group"
+                    :class="searchShow ? 'oh-input__search-group--show' : ''">
+                    <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+                    <input type="text" class="oh-input oh-input__icon" aria-label="Search Input"
+                        placeholder="{% trans 'Search' %}" name="search" onkeyup="$('.filterButton')[0].click()" />
+                </div>
+            {% endif %}
+            <div class="oh-main__titlebar-button-container">
+                {% if available_leaves %}
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                            <div id="filterCount"></div>
+                        </button>
+                        {% include "leave/leave_assign/assigned_leaves_filter.html" %}
+                    </div>
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                            <ion-icon name="library-outline" class="mr-1"></ion-icon>
+                            {% trans "Group By" %}
+                            <div id="filterCount"></div>
+                        </button>
+                        <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                            @click.outside="open = false" style="display: none">
+                            <div class="oh-accordion">
+                                <label>{% trans "Group By" %}</label>
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label">{% trans "Field" %}</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group">
+                                            <select class="oh-select mt-1 w-100" id="id_field" name="field"
+                                                class="select2-selection select2-selection--single">
+                                                {% for field in gp_fields %}
+                                                    <option value="{{ field.0 }}"
+                                                        {% if field.0 == "leave_type_id" %}selected{% endif %}>
+                                                        {% trans field.1 %}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="oh-dropdown ml-2" x-data="{open: false}">
+                    <button class="oh-btn oh-btn--dropdown" @click="open = !open" @click.outside="open = false"
+                        onclick="event.preventDefault()">
+                        {% trans "Actions" %}
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
+                        <ul class="oh-dropdown__items">
+                            {% if perms.leave.add_availableleave %}
+                                <li class="oh-dropdown__item">
+                                    <a href="#" class="oh-dropdown__link assign-leave-type-info-import"
+                                        data-toggle="oh-modal-toggle" data-target="#assignLeaveTypeImport">{% trans "Import" %}</a>
+                                </li>
+                            {% endif %}
+                            {% if available_leaves %}
+                                <li class="oh-dropdown__item">
+                                    <a href="#" class="oh-dropdown__link" id="assign-leave-type-export"
+                                        data-toggle="oh-modal-toggle" data-target="#assignedLeavesExportModal"
+                                        hx-get="{% url 'assigned-leaves-info-export' %}"
+                                        hx-target="#assignedLeavesExportModalTarget">{% trans "Export" %}</a>
+                                </li>
+                                {% if perms.leave.delete_availableleave or request.user|is_reportingmanager %}
+                                    <li class="oh-dropdown__item">
+                                        <a href="#" id="bulkAssignedLeavesDelete" data-action="delete"
+                                            class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</a>
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </form>
+        {% if perms.leave.add_availableleave %}
+            <div class="oh-btn-group ml-2">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                        hx-on:click="$('#objectCreateModalTarget').css('max-width', '410px');"
+                        data-target="#objectCreateModal" hx-get="{% url 'assign' %}" hx-target="#objectCreateModalTarget">
+                        {% trans "Assign" %}
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 </section>
 
 {% if available_leaves %}
 <div class="ms-5">
-  <div
-    class="oh-checkpoint-badge mb-2"
-    id="selectedLeaves"
-    data-ids="[]"
-    data-clicked=""
-    style="display: none"
-  >
-    {% trans "Selected Leaves" %}
-  </div>
-  <div
-    class="oh-checkpoint-badge text-success mb-2"
-    id="selectAllLeaves"
-    style="cursor: pointer"
-  >
-    {% trans "Select All Leaves" %}
-  </div>
-  <div
-    class="oh-checkpoint-badge text-secondary mb-2"
-    id="unselectAllLeaves"
-    style="cursor: pointer; display: none"
-  >
-    {% trans "Unselect All Leaves" %}
-  </div>
-  <div
-    class="oh-checkpoint-badge text-info mb-2"
-    id="exportAssignedLeaves"
-    style="cursor: pointer; display: none"
-  >
-    {% trans "Export Leaves" %}
-  </div>
-  <div
-    class="oh-checkpoint-badge text-danger mb-2"
-    id="selectedShowLeaves"
-    style="display: none"
-  ></div>
+    <div class="oh-checkpoint-badge mb-2" id="selectedLeaves" data-ids="[]" data-clicked="" style="display: none">
+        {% trans "Selected Leaves" %}
+    </div>
+    <div class="oh-checkpoint-badge text-success mb-2" id="selectAllLeaves" style="cursor: pointer">
+        {% trans "Select All Leaves" %}
+    </div>
+    <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllLeaves" style="cursor: pointer; display: none">
+        {% trans "Unselect All Leaves" %}
+    </div>
+    <div class="oh-checkpoint-badge text-info mb-2" id="exportAssignedLeaves" style="cursor: pointer; display: none">
+        {% trans "Export Leaves" %}
+    </div>
+    <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowLeaves" style="display: none"></div>
 </div>
 {% endif %}
 
 <div class="oh-wrapper" id="assignedLeaves">
-  {% if available_leaves %}
-    {% if not request.GET.field %}
-      {% include 'leave/leave_assign/assigned_leave.html'%}
+    {% if available_leaves %}
+        {% if not request.GET.field %}
+            {% include 'leave/leave_assign/assigned_leave.html'%}
+        {% else %}
+            {% include "leave/leave_assign/group_by.html" %}
+        {% endif %}
     {% else %}
-      {% include "leave/leave_assign/group_by.html" %}
+        <div style="
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        " class="">
+            <div style="" class="oh-404">
+                <img style="display: block; width: 150px; height: 150px; margin: 10px auto"
+                    src="{% static 'images/ui/leave_types.png' %}" class="mb-4" alt="" />
+                <h3 style="font-size: 20px" class="oh-404__subtitle">
+                    {% trans "There are no leave assigned at the moment." %}
+                </h3>
+            </div>
+        </div>
     {% endif %}
-  {% else %}
-    <div
-      style="
-        height: 70vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      "
-      class=""
-      >
-      <div style="" class="oh-404">
-        <img
-          style="display: block; width: 150px; height: 150px; margin: 10px auto"
-          src="{% static 'images/ui/leave_types.png' %}"
-          class="mb-4"
-          alt=""
-        />
-        <h3 style="font-size: 20px" class="oh-404__subtitle">
-          {% trans "There are no leave assigned at the moment." %}
-        </h3>
-      </div>
-    </div>
-  {% endif %}
 </div>
 
 <!-- update available leave -->
 
-<div
-  class="oh-modal"
-  id="assignLeaveUpdateModal"
-  role="dialog"
-  aria-labelledby="assignLeaveUpdateModalLabel"
-  aria-hidden="true"
->
-  <div
-    class="oh-modal__dialog oh-modal__dialog--timeoff"
-    id="assignLeaveUpdateFormModal"
-  ></div>
+<div class="oh-modal" id="assignLeaveUpdateModal" role="dialog" aria-labelledby="assignLeaveUpdateModalLabel"
+    aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--timeoff" id="assignLeaveUpdateFormModal"></div>
 </div>
 
 <script>
-  $(document).ready(function () {
-    $("#id_field").on("change", function () {
-      $(".filterButton")[0].click();
+    $(document).ready(function () {
+        $("#id_field").on("change", function () {
+            $(".filterButton")[0].click();
+        });
     });
-  });
 </script>
 <script>
-  $(document).on('htmx:load', '#assignLeaveForm', function () {
-  	{% include 'select2.js' %}
-  	$('#leaveTypeAssign #id_leave_type_id').select2();
-  	$('#employeeAssign #id_employee_id').select2();
-  });
+    $(document).on('htmx:load', '#assignLeaveForm', function () {
+        {% include 'select2.js' %}
+        $('#leaveTypeAssign #id_leave_type_id').select2();
+        $('#employeeAssign #id_employee_id').select2();
+    });
 
-  $('#delete-link').on('click', function (event) {
+    $('#delete-link').on('click', function (event) {
 
-  	event.preventDefault();
+        event.preventDefault();
 
-  	const link = $(this);
-  	const confirmation = confirm("{% trans 'Are you sure you want to delete?' %}");
+        const link = $(this);
+        const confirmation = confirm("{% trans 'Are you sure you want to delete?' %}");
 
-  	if (confirmation) {
-  		window.location.href = link.attr('href');
-  	}
-  });
+        if (confirmation) {
+            window.location.href = link.attr('href');
+        }
+    });
 </script>
 
 <script src="{% static '/base/filter.js' %}"></script>

@@ -34,37 +34,43 @@
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=employee_id__employee_first_name">
                                         {% trans "Employee" %}</div>
-                                    <div data-cell-index="1" data-cell-title='{% trans "Date" %}'
+                                    <div data-cell-index="1" data-cell-title='{% trans "Batch" %}'
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-batch_attendance_id__title' %}arrow-up {% elif request.sort_option.order == 'batch_attendance_id__title' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-target='#view-container'
+                                        hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=batch_attendance_id__title">
+                                        {% trans "Batch" %}
+                                    </div>
+                                    <div data-cell-index="2" data-cell-title='{% trans "Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_date' %}arrow-up {% elif request.sort_option.order == 'attendance_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=attendance_date">
                                         {% trans "Date" %}
                                     </div>
-                                    <div data-cell-index="2" data-cell-title='{% trans "Day" %}'
+                                    <div data-cell-index="3" data-cell-title='{% trans "Day" %}'
                                         class="oh-sticky-table__th">{% trans "Day" %}</div>
-                                    <div data-cell-index="3" data-cell-title='{% trans "Check-In" %}'
+                                    <div data-cell-index="4" data-cell-title='{% trans "Check-In" %}'
                                         class="oh-sticky-table__th">{% trans "Check-In" %}</div>
-                                    <div data-cell-index="4" data-cell-title='{% trans "In Date" %}'
+                                    <div data-cell-index="5" data-cell-title='{% trans "In Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_in_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_in_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=attendance_clock_in_date">
                                         {% trans "In Date" %}</div>
-                                    <div data-cell-index="5" data-cell-title='{% trans "Check-Out" %}'
+                                    <div data-cell-index="6" data-cell-title='{% trans "Check-Out" %}'
                                         class="oh-sticky-table__th">{% trans "Check-Out" %}</div>
-                                    <div data-cell-index="6" data-cell-title='{% trans "Out Date" %}'
+                                    <div data-cell-index="7" data-cell-title='{% trans "Out Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=attendance_clock_out_date">
                                         {% trans "Out Date" %}</div>
-                                    <div data-cell-index="7" data-cell-title='{% trans "Shift" %}'
+                                    <div data-cell-index="8" data-cell-title='{% trans "Shift" %}'
                                         class="oh-sticky-table__th">{% trans "Shift" %}</div>
-                                    <div data-cell-index="8" data-cell-title='{% trans "Work Type" %}'
+                                    <div data-cell-index="9" data-cell-title='{% trans "Work Type" %}'
                                         class="oh-sticky-table__th">{% trans "Work Type" %}</div>
-                                    <div data-cell-index="9" data-cell-title='{% trans "Min Hour" %}'
+                                    <div data-cell-index="10" data-cell-title='{% trans "Min Hour" %}'
                                         class="oh-sticky-table__th">{% trans "Min Hour" %}</div>
-                                    <div data-cell-index="10" data-cell-title='{% trans "At Work" %}'
+                                    <div data-cell-index="11" data-cell-title='{% trans "At Work" %}'
                                         class="oh-sticky-table__th">{% trans "At Work" %}</div>
-                                    <div data-cell-index="11" data-cell-title='{% trans "Overtime" %}'
+                                    <div data-cell-index="12" data-cell-title='{% trans "Overtime" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_overtime' %}arrow-up {% elif request.sort_option.order == 'attendance_overtime' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=attendance_overtime">
@@ -98,47 +104,50 @@
                                                 </span>
                                             </div>
                                         </div>
-
-                                        <div data-cell-index="1"
+                                        <div data-cell-index="1" data-cell-index="1"
+                                            class="oh-sticky-table__td {% if 'attendance_worked_hour' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}">
+                                            {{attendance.batch_attendance_id}}
+                                        </div>
+                                        <div data-cell-index="2"
                                             class="oh-sticky-table__td {% if 'attendance_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} dateformat_changer">
                                             {{attendance.attendance_date}}
                                         </div>
-                                        <div data-cell-index="2"
+                                        <div data-cell-index="3"
                                             class="oh-sticky-table__td {% if 'attendance_day' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}">
                                             {{attendance.attendance_day|capfirst}}
                                         </div>
-                                        <div data-cell-index="3"
+                                        <div data-cell-index="4"
                                             class="oh-sticky-table__td {% if 'attendance_clock_in' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} timeformat_changer">
                                             {{attendance.attendance_clock_in}}
                                         </div>
-                                        <div data-cell-index="4"
+                                        <div data-cell-index="5"
                                             class="oh-sticky-table__td {% if 'attendance_clock_in_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} dateformat_changer">
                                             {{attendance.attendance_clock_in_date}}
                                         </div>
-                                        <div data-cell-index="5"
+                                        <div data-cell-index="6"
                                             class="oh-sticky-table__td {% if 'attendance_clock_out' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} timeformat_changer">
                                             {{attendance.attendance_clock_out}}
                                         </div>
-                                        <div data-cell-index="6"
+                                        <div data-cell-index="7"
                                             class="oh-sticky-table__td {% if 'attendance_clock_out_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} dateformat_changer">
                                             {{attendance.attendance_clock_out_date}}
                                         </div>
-                                        <div data-cell-index="7"
+                                        <div data-cell-index="8"
                                             class="oh-sticky-table__td {% if 'shift_id' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}">
                                             {{attendance.shift_id}}</div>
-                                        <div data-cell-index="8"
+                                        <div data-cell-index="9"
                                             class="oh-sticky-table__td {% if 'work_type_id' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}">
                                             {{attendance.work_type_id}}
                                         </div>
-                                        <div data-cell-index="9"
+                                        <div data-cell-index="10"
                                             class="oh-sticky-table__td {% if 'minimum_hour' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}">
                                             {{attendance.minimum_hour}}
                                         </div>
-                                        <div data-cell-index="10" data-cell-index="1"
+                                        <div data-cell-index="11" data-cell-index="1"
                                             class="oh-sticky-table__td {% if 'attendance_worked_hour' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}">
                                             {{attendance.attendance_worked_hour}}
                                         </div>
-                                        <div data-cell-index="11"
+                                        <div data-cell-index="12"
                                             class="oh-sticky-table__td {% if 'attendance_overtime' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}">
                                             {{attendance.attendance_overtime}}
                                         </div>
@@ -254,37 +263,44 @@
                                     <div class="oh-sticky-table__th oh-sticky-table__top  {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=employee_id__employee_first_name">
-                                        {% trans "Employee" %}</div>
-                                    <div data-cell-index="21" data-cell-title='{% trans "Date" %}'
+                                        {% trans "Employee" %}
+                                    </div>
+                                    <div data-cell-index="21" data-cell-title='{% trans "Batch" %}'
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-batch_attendance_id__title' %}arrow-up {% elif request.sort_option.order == 'batch_attendance_id__title' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-target='#view-container'
+                                        hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=batch_attendance_id__title">
+                                        {% trans "Batch" %}
+                                    </div>
+                                    <div data-cell-index="22" data-cell-title='{% trans "Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_date' %}arrow-up {% elif request.sort_option.order == 'attendance_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=attendance_date">
                                         {% trans "Date" %}</div>
-                                    <div data-cell-index="22" data-cell-title='{% trans "Day" %}'
+                                    <div data-cell-index="23" data-cell-title='{% trans "Day" %}'
                                         class="oh-sticky-table__th">{% trans "Day" %}</div>
-                                    <div data-cell-index="23" data-cell-title='{% trans "Check-In" %}'
+                                    <div data-cell-index="24" data-cell-title='{% trans "Check-In" %}'
                                         class="oh-sticky-table__th">{% trans "Check-In" %}</div>
-                                    <div data-cell-index="24" data-cell-title='{% trans "In Date" %}'
+                                    <div data-cell-index="25" data-cell-title='{% trans "In Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_in_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_in_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=attendance_clock_in_date">
                                         {% trans "In Date" %}</div>
-                                    <div data-cell-index="25" data-cell-title='{% trans "Check-Out" %}'
+                                    <div data-cell-index="26" data-cell-title='{% trans "Check-Out" %}'
                                         class="oh-sticky-table__th">{% trans "Check-Out" %}</div>
-                                    <div data-cell-index="26" data-cell-title='{% trans "Out Date" %}'
+                                    <div data-cell-index="27" data-cell-title='{% trans "Out Date" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=attendance_clock_out_date">
                                         {% trans "Out Date" %}</div>
-                                    <div data-cell-index="27" data-cell-title='{% trans "Shift" %}'
+                                    <div data-cell-index="28" data-cell-title='{% trans "Shift" %}'
                                         class="oh-sticky-table__th">{% trans "Shift" %}</div>
-                                    <div data-cell-index="28" data-cell-title='{% trans "Work Type" %}'
+                                    <div data-cell-index="29" data-cell-title='{% trans "Work Type" %}'
                                         class="oh-sticky-table__th">{% trans "Work Type" %}</div>
-                                    <div data-cell-index="29" data-cell-title='{% trans "Min Hour" %}'
+                                    <div data-cell-index="30" data-cell-title='{% trans "Min Hour" %}'
                                         class="oh-sticky-table__th">{% trans "Min Hour" %}</div>
-                                    <div data-cell-index="30" data-cell-title='{% trans "At Work" %}'
+                                    <div data-cell-index="31" data-cell-title='{% trans "At Work" %}'
                                         class="oh-sticky-table__th">{% trans "At Work" %}</div>
-                                    <div data-cell-index="31" data-cell-title='{% trans "Overtime" %}'
+                                    <div data-cell-index="32" data-cell-title='{% trans "Overtime" %}'
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_overtime' %}arrow-up {% elif request.sort_option.order == 'attendance_overtime' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=attendance_overtime">
@@ -307,35 +323,38 @@
                                                 <span class="oh-profile__name oh-text--dark">{{attendance.employee_id}}</span>
                                             </div>
                                         </div>
-                                        <div data-cell-index="21" class="oh-sticky-table__td dateformat_changer">
+                                        <div data-cell-index="21" class="oh-sticky-table__td">
+                                            {{attendance.batch_attendance_id}}
+                                        </div>
+                                        <div data-cell-index="22" class="oh-sticky-table__td dateformat_changer">
                                             {{attendance.attendance_date}}
                                         </div>
-                                        <div data-cell-index="22" class="oh-sticky-table__td">
+                                        <div data-cell-index="23" class="oh-sticky-table__td">
                                             {{attendance.attendance_day|capfirst}}
                                         </div>
-                                        <div data-cell-index="23" class="oh-sticky-table__td timeformat_changer">
+                                        <div data-cell-index="24" class="oh-sticky-table__td timeformat_changer">
                                             {{attendance.attendance_clock_in}}
                                         </div>
-                                        <div data-cell-index="24" class="oh-sticky-table__td dateformat_changer">
+                                        <div data-cell-index="25" class="oh-sticky-table__td dateformat_changer">
                                             {{attendance.attendance_clock_in_date}}
                                         </div>
-                                        <div data-cell-index="25" class="oh-sticky-table__td timeformat_changer">
+                                        <div data-cell-index="26" class="oh-sticky-table__td timeformat_changer">
                                             {{attendance.attendance_clock_out}}
                                         </div>
-                                        <div data-cell-index="26" class="oh-sticky-table__td dateformat_changer">
+                                        <div data-cell-index="27" class="oh-sticky-table__td dateformat_changer">
                                             {{attendance.attendance_clock_out_date}}
                                         </div>
-                                        <div data-cell-index="27" class="oh-sticky-table__td">{{attendance.shift_id}}</div>
-                                        <div data-cell-index="28" class="oh-sticky-table__td">
+                                        <div data-cell-index="28" class="oh-sticky-table__td">{{attendance.shift_id}}</div>
+                                        <div data-cell-index="29" class="oh-sticky-table__td">
                                             {{attendance.work_type_id}}
                                         </div>
-                                        <div data-cell-index="29" class="oh-sticky-table__td">
+                                        <div data-cell-index="30" class="oh-sticky-table__td">
                                             {{attendance.minimum_hour}}
                                         </div>
-                                        <div data-cell-index="30" class="oh-sticky-table__td">
+                                        <div data-cell-index="31" class="oh-sticky-table__td">
                                             {{attendance.attendance_worked_hour}}
                                         </div>
-                                        <div data-cell-index="31" class="oh-sticky-table__td">
+                                        <div data-cell-index="32" class="oh-sticky-table__td">
                                             {{attendance.attendance_overtime}}
                                         </div>
                                         <div class="oh-sticky-table__td oh-sticky-table__right">
@@ -436,7 +455,14 @@
             <div class="oh-modal__dialog-body oh-modal__dialog-relative" id="shiftRequestDetailTarget"></div>
         </div>
     </div>
-
+    <span
+        id = "dynamicCreateBatchAttendanceSpan"
+        hx-get="{% url "create-batch-attendance" %}"
+        data-target = "#dynamicCreateModal"
+        data-toggle="oh-modal-toggle"
+        hx-target="#dynamicCreateModalTarget"
+        hx-include = "#attendanceRequestForm"
+    ></span>
     <script>
         requestedAttendanceTickCheckboxes()
         $(document).ready(function () {

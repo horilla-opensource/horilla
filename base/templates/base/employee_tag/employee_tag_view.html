@@ -4,61 +4,48 @@
 		<div class="oh-sticky-table__thead">
 			<div class="oh-sticky-table__tr">
 				<div class="oh-sticky-table__th">{% trans "Title" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Color" %}</div>
-				{% if perms.employee.delete_employeetag or perms.employee.delete_employeetag %}
+				<div class="oh-sticky-table__th">{% trans "Color" %}</div>
+				{% if perms.employee.change_employeetag or perms.employee.delete_employeetag %}
 					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 				{% endif %}
 			</div>
 		</div>
 		<div class="oh-sticky-table__tbody">
 			{% for tag in employeetags %}
-			<div class="oh-sticky-table__tr" draggable="true">
-				<div class="oh-sticky-table__td">{{tag}}</div>
-                <div class="oh-sticky-table__td">
-                    <span
-                       style=" height: 25px;
-                        width: 25px;
-                        background-color: {{tag.color}};
-                        border-radius: 50%;
-                        display: inline-block;"
-                    ></span>
-                </div>
-				{% if perms.employee.delete_employeetag or perms.employee.delete_employeetag %}
+				<div class="oh-sticky-table__tr" draggable="true" id="employeeTagTr{{tag.id}}">
+					<div class="oh-sticky-table__td">{{tag}}</div>
 					<div class="oh-sticky-table__td">
-						<div class="oh-btn-group">
-							{% if perms.employee.change_employeetag %}
-							<a
-								hx-get="{% url 'employee-tag-update' tag.id %}"
-								hx-target="#objectUpdateModalTarget"
-								data-toggle="oh-modal-toggle"
-								data-target="#objectUpdateModal"
-								type="button"
-								class="oh-btn oh-btn--light-bkg w-50"
-								title="{% trans 'Edit' %}"
-							>
-								<ion-icon name="create-outline"></ion-icon
-							></a>
-							{% endif %}
-							{% if perms.employee.delete_employeetag %}
-							<form
-								action="{% url 'employee-tag-delete' tag.id %}"
-								class="w-50"
-								onsubmit="return confirm('{% trans "Are you sure you want to delete this employee tag ?" %}');"
-								method='post'>
-								{% csrf_token %}
-								<button
-									type="submit"
-									class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-									title="{% trans 'Remove' %}"
-								>
-									<ion-icon name="trash-outline"></ion-icon>
-								</button>
-							</form>
-							{% endif %}
-						</div>
+						<span style=" height: 25px;
+							width: 25px;
+							background-color: {{tag.color}};
+							border-radius: 50%;
+							display: inline-block;"></span>
 					</div>
-				{% endif %}
-			</div>
+					{% if perms.employee.change_employeetag or perms.employee.delete_employeetag %}
+						<div class="oh-sticky-table__td">
+							<div class="oh-btn-group">
+								{% if perms.employee.change_employeetag %}
+									<a hx-get="{% url 'employee-tag-update' tag.id %}" hx-target="#objectUpdateModalTarget"
+										data-toggle="oh-modal-toggle" data-target="#objectUpdateModal" type="button"
+										class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}">
+										<ion-icon name="create-outline"></ion-icon>
+									</a>
+								{% endif %}
+								{% if perms.employee.delete_employeetag %}
+									<form hx-post="{% url 'employee-tag-delete' tag.id %}" hx-swap="outerHTML" class="w-100"
+										hx-confirm="{% trans 'Are you sure you want to delete this employee tag ?'%}"
+										hx-target="#employeeTagTr{{tag.id}}" hx-on-htmx-after-request="reloadMessage(this);">
+										{% csrf_token %}
+										<button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+											title="{% trans 'Delete' %}">
+											<ion-icon name="trash-outline"></ion-icon>
+										</button>
+									</form>
+								{% endif %}
+							</div>
+						</div>
+					{% endif %}
+				</div>
 			{% endfor %}
 		</div>
 	</div>

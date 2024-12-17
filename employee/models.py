@@ -139,6 +139,16 @@ class Employee(models.Model):
         """
         return getattr(getattr(self, "employee_work_info", None), "company_id", None)
 
+    def get_date_format(self):
+        company = self.get_company()
+
+        if company:
+            date_format = company.date_format
+
+            return date_format if date_format else "MMM. D, YYYY"
+
+        return "MMM. D, YYYY"
+
     def get_job_position(self):
         """
         This method is used to return the job position of the employee
@@ -495,6 +505,12 @@ class Employee(models.Model):
             user = User.objects.create_user(
                 username=username, email=username, password=password, is_new_employee=is_new_employee_flag
             )
+            user = User.objects.filter(username=username).first()
+            if not user:
+                user = User.objects.create_user(
+                    username=username, email=username, password=password
+                )
+
             self.employee_user_id = user
             # default permissions
             change_ownprofile = Permission.objects.get(codename="change_ownprofile")
@@ -571,7 +587,7 @@ class EmployeeWorkInformation(models.Model):
     )
     reporting_manager_id = models.ForeignKey(
         Employee,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="reporting_manager",
@@ -766,7 +782,7 @@ class Policy(HorillaModel):
     attachments = models.ManyToManyField(PolicyMultipleFile, blank=True)
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
-    objects = HorillaCompanyManager()
+    objects = HorillaCompanyManager("company_id")
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
@@ -856,6 +872,10 @@ class Actiontype(HorillaModel):
     def __str__(self) -> str:
         return f"{self.title}"
 
+    class Meta:
+        verbose_name = _("Action Type")
+        verbose_name_plural = _("Action Types")
+
 
 class DisciplinaryAction(HorillaModel):
     """
@@ -878,9 +898,7 @@ class DisciplinaryAction(HorillaModel):
     attachment = models.FileField(
         upload_to="employee/discipline", null=True, blank=True
     )
-    company_id = models.ManyToManyField(Company, blank=True)
-
-    objects = HorillaCompanyManager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self) -> str:
         return f"{self.action}"
@@ -895,8 +913,8 @@ class EmployeeGeneralSetting(HorillaModel):
     """
 
     badge_id_prefix = models.CharField(max_length=5, default="PEP")
-    objects = models.Manager()
     company_id = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)
+    objects = HorillaCompanyManager("company_id")
 
 
 from accessibility.accessibility import ACCESSBILITY_FEATURE

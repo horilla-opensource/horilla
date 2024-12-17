@@ -1,126 +1,63 @@
 {% load i18n static %}
-<div
-    class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
-    style="min-height: 423px"
->
-    <div
-        class="oh-card-dashboard__header oh-card-dashboard__header--divider mb-0"
-    >
-        <span class="oh-card-dashboard__title"
-            >{% trans 'Offline Employees' %}
-        </span>
-		<span class="float-end chart_close_button " role="button" data-chart="offline_employees" hx-post="{% url 'employee-charts' %}?chart_id=offline_employees" hx-target="#notInYetId" hx-swap="outerHTML">
-			<i class="material-icons fw-lighter fs-5">close</i>
-		</span>
-    </div>
-    {% if employees %}
-		<div class="oh-card-dashboard__body">
-			<div class="oh-sticky-table" style="height: 320px">
-				<div class="oh-sticky-table__table oh-table--sortable">
-					<div class="oh-sticky-table__tbody">
-						{% for emp in employees %}
-						<div class="oh-sticky-table__tr" draggable="true">
-							<div class="oh-sticky-table__sd">
-								<div class="oh-profile oh-profile--md">
-									<div class="oh-profile__avatar mr-1">
-										<img
-											src="{{ emp.get_avatar }}"
-											class="oh-profile__image"
-										/>
-									</div>
-									<span class="oh-profile__name oh-text--dark">
-										{{ emp.get_full_name }}
-										<span
-											class="oh-recuritment_tag"
-											style="font-size: 0.5rem"
-											>{{ emp.get_leave_status }}</span
-										>
-									</span>
+{% if employees %}
+	<div class="oh-sticky-table" style="height: 300px">
+		<div class="oh-sticky-table__table oh-table--sortable">
+			<div class="oh-sticky-table__tbody">
+				{% for emp in employees %}
+					<div class="oh-sticky-table__tr" draggable="true">
+						<div class="oh-sticky-table__sd">
+							<div class="oh-profile oh-profile--md">
+								<div class="oh-profile__avatar mr-1">
+									<img src="{{ emp.get_avatar }}" class="oh-profile__image" />
 								</div>
-							</div>
-							<div
-								hx-get="{% url 'send-mail-employee' emp.id %}"
-								class="oh-sticky-table__td"
-								title="{% trans 'Send Mail' %}"
-								hx-target="#mail-content"
-								data-toggle="oh-modal-toggle"
-								data-target="#sendMailModal"
-								align="center"
-								style="width: 50px"
-							>
-								<ion-icon name="mail-outline"></ion-icon>
+								<span class="oh-profile__name oh-text--dark">
+									{{ emp.get_full_name }}
+									<span class="oh-recuritment_tag" style="font-size: 0.5rem">
+										{{ emp.get_leave_status }}
+									</span>
+								</span>
 							</div>
 						</div>
-						{% endfor %}
+						<div hx-get="{% url 'send-mail-employee' emp.id %}" class="oh-sticky-table__td"
+							title="{% trans 'Send Mail' %}" hx-target="#mail-content" data-toggle="oh-modal-toggle"
+							data-target="#sendMailModal" align="center" style="width: 50px">
+							<ion-icon name="mail-outline"></ion-icon>
+						</div>
 					</div>
-				</div>
+				{% endfor %}
 			</div>
 		</div>
-    {% else %}
-		<div
-			style="
-				height: 380px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			"
-			class=""
-		>
-			<div style="" class="">
-				<img
-					style="display: block; width: 70px; margin: 20px auto"
-					src="{% static "/images/ui/joiningchart.png" %}"
-					class=""
-					alt=""
-				/>
-				<h3 style="font-size: 16px" class="oh-404__subtitle">
-					{% trans "No data Found..." %}
-				</h3>
-			</div>
-		</div>
-    {% endif %}
-    <div class="float-end mt-3 mb-3">
-        {% if employees.has_previous %}
-			<span
-				class="oh-card-dashboard__title"
-				id="employee-previous"
-				style="cursor: pointer"
-				hx-target="#notInYetId"
-				hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.previous_page_number }}"
-				hx-trigger="click delay:0.3s"
-				title="Previous Page"
-			>
-				<ion-icon
-					name="caret-back-outline"
-					role="img"
-					class="md hydrated"
-					aria-label="caret back outline"
-				></ion-icon>
+	</div>
+{% else %}
+	<div class="oh-empty h-100">
+		<p class="oh-empty__message">
+			<img style="display: block;width: 70px;margin: 20px auto ;" src="{% static "/images/ui/no_records.svg" %}" class="" alt=""/>
+			{% trans "No records available at the moment." %}
+		</p>
+	</div>
+{% endif %}
+{% if employees.has_previous or employees.has_next %}
+	<div class="float-end mt-3 mb-3">
+		{% if employees.has_previous %}
+			<span class="oh-card-dashboard__title" id="employee-previous" style="cursor: pointer"
+				hx-target="#notInYetIdCardBody" hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.previous_page_number }}"
+				hx-trigger="click delay:0.3s">
+				<ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
 			</span>
-        {% endif %}
+		{% endif %}
 		{% if employees.has_next %}
-			<span
-				class="oh-card-dashboard__title ms-2 float-end"
-				id="employee-previous"
-				style="cursor: pointer"
-				hx-target="#notInYetId"
-				hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.next_page_number }}"
-				hx-trigger="click delay:0.3s"
-				title="Next Page"
-			>
-				<ion-icon
-					name="caret-forward-outline"
-					role="img"
-					class="md hydrated"
-					aria-label="caret back outline"
-				></ion-icon>
+			<span class="oh-card-dashboard__title ms-2 float-end" id="employee-previous" style="cursor: pointer"
+				hx-target="#notInYetIdCardBody" hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.next_page_number }}"
+				hx-trigger="click delay:0.3s">
+				<ion-icon name="caret-forward-outline" role="img" class="md hydrated"
+					aria-label="caret back outline"></ion-icon>
 			</span>
-        {% endif %}
+		{% endif %}
 		{% if employees.has_previous or employees.has_next %}
 			<span class="oh-pagination__page mt-1 fw-bold">
 				{% trans "Page" %} {{ employees.number }} {%trans "of" %}
 				{{employees.paginator.num_pages }}
 			</span>
-        {% endif %}
-    </div>
-</div>
+		{% endif %}
+	</div>
+{% endif %}

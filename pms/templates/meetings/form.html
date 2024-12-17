@@ -1,29 +1,24 @@
 {% load i18n %}
+{% if messages %}
+    <span hx-get="/pms/filter-meeting" hx-target="#meeting_list" hx-trigger="load"
+        hx-on-htmx-after-request="setTimeout(() => { reloadMessage();$(this).closest('.oh-modal--show').removeClass('oh-modal--show');},100);">
+    </span>
+{% endif %}
 <div class="oh-modal__dialog-header">
-    <span class="oh-modal__dialog-title" id="objectCreateModalLabel"
-        >{% trans "Meetings" %}</span
-    >
-    <button
-        class="oh-modal__close--custom"
-        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
-        aria-label="Close"
-        {% if close_hx_url and messages %}
-			hx-get="{{close_hx_url}}"
-			hx-target="{{close_hx_target}}"
-        {% endif %}
-    >
+    <span class="oh-modal__dialog-title" id="objectCreateModalLabel">{% trans "Meetings" %}</span>
+    <button class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body" id="formBody">
-    <form hx-post="{% url "create-meeting" %}?instance_id={{form.instance.id}}" hx-target="#objectCreateModalTarget">
+    <form hx-post="{% url 'create-meeting' %}?instance_id={{form.instance.id}}" hx-target="#objectCreateModalTarget" hx->
         {{form.as_p}}
     </form>
 </div>
 
 <script>
     $(document).ready(function () {
-		$("#id_employee_id").closest(".col-md-6").removeClass("col-md-6")
+        $("#id_employee_id").closest(".col-md-6").removeClass("col-md-6")
         $("#id_employee_id").on("change", function () {
             var employees = $(this).find("option:selected");
             values = $("#id_answer_employees").val();

@@ -190,7 +190,11 @@ def dashboard_pipeline(request):
                 }
             )
     return JsonResponse(
-        {"dataSet": data_set, "labels": labels, "message": _("No data Found...")}
+        {
+            "dataSet": data_set,
+            "labels": labels,
+            "message": _("No records available at the moment."),
+        }
     )
 
 

@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base import announcement, request_and_approve, views
 from base.forms import (
+    HolidayForm,
     MailTemplateForm,
     RotatingShiftAssignForm,
     RotatingShiftForm,
@@ -18,6 +19,7 @@ from base.models import (
     EmployeeShift,
     EmployeeShiftSchedule,
     EmployeeType,
+    Holidays,
     HorillaMailTemplate,
     JobPosition,
     JobRole,
@@ -34,6 +36,7 @@ from horilla_audit.models import AuditTag
 
 urlpatterns = [
     path("", views.home, name="home-page"),
+    path("announcement-list", views.announcement_list, name="announcement-list"),
     path("initialize-database", views.initialize_database, name="initialize-database"),
     path("load-demo-database", views.load_demo_database, name="load-demo-database"),
     path(
@@ -199,7 +202,7 @@ urlpatterns = [
         kwargs={"model": Company},
     ),
     path(
-        "company-delete/<int:obj_id>/",
+        "settings/company-delete/<int:obj_id>/",
         views.object_delete,
         name="company-delete",
         kwargs={"model": Company, "redirect": "/settings/company-view"},
@@ -222,7 +225,7 @@ urlpatterns = [
         name="department-delete",
         kwargs={
             "model": Department,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path(
@@ -247,7 +250,7 @@ urlpatterns = [
         name="job-position-delete",
         kwargs={
             "model": JobPosition,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path("settings/job-role-create/", views.job_role_create, name="job-role-create"),
@@ -264,7 +267,7 @@ urlpatterns = [
         name="job-role-delete",
         kwargs={
             "model": JobRole,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path("settings/work-type-view/", views.work_type_view, name="work-type-view"),
@@ -281,7 +284,7 @@ urlpatterns = [
         name="work-type-delete",
         kwargs={
             "model": WorkType,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path(
@@ -318,7 +321,7 @@ urlpatterns = [
         name="rotating-work-type-delete",
         kwargs={
             "model": RotatingWorkType,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path(
@@ -398,7 +401,7 @@ urlpatterns = [
         name="employee-type-delete",
         kwargs={
             "model": EmployeeType,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path(
@@ -423,7 +426,7 @@ urlpatterns = [
         name="employee-shift-delete",
         kwargs={
             "model": EmployeeShift,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path(
@@ -448,7 +451,7 @@ urlpatterns = [
         name="employee-shift-schedule-delete",
         kwargs={
             "model": EmployeeShiftSchedule,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path(
@@ -600,7 +603,7 @@ urlpatterns = [
         name="work-type-request-delete",
     ),
     path(
-        "work-type-request-single-view/<int:work_type_request_id>/",
+        "work-type-request-single-view/<int:obj_id>/",
         views.work_type_request_single_view,
         name="work-type-request-single-view",
     ),
@@ -793,7 +796,7 @@ urlpatterns = [
         name="tag-delete",
         kwargs={
             "model": Tags,
-            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+            "HttpResponse": True,
         },
     ),
     path("audit-tag-create", views.audit_tag_create, name="audit-tag-create"),
@@ -804,7 +807,7 @@ urlpatterns = [
         "audit-tag-delete/<int:obj_id>",
         views.object_delete,
         name="audit-tag-delete",
-        kwargs={"model": AuditTag, "redirect": "/settings/tag-view/"},
+        kwargs={"model": AuditTag, "HttpResponse": True},
     ),
     path(
         "configuration/multiple-approval-condition",
@@ -950,6 +953,11 @@ urlpatterns = [
         name="announcement-single-view",
     ),
     path(
+        "announcement-single-view/",
+        announcement.announcement_single_view,
+        name="announcement-single-view",
+    ),
+    path(
         "announcement-delete-comment/<int:comment_id>/",
         announcement.delete_announcement_comment,
         name="announcement-delete-comment",
@@ -990,9 +998,24 @@ urlpatterns = [
         "holidays-info-import", views.holidays_info_import, name="holidays-info-import"
     ),
     path("holiday-info-export", views.holiday_info_export, name="holiday-info-export"),
+    path(
+        "get-upcoming-holidays",
+        views.get_upcoming_holidays,
+        name="get-upcoming-holidays",
+    ),
     path("holiday-creation", views.holiday_creation, name="holiday-creation"),
-    path("holiday-update/<int:id>", views.holiday_update, name="holiday-update"),
-    path("holiday-delete/<int:id>", views.holiday_delete, name="holiday-delete"),
+    path("holiday-update/<int:obj_id>", views.holiday_update, name="holiday-update"),
+    path(
+        "duplicate-holiday/<int:obj_id>",
+        views.object_duplicate,
+        name="duplicate-holiday",
+        kwargs={
+            "model": Holidays,
+            "form": HolidayForm,
+            "template": "holiday/holiday_form.html",
+        },
+    ),
+    path("holiday-delete/<int:obj_id>", views.holiday_delete, name="holiday-delete"),
     path(
         "holidays-bulk-delete", views.bulk_holiday_delete, name="holidays-bulk-delete"
     ),

@@ -170,6 +170,7 @@
                     </button>
                     <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
                         <ul class="oh-dropdown__items">
+                            {% if perms.asset.add_asset %}
                             <li class="oh-dropdown__item" id="import-button">
                                 <a href="#" class="oh-dropdown__link asset-info-import" data-toggle="oh-modal-toggle"
                                     data-target="#objectCreateModal" hx-get="{%url 'asset-import' %}"
@@ -178,6 +179,7 @@
                                     {% trans "Import" %}
                                 </a>
                             </li>
+                            {% endif %}
                             <li class="oh-dropdown__item">
                                 <a href="#" class="oh-dropdown__link" data-toggle="oh-modal-toggle"
                                     data-target="#objectCreateModal" hx-get="{% url 'asset-export-excel' %}"

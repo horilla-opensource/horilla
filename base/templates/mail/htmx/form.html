@@ -4,30 +4,34 @@
 {% else %}
 <form id="createForm" hx-post="{% url "create-mail-template" %}" hx-target="#viewTemplateModalBody">
 {% endif %}
-    <section>
-        <div id="viewTemplateModalContainer">
-            <div class="my-3" id="keyResultCard">
-                <div class="oh-card oh-card--no-shadow oh-card__body">
-                    <div class="oh-input__group">
-                        <label class="oh-input__label mt-0" for="keyTitle">{% trans "Title" %}</label>
-                        {{ form.title }}
-                    </div>
-                    <div class="oh-input__group">
-                        <label class="oh-input__label mt-2" for="keyTitle">{% trans "Body" %}</label>
-                        {{ form.body }}
-                    </div>
-                    <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
-                        {% trans "Hint: Type '{' to get sender or receiver data" %}
-                    </div>
-                    <div class="oh-input__group">
-                        <label class="oh-input__label mt-2" for="keyTitle">{% trans "Company" %}</label>
-                        {{ form.company_id }}
-                    </div>
+    <div id="viewTemplateModalContainer">
+        <div class="my-3" id="keyResultCard">
+            <div class="oh-card oh-card--no-shadow oh-card__body">
+                <div class="oh-input__group">
+                    <label class="oh-input__label mt-0" for="id_title">{% trans "Title" %}</label>
+                    {{ form.title }}
+                </div>
+                <div class="oh-input__group">
+                    <label class="oh-input__label mt-2" for="id_body">{% trans "Body" %}</label>
+                    {{ form.body }}
+                </div>
+                <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
+                    {% trans "Hint: Type '{' to get sender or receiver data" %}
+                </div>
+                <div class="oh-input__group">
+                    <label class="oh-input__label mt-2" for="id_company_id">{% trans "Company" %}</label>
+                    {{ form.company_id }}
                 </div>
             </div>
         </div>
-    </section>
-    <button id="submitFormButton" type="submit" hidden ></button>
+    </div>
+    {% if duplicate %}
+        <div class="oh-modal__dialog-footer p-0">
+            <button id="submitFormButton" type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans "Save Duplicate" %}</button>
+        </div>
+    {% else %}
+        <button id="submitFormButton" type="submit" hidden ></button>
+    {% endif %}
 </form>
 <script>
     $(document).ready(function () {

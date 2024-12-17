@@ -8,23 +8,25 @@
 
     <div class="oh-main__titlebar-button-container">
 
-      <div class="oh-btn-group ml-2">
-        <div>
-          <a
-            class="oh-btn oh-btn--secondary oh-btn--shadow"
-            href="{% url 'create-allowance' %}"
-          >
-            <ion-icon
-              class="me-2 md hydrated"
-              name="add-outline"
-              role="img"
-              aria-label="add outline"
-            ></ion-icon
-            >{% trans "Create" %}</a
-          >
+        <div class="oh-btn-group ml-2">
+          {% if perms.payroll.add_allowance %}
+            <div>
+              <a
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                href="{% url 'create-allowance' %}"
+              >
+                <ion-icon
+                  class="me-2 md hydrated"
+                  name="add-outline"
+                  role="img"
+                  aria-label="add outline"
+                ></ion-icon
+                >{% trans "Create" %}</a
+              >
+            </div>
+          {% endif %}
         </div>
       </div>
-    </div>
   </div>
 </section>
 

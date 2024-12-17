@@ -72,21 +72,23 @@
                                 </div>
                                 <div>
                                     {% if req.status != "approved" %}
-                                    <a
-                                        hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                        hx-target="#objectCreateModalTarget"
-                                        class="mr-2"
-                                        style="cursor:pointer;"
-                                        title='{% trans "Update" %}'
-                                        data-toggle="oh-modal-toggle"
-                                        data-target="#objectCreateModal"
-                                        ><ion-icon
-                                            class="text-dark md hydrated"
-                                            name="create-outline"
-                                            role="img"
-                                            aria-label="create outline"
-                                        ></ion-icon
-                                    ></a>
+                                        {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
+                                            <a
+                                                hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
+                                                hx-target="#objectCreateModalTarget"
+                                                class="mr-2"
+                                                style="cursor:pointer;"
+                                                title='{% trans "Update" %}'
+                                                data-toggle="oh-modal-toggle"
+                                                data-target="#objectCreateModal"
+                                                ><ion-icon
+                                                    class="text-dark md hydrated"
+                                                    name="create-outline"
+                                                    role="img"
+                                                    aria-label="create outline"
+                                                ></ion-icon
+                                            ></a>
+                                        {% endif %}
                                     {% endif %}
                                     {% if perms.payroll.delete_reimbursement  %}
                                     <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')"
@@ -130,18 +132,20 @@
                                 class="oh-card__footer--border-top pt-1"
                                 style="display: block"
                             >
-                                <div class="mb-2">
-                                    <i
-                                        ><a
-                                            hx-get="{% url 'payroll-request-view-comment' req.id %}"
-                                            hx-target="#commentContainer"
-                                            data-target = '#activitySidebar'
-                                            class="text-primary fw-bold oh-activity-sidebar__open w-100"
-                                            style="cursor: pointer"
-                                            >{% trans 'Comments' %}</a
-                                        ></i
-                                    >
-                                </div>
+                                {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
+                                    <div class="mb-2">
+                                        <i
+                                            ><a
+                                                hx-get="{% url 'payroll-request-view-comment' req.id %}"
+                                                hx-target="#commentContainer"
+                                                data-target = '#activitySidebar'
+                                                class="text-primary fw-bold oh-activity-sidebar__open w-100"
+                                                style="cursor: pointer"
+                                                >{% trans 'Comments' %}</a
+                                            ></i
+                                        >
+                                    </div>
+                                {% endif %}
 
                                 <i style="color: hsl(0, 0%, 45%)"
                                     >{% trans 'Allowance on' %}</i
@@ -359,21 +363,23 @@
                                 </div>
                                 <div>
                                     {% if req.status != "approved" %}
-                                    <a
-                                        hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                        hx-target="#objectCreateModalTarget"
-                                        class="mr-2"
-                                        style="cursor:pointer;"
-                                        title='{% trans "Update" %}'
-                                        data-toggle="oh-modal-toggle"
-                                        data-target="#objectCreateModal"
-                                        ><ion-icon
-                                            class="text-dark md hydrated"
-                                            name="create-outline"
-                                            role="img"
-                                            aria-label="create outline"
-                                        ></ion-icon
-                                    ></a>
+                                        {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
+                                            <a
+                                                hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
+                                                hx-target="#objectCreateModalTarget"
+                                                class="mr-2"
+                                                style="cursor:pointer;"
+                                                title='{% trans "Update" %}'
+                                                data-toggle="oh-modal-toggle"
+                                                data-target="#objectCreateModal"
+                                                ><ion-icon
+                                                    class="text-dark md hydrated"
+                                                    name="create-outline"
+                                                    role="img"
+                                                    aria-label="create outline"
+                                                ></ion-icon
+                                            ></a>
+                                        {% endif %}
                                     {% endif %}
                                     {% if perms.payroll.delete_reimbursement  %}
                                     <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')"
@@ -416,19 +422,20 @@
                                 class="oh-card__footer--border-top pt-1"
                                 style="display: block"
                             >
-                                <div class="mb-2">
-                                    <i
-                                        ><a
-                                            hx-target="#commentContainer"
-                                            hx-get="{% url 'payroll-request-view-comment' req.id %}"
-                                            class="text-primary fw-bold oh-activity-sidebar__open w-100"
-                                            data-target = '#activitySidebar'
-                                            style="cursor: pointer"
-                                            >{% trans 'Comments' %}</a
-                                        ></i
-                                    >
-                                </div>
-
+                                {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
+                                    <div class="mb-2">
+                                        <i
+                                            ><a
+                                                hx-target="#commentContainer"
+                                                hx-get="{% url 'payroll-request-view-comment' req.id %}"
+                                                class="text-primary fw-bold oh-activity-sidebar__open w-100"
+                                                data-target = '#activitySidebar'
+                                                style="cursor: pointer"
+                                                >{% trans 'Comments' %}</a
+                                            ></i
+                                        >
+                                    </div>
+                                {% endif %}
                                 <i style="color: hsl(0, 0%, 45%)"
                                     >{% trans 'Allowance on' %}</i
                                 >
@@ -642,21 +649,23 @@
                                 </div>
                                 <div>
                                     {% if req.status != "approved" %}
-                                    <a
-                                        hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                        hx-target="#objectCreateModalTarget"
-                                        class="mr-2"
-                                        style="cursor:pointer;"
-                                        title='{% trans "Update" %}'
-                                        data-toggle="oh-modal-toggle"
-                                        data-target="#objectCreateModal"
-                                        ><ion-icon
-                                            class="text-dark md hydrated"
-                                            name="create-outline"
-                                            role="img"
-                                            aria-label="create outline"
-                                        ></ion-icon
-                                    ></a>
+                                        {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
+                                            <a
+                                                hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
+                                                hx-target="#objectCreateModalTarget"
+                                                class="mr-2"
+                                                style="cursor:pointer;"
+                                                title='{% trans "Update" %}'
+                                                data-toggle="oh-modal-toggle"
+                                                data-target="#objectCreateModal"
+                                                ><ion-icon
+                                                    class="text-dark md hydrated"
+                                                    name="create-outline"
+                                                    role="img"
+                                                    aria-label="create outline"
+                                                ></ion-icon
+                                            ></a>
+                                        {% endif %}
                                     {% endif %}
                                     {% if perms.payroll.delete_reimbursement  %}
                                     <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')"
@@ -698,18 +707,20 @@
                                 class="oh-card__footer--border-top pt-1"
                                 style="display: block"
                             >
-                                <div class="mb-2">
-                                    <i
-                                        ><a
-                                            hx-target="#commentContainer"
-                                            hx-get="{% url 'payroll-request-view-comment' req.id %}"
-                                            class="text-primary fw-bold oh-activity-sidebar__open w-100"
-                                            data-target = '#activitySidebar'
-                                            style="cursor: pointer"
-                                            >{% trans 'Comments' %}</a
-                                        ></i
-                                    >
-                                </div>
+                                {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
+                                    <div class="mb-2">
+                                        <i
+                                            ><a
+                                                hx-target="#commentContainer"
+                                                hx-get="{% url 'payroll-request-view-comment' req.id %}"
+                                                class="text-primary fw-bold oh-activity-sidebar__open w-100"
+                                                data-target = '#activitySidebar'
+                                                style="cursor: pointer"
+                                                >{% trans 'Comments' %}</a
+                                            ></i
+                                        >
+                                    </div>
+                                {% endif %}
 
                                 <i style="color: hsl(0, 0%, 45%)"
                                     >{% trans 'Allowance on' %}</i

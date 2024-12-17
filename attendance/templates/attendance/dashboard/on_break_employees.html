@@ -1,0 +1,27 @@
+{% load static %}
+{% load i18n %}
+{% if on_break %}
+    <ul class="oh-card-dashboard__user-list">
+        {% for emp in on_break %}
+            <li class="oh-card-dashboard__user-item">
+                <div class="oh-profile oh-profile--md">
+                    <div class="oh-profile__avatar mr-1">
+                        <img src="https://ui-avatars.com/api/?name={{emp.employee_id}}&background=random"
+                            class="oh-profile__image" alt="Amy Winehouse" />
+                    </div>
+                    <span class="oh-profile__name oh-text--dark">{{emp.employee_id}}</span>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <div style="height: 380px; display:flex;align-items: center;justify-content: center;"
+        class="">
+        <div style="" class="">
+            <img style="display: block;width: 70px;margin: 20px auto ;"
+                src="{% static '/images/ui/coffee-break.png' %}" class="" alt="" />
+            <h3 style="font-size:16px" class="oh-404__subtitle">
+                {% trans "No employees are currently taking a break." %}</h3>
+        </div>
+    </div>
+{% endif %}

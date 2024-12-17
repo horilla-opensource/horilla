@@ -13,7 +13,7 @@
             {% endif %}
             {{ policy.title }}</span>
           <div>
-            {% if perms.employee.change_policiy %}
+            {% if perms.employee.change_policy %}
               <a hx-get="{% url 'create-policy' %}?instance_id={{ policy.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" title="Edit" style="cursor: pointer;"><ion-icon name="create-outline" role="img" class="md hydrated" aria-label="copy outline"></ion-icon></a>
             {% endif %}
             {% if perms.employee.delete_policy %}

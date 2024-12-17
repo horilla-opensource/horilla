@@ -1,64 +1,55 @@
 {% load i18n %}
 <div class="oh-sticky-table">
-  <div class="oh-sticky-table__table oh-table--sortable">
-    <div class="oh-sticky-table__thead">
-      <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th">{% trans "Title" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Shift 1" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Shift 2" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Additional Shifts" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-      </div>
-    </div>
-    <div class="oh-sticky-table__tbody">
-      {% for rshift in rshifts %}
-      <div class="oh-sticky-table__tr" draggable="true">
-        <div class="oh-sticky-table__sd">{{rshift.name}}</div>
-        <div class="oh-sticky-table__td">{{rshift.shift1}}</div>
-        <div class="oh-sticky-table__td">{{rshift.shift2}}</div>
-        <div class="oh-sticky-table__td">
-          	{% if rshift.additional_shifts %}
-		  		{% for shift in rshift.additional_shifts %}
-					{{shift}} </br>
-				{% endfor %}
-			{% else %}
-				{{rshift.additional_shifts}}
-			{% endif %}
+    <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Title" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Shift 1" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Shift 2" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Additional Shifts" %}</div>
+                {% if perms.base.change_rotatingshift or perms.base.delete_rotatingshift %}
+                    <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                {% endif %}
+            </div>
         </div>
-        {% if perms.base.change_rotatingshift or perms.base.delete_rotatingshift %}
-        <div class="oh-sticky-table__td">
-          <div class="oh-btn-group">
-            {% if perms.base.change_rotatingshift %}
-            <a
-              data-toggle="oh-modal-toggle"
-              data-target="#objectUpdateModal"
-              hx-get="{% url 'rotating-shift-update' rshift.id %}"
-              hx-target="#objectUpdateModalTarget"
-              type="button"
-              class="oh-btn oh-btn--light-bkg w-50"
-              title="{% trans 'Edit' %}"
-            >
-              <ion-icon name="create-outline"></ion-icon
-            ></a>
-            {% endif %} {% if perms.base.delete_rotatingshift %}
-			<form action="{% url 'rotating-shift-delete' rshift.id %}"
-				onsubmit="return confirm('{% trans "Are you sure you want to delete this rotating shift?" %}');"
-				method="post" class="w-50" >
-				{% csrf_token %}
-            	<button
-            	  type="submit"
-            	  class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-            	  title="{% trans 'Remove' %}"
-            	>
-            	  <ion-icon name="trash-outline"></ion-icon>
-            	</button>
-			</form>
-            {% endif %}
-          </div>
+        <div class="oh-sticky-table__tbody">
+            {% for rshift in rshifts %}
+                <div class="oh-sticky-table__tr" draggable="true">
+                    <div class="oh-sticky-table__sd">{{rshift.name}}</div>
+                    <div class="oh-sticky-table__td">{{rshift.shift1}}</div>
+                    <div class="oh-sticky-table__td">{{rshift.shift2}}</div>
+                    <div class="oh-sticky-table__td">
+                        {% if rshift.additional_shifts %}
+                            {% for shift in rshift.additional_shifts %}
+                                {{shift}} </br>
+                            {% endfor %}
+                        {% else %}
+                            {{rshift.additional_shifts}}
+                        {% endif %}
+                    </div>
+                    {% if perms.base.change_rotatingshift or perms.base.delete_rotatingshift %}
+                        <div class="oh-sticky-table__td">
+                            <div class="oh-btn-group">
+                                {% if perms.base.change_rotatingshift %}
+                                    <a data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+                                        hx-get="{% url 'rotating-shift-update' rshift.id %}" hx-target="#objectUpdateModalTarget"
+                                        type="button" class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
+                                        <ion-icon name="create-outline"></ion-icon>
+                                    </a>
+                                {% endif %}
+                                {% if perms.base.delete_rotatingshift %}
+                                    <form action="{% url 'rotating-shift-delete' rshift.id %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this rotating shift?" %}');" method="post" class="w-50">
+                                        {% csrf_token %}
+                                        <button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}">
+                                            <ion-icon name="trash-outline"></ion-icon>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
         </div>
-        {% endif %}
-      </div>
-      {% endfor %}
     </div>
-  </div>
 </div>

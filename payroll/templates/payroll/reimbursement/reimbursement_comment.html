@@ -1,123 +1,91 @@
 {% load i18n static %}
+{% load basefilters %}
 <style>
-    #enlargeImageContainer {
-        position: absolute;
-        left: -300px;
-        top: 100px;
-        height: 200px;
-        width: 200px;
-    }
+	#enlargeImageContainer {
+		position: absolute;
+		left: -300px;
+		top: 100px;
+		height: 200px;
+		width: 200px;
+	}
 </style>
 
-{% if messages %}
-    <div class="oh-alert-container">
-      {% for message in messages %}
-      <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
-      {% endfor %}
-    </div>
-<script>
-    setTimeout(() => {
-        $(".oh-modal__close").click();
-    }, 1000);
-</script>
-{% endif %}
 
-	<div class="oh-activity-sidebar__header">
-		<a
-		style="cursor: pointer;"
-		onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');">
-		<ion-icon
-		name="chevron-forward-outline"
-		class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
-		data-target="#activitySidebar"
-		></ion-icon>
-		</a>
-		<span class="oh-activity-sidebar__title"> {% trans "Comments" %} </span>
-	</div>
-
-	<form method="post"
-		hx-target="#commentContainer"
-		hx-post="{% url 'payroll-request-add-comment' request_id %}" id="commentForm">
+<div class="oh-activity-sidebar__header">
+	<a style="cursor: pointer;" onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');">
+		<ion-icon name="chevron-forward-outline"
+			class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+			data-target="#activitySidebar"></ion-icon>
+	</a>
+	<span class="oh-activity-sidebar__title"> {% trans "Comments" %} </span>
+</div>
+{% if request.user == req.employee_id.employee_user_id or perms.payroll.add_reimbursementrequestcomment or request.user|is_reportingmanager %}
+	<form hx-post="{% url 'payroll-request-add-comment' request_id %}" id="commentForm" hx-target="#commentContainerList"
+		hx-select=".oh-activity-sidebar__qa-list"
+		hx-on-htmx-after-request="reloadMessage(this);$('#commentInput').val('');$('#commentButton').hide();">
 		{% csrf_token %}
 
 		<div>
-			<input type="text" name="comment" id="commentInput" class="oh-input w-100" placeholder="Comment here">
-			<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp" style="display: none;">
+			<input type="text" name="comment" id="commentInput" class="oh-input w-100" placeholder="Comment here"
+				hx-on:keyup="toggleCommentButton(this);">
+			<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+				style="display: none;">
 				{% trans "Comment" %}
 			</button>
 		</div>
 
 		<div class="oh-inner-sidebar-content__footer"></div>
 	</form>
-
-
-{% if comments %}
-	<ol class="oh-activity-sidebar__qa-list" role="list">
+{% endif %}
+<ol class="oh-activity-sidebar__qa-list" role="list" id="commentContainerList">
+	{% if comments %}
 		{% for comment in comments %}
-			<li class="oh-activity-sidebar__qa-item">
+			<li class="oh-activity-sidebar__qa-item fade-me-out" id="requestCommentItem{{comment.id}}">
 				<span class="oh-activity-sidebar__q">{{ comment.comment }}
-						<span class="float-end" title="Delete" hx-get='{% url "payroll-request-delete-comment" comment.id %}' data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#commentContainer">
-							<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="close outline"></ion-icon></span>
+					{% if request.user.employee_get == comment.employee_id or perms.payroll.delete_reimbursementrequestcomment or request.user|is_reportingmanager %}
+						<span class="float-end" hx-get="{% url 'payroll-request-delete-comment' comment.id %}"
+							hx-swap="outerHTML swap:.5s" hx-target="#requestCommentItem{{comment.id}}"
+							hx-on:click="setTimeout(() => {reloadMessage(this);},100);">
+							<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated"
+								aria-label="close outline"></ion-icon>
+						</span>
+					{% endif %}
 				</span>
 
 				<div class="d-flex mt-2 mb-2">
 					{% for file in comment.files.all %}
-					<a
-						href="{{ file.file.url }}"
-						rel="noopener noreferrer"
-						target="_blank"
-						><span
-							class="oh-file-icon oh-file-icon--pdf"
-							onmouseover="enlargeImage('{{ file.file.url }}',$(this))"
-							style="width: 40px; height: 40px"
-							><img
-								src="{% static 'images/ui/minus-icon.png' %}"
-								style="display: block; width: 50%; height: 50%"
-								hx-get="{% url 'delete-reimbursement-comment-file' %}?ids={{ file.id }}&payroll_id={{ request_id }}"
-								hx-target="#commentContainer"
-								onclick="event.stopPropagation();event.preventDefault()" /></span
-					></a>
+						{% if request.user == req.employee_id.employee_user_id	 or perms.payroll.view_reimbursementfile or request.user|is_reportingmanager %}
+							<a href="{{ file.file.url }}" rel="noopener noreferrer" target="_blank"
+								id="commentFileItem{{file.id}}">
+								<span class="oh-file-icon oh-file-icon--pdf" onmouseover="enlargeImage('{{ file.file.url }}',$(this))" style="width: 40px; height: 40px">
+									{% if request.user.employee_get == comment.employee_id or perms.payroll.delete_reimbursementfile or request.user|is_reportingmanager %}
+										<img src="{% static 'images/ui/minus-icon.png' %}" style="display: block; width: 50%; height: 50%"
+											hx-get="{% url 'delete-reimbursement-comment-file' %}?ids={{ file.id }}&payroll_id={{ request_id }}"
+											hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
+											hx-target="#commentFileItem{{file.id}}" hx-swap="outerHTML"
+											onclick="event.stopPropagation();event.preventDefault()" />
+									{% endif %}
+								</span>
+							</a>
+						{% endif %}
 					{% endfor %}
-
-					<form
-						hx-post="{% url 'payroll-request-view-comment' comment.request_id.id %}?comment_id={{ comment.id }}"
-						class="add-files-form"
-						hx-encoding="multipart/form-data"
-						data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#commentContainer"
-
-					>
-						{% csrf_token %}
-						<label for="addFile_{{comment.id}}" title="Add Files"
-							><ion-icon
-								name="add-outline"
-								style="font-size: 24px"
-								role="img"
-								class="md hydrated"
-								aria-label="add outline"
-							></ion-icon
-						></label>
-						<input
-							type="file"
-							name="files"
-							class="d-none"
-							multiple="true"
-							accept=".jpg, .jpeg, .png, .pdf"
-							id="addFile_{{comment.id}}"
-							onchange="submitForm(this)"
-						/>
-						<input
-							type="submit"
-							class="d-none add_more_submit"
-							value="save"
-						/>
-					</form>
+					{% if request.user.employee_get == comment.employee_id or perms.payroll.add_reimbursementfile or request.user|is_reportingmanager %}
+						<form hx-post="{% url 'payroll-request-view-comment' comment.request_id.id %}?comment_id={{ comment.id }}"
+							class="add-files-form" hx-encoding="multipart/form-data" data-target="#activitySidebar"
+							hx-swap="innerHTML" hx-target="#commentContainer">
+							{% csrf_token %}
+							<label for="addFile_{{comment.id}}" title="Add Files"><ion-icon name="add-outline"
+									style="font-size: 24px" role="img" class="md hydrated"
+									aria-label="add outline"></ion-icon></label>
+							<input type="file" name="files" class="d-none" multiple="true" accept=".jpg, .jpeg, .png, .pdf"
+								id="addFile_{{comment.id}}" onchange="submitForm(this)" />
+							<input type="submit" class="d-none add_more_submit" value="save" />
+						</form>
+					{% endif %}
 				</div>
 				<span class="oh-activity-sidebar__a">
 					{% trans 'by' %}
-					<img
-						src="{{ note.note_by.get_avatar }}"
-						style="width: 1.5em; border-radius: 100%"
-					/>
+					<img src="{{ note.note_by.get_avatar }}" style="width: 1.5em; border-radius: 100%" />
 					{{ comment.employee_id.get_full_name }} @ {{comment.request_id.employee_id.get_full_name }}
 					{% trans "'s reimbursement request" %}
 				</span>
@@ -125,38 +93,15 @@
 					<div id="enlargeImageContainer" class="enlargeImageContainer"></div>
 				</div>
 			</li>
-
 		{% endfor %}
-	</ol>
-{% else %}
-	<div class="oh-timeoff-modal__profile-content">
-		<div class="oh-404">
-			<div class="">
-				<span class="oh-timeoff-title fw-bold" style="display: block"
-					>{% trans "There are no comments to show." %}</span
-				>
-				<img
-					style="display: block; width: 100px; margin: 20px auto"
-					src="{% static "/images/ui/comment.png" %}"
-					class=""
-				/>
+	{% else %}
+		<div class="oh-timeoff-modal__profile-content">
+			<div class="oh-404">
+				<div class="">
+					<span class="oh-timeoff-title fw-bold" style="display: block">{% trans "There are no comments to show." %}</span>
+					<img style="display: block; width: 100px; margin: 20px auto" src="{% static '/images/ui/comment.png' %}" class="" />
+				</div>
 			</div>
 		</div>
-	</div>
-{% endif %}
-
-<script>
-    // Get references to the input field and comment button
-    const commentInput = document.getElementById('commentInput');
-    const commentButton = document.getElementById('commentButton');
-
-    // Add event listener to the input field
-    commentInput.addEventListener('input', function() {
-        // Show the comment button if the input field is not empty, hide it otherwise
-        if (commentInput.value.trim() !== '') {
-            commentButton.style.display = 'inline';
-        } else {
-            commentButton.style.display = 'none';
-        }
-    });
-</script>
+	{% endif %}
+</ol>

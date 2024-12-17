@@ -52,6 +52,15 @@
         </div>
     </div>
 </div>
+<span
+    id = "dynamicCreateBatchAttendanceSpan"
+    hx-get="{% url "create-batch-attendance" %}"
+    data-target = "#dynamicCreateModal"
+    data-toggle="oh-modal-toggle"
+    hx-target="#dynamicCreateModalTarget"
+    hx-include = "#attendanceRequestForm,#attendanceUpdateForm,#attendanceCreateForm"
+></span>
+<button hidden hx-post="{% url "update-title" %}" hx-target="#objectDetailsModalTarget" id="updateTitleSpan"></button>
 
 <script>
     function dateChange(selectElement) {
@@ -71,6 +80,27 @@
                 parentForm.find("[name=minimum_hour]").val(response.minimum_hour);
             },
         });
+    }
+    // Dynamic batch attendance create
+    function dynamicBatchAttendance(element){
+        batch = element.val()
+        if (batch === 'dynamic_create'){
+        var parentForm = element.parents().closest("form");
+        previous_url = parentForm.data('url');
+        $('#dynamicCreateBatchAttendanceSpan').attr("hx-vals",`{"previous_url":"${previous_url}"}`)
+        $('#dynamicCreateBatchAttendanceSpan').click();
+        // unselect the choosen value
+        element.val('').change();
+        }
+    }
+
+    // Batch title change
+    function batchTitleChange(element){
+        console.log(element)
+        title = $(element).val()
+        batchId = $(element).data('id')
+        $('#updateTitleSpan').attr("hx-vals",`{"batch_id":"${batchId}","title":"${title}"}`)
+        $('#updateTitleSpan').click()
     }
 </script>
 

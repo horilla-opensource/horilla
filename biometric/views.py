@@ -21,6 +21,7 @@ from django.utils import timezone as django_timezone
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from zk import ZK
+from zk import exception as zk_exception
 
 from attendance.methods.utils import Request
 from attendance.views.clock_in_out import clock_in, clock_out
@@ -123,10 +124,11 @@ class ZKBioAttendance(Thread):
     - stop(): Sets the _stop_event to signal the thread to stop gracefully.
     """
 
-    def __init__(self, machine_ip, port_no):
+    def __init__(self, machine_ip, port_no, password):
         super().__init__()
         self.machine_ip = machine_ip
         self.port_no = port_no
+        self.password = int(password)
         self._stop_event = Event()  # Initialize stop event
         self.conn = None
 
@@ -136,7 +138,7 @@ class ZKBioAttendance(Thread):
                 self.machine_ip,
                 port=self.port_no,
                 timeout=5,
-                password=0,
+                password=self.password,
                 force_udp=False,
                 ommit_ping=False,
             )
@@ -200,7 +202,7 @@ class ZKBioAttendance(Thread):
                             else:
                                 continue
         except ConnectionResetError as error:
-            ZKBioAttendance(self.machine_ip, self.port_no).start()
+            ZKBioAttendance(self.machine_ip, self.port_no, self.password).start()
 
     def stop(self):
         """To stop the ZK live capture mode"""
@@ -504,12 +506,13 @@ def biometric_device_schedule(request, device_id):
                 try:
                     port_no = device.port
                     machine_ip = device.machine_ip
+                    password = device.zk_password
                     conn = None
                     zk_device = ZK(
                         machine_ip,
                         port=port_no,
                         timeout=5,
-                        password=0,
+                        password=int(password),
                         force_udp=False,
                         ommit_ping=False,
                     )
@@ -764,13 +767,14 @@ def biometric_device_test(_request, device_id):
     if device.machine_type == "zk":
         port_no = device.port
         machine_ip = device.machine_ip
+        password = device.zk_password
         conn = None
         # create ZK instance
         zk_device = ZK(
             machine_ip,
             port=port_no,
             timeout=5,
-            password=0,
+            password=int(password),
             force_udp=False,
             ommit_ping=False,
         )
@@ -791,13 +795,30 @@ def biometric_device_test(_request, device_id):
                     });
                     </script>
                 """
+        except zk_exception.ZKErrorResponse as error:
+            script = """
+           <script>
+                Swal.fire({
+                  title : "Failed to connect: Authentication error.",
+                  text: "Please double-check the accuracy of the provided IP Address, Port Number and Password for correctness",
+                  icon: "warning",
+                  showConfirmButton: false,
+                  timer: 3500,
+                  timerProgressBar: true,
+                  didClose: () => {
+                    location.reload();
+                    },
+                });
+            </script>
+            """
+
         except Exception as error:
             logger.error("An error comes in biometric_device_test ", error)
             script = """
            <script>
                 Swal.fire({
                   title : "Connection unsuccessful",
-                  text: "Please double-check the accuracy of the provided IP Address and Port Number for correctness",
+                  text: "Please double-check the accuracy of the provided IP Address, Port Number and Password for correctness",
                   icon: "warning",
                   showConfirmButton: false,
                   timer: 3500,
@@ -951,7 +972,7 @@ def zk_employees_fetch(device):
         device.machine_ip,
         port=device.port,
         timeout=1,
-        password=0,
+        password=int(device.zk_password),
         force_udp=False,
         ommit_ping=False,
     )
@@ -1087,7 +1108,9 @@ def find_employees_in_zk(device_id):
             "user_id", flat=True
         )
     )
-    zk_device = ZK(device.machine_ip, port=device.port, timeout=5)
+    zk_device = ZK(
+        device.machine_ip, port=device.port, password=int(device.zk_password), timeout=5
+    )
     conn = zk_device.connect()
     zk_users = {user.user_id: user.uid for user in conn.get_users()}
     biometric_employees_to_create = [
@@ -1163,7 +1186,7 @@ def biometric_device_employees(request, device_id, **kwargs):
                 request,
                 _(
                     "Failed to establish a connection. Please verify the accuracy of the IP\
-                    Address and Port No. of the device."
+                    Address , Port No. and Password of the device."
                 ),
             )
     else:
@@ -1259,7 +1282,7 @@ def delete_biometric_user(request, uid, device_id):
         device.machine_ip,
         port=device.port,
         timeout=5,
-        password=0,
+        password=int(device.zk_password),
         force_udp=False,
         ommit_ping=False,
     )
@@ -1482,7 +1505,7 @@ def bio_users_bulk_delete(request):
             device.machine_ip,
             port=device.port,
             timeout=5,
-            password=0,
+            password=int(device.zk_password),
             force_udp=False,
             ommit_ping=False,
         )
@@ -1579,7 +1602,7 @@ def add_biometric_user(request, device_id):
                     device.machine_ip,
                     port=device.port,
                     timeout=5,
-                    password=0,
+                    password=int(device.zk_password),
                     force_udp=False,
                     ommit_ping=False,
                 )
@@ -1700,6 +1723,7 @@ def biometric_device_live(request):
     if is_live:
         port_no = device.port
         machine_ip = device.machine_ip
+        password = int(device.zk_password)
         conn = None
         # create ZK instance
         try:
@@ -1708,12 +1732,12 @@ def biometric_device_live(request):
                     machine_ip,
                     port=port_no,
                     timeout=5,
-                    password=0,
+                    password=int(password),
                     force_udp=False,
                     ommit_ping=False,
                 )
                 conn = zk_device.connect()
-                instance = ZKBioAttendance(machine_ip, port_no)
+                instance = ZKBioAttendance(machine_ip, port_no, password)
                 conn.test_voice(index=14)
                 if conn:
                     device.is_live = True
@@ -1730,12 +1754,12 @@ def biometric_device_live(request):
                 )
                 response = cosec.basic_config()
                 if response.get("app"):
-                    thread = COSECBioAttendanceThread(device.id)
-                    thread.start()
-                    BIO_DEVICE_THREADS[device.id] = thread
                     device.is_live = True
                     device.is_scheduler = False
                     device.save()
+                    thread = COSECBioAttendanceThread(device.id)
+                    thread.start()
+                    BIO_DEVICE_THREADS[device.id] = thread
                 else:
                     raise TimeoutError
             else:
@@ -1817,7 +1841,7 @@ def zk_biometric_device_attendance(device_id):
             machine_ip,
             port=port_no,
             timeout=5,
-            password=0,
+            password=int(device.zk_password),
             force_udp=False,
             ommit_ping=False,
         )

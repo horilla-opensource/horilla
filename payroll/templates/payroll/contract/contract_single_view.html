@@ -165,7 +165,7 @@
                 <div class="oh-modal__button-container text-center">
                     <div class="oh-btn-group">
                         {% if perms.payroll.change_contract  %}
-                            <a href="{% url 'update-contract' contract.id %}" class="oh-btn oh-btn--info" style="width: 50%;">
+                            <a href="{% url 'update-contract' contract.id %}" class="oh-btn oh-btn--info" style="width: 100%;">
                                 <ion-icon
                                 name="create-outline"
                                 role="img"
@@ -175,7 +175,7 @@
                             </a>
                         {% endif %}
                         {% if perms.payroll.delete_contract  %}
-                            <button class="oh-btn oh-btn--danger" style="width: 50%;" data-action="delete"
+                            <button class="oh-btn oh-btn--danger" style="width: 100%;" data-action="delete"
                                 hx-confirm="{% trans 'Do you want to delete this Contract?' %}" hx-target="{{delete_hx_target}}"
                                 hx-post="{% url 'delete-contract-modal' contract.id %}?{{pd}}&instances_ids={{contract_ids}}"
                                 >

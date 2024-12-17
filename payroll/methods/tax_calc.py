@@ -88,7 +88,12 @@ def calculate_taxable_amount(**kwargs):
 
     elif filing.use_py:
         code = filing.python_code
-        code = code.replace("print(", "pass#print(")
+        code = code.replace("print(", "pass_print(")
+        pass_print = """
+def pass_print(*args, **kwargs):
+    return None
+"""
+        code = pass_print + code
         code = code.replace("  formated_result(", "#  formated_result(")
         local_vars = {}
         exec(code, {}, local_vars)

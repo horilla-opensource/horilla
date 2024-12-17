@@ -5,456 +5,433 @@
 {% include 'filter_tags.html' %}
 
 {% if messages %}
-  <div class="oh-wrapper">
+<div class="oh-wrapper">
     {% for message in messages %}
     <div class="oh-alert-container">
-      <div class="oh-alert oh-alert--animated {{message.tags}}">
-        {{ message }}
-      </div>
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+            {{ message }}
+        </div>
     </div>
     {% endfor %}
-  </div>
+</div>
 {% endif %}
 
-<div data-pd="{{pd}}"
-  id="selectAllWorktypes"
-  style="cursor: pointer"
-  class="oh-checkpoint-badge text-success mb-2">
-  {% trans "Select All Worktypes" %}
+<div data-pd="{{pd}}" id="selectAllWorktypes" style="cursor: pointer" class="oh-checkpoint-badge text-success mb-2">
+    {% trans "Select All Worktypes" %}
 </div>
-<div id="unselectAllWorktypes"
-  style="cursor: pointer;display: none;"
-  class="oh-checkpoint-badge text-secondary mb-2">
-  {% trans "Unselect All Worktypes" %}
+<div id="unselectAllWorktypes" style="cursor: pointer;display: none;" class="oh-checkpoint-badge text-secondary mb-2">
+    {% trans "Unselect All Worktypes" %}
 </div>
-<div id="exportWorktypes"
-  style="cursor: pointer; display: none;"
-  class="oh-checkpoint-badge text-info mb-2"
-  >
-  {% trans "Export Worktypes" %}
+<div id="exportWorktypes" style="cursor: pointer; display: none;" class="oh-checkpoint-badge text-info mb-2">
+    {% trans "Export Worktypes" %}
 </div>
 <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowWorktypes" style="display: none;"></div>
 
 {% if data %}
-  <div class="oh-table_sticky--wrapper">
+<div class="oh-table_sticky--wrapper">
     <div class="oh-sticky-dropdown--header">
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-          role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
-        <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-        <ul class="oh-dropdown__items" id="workTypeRequestCells">
-        </ul>
+        <div class="oh-dropdown" x-data="{open: false}">
+            <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
+                    role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+            <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+                <ul class="oh-dropdown__items" id="workTypeRequestCells">
+                </ul>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  <div id="work-type-request-table" data-table-name="work_type_request_tab">
+</div>
+<div id="work-type-request-table" data-table-name="work_type_request_tab">
     <!-- start of sticky table -->
     <div class="oh-sticky-table">
-      <div class="oh-sticky-table__table oh-table--sortable">
-        <div class="oh-sticky-table__thead">
-          <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__th" style="width:10px">
-              <div class="centered-div">
-                <input
-                  type="checkbox"
-                  class="oh-input oh-input__checkbox all-work-type-requests"
-                  title='{% trans "Select All" %}'
-                />
-              </div>
-            </div>
-            <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=employee_id__employee_first_name"
-              hx-target="#view-container"
-            >
-              {% trans "Employee" %}
-            </div>
-            <div data-cell-index="1" data-cell-title='{% trans "Requested Work Type" %}'
-              class="oh-sticky-table__th"
-            >{% trans "Requested Work Type" %}</div>
-            <div data-cell-index="2" data-cell-title='{% trans "Previous/Current Work Type" %}' class="oh-sticky-table__th">{% trans "Previous/Current Work Type" %}</div>
-            <div data-cell-index="3" data-cell-title='{% trans "Requested Date" %}'
-              class="oh-sticky-table__th {% if request.sort_option.order == '-requested_date' %}arrow-up {% elif request.sort_option.order == 'requested_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=requested_date" hx-target="#view-container"
-            >{% trans "Requested Date" %}</div>
-            <div data-cell-index="4" data-cell-title='{% trans "Requested Till" %}'
-              class="oh-sticky-table__th {% if request.sort_option.order == '-requested_till' %}arrow-up {% elif request.sort_option.order == 'requested_till' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=requested_till"
-              hx-target="#view-container"
-            >{% trans "Requested Till" %}</div>
-            <div data-cell-index="5" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
-            <div data-cell-index="6" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
-            <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
-            <div class="oh-sticky-table__th" style="width: 190px;">{% trans "Actions" %}</div>
-            {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
-              <div class="oh-sticky-table__th" style="width:180px">{% trans "Confirmation" %}</div>
-            {% endif %}
-          </div>
-        </div>
-      {% for work_type_request in data %}
-        <div class="oh-sticky-table__tbody">
-          <div class="oh-sticky-table__tr"
-            hx-get="{% url 'work-type-request-single-view' work_type_request.id %}?instances_ids={{requests_ids}}"
-            hx-target='#objectDetailsModalTarget'
-            data-target='#objectDetailsModal'
-            data-toggle='oh-modal-toggle'
-            draggable="true"
-          >
-            <div class="oh-sticky-table__sd
-              {% if work_type_request.approved %} row-status--yellow
-              {% elif  work_type_request.canceled %} row-status--red
-              {% endif %}"
-              onclick="event.stopPropagation();"
-            >
-              <div class="centered-div">
-                <input
-                  type="checkbox"
-                  id="{{work_type_request.id}}"
-                  onchange="highlightRow($(this))"
-                  class="oh-input employee-checkbox oh-input__checkbox all-work-type-requests-row"
-                />
-              </div>
-            </div>
-            <div class="oh-sticky-table__td">
-              <div class="oh-profile oh-profile--md">
-                <div class="oh-profile__avatar mr-1">
-                  <img src="{{work_type_request.employee_id.get_avatar}}" class="oh-profile__image" alt="Username">
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th" style="width:10px">
+                        <div class="centered-div">
+                            <input type="checkbox" class="oh-input oh-input__checkbox all-work-type-requests"
+                                title='{% trans "Select All" %}' />
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=employee_id__employee_first_name"
+                        hx-target="#view-container">
+                        {% trans "Employee" %}
+                    </div>
+                    <div data-cell-index="1" data-cell-title='{% trans "Requested Work Type" %}'
+                        class="oh-sticky-table__th">{% trans "Requested Work Type" %}</div>
+                    <div data-cell-index="2" data-cell-title='{% trans "Previous/Current Work Type" %}'
+                        class="oh-sticky-table__th">{% trans "Previous/Current Work Type" %}</div>
+                    <div data-cell-index="3" data-cell-title='{% trans "Requested Date" %}'
+                        class="oh-sticky-table__th {% if request.sort_option.order == '-requested_date' %}arrow-up {% elif request.sort_option.order == 'requested_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=requested_date"
+                        hx-target="#view-container">{% trans "Requested Date" %}</div>
+                    <div data-cell-index="4" data-cell-title='{% trans "Requested Till" %}'
+                        class="oh-sticky-table__th {% if request.sort_option.order == '-requested_till' %}arrow-up {% elif request.sort_option.order == 'requested_till' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                        hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=requested_till"
+                        hx-target="#view-container">{% trans "Requested Till" %}</div>
+                    <div data-cell-index="5" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
+                    <div data-cell-index="6" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
+                    <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
+                    <div class="oh-sticky-table__th" style="width: 190px;">{% trans "Actions" %}</div>
+                    {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
+                        <div class="oh-sticky-table__th" style="width:180px">{% trans "Confirmation" %}</div>
+                    {% endif %}
                 </div>
-                <span class="oh-profile__name oh-text--dark">{{work_type_request.employee_id}}</span>
-              </div>
             </div>
-            <div class="oh-sticky-table__td" data-cell-index="1">{{work_type_request.work_type_id}}</div>
-            <div class="oh-sticky-table__td" data-cell-index="2">{{work_type_request.previous_work_type_id}}</div>
-            <div class="oh-sticky-table__td dateformat_changer" data-cell-index="3">{{work_type_request.requested_date}}</div>
-            <div class="oh-sticky-table__td dateformat_changer" data-cell-index="4">{{work_type_request.requested_till}}</div>
-            <div class="oh-sticky-table__td" data-cell-index="5">{{work_type_request.request_status}}</div>
-            <div class="oh-sticky-table__td" data-cell-index="6">{{work_type_request.description|truncatechars:25}}</div>
-            <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-
-                <button type="button" hx-get="{% url 'view-work-type-comment' work_type_request.id %}" hx-target="#commentContainer"
-                  data-toggle='oh-modal-toggle' data-target = '#worktypeactivitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
-                  style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
-                  <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
-                </button>
-
-            </div>
-            <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-              <div class="oh-btn-group">
-              {% if work_type_request.approved == False and not work_type_request.canceled  %}
-                <a hx-get="{% url 'work-type-request-update' work_type_request.id %}" hx-target='#workTypeRequestUpdateModalBody' data-toggle="oh-modal-toggle" data-target='#workTypeRequestUpdateModal' class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
-              {% else %}
-                <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="create-outline" ></ion-icon></button></td>
-              {% endif %}
-              <a
-                  class="oh-btn oh-btn--light-bkg w-50"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#objectCreateModal"
-                  hx-get="{% url 'work-type-request-duplicate' work_type_request.id %}?{{pg}}"
-                  title="{% trans 'Duplicate' %}"
-                  hx-target="#objectCreateModalTarget"
-                  style= "cursor: pointer;"
-                >
-                  <ion-icon name="copy-outline"></ion-icon>
-                </a>
-              {% if work_type_request.approved == False and work_type_request.canceled == False %}
-                <form hx-confirm="{% trans 'Are you sure you want to delete this work type request?' %}" hx-post="{% url 'work-type-request-delete' work_type_request.id  %}?{{pd}}" hx-target="#view-container" class="w-75">
-                  {% csrf_token %}
-                  <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-                </form>
-              {% else %}
-                <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="trash-outline"></ion-icon></button></td>
-              {% endif %}
-              </div>
-            </div>
-            {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
-              <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                <div class="oh-btn-group" >
-                  {% if work_type_request.approved == False and work_type_request.canceled == False %}
-                    <a title="{% trans 'Approve' %}"
-                      hx-confirm="{% trans 'Do you want to approve this request?' %}"
-                      hx-post="/work-type-request-approve/{{work_type_request.id}}/?{{pd}}"
-                      hx-target="#view-container"
-                      class="oh-btn oh-btn--success w-100">
-                      <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                    </a>
-                  {% else %}
-                    <a type="submit" href="#" title="{% trans 'Approve' %}"
-                        class="oh-btn oh-btn--success oh-btn--disabled w-100">
-                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                    </a>
-                  {% endif %}
-                  {% if work_type_request.canceled == False %}
-                    <a hx-confirm="{% trans 'Do you want to reject this request?' %}"
-                      hx-post="/work-type-request-cancel/{{work_type_request.id}}/?{{pd}}"
-                      hx-target="#view-container"
-                      title="{% trans 'Reject' %}"
-                      class="oh-btn oh-btn--danger w-100"
-                      >
-                      <ion-icon
-                        class="me-1"
-                        name="close-circle-outline"
-                      ></ion-icon>
-                    </a>
-                  {% else %}
-                    <a type="submit" href="#" title="{% trans 'Reject' %}"
-                        class="oh-btn oh-btn--danger oh-btn--disabled
-                        w-100" >
-                        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                    </a>
-                  {% endif %}
+            {% for work_type_request in data %}
+            <div class="oh-sticky-table__tbody">
+                <div class="oh-sticky-table__tr"
+                    hx-get="{% url 'work-type-request-single-view' work_type_request.id %}?instances_ids={{requests_ids}}"
+                    hx-target='#objectDetailsModalTarget' data-target='#objectDetailsModal'
+                    data-toggle='oh-modal-toggle' draggable="true">
+                    <div class="oh-sticky-table__sd {% if work_type_request.approved %} row-status--yellow {% elif  work_type_request.canceled %} row-status--red {% endif %}" onclick="event.stopPropagation();">
+                        <div class="centered-div">
+                            <input type="checkbox" id="{{work_type_request.id}}" onchange="highlightRow($(this))" class="oh-input employee-checkbox oh-input__checkbox all-work-type-requests-row" />
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__td">
+                        <div class="oh-profile oh-profile--md">
+                            <div class="oh-profile__avatar mr-1">
+                                <img src="{{work_type_request.employee_id.get_avatar}}" class="oh-profile__image" alt="Username">
+                            </div>
+                            <span class="oh-profile__name oh-text--dark">{{work_type_request.employee_id}}</span>
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__td" data-cell-index="1">{{work_type_request.work_type_id}}</div>
+                    <div class="oh-sticky-table__td" data-cell-index="2">{{work_type_request.previous_work_type_id}}
+                    </div>
+                    <div class="oh-sticky-table__td dateformat_changer" data-cell-index="3">
+                        {{work_type_request.requested_date}}</div>
+                    <div class="oh-sticky-table__td dateformat_changer" data-cell-index="4">
+                        {{work_type_request.requested_till}}</div>
+                    <div class="oh-sticky-table__td" data-cell-index="5">{{work_type_request.request_status}}</div>
+                    <div class="oh-sticky-table__td" data-cell-index="6">
+                        {{work_type_request.description|truncatechars:25}}
+                    </div>
+                    <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
+                        {% if request.user.employee_get ==  work_type_request.employee_id or perms.base.view_worktyperequestcomment or request.user|is_reportingmanager %}
+                            <button type="button" hx-get="{% url 'view-work-type-comment' work_type_request.id %}"
+                                hx-target="#commentContainer" data-toggle='oh-modal-toggle'
+                                data-target='#worktypeactivitySidebar' title="View Comment"
+                                class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
+                                style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
+                                <ion-icon name="newspaper-outline" role="img" class="md hydrated"
+                                    aria-label="newspaper outline"></ion-icon>
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
+                        {% if request.user.employee_get ==  work_type_request.employee_id or perms.base.add_worktyperequest or perms.base.change_worktyperequest or request.user|is_reportingmanager or perms.base.delete_worktyperequest %}
+                            <div class="oh-btn-group">
+                                {% if request.user.employee_get ==  work_type_request.employee_id or perms.base.change_worktyperequest or request.user|is_reportingmanager %}
+                                    {% if work_type_request.approved == False and not work_type_request.canceled %}
+                                        <a hx-get="{% url 'work-type-request-update' work_type_request.id %}"
+                                            hx-target='#workTypeRequestUpdateModalBody' data-toggle="oh-modal-toggle"
+                                            data-target='#workTypeRequestUpdateModal' class="oh-btn oh-btn--light-bkg w-50"
+                                            title="{% trans 'Edit' %}">
+                                            <ion-icon name="create-outline"></ion-icon>
+                                        </a>
+                                    {% else %}
+                                        <button class="oh-btn oh-btn--light-bkg w-50" disabled>
+                                            <ion-icon name="create-outline"></ion-icon>
+                                        </button></td>
+                                    {% endif %}
+                                {% endif %}
+                                {% if request.user.employee_get ==  work_type_request.employee_id or perms.base.add_worktyperequest or request.user|is_reportingmanager %}
+                                    <a class="oh-btn oh-btn--light-bkg w-50" data-toggle="oh-modal-toggle"
+                                        data-target="#objectCreateModal"
+                                        hx-get="{% url 'work-type-request-duplicate' work_type_request.id %}?{{pg}}"
+                                        title="{% trans 'Duplicate' %}" hx-target="#objectCreateModalTarget"
+                                        style="cursor: pointer;">
+                                        <ion-icon name="copy-outline"></ion-icon>
+                                    </a>
+                                {% endif %}
+                                {% if request.user.employee_get ==  work_type_request.employee_id or perms.base.delete_worktyperequest or request.user|is_reportingmanager %}
+                                    {% if work_type_request.approved == False and work_type_request.canceled == False %}
+                                        <form hx-confirm="{% trans 'Are you sure you want to delete this work type request?' %}"
+                                            hx-post="{% url 'work-type-request-delete' work_type_request.id  %}?{{pd}}"
+                                            hx-target="#view-container" class="w-75">
+                                            {% csrf_token %}
+                                            <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                                        </form>
+                                    {% else %}
+                                        <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon
+                                                name="trash-outline"></ion-icon></button></td>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
+                        <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
+                            <div class="oh-btn-group">
+                                {% if work_type_request.approved == False and work_type_request.canceled == False %}
+                                    <a title="{% trans 'Approve' %}"
+                                        hx-confirm="{% trans 'Do you want to approve this request?' %}"
+                                        hx-post="/work-type-request-approve/{{work_type_request.id}}/?{{pd}}"
+                                        hx-target="#view-container" class="oh-btn oh-btn--success w-100">
+                                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                    </a>
+                                {% else %}
+                                    <a type="submit" href="#" title="{% trans 'Approve' %}"
+                                        class="oh-btn oh-btn--success oh-btn--disabled w-100">
+                                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                    </a>
+                                {% endif %}
+                                {% if work_type_request.canceled == False %}
+                                    <a hx-confirm="{% trans 'Do you want to reject this request?' %}"
+                                        hx-post="/work-type-request-cancel/{{work_type_request.id}}/?{{pd}}"
+                                        hx-target="#view-container" title="{% trans 'Reject' %}"
+                                        class="oh-btn oh-btn--danger w-100">
+                                        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                    </a>
+                                {% else %}
+                                    <a type="submit" href="#" title="{% trans 'Reject' %}" class="oh-btn oh-btn--danger oh-btn--disabled w-100">
+                                        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
-              </div>
-            {% endif %}
-
-
-          </div>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-      </div>
     </div>
     <!-- end of sticky table -->
     <!-- start of pagination -->
     <div class="oh-pagination">
-      <span class="oh-pagination__page">
-        {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
-      </span>
-      <nav class="oh-pagination__nav">
-        <div class="oh-pagination__input-container me-3">
-          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-          <input type="number" name="page" class="oh-pagination__input" value="{{data.number}}"
-            hx-get="{% url 'work-type-request-search' %}?{{pd}}" hx-target="#view-container" min="1" />
-          <span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
-        </div>
-        <ul class="oh-pagination__items">
-          {% if data.has_previous %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#view-container' hx-get="{% url 'work-type-request-search' %}?{{pd}}&page=1"
-              class="oh-pagination__link">{% trans "First" %}</a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#view-container'
-              hx-get="{% url 'work-type-request-search' %}?{{pd}}&page={{ data.previous_page_number }}"
-              class="oh-pagination__link">{% trans "Previous" %}</a>
-          </li>
-          {% endif %}
-          {% if data.has_next %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#view-container'
-              hx-get="{% url 'work-type-request-search' %}?{{pd}}&page={{ data.next_page_number }}"
-              class="oh-pagination__link">{% trans "Next" %}</a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#view-container'
-              hx-get="{% url 'work-type-request-search' %}?{{pd}}&page={{ data.paginator.num_pages }}"
-              class="oh-pagination__link">{% trans "Last" %}</a>
-          </li>
-          {% endif %}
-        </ul>
-      </nav>
+        <span class="oh-pagination__page">
+            {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
+        </span>
+        <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                <input type="number" name="page" class="oh-pagination__input" value="{{data.number}}"
+                    hx-get="{% url 'work-type-request-search' %}?{{pd}}" hx-target="#view-container" min="1" />
+                <span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
+            </div>
+            <ul class="oh-pagination__items">
+                {% if data.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target='#view-container' hx-get="{% url 'work-type-request-search' %}?{{pd}}&page=1"
+                        class="oh-pagination__link">{% trans "First" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target='#view-container'
+                        hx-get="{% url 'work-type-request-search' %}?{{pd}}&page={{ data.previous_page_number }}"
+                        class="oh-pagination__link">{% trans "Previous" %}</a>
+                </li>
+                {% endif %}
+                {% if data.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target='#view-container'
+                        hx-get="{% url 'work-type-request-search' %}?{{pd}}&page={{ data.next_page_number }}"
+                        class="oh-pagination__link">{% trans "Next" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target='#view-container'
+                        hx-get="{% url 'work-type-request-search' %}?{{pd}}&page={{ data.paginator.num_pages }}"
+                        class="oh-pagination__link">{% trans "Last" %}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
     <!-- end of pagination -->
-  </div>
+</div>
 {% else %}
-  <!-- start of empty page -->
-  <div class="oh-404">
-    <img
-      style="width: 150px; height: 150px"
-      src="{% static 'images/ui/no-results.png' %}"
-      class="oh-404__image mb-4"
-    />
+<!-- start of empty page -->
+<div class="oh-404">
+    <img style="width: 150px; height: 150px" src="{% static 'images/ui/no-results.png' %}" class="oh-404__image mb-4" />
     <h5 class="oh-404__subtitle">
-      {% trans "No search result found!" %}
+        {% trans "No search result found!" %}
     </h5>
-  </div>
-  <!-- end of empty page -->
+</div>
+<!-- end of empty page -->
 {% endif %}
 
 <!-- start of comment modal -->
-<div
-	class="oh-modal"
-	id="WorktypecommentModal"
-	role="dialog"
-	aria-labelledby="emptagModal"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="createModalTitle">
-				{% trans "Add Comment" %}
-			</h2>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="WorktypeRequestCommentForm"></div>
-	</div>
+<div class="oh-modal" id="WorktypecommentModal" role="dialog" aria-labelledby="emptagModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="createModalTitle">
+                {% trans "Add Comment" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="WorktypeRequestCommentForm"></div>
+    </div>
 </div>
 <!-- end of comment modal -->
 
 
 <script src="{% static '/base/actions.js' %}"></script>
 <script>
-  function addingWorktypeIds() {
-    var ids = JSON.parse($("#selectedWorktypes").attr("data-ids") || "[]");
-    var selectedCount = 0;
+    function addingWorktypeIds() {
+        var ids = JSON.parse($("#selectedWorktypes").attr("data-ids") || "[]");
+        var selectedCount = 0;
 
-    $(".all-work-type-requests-row").each(function () {
-      if ($(this).is(":checked")) {
-        ids.push(this.id);
-      } else {
-        var index = ids.indexOf(this.id);
-        if (index > -1) {
-          ids.splice(index, 1);
-        }
-      }
-    });
+        $(".all-work-type-requests-row").each(function () {
+            if ($(this).is(":checked")) {
+                ids.push(this.id);
+            } else {
+                var index = ids.indexOf(this.id);
+                if (index > -1) {
+                    ids.splice(index, 1);
+                }
+            }
+        });
 
-    ids = makeWorktypeListUnique(ids);
-    selectedCount = ids.length;
+        ids = makeWorktypeListUnique(ids);
+        selectedCount = ids.length;
 
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var message = rowMessages[languageCode];
-      $("#selectedWorktypes").attr("data-ids", JSON.stringify(ids));
-      if (selectedCount === 0) {
-        $("#selectedShowWorktypes").css("display", "none");
-        $("#exportWorktypes").css("display", "none");
-        $("#unselectAllWorktypes").css("display", "none");
-      } else {
-        $("#exportWorktypes").css("display", "inline-flex");
-        $("#unselectAllWorktypes").css("display", "inline-flex");
-        $("#selectedShowWorktypes").css("display", "inline-flex");
-        $("#selectedShowWorktypes").text(selectedCount + " - " + message);
-      }
-    });
-  }
-
-  $(document).ready(function () {
-    var search = $("#selectAllWorktypes").attr("data-pd");
-    if (search) {
-      var pd = $(".oh-pagination").attr("data-pd");
-      var hxVals = JSON.stringify(search);
-      $("#workTypeRequestCreate").attr("hx-vals", `{"pd":${hxVals}}`);
+        getCurrentLanguageCode(function (code) {
+            languageCode = code;
+            var message = rowMessages[languageCode];
+            $("#selectedWorktypes").attr("data-ids", JSON.stringify(ids));
+            if (selectedCount === 0) {
+                $("#selectedShowWorktypes").css("display", "none");
+                $("#exportWorktypes").css("display", "none");
+                $("#unselectAllWorktypes").css("display", "none");
+            } else {
+                $("#exportWorktypes").css("display", "inline-flex");
+                $("#unselectAllWorktypes").css("display", "inline-flex");
+                $("#selectedShowWorktypes").css("display", "inline-flex");
+                $("#selectedShowWorktypes").text(selectedCount + " - " + message);
+            }
+        });
     }
-    $(".all-work-type-requests-row").change(function () {
-      var parentTable = $(this).closest(".oh-sticky-table");
-      var body = parentTable.find(".oh-sticky-table__tbody");
-      var parentCheckbox = parentTable.find(".all-work-type-requests");
-      parentCheckbox.prop(
-        "checked",
-        body.find(".all-work-type-requests-row:checked").length ===
-          body.find(".all-work-type-requests-row").length
-      );
-      addingWorktypeIds();
-    });
 
-    $(".all-work-type-requests").change(function () {
-      addingWorktypeIds();
-    });
-
-    tickWorktypeCheckboxes();
-
-    $("#selectAllWorktypes").click(function () {
-      $("#selectedWorktypes").attr("data-clicked", 1);
-      $("#selectedShowWorktypes").removeAttr("style");
-      var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
-
-      if (savedFilters && savedFilters["filterData"] !== null) {
-        var filter = savedFilters["filterData"];
-        $.ajax({
-          url: '{% url "work-type-select-filter" %}',
-          data: { page: "all", filter: JSON.stringify(filter) },
-          type: "GET",
-          dataType: "json",
-          success: function (response) {
-            var employeeIds = response.employee_ids;
-            var selectedCount = employeeIds.length;
-            for (var i = 0; i < employeeIds.length; i++) {
-              var empId = employeeIds[i];
-              $("#" + empId).prop("checked", true);
-            }
-            $("#selectedWorktypes").attr(
-              "data-ids",
-              JSON.stringify(employeeIds)
+    $(document).ready(function () {
+        var search = $("#selectAllWorktypes").attr("data-pd");
+        if (search) {
+            var pd = $(".oh-pagination").attr("data-pd");
+            var hxVals = JSON.stringify(search);
+            $("#workTypeRequestCreate").attr("hx-vals", `{"pd":${hxVals}}`);
+        }
+        $(".all-work-type-requests-row").change(function () {
+            var parentTable = $(this).closest(".oh-sticky-table");
+            var body = parentTable.find(".oh-sticky-table__tbody");
+            var parentCheckbox = parentTable.find(".all-work-type-requests");
+            parentCheckbox.prop(
+                "checked",
+                body.find(".all-work-type-requests-row:checked").length ===
+                body.find(".all-work-type-requests-row").length
             );
-
-            count = makeWorktypeListUnique(employeeIds);
-            tickWorktypeCheckboxes(count);
-          },
-          error: function (xhr, status, error) {
-            console.error("Error:", error);
-          },
+            addingWorktypeIds();
         });
-      } else {
-        $.ajax({
-          url: '{% url "work-type-select" %}',
-          data: { page: "all" },
-          type: "GET",
-          dataType: "json",
-          success: function (response) {
-            var employeeIds = response.employee_ids;
-            var selectedCount = employeeIds.length;
-            for (var i = 0; i < employeeIds.length; i++) {
-              var empId = employeeIds[i];
-              $("#" + empId).prop("checked", true);
+
+        $(".all-work-type-requests").change(function () {
+            addingWorktypeIds();
+        });
+
+        tickWorktypeCheckboxes();
+
+        $("#selectAllWorktypes").click(function () {
+            $("#selectedWorktypes").attr("data-clicked", 1);
+            $("#selectedShowWorktypes").removeAttr("style");
+            var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+
+            if (savedFilters && savedFilters["filterData"] !== null) {
+                var filter = savedFilters["filterData"];
+                $.ajax({
+                    url: '{% url "work-type-select-filter" %}',
+                    data: { page: "all", filter: JSON.stringify(filter) },
+                    type: "GET",
+                    dataType: "json",
+                    success: function (response) {
+                        var employeeIds = response.employee_ids;
+                        var selectedCount = employeeIds.length;
+                        for (var i = 0; i < employeeIds.length; i++) {
+                            var empId = employeeIds[i];
+                            $("#" + empId).prop("checked", true);
+                        }
+                        $("#selectedWorktypes").attr(
+                            "data-ids",
+                            JSON.stringify(employeeIds)
+                        );
+
+                        count = makeWorktypeListUnique(employeeIds);
+                        tickWorktypeCheckboxes(count);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                    },
+                });
+            } else {
+                $.ajax({
+                    url: '{% url "work-type-select" %}',
+                    data: { page: "all" },
+                    type: "GET",
+                    dataType: "json",
+                    success: function (response) {
+                        var employeeIds = response.employee_ids;
+                        var selectedCount = employeeIds.length;
+                        for (var i = 0; i < employeeIds.length; i++) {
+                            var empId = employeeIds[i];
+                            $("#" + empId).prop("checked", true);
+                        }
+                        var previousIds = $("#selectedWorktypes").attr("data-ids");
+                        $("#selectedWorktypes").attr(
+                            "data-ids",
+                            JSON.stringify(
+                                Array.from(
+                                    new Set([...employeeIds, ...JSON.parse(previousIds)])
+                                )
+                            )
+                        );
+                        count = makeWorktypeListUnique(employeeIds);
+                        tickWorktypeCheckboxes(count);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                    },
+                });
             }
-            var previousIds = $("#selectedWorktypes").attr("data-ids");
-            $("#selectedWorktypes").attr(
-              "data-ids",
-              JSON.stringify(
-                Array.from(
-                  new Set([...employeeIds, ...JSON.parse(previousIds)])
-                )
-              )
-            );
-            count = makeWorktypeListUnique(employeeIds);
-            tickWorktypeCheckboxes(count);
-          },
-          error: function (xhr, status, error) {
-            console.error("Error:", error);
-          },
         });
-      }
-    });
 
-    $("#unselectAllWorktypes").click(function () {
-      $("#selectedWorktypes").attr("data-clicked", 0);
-      $.ajax({
-        url: '{% url "work-type-select" %}',
-        data: { page: "all", filter: "{}" },
-        type: "GET",
-        dataType: "json",
-        success: function (response) {
-          var employeeIds = response.employee_ids;
-          for (var i = 0; i < employeeIds.length; i++) {
-            var empId = employeeIds[i];
-            $("#" + empId).prop("checked", false);
-            $(".all-work-type-requests").prop("checked", false);
-          }
-          var ids = JSON.parse(
-            $("#selectedWorktypes").attr("data-ids") || "[]"
-          );
-          var uniqueIds = makeListUnique(ids);
-          toggleHighlight(uniqueIds);
-          $("#selectedWorktypes").attr("data-ids", JSON.stringify([]));
+        $("#unselectAllWorktypes").click(function () {
+            $("#selectedWorktypes").attr("data-clicked", 0);
+            $.ajax({
+                url: '{% url "work-type-select" %}',
+                data: { page: "all", filter: "{}" },
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    var employeeIds = response.employee_ids;
+                    for (var i = 0; i < employeeIds.length; i++) {
+                        var empId = employeeIds[i];
+                        $("#" + empId).prop("checked", false);
+                        $(".all-work-type-requests").prop("checked", false);
+                    }
+                    var ids = JSON.parse(
+                        $("#selectedWorktypes").attr("data-ids") || "[]"
+                    );
+                    var uniqueIds = makeListUnique(ids);
+                    toggleHighlight(uniqueIds);
+                    $("#selectedWorktypes").attr("data-ids", JSON.stringify([]));
 
-          count = [];
-          tickWorktypeCheckboxes(count);
-        },
-        error: function (xhr, status, error) {
-          console.error("Error:", error);
-        },
-      });
+                    count = [];
+                    tickWorktypeCheckboxes(count);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                },
+            });
+        });
+        $("#exportWorktypes").click(function () {
+            exportWorkTypeRequets();
+        });
     });
-    $("#exportWorktypes").click(function () {
-      exportWorkTypeRequets();
-    });
-  });
-  // toggle columns //
-  toggleColumns("work-type-request-table", "workTypeRequestCells");
-  localStorageWorkTypeReqCells = localStorage.getItem("work_type_request_tab");
-  if (!localStorageWorkTypeReqCells) {
-    $("#workTypeRequestCells").find("[type=checkbox]").prop("checked", true);
-  }
-  $("[type=checkbox]").change();
+    // toggle columns //
+    toggleColumns("work-type-request-table", "workTypeRequestCells");
+    localStorageWorkTypeReqCells = localStorage.getItem("work_type_request_tab");
+    if (!localStorageWorkTypeReqCells) {
+        $("#workTypeRequestCells").find("[type=checkbox]").prop("checked", true);
+    }
+    $("[type=checkbox]").change();
 </script>

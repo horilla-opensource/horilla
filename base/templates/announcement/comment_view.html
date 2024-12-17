@@ -5,14 +5,9 @@
 {% if messages %}
     <div class="oh-alert-container">
       {% for message in messages %}
-      <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+        <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
       {% endfor %}
     </div>
-<script>
-    setTimeout(() => {
-        $(".oh-modal__close").click();
-    }, 1000);
-</script>
 {% endif %}
 
 	<div class="oh-activity-sidebar__header">
@@ -35,7 +30,7 @@
         {% csrf_token %}
 
         <div>
-			<input type="text" name="comment" id="commentInput" class="oh-input w-100" placeholder="Comment here">
+			<input type="text" name="comment" id="commentInput" hx-on:keyup="toggleCommentButton(this);" class="oh-input w-100" placeholder="Comment here">
 			<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp" style="display: none;">
 				{% trans "Comment" %}
 			</button>
@@ -65,11 +60,14 @@
 
     <ol class="oh-activity-sidebar__qa-list" role="list">
 		{% for comment in comments %}
-			<li class="oh-activity-sidebar__qa-item">
-				<span class="oh-activity-sidebar__q" style="font-size:16px;">{{ comment.comment }}
-                    <span class="float-end" title="Delete" hx-get='{% url "announcement-delete-comment" comment.id %}' data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#commentContainer">
-                        <ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="close outline"></ion-icon></span>
-				</span>
+			<li class="oh-activity-sidebar__qa-item" id="announCommentCard{{comment.id}}">
+                {% if perms.base.delete_announcementcomment or request.user == comment.created_by %}
+                    <span class="oh-activity-sidebar__q" style="font-size:16px;">{{ comment.comment }}
+                        <span class="float-end" hx-get="{% url 'announcement-delete-comment' comment.id %}"
+                            hx-swap="delete" hx-target="#announCommentCard{{comment.id}}" hx-on:click="setTimeout(() => {reloadMessage(this);},100);">
+                            <ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="close outline"></ion-icon></span>
+                    </span>
+                {% endif %}
 
                 <span class="d-flex mt-3">
                     <div>
@@ -98,19 +96,3 @@
 	</ol>
 
 {% endif %}
-
-<script>
-    // Get references to the input field and comment button
-    const commentInput = document.getElementById('commentInput');
-    const commentButton = document.getElementById('commentButton');
-
-    // Add event listener to the input field
-    commentInput.addEventListener('input', function() {
-        // Show the comment button if the input field is not empty, hide it otherwise
-        if (commentInput.value.trim() !== '') {
-            commentButton.style.display = 'inline';
-        } else {
-            commentButton.style.display = 'none';
-        }
-    });
-</script>

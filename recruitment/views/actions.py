@@ -21,7 +21,11 @@ from employee.models import Employee
 from horilla.decorators import login_required, permission_required
 from horilla.group_by import group_by_queryset
 from notifications.signals import notify
-from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
+from recruitment.decorators import (
+    candidate_login_required,
+    manager_can_enter,
+    recruitment_manager_can_enter,
+)
 from recruitment.filters import StageFilter
 from recruitment.forms import StageCreationForm
 from recruitment.models import Candidate, Recruitment, Stage, StageNote
@@ -123,25 +127,29 @@ def note_delete(request, note_id):
         candidate_id = note.candidate_id.id
         note.delete()
         messages.success(request, _("Note deleted"))
+        script = ""
     except StageNote.DoesNotExist:
         messages.error(request, _("Note not found."))
+        script = "<script>window.location.reload()</script>"
     except ProtectedError:
         messages.error(request, _("You cannot delete this note."))
+        script = f"""
+            <span hx-trigger='load' hx-get='/recruitment/view-note/{candidate_id}/' hx-target='#activitySidebar'></span>
+            """
+    return HttpResponse(script)
 
-    return redirect("view-note", cand_id=candidate_id)
 
-
-@login_required
-@manager_can_enter(perm="recruitment.delete_stagenote")
+@candidate_login_required
+# @manager_can_enter(perm="recruitment.delete_stagenote")
 def note_delete_individual(request, note_id):
     """
     This method is used to delete the stage note
     """
+    script = ""
     note = StageNote.objects.get(id=note_id)
-    candidate_id = note.candidate_id.id
     note.delete()
     messages.success(request, _("Note deleted."))
-    return redirect(f"/recruitment/add-note/{candidate_id}/")
+    return HttpResponse(script)
 
 
 @login_required

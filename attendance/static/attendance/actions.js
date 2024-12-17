@@ -47,6 +47,13 @@ var norowdeleteMessages = {
     en: "No rows are selected for deleting attendances.",
     fr: "Aucune ligne n'est sélectionnée pour la suppression des présences.",
 };
+var norowAddToBatchMessages = {
+    ar: "لم يتم تحديد أي صفوف لإضافتها إلى الحضور الجماعي.",
+    de: "Es wurden keine Zeilen zur Stapelteilnahme hinzugefügt.",
+    es: "No se han seleccionado filas para agregar a las asistencias por lotes.",
+    en: "No rows are selected to be added to batch attendances.",
+    fr: "Aucune ligne n'a été sélectionnée pour être ajoutée aux présences en lot.",
+};
 var rowMessages = {
     ar: " تم الاختيار",
     de: " Ausgewählt",
@@ -1170,22 +1177,37 @@ $("#bulkDelete").click(function (e) {
                     checkedRows.each(function () {
                         ids.push($(this).attr("id"));
                     });
-                    $.ajax({
-                        type: "POST",
-                        url: "/attendance/attendance-bulk-delete",
-                        data: {
-                            csrfmiddlewaretoken: getCookie("csrftoken"),
-                            ids: JSON.stringify(ids),
-                        },
-                        success: function (response, textStatus, jqXHR) {
-                            if (jqXHR.status === 200) {
-                                location.reload();
-                            } else {
-                            }
-                        },
-                    });
+                    var hxValue = JSON.stringify(ids);
+                    $("#bulkAttendanceDeleteSpan").attr("hx-vals", `{"ids":${hxValue}}`);
+                    $("#bulkAttendanceDeleteSpan").click();
                 }
             });
+        }
+    });
+});
+
+$("#attendanceAddToBatch").click(function (e) {
+    e.preventDefault();
+    var languageCode = null;
+    getCurrentLanguageCode(function (code) {
+        languageCode = code;
+        var textMessage = norowAddToBatchMessages[languageCode];
+        var checkedRows = $(".attendance-checkbox").filter(":checked");
+        if (checkedRows.length === 0) {
+            Swal.fire({
+                text: textMessage,
+                icon: "warning",
+                confirmButtonText: "Close",
+            });
+        } else {
+            ids = [];
+            checkedRows.each(function () {
+                ids.push($(this).attr("id"));
+            });
+            var hxValue = JSON.stringify(ids);
+            console.log('ids',hxValue)
+            $("#attendanceAddToBatchButton").attr("hx-vals", `{"ids":${hxValue}}`);
+            $("#attendanceAddToBatchButton").click();
         }
     });
 });

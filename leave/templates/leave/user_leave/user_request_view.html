@@ -281,16 +281,17 @@
 	{% if leave_requests %}
         {% include 'leave/user_leave/user_requests.html' %}
     {% else %}
+	<div>
         <div
             style="
-                height: 70vh;
+                height: 40vh;
                 display: flex;
                 align-items: center;
                 justify-content: center;
             "
             class=""
         >
-            <div style="" class="oh-404">
+            <div>
                 <img
                     style="display: block; width: 150px; height: 150px; margin: 10px auto"
                     src="{% static 'images/ui/attendance.png' %}"
@@ -302,6 +303,7 @@
                 </h3>
             </div>
         </div>
+	</div>
 	{% endif %}
 </div>
 

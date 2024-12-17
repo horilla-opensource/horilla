@@ -5,14 +5,14 @@ from urllib.parse import parse_qs
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from base.context_processors import intial_notice_period
-from base.methods import closest_numbers, sortby
-from base.views import paginator_qry
+from base.methods import closest_numbers, eval_validate, paginator_qry, sortby
 from employee.models import Employee
 from horilla.decorators import (
     hx_request_required,
@@ -111,6 +111,15 @@ def pipeline_grouper(filters={}, offboardings=[]):
     return groups
 
 
+def paginator_qry_offboarding_limited(qryset, page_number):
+    """
+    This method is used to generate common paginator limit.
+    """
+    paginator = Paginator(qryset, 3)
+    qryset = paginator.get_page(page_number)
+    return qryset
+
+
 @login_required
 @any_manager_can_enter(
     "offboarding.view_offboarding", offboarding_employee_can_enter=True
@@ -119,12 +128,20 @@ def pipeline(request):
     """
     Offboarding pipeline view
     """
+    # Apply filters and pagination
     offboardings = PipelineFilter().qs
-    groups = pipeline_grouper({}, offboardings)
+    paginated_offboardings = paginator_qry_offboarding_limited(
+        offboardings, request.GET.get("page")
+    )
+
+    # Group data after pagination
+    groups = pipeline_grouper({}, paginated_offboardings)
+
     for item in groups:
         setattr(item["offboarding"], "stages", item["stages"])
+
     stage_forms = {}
-    for offboarding in offboardings:
+    for offboarding in paginated_offboardings:
         stage_forms[str(offboarding.id)] = StageSelectForm(offboarding=offboarding)
 
     filter_dict = parse_qs(request.GET.urlencode())
@@ -133,7 +150,8 @@ def pipeline(request):
         request,
         "offboarding/pipeline/pipeline.html",
         {
-            "offboardings": groups,
+            "offboardings": groups,  # Grouped data
+            "paginated_offboardings": paginated_offboardings,  # Original paginated object
             "employee_filter": PipelineEmployeeFilter(),
             "pipeline_filter": PipelineFilter(),
             "stage_filter": PipelineStageFilter(),
@@ -154,17 +172,22 @@ def filter_pipeline(request):
     This method is used filter offboarding process
     """
     offboardings = PipelineFilter(request.GET).qs
-    groups = pipeline_grouper(request.GET, offboardings)
+    paginated_offboardings = paginator_qry_offboarding_limited(
+        offboardings, request.GET.get("page")
+    )
+
+    groups = pipeline_grouper(request.GET, paginated_offboardings)
     for item in groups:
         setattr(item["offboarding"], "stages", item["stages"])
     stage_forms = {}
-    for offboarding in offboardings:
+    for offboarding in paginated_offboardings:
         stage_forms[str(offboarding.id)] = StageSelectForm(offboarding=offboarding)
     return render(
         request,
         "offboarding/pipeline/offboardings.html",
         {
             "offboardings": groups,
+            "paginated_offboardings": paginated_offboardings,
             "stage_forms": stage_forms,
             "filter_dict": parse_qs(request.GET.urlencode()),
         },
@@ -178,7 +201,7 @@ def create_offboarding(request):
     """
     Create offboarding view
     """
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     if instance_id and isinstance(instance_id, int):
         instance = Offboarding.objects.filter(id=instance_id).first()
@@ -186,8 +209,23 @@ def create_offboarding(request):
     if request.method == "POST":
         form = OffboardingForm(request.POST, instance=instance)
         if form.is_valid():
-            form.save()
+            off_boarding = form.save()
             messages.success(request, _("Offboarding saved"))
+            users = [
+                employee.employee_user_id for employee in off_boarding.managers.all()
+            ]
+            notify.send(
+                request.user.employee_get,
+                recipient=users,
+                verb="You are chosen as an offboarding manager",
+                verb_ar="لقد تم اختيارك كمدير عملية المغادرة",
+                verb_de="Sie wurden als Offboarding-Manager ausgewählt",
+                verb_es="Has sido elegido como gerente de offboarding",
+                verb_fr="Vous avez été choisi comme responsable du processus de départ",
+                icon="people-circle",
+                redirect=reverse("offboarding-pipeline"),
+            )
+
             return HttpResponse("<script>window.location.reload()</script>")
 
     return render(
@@ -221,7 +259,7 @@ def create_stage(request):
     This method is used to create stages for offboardings
     """
     offboarding_id = request.GET["offboarding_id"]
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     if instance_id and isinstance(instance_id, int):
         instance = OffboardingStage.objects.get(id=instance_id)
@@ -236,6 +274,18 @@ def create_stage(request):
             instance.save()
             instance.managers.set(form.data.getlist("managers"))
             messages.success(request, _("Stage saved"))
+            users = [employee.employee_user_id for employee in instance.managers.all()]
+            notify.send(
+                request.user.employee_get,
+                recipient=users,
+                verb="You are chosen as offboarding stage manager",
+                verb_ar="لقد تم اختيارك كمدير لمرحلة عملية المغادرة",
+                verb_de="Sie wurden als Manager der Offboarding-Phase ausgewählt",
+                verb_es="Has sido elegido como gerente de la etapa de offboarding",
+                verb_fr="Vous avez été choisi comme responsable de l'étape de départ",
+                icon="people-circle",
+                redirect=reverse("offboarding-pipeline"),
+            )
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "offboarding/stage/form.html", {"form": form})
 
@@ -253,7 +303,7 @@ def add_employee(request):
     )
     end_date = datetime.today() + timedelta(days=default_notice_period)
     stage_id = request.GET["stage_id"]
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     if instance_id and isinstance(instance_id, int):
         instance = OffboardingEmployee.objects.get(id=instance_id)
@@ -330,7 +380,7 @@ def delete_stage(request):
             messages.error(request, _("Stage not found"))
     except OverflowError:
         messages.error(request, _("Stage not found"))
-    return redirect(filter_pipeline)
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
@@ -449,15 +499,16 @@ def offboarding_note_delete(request, note_id):
     """
     This method is used to delete the offboarding note
     """
+    script = ""
     try:
         note = OffboardingNote.objects.get(id=note_id)
-        employee = note.employee_id.id
         note.delete()
-        messages.success(request, _("Note deleted"))
+        messages.success(request, _("The note has been successfully deleted."))
     except OffboardingNote.DoesNotExist:
         messages.error(request, _("Note not found."))
+        script = "<script>window.location.reload()</script>"
 
-    return redirect("view-offboarding-note", employee_id=employee)
+    return HttpResponse(script)
 
 
 @login_required
@@ -466,17 +517,11 @@ def delete_attachment(request):
     """
     Used to delete attachment
     """
+    script = ""
     ids = request.GET.getlist("ids")
     OffboardingStageMultipleFile.objects.filter(id__in=ids).delete()
-    offboarding_employee_id = request.GET["employee_id"]
-    employee = OffboardingEmployee.objects.get(id=offboarding_employee_id)
-    return render(
-        request,
-        "offboarding/note/view_notes.html",
-        {
-            "employee": employee,
-        },
-    )
+    messages.success(request, _("File deleted successfully"))
+    return HttpResponse(script)
 
 
 @login_required
@@ -486,7 +531,7 @@ def add_task(request):
     This method is used to add offboarding tasks
     """
     stage_id = request.GET.get("stage_id")
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     employees = OffboardingEmployee.objects.filter(stage_id=stage_id)
     instance = None
     if instance_id:
@@ -785,7 +830,7 @@ def create_resignation_request(request):
     """
     This method is used to render form to create resignation requests
     """
-    instance_id = eval(str(request.GET.get("instance_id")))
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     if instance_id:
         instance = ResignationLetter.objects.get(id=instance_id)

@@ -1,41 +1,41 @@
 {% load i18n %}
+{% if messages %}
+        <script>reloadMessage();</script>
+        <span hx-on-htmx-after-request="setTimeout(() => {$('.oh-modal__close').click();}, 500);" hx-target="#employeeTags" hx-trigger="load" hx-select=".oh-sticky-table"
+            hx-get="{% url 'employee-tag-view' %}"></span>
+{% endif %}
 <div class="oh-modal__dialog-header pb-0">
-  <h2 class="oh-modal__dialog-title" id="createModalTitle">
-    {% if tag_id %} {% trans "Update Employee Tag" %} {% else %} {% trans "Create Employee Tag" %} {% endif %}
-  </h2>
-  <button class="oh-modal__close" aria-label="Close">
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <h2 class="oh-modal__dialog-title" id="createModalTitle">
+        {% if tag_id %} {% trans "Update Employee Tag" %} {% else %} {% trans "Create Employee Tag" %} {% endif %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  {% if form.errors %}
-  <!-- form errors  -->
-  <div class="oh-wrapper">
-    <div class="oh-alert-container">
-      {% for error in form.non_field_errors %}
-      <div class="oh-alert oh-alert--animated oh-alert--danger">
-        {{ error }}
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
-  <form
-    {% if tag_id %}
-        hx-post="{% url 'employee-tag-update' tag_id %}"
-        hx-target="#objectUpdateModalTarget"
-    {% else %}
-        hx-post="{% url 'employee-tag-create' %}"
-        hx-target="#objectCreateModalTarget"
+    {% if form.errors %}
+        <!-- form errors  -->
+        <div class="oh-wrapper">
+            <div class="oh-alert-container">
+                {% for error in form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    {{ error }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     {% endif %}
-    hx-encoding="multipart/form-data"
-    class="oh-profile-section"
-  >
-    {% csrf_token %} {{form.as_p}}
-    <div class="oh-modal__dialog-footer p-0 mt-3">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-        {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+    <form {% if tag_id %}
+            hx-post="{% url 'employee-tag-update' tag_id %}" hx-target="#objectUpdateModalTarget"
+        {% else %}
+            hx-post="{% url 'employee-tag-create' %}" hx-target="#objectCreateModalTarget"
+        {% endif %}
+        hx-encoding="multipart/form-data" class="oh-profile-section">
+        {% csrf_token %} {{form.as_p}}
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
 </div>
