@@ -231,25 +231,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-sm-12 col-md-12">
-                        <div class="oh-input-group oh-label__info">
-                            <label for="id_employee_id" class="oh-label">{% trans "Assign to Employees" %}</label>
-                            <span class=" oh-info me-3" title="{% trans 'Choose employees to assign this leave type' %}"></span>
-                            
-                            <!-- Add Select All Checkbox -->
-                            <div class="form-check mb-2">
-                                <input type="checkbox" class="form-check-input" id="select-all-employees">
-                                <label class="form-check-label" for="select-all-employees">
-                                    {% trans "Select All Employees" %}
-                                </label>
-                            </div>
-                        </div>
-                        
-                        {{form.employee_id}}
-                        {{form.employee_id.errors}}
-                    </div>
-
                     {% if perms.leave.add_availableleave %}
                         <div class="col-sm-12 col-md-12">
                                 <div class="oh-input-group oh-label__info">
@@ -260,7 +241,6 @@
                                 {{form.employee_id.errors}}
                         </div>
                     {% endif %}
-
                     <div hidden>{{form.require_approval}}</div>
                     <div hidden>{{form.require_attachment}}</div>
                     <div hidden>{{form.exclude_company_leave}}</div>
@@ -459,25 +439,25 @@
     // Select All Employees Functionality
     $('#select-all-employees').change(function() {
         var isChecked = $(this).prop('checked');
-        
-        
+
+
         if ($('#id_employee_id').is('select')) {
-           
+
             $('#id_employee_id option').prop('selected', isChecked);
-        } 
-       
+        }
+
         else if ($('#id_employee_id input[type="checkbox"]').length > 0) {
-            
+
             $('#id_employee_id input[type="checkbox"]').each(function() {
-                
+
                 $(this).prop('checked', false);
-               
+
                 if (isChecked) {
                     $(this).prop('checked', true);
                 }
             });
         }
-        
+
         $('#id_employee_id').trigger('change');
     });
 });

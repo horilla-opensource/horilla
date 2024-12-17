@@ -8,11 +8,10 @@ import ipaddress
 from datetime import date, datetime, timedelta
 from typing import Iterable
 
-from django.contrib.auth.models import AbstractUser
 import django
 from django.apps import apps
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser, User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save
@@ -1797,4 +1796,4 @@ def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
             available.save()
 
 
-User.add_to_class('is_new_employee', models.BooleanField(default=False))
+User.add_to_class("is_new_employee", models.BooleanField(default=False))

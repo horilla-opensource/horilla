@@ -93,7 +93,6 @@ urlpatterns = [
     ),
     path("reset-send-success", views.reset_send_success, name="reset-send-success"),
     path("change-password", views.change_password, name="change-password"),
-    
     path("logout", views.logout_user, name="logout"),
     path("settings", views.common_settings, name="settings"),
     path(
