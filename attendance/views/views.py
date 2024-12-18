@@ -2357,96 +2357,68 @@ def work_records_change_month(request):
 @login_required
 @permission_required("attendance.view_workrecords")
 def work_record_export(request):
-    month = (
-        int(request.GET.get("month"))
-        if request.GET.get("month")
-        else date.today().month
-    )
-    year = (
-        int(request.GET.get("year")) if request.GET.get("year") else date.today().year
-    )
+    month = int(request.GET.get("month", date.today().month))
+    year = int(request.GET.get("year", date.today().year))
+
     employees = EmployeeFilter(request.GET).qs
     records = WorkRecords.objects.filter(date__month=month, date__year=year)
     num_days = calendar.monthrange(year, month)[1]
     all_date_objects = [date(year, month, day) for day in range(1, num_days + 1)]
-    leave_dates = monthly_leave_days(month, year)
-    data_rows = []
-    data = ["Employee"]
-    if info := request.user.employee_get.employee_work_info:
-        try:
-            employee_company = info.company_id
-            date_format = (
-                employee_company.date_format
-                if employee_company and employee_company.date_format
-                else "DD-MM-YYYY"
-            )
-        except:
-            date_format = "DD-MM-YYYY"
-    else:
-        date_format = "DD-MM-YYYY"
+    leave_dates = set(monthly_leave_days(month, year))
 
+    record_lookup = defaultdict(lambda: "ABS")
+    for record in records:
+        if record.date <= date.today():
+            record_key = (record.employee_id, record.date)
+            record_lookup[record_key] = record.work_record_type
+
+    date_format = request.user.employee_get.get_date_format()
     format_string = HORILLA_DATE_FORMATS.get(date_format)
+    formatted_dates = [day.strftime(format_string) for day in all_date_objects]
+    data_rows = []
 
     for employee in employees:
         row_data = {"Employee": employee}
-        for date_item in all_date_objects:
-            for record in records:
-                if date_item <= date.today() and date_item not in leave_dates:
-                    date_item_string = date_item.strftime(format_string)
-                    if employee == record.employee_id:
-                        row_data[str(record.date.strftime(format_string))] = (
-                            record.work_record_type
-                        )
-                    else:
-                        row_data[str(date_item_string)] = "EW"
-
+        for day, formatted_day in zip(all_date_objects, formatted_dates):
+            if not day in leave_dates and day < date.today():
+                row_data[formatted_day] = record_lookup.get((employee, day), "EW")
+            else:
+                row_data[formatted_day] = record_lookup.get((employee, day), "")
         data_rows.append(row_data)
 
-    for date_item in all_date_objects:
-        data.append(str(date_item.strftime(format_string)))
-
-    data_frame = pd.DataFrame(data_rows, columns=data)
+    columns = ["Employee"] + formatted_dates
+    df = pd.DataFrame(data_rows, columns=columns)
 
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
-        data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
-
+        df.to_excel(writer, index=False, sheet_name="Sheet1")
         workbook = writer.book
         worksheet = writer.sheets["Sheet1"]
 
-        format_abs = workbook.add_format(
-            {"bg_color": "#808080", "font_color": "#ffffff"}
-        )
-        format_fdp = workbook.add_format(
-            {"bg_color": "#38c338", "font_color": "#ffffff"}
-        )
-        format_hdp = workbook.add_format(
-            {"bg_color": "#dfdf52", "font_color": "#000000"}
-        )
-        format_conf = workbook.add_format(
-            {"bg_color": "#ed4c4c", "font_color": "#ffffff"}
-        )
-        format_ew = workbook.add_format(
-            {"bg_color": "#a8b1ff", "font_color": "#ffffff"}
-        )
+        formats = {
+            "ABS": workbook.add_format(
+                {"bg_color": "#808080", "font_color": "#ffffff"}
+            ),
+            "FDP": workbook.add_format(
+                {"bg_color": "#38c338", "font_color": "#ffffff"}
+            ),
+            "HDP": workbook.add_format(
+                {"bg_color": "#dfdf52", "font_color": "#000000"}
+            ),
+            "CONF": workbook.add_format(
+                {"bg_color": "#ed4c4c", "font_color": "#ffffff"}
+            ),
+            "EW": workbook.add_format({"bg_color": "#a8b1ff", "font_color": "#ffffff"}),
+        }
 
-        for row_num in range(1, len(data_frame) + 1):
-            for col_num in range(1, len(data_frame.columns)):
-                cell_value = data_frame.iloc[row_num - 1, col_num]
-                if cell_value == "ABS":
-                    worksheet.write(row_num, col_num, cell_value, format_abs)
-                elif cell_value == "FDP":
-                    worksheet.write(row_num, col_num, cell_value, format_fdp)
-                elif cell_value == "HDP":
-                    worksheet.write(row_num, col_num, cell_value, format_hdp)
-                elif cell_value == "CONF":
-                    worksheet.write(row_num, col_num, cell_value, format_conf)
-                elif cell_value == "EW":
-                    worksheet.write(row_num, col_num, cell_value, format_ew)
+        for row_idx, row in enumerate(df.itertuples(index=False), start=1):
+            for col_idx, cell_value in enumerate(row[1:], start=1):
+                if cell_value in formats:
+                    worksheet.write(row_idx, col_idx, cell_value, formats[cell_value])
 
-        for i, col in enumerate(data_frame.columns):
-            column_len = max(data_frame[col].astype(str).map(len).max(), len(col))
-            worksheet.set_column(i, i, column_len)
+        for col_idx, col in enumerate(df.columns):
+            max_len = max(df[col].astype(str).map(len).max(), len(col))
+            worksheet.set_column(col_idx, col_idx, max_len)
 
     output.seek(0)
 
@@ -2455,7 +2427,6 @@ def work_record_export(request):
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
     response["Content-Disposition"] = 'attachment; filename="work_record_export.xlsx"'
-
     return response
 
 

@@ -294,13 +294,14 @@ class HorillaListView(ListView):
             keys_to_remove = [
                 key
                 for key, value in data_dict.items()
-                if value[0] in ["unknown", "on"] + self.filter_keys_to_remove
+                if key in ["filter_applied", "nav_url"] + self.filter_keys_to_remove
             ]
 
             for key in keys_to_remove + ["referrer"]:
                 if key in data_dict.keys():
                     data_dict.pop(key)
             context["filter_dict"] = data_dict
+            context["keys_to_remove"] = keys_to_remove
 
         request = self.request
         ordered_ids = list(queryset.values_list("id", flat=True))
@@ -813,6 +814,8 @@ class HorillaFormView(FormView):
 
     # NOTE: Dynamic create view's forms save method will be overwritten
     is_dynamic_create_view: bool = False
+    # [(field_name,DynamicFormView,[other_field1,...])] # other_fields
+    # can be mentioned like this to pass the field selected
     dynamic_create_fields: list = []
 
     def __init__(self, **kwargs: Any) -> None:
@@ -903,7 +906,10 @@ class HorillaFormView(FormView):
                 files = self.request.FILES
             form = self.init_form(data=data, files=files, instance=instance)
             if self.is_dynamic_create_view:
-                setattr(type(form), "save", save)
+                # setattr(type(form), "save", save)
+                from types import MethodType
+
+                form.save = MethodType(save, form)
 
             if self.request.method == "GET":
                 [
@@ -916,6 +922,9 @@ class HorillaFormView(FormView):
                     view = dynamic_tuple[1]
                     view.display_title = "Dynamic create"
                     field = dynamic_tuple[0]
+                    additional_data_fields = []
+                    if len(dynamic_tuple) == 3:
+                        additional_data_fields = dynamic_tuple[2]
                     key = self.request.session.session_key + "cbv" + field
                     field_instance = form.instance._meta.get_field(field)
                     value = form.initial.get(field, [])
@@ -931,7 +940,6 @@ class HorillaFormView(FormView):
                             )
                     else:
                         value = getattr(getattribute(form.instance, field), "pk", value)
-
                     CACHE.set(
                         key,
                         {
@@ -957,6 +965,22 @@ class HorillaFormView(FormView):
                     choices.insert(0, ("", "Select option"))
                     choices.append(("dynamic_create", "Dynamic create"))
                     attrs = form.fields[field].widget.attrs
+                    for data_field in additional_data_fields:
+
+                        data_field_attr = form.fields[data_field].widget.attrs
+                        if (
+                            f"$('#modalButton{field}Form [name={data_field}]').val(this.value);"
+                            not in data_field_attr.get("onchange", "")
+                        ):
+                            data_field_attr["onchange"] = (
+                                data_field_attr.get("onchange", "")
+                                + f"""
+                                if(this.value != 'dynamic_create'){{
+                                $('#modalButton{field}Form [name={data_field}]').val(this.value);
+                                }}
+                            """
+                            )
+
                     form.fields[field] = form_field(
                         choices=choices,
                         label=form.fields[field].label,
@@ -967,6 +991,18 @@ class HorillaFormView(FormView):
                     )
                     form.fields[field].widget.attrs = attrs
                     form.initial[field] = value
+                for dynamic_tuple in self.dynamic_create_fields:
+                    field = dynamic_tuple[0]
+                    onchange = form.fields[field].widget.attrs.get("onchange", "")
+                    if onchange:
+                        CACHE.set(
+                            self.request.session.session_key
+                            + "cbv"
+                            + field
+                            + "onchange",
+                            onchange,
+                        )
+
             if pk:
                 form.instance = instance
                 title = str(instance)
@@ -1004,6 +1040,7 @@ class HorillaNavView(TemplateView):
     filter_instance: FilterSet = None
     filter_instance_context_name: str = ""
     filter_body_template: str = ""
+    empty_inputs: list = []
     view_types: list = []
     create_attrs: str = """"""
 
@@ -1027,8 +1064,12 @@ class HorillaNavView(TemplateView):
         context["search_in"] = self.search_in
         context["filter_instance_context_name"] = self.filter_instance
         last_filter = CACHE.get(
-            self.request.session.session_key + "last-applied-filter", {}
+            self.request.session.session_key
+            + "last-applied-filter"
+            + self.request.path,
+            {},
         )
+        context["empty_inputs"] = self.empty_inputs + ["nav_url"]
         context["last_filter"] = dict(last_filter)
         if self.filter_instance:
             context[self.filter_form_context_name] = self.filter_instance.form

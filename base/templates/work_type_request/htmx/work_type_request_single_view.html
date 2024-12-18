@@ -87,11 +87,7 @@
                 <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
                     <span class="oh-timeoff-modal__stat-title">{% trans "Is permenent work type" %}</span>
                     <span class="oh-timeoff-modal__stat-count">
-                        {% if work_type_request.is_permanent_work_type == True %}
-                            {% trans "Yes" %}
-                        {% else %}
-                            {% trans "No" %}
-                        {% endif %}
+                        {{work_type_request.is_permanent_work_type|yes_no}}
                     </span>
                 </div>
             </div>

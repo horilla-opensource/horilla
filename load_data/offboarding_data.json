@@ -3,37 +3,22 @@
     "model": "offboarding.offboarding",
     "pk": 1,
     "fields": {
-      "created_at": "2024-11-15T03:07:52.493Z",
+      "created_at": "2024-12-12T09:48:40.988Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "title": "Offboarding 2024",
-      "description": "Offboarding pipeline 2024",
+      "description": "Offboarding Pipeline for 2024",
       "status": "ongoing",
-      "company_id": null,
-      "managers": [1]
-    }
-  },
-  {
-    "model": "offboarding.offboarding",
-    "pk": 2,
-    "fields": {
-      "created_at": "2024-11-15T03:10:52.493Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "title": "Offboarding 2025",
-      "description": "Offboarding pipeline 2025",
-      "status": "ongoing",
-      "company_id": null,
+      "company_id": 1,
       "managers": [1]
     }
   },
   {
     "model": "offboarding.offboardingstage",
-    "pk": 1,
+    "pk": 13,
     "fields": {
-      "created_at": "2024-11-15T03:07:52.499Z",
+      "created_at": "2024-12-12T09:48:41.001Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -46,9 +31,9 @@
   },
   {
     "model": "offboarding.offboardingstage",
-    "pk": 2,
+    "pk": 14,
     "fields": {
-      "created_at": "2024-11-15T03:07:52.517Z",
+      "created_at": "2024-12-12T09:48:41.028Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -61,9 +46,9 @@
   },
   {
     "model": "offboarding.offboardingstage",
-    "pk": 3,
+    "pk": 15,
     "fields": {
-      "created_at": "2024-11-15T03:07:52.527Z",
+      "created_at": "2024-12-12T09:48:41.045Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -76,9 +61,9 @@
   },
   {
     "model": "offboarding.offboardingstage",
-    "pk": 4,
+    "pk": 16,
     "fields": {
-      "created_at": "2024-11-15T03:07:52.537Z",
+      "created_at": "2024-12-12T09:48:41.063Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -91,9 +76,9 @@
   },
   {
     "model": "offboarding.offboardingstage",
-    "pk": 5,
+    "pk": 17,
     "fields": {
-      "created_at": "2024-11-15T03:07:52.547Z",
+      "created_at": "2024-12-12T09:48:41.080Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -106,90 +91,15 @@
   },
   {
     "model": "offboarding.offboardingstage",
-    "pk": 6,
+    "pk": 18,
     "fields": {
-      "created_at": "2024-11-15T03:07:52.556Z",
+      "created_at": "2024-12-12T09:48:41.097Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "title": "Archived",
       "type": "archived",
       "offboarding_id": 1,
-      "sequence": 0,
-      "managers": []
-    }
-  },
-  {
-    "model": "offboarding.offboardingstage",
-    "pk": 8,
-    "fields": {
-      "created_at": "2024-11-15T03:07:52.517Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "title": "Exit interview",
-      "type": "interview",
-      "offboarding_id": 2,
-      "sequence": 0,
-      "managers": []
-    }
-  },
-  {
-    "model": "offboarding.offboardingstage",
-    "pk": 9,
-    "fields": {
-      "created_at": "2024-11-15T03:07:52.527Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "title": "Work Handover",
-      "type": "handover",
-      "offboarding_id": 2,
-      "sequence": 0,
-      "managers": []
-    }
-  },
-  {
-    "model": "offboarding.offboardingstage",
-    "pk": 10,
-    "fields": {
-      "created_at": "2024-11-15T03:07:52.537Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "title": "FNF",
-      "type": "fnf",
-      "offboarding_id": 2,
-      "sequence": 0,
-      "managers": []
-    }
-  },
-  {
-    "model": "offboarding.offboardingstage",
-    "pk": 11,
-    "fields": {
-      "created_at": "2024-11-15T03:07:52.547Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "title": "Farewell",
-      "type": "other",
-      "offboarding_id": 2,
-      "sequence": 0,
-      "managers": []
-    }
-  },
-  {
-    "model": "offboarding.offboardingstage",
-    "pk": 12,
-    "fields": {
-      "created_at": "2024-11-15T03:07:52.556Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "title": "Archived",
-      "type": "archived",
-      "offboarding_id": 2,
       "sequence": 0,
       "managers": []
     }

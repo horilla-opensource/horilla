@@ -2,7 +2,9 @@ from django import views
 from django.apps import apps
 from django.urls import path
 
+from base.views import object_duplicate
 from employee.models import Employee
+from leave.forms import RestrictLeaveForm
 
 from . import models, views
 
@@ -353,6 +355,16 @@ urlpatterns = [
         "cut-penalty/<int:instance_id>/",
         views.cut_available_leave,
         name="leave-cut-penalty",
+    ),
+    path(
+        "duplicate-restrict-leave/<int:obj_id>/",
+        object_duplicate,
+        name="duplicate-restrict-leave",
+        kwargs={
+            "model": models.RestrictLeave,
+            "form": RestrictLeaveForm,
+            "template": "leave/restrict/restrict_form.html",
+        },
     ),
 ]
 

@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base import announcement, request_and_approve, views
 from base.forms import (
+    HolidayForm,
     MailTemplateForm,
     RotatingShiftAssignForm,
     RotatingShiftForm,
@@ -18,6 +19,7 @@ from base.models import (
     EmployeeShift,
     EmployeeShiftSchedule,
     EmployeeType,
+    Holidays,
     HorillaMailTemplate,
     JobPosition,
     JobRole,
@@ -1002,6 +1004,16 @@ urlpatterns = [
     ),
     path("holiday-creation", views.holiday_creation, name="holiday-creation"),
     path("holiday-update/<int:obj_id>", views.holiday_update, name="holiday-update"),
+    path(
+        "duplicate-holiday/<int:obj_id>",
+        views.object_duplicate,
+        name="duplicate-holiday",
+        kwargs={
+            "model": Holidays,
+            "form": HolidayForm,
+            "template": "holiday/holiday_form.html",
+        },
+    ),
     path("holiday-delete/<int:obj_id>", views.holiday_delete, name="holiday-delete"),
     path(
         "holidays-bulk-delete", views.bulk_holiday_delete, name="holidays-bulk-delete"

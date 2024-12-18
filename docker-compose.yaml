@@ -10,6 +10,8 @@ services:
     environment:
       DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
     command: ./entrypoint.sh
+    volumes:
+      - ./horilla:/app/horilla
     depends_on:
       db:
         condition: service_healthy

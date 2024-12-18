@@ -434,6 +434,34 @@
     $('.yesOrNo').change(function(){
         checkYesOrNoFields()
     })
+
+    $(document).ready(function() {
+    // Select All Employees Functionality
+    $('#select-all-employees').change(function() {
+        var isChecked = $(this).prop('checked');
+
+
+        if ($('#id_employee_id').is('select')) {
+
+            $('#id_employee_id option').prop('selected', isChecked);
+        }
+
+        else if ($('#id_employee_id input[type="checkbox"]').length > 0) {
+
+            $('#id_employee_id input[type="checkbox"]').each(function() {
+
+                $(this).prop('checked', false);
+
+                if (isChecked) {
+                    $(this).prop('checked', true);
+                }
+            });
+        }
+
+        $('#id_employee_id').trigger('change');
+    });
+});
+
 </script>
 
 {% endblock %}

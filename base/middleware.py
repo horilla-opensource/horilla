@@ -5,7 +5,7 @@ middleware.py
 from django.apps import apps
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseNotAllowed
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from asset.models import AssetAssignment, AssetRequest
 from attendance.models import (
@@ -181,3 +181,22 @@ class CompanyMiddleware:
 
         response = self.get_response(request)
         return response
+
+
+# MIDDLEWARE TO CHECK IF EMPLOYEE IS NEW USER OR NOT
+class ForcePasswordChangeMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Exclude specific paths from redirection
+        excluded_paths = ["/change-password", "/login", "/logout"]
+        if request.path.rstrip("/") in excluded_paths:
+            return self.get_response(request)
+
+        # Check if employee is a new employee
+        if hasattr(request, "user") and request.user.is_authenticated:
+            if getattr(request.user, "is_new_employee", True):
+                return redirect("change-password")  # Adjust to match your URL name
+
+        return self.get_response(request)

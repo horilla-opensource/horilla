@@ -60,19 +60,6 @@
     }
   },
   {
-    "model": "base.horillamailtemplate",
-    "pk": 1,
-    "fields": {
-      "created_at": "2024-11-05T09:39:13.733Z",
-      "created_by": null,
-      "modified_by": null,
-      "is_active": true,
-      "title": "Offer letter",
-      "body": "<p style=\"font-size: 12.8px; text-align: center;\"><span style=\"font-weight: bolder;\"><span style=\"font-family: &quot;Courier New&quot;; font-size: 24px;\">Congratulations! Job Offer at {{instance.get_company}}</span></span></p><p style=\"font-size: 12.8px;\">username:{{instance.get_email}}</p><p style=\"font-size: 12.8px;\">password:{{instance.phone}}</p><p style=\"font-size: 12.8px;\"><i><span style=\"font-size: 14px;\">Dear {{instance.get_full_name}},</span></i></p><p style=\"font-size: 12.8px;\">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; I am delighted to extend an official offer of employment to you for the position of [Job Title] at [Company Name]. We were thoroughly impressed with your skills, experience, and the passion you demonstrated during the interview process.</p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">Here are the details of your job offer:&nbsp;</span></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">&nbsp; &nbsp; Job Position: {{instance.get_job_position}}</span></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">We believe that your unique talents will make a significant contribution to our team, and we are thrilled about the prospect of you joining us. Please take the time to review the attached detailed job description, as well as the terms and conditions outlined in the employment contract.</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">To signify your acceptance of this job offer, please confirm your agreement by [Date to Respond]. If you have any questions or need further clarification, feel free to contact me directly</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">We are excited about the value you will bring to [Company Name], and we eagerly anticipate the positive impact you'll have on our team.</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">Welcome aboard, and we look forward to a successful and fulfilling working relationship!</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">Warm regards,</span></p>",
-      "company_id": null
-    }
-  },
-  {
     "model": "base.department",
     "pk": 1,
     "fields": {
@@ -2668,7 +2655,7 @@
       "modified_by": 1,
       "is_active": true,
       "title": "Recruitment",
-      "color": "#ffcccc",
+      "color": "#fb8787",
       "company_id": null
     }
   },
@@ -2693,8 +2680,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "attendance",
-      "color": "#000000",
+      "title": "Attendance",
+      "color": "#afbcee",
       "company_id": null
     }
   },
@@ -2706,8 +2693,203 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "employee",
+      "title": "Employee",
       "color": "#806d8d",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-12-12T03:26:32.592Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Leave",
+      "color": "#66cffd",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 7,
+    "fields": {
+      "created_at": "2024-12-12T03:49:46.452Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Biometric",
+      "color": "#e35959",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 17,
+    "fields": {
+      "created_at": "2024-12-12T06:48:51.312Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Asset",
+      "color": "#4cbdef",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 18,
+    "fields": {
+      "created_at": "2024-12-12T06:49:10.165Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Dashboard",
+      "color": "#8a8585",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 19,
+    "fields": {
+      "created_at": "2024-12-12T06:49:42.695Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Import",
+      "color": "#1dc56e",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 20,
+    "fields": {
+      "created_at": "2024-12-12T06:50:12.441Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Export",
+      "color": "#70a5eb",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 21,
+    "fields": {
+      "created_at": "2024-12-12T06:50:50.090Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Request",
+      "color": "#bec30c",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 22,
+    "fields": {
+      "created_at": "2024-12-12T06:51:04.892Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Allocation",
+      "color": "#046d88;",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 23,
+    "fields": {
+      "created_at": "2024-12-12T07:05:58.903Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Stage",
+      "color": "#b8a5fa;",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 24,
+    "fields": {
+      "created_at": "2024-12-12T07:06:07.247Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Manager",
+      "color": "#00b2ba",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 25,
+    "fields": {
+      "created_at": "2024-12-12T07:08:52.033Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Pipeline",
+      "color": "#843787",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 26,
+    "fields": {
+      "created_at": "2024-12-12T07:12:53.694Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Resume",
+      "color": "#63a189",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 27,
+    "fields": {
+      "created_at": "2024-12-12T07:13:16.506Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Skill Zone",
+      "color": "#f4b74e",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 28,
+    "fields": {
+      "created_at": "2024-12-12T07:13:38.071Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Interview",
+      "color": "#f5dcb3",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.tags",
+    "pk": 29,
+    "fields": {
+      "created_at": "2024-12-12T07:14:05.035Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Candidate",
+      "color": "#b2e1f5",
       "company_id": null
     }
   },
@@ -2988,6 +3170,49 @@
       "based_on_week": "3",
       "based_on_week_day": "5",
       "company_id": null
+    }
+  },
+  {
+    "model": "base.multipleapprovalcondition",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-12-12T10:22:43.982Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "department": 2,
+      "condition_field": "requested_days",
+      "condition_operator": "gt",
+      "condition_value": "2",
+      "condition_start_value": null,
+      "condition_end_value": null,
+      "company_id": 1
+    }
+  },
+  {
+    "model": "base.horillamailtemplate",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-11-05T09:39:13.733Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "title": "Offer letter",
+      "body": "<p style=\"font-size: 12.8px; text-align: center;\"><span style=\"font-weight: bolder;\"><span style=\"font-family: &quot;Courier New&quot;; font-size: 24px;\">Congratulations! Job Offer at {{instance.get_company}}</span></span></p><p style=\"font-size: 12.8px;\">username:{{instance.get_email}}</p><p style=\"font-size: 12.8px;\">password:{{instance.phone}}</p><p style=\"font-size: 12.8px;\"><i><span style=\"font-size: 14px;\">Dear {{instance.get_full_name}},</span></i></p><p style=\"font-size: 12.8px;\">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; I am delighted to extend an official offer of employment to you for the position of [Job Title] at [Company Name]. We were thoroughly impressed with your skills, experience, and the passion you demonstrated during the interview process.</p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">Here are the details of your job offer:&nbsp;</span></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">&nbsp; &nbsp; Job Position: {{instance.get_job_position}}</span></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">We believe that your unique talents will make a significant contribution to our team, and we are thrilled about the prospect of you joining us. Please take the time to review the attached detailed job description, as well as the terms and conditions outlined in the employment contract.</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">To signify your acceptance of this job offer, please confirm your agreement by [Date to Respond]. If you have any questions or need further clarification, feel free to contact me directly</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">We are excited about the value you will bring to [Company Name], and we eagerly anticipate the positive impact you'll have on our team.</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">Welcome aboard, and we look forward to a successful and fulfilling working relationship!</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">Warm regards,</span></p>",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.horillamailtemplate",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-12-12T10:23:52.188Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": false,
+      "title": "Leave Request Mail",
+      "body": "<p>Dear,</p><p>This is to inform you that {{ model_instance.employee_id }} has submitted a leave request for {{model_instance.requested_days}} days. Please take the necessary actions to review and process the request at your earliest convenience.<br><br>If you require any additional information or updates, feel free to communicate directly with {{ model_instance.employee_id }}.<br><br>Thank you for your prompt attention to this matter.</p>",
+      "company_id": 1
     }
   }
 ]
