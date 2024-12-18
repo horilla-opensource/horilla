@@ -334,7 +334,7 @@ def about_tab(request, obj_id, **kwargs):
     )
     return render(
         request,
-        "tabs/personal-tab.html",
+        "tabs/personal_tab.html",
         {
             "employee": employee,
             "employee_leaves": employee_leaves,
