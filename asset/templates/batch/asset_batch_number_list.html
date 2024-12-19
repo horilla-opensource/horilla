@@ -42,7 +42,7 @@
                                     {% if perms.asset.change_assetlot %}
                                     <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Update' %}"
                                         data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
-                                        hx-put="{% url 'asset-batch-update' batch_id=batch_number.id %}"
+                                        hx-get="{% url 'asset-batch-update' batch_id=batch_number.id %}"
                                         hx-target="#objectUpdateModalTarget">
                                         <ion-icon name="create-outline" role="img" class="md hydrated"
                                             aria-label="create outline"></ion-icon>

@@ -1,118 +1,77 @@
-
 {% load i18n %}
 {% load basefilters %}
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-  <div class="oh-main__titlebar oh-main__titlebar--left">
-    <h1 class="oh-main__titlebar-title fw-bold">
-        <a href="{% url 'asset-history' %}" class='text-dark'>
-            {% trans "Asset History" %}
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">
+            <a href="{% url 'asset-history' %}" class='text-dark'>
+                {% trans "Asset History" %}
+            </a>
+        </h1>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
         </a>
-      </h1>
-    <a
-      class="oh-main__titlebar-search-toggle"
-      role="button"
-      aria-label="Toggle Search"
-      @click="searchShow = !searchShow"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-main__titlebar-serach-icon"
-      ></ion-icon>
-    </a>
-  </div>
-  <div class="oh-main__titlebar oh-main__titlebar--right">
-    <div
-      class="oh-input-group oh-input__search-group"
-      :class="searchShow ? 'oh-input__search-group--show' : ''"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-input-group__icon oh-input-group__icon--left"
-      ></ion-icon>
-      <input
-        type="text"
-        class="oh-input oh-input__icon"
-        aria-label="Search Input"
-        id="assetHistorySearch"
-        name='search'
-        placeholder="{% trans 'Search' %}"
-        hx-get="{% url 'asset-history-search' %}"
-        hx-trigger="keyup changed delay:500ms, search"
-        hx-target="#historyTable"
-        hx-swap="innerHTML"
-      />
     </div>
-    <div class="oh-main__titlebar-button-container">
-      <form
-        hx-get="{% url 'asset-history-search' %}"
-        hx-swap="innerHTML"
-        hx-target="#historyTable"
-        id="filterForm"
-        class="d-flex"
-        >
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-        </button>
-        <div
-          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-          x-show="open"
-          @click.outside="open = false"
-          style="display: none;
-                 width: 550px;"
-        >
-          {% include 'asset_history/asset_history_filter.html' %}
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+        <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+            <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" id="assetHistorySearch"
+                name='search' placeholder="{% trans 'Search' %}" hx-get="{% url 'asset-history-search' %}"
+                hx-trigger="keyup changed delay:500ms, search" hx-target="#historyTable" hx-swap="innerHTML" />
         </div>
-      </div>
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-          <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
-          <div id="filterCount"></div>
-        </button>
-        <div
-        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-        x-show="open"
-        @click.outside="open = false"
-        style="display: none"
-        >
-        <div class="oh-accordion">
-          <label for="id_field">{% trans "Group By" %}</label>
-            <div class="row">
-              <div class="col-sm-12 col-md-12 col-lg-6">
-                <div class="oh-input-group">
-                  <label class="oh-label" for="id_field">{% trans "Field" %}</label>
+        <div class="oh-main__titlebar-button-container">
+            <form hx-get="{% url 'asset-history-search' %}" hx-swap="innerHTML" hx-target="#historyTable"
+                id="filterForm" class="d-flex">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                        @click.outside="open = false" style="display: none; width: 550px;">
+                        {% include 'asset_history/asset_history_filter.html' %}
+                    </div>
                 </div>
-              </div>
-              <div class="col-sm-12 col-md-12 col-lg-6">
-                <div class="oh-input-group">
-                  <select
-                    class="oh-select mt-1 w-100"
-                    id="id_field"
-                    name="field"
-                    class="select2-selection select2-selection--single"
-                  >
-                    {% for field in gp_fields %}
-                    <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                    {% endfor %}
-                  </select>
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                        <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+                        <div id="filterCount"></div>
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                        @click.outside="open = false" style="display: none">
+                        <div class="oh-accordion">
+                            <label for="id_field">{% trans "Group By" %}</label>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="oh-input-group">
+                                        <label class="oh-label" for="id_field">{% trans "Field" %}</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="oh-input-group">
+                                        <select class="oh-select mt-1 w-100" id="id_field" name="field"
+                                            class="select2-selection select2-selection--single">
+                                            {% for field in gp_fields %}
+                                                <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-          </div>
+            </form>
         </div>
-      </div>
-      </form>
     </div>
-  </div>
-  <script>
-    $('#assetHistorySearch').keydown(function (e) {
-      var val = $(this).val();
-      $('.pg').attr('hx-vals', `{"search":${val}}`);
-    });
-    $(document).ready(function(){
-      $('#id_field').on('change',function(){
-        $('.filterButton')[0].click();
-      })
-    });
-  </script>
+    <script>
+        $('#assetHistorySearch').keydown(function (e) {
+            var val = $(this).val();
+            $('.pg').attr('hx-vals', `{"search":${val}}`);
+        });
+        $(document).ready(function () {
+            $('#id_field').on('change', function () {
+                $('.filterButton')[0].click();
+            })
+        });
+    </script>
 </section>

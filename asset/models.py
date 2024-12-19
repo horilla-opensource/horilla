@@ -79,6 +79,9 @@ class Asset(HorillaModel):
     notify_before = models.IntegerField(default=1, null=True)
     objects = HorillaCompanyManager("asset_category_id__company_id")
 
+    class Meta:
+        ordering = ["-created_at"]
+
     def __str__(self):
         return f"{self.asset_name}-{self.asset_tracking_id}"
 
@@ -238,3 +241,21 @@ class AssetRequest(HorillaModel):
         """Meta class for AssetRequest model"""
 
         ordering = ["-id"]
+
+    def status_html_class(self):
+        COLOR_CLASS = {
+            "Approved": "oh-dot--success",
+            "Requested": "oh-dot--info",
+            "Rejected": "oh-dot--danger",
+        }
+
+        LINK_CLASS = {
+            "Approved": "link-success",
+            "Requested": "link-info",
+            "Rejected": "link-danger",
+        }
+        status = self.asset_request_status
+        return {
+            "color": COLOR_CLASS.get(status),
+            "link": LINK_CLASS.get(status),
+        }
