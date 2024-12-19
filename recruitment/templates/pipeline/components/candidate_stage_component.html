@@ -55,42 +55,44 @@
                 <div class="oh-sticky-table__th oh-table-config__th" style="width: 155px;">
                     <span> {% trans "Scheduled Interviews" %} </span>
                 </div>
-                {% if request.user|stage_manages:rec or perms.recruitment.change_candidate %}
+                {% if request.user.employee_get in stage.stage_managers.all or request.user.employee_get in rec.recruitment_managers.all or perms.recruitment.change_candidate %}
                 <div class="oh-sticky-table__th oh-table-config__th" style="width: 135px;">
                     <span> {% trans "Rating" %} </span>
                 </div>
                 {% endif %}
-                <div class="oh-sticky-table__th oh-table-config__th">{% trans "Stage" %}</div>
-                <div class="oh-sticky-table__th oh-table-config__th" style="width: 225px;">
-                    <select name="bulk_stage"
-                    onchange="
-                    if (this.value) {
-                        preStageId= {{stage.id}}
-                        stageId = this.value
-                        candidateCheckBoxes = $(this).closest('.oh-sticky-table').find('.stage-candidate-row[type=checkbox]:checked')
-                        if (!candidateCheckBoxes.length) {
-                            Swal.fire({
-                                title: 'No rows selected!',
-                                icon: 'warning'
-                            });
-                        }else{
-                            canIds=[]
-                            $.each(candidateCheckBoxes, function(index, checkbox) {
-                                canId=$(checkbox).val()
-                                canIds.push($(checkbox).val())
-                            });
-                            bulkStageUpdate(canIds,stageId,preStageId)
+                {% if request.user.employee_get in stage.stage_managers.all or perms.recruitment.change_candidate or request.user.employee_get in rec.recruitment_managers.all %}
+                    <div class="oh-sticky-table__th oh-table-config__th">{% trans "Stage" %}</div>
+                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 225px;">
+                        <select name="bulk_stage"
+                        onchange="
+                        if (this.value) {
+                            preStageId= {{stage.id}}
+                            stageId = this.value
+                            candidateCheckBoxes = $(this).closest('.oh-sticky-table').find('.stage-candidate-row[type=checkbox]:checked')
+                            if (!candidateCheckBoxes.length) {
+                                Swal.fire({
+                                    title: 'No rows selected!',
+                                    icon: 'warning'
+                                });
+                            }else{
+                                canIds=[]
+                                $.each(candidateCheckBoxes, function(index, checkbox) {
+                                    canId=$(checkbox).val()
+                                    canIds.push($(checkbox).val())
+                                });
+                                bulkStageUpdate(canIds,stageId,preStageId)
+                            }
                         }
-                    }
-                    "
-                     class="oh-select w-100" data-stage-id="{{stage.id}}">
-                        <option value="" style="color: gray !important;" selected>{% trans "Stage bulk update" %}
-                        </option>
-                        {% for stage in rec.stage_set.all|dictsort:"sequence" %}
-                        <option value="{{stage.id}}">{{stage}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                        "
+                        class="oh-select w-100" data-stage-id="{{stage.id}}">
+                            <option value="" style="color: gray !important;" selected>{% trans "Stage bulk update" %}
+                            </option>
+                            {% for stage in rec.stage_set.all|dictsort:"sequence" %}
+                            <option value="{{stage.id}}">{{stage}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
             </div>
         </div>
         <div hx-trigger="end" data-drag-htmx="true" hx-target="#pipelineStageContainer{{stage.id}}" hx-swap="none" hx-get="" class="hx-sortable oh-sticky-table__tbody oh-table--inter-sortable ui-sortable candidate-container"
@@ -171,7 +173,7 @@
                     {% trans "Interviews Scheduled" %} : {{cand.candidate_interview.count}}
                 </div>
 
-                {% if request.user|stage_manages:rec or perms.recruitment.add_candidaterating %}
+                {% if request.user.employee_get in stage.stage_managers.all or request.user.employee_get in rec.recruitment_managers.all or perms.recruitment.add_candidaterating %}
                 <div onclick="event.stopPropagation()" class="oh-sticky-table__td oh-table-config__td"
                     onclick="event.stopPropagation()">
                     {% with request.user.employee_get.candidate_rating.all as candidate_ratings %}
@@ -209,93 +211,107 @@
                     {% endwith %}
                 </div>
                 {% endif %}
-                <div onclick="event.stopPropagation()" class="oh-sticky-table__td oh-table-config__td">
-                    <select
-                        name="stage_id"
-                        onchange="checkSequence(this)"
-                        data-stage_id = {{stage.id}}
-                        data-cand_id = {{cand.id}}
-                        data-stage_order = '{{rec.ordered_stages|to_json|safe}}'
-                        id="stageChange{{cand.id}}"
-                        class="oh-select w-100"
-                        data-candidate-id="{{cand.id}}" data-stage-id="{{stage.id}}">
-                        {% for sg in rec.ordered_stages %}
-                            <option value="{{sg.id}}" {% if sg == cand.stage_id %} selected{% endif %}>{{sg}}</option>
-                        {% endfor %}
-                    </select>
-                    <input onclick="setTimeout(() => {
-                        $('#stageReloadContainer{{rec.id}}').click()
-                        }, 100);" type="submit" hidden>
+                {% if request.user.employee_get in stage.stage_managers.all or perms.recruitment.change_candidate or request.user.employee_get in rec.recruitment_managers.all %}
+                    <div onclick="event.stopPropagation()" class="oh-sticky-table__td oh-table-config__td">
+                        <select
+                            name="stage_id"
+                            onchange="checkSequence(this)"
+                            data-stage_id = {{stage.id}}
+                            data-cand_id = {{cand.id}}
+                            data-stage_order = '{{rec.ordered_stages|to_json|safe}}'
+                            id="stageChange{{cand.id}}"
+                            class="oh-select w-100"
+                            data-candidate-id="{{cand.id}}" data-stage-id="{{stage.id}}">
+                            {% for sg in rec.ordered_stages %}
+                                <option value="{{sg.id}}" {% if sg == cand.stage_id %} selected{% endif %}>{{sg}}</option>
+                            {% endfor %}
+                        </select>
+                        <input onclick="setTimeout(() => {
+                            $('#stageReloadContainer{{rec.id}}').click()
+                            }, 100);" type="submit" hidden>
 
-                </div>
-                <div onclick="event.stopPropagation()" class="oh-sticky-table__td oh-table-config__td">
-                    <div class="oh-btn-group">
-                        <button type="button" hx-get='{% url "interview-schedule" cand.id %}' title="{% trans "Schedule Interview" %}"
-                                hx-target="#createTarget"
-                                hx-swap="innerHTML"
-                                data-target="#createModal" class="oh-btn oh-btn--light"
-                                data-toggle="oh-modal-toggle"
-                                style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
-                            <ion-icon name="time-outline"></ion-icon>
-                        </button>
-                        <button type="button" hx-get='{% url "send-mail" cand.id %}' title="{% trans " Send Mail" %}"
-                            hx-target="#objectDetailsModalTarget" hx-swap="innerHTML" class="oh-btn oh-btn--light"
-                            data-toggle="oh-modal-toggle" data-target="#objectDetailsModal"
-                            onclick="$('#objectDetailsModal').addClass('oh-modal--show')"
-                            style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
-                            <ion-icon name="mail-open-outline"></ion-icon>
-                        </button>
-                        <button type="button" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'To Skill zone' %}"
-                            data-toggle="oh-modal-toggle"
-                            hx-get="{% url 'to-skill-zone' cand.id %}"
-                            hx-target="#createTarget"
-                            hx-swap="innerHTML"
-                            data-target="#createModal"
-                            style="flex: 1 0 auto; width:25px !important;height: 40.68px; padding: 0;color: orangered;">
-                            <ion-icon name="heart-circle-outline"></ion-icon>
-                        </button>
-                        {% if onboarding|app_installed %}
-                            <button type="button" hx-target="#rejectModalBody" hx-swap="innerHTML"
-                                class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" data-target="#rejectModal"
-                                onclick="$('#rejectModal').addClass('oh-modal--show')"
-                                hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
-                                {% if cand.is_offer_rejected %}
-                                    style="flex: 1 0 auto;background: #ff4500a3;width:20px;height: 40.68px; padding: 0;color: white;"
-                                {% else %}
-                                    style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
-                                {% endif %}
-                                {% if cand.is_offer_rejected %} title="{% trans " Added In Rejected Candidates" %}" {% else %}
-                                title="{% trans " Add To Rejected Candidates" %}" {% endif %}>
-                                <ion-icon name="thumbs-down-outline"></ion-icon>
-                            </button>
-                        {% endif %}
-                        <button type="button" hx-get='{% url "view-note" cand.id %}' title="{% trans " View Note" %}"
-                            hx-target="#activitySidebar" hx-swap="innerHTML" data-target="#activitySidebar"
-                            onclick="$('#activitySidebar').addClass('oh-activity-sidebar--show')"
-                            hx-swap="innerHTML" class="oh-btn oh-btn--light oh-activity-sidebar__open"
-                            style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
-                            <ion-icon name="newspaper-outline"></ion-icon>
-                        </button>
-                        {% if check_candidate_self_tracking %}
-                            {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
-                                <button type="button" hx-get="{% url 'candidate-document-request' %}?candidate_id={{cand.id}}"
-                                    title="{% trans " Request Document" %}"
-                                    class="oh-btn oh-btn--light"
-                                    hx-target="#objectDetailsModalTarget" data-target="#objectDetailsModal"
-                                    data-toggle="oh-modal-toggle"
-                                    hx-swap="innerHTML"
-                                    style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
-                                    <ion-icon name="clipboard-outline"></ion-icon>
+                    </div>
+                {% endif %}
+                {% if request.user.employee_get in stage.stage_managers.all or perms.recruitment.change_candidate or perms.recruitment.add_interviewschedule or perms.recruitment.add_candidatedocumentrequest or request.user.employee_get in rec.recruitment_managers.all %}
+                    <div onclick="event.stopPropagation()" class="oh-sticky-table__td oh-table-config__td">
+                        <div class="oh-btn-group">
+                            {% if perms.recruitment.add_interviewschedule or request.user.employee_get in stage.stage_managers.all %}
+                                <button type="button" hx-get='{% url "interview-schedule" cand.id %}' title="{% trans "Schedule Interview" %}"
+                                        hx-target="#createTarget"
+                                        hx-swap="innerHTML"
+                                        data-target="#createModal" class="oh-btn oh-btn--light"
+                                        data-toggle="oh-modal-toggle"
+                                        style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
+                                    <ion-icon name="time-outline"></ion-icon>
                                 </button>
                             {% endif %}
-                        {% endif %}
-                        <a class="oh-btn oh-btn--light {% if not cand.resume.url %}oh-btn--disabled{% endif %}" href="{{cand.resume.url}}"
-                            target="_blank" title="{% trans " Resume" %}" rel="noopener noreferrer"
-                            style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"><ion-icon
+                            {% if perms.recruitment.change_candidate or request.user.employee_get in stage.stage_managers.all %}
+                                <button type="button" hx-get='{% url "send-mail" cand.id %}' title="{% trans " Send Mail" %}"
+                                    hx-target="#objectDetailsModalTarget" hx-swap="innerHTML" class="oh-btn oh-btn--light"
+                                    data-toggle="oh-modal-toggle" data-target="#objectDetailsModal"
+                                    onclick="$('#objectDetailsModal').addClass('oh-modal--show')"
+                                    style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
+                                    <ion-icon name="mail-open-outline"></ion-icon>
+                                </button>
+                            {% endif %}
+                            {% if perms.recruitment.add_skillzonecandidate or request.user.employee_get in stage.stage_managers.all %}
+                                <button type="button" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'To Skill zone' %}"
+                                    data-toggle="oh-modal-toggle"
+                                    hx-get="{% url 'to-skill-zone' cand.id %}"
+                                    hx-target="#createTarget"
+                                    hx-swap="innerHTML"
+                                    data-target="#createModal"
+                                    style="flex: 1 0 auto; width:25px !important;height: 40.68px; padding: 0;color: orangered;">
+                                    <ion-icon name="heart-circle-outline"></ion-icon>
+                                </button>
+                            {% endif %}
+                            {% if onboarding|app_installed %}
+                                {% if perms.recruitment.add_rejectedcandidate or request.user.employee_get in stage.stage_managers.all %}
+                                    <button type="button" hx-target="#rejectModalBody" hx-swap="innerHTML"
+                                        class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" data-target="#rejectModal"
+                                        onclick="$('#rejectModal').addClass('oh-modal--show')"
+                                        hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
+                                        {% if cand.is_offer_rejected %}
+                                            style="flex: 1 0 auto;background: #ff4500a3;width:20px;height: 40.68px; padding: 0;color: white;"
+                                        {% else %}
+                                            style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
+                                        {% endif %}
+                                        {% if cand.is_offer_rejected %} title="{% trans " Added In Rejected Candidates" %}" {% else %}
+                                        title="{% trans " Add To Rejected Candidates" %}" {% endif %}>
+                                        <ion-icon name="thumbs-down-outline"></ion-icon>
+                                    </button>
+                                {% endif %}
+                            {% endif %}
+                            {% if perms.view_stagenote or request.user.employee_get in stage.stage_managers.all %}
+                                <button type="button" hx-get='{% url "view-note" cand.id %}' title="{% trans " View Note" %}"
+                                    hx-target="#activitySidebar" hx-swap="innerHTML" data-target="#activitySidebar"
+                                    onclick="$('#activitySidebar').addClass('oh-activity-sidebar--show')"
+                                    hx-swap="innerHTML" class="oh-btn oh-btn--light oh-activity-sidebar__open"
+                                    style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
+                                    <ion-icon name="newspaper-outline"></ion-icon>
+                                </button>
+                            {% endif %}
+                            {% if check_candidate_self_tracking %}
+                                {% if perms.recruitment.change_candidate or perms.recruitment.add_candidatedocumentrequest or request.user.employee_get in stage.stage_managers.all or request.user.employee_get in rec.recruitment_managers.all %}
+                                    <button type="button" hx-get="{% url 'candidate-document-request' %}?candidate_id={{cand.id}}"
+                                        title="{% trans " Request Document" %}"
+                                        class="oh-btn oh-btn--light"
+                                        hx-target="#objectDetailsModalTarget" data-target="#objectDetailsModal"
+                                        data-toggle="oh-modal-toggle"
+                                        hx-swap="innerHTML"
+                                        style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
+                                        <ion-icon name="clipboard-outline"></ion-icon>
+                                    </button>
+                                {% endif %}
+                            {% endif %}
+                            <a class="oh-btn oh-btn--light {% if not cand.resume.url %}oh-btn--disabled{% endif %}" href="{{cand.resume.url}}"
+                                target="_blank" title="{% trans " Resume" %}" rel="noopener noreferrer"
+                                style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"><ion-icon
                                 name="document-outline"></ion-icon>
                             </a>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
