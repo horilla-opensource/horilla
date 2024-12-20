@@ -121,9 +121,11 @@
                                 >{{manager.employee_first_name|truncatechars:4}}</span
                                 >
                               </div>
-                              <a hx-post="{% url 'remove-recruitment-manager' manager.id rec.id %}?{{pd}}&page={{data.number}}"  title="{% trans "Remove" %}" hx-target="#recruitment-container"class="oh-user-panel__remove">
-                                <ion-icon name="close-outline"></ion-icon>
-                              </a>
+                              {% if perms.recruitment.change_recruitment or request.user.employee_get in rec.recruitment_managers.all %}
+                                <a hx-post="{% url 'remove-recruitment-manager' manager.id rec.id %}?{{pd}}&page={{data.number}}"  title="{% trans "Remove" %}" hx-target="#recruitment-container"class="oh-user-panel__remove">
+                                  <ion-icon name="close-outline"></ion-icon>
+                                </a>
+                              {% endif %}
                             </span>
                             {% endfor %}
                             <span class="count-span">{{rec.recruitment_managers.all|length}} {% trans "Managers" %}</span>
@@ -176,27 +178,27 @@
                               {% if perms.recruitment.change_recruitment %}
                                 <a hx-get="{% url 'recruitment-update' rec.id %}" hx-target='#objectUpdateModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
                               {% endif %}
-                              <a hx-get="{% url 'recruitment-duplicate' rec.id %}" hx-target='#objectCreateModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectCreateModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Duplicate' %}"><ion-icon name="copy-outline"></ion-icon></a>
+                              {% if perms.recruitment.add_recruitment %}
+                                <a hx-get="{% url 'recruitment-duplicate' rec.id %}" hx-target='#objectCreateModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectCreateModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Duplicate' %}"><ion-icon name="copy-outline"></ion-icon></a>
+                              {% endif %}
                               {% if perms.recruitment.delete_recruitment %}
                                 {% if rec.is_active %}
                                   <a href="{% url 'recruitment-archive' rec.id %}" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Archive' %}"><ion-icon name="archive"></ion-icon></a>
                                   {% else %}
                                   <a href="{% url 'recruitment-archive' rec.id %}" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Unarchive' %}"><ion-icon name="archive"></ion-icon></a>
                                 {% endif %}
-                              {% endif %}
-                              {% if perms.recruitment.delete_recruitment %}
-                              <span>
-                                <form
-                                action="{% url 'recruitment-delete' rec.id  %}"
-                                onsubmit="return confirm('{% trans "Are you sure to delete this recruitment?" %}')"
-                                method="post"
-                                style="display: contents">
-                                {% csrf_token %}
-                                <button class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
-                                  <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-                                </button>
-                              </form>
-                              </span>
+                                <span>
+                                  <form
+                                    action="{% url 'recruitment-delete' rec.id  %}"
+                                    onsubmit="return confirm('{% trans "Are you sure to delete this recruitment?" %}')"
+                                    method="post"
+                                    style="display: contents">
+                                    {% csrf_token %}
+                                    <button class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
+                                      <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                                    </button>
+                                  </form>
+                                </span>
                               {% endif %}
                             </div>
                           </div>

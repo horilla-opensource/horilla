@@ -44,21 +44,23 @@
 		font-size: 1.75rem !important;
 	}
 </style>
-<div class="oh-btn-group p-3 justify-content-end">
-	<div>
-		<button
-			class="oh-btn oh-btn--secondary"
-			data-toggle="oh-modal-toggle"
-			data-target="#objectCreateModal"
-			hx-get="{% url 'candidate-document-create' candidate.id %}"
-			hx-target="#objectCreateModalTarget"
-			onclick="event.preventDefault()"
+{% if perms.recruitment.add_candidatedocument or perms.recruitment.change_candidate %}
+	<div class="oh-btn-group p-3 justify-content-end">
+		<div>
+			<button
+				class="oh-btn oh-btn--secondary"
+				data-toggle="oh-modal-toggle"
+				data-target="#objectCreateModal"
+				hx-get="{% url 'candidate-document-create' candidate.id %}"
+				hx-target="#objectCreateModalTarget"
+				onclick="event.preventDefault()"
 
-		>
-			<ion-icon name="add-sharp" class="mr-2"></ion-icon>{% trans "Create" %}
-		</button>
+			>
+				<ion-icon name="add-sharp" class="mr-2"></ion-icon>{% trans "Create" %}
+			</button>
+		</div>
 	</div>
-</div>
+{% endif %}
 <div class="mt-2">
 	{% for document in documents %}
 		<div id="document{{document.id}}">
@@ -129,7 +131,7 @@
 					</div>
 				</div>
 				<div class="oh-btn-group">
-					{% if perms.horilla_document.change_documentrequest %}
+					{% if perms.recruitment.change_candidatedocument %}
 						{% if document.status == "approved" %}
 							<a class="oh-btn oh-btn--success w-100 oh-btn--disabled"  onclick="event.stopPropagation()">
 								<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
@@ -162,28 +164,30 @@
 							</a>
 						{% endif %}
 					{% endif %}
-					<form hx-confirm="{% trans 'Are you sure you want to delete this Document Request?' %}"
-						hx-post="{% url 'candidate-document-delete' document.id %}"
-						hx-target="#document{{document.id}}"
-						hx-swap="outerHTML"
-						class=""
-						onclick="event.stopPropagation()"
-						>
-						{% csrf_token %}
-						<button
-							type="submit"
-							class="oh-btn oh-btn--secondary"
-							title="{% trans 'Delete' %}"
-						>
-							<ion-icon
-								class="me-1 md hydrated"
-								name="trash-outline"
-								role="img"
-								aria-label="trash outline"
-							></ion-icon
+					{% if perms.recruitment.delete_candidatedocument %}
+						<form hx-confirm="{% trans 'Are you sure you want to delete this Document Request?' %}"
+							hx-post="{% url 'candidate-document-delete' document.id %}"
+							hx-target="#document{{document.id}}"
+							hx-swap="outerHTML"
+							class=""
+							onclick="event.stopPropagation()"
 							>
-						</button>
-					</form>
+							{% csrf_token %}
+							<button
+								type="submit"
+								class="oh-btn oh-btn--secondary"
+								title="{% trans 'Delete' %}"
+							>
+								<ion-icon
+									class="me-1 md hydrated"
+									name="trash-outline"
+									role="img"
+									aria-label="trash outline"
+								></ion-icon
+								>
+							</button>
+						</form>
+					{% endif %}
 				</div>
 			</div>
 		</div>

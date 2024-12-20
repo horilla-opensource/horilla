@@ -5,8 +5,7 @@
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-    <form id="add-form" hx-post="{% url 'document-create' emp_id %}" hx-target="#objectCreateModalTarget"
-        hx-swap="innerHTML" method="post" hx-encoding="multipart/form-data">
+    <form id="add-form" hx-post="{% url 'document-create' emp_id %}" hx-target="#objectCreateModalTarget" hx-encoding="multipart/form-data">
         {{form.errors}} {{form.as_p}}
     </form>
 </div>

@@ -110,7 +110,7 @@
                 >
                     <ul class="oh-dropdown__items">
                         {% if not cand.email in emp_list %}
-                            {% if not cand.start_onboard %}
+                            {% if not cand.start_onboard and perms.recruitment.change_candidate %}
                             <li class="oh-dropdown__item">
                                 <a
                                     href="{% url 'candidate-conversion' cand.id %}"
@@ -121,7 +121,7 @@
                                 >
                             </li>
                             {% endif %}
-                            {% if perms.recruitment.add_skillzonecandidate %}
+                            {% if perms.recruitment.add_skillzonecandidate or perms.recruitment.change_candidate %}
                             <li class="oh-dropdown__item">
                                 <a
                                     data-toggle="oh-modal-toggle"
@@ -133,7 +133,7 @@
                             </li>
                             {% endif %}
                             {% if onboarding|app_installed %}
-                                {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
+                                {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager or perms.recruitment.chanage_candidate %}
                                 <li class="oh-dropdown__item">
                                     <a
                                         class="oh-dropdown__link oh-dropdown__link--secondary"
@@ -171,7 +171,7 @@
                             {% endif %}
                         {% endif %}
                         {% if check_candidate_self_tracking %}
-                            {% if perms.recruitment.add_candidate or request.user|is_stagemanager %}
+                            {% if perms.recruitment.change_candidate or perms.recruitment.add_candidatedocumentrequest or request.user|is_stagemanager %}
                                 <li class="oh-dropdown__item">
                                     <a
                                         hx-get="{% url 'candidate-document-request' %}?candidate_id={{cand.id}}"

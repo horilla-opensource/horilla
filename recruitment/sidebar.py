@@ -9,7 +9,10 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as trans
 
 from recruitment.models import InterviewSchedule
-from recruitment.templatetags.recruitmentfilters import is_stagemanager
+from recruitment.templatetags.recruitmentfilters import (
+    is_recruitmentmangers,
+    is_stagemanager,
+)
 
 MENU = trans("Recruitment")
 ACCESSIBILITY = "recruitment.sidebar.menu_accessibilty"
@@ -88,8 +91,8 @@ def survey_accessibility(
     request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
     _submenu["redirect"] = _submenu["redirect"] + "?closed=false"
-    return is_stagemanager(request.user) or request.user.has_perm(
-        "recruitment.view_recruitment"
+    return is_recruitmentmangers(request.user) or request.user.has_perm(
+        "recruitment.view_recruitmentsurvey"
     )
 
 

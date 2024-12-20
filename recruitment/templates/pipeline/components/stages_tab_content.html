@@ -26,7 +26,7 @@
             </div>
         </div>
         <div class="d-flex">
-            {% if perms.add_candidate or request.user|is_stagemanager %}
+            {% if  perms.recruitment.add_candidate or request.user.employee_get in stage.stage_managers.all or request.user.employee_get in rec.recruitment_managers.all %}
             <button onclick="event.stopPropagation()" style="display: inline-block;padding: 0px;
                   border-radius: 6px;
                   display: flex;
@@ -39,40 +39,42 @@
                 <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
             </button>
             {% endif %}
-            <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
-                <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open"
-                    @click.outside="open = false" title="{% trans " Actions" %}">
-                    <ion-icon name="ellipsis-vertical"></ion-icon>
-                </button>
-                <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
-                    <ul class="oh-dropdown__items">
-                        {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec %}
-                        <li class="oh-dropdown__item" style="cursor: pointer;">
-                            <a hx-get='{% url "stage-update-pipeline" stage.id %}' hx-target="#objectUpdateModalTarget"
-                                data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
-                                class="oh-dropdown__link">{% trans "Edit" %}</a>
-                        </li>
-                        <li class="oh-dropdown__item" style="cursor: pointer;">
-                            <a hx-get="{% url 'send-mail' %}?stage_id={{stage.id}}" hx-target="#objectCreateModalTarget"
-                               data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-dropdown__link">
-                               {% trans "Bulk mail" %}
-                            </a>
-                        </li>
-                        {% endif %}
-                        {% if perms.recruitment.delete_stage %}
-                        <li class="oh-dropdown__item">
-                            <form method="post" action="{% url 'rec-stage-delete' stage.id %}"
-                            onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');">
-                                {% csrf_token %}
-                                <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">
-                                    {% trans "Delete" %}
-                                </button>
-                            </form>
-                        </li>
-                        {% endif %}
-                    </ul>
+            {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec or perms.recruitment.delete_stage or request.user.employee_get in stage.stage_managers.all or request.user.employee_get in rec.recruitment_managers.all %}
+                <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open"
+                        @click.outside="open = false" title="{% trans " Actions" %}">
+                        <ion-icon name="ellipsis-vertical"></ion-icon>
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
+                        <ul class="oh-dropdown__items">
+                            {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec or request.user.employee_get in stage.stage_managers.all %}
+                            <li class="oh-dropdown__item" style="cursor: pointer;">
+                                <a hx-get='{% url "stage-update-pipeline" stage.id %}' hx-target="#objectUpdateModalTarget"
+                                    data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+                                    class="oh-dropdown__link">{% trans "Edit" %}</a>
+                            </li>
+                            <li class="oh-dropdown__item" style="cursor: pointer;">
+                                <a hx-get="{% url 'send-mail' %}?stage_id={{stage.id}}" hx-target="#objectCreateModalTarget"
+                                data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-dropdown__link">
+                                {% trans "Bulk mail" %}
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if perms.recruitment.delete_stage %}
+                            <li class="oh-dropdown__item">
+                                <form method="post" action="{% url 'rec-stage-delete' stage.id %}"
+                                onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">
+                                        {% trans "Delete" %}
+                                    </button>
+                                </form>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
     </div>
     <div class="oh-tabs__movable-body position-relative pipeline_items recruitment_items {% if stage.stage_type == 'cancelled' %}d-none{% endif %}"
