@@ -52,11 +52,6 @@ class DocumentRequestForm(ModelForm):
 class DocumentForm(ModelForm):
     """form to create a new Document"""
 
-    expiry_date = forms.DateField(
-        widget=forms.DateInput(attrs={"type": "date"}),
-        required=False,
-    )
-
     verbose_name = "Document"
 
     class Meta:
@@ -65,6 +60,12 @@ class DocumentForm(ModelForm):
         exclude = ["document_request_id", "status", "reject_reason", "is_active"]
         widgets = {
             "employee_id": forms.HiddenInput(),
+            "issue_date": forms.DateInput(
+                attrs={"type": "date", "class": "oh-input  w-100"}
+            ),
+            "expiry_date": forms.DateInput(
+                attrs={"type": "date", "class": "oh-input  w-100"}
+            ),
         }
 
     def as_p(self):
@@ -80,15 +81,19 @@ class DocumentUpdateForm(ModelForm):
     """form to Update a Document"""
 
     verbose_name = "Document"
-    expiry_date = forms.DateField(
-        widget=forms.DateInput(attrs={"type": "date"}),
-        required=False,
-    )
 
     class Meta:
         model = Document
         fields = "__all__"
         exclude = ["is_active"]
+        widgets = {
+            "issue_date": forms.DateInput(
+                attrs={"type": "date", "class": "oh-input  w-100"}
+            ),
+            "expiry_date": forms.DateInput(
+                attrs={"type": "date", "class": "oh-input  w-100"}
+            ),
+        }
 
 
 class DocumentRejectForm(ModelForm):
