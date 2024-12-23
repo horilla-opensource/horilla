@@ -128,7 +128,8 @@
                                                 hx-post="{% url 'work-type-request-delete' work_type_request.id  %}?instances_ids={{requests_ids}}"
                                                 hx-target="#objectDetailsModalTarget" style="width: 50%">
                                                 {% csrf_token %}
-                                                <button type="submit" class="oh-btn oh-btn--secondary w-100" title="{% trans 'Remove' %}">
+                                                <button type="submit" class="oh-btn oh-btn--secondary w-100" title="{% trans 'Remove' %}"
+                                                    data-action="delete">
                                                     <ion-icon name="trash-outline"></ion-icon>
                                                 </button>
                                             </form>
