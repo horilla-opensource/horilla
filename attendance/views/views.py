@@ -2495,6 +2495,42 @@ def enable_disable_tracking_late_come_early_out(request):
 
 
 @login_required
+def check_in_check_out_setting(request):
+    """
+    Check in check out setting
+    """
+    attendance_settings = AttendanceGeneralSetting.objects.all()
+    return render(
+        request,
+        "attendance/settings/check_in_check_out_enable_form.html",
+        {"attendance_settings": attendance_settings},
+    )
+
+
+@login_required
+def enable_disable_check_in(request):
+    """
+    Enables or disables check in check out.
+    """
+    if request.method == "POST":
+        if request.POST.get("isChecked") and request.POST.get("isChecked") == "false":
+            enable = False
+        else:
+            enable = True
+        setting_id = request.POST.get("setting_Id")
+        attendance_gen_setting = AttendanceGeneralSetting.objects.filter(
+            id=setting_id
+        ).first()
+        attendance_gen_setting.enable_check_in = enable
+        attendance_gen_setting.save()
+        message = _("enabled") if enable else _("disabled")
+        messages.success(
+            request, _("Check in/Check out {} successfully").format(message)
+        )
+    return HttpResponse("<script>window.location.reload()</script>")
+
+
+@login_required
 @permission_required("attendance.view_attendancevalidationcondition")
 def grace_time_view(request):
     """

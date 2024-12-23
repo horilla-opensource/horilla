@@ -1,0 +1,67 @@
+{% extends 'settings.html' %}{% block settings %}{% load static %}{% load widget_tweaks %}{% load i18n %}
+
+
+<div class="oh-inner-sidebar-content">
+    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+        <h2 class="oh-inner-sidebar-content__title">{% trans 'Enable Check In/Check out' %}</h2>
+        {% comment %} {% if not condition and perms.attendance.add_attendancevalidationcondition%}
+            <button class="oh-btn oh-btn--secondary oh-btn--shadow"  type="button" class="oh-btn oh-btn--info"
+                hx-get="{% url 'attendance-settings-create' %}" hx-target="#objectCreateModalTarget" 
+                data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                >
+                <ion-icon name="add-outline" class="me-1"></ion-icon>
+                {% trans 'Create' %}
+            </button>
+        {% endif %} {% endcomment %}
+    </div>
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">
+                        {% trans 'Company' %}
+                    </div>
+                    <div class="oh-sticky-table__th">
+                        {% trans 'Check in/Check out' %}
+                    </div>
+                </div>
+            </div>
+            <div class="oh-sticky-table__tbody">
+                {% for att_setting in attendance_settings %}
+                    <div class="oh-sticky-table__tr" draggable="true">
+                        <div class="oh-sticky-table__td">
+                            {% if att_setting.company_id %}
+                                {{att_setting.company_id}}
+                            {% else %}
+                                {% trans "All company" %}
+                            {% endif %}
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            <div class="oh-switch">
+                                {% if  perms.attendance.change_attendancegeneralsetting %}
+                                    <input type="checkbox" id="updateCheckInCheckBox" data-id ="{{att_setting.id}}" class="oh-switch__checkbox"
+                                    {% if att_setting.enable_check_in %} checked {% endif %} 
+                                    onchange = "updateCheckIn(this)"
+                                    >
+                                {% else %}
+                                    <input type="checkbox" id="updateCheckInCheckBox" class="oh-switch__checkbox" {% if att_setting.enable_check_in %} checked {% endif %} disabled>
+                                {% endif %}
+                                
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+            </div>
+        </div>
+    </div>
+    <button id="checkInUpdateButton" hx-post="{% url "enable-disable-check-in" %}" hx-target="this" hidden>
+    </button>
+    <script>
+        function updateCheckIn(element){
+            settingId = $(element).data('id');
+            isChecked = $(element).prop('checked');
+            $("#checkInUpdateButton").attr("hx-vals", `{"setting_Id":${settingId},"isChecked":${isChecked}}`);
+            $("#checkInUpdateButton").click();
+        }
+    </script>
+{% endblock %}
