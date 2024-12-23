@@ -733,18 +733,20 @@ def change_password(request):
     user = request.user
     form = ChangePasswordForm(user=user)
     if request.method == "POST":
-        response = render(request, "base/auth/password_change.html", {"form": form})
         form = ChangePasswordForm(user, request.POST)
         if form.is_valid():
             new_password = form.cleaned_data["new_password"]
             user.set_password(new_password)
             user.save()
             user = authenticate(request, username=user.username, password=new_password)
+            if hasattr(user, "is_new_employee"):
+                user.is_new_employee = False
+                user.save()
             login(request, user)
             messages.success(request, _("Password changed successfully"))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HttpResponse("<script>window.location.href='/';</script>")
+        return render(request, "base/auth/password_change_form.html", {"form": form})
+
     return render(request, "base/auth/password_change.html", {"form": form})
 
 
@@ -806,48 +808,6 @@ def home(request):
     }
 
     return render(request, "index.html", context)
-
-
-@login_required
-def announcement_list(request):
-    general_expire_date = (
-        AnnouncementExpire.objects.values_list("days", flat=True).first() or 30
-    )
-    announcements = Announcement.objects.all()
-    announcements_to_update = []
-
-    for announcement in announcements.filter(expire_date__isnull=True):
-        announcement.expire_date = announcement.created_at + timedelta(
-            days=general_expire_date
-        )
-        announcements_to_update.append(announcement)
-
-    if announcements_to_update:
-        Announcement.objects.bulk_update(announcements_to_update, ["expire_date"])
-
-    announcements = announcements.filter(expire_date__gte=datetime.today().date())
-
-    if request.user.has_perm("base.view_announcement"):
-        announcement_list = announcements
-    else:
-        announcement_list = announcements.filter(
-            Q(employees=request.user.employee_get) | Q(employees__isnull=True)
-        )
-
-    announcement_list = announcement_list.prefetch_related(
-        "announcementview_set"
-    ).order_by("-created_at")
-    for announcement in announcement_list:
-        announcement.has_viewed = announcement.announcementview_set.filter(
-            user=request.user, viewed=True
-        ).exists()
-    instance_ids = json.dumps([instance.id for instance in announcement_list])
-    context = {
-        "announcements": announcement_list,
-        "general_expire_date": general_expire_date,
-        "instance_ids": instance_ids,
-    }
-    return render(request, "announcements_list.html", context)
 
 
 @login_required
@@ -3439,12 +3399,13 @@ def work_type_request_search(request):
 
 def handle_wtr_close_hx_url(request):
     employee = request.user.employee_get.id
-    HTTP_REFERER = request.META.get("HTTP_REFERER", None)
+    HTTP_REFERER = request.META.get("HTTP_REFERER", "")
     previous_data = unquote(request.GET.urlencode().replace("pd=", ""))
     close_hx_url = ""
     close_hx_target = ""
-    if "/" + "/".join(HTTP_REFERER.split("/")[3:]) == "/":
-        close_hx_url = f"{reverse('dashboard-work-type-request')}"
+
+    if HTTP_REFERER and "/" + "/".join(HTTP_REFERER.split("/")[3:]) == "/":
+        close_hx_url = reverse("dashboard-work-type-request")
         close_hx_target = "#WorkTypeRequestApproveBody"
     elif HTTP_REFERER and HTTP_REFERER.endswith("work-type-request-view/"):
         close_hx_url = f"/work-type-request-search?{previous_data}"
