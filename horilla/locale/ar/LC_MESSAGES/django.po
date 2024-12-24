@@ -6876,7 +6876,7 @@ msgstr "منظر"
 
 #: .\attendance\templates\requests\attendance\request_lines.html:143
 msgid "Cancel / Reject"
-msgstr "إلغاء \ رفض"
+msgstr "إلغاء / رفض"
 
 #: .\attendance\templates\requests\attendance\request_new_form.html:4
 msgid "New Attendances Request"
