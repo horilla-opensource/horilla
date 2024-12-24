@@ -1371,6 +1371,9 @@ def payslip_pdf(request, id):
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
 
+        month_start_name = start_date.strftime("%B %d")
+        month_end_name = end_date.strftime("%B %d")
+
         # Print the formatted date for each format
         for format_name, format_string in HORILLA_DATE_FORMATS.items():
             if format_name == date_format:
@@ -1379,7 +1382,8 @@ def payslip_pdf(request, id):
         for format_name, format_string in HORILLA_DATE_FORMATS.items():
             if format_name == date_format:
                 formatted_end_date = end_date.strftime(format_string)
-
+        data["month_start_name"] = month_start_name
+        data["month_end_name"] = month_end_name
         data["formatted_start_date"] = formatted_start_date
         data["formatted_end_date"] = formatted_end_date
         data["employee"] = payslip.employee_id
