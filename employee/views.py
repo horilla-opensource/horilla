@@ -213,6 +213,7 @@ def self_info_update(request):
     """
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
+    badge_id = employee.badge_id
     bank_form = EmployeeBankDetailsForm(
         instance=EmployeeBankDetails.objects.filter(employee_id=employee).first()
     )
@@ -224,6 +225,8 @@ def self_info_update(request):
             if form.is_valid():
                 instance = form.save(commit=False)
                 instance.employee_user_id = user
+                if instance.badge_id is None:
+                    instance.badge_id = badge_id
                 instance.save()
                 messages.success(request, _("Profile updated."))
         elif request.POST.get("any_other_code1") is not None:
