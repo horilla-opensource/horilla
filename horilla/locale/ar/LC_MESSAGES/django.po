@@ -17020,7 +17020,7 @@ msgstr "لا يمكنك حذف هذا المرشح. المرشح مُدرج في
 #: .\onboarding\views.py:484
 #, python-format
 msgid "%(recruitment)s has no stage.."
-msgstr "%(المرشح)s ليس له مرحلة ..."
+msgstr "%(recruitment)s has no stage.."
 
 #: .\onboarding\views.py:666
 msgid "{candidate} has already been converted to employee."
@@ -17061,7 +17061,7 @@ msgstr "تم تحديث مرحلة اعداد المرشح"
 #: .\onboarding\views.py:1471
 #, python-brace-format
 msgid "{candidate}'s Date of joining updated sussefully"
-msgstr "{المرشح}'s تم تحديث تاريخ الانضمام بنجاح"
+msgstr "{candidate} تم تحديث تاريخ الانضمام بنجاح"
 
 #: .\onboarding\views.py:1528
 msgid "No candidates started onboarding...."
@@ -18577,22 +18577,22 @@ msgstr "لا توجد عقود تنتهي هذا الشهر"
 #: .\payroll\views\views.py:1307
 #, python-brace-format
 msgid "{employee} {period} payslip deleted."
-msgstr "تم حذف كشف الراتب {الموظف} {الفترة}."
+msgstr "{period} {employee} تم حذف كشف الراتب."
 
 #: .\payroll\views\views.py:1316
 #, python-brace-format
 msgid "You cannot delete {payslip}"
-msgstr "لا يمكنك حذف {كشف الراتب}"
+msgstr "لا يمكنك حذف {payslip}"
 
 #: .\payroll\views\views.py:1362
 #, python-brace-format
 msgid "{name} deleted."
-msgstr "تم حذف {الاسم}."
+msgstr "تم حذف {name}."
 
 #: .\payroll\views\views.py:1369
 #, python-brace-format
 msgid "You cannot delete {contract}"
-msgstr "لا يمكنك حذف {العقد}"
+msgstr "لا يمكنك حذف {contract}"
 
 #: .\pms\forms.py:225 .\pms\forms.py:282
 msgid "Key result"
