@@ -17358,7 +17358,7 @@ msgstr "لأيام العمل في الشهر"
 
 #: .\payroll\models\models.py:865 .\payroll\models\models.py:1173
 msgid "The pay head for the if condition"
-msgstr "بند الدفع لشروط "إذا"
+msgstr "بند الدفع لي ادا الشرطية"
 
 #: .\payroll\models\models.py:871 .\payroll\models\models.py:1179
 msgid "Apply for those, if the pay-head conditions satisfy"
@@ -17370,7 +17370,7 @@ msgstr "مبلغ الدفع"
 
 #: .\payroll\models\models.py:939 .\payroll\models\models.py:1211
 msgid "If the 'Is fixed' field is disabled, the 'Based on' field is required."
-msgstr "إذا تم تعطيل حقل "ثابت"، فيجب تعبئة حقل "يعتمد على""
+msgstr "<إذا تم تعطيل حقل <ثابت>، فيجب تعبئة حقل <يعتمد على"
 
 #: .\payroll\models\models.py:945
 msgid "Rate must be specified for allowances based on basic pay."
@@ -17393,7 +17393,7 @@ msgstr "إذا كان الأساس هو المناوبة، فيجب تعبئة �
 
 #: .\payroll\models\models.py:967
 msgid "If based on is work type, then work type must be filled."
-msgstr "إذا كان "يعتمد على" هو نوع العمل، فيجب تحديد نوع العمل."
+msgstr "إذا كان <يعتمد على> هو نوع العمل، فيجب تحديد نوع العمل."
 
 #: .\payroll\models\models.py:971
 msgid "Amount should be greater than zero."
@@ -18452,7 +18452,7 @@ msgstr "يرجى التحقق من البيانات التي قدمتها"
 
 #: .\payroll\views\component_views.py:1429
 msgid "Request {reimbursement.get_status_display()} successfully"
-msgstr ""تم طلب {reimbursement.get_status_display()} بنجاح""
+msgstr "تم الطلب بنجاح"
 
 #: .\payroll\views\tax_views.py:60
 msgid "Filing status created successfully "
