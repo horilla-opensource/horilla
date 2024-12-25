@@ -1,8 +1,12 @@
-FROM python:3.10-slim-bullseye
+FROM python:3.13.1-slim
 
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update && apt-get install -y libcairo2-dev gcc
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    python3-dev
 
 WORKDIR /app/
 
