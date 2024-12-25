@@ -6,8 +6,8 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     restart: unless-stopped
-    environment:
-      DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
+    env_file:
+      - .env.app.local
     command: ./entrypoint.sh
     depends_on:
       db:
@@ -34,10 +34,8 @@ services:
 
   db:
     image: postgres:15
-    environment:
-      POSTGRES_DB: horilla
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - .env.db.local
     ports:
       - "127.0.0.1:5432:5432"
     restart: unless-stopped
