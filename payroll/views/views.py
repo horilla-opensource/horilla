@@ -845,7 +845,6 @@ def payslip_export(request):
             "id", flat=True
         )
     )
-    # print(contributions)
     department = []
     total_amount = 0
 
@@ -1374,7 +1373,7 @@ def payslip_pdf(request, id):
         month_start_name = start_date.strftime("%B %d")
         month_end_name = end_date.strftime("%B %d")
 
-        # Print the formatted date for each format
+        # Formatted date for each format
         for format_name, format_string in HORILLA_DATE_FORMATS.items():
             if format_name == date_format:
                 formatted_start_date = start_date.strftime(format_string)
@@ -1674,7 +1673,11 @@ def initial_notice_period(request):
     settings = settings if settings else PayrollGeneralSetting()
     settings.notice_period = max(notice_period, 0)
     settings.save()
-    messages.success(request, "Initial notice period updated")
+    messages.success(
+        request, _("The initial notice period has been successfully updated.")
+    )
+    if request.META.get("HTTP_HX_REQUEST"):
+        return HttpResponse()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
