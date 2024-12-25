@@ -5142,21 +5142,27 @@ def history_field_settings(request):
     return redirect(general_settings)
 
 
+@login_required
+@permission_required("horilla_audit.change_accountblockunblock")
 def enable_account_block_unblock(request):
     if request.method == "POST":
-        enabled = request.POST.get("enable_block_account")
-        if enabled == "on":
-            enabled = True
-        else:
-            enabled = False
-        if AccountBlockUnblock.objects.exists():
-            instance = AccountBlockUnblock.objects.first()
+        enabled = request.POST.get("enable_block_account") == "on"
+        instance = AccountBlockUnblock.objects.first()
+        if instance:
             instance.is_enabled = enabled
-            messages.success(request, _("Settings updated."))
             instance.save()
         else:
             AccountBlockUnblock.objects.create(is_enabled=enabled)
+        messages.success(
+            request,
+            _(
+                f"Account block/unblock setting has been {'enabled' if enabled else 'disabled'}."
+            ),
+        )
+        if request.META.get("HTTP_HX_REQUEST"):
+            return HttpResponse()
         return redirect(general_settings)
+    return HttpResponse(status=405)
 
 
 @login_required
@@ -6111,6 +6117,8 @@ def pagination_settings_view(request):
             if pagination_form.is_valid():
                 pagination_form.save()
                 messages.success(request, _("Default pagination updated."))
+    if request.META.get("HTTP_HX_REQUEST"):
+        return HttpResponse()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
