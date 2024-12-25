@@ -1,27 +1,35 @@
-version: '3.8'
 services:
-  server:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8000:8000
+      - "8000:8000"
     restart: unless-stopped
     environment:
       DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
     command: ./entrypoint.sh
     depends_on:
-      db:
-        condition: service_healthy
+      - db
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - app
 
   db:
-    image: postgres:16-bullseye
+    image: postgres:15
     environment:
       POSTGRES_DB: horilla
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - 5432:5432
+      - "5432:5432"
     restart: unless-stopped
     volumes:
       - horilla-data:/var/lib/postgresql/data
