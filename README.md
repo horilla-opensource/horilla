@@ -7,11 +7,11 @@ Horilla is a Free and Open Source HRMS Software.
 ## **Docker compose setup**
 Run the application with
 ```
-docker compose up -d
+docker compose --profile local up -d
 ```
 and to stop and delete the containers with data  
 ```
-docker compose down
+docker compose --profile local down
 docker volume rm horilla_horilla-data
 ``` 
 
