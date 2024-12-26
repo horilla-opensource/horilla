@@ -1,4 +1,4 @@
-FROM python:3.11-slim AS builder
+FROM python:3.13.1-slim AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
@@ -19,7 +19,7 @@ COPY . .
 
 RUN python manage.py collectstatic --noinput
 
-FROM python:3.11-slim
+FROM python:3.13.1-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
