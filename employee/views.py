@@ -25,6 +25,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import models, transaction
 from django.db.models import F, ProtectedError
 from django.db.models.query import QuerySet
@@ -38,6 +39,9 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
 from accessibility.decorators import enter_if_accessible
+from accessibility.methods import update_employee_accessibility_cache
+from accessibility.middlewares import ACCESSIBILITY_CACHE_USER_KEYS
+from accessibility.models import DefaultAccessibility
 from base.forms import ModelForm
 from base.methods import (
     choosesubordinates,
@@ -207,6 +211,10 @@ def employee_profile(request):
 
 
 @login_required
+@enter_if_accessible(
+    feature="profile_edit",
+    perm="employee.change_employee",
+)
 def self_info_update(request):
     """
     This method is used to update own profile of an employee.
@@ -245,6 +253,28 @@ def self_info_update(request):
             "bank_form": bank_form,
         },
     )
+
+
+def profile_edit_access(request, emp_id):
+    feature = request.GET.get("feature", None)
+    accessibility = DefaultAccessibility.objects.filter(feature=feature).first()
+    if accessibility:
+        employees = Employee.objects.filter(id=emp_id)
+
+        if employee := employees.first():
+            if employee in accessibility.employees.all():
+                accessibility.employees.remove(employee)
+            else:
+                accessibility.employees.add(employee)
+
+            user_cache_key = ACCESSIBILITY_CACHE_USER_KEYS.get(
+                employees.first().employee_user_id.id, None
+            )
+            if user_cache_key:
+                cache.delete(user_cache_key[-1])
+                update_employee_accessibility_cache(user_cache_key[-1], employee)
+
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
