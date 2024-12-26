@@ -122,7 +122,7 @@ class ConditionForm(forms.ModelForm):
                     "width:100%; height:50px;border: 1px solid hsl(213deg,22%,84%);border-radius: 0rem;padding: 0.8rem 1.25rem;"
                 )
             elif isinstance(widget, (forms.DateInput)):
-                field.widget.attrs.update({"class": "oh-input oh-calendar-input w-100"})
+                field.widget.attrs.update({"class": "oh-input w-100"})
                 field.initial = date.today()
 
             elif isinstance(
@@ -184,6 +184,7 @@ class LeaveTypeForm(ConditionForm):
             "color": TextInput(attrs={"type": "color", "style": "height:40px;"}),
             "period_in": forms.HiddenInput(),
             "total_days": forms.HiddenInput(),
+            "carryforward_expire_date": forms.DateInput(attrs={"type": "date"}),
         }
 
     def clean(self):
@@ -237,12 +238,16 @@ class UpdateLeaveTypeForm(ConditionForm):
                 )
                 visible.field.widget.attrs["data-hidden"] = True
 
+        if expire_date := self.instance.carryforward_expire_date:
+            self.fields["carryforward_expire_date"] = expire_date
+
     class Meta:
         model = LeaveType
         fields = "__all__"
         exclude = ["period_in", "total_days", "is_active"]
         widgets = {
             "color": TextInput(attrs={"type": "color", "style": "height:40px;"}),
+            "carryforward_expire_date": forms.DateInput(attrs={"type": "date"}),
         }
 
     def clean(self):
