@@ -6,7 +6,7 @@
         <h2 class="oh-inner-sidebar-content__title">{% trans 'Enable Check In/Check out' %}</h2>
         {% comment %} {% if not condition and perms.attendance.add_attendancevalidationcondition%}
             <button class="oh-btn oh-btn--secondary oh-btn--shadow"  type="button" class="oh-btn oh-btn--info"
-                hx-get="{% url 'attendance-settings-create' %}" hx-target="#objectCreateModalTarget" 
+                hx-get="{% url 'attendance-settings-create' %}" hx-target="#objectCreateModalTarget"
                 data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
                 >
                 <ion-icon name="add-outline" class="me-1"></ion-icon>
@@ -40,13 +40,13 @@
                             <div class="oh-switch">
                                 {% if  perms.attendance.change_attendancegeneralsetting %}
                                     <input type="checkbox" id="updateCheckInCheckBox" data-id ="{{att_setting.id}}" class="oh-switch__checkbox"
-                                    {% if att_setting.enable_check_in %} checked {% endif %} 
+                                    {% if att_setting.enable_check_in %} checked {% endif %}
                                     onchange = "updateCheckIn(this)"
                                     >
                                 {% else %}
                                     <input type="checkbox" id="updateCheckInCheckBox" class="oh-switch__checkbox" {% if att_setting.enable_check_in %} checked {% endif %} disabled>
                                 {% endif %}
-                                
+
                             </div>
                         </div>
                     </div>
