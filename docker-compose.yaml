@@ -13,6 +13,9 @@ services:
       db:
         condition: service_healthy
         required: true
+      migrations:
+        condition: service_completed_successfully
+        required: false
     healthcheck:
       test: ["CMD", "curl", "http://127.0.0.1:8000"]
       interval: 20s
@@ -47,6 +50,20 @@ services:
       timeout: 5s
       retries: 5
       start_period: 5s
+  
+  migrations:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    profiles:
+      - migrate
+    env_file:
+      - .env.app.local
+    entrypoint: ["/app/run_migrations.sh"]
 
 volumes:
   horilla-data:
