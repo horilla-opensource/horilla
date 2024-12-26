@@ -423,6 +423,13 @@ def settings(request):
     """
     instance = PayrollSettings.objects.first()
     currency_form = PayrollSettingsForm(instance=instance)
+    selected_company_id = request.session.get("selected_company")
+
+    if selected_company_id == "all" or not selected_company_id:
+        companies = Company.objects.all()
+    else:
+        companies = Company.objects.filter(id=selected_company_id)
+
     if request.method == "POST":
 
         currency_form = PayrollSettingsForm(request.POST, instance=instance)
@@ -430,8 +437,16 @@ def settings(request):
 
             currency_form.save()
             messages.success(request, _("Payroll settings updated."))
-    # return render(request, "payroll/settings/payroll_settings.html", {"currency_form": currency_form})
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return render(
+        request,
+        "payroll/settings/payroll_settings.html",
+        {
+            "currency_form": currency_form,
+            "companies": companies,
+            "selected_company_id": selected_company_id,
+        },
+    )
 
 
 @login_required
