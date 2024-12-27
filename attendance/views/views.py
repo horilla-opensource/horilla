@@ -2508,26 +2508,30 @@ def check_in_check_out_setting(request):
 
 
 @login_required
+@hx_request_required
+@permission_required("attendance.change_attendancegeneralsetting")
 def enable_disable_check_in(request):
     """
-    Enables or disables check in check out.
+    Enables or disables check-in check-out.
     """
     if request.method == "POST":
-        if request.POST.get("isChecked") and request.POST.get("isChecked") == "false":
-            enable = False
-        else:
-            enable = True
+        is_checked = request.POST.get("isChecked")
         setting_id = request.POST.get("setting_Id")
-        attendance_gen_setting = AttendanceGeneralSetting.objects.filter(
-            id=setting_id
-        ).first()
-        attendance_gen_setting.enable_check_in = enable
-        attendance_gen_setting.save()
-        message = _("enabled") if enable else _("disabled")
-        messages.success(
-            request, _("Check in/Check out {} successfully").format(message)
+        enable = bool(is_checked)
+
+        updated = AttendanceGeneralSetting.objects.filter(id=setting_id).update(
+            enable_check_in=enable
         )
-    return HttpResponse("<script>window.location.reload()</script>")
+
+        if updated:
+            message = _("Check In/Check Out has been successfully {}.").format(
+                _("enabled") if enable else _("disabled")
+            )
+            messages.success(request, message)
+            if enable:
+                return render(request, "attendance/components/in_out_component.html")
+
+    return HttpResponse("")
 
 
 @login_required
