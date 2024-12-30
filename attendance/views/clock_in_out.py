@@ -200,10 +200,15 @@ def clock_in(request):
     """
     # check wether check in/check out feature is enabled
     selected_company = request.session.get("selected_company")
-    company = Company.objects.filter(id=selected_company).first()
-    attendance_general_settings = AttendanceGeneralSetting.objects.filter(
-        company_id=company
-    ).first()
+    if selected_company == "all":
+        attendance_general_settings = AttendanceGeneralSetting.objects.filter(
+            company_id=None
+        ).first()
+    else:
+        company = Company.objects.filter(id=selected_company).first()
+        attendance_general_settings = AttendanceGeneralSetting.objects.filter(
+            company_id=company
+        ).first()
     # request.__dict__.get("datetime")' used to check if the request is from a biometric device
     if (
         attendance_general_settings
@@ -476,11 +481,15 @@ def clock_out(request):
     """
     # check wether check in/check out feature is enabled
     selected_company = request.session.get("selected_company")
-    company = Company.objects.filter(id=selected_company).first()
-    # request.__dict__.get("datetime")' used to check if the request is from a biometric device
-    attendance_general_settings = AttendanceGeneralSetting.objects.filter(
-        company_id=company
-    ).first()
+    if selected_company == "all":
+        attendance_general_settings = AttendanceGeneralSetting.objects.filter(
+            company_id=None
+        ).first()
+    else:
+        company = Company.objects.filter(id=selected_company).first()
+        attendance_general_settings = AttendanceGeneralSetting.objects.filter(
+            company_id=company
+        ).first()
     if (
         attendance_general_settings
         and attendance_general_settings.enable_check_in
