@@ -1797,9 +1797,6 @@ def delete_attachments(request, _reimbursement_id):
     return redirect(view_reimbursement)
 
 
-from pprint import pprint
-
-
 @login_required
 @permission_required("payroll.view_payslip")
 def get_contribution_report(request):
@@ -1969,8 +1966,6 @@ def payslip_detailed_export_data(request):
     totals.update(allowance_totals)
     totals.update(deduction_totals)
     totals.update(other_totals)
-    print(payslips[0].employee_id)
-    print(json.dumps(payslips[0].pay_head_data, indent=2))
     for payslip in payslips:
         payslip_data = {}
         other_allowances_sum = 0
@@ -2028,7 +2023,6 @@ def payslip_detailed_export_data(request):
             else:
                 data = str(value) if value is not None else ""
 
-            # print(allos)
             if allos:
                 for allowance in allos:
                     if str(allowance["title"]) == str(column_name):
