@@ -148,6 +148,8 @@ sidebar_urls = [
     "employee-bonus-point",
     "mail-automations",
     "check-in-check-out-setting",
+    "user-accessibility",
+    "asset-batch-view",
 ]
 remove_urls = [
     "feedback-detailed-view",
