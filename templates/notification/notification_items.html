@@ -103,6 +103,27 @@
         </div>
     {% endif %}
 </div>
+<div class="oh-navbar__notification-footer" x-show="visible" style="position:relative;">
+    <a
+        id="viewallnotification"
+        data-target="#allNotifications"
+        hx-get="{% url 'all-notifications' %}"
+        hx-target="#allNotificationBody"
+        class="oh-navbar__notification-tray-link oh-activity-sidebar__open"
+        >{% trans "View all notifications" %} </a
+    >
+    <div class="oh-navbar__volume-icon" title="{% trans 'Notification Sound' %}" style="position:absolute; right:25px" hx-get="{% url 'notifications:notification-sound' %}" hx-swap="none">
+        {% if request.user.employee_get.notification_sound.sound_enabled %}
+        <span class="material-symbols-outlined text-danger">
+            volume_up
+        </span>
+        {% else %}
+        <span class="material-symbols-outlined text-danger">
+            volume_off
+        </span>
+        {% endif %}
+    </div>
+</div>
 <script>
     $(document).ready(function () {
         $(".oh-navbar__notification-item").on("click", function (event) {

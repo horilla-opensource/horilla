@@ -1750,6 +1750,15 @@ class PenaltyAccounts(HorillaModel):
         ordering = ["-created_at"]
 
 
+class NotificationSound(models.Model):
+    from employee.models import Employee
+
+    employee = models.OneToOneField(
+        Employee, on_delete=models.CASCADE, related_name="notification_sound"
+    )
+    sound_enabled = models.BooleanField(default=False)
+
+
 @receiver(post_save, sender=PenaltyAccounts)
 def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
     """
