@@ -909,6 +909,7 @@ class AttendanceGeneralSetting(HorillaModel):
         ),
     )
     company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+    objects = HorillaCompanyManager()
 
 
 if apps.is_installed("leave") and apps.is_installed("payroll"):

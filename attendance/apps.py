@@ -32,5 +32,21 @@ class AttendanceConfig(AppConfig):
             MIDDLEWARE.append(middleware_path)
 
         APP_URLS.append("attendance.urls")  # Used to remove Dynamically Added Urls
-
+        self.create_enable_disable_check_in()
         super().ready()
+
+    def create_enable_disable_check_in(self):
+        """
+        Checks if an AttendanceGeneralSetting object exists for each company.
+        If it doesn't exist, creates one.
+        """
+        from attendance.models import AttendanceGeneralSetting
+        from base.models import Company
+
+        companies = Company.objects.all()
+        for company in companies:
+            if not AttendanceGeneralSetting.objects.filter(company_id=company).exists():
+                try:
+                    AttendanceGeneralSetting.objects.create(company_id=company)
+                except:
+                    pass

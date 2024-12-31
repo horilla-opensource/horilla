@@ -34,7 +34,12 @@ from django.core.validators import validate_ipv46_address
 from django.db import transaction
 from django.db.models import ProtectedError
 from django.forms import ValidationError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -2357,8 +2362,11 @@ def work_records_change_month(request):
 @login_required
 @permission_required("attendance.view_workrecords")
 def work_record_export(request):
-    month = int(request.GET.get("month", date.today().month))
-    year = int(request.GET.get("year", date.today().year))
+    try:
+        month = int(request.GET.get("month") or date.today().month)
+        year = int(request.GET.get("year") or date.today().year)
+    except ValueError:
+        return HttpResponseBadRequest("Invalid month or year parameter.")
 
     employees = EmployeeFilter(request.GET).qs
     records = WorkRecords.objects.filter(date__month=month, date__year=year)
