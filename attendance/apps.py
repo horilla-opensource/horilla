@@ -32,7 +32,10 @@ class AttendanceConfig(AppConfig):
             MIDDLEWARE.append(middleware_path)
 
         APP_URLS.append("attendance.urls")  # Used to remove Dynamically Added Urls
-        self.create_enable_disable_check_in()
+        try:
+            self.create_enable_disable_check_in()
+        except:
+            pass
         super().ready()
 
     def create_enable_disable_check_in(self):
