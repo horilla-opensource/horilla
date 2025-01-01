@@ -556,45 +556,49 @@ def initialize_job_position_delete(request, obj_id):
 
 def login_user(request):
     """
-    This method is used render login template and authenticate user
+    Handles user login and authentication.
     """
     if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
-        next_url = request.GET.get("next")
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        next_url = request.GET.get("next", "/")
         query_params = request.GET.dict()
-        if "next" in query_params:
-            del query_params["next"]
+        query_params.pop("next", None)
+        params = urlencode(query_params)
 
-        params = f"{urlencode(query_params)}"
         user = authenticate(request, username=username, password=password)
-        if user is None:
+
+        if not user:
             user_object = User.objects.filter(username=username).first()
-            is_active = user_object.is_active if user_object else None
-            if is_active is True or is_active is None:
-                messages.error(request, _("Invalid username or password."))
+            if user_object and not user_object.is_active:
+                messages.warning(request, _("Access Denied: Your account is blocked."))
             else:
-                messages.warning(
-                    request,
-                    _("Access Denied: Your login credentials are currently blocked."),
-                )
-            return redirect("/login")
-        if user.employee_get.is_active == False:
+                messages.error(request, _("Invalid username or password."))
+            return redirect("login")
+
+        employee = getattr(user, "employee_get", None)
+        if employee is None:
+            messages.error(
+                request,
+                _("An employee related to this user's credentials does not exist."),
+            )
+            return redirect("login")
+        if not employee.is_active:
             messages.warning(
                 request,
                 _(
                     "This user is archived. Please contact the manager for more information."
                 ),
             )
-            return redirect("/login")
+            return redirect("login")
+
         login(request, user)
-        messages.success(request, _("Login Success"))
-        if next_url:
-            url = f"{next_url}"
-            if params:
-                url += f"?{params}"
-            return redirect(url)
-        return redirect("/")
+        messages.success(request, _("Login successful."))
+
+        if params:
+            next_url += f"?{params}"
+        return redirect(next_url)
+
     return render(
         request, "login.html", {"initialize_database": initialize_database_condition()}
     )
