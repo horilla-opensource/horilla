@@ -1754,6 +1754,11 @@ class Reimbursement(HorillaModel):
             if EncashmentGeneralSettings.objects.first()
             else 1
         )
+        amount_for_bonus = (
+            EncashmentGeneralSettings.objects.first().bonus_amount
+            if EncashmentGeneralSettings.objects.first()
+            else 1
+        )
 
         # Setting the created use if the used dont have the permission
         has_perm = request.user.has_perm("payroll.change_reimbursement")
@@ -1773,6 +1778,9 @@ class Reimbursement(HorillaModel):
             assigned_leave = self.leave_type_id.employee_available_leave.filter(
                 employee_id=self.employee_id
             ).first()
+        if self.type == "bonus_encashment":
+            if self.status == "requested":
+                self.amount = (self.bonus_to_encash) * amount_for_bonus
         if self.status != "approved" or self.allowance_id is None:
             super().save(*args, **kwargs)
             if self.status == "approved" and self.allowance_id is None:
