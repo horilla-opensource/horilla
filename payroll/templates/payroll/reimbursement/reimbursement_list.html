@@ -884,7 +884,8 @@
                                                     >
                                                         <input type="hidden" name="ids" value="{{ req.id }}" />
                                                         <input type="hidden" name="status" />
-                                                        <input type="hidden" name="amount" default="0" min="0" />
+                                                        <input type="hidden" name="amount" default="0" min="0" {% if req.status == "approved" %}disabled{% endif %} {% if req.amount %}
+                                                        value="{{req.amount}}"{% endif %}/>
                                                         <div class="oh-btn-group" onclick="event.stopPropagation()">
                                                             {% if req.status == 'requested' %}
                                                                 <button
