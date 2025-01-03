@@ -1,5 +1,6 @@
 import calendar
 import datetime as dt
+import sys
 from datetime import datetime, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -46,7 +47,13 @@ def leave_reset():
             leave_type.save()
 
 
-scheduler = BackgroundScheduler()
-scheduler.add_job(leave_reset, "interval", seconds=20)
+if not any(
+    cmd in sys.argv for cmd in ["makemigrations", "migrate", "compilemessages", "flush"]
+):
+    """
+    Initializes and starts background tasks using APScheduler when the server is running.
+    """
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(leave_reset, "interval", seconds=20)
 
-scheduler.start()
+    scheduler.start()
