@@ -150,6 +150,16 @@
           <div class="col-sm-12 col-md-12">
               <div>
                   <div class="oh-input-group oh-label__info">
+                      <label for="id_carryforward_expire_in" class="oh-label">{% trans "Carryforward Expire In" %}</label>
+                      <span class=" oh-info me-3" id="expire_in_help" title="{% trans 'The count of carryforward expire period' %}"></span>
+                  </div>
+                      {{form.carryforward_expire_in}}
+                      {{form.carryforward_expire_in.errors}}
+              </div>
+          </div>
+          <div class="col-sm-12 col-md-12">
+              <div>
+                  <div class="oh-input-group oh-label__info">
                       <label for="id_carryforward_expire_period" class="oh-label">{% trans "Carryforward Expire Period" %}</label>
                       <span class=" oh-info me-3" id="expire_period_help" title="{% trans 'The time period for the expiration of carryforward leave.' %}"></span>
                   </div>
@@ -160,11 +170,11 @@
           <div class="col-sm-12 col-md-12">
               <div>
                   <div class="oh-input-group oh-label__info">
-                      <label for="id_carryforward_expire_in" class="oh-label">{% trans "Carryforward Expire In" %}</label>
-                      <span class=" oh-info me-3" id="expire_in_help" title="{% trans 'The count of carryforward expire period' %}"></span>
+                      <label for="id_carryforward_expire_date" class="oh-label">{% trans "Carryforward Expire In" %}</label>
+                      <span class=" oh-info me-3" title="{% trans 'The date on which carryforward leave resets to 0. After this reset, the date will be updated to the next expiration period.' %}"></span>
                   </div>
-                      {{form.carryforward_expire_in}}
-                      {{form.carryforward_expire_in.errors}}
+                      {{form.carryforward_expire_date}}
+                      {{form.carryforward_expire_date.errors}}
               </div>
           </div>
           <div class="col-sm-12 col-md-12  col-lg-6">
@@ -274,6 +284,8 @@
     var resetContainer = $(".resetContainer");
     var totalDays = $("#id_total_days");
     var limitLeave = $("#id_limit_leave");
+    var carryforward_expire_date_label = $("label[for='id_carryforward_expire_date']");
+    var carryforward_expire_date = $("#id_carryforward_expire_date");
 
     var hiddenLabelsFields = $("[data-hidden]");
     for (let index = 0; index < hiddenLabelsFields.length; index++) {
@@ -391,7 +403,9 @@
           $('#expire_in_help').show(),
           carryforward_expire_in.show().prop("required", true),
           carryforward_expire_period_label.show(),
-          carryforward_expire_period.show().prop("required", true))
+          carryforward_expire_period.show().prop("required", true),
+          carryforward_expire_date_label.closest("div").show(),
+          carryforward_expire_date.show().prop("required", true))
         : (carryforward_expire_in_label.hide(),
           $('#expire_period_help').hide(),
           $('#expire_in_help').hide(),
@@ -400,7 +414,11 @@
           carryforward_expire_in.val(""),
           carryforward_expire_period_label.hide(),
           carryforward_expire_period.hide().prop("required", false),
-          carryforward_expire_period.val(""));
+          carryforward_expire_period.val(""),
+          carryforward_expire_date_label.closest("div").hide(),
+          carryforward_expire_date.hide().prop("required", true),
+          carryforward_expire_date.val("")
+          );
     });
 
     // leave total days calculation

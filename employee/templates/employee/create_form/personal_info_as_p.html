@@ -11,7 +11,7 @@
               for="id_{{ field.name }}"
               title="{{ field.help_text|safe }}"
             >
-              {{ field.label }}
+              {% trans field.label %}
             </label>
 
             {% if field.field.widget.input_type == 'checkbox' %}
@@ -31,7 +31,7 @@
               for="id_{{ field.name }}"
               title="{{ field.help_text|safe }}"
             >
-              {{ field.label }}
+              {% trans field.label %}
             </label>
             {{ field }}
             {{ field.errors }}

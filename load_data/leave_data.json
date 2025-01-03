@@ -3,7 +3,7 @@
     "model": "leave.leavetype",
     "pk": 1,
     "fields": {
-      "created_at": "2024-11-22T08:40:47.352Z",
+      "created_at": "2024-12-22T08:40:47.352Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -37,7 +37,7 @@
     "model": "leave.leavetype",
     "pk": 2,
     "fields": {
-      "created_at": "2024-11-22T10:22:18.995Z",
+      "created_at": "2024-12-22T10:22:18.995Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -71,7 +71,7 @@
     "model": "leave.leavetype",
     "pk": 3,
     "fields": {
-      "created_at": "2024-11-22T10:23:27.333Z",
+      "created_at": "2024-12-22T10:23:27.333Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -105,7 +105,7 @@
     "model": "leave.leavetype",
     "pk": 4,
     "fields": {
-      "created_at": "2024-11-22T10:24:19.925Z",
+      "created_at": "2024-12-22T10:24:19.925Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -139,7 +139,7 @@
     "model": "leave.availableleave",
     "pk": 1,
     "fields": {
-      "created_at": "2024-11-22T10:35:05.363Z",
+      "created_at": "2024-12-22T10:35:05.363Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -148,7 +148,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -157,7 +157,7 @@
     "model": "leave.availableleave",
     "pk": 2,
     "fields": {
-      "created_at": "2024-11-22T10:35:05.580Z",
+      "created_at": "2024-12-22T10:35:05.580Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -166,7 +166,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -175,7 +175,7 @@
     "model": "leave.availableleave",
     "pk": 3,
     "fields": {
-      "created_at": "2024-11-22T10:35:05.678Z",
+      "created_at": "2024-12-22T10:35:05.678Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -184,7 +184,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -193,7 +193,7 @@
     "model": "leave.availableleave",
     "pk": 4,
     "fields": {
-      "created_at": "2024-11-22T10:35:05.755Z",
+      "created_at": "2024-12-22T10:35:05.755Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -202,7 +202,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -211,7 +211,7 @@
     "model": "leave.availableleave",
     "pk": 5,
     "fields": {
-      "created_at": "2024-11-22T10:35:05.828Z",
+      "created_at": "2024-12-22T10:35:05.828Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -220,7 +220,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -229,7 +229,7 @@
     "model": "leave.availableleave",
     "pk": 6,
     "fields": {
-      "created_at": "2024-11-22T10:35:05.911Z",
+      "created_at": "2024-12-22T10:35:05.911Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -238,7 +238,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -247,7 +247,7 @@
     "model": "leave.availableleave",
     "pk": 7,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.018Z",
+      "created_at": "2024-12-22T10:35:06.018Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -256,7 +256,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -265,7 +265,7 @@
     "model": "leave.availableleave",
     "pk": 8,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.122Z",
+      "created_at": "2024-12-22T10:35:06.122Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -274,7 +274,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -283,7 +283,7 @@
     "model": "leave.availableleave",
     "pk": 9,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.213Z",
+      "created_at": "2024-12-22T10:35:06.213Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -292,7 +292,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -301,7 +301,7 @@
     "model": "leave.availableleave",
     "pk": 10,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.281Z",
+      "created_at": "2024-12-22T10:35:06.281Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -310,7 +310,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -319,7 +319,7 @@
     "model": "leave.availableleave",
     "pk": 11,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.350Z",
+      "created_at": "2024-12-22T10:35:06.350Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -328,7 +328,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -337,7 +337,7 @@
     "model": "leave.availableleave",
     "pk": 12,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.422Z",
+      "created_at": "2024-12-22T10:35:06.422Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -346,7 +346,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -355,7 +355,7 @@
     "model": "leave.availableleave",
     "pk": 13,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.494Z",
+      "created_at": "2024-12-22T10:35:06.494Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -364,7 +364,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -373,7 +373,7 @@
     "model": "leave.availableleave",
     "pk": 14,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.564Z",
+      "created_at": "2024-12-22T10:35:06.564Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -382,7 +382,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -391,7 +391,7 @@
     "model": "leave.availableleave",
     "pk": 15,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.639Z",
+      "created_at": "2024-12-22T10:35:06.639Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -400,7 +400,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -409,7 +409,7 @@
     "model": "leave.availableleave",
     "pk": 16,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.714Z",
+      "created_at": "2024-12-22T10:35:06.714Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -418,7 +418,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -427,7 +427,7 @@
     "model": "leave.availableleave",
     "pk": 17,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.785Z",
+      "created_at": "2024-12-22T10:35:06.785Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -436,7 +436,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -445,7 +445,7 @@
     "model": "leave.availableleave",
     "pk": 18,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.850Z",
+      "created_at": "2024-12-22T10:35:06.850Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -454,7 +454,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -463,7 +463,7 @@
     "model": "leave.availableleave",
     "pk": 19,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.911Z",
+      "created_at": "2024-12-22T10:35:06.911Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -472,7 +472,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -481,7 +481,7 @@
     "model": "leave.availableleave",
     "pk": 20,
     "fields": {
-      "created_at": "2024-11-22T10:35:06.981Z",
+      "created_at": "2024-12-22T10:35:06.981Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -490,7 +490,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -499,7 +499,7 @@
     "model": "leave.availableleave",
     "pk": 21,
     "fields": {
-      "created_at": "2024-11-22T10:35:07.040Z",
+      "created_at": "2024-12-22T10:35:07.040Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -508,7 +508,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -517,7 +517,7 @@
     "model": "leave.availableleave",
     "pk": 22,
     "fields": {
-      "created_at": "2024-11-22T10:35:07.103Z",
+      "created_at": "2024-12-22T10:35:07.103Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -526,7 +526,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -535,7 +535,7 @@
     "model": "leave.availableleave",
     "pk": 23,
     "fields": {
-      "created_at": "2024-11-22T10:35:07.161Z",
+      "created_at": "2024-12-22T10:35:07.161Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -544,7 +544,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -553,7 +553,7 @@
     "model": "leave.availableleave",
     "pk": 24,
     "fields": {
-      "created_at": "2024-11-22T10:35:07.230Z",
+      "created_at": "2024-12-22T10:35:07.230Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -562,7 +562,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -571,7 +571,7 @@
     "model": "leave.availableleave",
     "pk": 25,
     "fields": {
-      "created_at": "2024-11-22T10:35:07.288Z",
+      "created_at": "2024-12-22T10:35:07.288Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -580,7 +580,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -589,7 +589,7 @@
     "model": "leave.availableleave",
     "pk": 26,
     "fields": {
-      "created_at": "2024-11-22T10:35:07.344Z",
+      "created_at": "2024-12-22T10:35:07.344Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -598,7 +598,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -607,7 +607,7 @@
     "model": "leave.availableleave",
     "pk": 27,
     "fields": {
-      "created_at": "2024-11-22T10:35:07.411Z",
+      "created_at": "2024-12-22T10:35:07.411Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -616,7 +616,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -625,7 +625,7 @@
     "model": "leave.availableleave",
     "pk": 28,
     "fields": {
-      "created_at": "2024-11-22T10:35:07.464Z",
+      "created_at": "2024-12-22T10:35:07.464Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -634,7 +634,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -643,7 +643,7 @@
     "model": "leave.availableleave",
     "pk": 29,
     "fields": {
-      "created_at": "2024-11-22T10:35:07.614Z",
+      "created_at": "2024-12-22T10:35:07.614Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -652,7 +652,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -661,7 +661,7 @@
     "model": "leave.availableleave",
     "pk": 30,
     "fields": {
-      "created_at": "2024-11-22T10:35:07.801Z",
+      "created_at": "2024-12-22T10:35:07.801Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -670,7 +670,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -679,7 +679,7 @@
     "model": "leave.availableleave",
     "pk": 31,
     "fields": {
-      "created_at": "2024-11-22T10:35:07.881Z",
+      "created_at": "2024-12-22T10:35:07.881Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -688,7 +688,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -697,7 +697,7 @@
     "model": "leave.availableleave",
     "pk": 32,
     "fields": {
-      "created_at": "2024-11-22T10:35:07.955Z",
+      "created_at": "2024-12-22T10:35:07.955Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -706,7 +706,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -715,7 +715,7 @@
     "model": "leave.availableleave",
     "pk": 33,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.035Z",
+      "created_at": "2024-12-22T10:35:08.035Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -724,7 +724,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -733,7 +733,7 @@
     "model": "leave.availableleave",
     "pk": 34,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.101Z",
+      "created_at": "2024-12-22T10:35:08.101Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -742,7 +742,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -751,7 +751,7 @@
     "model": "leave.availableleave",
     "pk": 35,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.161Z",
+      "created_at": "2024-12-22T10:35:08.161Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -760,7 +760,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -769,7 +769,7 @@
     "model": "leave.availableleave",
     "pk": 36,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.214Z",
+      "created_at": "2024-12-22T10:35:08.214Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -778,7 +778,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -787,7 +787,7 @@
     "model": "leave.availableleave",
     "pk": 37,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.280Z",
+      "created_at": "2024-12-22T10:35:08.280Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -796,7 +796,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -805,7 +805,7 @@
     "model": "leave.availableleave",
     "pk": 38,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.344Z",
+      "created_at": "2024-12-22T10:35:08.344Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -814,7 +814,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -823,7 +823,7 @@
     "model": "leave.availableleave",
     "pk": 39,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.405Z",
+      "created_at": "2024-12-22T10:35:08.405Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -832,7 +832,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -841,7 +841,7 @@
     "model": "leave.availableleave",
     "pk": 40,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.461Z",
+      "created_at": "2024-12-22T10:35:08.461Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -850,7 +850,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -859,7 +859,7 @@
     "model": "leave.availableleave",
     "pk": 41,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.531Z",
+      "created_at": "2024-12-22T10:35:08.531Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -868,7 +868,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -877,7 +877,7 @@
     "model": "leave.availableleave",
     "pk": 42,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.587Z",
+      "created_at": "2024-12-22T10:35:08.587Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -886,7 +886,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -895,7 +895,7 @@
     "model": "leave.availableleave",
     "pk": 43,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.644Z",
+      "created_at": "2024-12-22T10:35:08.644Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -904,7 +904,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -913,7 +913,7 @@
     "model": "leave.availableleave",
     "pk": 44,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.711Z",
+      "created_at": "2024-12-22T10:35:08.711Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -922,7 +922,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -931,7 +931,7 @@
     "model": "leave.availableleave",
     "pk": 45,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.765Z",
+      "created_at": "2024-12-22T10:35:08.765Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -940,7 +940,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -949,7 +949,7 @@
     "model": "leave.availableleave",
     "pk": 46,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.831Z",
+      "created_at": "2024-12-22T10:35:08.831Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -958,7 +958,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -967,7 +967,7 @@
     "model": "leave.availableleave",
     "pk": 47,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.887Z",
+      "created_at": "2024-12-22T10:35:08.887Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -976,7 +976,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -985,7 +985,7 @@
     "model": "leave.availableleave",
     "pk": 48,
     "fields": {
-      "created_at": "2024-11-22T10:35:08.958Z",
+      "created_at": "2024-12-22T10:35:08.958Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -994,7 +994,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1003,7 +1003,7 @@
     "model": "leave.availableleave",
     "pk": 49,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.021Z",
+      "created_at": "2024-12-22T10:35:09.021Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1012,7 +1012,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1021,7 +1021,7 @@
     "model": "leave.availableleave",
     "pk": 50,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.095Z",
+      "created_at": "2024-12-22T10:35:09.095Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1030,7 +1030,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1039,7 +1039,7 @@
     "model": "leave.availableleave",
     "pk": 51,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.230Z",
+      "created_at": "2024-12-22T10:35:09.230Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1048,7 +1048,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1057,7 +1057,7 @@
     "model": "leave.availableleave",
     "pk": 52,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.315Z",
+      "created_at": "2024-12-22T10:35:09.315Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1066,7 +1066,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1075,7 +1075,7 @@
     "model": "leave.availableleave",
     "pk": 53,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.398Z",
+      "created_at": "2024-12-22T10:35:09.398Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1084,7 +1084,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1093,7 +1093,7 @@
     "model": "leave.availableleave",
     "pk": 54,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.464Z",
+      "created_at": "2024-12-22T10:35:09.464Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1102,7 +1102,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1111,7 +1111,7 @@
     "model": "leave.availableleave",
     "pk": 55,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.535Z",
+      "created_at": "2024-12-22T10:35:09.535Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1120,7 +1120,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1129,7 +1129,7 @@
     "model": "leave.availableleave",
     "pk": 56,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.614Z",
+      "created_at": "2024-12-22T10:35:09.614Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1138,7 +1138,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1147,7 +1147,7 @@
     "model": "leave.availableleave",
     "pk": 57,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.683Z",
+      "created_at": "2024-12-22T10:35:09.683Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1156,7 +1156,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1165,7 +1165,7 @@
     "model": "leave.availableleave",
     "pk": 58,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.746Z",
+      "created_at": "2024-12-22T10:35:09.746Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1174,7 +1174,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1183,7 +1183,7 @@
     "model": "leave.availableleave",
     "pk": 59,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.806Z",
+      "created_at": "2024-12-22T10:35:09.806Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1192,7 +1192,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1201,7 +1201,7 @@
     "model": "leave.availableleave",
     "pk": 60,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.882Z",
+      "created_at": "2024-12-22T10:35:09.882Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1210,7 +1210,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1219,7 +1219,7 @@
     "model": "leave.availableleave",
     "pk": 61,
     "fields": {
-      "created_at": "2024-11-22T10:35:09.950Z",
+      "created_at": "2024-12-22T10:35:09.950Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1228,7 +1228,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1237,7 +1237,7 @@
     "model": "leave.availableleave",
     "pk": 62,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.016Z",
+      "created_at": "2024-12-22T10:35:10.016Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1246,7 +1246,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1255,7 +1255,7 @@
     "model": "leave.availableleave",
     "pk": 63,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.078Z",
+      "created_at": "2024-12-22T10:35:10.078Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1264,7 +1264,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1273,7 +1273,7 @@
     "model": "leave.availableleave",
     "pk": 64,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.147Z",
+      "created_at": "2024-12-22T10:35:10.147Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1282,7 +1282,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1291,7 +1291,7 @@
     "model": "leave.availableleave",
     "pk": 65,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.213Z",
+      "created_at": "2024-12-22T10:35:10.213Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1300,7 +1300,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1309,7 +1309,7 @@
     "model": "leave.availableleave",
     "pk": 66,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.278Z",
+      "created_at": "2024-12-22T10:35:10.278Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1318,7 +1318,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1327,7 +1327,7 @@
     "model": "leave.availableleave",
     "pk": 67,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.339Z",
+      "created_at": "2024-12-22T10:35:10.339Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1336,7 +1336,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1345,7 +1345,7 @@
     "model": "leave.availableleave",
     "pk": 68,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.396Z",
+      "created_at": "2024-12-22T10:35:10.396Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1354,7 +1354,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1363,7 +1363,7 @@
     "model": "leave.availableleave",
     "pk": 69,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.461Z",
+      "created_at": "2024-12-22T10:35:10.461Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1372,7 +1372,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1381,7 +1381,7 @@
     "model": "leave.availableleave",
     "pk": 70,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.530Z",
+      "created_at": "2024-12-22T10:35:10.530Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1390,7 +1390,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1399,7 +1399,7 @@
     "model": "leave.availableleave",
     "pk": 71,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.594Z",
+      "created_at": "2024-12-22T10:35:10.594Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1408,7 +1408,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1417,7 +1417,7 @@
     "model": "leave.availableleave",
     "pk": 72,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.670Z",
+      "created_at": "2024-12-22T10:35:10.670Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1426,7 +1426,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1435,7 +1435,7 @@
     "model": "leave.availableleave",
     "pk": 73,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.737Z",
+      "created_at": "2024-12-22T10:35:10.737Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1444,7 +1444,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1453,7 +1453,7 @@
     "model": "leave.availableleave",
     "pk": 74,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.794Z",
+      "created_at": "2024-12-22T10:35:10.794Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1462,7 +1462,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1471,7 +1471,7 @@
     "model": "leave.availableleave",
     "pk": 75,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.865Z",
+      "created_at": "2024-12-22T10:35:10.865Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1480,7 +1480,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1489,7 +1489,7 @@
     "model": "leave.availableleave",
     "pk": 76,
     "fields": {
-      "created_at": "2024-11-22T10:35:10.940Z",
+      "created_at": "2024-12-22T10:35:10.940Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1498,7 +1498,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1507,7 +1507,7 @@
     "model": "leave.availableleave",
     "pk": 77,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.029Z",
+      "created_at": "2024-12-22T10:35:11.029Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1516,7 +1516,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1525,7 +1525,7 @@
     "model": "leave.availableleave",
     "pk": 78,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.111Z",
+      "created_at": "2024-12-22T10:35:11.111Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1534,7 +1534,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1543,7 +1543,7 @@
     "model": "leave.availableleave",
     "pk": 79,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.178Z",
+      "created_at": "2024-12-22T10:35:11.178Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1552,7 +1552,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1561,7 +1561,7 @@
     "model": "leave.availableleave",
     "pk": 80,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.258Z",
+      "created_at": "2024-12-22T10:35:11.258Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1570,7 +1570,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1579,7 +1579,7 @@
     "model": "leave.availableleave",
     "pk": 81,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.315Z",
+      "created_at": "2024-12-22T10:35:11.315Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1588,7 +1588,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1597,7 +1597,7 @@
     "model": "leave.availableleave",
     "pk": 82,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.382Z",
+      "created_at": "2024-12-22T10:35:11.382Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1606,7 +1606,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1615,7 +1615,7 @@
     "model": "leave.availableleave",
     "pk": 83,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.434Z",
+      "created_at": "2024-12-22T10:35:11.434Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1624,7 +1624,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1633,7 +1633,7 @@
     "model": "leave.availableleave",
     "pk": 84,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.496Z",
+      "created_at": "2024-12-22T10:35:11.496Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1642,7 +1642,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1651,7 +1651,7 @@
     "model": "leave.availableleave",
     "pk": 85,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.566Z",
+      "created_at": "2024-12-22T10:35:11.566Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1660,7 +1660,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1669,7 +1669,7 @@
     "model": "leave.availableleave",
     "pk": 86,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.640Z",
+      "created_at": "2024-12-22T10:35:11.640Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1678,7 +1678,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1687,7 +1687,7 @@
     "model": "leave.availableleave",
     "pk": 87,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.697Z",
+      "created_at": "2024-12-22T10:35:11.697Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1696,7 +1696,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1705,7 +1705,7 @@
     "model": "leave.availableleave",
     "pk": 88,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.774Z",
+      "created_at": "2024-12-22T10:35:11.774Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1714,7 +1714,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1723,7 +1723,7 @@
     "model": "leave.availableleave",
     "pk": 89,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.838Z",
+      "created_at": "2024-12-22T10:35:11.838Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1732,7 +1732,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1741,7 +1741,7 @@
     "model": "leave.availableleave",
     "pk": 90,
     "fields": {
-      "created_at": "2024-11-22T10:35:11.961Z",
+      "created_at": "2024-12-22T10:35:11.961Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1750,7 +1750,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1759,7 +1759,7 @@
     "model": "leave.availableleave",
     "pk": 91,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.038Z",
+      "created_at": "2024-12-22T10:35:12.038Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1768,7 +1768,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1777,7 +1777,7 @@
     "model": "leave.availableleave",
     "pk": 92,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.111Z",
+      "created_at": "2024-12-22T10:35:12.111Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1786,7 +1786,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1795,7 +1795,7 @@
     "model": "leave.availableleave",
     "pk": 93,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.182Z",
+      "created_at": "2024-12-22T10:35:12.182Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1804,7 +1804,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1813,7 +1813,7 @@
     "model": "leave.availableleave",
     "pk": 94,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.241Z",
+      "created_at": "2024-12-22T10:35:12.241Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1822,7 +1822,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1831,7 +1831,7 @@
     "model": "leave.availableleave",
     "pk": 95,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.312Z",
+      "created_at": "2024-12-22T10:35:12.312Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1840,7 +1840,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1849,7 +1849,7 @@
     "model": "leave.availableleave",
     "pk": 96,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.371Z",
+      "created_at": "2024-12-22T10:35:12.371Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1858,7 +1858,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1867,7 +1867,7 @@
     "model": "leave.availableleave",
     "pk": 97,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.430Z",
+      "created_at": "2024-12-22T10:35:12.430Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1876,7 +1876,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1885,7 +1885,7 @@
     "model": "leave.availableleave",
     "pk": 98,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.496Z",
+      "created_at": "2024-12-22T10:35:12.496Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1894,7 +1894,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1903,7 +1903,7 @@
     "model": "leave.availableleave",
     "pk": 99,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.566Z",
+      "created_at": "2024-12-22T10:35:12.566Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1912,7 +1912,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1921,7 +1921,7 @@
     "model": "leave.availableleave",
     "pk": 100,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.631Z",
+      "created_at": "2024-12-22T10:35:12.631Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1930,7 +1930,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1939,7 +1939,7 @@
     "model": "leave.availableleave",
     "pk": 101,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.694Z",
+      "created_at": "2024-12-22T10:35:12.694Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1948,7 +1948,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1957,7 +1957,7 @@
     "model": "leave.availableleave",
     "pk": 102,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.749Z",
+      "created_at": "2024-12-22T10:35:12.749Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1966,7 +1966,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1975,7 +1975,7 @@
     "model": "leave.availableleave",
     "pk": 103,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.822Z",
+      "created_at": "2024-12-22T10:35:12.822Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1984,7 +1984,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -1993,7 +1993,7 @@
     "model": "leave.availableleave",
     "pk": 104,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.902Z",
+      "created_at": "2024-12-22T10:35:12.902Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2002,7 +2002,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2011,7 +2011,7 @@
     "model": "leave.availableleave",
     "pk": 105,
     "fields": {
-      "created_at": "2024-11-22T10:35:12.961Z",
+      "created_at": "2024-12-22T10:35:12.961Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2020,7 +2020,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2029,7 +2029,7 @@
     "model": "leave.availableleave",
     "pk": 106,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.028Z",
+      "created_at": "2024-12-22T10:35:13.028Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2038,7 +2038,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2047,7 +2047,7 @@
     "model": "leave.availableleave",
     "pk": 107,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.099Z",
+      "created_at": "2024-12-22T10:35:13.099Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2056,7 +2056,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2065,7 +2065,7 @@
     "model": "leave.availableleave",
     "pk": 108,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.161Z",
+      "created_at": "2024-12-22T10:35:13.161Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2074,7 +2074,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2083,7 +2083,7 @@
     "model": "leave.availableleave",
     "pk": 109,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.244Z",
+      "created_at": "2024-12-22T10:35:13.244Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2092,7 +2092,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2101,7 +2101,7 @@
     "model": "leave.availableleave",
     "pk": 110,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.297Z",
+      "created_at": "2024-12-22T10:35:13.297Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2110,7 +2110,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2119,7 +2119,7 @@
     "model": "leave.availableleave",
     "pk": 111,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.364Z",
+      "created_at": "2024-12-22T10:35:13.364Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2128,7 +2128,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2137,7 +2137,7 @@
     "model": "leave.availableleave",
     "pk": 112,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.428Z",
+      "created_at": "2024-12-22T10:35:13.428Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2146,7 +2146,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2155,7 +2155,7 @@
     "model": "leave.availableleave",
     "pk": 113,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.480Z",
+      "created_at": "2024-12-22T10:35:13.480Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2164,7 +2164,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2173,7 +2173,7 @@
     "model": "leave.availableleave",
     "pk": 114,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.547Z",
+      "created_at": "2024-12-22T10:35:13.547Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2182,7 +2182,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2191,7 +2191,7 @@
     "model": "leave.availableleave",
     "pk": 115,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.606Z",
+      "created_at": "2024-12-22T10:35:13.606Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2200,7 +2200,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2209,7 +2209,7 @@
     "model": "leave.availableleave",
     "pk": 116,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.663Z",
+      "created_at": "2024-12-22T10:35:13.663Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2218,7 +2218,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2227,7 +2227,7 @@
     "model": "leave.availableleave",
     "pk": 117,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.727Z",
+      "created_at": "2024-12-22T10:35:13.727Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2236,7 +2236,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2245,7 +2245,7 @@
     "model": "leave.availableleave",
     "pk": 118,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.779Z",
+      "created_at": "2024-12-22T10:35:13.779Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2254,7 +2254,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2263,7 +2263,7 @@
     "model": "leave.availableleave",
     "pk": 119,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.837Z",
+      "created_at": "2024-12-22T10:35:13.837Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2272,7 +2272,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2281,7 +2281,7 @@
     "model": "leave.availableleave",
     "pk": 120,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.897Z",
+      "created_at": "2024-12-22T10:35:13.897Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2290,7 +2290,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2299,7 +2299,7 @@
     "model": "leave.availableleave",
     "pk": 121,
     "fields": {
-      "created_at": "2024-11-22T10:35:13.974Z",
+      "created_at": "2024-12-22T10:35:13.974Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2308,7 +2308,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2317,7 +2317,7 @@
     "model": "leave.availableleave",
     "pk": 122,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.031Z",
+      "created_at": "2024-12-22T10:35:14.031Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2326,7 +2326,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2335,7 +2335,7 @@
     "model": "leave.availableleave",
     "pk": 123,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.099Z",
+      "created_at": "2024-12-22T10:35:14.099Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2344,7 +2344,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2353,7 +2353,7 @@
     "model": "leave.availableleave",
     "pk": 124,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.163Z",
+      "created_at": "2024-12-22T10:35:14.163Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2362,7 +2362,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2371,7 +2371,7 @@
     "model": "leave.availableleave",
     "pk": 125,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.246Z",
+      "created_at": "2024-12-22T10:35:14.246Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2380,7 +2380,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2389,7 +2389,7 @@
     "model": "leave.availableleave",
     "pk": 126,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.312Z",
+      "created_at": "2024-12-22T10:35:14.312Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2398,7 +2398,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2407,7 +2407,7 @@
     "model": "leave.availableleave",
     "pk": 127,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.378Z",
+      "created_at": "2024-12-22T10:35:14.378Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2416,7 +2416,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2425,7 +2425,7 @@
     "model": "leave.availableleave",
     "pk": 128,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.428Z",
+      "created_at": "2024-12-22T10:35:14.428Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2434,7 +2434,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2443,7 +2443,7 @@
     "model": "leave.availableleave",
     "pk": 129,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.493Z",
+      "created_at": "2024-12-22T10:35:14.493Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2452,7 +2452,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2461,7 +2461,7 @@
     "model": "leave.availableleave",
     "pk": 130,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.547Z",
+      "created_at": "2024-12-22T10:35:14.547Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2470,7 +2470,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2479,7 +2479,7 @@
     "model": "leave.availableleave",
     "pk": 131,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.594Z",
+      "created_at": "2024-12-22T10:35:14.594Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2488,7 +2488,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2497,7 +2497,7 @@
     "model": "leave.availableleave",
     "pk": 132,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.646Z",
+      "created_at": "2024-12-22T10:35:14.646Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2506,7 +2506,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2515,7 +2515,7 @@
     "model": "leave.availableleave",
     "pk": 133,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.696Z",
+      "created_at": "2024-12-22T10:35:14.696Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2524,7 +2524,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2533,7 +2533,7 @@
     "model": "leave.availableleave",
     "pk": 134,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.744Z",
+      "created_at": "2024-12-22T10:35:14.744Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2542,7 +2542,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2551,7 +2551,7 @@
     "model": "leave.availableleave",
     "pk": 135,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.794Z",
+      "created_at": "2024-12-22T10:35:14.794Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2560,7 +2560,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2569,7 +2569,7 @@
     "model": "leave.availableleave",
     "pk": 136,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.846Z",
+      "created_at": "2024-12-22T10:35:14.846Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2578,7 +2578,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2587,7 +2587,7 @@
     "model": "leave.availableleave",
     "pk": 137,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.896Z",
+      "created_at": "2024-12-22T10:35:14.896Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2596,7 +2596,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2605,7 +2605,7 @@
     "model": "leave.availableleave",
     "pk": 138,
     "fields": {
-      "created_at": "2024-11-22T10:35:14.944Z",
+      "created_at": "2024-12-22T10:35:14.944Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2614,7 +2614,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2623,7 +2623,7 @@
     "model": "leave.availableleave",
     "pk": 139,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.011Z",
+      "created_at": "2024-12-22T10:35:15.011Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2632,7 +2632,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2641,7 +2641,7 @@
     "model": "leave.availableleave",
     "pk": 140,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.061Z",
+      "created_at": "2024-12-22T10:35:15.061Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2650,7 +2650,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2659,7 +2659,7 @@
     "model": "leave.availableleave",
     "pk": 141,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.113Z",
+      "created_at": "2024-12-22T10:35:15.113Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2668,7 +2668,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2677,7 +2677,7 @@
     "model": "leave.availableleave",
     "pk": 142,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.162Z",
+      "created_at": "2024-12-22T10:35:15.162Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2686,7 +2686,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2695,7 +2695,7 @@
     "model": "leave.availableleave",
     "pk": 143,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.212Z",
+      "created_at": "2024-12-22T10:35:15.212Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2704,7 +2704,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2713,7 +2713,7 @@
     "model": "leave.availableleave",
     "pk": 144,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.278Z",
+      "created_at": "2024-12-22T10:35:15.278Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2722,7 +2722,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2731,7 +2731,7 @@
     "model": "leave.availableleave",
     "pk": 145,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.338Z",
+      "created_at": "2024-12-22T10:35:15.338Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2740,7 +2740,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2749,7 +2749,7 @@
     "model": "leave.availableleave",
     "pk": 146,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.388Z",
+      "created_at": "2024-12-22T10:35:15.388Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2758,7 +2758,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2767,7 +2767,7 @@
     "model": "leave.availableleave",
     "pk": 147,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.444Z",
+      "created_at": "2024-12-22T10:35:15.444Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2776,7 +2776,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2785,7 +2785,7 @@
     "model": "leave.availableleave",
     "pk": 148,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.504Z",
+      "created_at": "2024-12-22T10:35:15.504Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2794,7 +2794,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2803,7 +2803,7 @@
     "model": "leave.availableleave",
     "pk": 149,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.578Z",
+      "created_at": "2024-12-22T10:35:15.578Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2812,7 +2812,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2821,7 +2821,7 @@
     "model": "leave.availableleave",
     "pk": 150,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.628Z",
+      "created_at": "2024-12-22T10:35:15.628Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2830,7 +2830,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2839,7 +2839,7 @@
     "model": "leave.availableleave",
     "pk": 151,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.685Z",
+      "created_at": "2024-12-22T10:35:15.685Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2848,7 +2848,7 @@
       "available_days": 10.0,
       "carryforward_days": 0.0,
       "total_leave_days": 10.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2857,7 +2857,7 @@
     "model": "leave.availableleave",
     "pk": 152,
     "fields": {
-      "created_at": "2024-11-22T10:35:15.743Z",
+      "created_at": "2024-12-22T10:35:15.743Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -2866,7 +2866,7 @@
       "available_days": 1.0,
       "carryforward_days": 0.0,
       "total_leave_days": 1.0,
-      "assigned_date": "2024-11-22",
+      "assigned_date": "2024-12-22",
       "reset_date": "2024-12-01",
       "expired_date": null
     }
@@ -2875,21 +2875,21 @@
     "model": "leave.leaverequest",
     "pk": 1,
     "fields": {
-      "created_at": "2024-11-23T12:02:05.620Z",
+      "created_at": "2024-12-23T12:02:05.620Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 13,
       "leave_type_id": 2,
-      "start_date": "2024-11-08",
+      "start_date": "2024-12-08",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-08",
+      "end_date": "2024-12-08",
       "end_date_breakdown": "full_day",
       "requested_days": 1.0,
       "leave_clashes_count": 0,
       "description": "i have to go to the bank",
       "attachment": "",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -2900,21 +2900,21 @@
     "model": "leave.leaverequest",
     "pk": 2,
     "fields": {
-      "created_at": "2024-11-23T12:02:42.988Z",
+      "created_at": "2024-12-23T12:02:42.988Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 68,
       "leave_type_id": 2,
-      "start_date": "2024-11-15",
+      "start_date": "2024-12-15",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-15",
+      "end_date": "2024-12-15",
       "end_date_breakdown": "full_day",
       "requested_days": 1.0,
       "leave_clashes_count": 0,
       "description": "i need a break",
       "attachment": "",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -2925,21 +2925,21 @@
     "model": "leave.leaverequest",
     "pk": 3,
     "fields": {
-      "created_at": "2024-11-23T12:05:12.635Z",
+      "created_at": "2024-12-23T12:05:12.635Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 62,
       "leave_type_id": 3,
-      "start_date": "2024-11-10",
+      "start_date": "2024-12-10",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-10",
+      "end_date": "2024-12-10",
       "end_date_breakdown": "full_day",
       "requested_days": 1.0,
       "leave_clashes_count": 0,
       "description": "i have a fever",
       "attachment": "leave/leave_attachment/prescription.webp",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -2950,21 +2950,21 @@
     "model": "leave.leaverequest",
     "pk": 4,
     "fields": {
-      "created_at": "2024-11-23T12:05:56.346Z",
+      "created_at": "2024-12-23T12:05:56.346Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 36,
       "leave_type_id": 2,
-      "start_date": "2024-11-14",
+      "start_date": "2024-12-14",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-14",
+      "end_date": "2024-12-14",
       "end_date_breakdown": "full_day",
       "requested_days": 1.0,
       "leave_clashes_count": 0,
       "description": "leave",
       "attachment": "",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -2975,21 +2975,21 @@
     "model": "leave.leaverequest",
     "pk": 5,
     "fields": {
-      "created_at": "2024-11-23T12:06:39.604Z",
+      "created_at": "2024-12-23T12:06:39.604Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 65,
       "leave_type_id": 2,
-      "start_date": "2024-11-13",
+      "start_date": "2024-12-13",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-13",
+      "end_date": "2024-12-13",
       "end_date_breakdown": "full_day",
       "requested_days": 1.0,
       "leave_clashes_count": 0,
       "description": "leave",
       "attachment": "",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -3000,21 +3000,21 @@
     "model": "leave.leaverequest",
     "pk": 6,
     "fields": {
-      "created_at": "2024-11-23T12:07:03.890Z",
+      "created_at": "2024-12-23T12:07:03.890Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 39,
       "leave_type_id": 2,
-      "start_date": "2024-11-30",
+      "start_date": "2024-12-30",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-30",
+      "end_date": "2024-12-30",
       "end_date_breakdown": "full_day",
       "requested_days": 1.0,
       "leave_clashes_count": 0,
       "description": "i need a leave",
       "attachment": "",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -3025,21 +3025,21 @@
     "model": "leave.leaverequest",
     "pk": 7,
     "fields": {
-      "created_at": "2024-11-23T12:07:27.352Z",
+      "created_at": "2024-12-23T12:07:27.352Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 13,
       "leave_type_id": 2,
-      "start_date": "2024-11-28",
+      "start_date": "2024-12-28",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-28",
+      "end_date": "2024-12-28",
       "end_date_breakdown": "full_day",
       "requested_days": 1.0,
       "leave_clashes_count": 0,
       "description": "hello",
       "attachment": "",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -3050,21 +3050,21 @@
     "model": "leave.leaverequest",
     "pk": 8,
     "fields": {
-      "created_at": "2024-11-23T12:07:48.842Z",
+      "created_at": "2024-12-23T12:07:48.842Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 63,
       "leave_type_id": 2,
-      "start_date": "2024-11-17",
+      "start_date": "2024-12-17",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-17",
+      "end_date": "2024-12-17",
       "end_date_breakdown": "full_day",
       "requested_days": 1.0,
       "leave_clashes_count": 0,
       "description": "hello",
       "attachment": "",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -3075,21 +3075,21 @@
     "model": "leave.leaverequest",
     "pk": 9,
     "fields": {
-      "created_at": "2024-11-23T12:08:17.706Z",
+      "created_at": "2024-12-23T12:08:17.706Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 61,
       "leave_type_id": 3,
-      "start_date": "2024-11-08",
+      "start_date": "2024-12-08",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-08",
+      "end_date": "2024-12-08",
       "end_date_breakdown": "full_day",
       "requested_days": 1.0,
       "leave_clashes_count": 0,
       "description": "hello",
       "attachment": "leave/leave_attachment/prescription_KXla4rB.webp",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -3100,21 +3100,21 @@
     "model": "leave.leaverequest",
     "pk": 10,
     "fields": {
-      "created_at": "2024-11-23T12:08:45.359Z",
+      "created_at": "2024-12-23T12:08:45.359Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 42,
       "leave_type_id": 2,
-      "start_date": "2024-11-29",
+      "start_date": "2024-12-29",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-29",
+      "end_date": "2024-12-29",
       "end_date_breakdown": "full_day",
       "requested_days": 1.0,
       "leave_clashes_count": 0,
       "description": "leave",
       "attachment": "",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -3125,21 +3125,21 @@
     "model": "leave.leaverequest",
     "pk": 11,
     "fields": {
-      "created_at": "2024-11-23T12:09:26.321Z",
+      "created_at": "2024-12-23T12:09:26.321Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 3,
       "leave_type_id": 2,
-      "start_date": "2024-11-28",
+      "start_date": "2024-12-28",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-28",
+      "end_date": "2024-12-28",
       "end_date_breakdown": "full_day",
       "requested_days": 1.0,
       "leave_clashes_count": 0,
       "description": "leave",
       "attachment": "",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -3150,21 +3150,21 @@
     "model": "leave.leaverequest",
     "pk": 12,
     "fields": {
-      "created_at": "2024-11-23T12:09:58.526Z",
+      "created_at": "2024-12-23T12:09:58.526Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 1,
       "leave_type_id": 2,
-      "start_date": "2024-11-25",
+      "start_date": "2024-12-25",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-25",
+      "end_date": "2024-12-25",
       "end_date_breakdown": "full_day",
       "requested_days": 0.0,
       "leave_clashes_count": 0,
       "description": "on a trip",
       "attachment": "",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -3175,21 +3175,21 @@
     "model": "leave.leaverequest",
     "pk": 13,
     "fields": {
-      "created_at": "2024-11-23T12:10:23.607Z",
+      "created_at": "2024-12-23T12:10:23.607Z",
       "modified_by": 1,
       "is_active": true,
       "employee_id": 66,
       "leave_type_id": 2,
-      "start_date": "2024-11-29",
+      "start_date": "2024-12-29",
       "start_date_breakdown": "full_day",
-      "end_date": "2024-11-29",
+      "end_date": "2024-12-29",
       "end_date_breakdown": "full_day",
       "requested_days": 1.0,
       "leave_clashes_count": 0,
       "description": "leave",
       "attachment": "",
       "status": "requested",
-      "requested_date": "2024-11-23",
+      "requested_date": "2024-12-23",
       "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
@@ -3200,14 +3200,14 @@
     "model": "leave.leaveallocationrequest",
     "pk": 1,
     "fields": {
-      "created_at": "2024-11-16T08:00:42.965Z",
+      "created_at": "2024-12-16T08:00:42.965Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "leave_type_id": 4,
       "employee_id": 12,
       "requested_days": 10.0,
-      "requested_date": "2024-11-16",
+      "requested_date": "2024-12-16",
       "description": "Kindly request to allocate this leave type",
       "attachment": "",
       "status": "requested",
@@ -3218,14 +3218,14 @@
     "model": "leave.leaveallocationrequest",
     "pk": 2,
     "fields": {
-      "created_at": "2024-11-16T08:01:28.674Z",
+      "created_at": "2024-12-16T08:01:28.674Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "leave_type_id": 3,
       "employee_id": 63,
       "requested_days": 10.0,
-      "requested_date": "2024-11-16",
+      "requested_date": "2024-12-16",
       "description": "Request to allcoate some additional available leaves for this leave type",
       "attachment": "",
       "status": "requested",
@@ -3236,14 +3236,14 @@
     "model": "leave.leaveallocationrequest",
     "pk": 3,
     "fields": {
-      "created_at": "2024-11-16T08:01:53.526Z",
+      "created_at": "2024-12-16T08:01:53.526Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "leave_type_id": 4,
       "employee_id": 8,
       "requested_days": 30.0,
-      "requested_date": "2024-11-16",
+      "requested_date": "2024-12-16",
       "description": "Kindly request to allocate this leave type",
       "attachment": "",
       "status": "requested",
@@ -3254,13 +3254,13 @@
     "model": "leave.restrictleave",
     "pk": 2,
     "fields": {
-      "created_at": "2024-11-16T08:06:27.474Z",
+      "created_at": "2024-12-16T08:06:27.474Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "title": "Critical Projects",
-      "start_date": "2024-11-16",
-      "end_date": "2024-11-16",
+      "start_date": "2024-12-16",
+      "end_date": "2024-12-16",
       "department": 1,
       "include_all": true,
       "description": "Horilla Project Installation",
@@ -3274,13 +3274,13 @@
     "model": "leave.restrictleave",
     "pk": 3,
     "fields": {
-      "created_at": "2024-11-16T08:07:02.327Z",
+      "created_at": "2024-12-16T08:07:02.327Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "title": "Product launch week",
-      "start_date": "2024-11-23",
-      "end_date": "2024-11-27",
+      "start_date": "2024-12-23",
+      "end_date": "2024-12-27",
       "department": 2,
       "include_all": true,
       "description": "Luanch Horilla",
@@ -3294,7 +3294,7 @@
     "model": "leave.restrictleave",
     "pk": 4,
     "fields": {
-      "created_at": "2024-11-16T08:07:48.937Z",
+      "created_at": "2024-12-16T08:07:48.937Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -3334,7 +3334,7 @@
     "model": "leave.employeepastleaverestrict",
     "pk": 1,
     "fields": {
-      "created_at": "2024-11-21T04:40:18.153Z",
+      "created_at": "2024-12-21T04:40:18.153Z",
       "created_by": null,
       "modified_by": null,
       "is_active": true,

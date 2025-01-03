@@ -466,6 +466,16 @@ urlpatterns = [
         name="enable-disable-tracking-late-come-early-out",
     ),
     path(
+        "check-in-check-out-setting/",
+        views.check_in_check_out_setting,
+        name="check-in-check-out-setting",
+    ),
+    path(
+        "enable-disable-check-in",
+        views.enable_disable_check_in,
+        name="enable-disable-check-in",
+    ),
+    path(
         "grace-settings-view/",
         views.grace_time_view,
         name="grace-settings-view",

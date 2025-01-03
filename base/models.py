@@ -1468,7 +1468,13 @@ class Announcement(HorillaModel):
     )
     department = models.ManyToManyField(Department, blank=True)
     job_position = models.ManyToManyField(JobPosition, blank=True)
+    company_id = models.ManyToManyField(
+        Company,
+        blank=True,
+        related_name="announcement",
+    )
     disable_comments = models.BooleanField(default=False)
+    objects = HorillaCompanyManager(related_company_field="company_id")
 
     def get_views(self):
         """
@@ -1638,7 +1644,6 @@ class Holidays(HorillaModel):
     company_id = models.ForeignKey(
         Company,
         null=True,
-        editable=False,
         on_delete=models.PROTECT,
         verbose_name=_("Company"),
     )
@@ -1667,9 +1672,7 @@ class CompanyLeaves(HorillaModel):
         max_length=100, choices=WEEKS, blank=True, null=True
     )
     based_on_week_day = models.CharField(max_length=100, choices=WEEK_DAYS)
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
+    company_id = models.ForeignKey(Company, null=True, on_delete=models.PROTECT)
     objects = HorillaCompanyManager(related_company_field="company_id")
 
     class Meta:
@@ -1745,6 +1748,15 @@ class PenaltyAccounts(HorillaModel):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class NotificationSound(models.Model):
+    from employee.models import Employee
+
+    employee = models.OneToOneField(
+        Employee, on_delete=models.CASCADE, related_name="notification_sound"
+    )
+    sound_enabled = models.BooleanField(default=False)
 
 
 @receiver(post_save, sender=PenaltyAccounts)

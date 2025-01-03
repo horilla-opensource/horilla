@@ -42,6 +42,8 @@
             }
 
             .tracking-card {
+                position:relative;
+                padding:1rem;
                 background: white;
                 border-radius: 8px;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -310,6 +312,38 @@
                 border-radius: 4px;
             }
 
+            .banner-container {
+                position: absolute;
+                top: 25px;
+                right: -43px;
+                transform: rotate(34deg);
+                background-color: #40ac40;
+                color: white;
+                padding: 8px 76px;
+                font-size: 12px;
+                z-index: 2;
+                clip-path: polygon(26% 0, 81% 0, 91% 94%, 0 115%);
+                text-align: center;
+            }
+
+            @media (max-width: 768px) {
+                .banner-container {
+                    top: 20px;
+                    right: -33px;
+                    font-size: 10px;
+                    padding: 6px 56px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .banner-container {
+                    top: 17px;
+                    right: -29px;
+                    font-size: 8px;
+                    padding: 5px 50px;
+                }
+            }
+
         </style>
     </head>
     <body>
@@ -327,6 +361,11 @@
             <div class="row justify-content-center mb-4">
                 <div class="col-12 col-md-10 col-lg-6">
                     <div class="tracking-card">
+                        {% if candidate.converted %}
+                            <div class="banner-container fw-bold">
+                                <span>{% trans "Converted" %}</span>
+                            </div>
+                        {% endif %}
                         <div class="d-flex align-items-center mb-3 flex-wrap">
                             <img
                                 src="{{ candidate.get_avatar }}"
@@ -372,7 +411,7 @@
                                 {{ candidate.get_job_position }}
                             </div>
                         </div>
-                        {% if candidate.hired %}
+                        {% if candidate.hired or candidate.converted %}
                             <span class="status-badge success">
                                 <i class="fas fa-check-circle me-2"></i>
                                 {% trans "Congratulation on your selection" %}

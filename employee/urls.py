@@ -23,6 +23,11 @@ urlpatterns = [
     ),
     path("edit-profile", views.self_info_update, name="edit-profile"),
     path(
+        "profile-edit-access/<int:emp_id>/",
+        views.profile_edit_access,
+        name="profile-edit-access",
+    ),
+    path(
         "update-profile-image/<int:obj_id>/",
         views.update_profile_image,
         name="update-profile-image",

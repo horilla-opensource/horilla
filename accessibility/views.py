@@ -29,6 +29,9 @@ def user_accessibility(request):
         accessibility.filter = dict(request.POST)
         accessibility.exclude_all = bool(request.POST.get("exclude_all"))
         accessibility.save()
+        employees = AccessibilityFilter(data=accessibility.filter).qs
+        accessibility.employees.set(employees)
+
         if len(request.POST.keys()) > 1:
             messages.success(request, _("Accessibility filter saved"))
         else:

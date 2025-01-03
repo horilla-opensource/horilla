@@ -189,6 +189,7 @@ class LeaveType(HorillaModel):
     carryforward_expire_period = models.CharField(
         max_length=30, choices=TIME_PERIOD, null=True, blank=True
     )
+    carryforward_expire_date = models.DateField(null=True, blank=True)
     require_approval = models.CharField(
         max_length=30, choices=CHOICES, null=True, blank=True, default="yes"
     )
@@ -270,6 +271,17 @@ class LeaveType(HorillaModel):
 
         return reset_date
 
+    def set_expired_date(self, assigned_date):
+        period = self.carryforward_expire_in
+        if self.carryforward_expire_period == "day":
+            expired_date = assigned_date + relativedelta(days=period)
+        elif self.carryforward_expire_period == "month":
+            expired_date = assigned_date + relativedelta(months=period)
+        else:
+            expired_date = assigned_date + relativedelta(years=period)
+
+        return expired_date
+
     def clean(self, *args, **kwargs):
         if self.is_compensatory_leave:
             if LeaveType.objects.filter(is_compensatory_leave=True).count() >= 1:
@@ -283,6 +295,15 @@ class LeaveType(HorillaModel):
             self.carryforward_max = math.inf
         if self.pk and LeaveType.objects.get(id=self.pk).is_compensatory_leave:
             self.is_compensatory_leave = True
+
+        if (
+            self.carryforward_type == "carryforward expire"
+            and not self.carryforward_expire_date
+        ):
+            self.carryforward_expire_date = self.set_expired_date(
+                assigned_date=self.created_at
+            )
+
         super().save()
 
     def __str__(self):
@@ -479,11 +500,11 @@ class AvailableLeave(HorillaModel):
                 )
                 self.reset_date = reset_date
             # assigning expire date
-            if self.leave_type_id.carryforward_type == "carryforward expire":
-                expired_date = self.set_expired_date(
-                    assigned_date=self.assigned_date, available_leave=self
-                )
-                self.expired_date = expired_date
+        if self.leave_type_id.carryforward_type == "carryforward expire":
+            expiry_date = self.assigned_date
+            if self.leave_type_id.carryforward_expire_date:
+                expiry_date = self.leave_type_id.carryforward_expire_date
+            self.expired_date = expiry_date
 
         self.total_leave_days = max(self.available_days + self.carryforward_days, 0)
         self.carryforward_days = max(self.carryforward_days, 0)

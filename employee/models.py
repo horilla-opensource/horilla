@@ -140,7 +140,11 @@ class Employee(models.Model):
         return getattr(getattr(self, "employee_work_info", None), "company_id", None)
 
     def get_date_format(self):
-        company = self.get_company()
+        company = (
+            self.get_company()
+            if self.get_company()
+            else Company.objects.filter(hq=True).first()
+        )
 
         if company:
             date_format = company.date_format
@@ -498,7 +502,6 @@ class Employee(models.Model):
         if employee.employee_user_id is None:
             # Create user if no corresponding user exists
             username = self.email
-
             password = self.phone
 
             is_new_employee_flag = (

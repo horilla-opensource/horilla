@@ -164,6 +164,7 @@ class EmployeeForm(ModelForm):
             "additional_info",
             "is_from_onboarding",
             "is_directly_converted",
+            "is_active",
         )
         widgets = {
             "dob": TextInput(attrs={"type": "date", "id": "dob"}),

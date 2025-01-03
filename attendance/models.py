@@ -901,7 +901,15 @@ class AttendanceGeneralSetting(HorillaModel):
     """
 
     time_runner = models.BooleanField(default=True)
+    enable_check_in = models.BooleanField(
+        default=True,
+        verbose_name=_("Enable Check in/Check out"),
+        help_text=_(
+            "Enabling this feature allows employees to record their attendance using the Check-In/Check-Out button."
+        ),
+    )
     company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+    objects = HorillaCompanyManager()
 
 
 if apps.is_installed("leave") and apps.is_installed("payroll"):

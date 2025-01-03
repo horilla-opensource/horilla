@@ -950,7 +950,7 @@ class InterviewSchedule(HorillaModel):
         related_name="candidate_interview",
         on_delete=models.CASCADE,
     )
-    employee_id = models.ManyToManyField(Employee, verbose_name=_("interviewer"))
+    employee_id = models.ManyToManyField(Employee, verbose_name=_("Interviewer"))
     interview_date = models.DateField(verbose_name=_("Interview Date"))
     interview_time = models.TimeField(verbose_name=_("Interview Time"))
     description = models.TextField(

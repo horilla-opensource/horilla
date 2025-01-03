@@ -34,7 +34,12 @@ from django.core.validators import validate_ipv46_address
 from django.db import transaction
 from django.db.models import ProtectedError
 from django.forms import ValidationError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -2357,8 +2362,11 @@ def work_records_change_month(request):
 @login_required
 @permission_required("attendance.view_workrecords")
 def work_record_export(request):
-    month = int(request.GET.get("month", date.today().month))
-    year = int(request.GET.get("year", date.today().year))
+    try:
+        month = int(request.GET.get("month") or date.today().month)
+        year = int(request.GET.get("year") or date.today().year)
+    except ValueError:
+        return HttpResponseBadRequest("Invalid month or year parameter.")
 
     employees = EmployeeFilter(request.GET).qs
     records = WorkRecords.objects.filter(date__month=month, date__year=year)
@@ -2492,6 +2500,46 @@ def enable_disable_tracking_late_come_early_out(request):
             request, _("Tracking late come early out {} successfully").format(message)
         )
     return HttpResponse("<script>window.location.reload()</script>")
+
+
+@login_required
+def check_in_check_out_setting(request):
+    """
+    Check in check out setting
+    """
+    attendance_settings = AttendanceGeneralSetting.objects.all()
+    return render(
+        request,
+        "attendance/settings/check_in_check_out_enable_form.html",
+        {"attendance_settings": attendance_settings},
+    )
+
+
+@login_required
+@hx_request_required
+@permission_required("attendance.change_attendancegeneralsetting")
+def enable_disable_check_in(request):
+    """
+    Enables or disables check-in check-out.
+    """
+    if request.method == "POST":
+        is_checked = request.POST.get("isChecked")
+        setting_id = request.POST.get("setting_Id")
+        enable = bool(is_checked)
+
+        updated = AttendanceGeneralSetting.objects.filter(id=setting_id).update(
+            enable_check_in=enable
+        )
+
+        if updated:
+            message = _("Check In/Check Out has been successfully {}.").format(
+                _("enabled") if enable else _("disabled")
+            )
+            messages.success(request, message)
+            if enable:
+                return render(request, "attendance/components/in_out_component.html")
+
+    return HttpResponse("")
 
 
 @login_required

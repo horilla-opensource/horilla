@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% load i18n %} {% load static %} {% load basefilters %} {% load horillafilters %} {% block content %}
+{% extends 'index.html' %} {% load i18n %} {% load static %} {% load basefilters %} {% load horillafilters accessibility_filters %} {% block content %}
 <style>
 	.oh-general__tab{
 		margin-bottom: 15px;
@@ -91,6 +91,7 @@
 
 <div class="oh-wrapper">
 	<div class="oh-card mt-4 mb-5">
+		{% if perms.employee.change_ownprofile or 'profile_edit'|feature_is_accessible:request %}
 		<div class="d-flex flex-row-reverse">
 			<a href="{% url 'edit-profile' %}" class="">
 				<img
@@ -100,6 +101,7 @@
 				/>
 			</a>
 		</div>
+		{% endif %}
 		<div class="row">
 			<div class="col-12 col-sm-12 col-md-12 col-lg-4">
 				<div class="d-flex align-items-center">

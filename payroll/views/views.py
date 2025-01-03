@@ -423,6 +423,13 @@ def settings(request):
     """
     instance = PayrollSettings.objects.first()
     currency_form = PayrollSettingsForm(instance=instance)
+    selected_company_id = request.session.get("selected_company")
+
+    if selected_company_id == "all" or not selected_company_id:
+        companies = Company.objects.all()
+    else:
+        companies = Company.objects.filter(id=selected_company_id)
+
     if request.method == "POST":
 
         currency_form = PayrollSettingsForm(request.POST, instance=instance)
@@ -430,8 +437,16 @@ def settings(request):
 
             currency_form.save()
             messages.success(request, _("Payroll settings updated."))
-    # return render(request, "payroll/settings/payroll_settings.html", {"currency_form": currency_form})
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return render(
+        request,
+        "payroll/settings/payroll_settings.html",
+        {
+            "currency_form": currency_form,
+            "companies": companies,
+            "selected_company_id": selected_company_id,
+        },
+    )
 
 
 @login_required
@@ -845,7 +860,6 @@ def payslip_export(request):
             "id", flat=True
         )
     )
-    # print(contributions)
     department = []
     total_amount = 0
 
@@ -1371,7 +1385,10 @@ def payslip_pdf(request, id):
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
 
-        # Print the formatted date for each format
+        month_start_name = start_date.strftime("%B %d")
+        month_end_name = end_date.strftime("%B %d")
+
+        # Formatted date for each format
         for format_name, format_string in HORILLA_DATE_FORMATS.items():
             if format_name == date_format:
                 formatted_start_date = start_date.strftime(format_string)
@@ -1379,7 +1396,8 @@ def payslip_pdf(request, id):
         for format_name, format_string in HORILLA_DATE_FORMATS.items():
             if format_name == date_format:
                 formatted_end_date = end_date.strftime(format_string)
-
+        data["month_start_name"] = month_start_name
+        data["month_end_name"] = month_end_name
         data["formatted_start_date"] = formatted_start_date
         data["formatted_end_date"] = formatted_end_date
         data["employee"] = payslip.employee_id
@@ -1670,7 +1688,11 @@ def initial_notice_period(request):
     settings = settings if settings else PayrollGeneralSetting()
     settings.notice_period = max(notice_period, 0)
     settings.save()
-    messages.success(request, "Initial notice period updated")
+    messages.success(
+        request, _("The initial notice period has been successfully updated.")
+    )
+    if request.META.get("HTTP_HX_REQUEST"):
+        return HttpResponse()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 

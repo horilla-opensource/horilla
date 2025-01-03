@@ -556,45 +556,49 @@ def initialize_job_position_delete(request, obj_id):
 
 def login_user(request):
     """
-    This method is used render login template and authenticate user
+    Handles user login and authentication.
     """
     if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
-        next_url = request.GET.get("next")
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        next_url = request.GET.get("next", "/")
         query_params = request.GET.dict()
-        if "next" in query_params:
-            del query_params["next"]
+        query_params.pop("next", None)
+        params = urlencode(query_params)
 
-        params = f"{urlencode(query_params)}"
         user = authenticate(request, username=username, password=password)
-        if user is None:
+
+        if not user:
             user_object = User.objects.filter(username=username).first()
-            is_active = user_object.is_active if user_object else None
-            if is_active is True or is_active is None:
-                messages.error(request, _("Invalid username or password."))
+            if user_object and not user_object.is_active:
+                messages.warning(request, _("Access Denied: Your account is blocked."))
             else:
-                messages.warning(
-                    request,
-                    _("Access Denied: Your login credentials are currently blocked."),
-                )
-            return redirect("/login")
-        if user.employee_get.is_active == False:
+                messages.error(request, _("Invalid username or password."))
+            return redirect("login")
+
+        employee = getattr(user, "employee_get", None)
+        if employee is None:
+            messages.error(
+                request,
+                _("An employee related to this user's credentials does not exist."),
+            )
+            return redirect("login")
+        if not employee.is_active:
             messages.warning(
                 request,
                 _(
                     "This user is archived. Please contact the manager for more information."
                 ),
             )
-            return redirect("/login")
+            return redirect("login")
+
         login(request, user)
-        messages.success(request, _("Login Success"))
-        if next_url:
-            url = f"{next_url}"
-            if params:
-                url += f"?{params}"
-            return redirect(url)
-        return redirect("/")
+        messages.success(request, _("Login successful."))
+
+        if params:
+            next_url += f"?{params}"
+        return redirect(next_url)
+
     return render(
         request, "login.html", {"initialize_database": initialize_database_condition()}
     )
@@ -733,18 +737,20 @@ def change_password(request):
     user = request.user
     form = ChangePasswordForm(user=user)
     if request.method == "POST":
-        response = render(request, "base/auth/password_change.html", {"form": form})
         form = ChangePasswordForm(user, request.POST)
         if form.is_valid():
             new_password = form.cleaned_data["new_password"]
             user.set_password(new_password)
             user.save()
             user = authenticate(request, username=user.username, password=new_password)
+            if hasattr(user, "is_new_employee"):
+                user.is_new_employee = False
+                user.save()
             login(request, user)
             messages.success(request, _("Password changed successfully"))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HttpResponse("<script>window.location.href='/';</script>")
+        return render(request, "base/auth/password_change_form.html", {"form": form})
+
     return render(request, "base/auth/password_change.html", {"form": form})
 
 
@@ -806,48 +812,6 @@ def home(request):
     }
 
     return render(request, "index.html", context)
-
-
-@login_required
-def announcement_list(request):
-    general_expire_date = (
-        AnnouncementExpire.objects.values_list("days", flat=True).first() or 30
-    )
-    announcements = Announcement.objects.all()
-    announcements_to_update = []
-
-    for announcement in announcements.filter(expire_date__isnull=True):
-        announcement.expire_date = announcement.created_at + timedelta(
-            days=general_expire_date
-        )
-        announcements_to_update.append(announcement)
-
-    if announcements_to_update:
-        Announcement.objects.bulk_update(announcements_to_update, ["expire_date"])
-
-    announcements = announcements.filter(expire_date__gte=datetime.today().date())
-
-    if request.user.has_perm("base.view_announcement"):
-        announcement_list = announcements
-    else:
-        announcement_list = announcements.filter(
-            Q(employees=request.user.employee_get) | Q(employees__isnull=True)
-        )
-
-    announcement_list = announcement_list.prefetch_related(
-        "announcementview_set"
-    ).order_by("-created_at")
-    for announcement in announcement_list:
-        announcement.has_viewed = announcement.announcementview_set.filter(
-            user=request.user, viewed=True
-        ).exists()
-    instance_ids = json.dumps([instance.id for instance in announcement_list])
-    context = {
-        "announcements": announcement_list,
-        "general_expire_date": general_expire_date,
-        "instance_ids": instance_ids,
-    }
-    return render(request, "announcements_list.html", context)
 
 
 @login_required
@@ -3439,12 +3403,13 @@ def work_type_request_search(request):
 
 def handle_wtr_close_hx_url(request):
     employee = request.user.employee_get.id
-    HTTP_REFERER = request.META.get("HTTP_REFERER", None)
+    HTTP_REFERER = request.META.get("HTTP_REFERER", "")
     previous_data = unquote(request.GET.urlencode().replace("pd=", ""))
     close_hx_url = ""
     close_hx_target = ""
-    if "/" + "/".join(HTTP_REFERER.split("/")[3:]) == "/":
-        close_hx_url = f"{reverse('dashboard-work-type-request')}"
+
+    if HTTP_REFERER and "/" + "/".join(HTTP_REFERER.split("/")[3:]) == "/":
+        close_hx_url = reverse("dashboard-work-type-request")
         close_hx_target = "#WorkTypeRequestApproveBody"
     elif HTTP_REFERER and HTTP_REFERER.endswith("work-type-request-view/"):
         close_hx_url = f"/work-type-request-search?{previous_data}"
@@ -5181,21 +5146,27 @@ def history_field_settings(request):
     return redirect(general_settings)
 
 
+@login_required
+@permission_required("horilla_audit.change_accountblockunblock")
 def enable_account_block_unblock(request):
     if request.method == "POST":
-        enabled = request.POST.get("enable_block_account")
-        if enabled == "on":
-            enabled = True
-        else:
-            enabled = False
-        if AccountBlockUnblock.objects.exists():
-            instance = AccountBlockUnblock.objects.first()
+        enabled = request.POST.get("enable_block_account") == "on"
+        instance = AccountBlockUnblock.objects.first()
+        if instance:
             instance.is_enabled = enabled
-            messages.success(request, _("Settings updated."))
             instance.save()
         else:
             AccountBlockUnblock.objects.create(is_enabled=enabled)
+        messages.success(
+            request,
+            _(
+                f"Account block/unblock setting has been {'enabled' if enabled else 'disabled'}."
+            ),
+        )
+        if request.META.get("HTTP_HX_REQUEST"):
+            return HttpResponse()
         return redirect(general_settings)
+    return HttpResponse(status=405)
 
 
 @login_required
@@ -6150,6 +6121,8 @@ def pagination_settings_view(request):
             if pagination_form.is_valid():
                 pagination_form.save()
                 messages.success(request, _("Default pagination updated."))
+    if request.META.get("HTTP_HX_REQUEST"):
+        return HttpResponse()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
