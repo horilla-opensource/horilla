@@ -614,32 +614,33 @@ if apps.is_installed("leave"):
                     ).delete()
 
 
-class OverrideWorkInfo(EmployeeWorkInformation):
-    """
-    This class is to override the Model default methods
-    """
+# class OverrideWorkInfo(EmployeeWorkInformation):
+#     """
+#     This class is to override the Model default methods
+#     """
 
-    @receiver(pre_save, sender=EmployeeWorkInformation)
-    def employeeworkinformation_pre_save(sender, instance, **_kwargs):
-        """
-        This method is used to override the save method for EmployeeWorkInformation Model
-        """
-        active_employee = (
-            instance.employee_id if instance.employee_id.is_active == True else None
-        )
-        if active_employee is not None:
-            contract_exists = active_employee.contract_set.exists()
-            if not contract_exists:
-                contract = Contract()
-                contract.contract_name = f"{active_employee}'s Contract"
-                contract.employee_id = active_employee
-                contract.contract_start_date = (
-                    instance.date_joining if instance.date_joining else datetime.today()
-                )
-                contract.wage = (
-                    instance.basic_salary if instance.basic_salary is not None else 0
-                )
-                contract.save()
+
+@receiver(pre_save, sender=EmployeeWorkInformation)
+def employeeworkinformation_pre_save(sender, instance, **_kwargs):
+    """
+    This method is used to override the save method for EmployeeWorkInformation Model
+    """
+    active_employee = (
+        instance.employee_id if instance.employee_id.is_active == True else None
+    )
+    if active_employee is not None:
+        contract_exists = active_employee.contract_set.exists()
+        if not contract_exists:
+            contract = Contract()
+            contract.contract_name = f"{active_employee}'s Contract"
+            contract.employee_id = active_employee
+            contract.contract_start_date = (
+                instance.date_joining if instance.date_joining else datetime.today()
+            )
+            contract.wage = (
+                instance.basic_salary if instance.basic_salary is not None else 0
+            )
+            contract.save()
 
 
 # Create your models here.
