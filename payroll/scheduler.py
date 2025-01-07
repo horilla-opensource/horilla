@@ -5,6 +5,7 @@ This module is used to register scheduled tasks
 """
 
 import json
+import sys
 from datetime import date, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -137,7 +138,11 @@ def auto_payslip_generate():
                 generate_payslip(date=date.today(), companies=companies, all=False)
 
 
-scheduler = BackgroundScheduler()
-scheduler.add_job(expire_contract, "interval", hours=4)
-scheduler.add_job(auto_payslip_generate, "interval", hours=3)
-scheduler.start()
+if not any(
+    cmd in sys.argv
+    for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
+):
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(expire_contract, "interval", hours=4)
+    scheduler.add_job(auto_payslip_generate, "interval", hours=3)
+    scheduler.start()

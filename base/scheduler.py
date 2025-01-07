@@ -1,5 +1,6 @@
 import calendar
 import datetime as dt
+import sys
 from datetime import date, datetime, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -429,66 +430,67 @@ def recurring_holiday():
         recurring_holiday.save()
 
 
-scheduler = BackgroundScheduler()
+if not any(
+    cmd in sys.argv
+    for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
+):
+    scheduler = BackgroundScheduler()
 
-# Set the initial start time to the current time
-start_time = datetime.now()
+    # Add jobs with next_run_time set to the end of the previous job
+    try:
+        scheduler.add_job(rotate_shift, "interval", minutes=5, id="job1")
+    except:
+        pass
 
-# Add jobs with next_run_time set to the end of the previous job
-try:
-    scheduler.add_job(rotate_shift, "interval", minutes=5, id="job1")
-except:
-    pass
+    try:
+        scheduler.add_job(
+            rotate_work_type,
+            "interval",
+            minutes=5,
+            id="job2",
+        )
+    except:
+        pass
 
-try:
-    scheduler.add_job(
-        rotate_work_type,
-        "interval",
-        minutes=5,
-        id="job2",
-    )
-except:
-    pass
+    try:
+        scheduler.add_job(
+            undo_shift,
+            "interval",
+            minutes=5,
+            id="job3",
+        )
+    except:
+        pass
 
-try:
-    scheduler.add_job(
-        undo_shift,
-        "interval",
-        minutes=5,
-        id="job3",
-    )
-except:
-    pass
+    try:
+        scheduler.add_job(
+            switch_shift,
+            "interval",
+            minutes=5,
+            id="job4",
+        )
+    except:
+        pass
 
-try:
-    scheduler.add_job(
-        switch_shift,
-        "interval",
-        minutes=5,
-        id="job4",
-    )
-except:
-    pass
+    try:
+        scheduler.add_job(
+            undo_work_type,
+            "interval",
+            minutes=5,
+            id="job6",
+        )
+    except:
+        pass
 
-try:
-    scheduler.add_job(
-        undo_work_type,
-        "interval",
-        minutes=5,
-        id="job6",
-    )
-except:
-    pass
+    try:
+        scheduler.add_job(
+            switch_work_type,
+            "interval",
+            minutes=5,
+            id="job5",
+        )
+    except:
+        pass
 
-try:
-    scheduler.add_job(
-        switch_work_type,
-        "interval",
-        minutes=5,
-        id="job5",
-    )
-except:
-    pass
-
-scheduler.add_job(recurring_holiday, "interval", hours=4)
-scheduler.start()
+    scheduler.add_job(recurring_holiday, "interval", hours=4)
+    scheduler.start()
