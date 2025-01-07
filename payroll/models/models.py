@@ -614,32 +614,33 @@ if apps.is_installed("leave"):
                     ).delete()
 
 
-class OverrideWorkInfo(EmployeeWorkInformation):
-    """
-    This class is to override the Model default methods
-    """
+# class OverrideWorkInfo(EmployeeWorkInformation):
+#     """
+#     This class is to override the Model default methods
+#     """
 
-    @receiver(pre_save, sender=EmployeeWorkInformation)
-    def employeeworkinformation_pre_save(sender, instance, **_kwargs):
-        """
-        This method is used to override the save method for EmployeeWorkInformation Model
-        """
-        active_employee = (
-            instance.employee_id if instance.employee_id.is_active == True else None
-        )
-        if active_employee is not None:
-            contract_exists = active_employee.contract_set.exists()
-            if not contract_exists:
-                contract = Contract()
-                contract.contract_name = f"{active_employee}'s Contract"
-                contract.employee_id = active_employee
-                contract.contract_start_date = (
-                    instance.date_joining if instance.date_joining else datetime.today()
-                )
-                contract.wage = (
-                    instance.basic_salary if instance.basic_salary is not None else 0
-                )
-                contract.save()
+
+@receiver(pre_save, sender=EmployeeWorkInformation)
+def employeeworkinformation_pre_save(sender, instance, **_kwargs):
+    """
+    This method is used to override the save method for EmployeeWorkInformation Model
+    """
+    active_employee = (
+        instance.employee_id if instance.employee_id.is_active == True else None
+    )
+    if active_employee is not None:
+        contract_exists = active_employee.contract_set.exists()
+        if not contract_exists:
+            contract = Contract()
+            contract.contract_name = f"{active_employee}'s Contract"
+            contract.employee_id = active_employee
+            contract.contract_start_date = (
+                instance.date_joining if instance.date_joining else datetime.today()
+            )
+            contract.wage = (
+                instance.basic_salary if instance.basic_salary is not None else 0
+            )
+            contract.save()
 
 
 # Create your models here.
@@ -1754,6 +1755,11 @@ class Reimbursement(HorillaModel):
             if EncashmentGeneralSettings.objects.first()
             else 1
         )
+        amount_for_bonus = (
+            EncashmentGeneralSettings.objects.first().bonus_amount
+            if EncashmentGeneralSettings.objects.first()
+            else 1
+        )
 
         # Setting the created use if the used dont have the permission
         has_perm = request.user.has_perm("payroll.change_reimbursement")
@@ -1773,6 +1779,9 @@ class Reimbursement(HorillaModel):
             assigned_leave = self.leave_type_id.employee_available_leave.filter(
                 employee_id=self.employee_id
             ).first()
+        if self.type == "bonus_encashment":
+            if self.status == "requested":
+                self.amount = (self.bonus_to_encash) * amount_for_bonus
         if self.status != "approved" or self.allowance_id is None:
             super().save(*args, **kwargs)
             if self.status == "approved" and self.allowance_id is None:

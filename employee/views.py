@@ -25,6 +25,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import models, transaction
 from django.db.models import F, ProtectedError
 from django.db.models.query import QuerySet
@@ -38,6 +39,9 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
 from accessibility.decorators import enter_if_accessible
+from accessibility.methods import update_employee_accessibility_cache
+from accessibility.middlewares import ACCESSIBILITY_CACHE_USER_KEYS
+from accessibility.models import DefaultAccessibility
 from base.forms import ModelForm
 from base.methods import (
     choosesubordinates,
@@ -207,12 +211,17 @@ def employee_profile(request):
 
 
 @login_required
+@enter_if_accessible(
+    feature="profile_edit",
+    perm="employee.change_employee",
+)
 def self_info_update(request):
     """
     This method is used to update own profile of an employee.
     """
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
+    badge_id = employee.badge_id
     bank_form = EmployeeBankDetailsForm(
         instance=EmployeeBankDetails.objects.filter(employee_id=employee).first()
     )
@@ -224,6 +233,8 @@ def self_info_update(request):
             if form.is_valid():
                 instance = form.save(commit=False)
                 instance.employee_user_id = user
+                if instance.badge_id is None:
+                    instance.badge_id = badge_id
                 instance.save()
                 messages.success(request, _("Profile updated."))
         elif request.POST.get("any_other_code1") is not None:
@@ -242,6 +253,28 @@ def self_info_update(request):
             "bank_form": bank_form,
         },
     )
+
+
+def profile_edit_access(request, emp_id):
+    feature = request.GET.get("feature", None)
+    accessibility = DefaultAccessibility.objects.filter(feature=feature).first()
+    if accessibility:
+        employees = Employee.objects.filter(id=emp_id)
+
+        if employee := employees.first():
+            if employee in accessibility.employees.all():
+                accessibility.employees.remove(employee)
+            else:
+                accessibility.employees.add(employee)
+
+            user_cache_key = ACCESSIBILITY_CACHE_USER_KEYS.get(
+                employees.first().employee_user_id.id, None
+            )
+            if user_cache_key:
+                cache.delete(user_cache_key[-1])
+                update_employee_accessibility_cache(user_cache_key[-1], employee)
+
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -334,7 +367,7 @@ def about_tab(request, obj_id, **kwargs):
     )
     return render(
         request,
-        "tabs/personal-tab.html",
+        "tabs/personal_tab.html",
         {
             "employee": employee,
             "employee_leaves": employee_leaves,
@@ -600,14 +633,10 @@ def update_document_title(request, id):
     if request.method == "POST":
         document.title = name
         document.save()
-
-        return JsonResponse(
-            {"success": True, "message": "Document title updated successfully"}
-        )
+        messages.success(request, _("Document title updated successfully"))
     else:
-        return JsonResponse(
-            {"success": False, "message": "Invalid request"}, status=400
-        )
+        messages.error(request, _("Invalid request"))
+    return HttpResponse("")
 
 
 @login_required
@@ -624,30 +653,40 @@ def document_delete(request, id):
     """
     try:
         document = Document.objects.filter(id=id)
-        # users can delete own documents
         if not request.user.has_perm("horilla_documents.delete_document"):
-            document = document.filter(employee_id__employee_user_id=request.user)
+            document = document.filter(
+                employee_id__employee_user_id=request.user
+            ).exclude(document_request_id__isnull=False)
         if document:
+            document_first = document.first()
             document.delete()
             messages.success(
                 request,
                 _(
-                    f"Document request {document.first()} for {document.first().employee_id} deleted successfully"
+                    f"Document request {document_first} for {document_first.employee_id} deleted successfully"
                 ),
             )
+            referrer = request.META.get("HTTP_REFERER", "")
+            referrer = "/" + "/".join(referrer.split("/")[3:])
+            if referrer.startswith("/employee/employee-view/") or referrer.endswith(
+                "/employee/employee-profile/"
+            ):
+                existing_documents = Document.objects.filter(
+                    employee_id=document_first.employee_id
+                )
+                if not existing_documents:
+                    return HttpResponse(
+                        f"""
+                            <span hx-get='/employee/document-tab/{document_first.employee_id.id}?employee_view=true'
+                            hx-target='#document_target' hx-trigger='load'></span>
+                        """
+                    )
+            return HttpResponse()
         else:
             messages.error(request, _("Document not found"))
-
     except ProtectedError:
         messages.error(request, _("You cannot delete this document."))
-
-    if "HTTP_HX_TARGET" in request.META and request.META.get(
-        "HTTP_HX_TARGET"
-    ).startswith("document"):
-        clear_messages(request)
-        return HttpResponse()
-    else:
-        return HttpResponse("<script>window.location.reload();</script>")
+    return HttpResponse("<script>window.location.reload();</script>")
 
 
 @login_required

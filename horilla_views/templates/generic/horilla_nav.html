@@ -24,6 +24,7 @@
     hx-on:submit="htmxLoadIndicator(this);"
     class="oh-main__titlebar oh-main__titlebar--right"
   >
+    <input type="text" name="nav_url" value="{{request.path}}" hidden>
     <div class="oh-input-group oh-input__search-group" id="searchGroup">
       <ion-icon
         name="search-outline"
@@ -236,6 +237,9 @@
     var data ={{last_filter|safe}}
     for (const key in data) {
       const field = form.elements[key];
+      if ({{empty_inputs|safe}}.includes(key)) {
+        continue
+      }
       const value = data[key][0];  // Get the first element in the array
 
       if (field) {

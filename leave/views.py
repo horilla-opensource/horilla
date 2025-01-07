@@ -1224,19 +1224,39 @@ def leave_assign_one(request, obj_id):
             ).values_list("employee_id", flat=True)
         )
 
-        # Identify new employees for assignment
+        expiry_date = (
+            leave_type.carryforward_expire_date
+            if leave_type.carryforward_expire_date
+            else None
+        )
         new_employees = list(set(employee_ids) - existing_leaves_set)
 
         assigned_count = 0
         if new_employees:
-            available_leaves = [
-                AvailableLeave(
+            available_leaves = []
+            for employee_id in new_employees:
+                leave = AvailableLeave(
                     leave_type_id=leave_type,
                     employee_id_id=employee_id,
                     available_days=leave_type.total_days,
                 )
-                for employee_id in new_employees
-            ]
+                if leave.reset_date is None:
+                    if leave_type.reset:
+                        leave.reset_date = leave.set_reset_date(
+                            assigned_date=leave.assigned_date, available_leave=leave
+                        )
+
+                if leave_type.carryforward_type == "carryforward expire":
+                    if not expiry_date:
+                        expiry_date = leave.assigned_date
+                    leave.expired_date = expiry_date
+
+                leave.total_leave_days = max(
+                    leave.available_days + leave.carryforward_days, 0
+                )
+                leave.carryforward_days = max(leave.carryforward_days, 0)
+                available_leaves.append(leave)
+
             AvailableLeave.objects.bulk_create(available_leaves)
             assigned_count = len(available_leaves)
 

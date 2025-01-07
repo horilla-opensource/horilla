@@ -3,15 +3,18 @@
 <div class="oh-inner-sidebar-content__header mt-4">
     <h2 class="oh-inner-sidebar-content__title">{% trans 'Resignation Request' %}</h2>
 </div>
-<form  hx-get="{% url 'enable-resignation-request' %}" hx-swap="none">
-  <div class="oh-label__info" for="application_tracking">
-    <label class="oh-label" for="application_tracking">{% trans "Resignation Request" %}</label>
-    <span class="oh-info mr-2" title="{% trans "By enabling this normal users can request for their resignationprogress" %}">
-    </span>
-  </div>
-  <div class="oh-switch p-3">
-    <input type="checkbox"class="oh-switch__checkbox" name="resignation_request" onchange="$(this).closest('form').find('input[type=submit]').click()" {% if enabled_resignation_request %} checked{% endif %} />
-  </div>
-  <input type="submit" hidden />
+<form hx-get="{% url 'enable-resignation-request' %}" hx-trigger="change from:#enableResignationRequest"  hx-swap="afterend"
+    hx-on-htmx-after-request="reloadMessage(this);">
+    <div class="oh-label__info" for="application_tracking">
+        <label class="oh-label" for="application_tracking">{% trans "Resignation Request" %}</label>
+        <span class="oh-info mr-2"
+            title="{% trans 'By enabling this normal users can request for their resignation progress' %}">
+        </span>
+    </div>
+    <div class="oh-switch p-3">
+        <input type="checkbox" class="oh-switch__checkbox" id="enableResignationRequest" name="resignation_request"
+            {% if enabled_resignation_request %} checked {% endif %} />
+    </div>
+    <input type="submit" hidden />
 </form>
 <div class="oh-inner-sidebar-content__footer"></div>

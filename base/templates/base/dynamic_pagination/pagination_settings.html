@@ -1,22 +1,21 @@
 {% load i18n %}
 
-<form action="{% url 'pagination-settings-view' %}" class='settings-label mb-1' method="post">
-  {% csrf_token %}
-  <div class="oh-inner-sidebar-content__header mt-4">
-    <h2 class="oh-inner-sidebar-content__title">{% trans "Default Records Per Page" %}</h2>
-  </div>
-  <div class="oh-label__info" for="pagination">
-    <label class="oh-label" for="pagination">{% trans "Pagination" %}</label>
-    <span class="oh-info mr-2" title='{% trans "Default pagination for all views." %}'>
-    </span>
-  </div>
-  <input type="number" name="pagination" value="{{pagination_form.instance.pagination}}" class="oh-input w-25" placeholder="Pagination" required="" id="id_pagination">
-  <button
-    style="display: inline;margin-left: 10px;"
-    type="submit"
-    class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-    >
-    {% trans "Save Changes" %}
-  </button>
-  <div class="oh-inner-sidebar-content__footer"></div>
+<form hx-post="{% url 'pagination-settings-view' %}" class='settings-label mb-1' hx-swap="none"
+    hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 100);">
+    {% csrf_token %}
+    <div class="oh-inner-sidebar-content__header mt-4">
+        <h2 class="oh-inner-sidebar-content__title">{% trans "Default Records Per Page" %}</h2>
+    </div>
+    <div class="oh-label__info" for="pagination">
+        <label class="oh-label" for="pagination">{% trans "Pagination" %}</label>
+        <span class="oh-info mr-2" title='{% trans "Default pagination for all views." %}'>
+        </span>
+    </div>
+    <input type="number" name="pagination" value="{{pagination_form.instance.pagination}}" class="oh-input w-25"
+        placeholder="Pagination" required="" id="id_pagination">
+    <button style="display: inline;margin-left: 10px;" type="submit"
+        class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
+        {% trans "Save Changes" %}
+    </button>
+    <div class="oh-inner-sidebar-content__footer"></div>
 </form>

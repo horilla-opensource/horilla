@@ -11,7 +11,7 @@ from typing import Iterable
 import django
 from django.apps import apps
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser, User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save
@@ -1468,7 +1468,13 @@ class Announcement(HorillaModel):
     )
     department = models.ManyToManyField(Department, blank=True)
     job_position = models.ManyToManyField(JobPosition, blank=True)
+    company_id = models.ManyToManyField(
+        Company,
+        blank=True,
+        related_name="announcement",
+    )
     disable_comments = models.BooleanField(default=False)
+    objects = HorillaCompanyManager(related_company_field="company_id")
 
     def get_views(self):
         """
@@ -1638,7 +1644,6 @@ class Holidays(HorillaModel):
     company_id = models.ForeignKey(
         Company,
         null=True,
-        editable=False,
         on_delete=models.PROTECT,
         verbose_name=_("Company"),
     )
@@ -1667,9 +1672,7 @@ class CompanyLeaves(HorillaModel):
         max_length=100, choices=WEEKS, blank=True, null=True
     )
     based_on_week_day = models.CharField(max_length=100, choices=WEEK_DAYS)
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
+    company_id = models.ForeignKey(Company, null=True, on_delete=models.PROTECT)
     objects = HorillaCompanyManager(related_company_field="company_id")
 
     class Meta:
@@ -1747,6 +1750,15 @@ class PenaltyAccounts(HorillaModel):
         ordering = ["-created_at"]
 
 
+class NotificationSound(models.Model):
+    from employee.models import Employee
+
+    employee = models.OneToOneField(
+        Employee, on_delete=models.CASCADE, related_name="notification_sound"
+    )
+    sound_enabled = models.BooleanField(default=False)
+
+
 @receiver(post_save, sender=PenaltyAccounts)
 def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
     """
@@ -1794,3 +1806,6 @@ def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
                 )
 
             available.save()
+
+
+User.add_to_class("is_new_employee", models.BooleanField(default=False))

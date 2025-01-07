@@ -1,117 +1,114 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-  <button type="button" class="oh-modal__close" aria-label="Close">
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <button type="button" class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <!-- htmx form -->
 <div class="oh-modal__dialog-body">
-{% if request.GET.assets_ids %}
-<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button hx-get="{% url 'own-asset-individual-view' previous %}?assets_ids={{assets_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev" data-action="previous">
-        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
-        aria-label="chevron back outline"></ion-icon>
-    </button>
-
-    <button hx-get="{% url 'own-asset-individual-view' next %}?assets_ids={{assets_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next" data-action="next">
-        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
-        aria-label="chevron forward outline"></ion-icon>
-    </button>
-</div>
-{% endif %}
-
-<div class="oh-modal__dialog-title mb-3">{% trans "Asset Information" %}</div>
-<div class="row">
-  <div class="col-12 col-md-12 col-lg-6">
-    <div class="oh-modal__group mt-2">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Asset Name" %}</label>
-      <label class="oh-timeoff-modal__stat-count">{{asset.asset_name}}</label>
-    </div>
-  </div>
-
-  <div class="col-12 col-md-12 col-lg-6">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Description" %}</label>
-      <div class="oh-modal__description">
-        {{asset.asset_description}}
-      </div>
-    </div>
-  </div>
-
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Tracking Id" %}</label>
-      <label class="oh-timeoff-modal__stat-count">{{asset.asset_tracking_id}}</label>
-    </div>
-  </div>
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Assigned Date" %}</label>
-      <label class="oh-timeoff-modal__stat-count dateformat_changer">{{asset_assignment.assigned_date}}</label>
-    </div>
-  </div>
-
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Status" %}</label>
-      {% if asset_assignment.return_request %}
-        <span class="link-primary"> {% trans "Requested to return" %} </span>
-      {% else %}
-        <label class="oh-timeoff-modal__stat-count">{{asset.get_asset_status_display}}</label>
-      {% endif %}
-    </div>
-  </div>
-
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Assigned By" %}</label>
-      <label class="oh-timeoff-modal__stat-count">{{asset_assignment.assigned_by_employee_id}}</label>
-    </div>
-  </div>
-
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Batch No" %}</label>
-      <label class="oh-timeoff-modal__stat-count">{{asset.asset_lot_number_id}}</label>
-    </div>
-  </div>
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-timeoff-modal__stat-title">{% trans "Category" %}</label>
-      <label class="oh-timeoff-modal__stat-count">{{asset.asset_category_id}}</label>
-    </div>
-  </div>
-
-  <div class="oh-modal__button-container text-center mt-3">
-    {% if perms.asset.change_assetassignment or not asset_assignment.return_request %}
-      <div class="oh-btn-group">
-          {% if perms.asset.change_assetassignment %}
-            <button
-                href="#"
-                class="oh-btn oh-btn--secondary w-100"
-                role="button"
-                data-toggle="oh-modal-toggle"
-                data-target="#objectCreateModal"
-                hx-get="{%url 'asset-allocate-return'  asset_id=asset.id %}"
-                hx-target="#objectCreateModalTarget"
-              >
-                <ion-icon name="return-down-back-sharp"></ion-icon>{% trans	"Return" %}
+    {% if request.GET.assets_ids %}
+        <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+            <button hx-get="{% url 'own-asset-individual-view' previous %}?assets_ids={{assets_ids}}"
+                hx-target="#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev"
+                data-action="previous">
+                <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+                    aria-label="chevron back outline"></ion-icon>
             </button>
-          {% else %}
-            {% if not asset_assignment.return_request %}
-              <form class=" w-100" action = "{% url 'asset-allocate-return-request' asset_id=asset_assignment.id %}"
-                  onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');"
-                  >
-                  {% csrf_token %}
-                  <button type="submit" class="oh-btn oh-btn--secondary w-100">
-                      <ion-icon name="return-down-back-sharp"></ion-icon>
-                      {% trans "Return Request" %}
-                  </button>
-              </form>
-            {% endif %}
-          {% endif %}
-      </div>
+
+            <button hx-get="{% url 'own-asset-individual-view' next %}?assets_ids={{assets_ids}}"
+                hx-target="#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next" data-action="next">
+                <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+                    aria-label="chevron forward outline"></ion-icon>
+            </button>
+        </div>
     {% endif %}
-  </div>
-</div>
+
+    <div class="oh-modal__dialog-title mb-3">{% trans "Asset Information" %}</div>
+    <div class="row">
+        <div class="col-12 col-md-12 col-lg-6">
+            <div class="oh-modal__group mt-2">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Asset Name" %}</label>
+                <label class="oh-timeoff-modal__stat-count">{{asset.asset_name}}</label>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-12 col-lg-6">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Description" %}</label>
+                <div class="oh-modal__description">
+                    {{asset.asset_description}}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Tracking Id" %}</label>
+                <label class="oh-timeoff-modal__stat-count">{{asset.asset_tracking_id}}</label>
+            </div>
+        </div>
+        <div class="col-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Assigned Date" %}</label>
+                <label
+                    class="oh-timeoff-modal__stat-count dateformat_changer">{{asset_assignment.assigned_date}}</label>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Status" %}</label>
+                {% if asset_assignment.return_request %}
+                    <span class="link-primary"> {% trans "Requested to return" %} </span>
+                {% else %}
+                    <label class="oh-timeoff-modal__stat-count">{{asset.get_asset_status_display}}</label>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Assigned By" %}</label>
+                <label class="oh-timeoff-modal__stat-count">{{asset_assignment.assigned_by_employee_id}}</label>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Batch No" %}</label>
+                <label class="oh-timeoff-modal__stat-count">{{asset.asset_lot_number_id}}</label>
+            </div>
+        </div>
+        <div class="col-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-modal__group">
+                <label class="oh-timeoff-modal__stat-title">{% trans "Category" %}</label>
+                <label class="oh-timeoff-modal__stat-count">{{asset.asset_category_id}}</label>
+            </div>
+        </div>
+
+        <div class="oh-modal__button-container text-center mt-3">
+            {% if perms.asset.change_assetassignment or not asset_assignment.return_request %}
+                <div class="oh-btn-group">
+                    {% if perms.asset.change_assetassignment %}
+                        <button href="#" class="oh-btn oh-btn--secondary w-100" role="button" data-toggle="oh-modal-toggle"
+                            data-target="#objectCreateModal" hx-get="{%url 'asset-allocate-return'  asset_id=asset.id %}"
+                            hx-target="#objectCreateModalTarget">
+                            <ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}
+                        </button>
+                    {% else %}
+                        {% if not asset_assignment.return_request %}
+                            <form class=" w-100" action="{% url 'asset-allocate-return-request' asset_id=asset_assignment.id %}"
+                                onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');">
+                                {% csrf_token %}
+                                <button type="submit" class="oh-btn oh-btn--secondary w-100">
+                                    <ion-icon name="return-down-back-sharp"></ion-icon>
+                                    {% trans "Return Request" %}
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </div>

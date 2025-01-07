@@ -7,12 +7,14 @@ from distutils.version import (  # pylint: disable=no-name-in-module,import-erro
 from django import get_version
 from django.contrib.auth.decorators import login_required
 from django.forms import model_to_dict
+from django.http import HttpResponse  # noqa
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.generic import ListView
 from swapper import load_model
 
+from base.models import NotificationSound
 from notifications import settings
 from notifications.settings import get_config
 from notifications.utils import id2slug, slug2id
@@ -24,8 +26,6 @@ if StrictVersion(get_version()) >= StrictVersion("1.7.0"):
 else:
     # Django 1.6 doesn't have a proper JsonResponse
     import json
-
-    from django.http import HttpResponse  # noqa
 
     def date_handler(obj):
         return obj.isoformat() if hasattr(obj, "isoformat") else obj
@@ -248,3 +248,14 @@ def live_all_notification_count(request):
             "all_count": request.user.notifications.count(),
         }
     return JsonResponse(data)
+
+
+@login_required
+def notification_sound(request):
+    employee = request.user.employee_get
+    sound, created = NotificationSound.objects.get_or_create(employee=employee)
+    if not created:
+        sound.sound_enabled = not sound.sound_enabled
+        sound.save()
+
+    return HttpResponse("")

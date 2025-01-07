@@ -52,10 +52,10 @@
                     <div class="oh-sticky-table__td">
                         <div class="d-flex align-items-center">
                             <span
-                                class="oh-dot oh-dot--small me-1 oh-dot--color {% if asset_request.asset_request_status == 'Approved' %} oh-dot--success {% elif asset_request.asset_request_status == 'Rejected' %} oh-dot--danger {% elif asset_request.asset_request_status == 'Requested' %} oh-dot--info {% endif %}"
+                                class="oh-dot oh-dot--small me-1 oh-dot--color {{asset_request.status_html_class.color}}"
                             ></span
                             ><span
-                                class="{% if asset_request.asset_request_status == 'Approved' %} link-success {% elif asset_request.asset_request_status == 'Rejected' %} link-danger {% elif asset_request.asset_request_status == 'Requested' %} link-info {% endif %}"
+                                class="{{asset_request.status_html_class.link}}"
                                 >{% trans asset_request.asset_request_status %}</span
                             >
                         </div>

@@ -1,28 +1,25 @@
 {% load i18n %}
 
 <form action="{% url 'general-settings' %}" class='settings-label mb-1' method="post">
-  {% csrf_token %}
-  <div class="oh-inner-sidebar-content__header mt-4">
-    <h2 class="oh-inner-sidebar-content__title">{% trans "Announcement Expire" %}</h2>
-  </div>
-  <div>
-    <div class="oh-label__info" for="defatul_expire">
-      <label class="oh-label" for="defatul_expire">{% trans "Default Expire Days" %}</label>
-      <span class="oh-info mr-2" title="{% trans "Set default announcement expire days" %}">
-      </span>
+    {% csrf_token %}
+    <div class="oh-inner-sidebar-content__header mt-4">
+        <h2 class="oh-inner-sidebar-content__title">{% trans "Announcement Expire" %}</h2>
     </div>
-    <input type="number" name="days" value="{{form.instance.days}}" class="oh-input w-25" placeholder="Days" id="id_days">
-  {% if perms.payroll.change_payrollsettings %}
-    <button
-      style="display: inline;margin-left: 10px;"
-      type="submit"
-      class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-    >
-      {% trans "Save Changes" %}
-    </button>
-  {% endif %}
-  </div>
+    <div>
+        <div class="oh-label__info" for="defatul_expire">
+            <label class="oh-label" for="defatul_expire">{% trans "Default Expire Days" %}</label>
+            <span class="oh-info mr-2" title="{% trans 'Set default announcement expire days' %}">
+            </span>
+        </div>
+        <input type="number" name="days" value="{{form.instance.days}}" class="oh-input w-25" placeholder="{% trans 'Days' %}" id="id_days">
+        {% if perms.payroll.change_payrollsettings %}
+            <button style="display: inline;margin-left: 10px;" type="submit"
+                class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
+                {% trans "Save Changes" %}
+            </button>
+        {% endif %}
+    </div>
 
-  <div class="oh-inner-sidebar-content__footer"></div>
+    <div class="oh-inner-sidebar-content__footer"></div>
 
 </form>

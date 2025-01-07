@@ -6,57 +6,60 @@ To set Horilla sidebar for onboarding
 
 from django.contrib.auth.context_processors import PermWrapper
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as trans
+from django.utils.translation import gettext_lazy as _
 
 from recruitment.models import InterviewSchedule
-from recruitment.templatetags.recruitmentfilters import is_stagemanager
+from recruitment.templatetags.recruitmentfilters import (
+    is_recruitmentmangers,
+    is_stagemanager,
+)
 
-MENU = trans("Recruitment")
+MENU = _("Recruitment")
 ACCESSIBILITY = "recruitment.sidebar.menu_accessibilty"
 IMG_SRC = "images/ui/recruitment.svg"
 
 SUBMENUS = [
     {
-        "menu": trans("Dashboard"),
+        "menu": _("Dashboard"),
         "redirect": reverse("recruitment-dashboard"),
     },
     {
-        "menu": trans("Recruitment Pipeline"),
+        "menu": _("Recruitment Pipeline"),
         "redirect": reverse("pipeline"),
         "accessibility": "recruitment.sidebar.pipeline_accessibility",
     },
     {
-        "menu": trans("Recruitment Survey"),
+        "menu": _("Recruitment Survey"),
         "redirect": reverse("recruitment-survey-question-template-view"),
         "accessibility": "recruitment.sidebar.survey_accessibility",
     },
     {
-        "menu": trans("Candidates"),
+        "menu": _("Candidates"),
         "redirect": reverse("candidate-view"),
         "accessibility": "recruitment.sidebar.candidates_accessibility",
     },
     {
-        "menu": trans("Interview"),
+        "menu": _("Interview"),
         "redirect": reverse("interview-view"),
         "accessibility": "recruitment.sidebar.interview_accessibility",
     },
     {
-        "menu": trans("Recruitment"),
+        "menu": _("Recruitment"),
         "redirect": reverse("recruitment-view"),
         "accessibility": "recruitment.sidebar.recruitment_accessibility",
     },
     {
-        "menu": trans("Open Jobs"),
+        "menu": _("Open Jobs"),
         "redirect": reverse("open-recruitments"),
         "accessibility": "recruitment.sidebar.recruitment_accessibility",
     },
     {
-        "menu": trans("Stages"),
+        "menu": _("Stages"),
         "redirect": reverse("rec-stage-view"),
         "accessibility": "recruitment.sidebar.stage_accessibility",
     },
     {
-        "menu": trans("Skill Zone"),
+        "menu": _("Skill Zone"),
         "redirect": reverse("skill-zone-view"),
         "accessibility": "recruitment.sidebar.skill_zone_accessibility",
     },
@@ -88,8 +91,8 @@ def survey_accessibility(
     request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
     _submenu["redirect"] = _submenu["redirect"] + "?closed=false"
-    return is_stagemanager(request.user) or request.user.has_perm(
-        "recruitment.view_recruitment"
+    return is_recruitmentmangers(request.user) or request.user.has_perm(
+        "recruitment.view_recruitmentsurvey"
     )
 
 

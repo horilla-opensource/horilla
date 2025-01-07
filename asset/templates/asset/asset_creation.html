@@ -1,168 +1,137 @@
 {% load static i18n %} {% load i18n %} {% load widget_tweaks %}
 {% if asset_creation_form.asset_category_id.initial %}
-<!-- start of messages -->
-{% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
-    </div>
-  </div>
-  {% endfor %}
-  <script>
-    setTimeout(function () {
-      $(".oh-modal__close").click();
-    }, 1000);
-  </script>
-</div>
-{% endif %}
-<!-- end of messages -->
+    <!-- start of messages -->
+    {% if messages %}
+        <div class="oh-wrapper">
+            {% for message in messages %}
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated {{message.tags}}">
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+            <script>
+                setTimeout(function () {
+                    $(".oh-modal__close").click();
+                }, 1000);
+            </script>
+        </div>
+    {% endif %}
+    <!-- end of messages -->
 
-<!-- checking if the category id is present  -->
-<div class="oh-modal__dialog-header">
-  <button
-    type="button"
-    class="oh-modal__close"
-    data-dismiss="oh-modal"
-    aria-label="Close"
-    hx-get="{%url 'asset-list' cat_id=asset_creation_form.asset_category_id.initial %}?{{request.GET.urlencode}}&category={{asset_creation_form.asset_category_id.initial}}"
-    hx-target="#assetCategory{{asset_creation_form.asset_category_id.initial}}"
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
-  <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
-    <h5>{% trans "Asset Creation" %}</h5>
-  </span>
-</div>
-<div class="oh-modal__dialog-body">
-  <form
-    hx-post="{%url 'asset-creation' asset_category_id=asset_creation_form.asset_category_id.initial %}"
-    hx-target="#objectCreateModalTarget"
-    data-id="{{asset_creation_form.asset_category_id.initial}}"
-  >
-    {% csrf_token %} {{asset_creation_form.asset_category_id.as_hidden }}
-    <div class="oh-profile-section pt-0" id="AssetCreationFormContainer">
-      <div class="oh-input__group">
-        <label
-          class="oh-input__label"
-          for="{{asset_creation_form.asset_name.id_for_label}}"
-          >{% trans "Asset Name" %}</label
-        >
-        {{asset_creation_form.asset_name}}
-        {{asset_creation_form.asset_name.errors}}
-      </div>
-      <div class="oh-input__group">
-        <label
-          class="oh-input__label"
-          for="{{asset_creation_form.asset_description.id_for_label}}"
-        >
-          {% trans "Description" %}</label
-        >
-        {{asset_creation_form.asset_description}}
-        {{asset_creation_form.asset_description.errors}}
-      </div>
-      <div class="row">
-        <div class="col-12 col-sm-12 col-md-4 col-lg-4">
-          <div class="oh-input__group">
-            <label
-              class="oh-input__label"
-              for="{{asset_creation_form.asset_tracking_id.id_for_label}}"
-              >{% trans "Tracking Id" %}</label
-            >
-            {{asset_creation_form.asset_tracking_id}}
-            {{asset_creation_form.asset_tracking_id.errors}}
-          </div>
-        </div>
-        <div class="col-12 col-sm-12 col-md-4 col-lg-4">
-          <div class="oh-input__group">
-            <label
-              class="oh-input__label"
-              for="{{asset_creation_form.asset_purchase_date.id_for_label}}"
-              >{% trans "Purchase Date" %}</label
-            >
-            {{asset_creation_form.asset_purchase_date |attr:"type:date" }}
-            {{asset_creation_form.asset_purchase_date.errors }}
-          </div>
-        </div>
-        <div class="col-12 col-sm-12 col-md-4 col-lg-4">
-          <div class="oh-input__group">
-            <label
-              class="oh-input__label"
-              for="{{asset_creation_form.asset_purchase_cost.id_for_label}}"
-              >{% trans "Cost" %}</label
-            >
-            {{asset_creation_form.asset_purchase_cost}}
-            {{asset_creation_form.asset_purchase_cost.errors}}
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-          <div class="oh-input__group">
-            <label
-              class="oh-input__label"
-              for="{{asset_creation_form.asset_status.id_for_label}}"
-              >{% trans "Status" %}</label
-            >
-            {{asset_creation_form.asset_status }}
-            {{asset_creation_form.asset_status.errors }}
-          </div>
-        </div>
-        <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-          <div class="oh-input__group">
-            <label
-              class="oh-input__label"
-              for="{{asset_creation_form.asset_lot_number_id.id_for_label}}"
-              >{% trans "Batch No" %}</label
-            >
-            {{asset_creation_form.asset_lot_number_id }}
-            {{asset_creation_form.asset_lot_number_id.errors}}
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-12 col-sm-12 col-md-4 col-lg-6">
-          <div class="oh-input__group">
-            <label
-              class="oh-input__label"
-              for="{{asset_creation_form.expiry_date.id_for_label}}"
-              >{% trans "Expiry Date" %}</label
-            >
-            {{asset_creation_form.expiry_date |attr:"type:date" }}
-            {{asset_creation_form.expiry_date.errors }}
-          </div>
-        </div>
-        <div class="col-12 col-sm-12 col-md-4 col-lg-6 d-none notify">
-          <div class="oh-input__group">
-            <label
-              class="oh-input__label"
-              for="{{asset_creation_form.notify_before.id_for_label}}"
-              >{% trans "Notify Before (days)" %}</label
-            >
-            {{asset_creation_form.notify_before}}
-            {{asset_creation_form.notify_before.errors}}
-          </div>
-        </div>
-      </div>
-      <div class="oh-modal__dialog-footer p-0">
-        <button
-          type="submit"
-          class="oh-btn oh-btn--secondary oh-btn--shadow mt-3"
-        >
-          {% trans "Save" %}
+    <!-- checking if the category id is present  -->
+    <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close"
+            hx-get="{%url 'asset-list' cat_id=asset_creation_form.asset_category_id.initial %}?{{request.GET.urlencode}}&category={{asset_creation_form.asset_category_id.initial}}"
+            hx-target="#assetCategory{{asset_creation_form.asset_category_id.initial}}">
+            <ion-icon name="close-outline"></ion-icon>
         </button>
-      </div>
+        <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
+            <h5>{% trans "Asset Creation" %}</h5>
+        </span>
     </div>
-  </form>
-</div>
+    <div class="oh-modal__dialog-body">
+        <form hx-post="{%url 'asset-creation' asset_category_id=asset_creation_form.asset_category_id.initial %}"
+            hx-target="#objectCreateModalTarget" data-id="{{asset_creation_form.asset_category_id.initial}}">
+            {% csrf_token %} {{asset_creation_form.asset_category_id.as_hidden }}
+            <div class="oh-profile-section pt-0" id="AssetCreationFormContainer">
+                <div class="oh-input__group">
+                    <label class="oh-input__label" for="{{asset_creation_form.asset_name.id_for_label}}">
+                        {% trans "Asset Name" %}
+                    </label>
+                    {{asset_creation_form.asset_name}}
+                    {{asset_creation_form.asset_name.errors}}
+                </div>
+                <div class="oh-input__group">
+                    <label class="oh-input__label" for="{{asset_creation_form.asset_description.id_for_label}}">
+                        {% trans "Description" %}</label>
+                    {{asset_creation_form.asset_description}}
+                    {{asset_creation_form.asset_description.errors}}
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{asset_creation_form.asset_tracking_id.id_for_label}}">
+                                {% trans "Tracking Id" %}
+                            </label>
+                            {{asset_creation_form.asset_tracking_id}}
+                            {{asset_creation_form.asset_tracking_id.errors}}
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{asset_creation_form.asset_purchase_date.id_for_label}}">
+                                {% trans "Purchase Date" %}
+                            </label>
+                            {{asset_creation_form.asset_purchase_date |attr:"type:date" }}
+                            {{asset_creation_form.asset_purchase_date.errors }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{asset_creation_form.asset_purchase_cost.id_for_label}}">
+                                {% trans "Cost" %}
+                            </label>
+                            {{asset_creation_form.asset_purchase_cost}}
+                            {{asset_creation_form.asset_purchase_cost.errors}}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{asset_creation_form.asset_status.id_for_label}}">
+                                {% trans "Status" %}
+                            </label>
+                            {{asset_creation_form.asset_status }}
+                            {{asset_creation_form.asset_status.errors }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{asset_creation_form.asset_lot_number_id.id_for_label}}">
+                                {% trans "Batch No" %}
+                            </label>
+                            {{asset_creation_form.asset_lot_number_id }}
+                            {{asset_creation_form.asset_lot_number_id.errors}}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-6">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{asset_creation_form.expiry_date.id_for_label}}">
+                                {% trans "Expiry Date" %}
+                            </label>
+                            {{asset_creation_form.expiry_date |attr:"type:date" }}
+                            {{asset_creation_form.expiry_date.errors }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-6 d-none notify">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{asset_creation_form.notify_before.id_for_label}}">
+                                {% trans "Notify Before (days)" %}
+                            </label>
+                            {{asset_creation_form.notify_before}}
+                            {{asset_creation_form.notify_before.errors}}
+                        </div>
+                    </div>
+                </div>
+                <div class="oh-modal__dialog-footer p-0">
+                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow mt-3">
+                        {% trans "Save" %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 {% endif %}
 
 <script>
-  $(document).ready(function() {
-    $("#id_expiry_date").on('change', function() {
-      $(".notify").removeClass('d-none');
+    $(document).ready(function () {
+        $("#id_expiry_date").on('change', function () {
+            $(".notify").removeClass('d-none');
+        })
     })
-  })
 
 </script>

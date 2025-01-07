@@ -1,5 +1,6 @@
 {% load i18n %}
 {% include 'filter_tags.html' %}{% load horillafilters %}
+
 <div class="oh-tabs__contents">
     <div class="oh-tabs__content " id="tab_3">
         <!-- Sticky Table  for own objective-->
@@ -148,24 +149,8 @@
                                                 <div class="oh-sticky-table__td dateformat_changer">{{ asset_request.asset_request_date }}</div>
                                                 <div class="oh-sticky-table__td">
                                                     <div class="d-flex align-items-center">
-                                                        <span class="oh-dot oh-dot--small  me-1 oh-dot--color
-                                                                    {% if asset_request.asset_request_status == 'Approved' %}
-                                                                        oh-dot--success
-                                                                    {% elif asset_request.asset_request_status == 'Rejected' %}
-                                                                        oh-dot--danger
-                                                                    {% elif asset_request.asset_request_status == 'Requested' %}
-                                                                        oh-dot--info
-                                                                    {% endif %}">
-                                                        </span>
-                                                        <span class="{% if asset_request.asset_request_status == 'Approved' %}
-                                                                        link-success
-                                                                    {% elif asset_request.asset_request_status == 'Rejected' %}
-                                                                        link-danger
-                                                                    {% elif asset_request.asset_request_status == 'Requested' %}
-                                                                        link-info
-                                                                    {% endif %}">
-                                                                {% trans asset_request.asset_request_status %}
-                                                        </span>
+                                                        <span class="oh-dot oh-dot--small me-1 oh-dot--color {{asset_request.status_html_class.color}}"></span>
+                                                        <span class="{{asset_request.status_html_class.link}}" >{% trans asset_request.asset_request_status %}</span>
                                                     </div>
                                                 </div>
                                                 {% if perms.asset.add_assetassignment %}
@@ -181,10 +166,11 @@
                                                                     <ion-icon name="checkmark-outline"></ion-icon>
 
                                                                 </a>
-                                                                <form
-                                                                    action="{% url 'asset-request-reject' req_id=asset_request.id %}"
-                                                                    class="w-50" method="post"
-                                                                    onsubmit="return confirm('{% trans " Do you want to reject this request?" %}')">
+                                                                <form class="w-50" hx-confirm="{% trans 'Do you want to reject this asset request?' %}"
+                                                                    hx-post="{% url 'asset-request-reject' req_id=asset_request.id %}?{{pg}}"
+                                                                    hx-target="#asset_request_allocation_list"
+                                                                    hx-on-htmx-after-request="setTimeout(() => { $('#tab_1').addClass('oh-tabs__content--active'); reloadMessage(); }, 300);"
+                                                                    >
                                                                     {% csrf_token %}
                                                                     <button class="oh-btn oh-btn--danger w-100" title="{% trans 'Reject' %}" onclick="event.stopPropagation();">
                                                                         <ion-icon name="close-outline"></ion-icon>
@@ -262,10 +248,11 @@
                                                                     hx-target="#objectCreateModalTarget">
                                                                     <ion-icon name="checkmark-outline"></ion-icon>
                                                                 </a>
-                                                                <form
-                                                                    action="{% url 'asset-request-reject' req_id=asset_request.id %}"
-                                                                    class="w-100" method="post" class="w-100"
-                                                                    onsubmit="event.stopPropagation(); return confirm('{% trans " Do you want to reject this request?" %}')">
+                                                                <form class="w-100" hx-confirm="{% trans 'Do you want to reject this asset request?' %}"
+                                                                    hx-post="{% url 'asset-request-reject' req_id=asset_request.id %}?{{pg}}"
+                                                                    hx-target="#asset_request_allocation_list"
+                                                                    hx-on-htmx-after-request="setTimeout(() => { $('#tab_1').addClass('oh-tabs__content--active'); reloadMessage(); }, 300);"
+                                                                    >
                                                                     {% csrf_token %}
                                                                     <button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation();" title="{% trans 'Reject' %}">
                                                                         <ion-icon name="close-outline"></ion-icon>
@@ -367,21 +354,8 @@
                                 </div>
                                 <div class="oh-sticky-table__td">
                                     <div class="d-flex align-items-center">
-                                        <span class="oh-dot oh-dot--small  me-1 oh-dot--color
-                                            {% if asset_request.asset_request_status == 'Approved' %}
-                                                oh-dot--success
-                                            {% elif asset_request.asset_request_status == 'Rejected' %}
-                                                oh-dot--danger
-                                            {% elif asset_request.asset_request_status == 'Requested' %}
-                                                oh-dot--info
-                                            {% endif %}">
-                                        </span>
-                                        <span class="{% if asset_request.asset_request_status == 'Approved' %} link-success
-                                                    {% elif asset_request.asset_request_status == 'Rejected' %} link-danger
-                                                    {% elif asset_request.asset_request_status == 'Requested' %} link-info
-                                                    {% endif %}">
-                                            {% trans asset_request.asset_request_status %}
-                                        </span>
+                                        <span class="oh-dot oh-dot--small me-1 oh-dot--color {{asset_request.status_html_class.color}}"></span>
+                                        <span class="{{asset_request.status_html_class.link}}" >{% trans asset_request.asset_request_status %}</span>
                                     </div>
                                 </div>
                                 {% if perms.asset.add_assetassignment %}
@@ -395,8 +369,10 @@
                                                     hx-target="#objectCreateModalTarget">
                                                     <ion-icon name="checkmark-outline"></ion-icon>
                                                 </a>
-                                                <form action="{% url 'asset-request-reject' req_id=asset_request.id %}"
-                                                    onsubmit="event.stopPropagation(); return confirm('{% trans " Do you want to reject this request?" %}')" class="w-50" method="post">
+                                                <form class="w-50" hx-confirm="{% trans 'Do you want to reject this asset request?' %}"
+                                                    hx-post="{% url 'asset-request-reject' req_id=asset_request.id %}?{{pg}}"
+                                                    hx-on-htmx-after-request="setTimeout(() => { $('#tab_1').addClass('oh-tabs__content--active'); reloadMessage(); }, 300);"
+                                                    hx-target="#asset_request_allocation_list">
                                                     {% csrf_token %}
                                                     <button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation();" title="{% trans 'Reject' %}">
                                                         <ion-icon name="close-outline"></ion-icon>
@@ -470,8 +446,10 @@
                                                     hx-target="#objectCreateModalTarget" title="{% trans 'Approve' %}">
                                                     <ion-icon name="checkmark-outline"></ion-icon>
                                                 </a>
-                                                <form action="{% url 'asset-request-reject' req_id=asset_request.id %}"
-                                                    class="w-100" method="post" class="" onsubmit="return confirm('{% trans "Do you want to reject this request?" %}')">
+                                                <form class="w-100" hx-confirm="{% trans 'Do you want to reject this asset request?' %}"
+                                                    hx-post="{% url 'asset-request-reject' req_id=asset_request.id %}?{{pg}}"
+                                                    hx-on-htmx-after-request="setTimeout(() => { $('#tab_1').addClass('oh-tabs__content--active'); reloadMessage(); }, 300);"
+                                                    hx-target="#asset_request_allocation_list">
                                                     {% csrf_token %}
                                                     <button class="oh-btn oh-btn--danger w-100" title="{% trans 'Reject' %}">
                                                         <ion-icon name="close-outline"></ion-icon>

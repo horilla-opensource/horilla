@@ -58,18 +58,18 @@
 <div class="mt-4 d-flex">
   <span class="oh-activity-sidebar__title fw-bold">{{candidate}}'s {% trans "Scheduled Interviews" %}</span>
 </div>
-{% if perms.recruitment.add_interview or request.user|is_stagemanager %}
-<div class="d-flex" style="flex-direction: row-reverse;">
-    <button type="button" hx-get='{% url "interview-schedule" candidate.id %}' title="{% trans "Schedule Interview" %}"
-        hx-target="#createTarget"
-        hx-swap="innerHTML"
-        data-target="#createModal"
-        class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-        data-toggle="oh-modal-toggle">
-        <ion-icon name="add" class="mr-1 md hydrated" role="img" aria-label="add"></ion-icon>
-        {% trans "Add" %}
-    </button>
-</div>
+{% if perms.recruitment.add_interviewschedule or request.user|stage_manages:candidate.recruitment_id %}
+    <div class="d-flex" style="flex-direction: row-reverse;">
+        <button type="button" hx-get='{% url "interview-schedule" candidate.id %}' title="{% trans "Schedule Interview" %}"
+            hx-target="#createTarget"
+            hx-swap="innerHTML"
+            data-target="#createModal"
+            class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+            data-toggle="oh-modal-toggle">
+            <ion-icon name="add" class="mr-1 md hydrated" role="img" aria-label="add"></ion-icon>
+            {% trans "Add" %}
+        </button>
+    </div>
 {% endif %}
 
 <div class="tracking-card">
@@ -77,7 +77,7 @@
         <ol class="oh-activity-sidebar__qa-list" role="list">
             {% for interview in candidate.candidate_interview.all %}
                 <li class="oh-activity-sidebar__qa-item">
-                    {% if perms.recruitment.delete_interview or request.user|is_stagemanager %}
+                    {% if perms.recruitment.delete_interviewschedule or request.user|stage_manages:candidate.recruitment_id %}
                         <span class="float-end" title="{% trans "Delete" %}" hx-get="{% url 'delete-interview' interview.id %}?view=false"
                                 data-target="#activitySidebar"
                                 hx-swap="innerHTML" hx-target="#interview">
@@ -85,7 +85,7 @@
                                 aria-label="close outline"></ion-icon>
                         </span>
                     {% endif %}
-                    {% if perms.recruitment.add_interview or request.user|is_stagemanager %}
+                    {% if perms.recruitment.change_interviewschedule or request.user|stage_manages:candidate.recruitment_id %}
                         <span class="float-end" title="{% trans "Edit" %}" hx-get="{% url 'edit-interview' interview.id %}?view=false"
                                 data-target="#createModal" hx-swap="innerHTML" hx-target="#createTarget"
                                 data-toggle="oh-modal-toggle">

@@ -71,7 +71,14 @@ class ReloadField(View):
         parent_form = getattr(module, class_name)()
 
         dynamic_cache = CACHE.get(request.session.session_key + "cbv" + reload_field)
+        onchange = CACHE.get(
+            request.session.session_key + "cbv" + reload_field + "onchange"
+        )
+        if not onchange:
+            onchange = ""
+
         model: models.HorillaModel = dynamic_cache["model"]
+        value = dynamic_cache.get("value", "")
 
         cache_field = dynamic_cache["dynamic_field"]
         if cache_field != reload_field:
@@ -87,6 +94,11 @@ class ReloadField(View):
         form_field = forms.ChoiceField
         if isinstance(field, forms.ModelMultipleChoiceField):
             form_field = forms.MultipleChoiceField
+            dynamic_initial = request.GET.get("dynamic_initial", [])
+            value = eval_validate(f"""[{dynamic_cache["value"]},{dynamic_initial}]""")
+        else:
+            if not value and self.request.GET.get("dynamic_initial"):
+                value = eval_validate(self.request.GET.get("dynamic_initial"))
 
         parent_form.fields[cache_field] = form_field(
             choices=choices,
@@ -96,11 +108,9 @@ class ReloadField(View):
         parent_form.fields[cache_field].widget.option_template_name = (
             "horilla_widgets/select_option.html",
         )
-        dynamic_initial = request.GET.get("dynamic_initial", [])
         parent_form.fields[cache_field].widget.attrs = field.widget.attrs
-        parent_form.fields[cache_field].initial = eval_validate(
-            f"""[{dynamic_cache["value"]},{dynamic_initial}]"""
-        )
+        parent_form.fields[cache_field].initial = value
+        parent_form.fields[cache_field].widget.attrs["onchange"] = onchange
 
         field = parent_form[cache_field]
         dynamic_id: str = get_short_uuid(4)
@@ -257,11 +267,16 @@ class LastAppliedFilter(View):
         """
         Get method
         """
-        CACHE.set(
-            self.request.session.session_key + "last-applied-filter",
-            self.request.GET,
-            timeout=600,
+
+        nav_path = self.request.GET.get(
+            "nav_url",
         )
+        if nav_path:
+            CACHE.set(
+                self.request.session.session_key + "last-applied-filter" + nav_path,
+                self.request.GET,
+                timeout=600,
+            )
         return HttpResponse("success")
 
 

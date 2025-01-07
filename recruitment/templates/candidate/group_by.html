@@ -1,5 +1,41 @@
 {% load recruitmentfilters horillafilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %}
+<style>
+	.note-modal-backdrop {
+		z-index: 998 !important;
+	}
+
+	.tooltip {
+		position: relative;
+		display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
+	}
+
+	.tooltip .tooltiptext {
+		visibility: hidden;
+		width: auto; /* Allow the tooltip width to adjust based on content */
+		max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
+		background-color: green;
+		color: white;
+		text-align: center;
+		border-radius: 6px;
+		padding: 5px;
+		position: absolute;
+		z-index: 1;
+		bottom: 5%;
+		left: 50%;
+		transform: translateX(5%);
+		opacity: 0;
+		transition: opacity 0.3s;
+		white-space: nowrap; /* Prevents the text from wrapping */
+		overflow: hidden; /* Hides any overflowed content */
+		font-size: 15px;
+	}
+
+	.tooltip:hover .tooltiptext {
+		visibility: visible;
+		opacity: 1;
+	}
+  </style>
 
 {% if data %}
 	<div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
@@ -61,6 +97,7 @@
 									<div class="oh-sticky-table__sd
 									{% if cand.canceled %} row-status--red
 									{% elif cand.hired %} row-status--yellow
+									{% elif cand.converted %} row-status--blue
 									{% else %} row-status--purple
 									{% endif %}">
 										<div class="centered-div">
@@ -81,6 +118,16 @@
 													alt="Username" />
 												</div>
 												<span class="oh-profile__name oh-text--dark">{{cand}}</span>
+												{% if cand.email in emp_list %}
+													<span class="tooltip">
+														<span class="material-symbols-outlined ms-2" style="flex-direction: row-reverse;color:green;">
+															how_to_reg
+														</span>
+														<span class="tooltiptext fw-bold">
+															{% trans "Converted to employee." %}
+														</span>
+													</span>
+												{% endif %}
 											</div>
 										</div>
 									</div>
@@ -97,22 +144,31 @@
 										target="_blank" rel="noopener noreferrer"><span class="oh-btn oh-btn--info"> {% trans "Resume" %}</span>
 									</a>
 
-									<div class="oh-sticky-table__td">
-										{% if perms.recruitment.change_candidate %}
+									{% if perms.recruitment.change_candidate or perms.recruitment.add_rejectedcandidate or perms.recruitment.add_skillzonecandidate %}
+										<div class="oh-sticky-table__td">
 										<div class="oh-btn-group">
-										  	{% if not cand.email in emp_list and not cand.start_onboard %}
+											{% if perms.recruitment.change_candidate %}
+											{% if not cand.email in emp_list and not cand.start_onboard %}
 												<a href="{% url 'candidate-conversion' cand.id %}"
-													onclick="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
-													class="oh-btn oh-btn--light-bkg w-100"
-													title='{% trans "To employee " %}'
-													style="padding:0.8rem 1rem"
+												onclick="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
+												class="oh-btn oh-btn--light-bkg w-100"
+												title='{% trans "To employee " %}'
+												style="padding:0.8rem 1rem"
 												>
-													<ion-icon name="person-circle-outline"></ion-icon>            </a>
+												<ion-icon name="person-circle-outline"></ion-icon></a>
+											{% elif cand.email in emp_list %}
+												<button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Converted " %}' style="opacity: 30%; padding:0.8rem 1rem" disabled>
+												<ion-icon name="person-circle-outline"></ion-icon></button>
 											{% else %}
-												<button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
-													<ion-icon name="person-circle-outline"></ion-icon>            </button>
+												<button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate in Onboarding " %}' style="opacity: 30%; padding:0.8rem 1rem" disabled>
+												<ion-icon name="person-circle-outline"></ion-icon></button>
 											{% endif %}
-											{% if perms.recruitment.add_skillzonecandidate %}
+											{% endif %}
+											{% if perms.recruitment.add_skillzonecandidate or perms.recruitment.change_candidate %}
+											{% if cand.email in emp_list %}
+												<button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
+												<ion-icon name="heart-circle-outline"></ion-icon></button>
+											{% else %}
 												<button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'To Skill zone' %}"
 													data-toggle="oh-modal-toggle"
 													data-target="#createModal"
@@ -123,41 +179,49 @@
 												<ion-icon name="heart-circle-outline"></ion-icon>
 												</button>
 											{% endif %}
-										{% if onboarding|app_installed %}
-											{% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
+											{% endif %}
+											{% if cand.email in emp_list %}
+											<button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
+												<ion-icon name="thumbs-down-outline"></ion-icon></button>
+											{% else %}
+											{% if onboarding|app_installed %}
+												{% if perms.recruitment.add_rejectedcandidate or perms.recruitment.change_candidate %}
 												<button
-												type="button"
-												class="oh-btn oh-btn--light-bkg w-100"
-												hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
-												hx-target="#createTarget"
-												data-toggle="oh-modal-toggle"
-												data-target="#createModal"
-												{% if cand.is_offer_rejected %}
-												style="background: #ff4500a3 !important; color: white;"
-												title="{% trans "Added In Rejected section" %}"
-												{% else %}
-												title="{% trans "Add To Rejected section" %}"
-												{% endif %}>
+													type="button"
+													class="oh-btn oh-btn--light-bkg w-100"
+													hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
+													hx-target="#createTarget"
+													data-toggle="oh-modal-toggle"
+													data-target="#createModal"
+													{% if cand.is_offer_rejected %}
+													style="background: #ff4500a3 !important; color: white;"
+													title="{% trans "Added In Rejected Candidates" %}"
+													{% else %}
+													title="{% trans "Add To Rejected Candidates" %}"
+													{% endif %}>
 												<ion-icon name="thumbs-down-outline"></ion-icon>
 												</button>
+												{% endif %}
 											{% endif %}
-										{% endif %}
-										<button
-										  type="button"
-										  hx-get='{% url "send-mail" cand.id %}'
-										  title="{% trans "Send Mail" %}"
-										  hx-target="#objectDetailsModalTarget"
-										  hx-swap="innerHTML"
-										  class="oh-btn oh-btn--light-bkg w-100"
-										  data-toggle="oh-modal-toggle"
-										  data-target="#objectDetailsModal"
-										  style="padding:0.8rem 1rem"
-										>
-										  <ion-icon name="mail-open-outline"></ion-icon>
-										</button>
+											{% endif %}
+											{% if perms.recruitment.change_candidate %}
+											<button
+												type="button"
+												hx-get='{% url "send-mail" cand.id %}'
+												title="{% trans "Send Mail" %}"
+												hx-target="#objectDetailsModalTarget"
+												class="oh-btn oh-btn--light-bkg w-100"
+												data-toggle="oh-modal-toggle"
+												data-target="#objectDetailsModal"
+												style="padding:0.8rem 1rem"
+											>
+												<ion-icon name="mail-open-outline"></ion-icon>
+											</button>
+											{% endif %}
 										</div>
-									  {% endif %}
-									  </div>
+										</div>
+									{% endif %}
+
 									  <div href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td oh-sticky-table__right">
 										<div class="oh-btn-group">
 										  {% if perms.recruitment.change_candidate %}

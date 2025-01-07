@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.context_processors import intial_notice_period
 from base.methods import closest_numbers, eval_validate, paginator_qry, sortby
+from base.views import general_settings
 from employee.models import Employee
 from horilla.decorators import (
     hx_request_required,
@@ -928,7 +929,25 @@ def enable_resignation_request(request):
         "resignation_request" in request.GET.keys()
     )
     resignation_request_feature.save()
-    return HttpResponse("Success")
+    message_text = (
+        "enabled" if resignation_request_feature.resignation_request else "disabled"
+    )
+    messages.success(
+        request,
+        _("Resignation Request setting has been {} successfully.").format(message_text),
+    )
+    if request.META.get("HTTP_HX_REQUEST"):
+        return HttpResponse(
+            """
+                            <span hx-trigger="load"
+                            hx-get="/"
+                            hx-swap="outerHTML"
+                            hx-select="#offboardingGenericNav"
+                            hx-target="#offboardingGenericNav">
+                            </span>
+                            """
+        )
+    return redirect(general_settings)
 
 
 @login_required

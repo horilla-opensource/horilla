@@ -335,6 +335,9 @@
             if (widths.length) {
               thWidth = widths[0];
             }
+            if (!thWidth) {
+              thWidth = 180
+            }
             $('#{{view_id}} .lastTh').css("width", `${thWidth}px`);
          }
     });

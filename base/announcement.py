@@ -3,10 +3,12 @@ Module for managing announcements, including creation, updates, comments, and vi
 """
 
 import json
+from datetime import datetime, timedelta
 
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -14,41 +16,62 @@ from django.utils.translation import gettext_lazy as _
 
 from base.forms import AnnouncementCommentForm, AnnouncementForm
 from base.methods import closest_numbers, filter_own_records
-from base.models import Announcement, AnnouncementComment, AnnouncementView
+from base.models import (
+    Announcement,
+    AnnouncementComment,
+    AnnouncementExpire,
+    AnnouncementView,
+)
 from employee.models import Employee
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import hx_request_required, login_required, permission_required
 from notifications.signals import notify
 
 
 @login_required
-def announcement_view(request):
-    """
-    This method is used to render all announcemnts.
-    """
-
-    announcement_list = Announcement.objects.all().order_by("-created_at")
-
-    # Set the number of items per page
-    items_per_page = 10
-
-    paginator = Paginator(announcement_list, items_per_page)
-
-    page = request.GET.get("page")
-    try:
-        announcements = paginator.page(page)
-    except PageNotAnInteger:
-        # If the page is not an integer, deliver the first page.
-        announcements = paginator.page(1)
-    except EmptyPage:
-        # If the page is out of range (e.g., 9999), deliver the last page of results.
-        announcements = paginator.page(paginator.num_pages)
-
-    return render(
-        request, "announcement/announcement.html", {"announcements": announcements}
+@hx_request_required
+def announcement_list(request):
+    general_expire_date = (
+        AnnouncementExpire.objects.values_list("days", flat=True).first() or 30
     )
+    announcements = Announcement.objects.all()
+    announcements_to_update = []
+
+    for announcement in announcements.filter(expire_date__isnull=True):
+        announcement.expire_date = announcement.created_at + timedelta(
+            days=general_expire_date
+        )
+        announcements_to_update.append(announcement)
+
+    if announcements_to_update:
+        Announcement.objects.bulk_update(announcements_to_update, ["expire_date"])
+
+    announcements = announcements.filter(expire_date__gte=datetime.today().date())
+
+    if request.user.has_perm("base.view_announcement"):
+        announcement_list = announcements
+    else:
+        announcement_list = announcements.filter(
+            Q(employees=request.user.employee_get) | Q(employees__isnull=True)
+        )
+
+    announcement_list = announcement_list.prefetch_related(
+        "announcementview_set"
+    ).order_by("-created_at")
+    for announcement in announcement_list:
+        announcement.has_viewed = announcement.announcementview_set.filter(
+            user=request.user, viewed=True
+        ).exists()
+    instance_ids = json.dumps([instance.id for instance in announcement_list])
+    context = {
+        "announcements": announcement_list,
+        "general_expire_date": general_expire_date,
+        "instance_ids": instance_ids,
+    }
+    return render(request, "announcement/announcements_list.html", context)
 
 
 @login_required
+@hx_request_required
 def create_announcement(request):
     """
     This method renders form and template to update Announcement
@@ -110,6 +133,7 @@ def create_announcement(request):
 
 
 @login_required
+@hx_request_required
 def delete_announcement(request, anoun_id):
     """
     This method is used to delete announcements.
@@ -137,6 +161,7 @@ def delete_announcement(request, anoun_id):
 
 
 @login_required
+@hx_request_required
 def update_announcement(request, anoun_id):
     """
     This method renders form and template to update Announcement
@@ -203,6 +228,7 @@ def update_announcement(request, anoun_id):
 
 
 @login_required
+@hx_request_required
 def create_announcement_comment(request, anoun_id):
     """
     This method renders form and template to create Announcement comments
@@ -250,6 +276,7 @@ def create_announcement_comment(request, anoun_id):
 
 
 @login_required
+@hx_request_required
 def comment_view(request, anoun_id):
     """
     This method is used to view all comments in the announcements
@@ -276,6 +303,7 @@ def comment_view(request, anoun_id):
 
 
 @login_required
+@hx_request_required
 def delete_announcement_comment(request, comment_id):
     """
     This method is used to delete announcement comments
@@ -287,6 +315,7 @@ def delete_announcement_comment(request, comment_id):
 
 
 @login_required
+@hx_request_required
 def announcement_single_view(request, anoun_id=None):
     """
     This method is used to render single announcements.
@@ -317,6 +346,7 @@ def announcement_single_view(request, anoun_id=None):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.view_announcement")
 def viewed_by(request):
     """

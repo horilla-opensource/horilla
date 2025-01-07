@@ -110,6 +110,10 @@
     $("div.oh-tabs").find(`{{active_target|safe}}`).click();
     if (!$(".oh-tabs__tab--active").length) {
       $("#{{view_id}}").find(".oh-tabs__tab").first().click()
+    }else{
+      setTimeout(() => {
+        $(".oh-tabs__tab--active").click();
+      }, 100);
     }
     {% endif %}
   </script>

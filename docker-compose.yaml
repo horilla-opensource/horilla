@@ -10,6 +10,8 @@ services:
     environment:
       DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
     command: ./entrypoint.sh
+    volumes:
+      - ./horilla:/app/horilla
     depends_on:
       db:
         condition: service_healthy
@@ -20,6 +22,8 @@ services:
       POSTGRES_DB: horilla
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - 5432:5432
     restart: unless-stopped

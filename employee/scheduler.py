@@ -1,4 +1,5 @@
 import datetime
+import sys
 from datetime import timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -131,7 +132,14 @@ def block_unblock_disciplinary():
     return
 
 
-scheduler = BackgroundScheduler()
-scheduler.add_job(update_experience, "interval", hours=4)
-scheduler.add_job(block_unblock_disciplinary, "interval", seconds=25)
-scheduler.start()
+if not any(
+    cmd in sys.argv
+    for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
+):
+    """
+    Initializes and starts background tasks using APScheduler when the server is running.
+    """
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(update_experience, "interval", hours=4)
+    scheduler.add_job(block_unblock_disciplinary, "interval", seconds=25)
+    scheduler.start()
