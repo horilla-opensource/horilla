@@ -49,6 +49,7 @@ from notifications.signals import notify
 from pms.filters import (
     ActualKeyResultFilter,
     ActualObjectiveFilter,
+    AnonymousFeedbackFilter,
     EmployeeObjectiveFilter,
     FeedbackFilter,
     KeyResultFilter,
@@ -74,6 +75,7 @@ from pms.forms import (
 )
 from pms.methods import (
     check_permission_feedback_detailed_view,
+    get_anonymous_feedbacks,
     pms_owner_and_manager_can_enter,
 )
 from pms.models import (
@@ -1603,7 +1605,9 @@ def filter_pagination_feedback(
     feedback_filter_all = FeedbackFilter(
         request.GET or initial_data, queryset=all_feedback
     )
-    anonymous_feedback = anonymous_feedback
+    anonymous_feedback = AnonymousFeedbackFilter(
+        request.GET, queryset=anonymous_feedback
+    ).qs
     feedback_paginator_own = Paginator(feedback_filter_own.qs, get_pagination())
     feedback_paginator_requested = Paginator(
         feedback_filter_requested.qs, get_pagination()
@@ -1668,11 +1672,16 @@ def feedback_list_search(request):
         all_feedback = Feedback.objects.filter(manager_id=employee_id).filter(
             review_cycle__icontains=feedback
         )
+    # Anonymous feedbacks
     anonymous_feedback = (
-        AnonymousFeedback.objects.filter(employee_id=employee_id)
+        AnonymousFeedback.objects.filter(
+            anonymous_feedback_id=request.user.id, archive=False
+        )
         if not request.user.has_perm("pms.view_feedback")
-        else AnonymousFeedback.objects.all()
+        else AnonymousFeedback.objects.filter(archive=False)
     )
+    related_anonymous_feedbacks = get_anonymous_feedbacks(employee_id)
+    anonymous_feedback = (related_anonymous_feedbacks | anonymous_feedback).distinct()
 
     context = filter_pagination_feedback(
         request, self_feedback, requested_feedback, all_feedback, anonymous_feedback
@@ -1708,13 +1717,16 @@ def feedback_list_view(request):
         feedback_all = Feedback.objects.filter(manager_id=employee, archive=False)
     # Anonymous feedbacks
     anonymous_feedback = (
-        AnonymousFeedback.objects.filter(employee_id=employee, archive=False)
+        AnonymousFeedback.objects.filter(
+            anonymous_feedback_id=request.user.id, archive=False
+        )
         if not request.user.has_perm("pms.view_feedback")
         else AnonymousFeedback.objects.filter(archive=False)
     )
-    anonymous_feedback = anonymous_feedback | AnonymousFeedback.objects.filter(
-        anonymous_feedback_id=request.user.id, archive=False
-    )
+    related_anonymous_feedbacks = get_anonymous_feedbacks(employee)
+    anonymous_feedback = (
+        related_anonymous_feedbacks.filter(archive=False) | anonymous_feedback
+    ).distinct()
     context = filter_pagination_feedback(
         request, feedback_own, feedback_requested, feedback_all, anonymous_feedback
     )
