@@ -17,6 +17,7 @@ import json
 import operator
 import os
 import re
+import threading
 from datetime import date, datetime, timedelta
 from urllib.parse import parse_qs
 
@@ -94,6 +95,7 @@ from employee.methods.methods import (
     bulk_create_work_types,
     convert_nan,
     get_ordered_badge_ids,
+    set_initial_password,
 )
 from employee.models import (
     BonusPoint,
@@ -2501,6 +2503,7 @@ def work_info_import(request):
                 "employee_first_name", "employee_last_name", "email"
             )
         )
+        users = []
         for work_info in work_info_dicts:
             error = False
             try:
@@ -2595,8 +2598,14 @@ def work_info_import(request):
 
         if create_work_info or not error_lists:
             try:
-                bulk_create_user_import(success_lists)
-                total_count = bulk_create_employee_import(success_lists)
+                users = bulk_create_user_import(success_lists)
+                employees = bulk_create_employee_import(success_lists)
+                thread = threading.Thread(
+                    target=set_initial_password, args=(employees,)
+                )
+                thread.start()
+
+                total_count = len(employees)
                 bulk_create_department_import(success_lists)
                 bulk_create_job_position_import(success_lists)
                 bulk_create_job_role_import(success_lists)
