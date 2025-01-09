@@ -11,10 +11,12 @@ from itertools import groupby
 from urllib.parse import parse_qs
 
 import pandas as pd
+import pdfkit
 from django.contrib import messages
 from django.db.models import ProtectedError, Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -533,6 +535,91 @@ def bulk_update_payslip_status(request):
         instance.save()
 
     return JsonResponse({"type": "success", "message": "Payslips status updated"})
+
+
+@login_required
+def view_payslip_pdf(request, payslip_id):
+
+    from .component_views import filter_payslip
+
+    if Payslip.objects.filter(id=payslip_id).exists():
+        payslip = Payslip.objects.get(id=payslip_id)
+        company = Company.objects.filter(hq=True).first()
+        if (
+            request.user.has_perm("payroll.view_payslip")
+            or payslip.employee_id.employee_user_id == request.user
+        ):
+            user = request.user
+            employee = user.employee_get
+
+            # Taking the company_name of the user
+            info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+            if info.exists():
+                for data in info:
+                    employee_company = data.company_id
+                company_name = Company.objects.filter(company=employee_company)
+                emp_company = company_name.first()
+
+                # Access the date_format attribute directly
+                date_format = (
+                    emp_company.date_format
+                    if emp_company and emp_company.date_format
+                    else "MMM. D, YYYY"
+                )
+            else:
+                date_format = "MMM. D, YYYY"
+
+            data = payslip.pay_head_data
+            start_date_str = data["start_date"]
+            end_date_str = data["end_date"]
+
+            # Convert the string to a datetime.date object
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+
+            month_start_name = start_date.strftime("%B %d, %Y")
+            month_end_name = end_date.strftime("%B %d, %Y")
+
+            # Formatted date for each format
+            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+                if format_name == date_format:
+                    formatted_start_date = start_date.strftime(format_string)
+
+            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+                if format_name == date_format:
+                    formatted_end_date = end_date.strftime(format_string)
+            data["month_start_name"] = month_start_name
+            data["month_end_name"] = month_end_name
+            data["formatted_start_date"] = formatted_start_date
+            data["formatted_end_date"] = formatted_end_date
+            data["employee"] = payslip.employee_id
+            data["payslip"] = payslip
+            data["json_data"] = data.copy()
+            data["json_data"]["employee"] = payslip.employee_id.id
+            data["json_data"]["payslip"] = payslip.id
+            data["instance"] = payslip
+            data["currency"] = PayrollSettings.objects.first().currency_symbol
+            data["all_deductions"] = []
+            for deduction_list in [
+                data["basic_pay_deductions"],
+                data["gross_pay_deductions"],
+                data["pretax_deductions"],
+                data["post_tax_deductions"],
+                data["tax_deductions"],
+                data["net_deductions"],
+            ]:
+                data["all_deductions"].extend(deduction_list)
+
+            data["all_allowances"] = data["allowances"].copy()
+            equalize_lists_length(data["allowances"], data["all_deductions"])
+            data["zipped_data"] = zip(data["allowances"], data["all_deductions"])
+            data["host"] = request.get_host()
+            data["protocol"] = "https" if request.is_secure() else "http"
+            data["company"] = company
+
+            return render(request, "payroll/payslip/test_pdf.html", context=data)
+        return redirect(filter_payslip)
+    return render(request, "405.html")
 
 
 @login_required
@@ -1351,80 +1438,139 @@ def equalize_lists_length(allowances, deductions):
     return deductions, allowances
 
 
+def generate_payslip_pdf(template_path, context, html=False):
+    """
+    Generate a PDF file from an HTML template and context data.
+
+    Args:
+        template_path (str): The path to the HTML template.
+        context (dict): The context data to render the template.
+        html (bool): If True, return raw HTML instead of a PDF.
+
+    Returns:
+        HttpResponse: A response with the generated PDF file or raw HTML.
+    """
+    try:
+        # Render the HTML content from the template and context
+        html_content = render_to_string(template_path, context)
+
+        # Return raw HTML if requested
+        if html:
+            return HttpResponse(html_content, content_type="text/html")
+
+        # PDF options for pdfkit
+        pdf_options = {
+            "page-size": "A4",
+            "margin-top": "10mm",
+            "margin-bottom": "10mm",
+            "margin-left": "10mm",
+            "margin-right": "10mm",
+            "encoding": "UTF-8",
+            "enable-local-file-access": None,  # Required to load local CSS/images
+        }
+
+        # Generate the PDF as binary content
+        pdf = pdfkit.from_string(html_content, False, options=pdf_options)
+
+        # Return an HttpResponse containing the PDF content
+        response = HttpResponse(pdf, content_type="application/pdf")
+        response["Content-Disposition"] = "inline; filename=payslip.pdf"
+        return response
+    except Exception as e:
+        # Handle errors gracefully
+        return HttpResponse(f"Error generating PDF: {str(e)}", status=500)
+
+
 def payslip_pdf(request, id):
-    payslip = Payslip.objects.get(id=id)
-    if (
-        request.user.has_perm("payroll.view_payslip")
-        or payslip.employee_id.employee_user_id == request.user
-    ):
-        user = request.user
-        employee = user.employee_get
+    """
+    Generate the payslip as a PDF and return it in an HttpResponse.
 
-        # Taking the company_name of the user
-        info = EmployeeWorkInformation.objects.filter(employee_id=employee)
-        if info.exists():
-            for data in info:
-                employee_company = data.company_id
-            company_name = Company.objects.filter(company=employee_company)
-            emp_company = company_name.first()
+    Args:
+        request (HttpRequest): The request object.
+        id (int): The ID of the payslip to generate.
 
-            # Access the date_format attribute directly
-            date_format = (
-                emp_company.date_format
-                if emp_company and emp_company.date_format
-                else "MMM. D, YYYY"
+    Returns:
+        HttpResponse: A response containing the PDF content.
+    """
+
+    from .component_views import filter_payslip
+
+    if Payslip.objects.filter(id=id).exists():
+        payslip = Payslip.objects.get(id=id)
+        company = Company.objects.filter(hq=True).first()
+        if (
+            request.user.has_perm("payroll.view_payslip")
+            or payslip.employee_id.employee_user_id == request.user
+        ):
+            user = request.user
+            employee = user.employee_get
+
+            # Taking the company_name of the user
+            info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+            if info.exists():
+                for data in info:
+                    employee_company = data.company_id
+                company_name = Company.objects.filter(company=employee_company)
+                emp_company = company_name.first()
+
+                # Access the date_format attribute directly
+                date_format = (
+                    emp_company.date_format
+                    if emp_company and emp_company.date_format
+                    else "MMM. D, YYYY"
+                )
+
+            data = payslip.pay_head_data
+            start_date_str = data["start_date"]
+            end_date_str = data["end_date"]
+
+            # Convert the string to a datetime.date object
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+
+            # Format the start and end dates
+            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+                if format_name == date_format:
+                    formatted_start_date = start_date.strftime(format_string)
+                    formatted_end_date = end_date.strftime(format_string)
+
+            # Prepare context for the template
+            data.update(
+                {
+                    "month_start_name": start_date.strftime("%B %d, %Y"),
+                    "month_end_name": end_date.strftime("%B %d, %Y"),
+                    "formatted_start_date": formatted_start_date,
+                    "formatted_end_date": formatted_end_date,
+                    "employee": payslip.employee_id,
+                    "payslip": payslip,
+                    "json_data": data.copy(),
+                    "currency": PayrollSettings.objects.first().currency_symbol,
+                    "all_deductions": [],
+                    "all_allowances": data["allowances"].copy(),
+                    "host": request.get_host(),
+                    "protocol": "https" if request.is_secure() else "http",
+                    "company": company,
+                }
             )
-        else:
-            date_format = "MMM. D, YYYY"
 
-        data = payslip.pay_head_data
-        start_date_str = data["start_date"]
-        end_date_str = data["end_date"]
+            # Merge deductions and allowances for display
+            for deduction_list in [
+                data["basic_pay_deductions"],
+                data["gross_pay_deductions"],
+                data["pretax_deductions"],
+                data["post_tax_deductions"],
+                data["tax_deductions"],
+                data["net_deductions"],
+            ]:
+                data["all_deductions"].extend(deduction_list)
 
-        # Convert the string to a datetime.date object
-        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
-        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+            equalize_lists_length(data["allowances"], data["all_deductions"])
+            data["zipped_data"] = zip(data["allowances"], data["all_deductions"])
+            template_path = "payroll/payslip/test_pdf.html"
 
-        month_start_name = start_date.strftime("%B %d")
-        month_end_name = end_date.strftime("%B %d")
-
-        # Formatted date for each format
-        for format_name, format_string in HORILLA_DATE_FORMATS.items():
-            if format_name == date_format:
-                formatted_start_date = start_date.strftime(format_string)
-
-        for format_name, format_string in HORILLA_DATE_FORMATS.items():
-            if format_name == date_format:
-                formatted_end_date = end_date.strftime(format_string)
-        data["month_start_name"] = month_start_name
-        data["month_end_name"] = month_end_name
-        data["formatted_start_date"] = formatted_start_date
-        data["formatted_end_date"] = formatted_end_date
-        data["employee"] = payslip.employee_id
-        data["payslip"] = payslip
-        data["json_data"] = data.copy()
-        data["json_data"]["employee"] = payslip.employee_id.id
-        data["json_data"]["payslip"] = payslip.id
-        data["instance"] = payslip
-        data["currency"] = PayrollSettings.objects.first().currency_symbol
-        data["all_deductions"] = []
-        for deduction_list in [
-            data["basic_pay_deductions"],
-            data["gross_pay_deductions"],
-            data["pretax_deductions"],
-            data["post_tax_deductions"],
-            data["tax_deductions"],
-            data["net_deductions"],
-        ]:
-            data["all_deductions"].extend(deduction_list)
-
-        data["all_allowances"] = data["allowances"].copy()
-        equalize_lists_length(data["allowances"], data["all_deductions"])
-        data["zipped_data"] = zip(data["allowances"], data["all_deductions"])
-        data["host"] = request.get_host()
-        data["protocol"] = "https" if request.is_secure() else "http"
-
-    return generate_pdf("payroll/payslip/individual_pdf.html", context=data, html=False)
+            return generate_payslip_pdf(template_path, context=data, html=False)
+        return redirect(filter_payslip)
+    return render(request, "405.html")
 
 
 @login_required
