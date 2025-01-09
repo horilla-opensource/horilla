@@ -5540,8 +5540,11 @@ def add_more_approval_managers(request):
     if managers_count:
         managers_count = int(managers_count) + 1
         field_name = f"multi_approval_manager_{managers_count}"
-        form.fields[field_name] = forms.ModelChoiceField(
-            queryset=Employee.objects.all(),
+        choices = [("reporting_manager_id", _("Reporting Manager"))] + [
+            (employee.pk, str(employee)) for employee in Employee.objects.all()
+        ]
+        form.fields[field_name] = forms.ChoiceField(
+            choices=choices,
             widget=forms.Select(
                 attrs={
                     "class": "oh-select oh-select-2 mb-3",
@@ -5596,28 +5599,31 @@ def multiple_level_approval_create(request):
         department = Department.objects.get(id=dept_id)
         instance = MultipleApprovalCondition()
         if form.is_valid():
+            instance.department = department
+            instance.condition_field = condition_field
+            instance.condition_operator = condition_operator
+            instance.company_id = company
             if condition_operator != "range":
-                instance.department = department
-                instance.condition_field = condition_field
-                instance.condition_operator = condition_operator
                 instance.condition_value = condition_value
-                instance.company_id = company
             else:
-                instance.department = department
-                instance.condition_field = condition_field
-                instance.condition_operator = condition_operator
                 instance.condition_start_value = condition_start_value
                 instance.condition_end_value = condition_end_value
-                instance.company_id = company
+
             instance.save()
             sequence = 0
             for emp_id in condition_approval_managers:
                 sequence += 1
-                employee_id = int(emp_id)
+                reporting_manager = None
+                try:
+                    employee_id = int(emp_id)
+                except:
+                    employee_id = None
+                    reporting_manager = emp_id
                 MultipleApprovalManagers.objects.create(
                     condition_id=instance,
                     sequence=sequence,
                     employee_id=employee_id,
+                    reporting_manager=reporting_manager,
                 )
             form = MultipleApproveConditionForm()
             messages.success(
@@ -5636,8 +5642,11 @@ def edit_approval_managers(form, managers):
             form.initial["multi_approval_manager"] = manager.employee_id
         else:
             field_name = f"multi_approval_manager_{i}"
-            form.fields[field_name] = forms.ModelChoiceField(
-                queryset=Employee.objects.all(),
+            choices = [("reporting_manager_id", _("Reporting Manager"))] + [
+                (employee.pk, str(employee)) for employee in Employee.objects.all()
+            ]
+            form.fields[field_name] = forms.ChoiceField(
+                choices=choices,
                 label=_("Approval Manager {}").format(i),
                 widget=forms.Select(attrs={"class": "oh-select oh-select-2 mb-3"}),
                 required=False,
@@ -5669,11 +5678,17 @@ def multiple_level_approval_edit(request, condition_id):
             for key, value in request.POST.items():
                 if key.startswith("multi_approval_manager"):
                     sequence += 1
-                    employee_id = int(value)
+                    reporting_manager = None
+                    try:
+                        employee_id = int(value)
+                    except:
+                        employee_id = None
+                        reporting_manager = value
                     MultipleApprovalManagers.objects.create(
                         condition_id=instance,
                         sequence=sequence,
                         employee_id=employee_id,
+                        reporting_manager=reporting_manager,
                     )
     selected_company = request.session.get("selected_company")
     if selected_company != "all":

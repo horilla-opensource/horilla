@@ -144,3 +144,12 @@ def config_perms(user):
 def startswith(value, arg):
     """Checks if the value starts with the provided argument."""
     return value.startswith(arg)
+
+
+@register.filter(name="readable")
+def readable(value):
+    try:
+        value = value.replace("_", " ").replace("id", "").title()
+    except:
+        value = value
+    return value

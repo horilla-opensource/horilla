@@ -765,6 +765,8 @@ class LeaveRequest(HorillaModel):
             managers = applicable_condition.approval_managers()
             for manager in managers:
                 sequence += 1
+                if not isinstance(manager, Employee):
+                    manager = getattr(self.employee_id.employee_work_info, manager)
                 LeaveRequestConditionApproval.objects.create(
                     sequence=sequence,
                     leave_request_id=self,
