@@ -3011,17 +3011,24 @@ def edit_anonymous_feedback(request, obj_id):
         Renders the 'anonymous/anonymous_feedback_form.html' template with the feedback form pre-filled with existing data.
     """
     feedback = AnonymousFeedback.objects.get(id=obj_id)
-    form = AnonymousFeedbackForm(instance=feedback)
-    anonymous_id = request.user.id
-    if request.method == "POST":
-        form = AnonymousFeedbackForm(request.POST, instance=feedback)
-        if form.is_valid():
-            feedback = form.save(commit=False)
-            feedback.anonymous_feedback_id = anonymous_id
-            feedback.save()
-            return HttpResponse("<script>window.location.reload();</script>")
-    context = {"form": form, "create": False}
-    return render(request, "anonymous/anonymous_feedback_form.html", context)
+    # checking feedback owner
+    if str(request.user.id) == feedback.anonymous_feedback_id or request.user.has_perm(
+        "pms.change_anonymousfeedback"
+    ):
+        form = AnonymousFeedbackForm(instance=feedback)
+        anonymous_id = request.user.id
+        if request.method == "POST":
+            form = AnonymousFeedbackForm(request.POST, instance=feedback)
+            if form.is_valid():
+                feedback = form.save(commit=False)
+                feedback.anonymous_feedback_id = anonymous_id
+                feedback.save()
+                return HttpResponse("<script>window.location.reload();</script>")
+        context = {"form": form, "create": False}
+        return render(request, "anonymous/anonymous_feedback_form.html", context)
+    else:
+        messages.info(request, _("You are don't have permissions."))
+        return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
@@ -3033,14 +3040,21 @@ def archive_anonymous_feedback(request, obj_id):
     """
 
     feedback = AnonymousFeedback.objects.get(id=obj_id)
-    if feedback.archive:
-        feedback.archive = False
-        feedback.save()
-        messages.info(request, _("Feedback un-archived successfully!."))
-    elif not feedback.archive:
-        feedback.archive = True
-        feedback.save()
-        messages.info(request, _("Feedback archived successfully!."))
+    # checking feedback owner
+    if str(request.user.id) == feedback.anonymous_feedback_id or request.user.has_perm(
+        "pms.anonymousfeedback"
+    ):
+        if feedback.archive:
+            feedback.archive = False
+            feedback.save()
+            messages.info(request, _("Feedback un-archived successfully!."))
+        elif not feedback.archive:
+            feedback.archive = True
+            feedback.save()
+            messages.info(request, _("Feedback archived successfully!."))
+
+    else:
+        messages.info(request, _("You are don't have permissions."))
     return redirect(feedback_list_view)
 
 
