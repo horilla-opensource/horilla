@@ -45,7 +45,7 @@
           </div>
           <div class="oh-sticky-table__td">
             {% for manager in condition.approval_managers %}
-                {{ forloop.counter}}. {{ manager }}<br />
+                {{ forloop.counter}}. {{ manager|readable }}<br />
             {% endfor %}
           </div>
           <div class="oh-sticky-table__td">

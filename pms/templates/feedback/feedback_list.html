@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load basefilters %}
+{% load basefilters pmsfilters %}
 {% load mathfilters %}
 {% load static %}
 {% if messages %}
@@ -560,9 +560,9 @@
         </div>
         <div class="oh-sticky-table__tbody">
           {% for feedback in anonymous_feedback %}
-          {% if request.GET.archive == "true" %}
-            {% if feedback.archive %}
-            <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target ="#FeedbackModal" hx-get="{% url 'single-anonymous-feedback-view' feedback.id %}" hx-target = "#OneFeedbackTarget">
+            <div class="oh-sticky-table__tr"
+            {% if request.user|is_anonymous_feedback_owner:feedback %}style="background: lightgreen;"{% endif %}
+              draggable="true" data-toggle="oh-modal-toggle" data-target ="#FeedbackModal" hx-get="{% url 'single-anonymous-feedback-view' feedback.id %}" hx-target = "#OneFeedbackTarget">
               <div class="oh-sticky-table__sd">
 
                   <div class="centered-div">
@@ -596,7 +596,12 @@
               </div>
               <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                 <div class="oh-btn-group">
-                  <a class="oh-btn w-100" data-toggle="oh-modal-toggle" data-target="#anonymousFeedbackModal" hx-get="{% url 'edit-anonymous-feedback' feedback.id %}" title="{% trans 'Edit' %}" hx-target="#anonymousFeedbackFormModal"><ion-icon name="create-outline"></ion-icon></a>
+                  {% if perms.pms.change_anonymousfeedback or request.user|is_anonymous_feedback_owner:feedback %}
+                  <a class="oh-btn w-100" data-toggle="oh-modal-toggle" data-target="#anonymousFeedbackModal"
+                      hx-get="{% url 'edit-anonymous-feedback' feedback.id %}"
+                      title="{% trans 'Edit' %}" hx-target="#anonymousFeedbackFormModal"
+                  ><ion-icon name="create-outline"></ion-icon>
+                  </a>
                   <form action="{% url 'archive-anonymous-feedback' obj_id=feedback.id %}" method="post"  style="display: contents">
                     {% if feedback.archive == True %}
                       <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
@@ -607,6 +612,14 @@
                     <ion-icon name="archive-sharp" type="submit"></ion-icon>
                   </button>
                   </form>
+                  {% else %}
+                    <button class="oh-btn w-100" disabled>
+                    <ion-icon name="create-outline"></ion-icon>
+                    </button>
+                    <button class="oh-btn oh-btn--danger-outline w-100" disabled >
+                      <ion-icon name="archive-sharp" type="submit"></ion-icon>
+                    </button>
+                  {% endif %}
                   {% if perms.pms.delete_feedback %}
                     <form action="{% url 'delete-anonymous-feedback' obj_id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
                       {% csrf_token %}
@@ -615,71 +628,10 @@
                       </button>
                     </form>
                   {% endif %}
+
                 </div>
               </div>
             </div>
-            {% endif %}
-          {% else %}
-            {% if feedback.archive == False %}
-            <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target ="#FeedbackModal" hx-get="{% url 'single-anonymous-feedback-view' feedback.id %}" hx-target = "#OneFeedbackTarget">
-              <div class="oh-sticky-table__sd">
-
-                  <div class="centered-div">
-                    <input
-                      type="checkbox"
-                      id="{{feedback.id}}"
-                      value="{{feedback.id}}"
-                      data-anounymous = "true"
-                      onclick = "event.stopPropagation()"
-                      class="oh-input feedback-checkbox oh-input__checkbox anonymous-feedback-row"
-                    />
-                  </div>
-              </div>
-              <div class="oh-sticky-table__td" >
-                {{feedback.feedback_subject}}
-              </div>
-              <div class="oh-sticky-table__td">
-                {% trans "Based on" %} :
-                    {% if feedback.based_on == "employee" %}
-                      {{feedback.employee_id}}
-                    {% elif feedback.based_on == "department" %}
-                      {{feedback.department_id}}
-                    {% elif feedback.based_on == "job_position" %}
-                      {{feedback.job_position_id}}
-                    {% else %}
-                      {{feedback.get_based_on_display}}
-                    {% endif %}
-              </div>
-              <div class="oh-sticky-table__td">
-                {{feedback.created_at}}
-              </div>
-              <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                <div class="oh-btn-group">
-                  <a class="oh-btn w-100" data-toggle="oh-modal-toggle" data-target="#anonymousFeedbackModal" hx-get="{% url 'edit-anonymous-feedback' feedback.id %}" title="{% trans 'Edit' %}" hx-target="#anonymousFeedbackFormModal"><ion-icon name="create-outline"></ion-icon></a>
-                  <form action="{% url 'archive-anonymous-feedback' obj_id=feedback.id %}" method="post"  style="display: contents">
-                    {% if feedback.archive == True %}
-                      <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
-                    {% else %}
-                      <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" >
-                    {% endif %}
-                     {% csrf_token %}
-                    <ion-icon name="archive-sharp" type="submit"></ion-icon>
-                  </button>
-                  </form>
-                  {% if perms.pms.delete_feedback %}
-                    <form action="{% url 'delete-anonymous-feedback' obj_id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
-                      {% csrf_token %}
-                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
-                          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-                      </button>
-                    </form>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-            {% endif %}
-          {% endif %}
-
           {% endfor%}
         </div>
       </div>

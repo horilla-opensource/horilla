@@ -175,11 +175,13 @@ function conditionalVisibility() {
       .hide();
   }
   if ($("#id_update_compensation").val() != "") {
+    $("#id_include_active_employees").prop("checked",false);
+    $("#id_is_fixed").prop("checked",false);
     $(
-      "#id_is_tax, [for=id_is_tax],#id_is_pretax, [for=id_is_pretax], #id_based_on,[for=id_based_on],#id_employee_rate,[for=id_employee_rate],#id_employer_rate,[for=id_employer_rate]"
+      "#id_is_tax, [for=id_is_tax],#id_is_pretax, [for=id_is_pretax], #id_based_on,[for=id_based_on]"
     ).hide();
     $(
-      "#id_is_tax, [for=id_is_tax],#id_is_pretax, [for=id_is_pretax], #id_based_on,[for=id_based_on],#id_employee_rate,[for=id_employee_rate],#id_employer_rate,[for=id_employer_rate]"
+      "#id_is_tax, [for=id_is_tax],#id_is_pretax, [for=id_is_pretax], #id_based_on,[for=id_based_on]"
     )
       .parent()
       .hide();
@@ -211,6 +213,8 @@ function conditionalVisibility() {
     $("#id_amount,[for=id_amount]").parent().show();
     $("#id_if_amount,[for=id_if_amount]").hide();
     $("#id_is_condition_based").prop("checked", false);
+    $("#id_rate:hidden,[for=id_rate]:hidden,#id_employer_rate:hidden,[for=id_employer_rate]:hidden").show();
+    $("#id_rate:hidden,[for=id_rate]:hidden,#id_employer_rate:hidden,[for=id_employer_rate]:hidden").parent().show();
   } else {
     $("#id_include_active_employees,[for=id_include_active_employees]").show();
     $("#id_include_active_employees,[for=id_include_active_employees]")

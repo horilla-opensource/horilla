@@ -2183,8 +2183,12 @@ class MultipleApproveConditionForm(ModelForm):
         ("ge", _("Greater Than or Equal To (>=)")),
         ("icontains", _("Contains")),
     ]
-    multi_approval_manager = forms.ModelChoiceField(
-        queryset=Employee.objects.all(),
+    choices = [("reporting_manager_id", _("Reporting Manager"))] + [
+        (employee.pk, str(employee)) for employee in Employee.objects.all()
+    ]
+
+    multi_approval_manager = forms.ChoiceField(
+        choices=choices,
         widget=forms.Select(attrs={"class": "oh-select oh-select-2 mb-2"}),
         label=_("Approval Manager"),
         required=True,

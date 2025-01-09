@@ -158,7 +158,7 @@
                                     {% endif %}
                                     <div class="oh-sticky-table__td oh-sticky-table__right"style="width: 251px !important;">
                                       <div class="oh-btn-group">
-                                        <form action="{% url 'payslip-pdf' payslip.id %}" method='post' class="w-75">
+                                        <form action="{% url 'view-payslip-pdf' payslip.id %}" method='post' class="w-75">
                                           {% csrf_token %}
                                           <button type='submit' title="{% trans 'Download' %}" class="oh-btn oh-btn--light-bkg w-100"> <ion-icon name="download"></ion-icon></button>
                                         </form>

@@ -1386,7 +1386,12 @@ class MultipleApprovalCondition(HorillaModel):
             condition_id=self.pk
         ).order_by("sequence")
         for query in queryset:
-            employee = Employee.objects.get(id=query.employee_id)
+            emp_id = query.employee_id
+            employee = (
+                query.reporting_manager
+                if not emp_id
+                else Employee.objects.get(id=emp_id)
+            )
             managers.append(employee)
 
         return managers
@@ -1397,8 +1402,15 @@ class MultipleApprovalManagers(models.Model):
         MultipleApprovalCondition, on_delete=models.CASCADE
     )
     sequence = models.IntegerField(null=False, blank=False)
-    employee_id = models.IntegerField(null=False, blank=False)
+    employee_id = models.IntegerField(null=True, blank=True)
+    reporting_manager = models.CharField(max_length=100, null=True, blank=True)
     objects = models.Manager()
+
+    def get_manager(self):
+        manager = self.employee_id
+        if manager:
+            manager = self.reporting_manager.replace("_", " ").title()
+        return manager
 
 
 class DynamicPagination(models.Model):

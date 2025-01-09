@@ -49,6 +49,7 @@ from notifications.signals import notify
 from pms.filters import (
     ActualKeyResultFilter,
     ActualObjectiveFilter,
+    AnonymousFeedbackFilter,
     EmployeeObjectiveFilter,
     FeedbackFilter,
     KeyResultFilter,
@@ -74,6 +75,7 @@ from pms.forms import (
 )
 from pms.methods import (
     check_permission_feedback_detailed_view,
+    get_anonymous_feedbacks,
     pms_owner_and_manager_can_enter,
 )
 from pms.models import (
@@ -1603,7 +1605,9 @@ def filter_pagination_feedback(
     feedback_filter_all = FeedbackFilter(
         request.GET or initial_data, queryset=all_feedback
     )
-    anonymous_feedback = anonymous_feedback
+    anonymous_feedback = AnonymousFeedbackFilter(
+        request.GET, queryset=anonymous_feedback
+    ).qs
     feedback_paginator_own = Paginator(feedback_filter_own.qs, get_pagination())
     feedback_paginator_requested = Paginator(
         feedback_filter_requested.qs, get_pagination()
@@ -1668,11 +1672,16 @@ def feedback_list_search(request):
         all_feedback = Feedback.objects.filter(manager_id=employee_id).filter(
             review_cycle__icontains=feedback
         )
+    # Anonymous feedbacks
     anonymous_feedback = (
-        AnonymousFeedback.objects.filter(employee_id=employee_id)
+        AnonymousFeedback.objects.filter(
+            anonymous_feedback_id=request.user.id, archive=False
+        )
         if not request.user.has_perm("pms.view_feedback")
-        else AnonymousFeedback.objects.all()
+        else AnonymousFeedback.objects.filter(archive=False)
     )
+    related_anonymous_feedbacks = get_anonymous_feedbacks(employee_id)
+    anonymous_feedback = (related_anonymous_feedbacks | anonymous_feedback).distinct()
 
     context = filter_pagination_feedback(
         request, self_feedback, requested_feedback, all_feedback, anonymous_feedback
@@ -1708,13 +1717,16 @@ def feedback_list_view(request):
         feedback_all = Feedback.objects.filter(manager_id=employee, archive=False)
     # Anonymous feedbacks
     anonymous_feedback = (
-        AnonymousFeedback.objects.filter(employee_id=employee, archive=False)
+        AnonymousFeedback.objects.filter(
+            anonymous_feedback_id=request.user.id, archive=False
+        )
         if not request.user.has_perm("pms.view_feedback")
         else AnonymousFeedback.objects.filter(archive=False)
     )
-    anonymous_feedback = anonymous_feedback | AnonymousFeedback.objects.filter(
-        anonymous_feedback_id=request.user.id, archive=False
-    )
+    related_anonymous_feedbacks = get_anonymous_feedbacks(employee)
+    anonymous_feedback = (
+        related_anonymous_feedbacks.filter(archive=False) | anonymous_feedback
+    ).distinct()
     context = filter_pagination_feedback(
         request, feedback_own, feedback_requested, feedback_all, anonymous_feedback
     )
@@ -2999,17 +3011,24 @@ def edit_anonymous_feedback(request, obj_id):
         Renders the 'anonymous/anonymous_feedback_form.html' template with the feedback form pre-filled with existing data.
     """
     feedback = AnonymousFeedback.objects.get(id=obj_id)
-    form = AnonymousFeedbackForm(instance=feedback)
-    anonymous_id = request.user.id
-    if request.method == "POST":
-        form = AnonymousFeedbackForm(request.POST, instance=feedback)
-        if form.is_valid():
-            feedback = form.save(commit=False)
-            feedback.anonymous_feedback_id = anonymous_id
-            feedback.save()
-            return HttpResponse("<script>window.location.reload();</script>")
-    context = {"form": form, "create": False}
-    return render(request, "anonymous/anonymous_feedback_form.html", context)
+    # checking feedback owner
+    if str(request.user.id) == feedback.anonymous_feedback_id or request.user.has_perm(
+        "pms.change_anonymousfeedback"
+    ):
+        form = AnonymousFeedbackForm(instance=feedback)
+        anonymous_id = request.user.id
+        if request.method == "POST":
+            form = AnonymousFeedbackForm(request.POST, instance=feedback)
+            if form.is_valid():
+                feedback = form.save(commit=False)
+                feedback.anonymous_feedback_id = anonymous_id
+                feedback.save()
+                return HttpResponse("<script>window.location.reload();</script>")
+        context = {"form": form, "create": False}
+        return render(request, "anonymous/anonymous_feedback_form.html", context)
+    else:
+        messages.info(request, _("You are don't have permissions."))
+        return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
@@ -3021,14 +3040,21 @@ def archive_anonymous_feedback(request, obj_id):
     """
 
     feedback = AnonymousFeedback.objects.get(id=obj_id)
-    if feedback.archive:
-        feedback.archive = False
-        feedback.save()
-        messages.info(request, _("Feedback un-archived successfully!."))
-    elif not feedback.archive:
-        feedback.archive = True
-        feedback.save()
-        messages.info(request, _("Feedback archived successfully!."))
+    # checking feedback owner
+    if str(request.user.id) == feedback.anonymous_feedback_id or request.user.has_perm(
+        "pms.anonymousfeedback"
+    ):
+        if feedback.archive:
+            feedback.archive = False
+            feedback.save()
+            messages.info(request, _("Feedback un-archived successfully!."))
+        elif not feedback.archive:
+            feedback.archive = True
+            feedback.save()
+            messages.info(request, _("Feedback archived successfully!."))
+
+    else:
+        messages.info(request, _("You are don't have permissions."))
     return redirect(feedback_list_view)
 
 
