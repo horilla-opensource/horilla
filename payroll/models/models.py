@@ -1264,7 +1264,7 @@ class Deduction(HorillaModel):
         if self.is_tax:
             self.is_pretax = False
         if not self.is_fixed:
-            if not self.based_on:
+            if not self.based_on and not self.update_compensation:
                 raise ValidationError(
                     _(
                         "If the 'Is fixed' field is disabled, the 'Based on' field is required."
