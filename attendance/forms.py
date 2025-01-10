@@ -581,42 +581,44 @@ class AttendanceValidationConditionForm(forms.ModelForm):
     Model form for AttendanceValidationCondition
     """
 
+    validation_at_work = forms.CharField(
+        required=True,
+        initial="00:00",
+        widget=forms.TextInput(
+            attrs={"class": "oh-input w-100", "placeholder": "09:00"}
+        ),
+        label=format_html(
+            _(
+                "<span title='Do not Auto Validate Attendance if an Employee Works More Than this Amount of Duration'>{}</span>"
+            ),
+            _("Worked Hours(At Work) Auto Approve Till"),
+        ),
+    )
+    minimum_overtime_to_approve = forms.CharField(
+        required=True,
+        initial="00:00",
+        widget=forms.TextInput(
+            attrs={"class": "oh-input w-100", "placeholder": "00:30"}
+        ),
+        label=_("Minimum Hour to Approve Overtime"),
+    )
+    overtime_cutoff = forms.CharField(
+        required=True,
+        initial="00:00",
+        widget=forms.TextInput(
+            attrs={"class": "oh-input w-100", "placeholder": "02:00"}
+        ),
+        label=_("Maximum Allowed Overtime Per Day"),
+    )
+    company_id = forms.ModelMultipleChoiceField(
+        label=_("Company"),
+        queryset=Company.objects.all(),
+        required=False,
+        widget=forms.SelectMultiple(attrs={"class": "oh-select oh-select-2 w-100"}),
+    )
+
     class Meta:
-        """
-        Meta class to add the additional info
-        """
-
         model = AttendanceValidationCondition
-        validation_at_work = forms.DurationField()
-        approve_overtime_after = forms.DurationField()
-        overtime_cutoff = forms.DurationField()
-        company_id = forms.ModelMultipleChoiceField(
-            queryset=Company.objects.all(),
-            widget=forms.SelectMultiple(attrs={"class": "oh-select oh-select-2 w-100"}),
-        )
-        widgets = {
-            "validation_at_work": forms.TextInput(
-                attrs={"class": "oh-input w-100", "placeholder": "09:00"}
-            ),
-            "minimum_overtime_to_approve": forms.TextInput(
-                attrs={"class": "oh-input w-100", "placeholder": "00:30"}
-            ),
-            "overtime_cutoff": forms.TextInput(
-                attrs={"class": "oh-input w-100", "placeholder": "02:00"}
-            ),
-            "company_id": forms.SelectMultiple(attrs={"class": "oh-select w-100"}),
-        }
-
-        labels = {
-            "validation_at_work": format_html(
-                _(
-                    "<span title='Do not Auto Validate Attendance if an Employee Works More Than this Amount of Duration'>{}</span>"
-                ),
-                _("Worked Hours(At Work) Auto Approve Till"),
-            ),
-            "minimum_overtime_to_approve": _("Minimum Hour to Approve Overtime"),
-            "overtime_cutoff": _("Maximum Allowed Overtime Per Day"),
-        }
         fields = "__all__"
         exclude = ["is_active"]
 

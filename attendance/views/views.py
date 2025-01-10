@@ -1240,26 +1240,6 @@ def late_come_early_out_export(request):
 
 
 @login_required
-@permission_required("attendance.add_attendancevalidationcondition")
-def validation_condition_create(request):
-    """
-    This method render a form to create attendance validation conditions,
-    and create if the form is valid.
-    """
-    form = AttendanceValidationConditionForm()
-    condition = AttendanceValidationCondition.objects.first()
-    if request.method == "POST":
-        form = AttendanceValidationConditionForm(request.POST)
-        if form.is_valid():
-            form.save()
-    return render(
-        request,
-        "attendance/break_point/condition.html",
-        {"form": form, "condition": condition},
-    )
-
-
-@login_required
 @permission_required("attendance.change_attendancevalidationcondition")
 @require_http_methods(["POST"])
 def validation_condition_delete(request, obj_id):
@@ -2454,22 +2434,6 @@ def enable_timerunner(request):
 
 
 @login_required
-@permission_required("attendance.view_attendancevalidationcondition")
-def validation_condition_view(request):
-    """
-    This method view attendance validation conditions.
-    """
-
-    condition = AttendanceValidationCondition.objects.first()
-    default_grace_time = GraceTime.objects.filter(is_default=True).first()
-    return render(
-        request,
-        "attendance/break_point/condition.html",
-        {"condition": condition, "default_grace_time": default_grace_time},
-    )
-
-
-@login_required
 @permission_required("base.view_tracklatecomeearlyout")
 def track_late_come_early_out(request):
     """
@@ -2563,6 +2527,22 @@ def grace_time_view(request):
 
 
 @login_required
+@permission_required("attendance.view_attendancevalidationcondition")
+def validation_condition_view(request):
+    """
+    This method view attendance validation conditions.
+    """
+
+    condition = AttendanceValidationCondition.objects.first()
+    default_grace_time = GraceTime.objects.filter(is_default=True).first()
+    return render(
+        request,
+        "attendance/break_point/condition.html",
+        {"condition": condition, "default_grace_time": default_grace_time},
+    )
+
+
+@login_required
 @permission_required("attendance.add_attendancevalidationcondition")
 def validation_condition_create(request):
     """
@@ -2575,7 +2555,7 @@ def validation_condition_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance Break-point settings created."))
-            return HttpResponse("<script>window.location.reload()</script>")
+            form = AttendanceValidationConditionForm()
     return render(
         request,
         "attendance/break_point/condition_form.html",
@@ -2599,7 +2579,6 @@ def validation_condition_update(request, obj_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance Break-point settings updated."))
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "attendance/break_point/condition_form.html",

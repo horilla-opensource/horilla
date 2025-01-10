@@ -1,7 +1,7 @@
 {% extends 'settings.html' %} {% load i18n %} {% block settings %}{% load static %}
 <div id="ohMessages"></div>
 
-<div class="oh-inner-sidebar-content">
+<div class="oh-inner-sidebar-content" id="attendanceValidationConditions">
     <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
         <h2 class="oh-inner-sidebar-content__title">{% trans 'Break Point Condition' %}</h2>
         {% if not condition and perms.attendance.add_attendancevalidationcondition%}

@@ -238,6 +238,11 @@ def validate_time_format(value):
     """
     this method is used to validate the format of duration like fields.
     """
+    if value.count(":") == 2:
+        # If the format is "H:MM:SS", check if it can be reduced to "HH:MM"
+        # Django's DurationField internally converts it to a timedelta object, it becomes "0:00:00"
+        value = ":".join(value.split(":")[:2])
+
     if len(value) > 6:
         raise ValidationError(_("Invalid format, it should be HH:MM format"))
     try:
