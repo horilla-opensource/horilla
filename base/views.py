@@ -173,6 +173,7 @@ from horilla.horilla_settings import (
     DB_INIT_PASSWORD,
     DYNAMIC_URL_PATTERNS,
     FILE_STORAGE,
+    NO_PERMISSION_MODALS,
 )
 from horilla.methods import get_horilla_model_class, remove_dynamic_url
 from horilla_audit.forms import HistoryTrackingFieldsForm
@@ -908,6 +909,7 @@ def user_group_table(request):
     """
     permissions = []
     apps = APPS
+    no_permission_models = NO_PERMISSION_MODALS
     form = UserGroupForm()
     for app_name in apps:
         app_models = []
@@ -931,6 +933,7 @@ def user_group_table(request):
         {
             "permissions": permissions,
             "form": form,
+            "no_permission_models": no_permission_models,
         },
     )
 
@@ -975,6 +978,7 @@ def user_group(request):
     permissions = []
 
     apps = APPS
+    no_permission_models = NO_PERMISSION_MODALS
     form = UserGroupForm()
     for app_name in apps:
         app_models = []
@@ -994,6 +998,7 @@ def user_group(request):
             "permissions": permissions,
             "form": form,
             "groups": paginator_qry(groups, request.GET.get("page")),
+            "no_permission_models": no_permission_models,
         },
     )
 
@@ -1007,6 +1012,7 @@ def user_group_search(request):
     permissions = []
 
     apps = APPS
+    no_permission_models = NO_PERMISSION_MODALS
     form = UserGroupForm()
     for app_name in apps:
         app_models = []
@@ -1029,6 +1035,7 @@ def user_group_search(request):
             "permissions": permissions,
             "form": form,
             "groups": paginator_qry(groups, request.GET.get("page")),
+            "no_permission_models": no_permission_models,
         },
     )
 
@@ -3069,46 +3076,7 @@ def employee_permission_assign(request):
     ]
     installed_apps = [app for app in settings.INSTALLED_APPS if app in horilla_apps]
 
-    no_permission_models = [
-        "historicalbonuspoint",
-        "assetreport",
-        "assetdocuments",
-        "returnimages",
-        "holiday",
-        "companyleave",
-        "historicalavailableleave",
-        "historicalleaverequest",
-        "historicalleaveallocationrequest",
-        "leaverequestconditionapproval",
-        "historicalcompensatoryleaverequest",
-        "employeepastleaverestrict",
-        "overrideleaverequests",
-        "historicalrotatingworktypeassign",
-        "employeeshiftday",
-        "historicalrotatingshiftassign",
-        "historicalworktyperequest",
-        "historicalshiftrequest",
-        "multipleapprovalmanagers",
-        "attachment",
-        "announcementview",
-        "emaillog",
-        "driverviewed",
-        "dashboardemployeecharts",
-        "attendanceallowedip",
-        "tracklatecomeearlyout",
-        "historicalcontract",
-        "overrideattendance",
-        "overrideleaverequest",
-        "overrideworkinfo",
-        "multiplecondition",
-        "historicalpayslip",
-        "reimbursementmultipleattachment",
-        "historicalcontract",
-        "overrideattendance",
-        "overrideleaverequest",
-        "workrecord",
-        "historicalticket",
-    ]
+    no_permission_models = NO_PERMISSION_MODALS
     for app_name in installed_apps:
         app_models = []
         for model in get_models_in_app(app_name):
@@ -3123,6 +3091,7 @@ def employee_permission_assign(request):
             {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
         )
     context["permissions"] = permissions
+    context["no_permission_models"] = no_permission_models
     context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,
@@ -3204,46 +3173,7 @@ def permission_table(request):
     apps = APPS
     form = AssignPermission()
 
-    no_permission_models = [
-        "historicalbonuspoint",
-        "assetreport",
-        "assetdocuments",
-        "returnimages",
-        "holiday",
-        "companyleave",
-        "historicalavailableleave",
-        "historicalleaverequest",
-        "historicalleaveallocationrequest",
-        "leaverequestconditionapproval",
-        "historicalcompensatoryleaverequest",
-        "employeepastleaverestrict",
-        "overrideleaverequests",
-        "historicalrotatingworktypeassign",
-        "employeeshiftday",
-        "historicalrotatingshiftassign",
-        "historicalworktyperequest",
-        "historicalshiftrequest",
-        "multipleapprovalmanagers",
-        "attachment",
-        "announcementview",
-        "emaillog",
-        "driverviewed",
-        "dashboardemployeecharts",
-        "attendanceallowedip",
-        "tracklatecomeearlyout",
-        "historicalcontract",
-        "overrideattendance",
-        "overrideleaverequest",
-        "overrideworkinfo",
-        "multiplecondition",
-        "historicalpayslip",
-        "reimbursementmultipleattachment",
-        "historicalcontract",
-        "overrideattendance",
-        "overrideleaverequest",
-        "workrecord",
-        "historicalticket",
-    ]
+    no_permission_models = NO_PERMISSION_MODALS
 
     for app_name in apps:
         app_models = []
@@ -3268,6 +3198,7 @@ def permission_table(request):
         {
             "permissions": permissions,
             "form": form,
+            "no_permission_models": no_permission_models,
         },
     )
 
