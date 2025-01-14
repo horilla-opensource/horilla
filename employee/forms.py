@@ -266,16 +266,32 @@ class EmployeeWorkInformationForm(ModelForm):
     Form for EmployeeWorkInformation model
     """
 
-    employees = Employee.objects.filter(employee_work_info=None)
-    employee_id = forms.ModelChoiceField(queryset=employees)
-
     class Meta:
         """
         Meta class to add the additional info
         """
 
         model = EmployeeWorkInformation
-        fields = "__all__"
+        fields = (
+            "department_id",
+            "job_position_id",
+            "job_role_id",
+            "shift_id",
+            "work_type_id",
+            "employee_type_id",
+            "reporting_manager_id",
+            "company_id",
+            "location",
+            "email",
+            "mobile",
+            "date_joining",
+            "contract_end_date",
+            "tags",
+            "basic_salary",
+            "salary_hour",
+        )
+        exclude = ("employee_id",)
+
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),
             "contract_end_date": DateInput(attrs={"type": "date"}),
@@ -344,6 +360,10 @@ class EmployeeWorkInformationForm(ModelForm):
             del self.errors["employee_id"]
         return cleaned_data
 
+    def as_p(self, *args, **kwargs):
+        context = {"form": self}
+        return render_to_string("employee/create_form/personal_info_as_p.html", context)
+
 
 class EmployeeWorkInformationUpdateForm(ModelForm):
     """
@@ -364,6 +384,10 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
             "contract_end_date": DateInput(attrs={"type": "date"}),
         }
 
+    def as_p(self, *args, **kwargs):
+        context = {"form": self}
+        return render_to_string("employee/create_form/personal_info_as_p.html", context)
+
 
 class EmployeeBankDetailsForm(ModelForm):
     """
@@ -378,17 +402,28 @@ class EmployeeBankDetailsForm(ModelForm):
         """
 
         model = EmployeeBankDetails
-        fields = "__all__"
-        exclude = [
-            "employee_id",
-            "is_active",
-        ]
+        fields = (
+            "bank_name",
+            "account_number",
+            "branch",
+            "any_other_code1",
+            "address",
+            "country",
+            "state",
+            "city",
+            "any_other_code2",
+        )
+        exclude = ["employee_id", "is_active", "additional_info"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["address"].widget.attrs["autocomplete"] = "address"
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "oh-input w-100"
+
+    def as_p(self, *args, **kwargs):
+        context = {"form": self}
+        return render_to_string("employee/update_form/bank_info_as_p.html", context)
 
 
 class EmployeeBankDetailsUpdateForm(ModelForm):
@@ -403,10 +438,7 @@ class EmployeeBankDetailsUpdateForm(ModelForm):
 
         model = EmployeeBankDetails
         fields = "__all__"
-        exclude = [
-            "employee_id",
-            "is_active",
-        ]
+        exclude = ["employee_id", "is_active", "additional_info"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -414,6 +446,10 @@ class EmployeeBankDetailsUpdateForm(ModelForm):
             visible.field.widget.attrs["class"] = "oh-input w-100"
         for field in self.fields:
             self.fields[field].widget.attrs["placeholder"] = self.fields[field].label
+
+    def as_p(self, *args, **kwargs):
+        context = {"form": self}
+        return render_to_string("employee/update_form/bank_info_as_p.html", context)
 
 
 excel_columns = [
