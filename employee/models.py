@@ -925,6 +925,15 @@ class EmployeeGeneralSetting(HorillaModel):
     objects = HorillaCompanyManager("company_id")
 
 
+class ProfileEditFeature(HorillaModel):
+    """
+    ProfileEditFeature
+    """
+
+    is_enabled = models.BooleanField(default=False)
+    objects = models.Manager()
+
+
 from accessibility.accessibility import ACCESSBILITY_FEATURE
 
 ACCESSBILITY_FEATURE.append(("gender_chart", "Can view Gender Chart"))
