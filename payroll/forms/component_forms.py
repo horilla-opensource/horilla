@@ -547,28 +547,58 @@ class ContractExportFieldForm(forms.Form):
     )
 
 
+from django.core.exceptions import ValidationError
+
+
+def rate_validator(value):
+    """
+    Percentage validator
+    """
+    if value < 0:
+        raise ValidationError(_("Rate must be greater than 0"))
+    if value > 100:
+        raise ValidationError(_("Rate must be less than 100"))
+
+
 class BonusForm(Form):
     """
     Bonus Creating Form
     """
 
     title = forms.CharField(max_length=100)
-    date = forms.DateField(widget=forms.DateInput())
+    date = forms.DateField(widget=forms.DateInput(), required=False)
     employee_id = forms.IntegerField(label="Employee", widget=forms.HiddenInput())
-    amount = forms.DecimalField(label="Amount")
+    is_fixed = forms.BooleanField(
+        label="Is Fixed", initial=True, required=False, widget=forms.CheckboxInput()
+    )
+    amount = forms.DecimalField(
+        label="Amount",
+        required=False,
+    )
+    based_on = forms.ChoiceField(choices=[("BASIC_PAY", "Basic Pay")], required=False)
+    rate = forms.FloatField(
+        validators=[
+            rate_validator,
+        ],
+        label="Rate",
+        required=False,
+    )
 
     def save(self, commit=True):
         title = self.cleaned_data["title"]
         date = self.cleaned_data["date"]
         employee_id = self.cleaned_data["employee_id"]
         amount = self.cleaned_data["amount"]
+        is_fixed = self.cleaned_data["is_fixed"]
+        rate = self.cleaned_data["rate"]
 
         bonus = Allowance()
         bonus.title = title
         bonus.one_time_date = date
         bonus.only_show_under_employee = True
         bonus.amount = amount
-        bonus.is_fixed = True
+        bonus.is_fixed = is_fixed
+        bonus.rate = rate
         bonus.save()
         bonus.include_active_employees = False
         bonus.specific_employees.set([employee_id])
@@ -583,6 +613,7 @@ class BonusForm(Form):
         self.fields["date"].widget = forms.DateInput(
             attrs={"type": "date", "class": "oh-input w-100"}
         )
+        self.fields["is_fixed"].widget.attrs.update({"class": "oh-switch__checkbox"})
 
 
 class PayslipAllowanceForm(BonusForm):

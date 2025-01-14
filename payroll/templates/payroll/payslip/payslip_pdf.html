@@ -16,12 +16,12 @@
           overflow-x: hidden;
           font-family: "Inter", serif;
         }
-  
+
         body {
           background-color: #f5f7ff;
           margin: 0;
         }
-  
+
         table {
           caption-side: bottom;
           border-collapse: collapse;
@@ -34,20 +34,20 @@
           padding: 10px;
           text-align: left;
         }
-  
+
         .oh-payslip {
           background: #fff;
           padding: 40px;
           font-size: 16px;
         }
-  
+
         .oh-payslip-container {
           max-width: 880px;
           padding: 30px 15px;
           margin-left: auto;
           margin-right: auto;
         }
-  
+
         .oh-payslip-table .oh-payslip-td-head {
           color: #777;
           margin-right: 16px;
@@ -55,7 +55,7 @@
         .oh-payslip-table .oh-payslip-td-value {
           color: #111;
         }
-  
+
         .oh-footer-total .oh-footer-gross-text {
           margin: 0;
           color: #777;
@@ -68,7 +68,7 @@
           font-weight: 700;
           margin: 0px 0 12px 0;
         }
-  
+
         .oh-payslip_head {
           display: -webkit-box;
           display: -ms-flexbox;
@@ -86,13 +86,13 @@
           -ms-flex-align: center;
           align-items: center;
         }
-  
+
         .oh-logo img {
           width: 150px;
           -o-object-fit: cover;
           object-fit: cover;
         }
-  
+
         .oh-payslip-secondhead p {
           color: #777;
         }
@@ -101,12 +101,12 @@
           margin: 10px 0;
           font-weight: 700;
         }
-  
+
         .oh-payslip-company-name {
           font-weight: 700;
           font-size: 20px;
         }
-  
+
         .oh-payslip-company-address {
           font-size: 16px;
           color: #777;
@@ -114,7 +114,7 @@
           word-wrap: break-word;
           margin-bottom: 0;
         }
-  
+
         .oh-payslip_left .oh-payslip-left-title {
           font-size: 16px;
           color: #777;
@@ -125,7 +125,7 @@
           color: #111;
           margin: 10px 0;
         }
-  
+
         .oh-allowance-table td {
           color: #777;
         }
@@ -133,11 +133,11 @@
           color: #111;
           width: 25%;
         }
-  
+
         .oh-bg-color {
           background-color: #f7f7f7;
         }
-  
+
         .oh-footer-page-number {
           display: -webkit-box;
           display: -ms-flexbox;
@@ -172,13 +172,13 @@
         .gap-2 {
           gap: 16px;
         }
-      </style>    
-        
+      </style>
+
       <script>
           function printDiv() {
               const printContents = document.getElementById('printDiv').innerHTML;
               const originalContents = document.body.innerHTML;
-              
+
               // Replace body content with print content
               document.body.innerHTML = printContents;
 
@@ -189,7 +189,7 @@
 
               // Open print dialog
               window.print();
-              
+
               // Restore original content
               document.body.innerHTML = originalContents;
 
@@ -199,7 +199,7 @@
             window.onload = printDiv;
 
       </script>
-    
+
     </head>
     <body id="printDiv">
           <div class="container oh-payslip-container">
