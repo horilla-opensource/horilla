@@ -18,5 +18,5 @@ class DefaultAccessibility(HorillaModel):
     filter = models.JSONField()
     exclude_all = models.BooleanField(default=False)
     employees = models.ManyToManyField(
-        Employee, blank=True, related_name="profile_edit_accessibility"
+        Employee, blank=True, related_name="default_accessibility"
     )

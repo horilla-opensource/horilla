@@ -745,6 +745,11 @@ urlpatterns = [
         name="enable-account-block-unblock",
     ),
     path(
+        "enable-profile-edit-feature",
+        views.enable_profile_edit_feature,
+        name="enable-profile-edit-feature",
+    ),
+    path(
         "rwork-individual-view/<int:instance_id>/",
         views.rotating_work_individual_view,
         name="rwork-individual-view",

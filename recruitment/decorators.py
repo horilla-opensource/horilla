@@ -156,11 +156,12 @@ def candidate_login_required(view_func):
         if request.user.has_perm("recruitment.view_candidate"):
             return view_func(request, *args, **kwargs)
         if request.user:
-            if (
-                request.user.employee_get.stage_set.exists()
-                or request.user.employee_get.recruitment_set.exists()
-            ):
-                return view_func(request, *args, **kwargs)
+            if request.user.is_authenticated:
+                if (
+                    request.user.employee_get.stage_set.exists()
+                    or request.user.employee_get.recruitment_set.exists()
+                ):
+                    return view_func(request, *args, **kwargs)
 
         if "candidate_id" in request.session:
             return view_func(request, *args, **kwargs)

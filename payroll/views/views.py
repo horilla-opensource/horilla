@@ -617,7 +617,7 @@ def view_payslip_pdf(request, payslip_id):
             data["protocol"] = "https" if request.is_secure() else "http"
             data["company"] = company
 
-            return render(request, "payroll/payslip/test_pdf.html", context=data)
+            return render(request, "payroll/payslip/payslip_pdf.html", context=data)
         return redirect(filter_payslip)
     return render(request, "405.html")
 
@@ -1566,7 +1566,7 @@ def payslip_pdf(request, id):
 
             equalize_lists_length(data["allowances"], data["all_deductions"])
             data["zipped_data"] = zip(data["allowances"], data["all_deductions"])
-            template_path = "payroll/payslip/test_pdf.html"
+            template_path = "payroll/payslip/payslip_pdf.html"
 
             return generate_payslip_pdf(template_path, context=data, html=False)
         return redirect(filter_payslip)

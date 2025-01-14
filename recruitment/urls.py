@@ -524,12 +524,12 @@ urlpatterns = [
         name="candidate-self-tracking-rating-option",
     ),
     path(
-        "candidate-self-status-tracking",
+        "candidate-self-status-tracking/",
         views.candidate_self_status_tracking,
         name="candidate-self-status-tracking",
     ),
     path(
-        "candidate-self-status-tracking/<int:cand_id>",
+        "candidate-self-status-tracking/<int:cand_id>/",
         views.candidate_self_status_tracking_managers_view,
         name="candidate-self-status-tracking",
     ),
