@@ -8,6 +8,10 @@ based on their contract details and income information.
 import datetime
 import logging
 
+from payroll.methods.methods import (
+    compute_yearly_taxable_amount,
+    convert_year_tax_to_period,
+)
 from payroll.methods.payslip_calc import (
     calculate_gross_pay,
     calculate_taxable_gross_pay,
@@ -65,6 +69,9 @@ def calculate_taxable_amount(**kwargs):
     check_end_date = datetime.date(year, 12, 31)
     total_days = (check_end_date - check_start_date).days + 1
     yearly_income = income / num_days * total_days
+    yearly_income = compute_yearly_taxable_amount(income, yearly_income)
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.")
+    print(yearly_income)
     yearly_income = round(yearly_income, 2)
     federal_tax = 0
     if filing is not None and not filing.use_py:
@@ -107,4 +114,11 @@ def pass_print(*args, **kwargs):
         daily_federal_tax = federal_tax / total_days
         federal_tax_for_period = daily_federal_tax * num_days
 
+    federal_tax_for_period = convert_year_tax_to_period(
+        federal_tax_for_period=federal_tax_for_period,
+        yearly_tax=federal_tax,
+        total_days=total_days,
+        start_date=start_date,
+        end_date=end_date,
+    )
     return federal_tax_for_period
