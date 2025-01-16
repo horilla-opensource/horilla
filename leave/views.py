@@ -1666,7 +1666,7 @@ def assign_leave_type_import(request):
         employees = {emp.badge_id.lower(): emp for emp in Employee.objects.all()}
         leave_types = {lt.name.lower(): lt for lt in LeaveType.objects.all()}
         available_leaves = {
-            (al.leave_type.id, al.employee.id): al
+            (al.leave_type_id.id, al.employee_id.id): al
             for al in AvailableLeave.objects.all()
         }
 
