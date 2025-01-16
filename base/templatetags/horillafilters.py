@@ -323,16 +323,16 @@ def is_check_in_enabled(request):
 
     # Fetch the settings based on the selected company
     if selected_company == "all":
-        attendance_settings, created = AttendanceGeneralSetting.objects.get_or_create(
+        attendance_settings = AttendanceGeneralSetting.objects.filter(
             company_id=None
-        )
+        ).first()
     else:
         company = Company.objects.filter(id=selected_company).first()
         if not company:
             return False  # Return False if the company doesn't exist
-        attendance_settings, created = AttendanceGeneralSetting.objects.get_or_create(
+        attendance_settings = AttendanceGeneralSetting.objects.filter(
             company_id=company
-        )
+        ).first()
 
     # Check if check-in is enabled
     return bool(attendance_settings and attendance_settings.enable_check_in)

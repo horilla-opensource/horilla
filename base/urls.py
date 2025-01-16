@@ -969,7 +969,11 @@ urlpatterns = [
         "announcement-viewed-by", announcement.viewed_by, name="announcement-viewed-by"
     ),
     path("driver-viewed", views.driver_viewed_status, name="driver-viewed"),
-    path("employee-charts", views.employee_charts, name="employee-charts"),
+    path(
+        "dashboard-components-toggle",
+        views.dashboard_components_toggle,
+        name="dashboard-components-toggle",
+    ),
     path("employee-chart-show", views.employee_chart_show, name="employee-chart-show"),
     path(
         "settings/enable-biometric-attendance/",

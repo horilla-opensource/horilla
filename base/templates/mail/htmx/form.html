@@ -1,8 +1,8 @@
 {% load i18n %}
 {% if form.instance.id %}
-<form id="editForm" hx-post="{% url "view-mail-template" form.instance.id %}" hx-target="#viewTemplateModalBody">
+    <form id="editForm" hx-post="{% url "view-mail-template" form.instance.id %}" hx-target="#viewTemplateModalBody">
 {% else %}
-<form id="createForm" hx-post="{% url "create-mail-template" %}" hx-target="#viewTemplateModalBody">
+    <form id="createForm" hx-post="{% url "create-mail-template" %}" hx-target="#viewTemplateModalBody">
 {% endif %}
     <div id="viewTemplateModalContainer">
         <div class="my-3" id="keyResultCard">
