@@ -1232,6 +1232,7 @@ def object_duplicate(request, obj_id, **kwargs):
     template = kwargs["template"]
     original_object = model.objects.get(id=obj_id)
     form = form_class(instance=original_object)
+    searchWords = form.get_template_language()
     if request.method == "GET":
         for field_name, field in form.fields.items():
             if isinstance(field, forms.CharField):
@@ -1251,11 +1252,11 @@ def object_duplicate(request, obj_id, **kwargs):
             new_object.id = None
             new_object.save()
             return HttpResponse("<script>window.location.reload()</script>")
-
     context = {
         kwargs.get("form_name", "form"): form,
         "obj_id": obj_id,
         "duplicate": True,
+        "searchWords": searchWords,
     }
     return render(request, template, context)
 
@@ -6230,7 +6231,7 @@ def driver_viewed_status(request):
 
 
 @login_required
-def employee_charts(request):
+def dashboard_components_toggle(request):
     """
     This function is used to create personalized dashboard charts for employees
     """

@@ -53,3 +53,4 @@ class AttendanceConfig(AppConfig):
                     AttendanceGeneralSetting.objects.create(company_id=company)
                 except:
                     pass
+        AttendanceGeneralSetting.objects.get_or_create(company_id=None)
