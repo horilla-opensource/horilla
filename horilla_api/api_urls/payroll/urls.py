@@ -1,33 +1,83 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
-from ...api_views.payroll.views import *
+from ...api_views.payroll.views import (
+    PayslipViewSet,
+    ContractViewSet,
+    LoanAccountViewSet,
+    ReimbursementViewSet,
+    TaxBracketViewSet,
+    AllowanceViewSet,
+    DeductionViewSet,
+)
 
+# Create a router for ViewSet-based URLs
+router = DefaultRouter()
+router.register(r'api/contract', ContractViewSet, basename='contract')
+router.register(r'api/payslip', PayslipViewSet, basename='payslip')
+router.register(r'api/loan-account', LoanAccountViewSet, basename='loan-account')
+router.register(r'api/reimbursement', ReimbursementViewSet, basename='reimbursement')
+router.register(r'api/tax-bracket', TaxBracketViewSet, basename='tax-bracket')
+router.register(r'api/allowance', AllowanceViewSet, basename='allowance')
+router.register(r'api/deduction', DeductionViewSet, basename='deduction')
+
+# Define URL patterns, maintaining backward compatibility
 urlpatterns = [
+    # Include router-generated URLs
+    path('', include(router.urls)),
+
+    # Legacy URL patterns for backward compatibility
     path(
         "contract/",
-        ContractView.as_view(),
+        ContractViewSet.as_view({'get': 'list', 'post': 'create'}),
+        name="legacy-contract-list"
     ),
     path(
         "contract/<int:id>",
-        ContractView.as_view(),
+        ContractViewSet.as_view({
+            'get': 'retrieve',
+            'put': 'update',
+            'delete': 'destroy'
+        }),
+        name="legacy-contract-detail"
     ),
-    path("payslip/", PayslipView.as_view(), name=""),
-    path("payslip/<int:id>", PayslipView.as_view(), name=""),
-    path("payslip-download/<int:id>", PayslipDownloadView.as_view(), name=""),
-    path("payslip-send-mail/", PayslipSendMailView.as_view(), name=""),
-    path("loan-account/", LoanAccountView.as_view(), name=""),
-    path("loan-account/<int:pk>", LoanAccountView.as_view(), name=""),
-    path("reimbusement/", ReimbursementView.as_view(), name=""),
-    path("reimbusement/<int:pk>", ReimbursementView.as_view(), name=""),
     path(
-        "reimbusement-approve-reject/<int:pk>",
-        ReimbusementApproveRejectView.as_view(),
-        name="",
+        "payslip/",
+        PayslipViewSet.as_view({'get': 'list', 'post': 'create'}),
+        name="legacy-payslip-list"
     ),
-    path("tax-bracket/<int:pk>", TaxBracketView.as_view(), name=""),
-    path("tax-bracket/", TaxBracketView.as_view(), name=""),
-    path("allowance", AllowanceView.as_view(), name=""),
-    path("allowance/<int:pk>", AllowanceView.as_view(), name=""),
-    path("deduction", DeductionView.as_view(), name=""),
-    path("deduction/<int:pk>", DeductionView.as_view(), name=""),
+    path(
+        "payslip/<int:id>",
+        PayslipViewSet.as_view({'get': 'retrieve'}),
+        name="legacy-payslip-detail"
+    ),
+    path(
+        "payslip-download/<int:id>",
+        PayslipViewSet.as_view({'get': 'download'}),
+        name="legacy-payslip-download"
+    ),
+    path(
+        "payslip-send-mail/",
+        PayslipViewSet.as_view({'post': 'send_mail'}),
+        name="legacy-payslip-send-mail"
+    ),
+    path(
+        "reimbursement/",
+        ReimbursementViewSet.as_view({'get': 'list', 'post': 'create'}),
+        name="legacy-reimbursement-list"
+    ),
+    path(
+        "reimbursement/<int:pk>",
+        ReimbursementViewSet.as_view({
+            'get': 'retrieve',
+            'put': 'update',
+            'delete': 'destroy'
+        }),
+        name="legacy-reimbursement-detail"
+    ),
+    path(
+        "reimbursement-approve-reject/<int:pk>",
+        ReimbursementViewSet.as_view({'post': 'process_request'}),
+        name="legacy-reimbursement-approve-reject"
+    ),
 ]
