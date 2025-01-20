@@ -363,4 +363,10 @@
       </div>
     </div>
   {% endif %}
+  <script>
+    setInterval(() => {
+      $("#{{view_id}} [type=checkbox].list-table-row:checked").first().change();
+      $("#{{view_id}} [type=checkbox].list-table-row:checked").not().first().change();
+    }, 200);
+  </script>
 </div>
