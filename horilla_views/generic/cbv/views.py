@@ -15,7 +15,7 @@ from django.http import HttpRequest, HttpResponse, QueryDict
 from django.shortcuts import render
 from django.urls import resolve, reverse
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _trans
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from base.methods import closest_numbers, eval_validate, get_key_instances
@@ -142,7 +142,7 @@ class HorillaListView(ListView):
         form = self.get_bulk_form()
         form.verbose_name = (
             form.verbose_name
-            + f" ({len((eval_validate(request.GET.get('instance_ids','[]'))))} {_trans('Records')})"
+            + f" ({len((eval_validate(request.GET.get('instance_ids','[]'))))} {_('Records')})"
         )
         return render(
             request,
@@ -168,7 +168,7 @@ class HorillaListView(ListView):
         )
         if instance_ids and form.is_valid():
             form.save()
-            messages.success(request, _trans("Selected Records updated"))
+            messages.success(request, _("Selected Records updated"))
 
             script_id = get_short_uuid(length=3, prefix="bulk")
             return HttpResponse(
@@ -181,7 +181,7 @@ class HorillaListView(ListView):
                 """
             )
         if not instance_ids:
-            messages.info(request, _trans("No records selected"))
+            messages.info(request, _("No records selected"))
         return render(
             request,
             self.bulk_template,
@@ -297,7 +297,9 @@ class HorillaListView(ListView):
                 if key in ["filter_applied", "nav_url"] + self.filter_keys_to_remove
             ]
 
-            for key in keys_to_remove + ["referrer"]:
+            for key in (
+                keys_to_remove + ["referrer", "nav_url"] + self.filter_keys_to_remove
+            ):
                 if key in data_dict.keys():
                     data_dict.pop(key)
             context["filter_dict"] = data_dict
@@ -500,7 +502,11 @@ class HorillaDetailedView(DetailView):
 
     title = "Detailed View"
     template_name = "generic/horilla_detailed_view.html"
-    header: dict = {"title": "Horilla", "subtitle": "Horilla Detailed View"}
+    header: dict = {
+        "title": "Horilla",
+        "subtitle": "Horilla Detailed View",
+        "avatar": "",
+    }
     body: list = []
 
     action_method: list = []
@@ -697,9 +703,12 @@ class HorillaCardView(ListView):
                 if value[0] in ["unknown", "on"] + self.filter_keys_to_remove
             ]
 
-            for key in keys_to_remove + ["referrer"]:
+            for key in (
+                keys_to_remove + ["referrer", "nav_url"] + self.filter_keys_to_remove
+            ):
                 if key in data_dict.keys():
                     data_dict.pop(key)
+
             context["filter_dict"] = data_dict
 
         ordered_ids = list(queryset.values_list("id", flat=True))
@@ -1089,6 +1098,8 @@ class HorillaProfileView(DetailView):
     template_name = "generic/horilla_profile_view.html"
     view_id: str = None
     filter_class: FilterSet = None
+    push_url: str = None
+    key_name: str = "pk"
 
     # add these method under the model
     # get_avatar --> image/profile
@@ -1209,10 +1220,14 @@ class HorillaProfileView(DetailView):
         url_name = url.url_name
         next_url = reverse(url_name, kwargs={key: next_id})
         previous_url = reverse(url_name, kwargs={key: previous_id})
+        push_url_next = reverse(self.push_url, kwargs={self.key_name: next_id})
+        push_url_prev = reverse(self.push_url, kwargs={self.key_name: previous_id})
         context["instance_ids"] = str(instance_ids)
         if instance_ids:
             context["next_url"] = next_url
             context["previous_url"] = previous_url
+            context["push_url_next"] = push_url_next
+            context["push_url_prev"] = push_url_prev
 
         context["display_count"] = display_count
         context["actions"] = self.actions

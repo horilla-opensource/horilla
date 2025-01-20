@@ -520,21 +520,19 @@ class HorillaDeleteConfirmationView(View):
             model = type(obj)
             protected_model_count[model._meta.verbose_name_plural] += 1
         protected_model_count = dict(protected_model_count)
+        context = {
+            "model_map": merge_dicts(MODEL_MAP, PROTECTED_MODEL_MAP),
+            "dynamic_list_path": DYNAMIC_PATH_MAP,
+            "delete_object": delete_object,
+            "protected": protected,
+            "model_count_sum": sum(model_count.values()),
+            "related_objects_count": model_count,
+            "protected_objects_count": protected_model_count,
+        }
+        for key, value in self.get_context_data().items():
+            context[key] = value
 
-        return render(
-            self.request,
-            "generic/delete_confirmation.html",
-            {
-                "model_map": merge_dicts(MODEL_MAP, PROTECTED_MODEL_MAP),
-                "dynamic_list_path": DYNAMIC_PATH_MAP,
-                "delete_object": delete_object,
-                "protected": protected,
-                "model_count_sum": sum(model_count.values()),
-                "related_objects_count": model_count,
-                "protected_objects_count": protected_model_count,
-            }
-            | self.get_context_data(),
-        )
+        return render(self.request, "generic/delete_confirmation.html", context)
 
     def post(self, *args, **kwargs):
         """
