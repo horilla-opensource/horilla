@@ -2836,7 +2836,7 @@ def dashboard(request):
 
 @login_required
 def total_employees_count(request):
-    employees = Employee.objects.filter().count()
+    employees = Employee.objects.all().count()
     return HttpResponse(employees)
 
 
