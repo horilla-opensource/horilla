@@ -70,8 +70,6 @@ def calculate_taxable_amount(**kwargs):
     total_days = (check_end_date - check_start_date).days + 1
     yearly_income = income / num_days * total_days
     yearly_income = compute_yearly_taxable_amount(income, yearly_income)
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.")
-    print(yearly_income)
     yearly_income = round(yearly_income, 2)
     federal_tax = 0
     if filing is not None and not filing.use_py:

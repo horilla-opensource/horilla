@@ -407,7 +407,7 @@ def compute_net_pay(
     return net_pay
 
 
-def monthly_computation(employee, wage, start_date, end_date):
+def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
     """
     Hourly salary computation for period.
 
@@ -485,6 +485,7 @@ def monthly_computation(employee, wage, start_date, end_date):
         "month_data": month_data,
         "unpaid_days": unpaid_leaves,
         "paid_days": paid_days,
+        "contract": contract,
     }
 
 

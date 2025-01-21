@@ -137,11 +137,11 @@ def payroll_calculation(employee, start_date, end_date):
     basic_pay = updated_basic_pay_data["compensation_amount"]
     basic_pay_deductions = updated_basic_pay_data["deductions"]
 
-    loss_of_pay_amount = (
-        float(loss_of_pay) if not contract.deduct_leave_from_basic_pay else 0
-    )
-
-    basic_pay = basic_pay - loss_of_pay_amount
+    loss_of_pay_amount = 0
+    if not contract.deduct_leave_from_basic_pay:
+        loss_of_pay_amount = loss_of_pay
+    else:
+        basic_pay = basic_pay - loss_of_pay_amount
 
     kwargs = {
         "employee": employee,
@@ -194,6 +194,9 @@ def payroll_calculation(employee, start_date, end_date):
     )
 
     net_pay = gross_pay - total_deductions
+    # loss_of_pay        -> actual lop amount
+    # loss_of_pay_amount -> actual lop if deduct from basic-
+    #                       pay from contract is enabled
     net_pay = compute_net_pay(
         net_pay=net_pay,
         gross_pay=gross_pay,
@@ -202,6 +205,7 @@ def payroll_calculation(employee, start_date, end_date):
         total_tax_deductions=total_tax_deductions,
         federal_tax=federal_tax,
         loss_of_pay_amount=loss_of_pay_amount,
+        loss_of_pay=loss_of_pay,
     )
     updated_net_pay_data = update_compensation_deduction(
         employee, net_pay, "net_pay", start_date, end_date
