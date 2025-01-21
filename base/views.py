@@ -161,6 +161,7 @@ from employee.models import (
     EmployeeWorkInformation,
     ProfileEditFeature,
 )
+from horilla import horilla_apps
 from horilla.decorators import (
     delete_permission,
     duplicate_permission,
@@ -1353,6 +1354,25 @@ def mail_server_conf(request):
 @permission_required("base.view_dynamicemailconfiguration")
 def mail_server_test_email(request):
     instance_id = request.GET.get("instance_id")
+    white_labelling = getattr(horilla_apps, "WHITE_LABELLING", False)
+    image_path = path.join(settings.STATIC_ROOT, "images/ui/horilla-logo.png")
+    company_name = "Horilla"
+
+    if white_labelling:
+        hq = Company.objects.filter(hq=True).last()
+        try:
+            company = (
+                request.user.employee_get.get_company()
+                if request.user.employee_get.get_company()
+                else hq
+            )
+        except:
+            company = hq
+
+        if company:
+            company_name = company.company
+            image_path = path.join(settings.MEDIA_ROOT, company.icon.name)
+
     form = DynamicMailTestForm()
     if request.method == "POST":
         form = DynamicMailTestForm(request.POST)
@@ -1361,26 +1381,26 @@ def mail_server_test_email(request):
             subject = _("Test mail from Horilla")
 
             # HTML content
-            html_content = """
+            html_content = f"""
             <html>
                 <body style="font-family: Arial, sans-serif; margin: 0; padding: 0;">
                     <table align="center" width="600" cellpadding="0" cellspacing="0" border="0" style="border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden;">
                         <tr>
                             <td align="center" bgcolor="#4CAF50" style="padding: 20px 0;">
-                                <h1 style="color: #ffffff; margin: 0;">Horilla</h1>
+                                <h1 style="color: #ffffff; margin: 0;">{company_name}</h1>
                             </td>
                         </tr>
                         <tr>
                             <td style="padding: 20px;">
                                 <h3 style="color: #4CAF50;">Email tested successfully</h3>
                                 <b><p style="font-size: 14px;">Hi,<br>
-                                    This email is being sent as part of mail sever testing from Horilla.</p></b>
+                                    This email is being sent as part of mail sever testing from {company_name}.</p></b>
                                 <img src="cid:unique_image_id" alt="Test Image" style="width: 200px; height: auto; margin: 20px 0;">
                             </td>
                         </tr>
                         <tr>
                             <td bgcolor="#f0f0f0" style="padding: 10px; text-align: center;">
-                                <p style="font-size: 12px; color: black;">&copy; 2024 Horilla, Inc.</p>
+                                <p style="font-size: 12px; color: black;">&copy; {datetime.today().year} {company_name}</p>
                             </td>
                         </tr>
                     </table>
@@ -1407,10 +1427,6 @@ def mail_server_test_email(request):
                 )
                 msg.attach_alternative(html_content, "text/html")
 
-                # Attach the image
-                image_path = path.join(
-                    settings.STATIC_ROOT, "images/ui/horilla-logo.png"
-                )
                 with open(image_path, "rb") as img:
                     msg_img = MIMEImage(img.read())
                     msg_img.add_header("Content-ID", "<unique_image_id>")
