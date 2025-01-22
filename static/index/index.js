@@ -519,14 +519,18 @@ $(document).on("htmx:beforeRequest", function (event, data) {
     ) {
         var response = event.detail.xhr.response;
         var target = $(event.detail.elt.getAttribute("hx-target"));
-        var avoid_target = [
+        var avoid_target_ids = [
             "BiometricDeviceTestFormTarget",
             "reloadMessages",
             "infinite",
         ];
+        var avoid_target_class = [
+            "oh-badge--small"
+        ]
         if (
             !target.closest("form").length &&
-            avoid_target.indexOf(target.attr("id")) === -1
+            !avoid_target_ids.includes(target.attr("id")) &&
+            !avoid_target_class.some((cls) => target.hasClass(cls))
         ) {
             target.html(`<div class="animated-background"></div>`);
         }
