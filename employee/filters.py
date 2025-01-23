@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 from django_filters import CharFilter
 
 # from attendance.models import Attendance
+from accessibility.methods import check_is_accessible
 from accessibility.models import DefaultAccessibility
 from employee.models import DisciplinaryAction, Employee, Policy
 from horilla.filters import FilterSet, HorillaFilterSet, filter_by_name
@@ -170,15 +171,15 @@ class EmployeeFilter(HorillaFilterSet):
         from django.db.models import Q
 
         # Handle default accessibility and filter based on reporting manager
-        accessibility = DefaultAccessibility.objects.filter(
-            feature="employee_view"
-        ).first()
-        if accessibility and accessibility.exclude_all:
-            request = getattr(_thread_locals, "request", None)
+
+        request = getattr(_thread_locals, "request", None)
+        if request:
             employee = getattr(request.user, "employee_get", None)
-            if employee and employee.reporting_manager.exists():
-                queryset = queryset.filter(
-                    employee_work_info__reporting_manager_id=employee
+            cache_key = request.session.session_key + "accessibility_filter"
+            accessible = check_is_accessible("employee_view", cache_key, employee)
+            if not accessible and employee.reporting_manager.exists():
+                queryset = filtersubordinatesemployeemodel(
+                    request=request, queryset=queryset, perm="employee.view_employee"
                 )
 
         # Handle 'not_set' values in the cleaned data
