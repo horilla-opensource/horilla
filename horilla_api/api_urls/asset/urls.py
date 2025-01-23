@@ -1,38 +1,40 @@
-from django.urls import path, re_path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
-from ...api_views.asset.views import *
+from ...api_views.asset.views import (
+    AssetViewSet,
+    AssetCategoryViewSet,
+    AssetLotViewSet,
+    AssetAssignmentViewSet,
+    AssetRequestViewSet,
+)
+
+
+router = DefaultRouter()
+router.register(r'assets', AssetViewSet, basename='api-asset')
+router.register(r'asset-categories', AssetCategoryViewSet, basename='api-asset-category')
+router.register(r'asset-lots', AssetLotViewSet, basename='api-asset-lot')
+router.register(r'asset-allocations', AssetAssignmentViewSet, basename='api-asset-allocation')
+router.register(r'asset-requests', AssetRequestViewSet, basename='api-asset-request')
 
 urlpatterns = [
-    re_path(
-        r"^asset-categories/(?P<pk>\d+)?$",
-        AssetCategoryAPIView.as_view(),
-        name="api-asset-category-detail",
-    ),
-    re_path(
-        r"^asset-lots/(?P<pk>\d+)?$",
-        AssetLotAPIView.as_view(),
-        name="api-asset-lot-detail",
-    ),
-    re_path(r"^assets/(?P<pk>\d+)?$", AssetAPIView.as_view(), name="api-asset-detail"),
-    re_path(
-        r"^asset-allocations/(?P<pk>\d+)?$",
-        AssetAllocationAPIView.as_view(),
-        name="api-asset-allocation-detail",
-    ),
-    re_path(
-        r"^asset-requests/(?P<pk>\d+)?$",
-        AssetRequestAPIView.as_view(),
-        name="api-asset-request-detail",
+    
+    path('', include(router.urls)),
+    
+    
+    path(
+        'asset-return/<int:pk>/',
+        AssetAssignmentViewSet.as_view({'put': 'return_asset'}),
+        name='api-asset-return'
     ),
     path(
-        "asset-return/<int:pk>", AssetReturnAPIView.as_view(), name="api-asset-return"
+        'asset-reject/<int:pk>/',
+        AssetRequestViewSet.as_view({'put': 'reject'}),
+        name='api-asset-reject'
     ),
     path(
-        "asset-reject/<int:pk>", AssetRejectAPIView.as_view(), name="api-asset-reject"
-    ),
-    path(
-        "asset-approve/<int:pk>",
-        AssetApproveAPIView.as_view(),
-        name="api-asset-approve",
+        'asset-approve/<int:pk>/',
+        AssetRequestViewSet.as_view({'put': 'approve'}),
+        name='api-asset-approve'
     ),
 ]
