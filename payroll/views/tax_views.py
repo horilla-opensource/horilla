@@ -14,6 +14,7 @@ import math
 from urllib.parse import parse_qs
 
 from django.contrib import messages
+from django.db.models import ProtectedError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
@@ -112,12 +113,23 @@ def filing_status_delete(request, filing_status_id):
     database and redirects to the filing status view.
 
     """
-    filing_status = FilingStatus.find(filing_status_id)
-    if filing_status:
-        filing_status.delete()
-        messages.info(request, _("Filing status successfully deleted."))
-    else:
-        messages.error(request, _("This filing status was not found."))
+    try:
+        filing_status = FilingStatus.find(filing_status_id)
+        if filing_status:
+            try:
+                filing_status.delete()
+                messages.info(request, _("Filing status successfully deleted."))
+            except ProtectedError:
+                messages.error(
+                    request,
+                    _("Filing status is in use by tax brackets. Remove them first."),
+                )
+        else:
+            messages.error(request, _("This filing status was not found."))
+    except Exception as e:
+        messages.error(
+            request, _("An error occurred while trying to delete the filing status.")
+        )
     if not FilingStatus.objects.exists():
         return HttpResponse("<script>window.location.reload()</script>")
     return redirect(filing_status_search)
