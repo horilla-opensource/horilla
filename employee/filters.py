@@ -14,6 +14,7 @@ from django_filters import CharFilter
 # from attendance.models import Attendance
 from accessibility.methods import check_is_accessible
 from accessibility.models import DefaultAccessibility
+from base.methods import filtersubordinatesemployeemodel
 from employee.models import DisciplinaryAction, Employee, Policy
 from horilla.filters import FilterSet, HorillaFilterSet, filter_by_name
 from horilla.horilla_middlewares import _thread_locals
