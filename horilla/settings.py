@@ -220,13 +220,13 @@ LOCALE_PATHS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = env("TIME_ZONE", default="Asia/Kolkata")
+# Timezone settings
+TIME_ZONE = 'America/New_York'
+USE_TZ = True
 
 USE_I18N = True
 
 USE_L10N = True
-
-USE_TZ = True
 
 # Production settings
 if not DEBUG:
