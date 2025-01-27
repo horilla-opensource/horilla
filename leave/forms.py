@@ -201,6 +201,17 @@ class LeaveTypeForm(ConditionForm):
             cleaned_data["reset_month"] = "1"
             cleaned_data["reset_day"] = "1"
 
+        reset = cleaned_data.get('reset')
+        reset_based = cleaned_data.get('reset_based')
+        reset_month = cleaned_data.get('reset_month')
+        reset_day = cleaned_data.get('reset_day')
+        
+        if reset and reset_based != 'anniversary':
+            if not reset_month:
+                raise ValidationError(_('Reset month is required when reset is enabled'))
+            if not reset_day:
+                raise ValidationError(_('Reset day is required when reset is enabled'))
+                
         return cleaned_data
 
     def save(self, *args, **kwargs):

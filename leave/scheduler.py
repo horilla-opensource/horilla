@@ -16,6 +16,15 @@ def leave_reset():
     leave_types = LeaveType.objects.filter(reset=True)
     # Looping through filtered leave types with reset is true
     for leave_type in leave_types:
+        # Skip if carryforward is not enabled
+        if not leave_type.carryforward:
+            continue
+            
+        expire_date = leave_type.set_expired_date(today_date)
+        if expire_date:
+            leave_type.carryforward_expire_date = expire_date
+            leave_type.save()
+
         # Looping through all available leaves
         available_leaves = leave_type.employee_available_leave.all()
 
@@ -36,15 +45,6 @@ def leave_reset():
                 )
                 available_leave.expired_date = new_expired_date
                 available_leave.save()
-
-        if (
-            leave_type.carryforward_expire_date
-            and leave_type.carryforward_expire_date <= today_date
-        ):
-            leave_type.carryforward_expire_date = leave_type.set_expired_date(
-                today_date
-            )
-            leave_type.save()
 
 
 if not any(

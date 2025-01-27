@@ -61,6 +61,7 @@ RESET_BASED = [
     ("yearly", _("Yearly")),
     ("monthly", _("Monthly")),
     ("weekly", _("Weekly")),
+    ("anniversary", _("Anniversary")),
 ]
 MONTHS = [
     ("1", _("Jan")),
@@ -209,6 +210,22 @@ class LeaveType(HorillaModel):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
+    carryforward = models.BooleanField(
+        default=False,
+        verbose_name=_("Allow Carryforward"),
+        help_text=_("Enable to allow carrying forward unused leaves")
+    )
+    carryforward_period = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_("Carryforward Period (Years)"),
+        help_text=_("Number of years before carried forward leaves expire")
+    )
+    carryforward_expire_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name=_("Carryforward Expiry Date")
+    )
     objects = HorillaCompanyManager(related_company_field="company_id")
 
     class Meta:
@@ -226,7 +243,10 @@ class LeaveType(HorillaModel):
                 url = self.icon.url
         return url
 
-    def leave_type_next_reset_date(self):
+    def leave_type_next_reset_date(self, employee=None):
+        """
+        Method to get the next reset date for leave type
+        """
         today = datetime.now().date()
 
         if not self.reset:
@@ -239,15 +259,33 @@ class LeaveType(HorillaModel):
                 else int(day)
             )
 
-        if self.reset_based == "yearly":
-            month, day = int(self.reset_month), get_reset_day(
-                int(self.reset_month), self.reset_day
-            )
-            reset_date = datetime(
-                today.year + (datetime(today.year, month, day).date() < today),
-                month,
-                day,
-            ).date()
+        if self.reset_based == "anniversary":
+            if not employee:
+                return None  # Can't calculate anniversary without employee
+            
+            work_info = employee.employee_work_info
+            if not work_info or not work_info.anniversary_date:
+                return None
+            
+            # Calculate next anniversary date
+            anniversary_date = work_info.anniversary_date
+            next_anniversary = anniversary_date.replace(year=today.year)
+            if next_anniversary < today:
+                next_anniversary = next_anniversary.replace(year=today.year + 1)
+            return next_anniversary
+
+        elif self.reset_based == "yearly":
+            try:
+                month = int(self.reset_month)
+                day = get_reset_day(month, self.reset_day)
+                reset_date = datetime(
+                    today.year + (datetime(today.year, month, day).date() < today),
+                    month,
+                    day,
+                ).date()
+                return reset_date
+            except (ValueError, TypeError):
+                return None
 
         elif self.reset_based == "monthly":
             month = today.month
@@ -272,15 +310,18 @@ class LeaveType(HorillaModel):
         return reset_date
 
     def set_expired_date(self, assigned_date):
-        period = self.carryforward_expire_in
-        if self.carryforward_expire_period == "day":
-            expired_date = assigned_date + relativedelta(days=period)
-        elif self.carryforward_expire_period == "month":
-            expired_date = assigned_date + relativedelta(months=period)
-        else:
+        """
+        Method to set the expiry date for carried forward leaves
+        """
+        if not assigned_date or not self.carryforward_period:
+            return None
+        
+        try:
+            period = int(self.carryforward_period)
             expired_date = assigned_date + relativedelta(years=period)
-
-        return expired_date
+            return expired_date
+        except (ValueError, TypeError):
+            return None
 
     def clean(self, *args, **kwargs):
         if self.is_compensatory_leave:
@@ -410,62 +451,75 @@ class AvailableLeave(HorillaModel):
 
     # Setting the reset date for carryforward leaves
 
-    def set_reset_date(self, assigned_date, available_leave):
-        if available_leave.leave_type_id.reset_based == "monthly":
-            reset_day = available_leave.leave_type_id.reset_day
+    def set_reset_date(self, available_leave, assigned_date=None):
+        """
+        Method to set the reset date for leave allocation
+        """
+        today = assigned_date if assigned_date else datetime.now().date()
+        
+        if not available_leave.leave_type_id.reset:
+            return None
+            
+        if available_leave.leave_type_id.reset_based == "anniversary":
+            # Get employee anniversary date from work info
+            work_info = self.employee_id.employee_work_info
+            if not work_info or not work_info.anniversary_date:
+                return None
+                
+            # Calculate next anniversary date
+            anniversary_date = work_info.anniversary_date
+            next_anniversary = anniversary_date.replace(year=today.year)
+            # Convert to date if it's a datetime
+            if isinstance(next_anniversary, datetime):
+                next_anniversary = next_anniversary.date()
+            if isinstance(today, datetime):
+                today = today.date()
+            
+            if next_anniversary < today:
+                next_anniversary = next_anniversary.replace(year=today.year + 1)
+            return next_anniversary
+            
+        # Handle other reset types
+        reset_month = available_leave.leave_type_id.reset_month
+        reset_day = available_leave.leave_type_id.reset_day
+        
+        if not reset_month or not reset_day:
+            return None
+            
+        try:
+            reset_month = int(reset_month)
             if reset_day == "last day":
-                temp_date = assigned_date + relativedelta(months=0, day=31)
-                if assigned_date < temp_date:
-                    reset_date = temp_date
-                else:
-                    reset_date = assigned_date + relativedelta(months=1, day=31)
-
+                reset_day = calendar.monthrange(today.year, reset_month)[1]
             else:
-                temp_date = assigned_date + relativedelta(months=0, day=int(reset_day))
-                if assigned_date < temp_date:
-                    reset_date = temp_date
-                else:
-                    reset_date = assigned_date + relativedelta(
-                        months=1, day=int(reset_day)
-                    )
-
-        elif available_leave.leave_type_id.reset_based == "weekly":
-            temp = 7 - (
-                assigned_date.isoweekday()
-                - int(available_leave.leave_type_id.reset_weekend)
-                - 1
-            )
-            if temp != 7:
-                reset_date = assigned_date + relativedelta(days=(temp % 7))
+                reset_day = int(reset_day)
+                
+            if available_leave.leave_type_id.reset_based == "yearly":
+                reset_date = datetime(
+                    today.year + (datetime(today.year, reset_month, reset_day).date() < today),
+                    reset_month,
+                    reset_day,
+                ).date()
+            elif available_leave.leave_type_id.reset_based == "monthly":
+                reset_date = datetime(
+                    today.year, reset_month, reset_day
+                ).date()
+                if reset_date < today:
+                    month = (reset_month % 12) + 1
+                    year = today.year + (month == 1)
+                    reset_date = datetime(
+                        year, month, reset_day
+                    ).date()
+            elif available_leave.leave_type_id.reset_based == "weekly":
+                target_weekday = WEEK_DAYS[reset_day]
+                days_until_reset = (target_weekday - today.weekday()) % 7 or 7
+                reset_date = today + timedelta(days=days_until_reset)
             else:
-                reset_date = assigned_date + relativedelta(days=7)
-        else:
-            reset_month = int(available_leave.leave_type_id.reset_month)
-            reset_day = available_leave.leave_type_id.reset_day
-
-            if reset_day == "last day":
-                temp_date = assigned_date + relativedelta(
-                    years=0, month=reset_month, day=31
-                )
-                if assigned_date < temp_date:
-                    reset_date = temp_date
-                else:
-                    reset_date = assigned_date + relativedelta(
-                        years=1, month=reset_month, day=31
-                    )
-            else:
-                temp_date = assigned_date + relativedelta(
-                    years=0, month=reset_month, day=int(reset_day)
-                )
-                if assigned_date < temp_date:
-                    reset_date = temp_date
-                else:
-                    # nth_day = int(reset_day)
-                    reset_date = assigned_date + relativedelta(
-                        years=1, month=reset_month, day=int(reset_day)
-                    )
-
-        return reset_date
+                reset_date = None
+            
+            return reset_date
+            
+        except (ValueError, TypeError):
+            return None
 
     def leave_taken(self):
         leave_taken = LeaveRequest.objects.filter(
@@ -495,9 +549,7 @@ class AvailableLeave(HorillaModel):
         if self.reset_date is None:
             # Check whether the reset is enabled
             if self.leave_type_id.reset:
-                reset_date = self.set_reset_date(
-                    assigned_date=self.assigned_date, available_leave=self
-                )
+                reset_date = self.set_reset_date(available_leave=self)
                 self.reset_date = reset_date
             # assigning expire date
         if self.leave_type_id.carryforward_type == "carryforward expire":

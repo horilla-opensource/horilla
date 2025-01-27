@@ -641,6 +641,12 @@ class EmployeeWorkInformation(models.Model):
     )
     additional_info = models.JSONField(null=True, blank=True)
     experience = models.FloatField(null=True, blank=True, default=0)
+    anniversary_date = models.DateField(
+        null=True, 
+        blank=True,
+        verbose_name=_("Anniversary Date"),
+        help_text=_("Date used for anniversary-based leave resets")
+    )
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[

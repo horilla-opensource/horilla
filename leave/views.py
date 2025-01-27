@@ -3817,10 +3817,14 @@ def employee_available_leave_count(request):
 
     if (
         available_leave
-        and available_leave.leave_type_id.leave_type_next_reset_date()
+        and available_leave.leave_type_id.leave_type_next_reset_date(
+            employee=available_leave.employee_id
+        )
         and available_leave
         and start_date_format
-        >= available_leave.leave_type_id.leave_type_next_reset_date()
+        >= available_leave.leave_type_id.leave_type_next_reset_date(
+            employee=available_leave.employee_id
+        )
     ):
         forcated_days = available_leave.forcasted_leaves(start_date)
         total_leave_days = (
