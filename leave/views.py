@@ -1241,10 +1241,7 @@ def leave_assign_one(request, obj_id):
                     available_days=leave_type.total_days,
                 )
                 if leave.reset_date is None:
-                    if leave_type.reset:
-                        leave.reset_date = leave.set_reset_date(
-                            assigned_date=leave.assigned_date, available_leave=leave
-                        )
+                    leave.reset_date = leave.set_reset_date(leave)
 
                 if leave_type.carryforward_type == "carryforward expire":
                     if not expiry_date:
@@ -4121,7 +4118,7 @@ def create_allocationrequest_comment(request, leave_id):
                             verb_ar="تلقى طلب تخصيص الإجازة الخاص بك تعليقًا.",
                             verb_de="Ihr Antrag auf Urlaubszuweisung hat einen Kommentar erhalten.",
                             verb_es="Tu solicitud de asignación de permisos ha recibido un comentario.",
-                            verb_fr="Votre demande d'allocation de congé a reçu un commentaire.",
+                            verb_fr=f"La demande d'allocation de congé de {leave.employee_id} a reçu un commentaire.",
                             redirect=reverse("leave-allocation-request-view")
                             + f"?id={leave.id}",
                             icon="chatbox-ellipses",
@@ -5209,3 +5206,4 @@ def leave_allocation_approve(request):
             # "current_date":date.today(),
         },
     )
+

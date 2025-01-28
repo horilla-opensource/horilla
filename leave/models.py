@@ -451,13 +451,14 @@ class AvailableLeave(HorillaModel):
 
     # Setting the reset date for carryforward leaves
 
-    def set_reset_date(self, available_leave):
+    def set_reset_date(self, available_leave, assigned_date=None):
         """
         Method to set the reset date for leave allocation
         """
         today = datetime.now().date()
 
-        if not self.reset:
+        # Check if the leave type has reset enabled
+        if not self.leave_type_id.reset:
             return None
 
         def get_reset_day(month, day):
@@ -467,8 +468,7 @@ class AvailableLeave(HorillaModel):
                 else int(day)
             )
 
-        if self.reset_based == "anniversary":
-            # Anniversary reset logic here
+        if self.leave_type_id.reset_based == "anniversary":
             work_info = self.employee_id.employee_work_info
             if not work_info or not work_info.anniversary_date:
                 return None
@@ -479,8 +479,7 @@ class AvailableLeave(HorillaModel):
                 next_anniversary = next_anniversary.replace(year=today.year + 1)
             return next_anniversary
 
-        elif self.reset_based == "yearly":
-            # Yearly reset logic remains unchanged
+        elif self.leave_type_id.reset_based == "yearly":
             month, day = int(self.reset_month), get_reset_day(
                 int(self.reset_month), self.reset_day
             )
@@ -491,7 +490,7 @@ class AvailableLeave(HorillaModel):
             ).date()
             return reset_date
 
-        elif self.reset_based == "monthly":
+        elif self.leave_type_id.reset_based == "monthly":
             month = today.month
             reset_date = datetime(
                 today.year, month, get_reset_day(month, self.reset_day)
@@ -503,7 +502,7 @@ class AvailableLeave(HorillaModel):
                     year, month, get_reset_day(month, self.reset_day)
                 ).date()
 
-        elif self.reset_based == "weekly":
+        elif self.leave_type_id.reset_based == "weekly":
             target_weekday = WEEK_DAYS[self.reset_day]
             days_until_reset = (target_weekday - today.weekday()) % 7 or 7
             reset_date = today + timedelta(days=days_until_reset)
@@ -538,28 +537,30 @@ class AvailableLeave(HorillaModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.reset_date = self.set_reset_date(self)
-            
+            # Set the reset date to the employee's anniversary date if the leave type is anniversary-based
+            if self.leave_type_id.reset_based == "anniversary":
+                work_info = self.employee_id.employee_work_info
+                if work_info and work_info.anniversary_date:
+                    self.reset_date = work_info.anniversary_date
+
         if self.leave_type_id.reset:
             today = datetime.now().date()
             reset_date = self.set_reset_date(self)
-            
+
             if reset_date and reset_date <= today:
                 # Reset the available days
                 self.available_days = self.leave_type_id.total_days
                 self.reset_date = reset_date
-                
+
                 # Calculate next reset date
                 if self.leave_type_id.reset_based == "anniversary":
-                    # Use anniversary date for next reset
                     work_info = self.employee_id.employee_work_info
                     if work_info and work_info.anniversary_date:
                         next_year = reset_date.year + 1
                         self.reset_date = work_info.anniversary_date.replace(year=next_year)
                 else:
-                    # Use existing logic for other reset types
                     self.reset_date = self.set_reset_date(self)
-                    
+
         super().save(*args, **kwargs)
 
 

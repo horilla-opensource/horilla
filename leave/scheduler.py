@@ -34,9 +34,7 @@ def leave_reset():
             if reset_date == today_date:
                 available_leave.update_carryforward()
                 # new_reset_date = available_leave.set_reset_date(assigned_date=today_date,available_leave = available_leave)
-                new_reset_date = available_leave.set_reset_date(
-                    assigned_date=today_date, available_leave=available_leave
-                )
+                new_reset_date = available_leave.set_reset_date(available_leave)
                 available_leave.reset_date = new_reset_date
                 available_leave.save()
             if expired_date and expired_date <= today_date:
