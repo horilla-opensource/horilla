@@ -62,6 +62,7 @@ from base.forms import (
     AssignUserGroup,
     AuditTagForm,
     ChangePasswordForm,
+    ChangeUsernameForm,
     CompanyForm,
     CompanyLeaveForm,
     DepartmentForm,
@@ -756,6 +757,38 @@ def change_password(request):
         return render(request, "base/auth/password_change_form.html", {"form": form})
 
     return render(request, "base/auth/password_change.html", {"form": form})
+
+
+@login_required
+def change_username(request):
+    """
+    Handles the username change process for a logged-in user.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about
+                               the request and user.
+
+    Returns:
+        HttpResponse: Renders the username change form if the request method is GET or
+                      the form is invalid. If the form is valid and the password is changed
+                      successfully, the page reloads with a success message.
+    """
+    user = request.user
+    form = ChangeUsernameForm(user=user, initial={"old_username": user.username})
+    if request.method == "POST":
+        form = ChangeUsernameForm(user, request.POST)
+        if form.is_valid():
+            new_username = form.cleaned_data["username"]
+            user.username = new_username
+            user.save()
+            if hasattr(user, "is_new_employee"):
+                user.is_new_employee = False
+                user.save()
+            messages.success(request, _("Username changed successfully"))
+            return HttpResponse("<script>window.location.href='/';</script>")
+        return render(request, "base/auth/username_change_form.html", {"form": form})
+
+    return render(request, "base/auth/username_change.html", {"form": form})
 
 
 def logout_user(request):
