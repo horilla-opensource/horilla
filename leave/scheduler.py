@@ -11,6 +11,7 @@ today = datetime.now()
 
 def leave_reset():
     from leave.models import LeaveType
+    from employee.models import EmployeeWorkInformation
 
     today_date = today.date()
     leave_types = LeaveType.objects.filter(reset=True)
@@ -29,13 +30,21 @@ def leave_reset():
         available_leaves = leave_type.employee_available_leave.all()
 
         for available_leave in available_leaves:
-            reset_date = available_leave.reset_date
+            reset_date = None
             expired_date = available_leave.expired_date
+
+            if leave_type.reset_based == "anniversary":
+                work_info = available_leave.employee_id.employee_work_info
+                if work_info and work_info.anniversary_date:
+                    anniversary_date = work_info.anniversary_date
+                    next_anniversary = anniversary_date.replace(year=today_date.year)
+                    if next_anniversary < today_date:
+                        next_anniversary = next_anniversary.replace(year=today_date.year + 1)
+                    reset_date = next_anniversary
+
             if reset_date == today_date:
                 available_leave.update_carryforward()
-                # new_reset_date = available_leave.set_reset_date(assigned_date=today_date,available_leave = available_leave)
-                new_reset_date = available_leave.set_reset_date(available_leave)
-                available_leave.reset_date = new_reset_date
+                available_leave.reset_date = reset_date  # Update reset_date if needed
                 available_leave.save()
             if expired_date and expired_date <= today_date:
                 new_expired_date = available_leave.set_expired_date(
