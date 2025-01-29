@@ -4991,33 +4991,49 @@ def save_date_format(request):
         else:
             user = request.user
             employee = user.employee_get
-
-            # Taking the company_name of the user
-            info = EmployeeWorkInformation.objects.filter(employee_id=employee)
-            # Employee workinformation will not exists if he/she chnged the company, So can't save the date format.
-            if info.exists():
-                for data in info:
-                    employee_company = data.company_id
-
-                company_name = Company.objects.filter(company=employee_company)
-                emp_company = company_name.first()
-
-                if emp_company is None:
-                    messages.warning(
-                        request, _("Please update the company field for the user.")
-                    )
-                else:
-                    # Save the selected format to the backend
-                    emp_company.date_format = selected_format
-                    emp_company.save()
+            if request.user.is_superuser:
+                selected_company = request.session.get("selected_company")
+                if selected_company == "all":
+                    all_companies = Company.objects.all()
+                    for cmp in all_companies:
+                        cmp.date_format = selected_format
+                        cmp.save()
                     messages.success(request, _("Date format saved successfully."))
-            else:
-                messages.warning(
-                    request, _("Date format cannot saved. You are not in the company.")
-                )
+                else:
+                    company = Company.objects.get(id=selected_company)
+                    company.date_format = selected_format
+                    company.save()
+                    messages.success(request, _("Date format saved successfully."))
 
-            # Return a JSON response indicating success
-            return JsonResponse({"success": True})
+                # Return a JSON response indicating success
+                return JsonResponse({"success": True})
+            else:
+                # Taking the company_name of the user
+                info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+                # Employee workinformation will not exists if he/she chnged the company, So can't save the date format.
+                if info.exists():
+                    for data in info:
+                        employee_company = data.company_id
+
+                    company_name = Company.objects.filter(company=employee_company)
+                    emp_company = company_name.first()
+
+                    if emp_company is None:
+                        messages.warning(
+                            request, _("Please update the company field for the user.")
+                        )
+                    else:
+                        # Save the selected format to the backend
+                        emp_company.date_format = selected_format
+                        emp_company.save()
+                        messages.success(request, _("Date format saved successfully."))
+                else:
+                    messages.warning(
+                        request,
+                        _("Date format cannot saved. You are not in the company."),
+                    )
+                # Return a JSON response indicating success
+                return JsonResponse({"success": True})
 
     # Return a JSON response for unsupported methods
     return JsonResponse({"error": False, "error": "Unsupported method"}, status=405)
@@ -5027,6 +5043,16 @@ def save_date_format(request):
 def get_date_format(request):
     user = request.user
     employee = user.employee_get
+
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all" and request.user.is_superuser:
+        company = Company.objects.get(id=selected_company)
+        date_format = company.date_format
+        if date_format:
+            date_format = date_format
+        else:
+            date_format = "MMM. D, YYYY"
+        return JsonResponse({"selected_format": date_format})
 
     # Taking the company_name of the user
     info = EmployeeWorkInformation.objects.filter(employee_id=employee)
@@ -5058,33 +5084,50 @@ def save_time_format(request):
         else:
             user = request.user
             employee = user.employee_get
-
-            # Taking the company_name of the user
-            info = EmployeeWorkInformation.objects.filter(employee_id=employee)
-            # Employee workinformation will not exists if he/she chnged the company, So can't save the time format.
-            if info.exists():
-                for data in info:
-                    employee_company = data.company_id
-
-                company_name = Company.objects.filter(company=employee_company)
-                emp_company = company_name.first()
-
-                if emp_company is None:
-                    messages.warning(
-                        request, _("Please update the company field for the user.")
-                    )
+            if request.user.is_superuser:
+                selected_company = request.session.get("selected_company")
+                if selected_company == "all":
+                    all_companies = Company.objects.all()
+                    for cmp in all_companies:
+                        cmp.time_format = selected_format
+                        cmp.save()
+                    messages.success(request, _("Date format saved successfully."))
                 else:
-                    # Save the selected format to the backend
-                    emp_company.time_format = selected_format
-                    emp_company.save()
-                    messages.success(request, _("Time format saved successfully."))
-            else:
-                messages.warning(
-                    request, _("Time format cannot saved. You are not in the company.")
-                )
+                    company = Company.objects.get(id=selected_company)
+                    company.time_format = selected_format
+                    company.save()
+                    messages.success(request, _("Date format saved successfully."))
 
-            # Return a JSON response indicating success
-            return JsonResponse({"success": True})
+                # Return a JSON response indicating success
+                return JsonResponse({"success": True})
+            else:
+                # Taking the company_name of the user
+                info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+                # Employee workinformation will not exists if he/she chnged the company, So can't save the time format.
+                if info.exists():
+                    for data in info:
+                        employee_company = data.company_id
+
+                    company_name = Company.objects.filter(company=employee_company)
+                    emp_company = company_name.first()
+
+                    if emp_company is None:
+                        messages.warning(
+                            request, _("Please update the company field for the user.")
+                        )
+                    else:
+                        # Save the selected format to the backend
+                        emp_company.time_format = selected_format
+                        emp_company.save()
+                        messages.success(request, _("Time format saved successfully."))
+                else:
+                    messages.warning(
+                        request,
+                        _("Time format cannot saved. You are not in the company."),
+                    )
+
+                # Return a JSON response indicating success
+                return JsonResponse({"success": True})
 
     # Return a JSON response for unsupported methods
     return JsonResponse({"error": False, "error": "Unsupported method"}, status=405)
@@ -5094,6 +5137,16 @@ def save_time_format(request):
 def get_time_format(request):
     user = request.user
     employee = user.employee_get
+
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all" and request.user.is_superuser:
+        company = Company.objects.get(id=selected_company)
+        time_format = company.time_format
+        if time_format:
+            time_format = time_format
+        else:
+            time_format = "hh:mm A"
+        return JsonResponse({"selected_format": time_format})
 
     # Taking the company_name of the user
     info = EmployeeWorkInformation.objects.filter(employee_id=employee)
