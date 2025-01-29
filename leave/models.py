@@ -451,7 +451,7 @@ class AvailableLeave(HorillaModel):
 
     # Setting the reset date for carryforward leaves
 
-    def set_reset_date(self, available_leave, assigned_date=None):
+    def set_reset_date(self, available_leave):
         """
         Method to set the reset date for leave allocation
         """
@@ -480,8 +480,8 @@ class AvailableLeave(HorillaModel):
             return next_anniversary
 
         elif self.leave_type_id.reset_based == "yearly":
-            month, day = int(self.reset_month), get_reset_day(
-                int(self.reset_month), self.reset_day
+            month, day = int(self.leave_type_id.reset_month), get_reset_day(
+                int(self.leave_type_id.reset_month), self.leave_type_id.reset_day
             )
             reset_date = datetime(
                 today.year + (datetime(today.year, month, day).date() < today),
