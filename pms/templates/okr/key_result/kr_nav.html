@@ -104,25 +104,27 @@
                 </div>
             </div>
         </div> {% endcomment %}
-        <div class="oh-btn-group ml-2">
-          <div>
-            <a
-              class="oh-btn oh-btn--secondary oh-btn--shadow"
-              data-toggle="oh-modal-toggle"
-              data-target="#objectCreateModal"
-              hx-get="{% url 'create-key-result' %}"
-              hx-target="#objectCreateModalTarget"
-            >
-              <ion-icon
-                class="md hydrated"
-                name="add-outline"
-                role="img"
-                aria-label="add outline"
-              ></ion-icon
-              >{% trans "Create" %}</a
-            >
+        {% if perms.pms.add_keyresult %}
+          <div class="oh-btn-group ml-2">
+            <div>
+              <a
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-get="{% url 'create-key-result' %}"
+                hx-target="#objectCreateModalTarget"
+              >
+                <ion-icon
+                  class="md hydrated"
+                  name="add-outline"
+                  role="img"
+                  aria-label="add outline"
+                ></ion-icon
+                >{% trans "Create" %}</a
+              >
+            </div>
           </div>
-        </div>
+        {% endif %}
       </div>
     </div>
   </form>

@@ -368,7 +368,7 @@ def key_result_create(request):
 
 @login_required
 @hx_request_required
-@permission_required("pms.add_key_result")
+@permission_required("pms.add_keyresult")
 def kr_create_or_update(request, kr_id=None):
     """
     View function for creating or updating a Key Result.
