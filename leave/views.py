@@ -3810,7 +3810,7 @@ def employee_available_leave_count(request):
         else None
     )
     total_leave_days = available_leave.total_leave_days if available_leave else 0
-    forcated_days = 0
+    forcasted_days = 0
 
     if (
         available_leave
@@ -3823,7 +3823,7 @@ def employee_available_leave_count(request):
             employee=available_leave.employee_id
         )
     ):
-        forcated_days = available_leave.forcasted_leaves(start_date)
+        forcasted_days = available_leave.forcasted_leaves(start_date)
         total_leave_days = (
             available_leave.leave_type_id.carryforward_max
             if available_leave.leave_type_id.carryforward_type
@@ -3833,14 +3833,14 @@ def employee_available_leave_count(request):
         )
         if available_leave.leave_type_id.carryforward_type == "no carryforward":
             total_leave_days = 0
-        total_leave_days += forcated_days
+        total_leave_days += forcasted_days
 
     context = {
         "hx_target": hx_target,
         "leave_type_id": leave_type_id,
         "available_leave": available_leave,
         "total_leave_days": total_leave_days,
-        "forcated_days": forcated_days,
+        "forcasted_days": forcasted_days,
     }
     return render(
         request, "leave/leave_request/employee_available_leave_count.html", context

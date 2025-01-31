@@ -380,7 +380,7 @@ class LeaveRequestCreationForm(ModelForm):
         if f"{today.month}-{today.year}" in unique_dates:
             unique_dates.remove(f"{today.strftime('%m')}-{today.year}")
 
-        forcated_days = available_leave.forcasted_leaves(start_date)
+        forcasted_days = available_leave.forcasted_leaves(start_date)
         total_leave_days = (
             available_leave.leave_type_id.carryforward_max
             if available_leave.leave_type_id.carryforward_type
@@ -393,7 +393,7 @@ class LeaveRequestCreationForm(ModelForm):
             and available_leave.carryforward_days
         ):
             total_leave_days = total_leave_days - available_leave.carryforward_days
-        total_leave_days += forcated_days
+        total_leave_days += forcasted_days
 
         if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
@@ -508,7 +508,7 @@ class LeaveRequestUpdationForm(ModelForm):
         if f"{today.month}-{today.year}" in unique_dates:
             unique_dates.remove(f"{today.strftime('%m')}-{today.year}")
 
-        forcated_days = available_leave.forcasted_leaves(start_date)
+        forcasted_days = available_leave.forcasted_leaves(start_date)
         total_leave_days = (
             available_leave.leave_type_id.carryforward_max
             if available_leave.leave_type_id.carryforward_type
@@ -521,7 +521,7 @@ class LeaveRequestUpdationForm(ModelForm):
             and available_leave.carryforward_days
         ):
             total_leave_days = total_leave_days - available_leave.carryforward_days
-        total_leave_days += forcated_days
+        total_leave_days += forcasted_days
 
         if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
