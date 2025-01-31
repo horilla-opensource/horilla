@@ -1025,7 +1025,9 @@ def user_group(request):
                     "model_name": model._meta.model_name,
                 }
             )
-        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+        permissions.append(
+            {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
+        )
     groups = Group.objects.all()
     return render(
         request,
@@ -1266,7 +1268,9 @@ def object_duplicate(request, obj_id, **kwargs):
     template = kwargs["template"]
     original_object = model.objects.get(id=obj_id)
     form = form_class(instance=original_object)
-    searchWords = form.get_template_language()
+    search_words = (
+        form.get_template_language() if hasattr(form, "get_template_language") else None
+    )
     if request.method == "GET":
         for field_name, field in form.fields.items():
             if isinstance(field, forms.CharField):
@@ -1290,7 +1294,7 @@ def object_duplicate(request, obj_id, **kwargs):
         kwargs.get("form_name", "form"): form,
         "obj_id": obj_id,
         "duplicate": True,
-        "searchWords": searchWords,
+        "searchWords": search_words,
     }
     return render(request, template, context)
 

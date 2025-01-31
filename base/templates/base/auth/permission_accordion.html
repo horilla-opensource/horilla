@@ -1,97 +1,77 @@
 {% load i18n %}
 <div id="messages" class="oh-alert-container"></div>
 
-<div
-  class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
->
-  <h2 class="oh-inner-sidebar-content__title">{% trans "Employee Permissions" %}</h2>
-  <div class=" d-flex">
-    <div class="oh-input-group oh-input__search-group" id="searchContainer" style="display: none;">
-      <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
-        <input hx-get="{% url 'permission-search' %}" hx-target="#permissionContainer" hx-trigger="keyup changed delay:.2s" type="text" id="permissionSearch" placeholder="Search" name="search" class="oh-input oh-input__icon" aria-label="Search Input">
+<div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+    <h2 class="oh-inner-sidebar-content__title">{% trans "Employee Permissions" %}</h2>
+    <div class=" d-flex">
+        <div class="oh-input-group oh-input__search-group" id="searchContainer" style="display: none;">
+            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated"
+                role="img" aria-label="search outline"></ion-icon>
+            <input hx-get="{% url 'permission-search' %}" hx-target="#permissionContainer"
+                hx-trigger="keyup changed delay:.2s" type="text" id="permissionSearch" placeholder="Search"
+                name="search" class="oh-input oh-input__icon" aria-label="Search Input">
+        </div>
+        <script>
+            if (showSearch) {
+                $("#searchContainer").show();
+            }
+        </script>
+        {% if show_assign %}
+            {% if perms.auth.add_permission %}
+                <button style="margin-left: 10px;" class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                    data-target="#Permissions" hx-get="{% url 'permission-table' %}" hx-target="#permissionForm">
+                    <ion-icon name="add-outline" class="me-1 md hydrated" role="img" aria-label="add outline"></ion-icon>
+                    {% trans "Assign" %}
+                </button>
+            {% endif %}
+        {% endif %}
     </div>
-    <script>
-      if (showSearch) {
-        $("#searchContainer").show();
-      }
-    </script>
-    {% if show_assign %}
-      {% if perms.auth.add_permission %}
-        <button
-        style="margin-left: 10px;"
-          class="oh-btn oh-btn--secondary oh-btn--shadow"
-          data-toggle="oh-modal-toggle"
-          data-target="#Permissions"
-          hx-get="{% url "permission-table" %}"
-          hx-target="#permissionForm"
-        >
-          <ion-icon
-            name="add-outline"
-            class="me-1 md hydrated"
-            role="img"
-            aria-label="add outline"
-          ></ion-icon>
-          {% trans "Assign" %}
-        </button>
-      {% endif %}
-    {% endif %}
-  </div>
 </div>
 <div id="permissionContainer">
-{% include "base/auth/permission_lines.html" %}
+    {% include "base/auth/permission_lines.html" %}
 </div>
-<div
-  class="oh-modal"
-  id="Permissions"
-  role="dialog"
-  aria-labelledby="Permissions"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog" style="max-width: 880px">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
-        {% trans "Permissions" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
+<div class="oh-modal" id="Permissions" role="dialog" aria-labelledby="Permissions" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 880px">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+                {% trans "Permissions" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body">
+            <form hx-post="{% url 'permission-table' %}" class="oh-profile-section perm-form" id="permissionForm">
+            </form>
+        </div>
     </div>
-    <div class="oh-modal__dialog-body">
-      <form
-        hx-post='{% url "permission-table" %}'
-        class="perm-form"
-        id="permissionForm"
-      >
-      </form>
-    </div>
-  </div>
 </div>
 <script>
-  function updateBadge() {
-    var panels = $(".panel");
-      $.each(panels, function (indexInArray, valueOfElement) {
-        var check = $(valueOfElement).find("[name=permissions]:checked").length;
-        $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
-        $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title",check + " Permissions");
-    });
+    function updateBadge() {
+        var panels = $(".panel");
+        $.each(panels, function (indexInArray, valueOfElement) {
+            var check = $(valueOfElement).find("[name=permissions]:checked").length;
+            $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+            $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title", check + " Permissions");
+        });
 
-      var permissionLine = $(".oh-sticky-table__tr");
-      $.each(permissionLine, function(index,value){
-        var check = $(value).find("[name=permissions]:checked").length;
-        if (check === 4) {
-          $(value).find(".row-permission").prop("checked", true);
-        }
-      })
+        var permissionLine = $(".oh-sticky-table__tr");
+        $.each(permissionLine, function (index, value) {
+            var check = $(value).find("[name=permissions]:checked").length;
+            if (check === 4) {
+                $(value).find(".row-permission").prop("checked", true);
+            }
+        })
 
-      var permissionApps = $(".oh-sticky-table__tbody")
-      $.each(permissionApps, function(index,value){
-        var total_permission_count = $(value).find("[name=permissions]").length;
-        var checked_permission_count = $(value).find("[name=permissions]:checked").length
-        if (checked_permission_count===total_permission_count){
-          $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked",true);
-        } else {
-          $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked",false)
-        }
-      })
-  }
+        var permissionApps = $(".oh-sticky-table__tbody")
+        $.each(permissionApps, function (index, value) {
+            var total_permission_count = $(value).find("[name=permissions]").length;
+            var checked_permission_count = $(value).find("[name=permissions]:checked").length
+            if (checked_permission_count === total_permission_count) {
+                $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", true);
+            } else {
+                $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", false)
+            }
+        })
+    }
 </script>
