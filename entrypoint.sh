@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Waiting for database to be ready..."
-rm -R /opt/Horilla_Main/horilla/staticfiles/
+rm -R /opt/Horilla_Main/staticfiles/
 sleep 5
 python3 manage.py makemigrations
 python3 manage.py migrate
