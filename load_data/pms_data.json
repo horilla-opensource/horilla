@@ -1087,6 +1087,66 @@
     }
   },
   {
+    "model": "pms.objective",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-09-17T09:33:00.753Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Customer Satisfaction",
+      "description": "Measure client or customer satisfaction levels based on interactions or feedback.",
+      "duration_unit": "months",
+      "duration": 1,
+      "add_assignees": false,
+      "archive": false,
+      "company_id": null,
+      "managers": [37],
+      "assignees": [12, 13, 68],
+      "key_result_id": [3, 2, 1]
+    }
+  },
+  {
+    "model": "pms.objective",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-09-17T09:33:00.753Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Productivity Metrics",
+      "description": "Use KPIs (Key Performance Indicator) related to the role to measure productive",
+      "duration_unit": "months",
+      "duration": 1,
+      "add_assignees": false,
+      "archive": false,
+      "company_id": null,
+      "managers": [37],
+      "assignees": [12, 13, 68],
+      "key_result_id": [3, 2, 1]
+    }
+  },
+  {
+    "model": "pms.objective",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-09-17T09:33:00.753Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Employee Engagement",
+      "description": "Evaluate the level of engagement and commitment toward the company.",
+      "duration_unit": "months",
+      "duration": 1,
+      "add_assignees": false,
+      "archive": false,
+      "company_id": null,
+      "managers": [37],
+      "assignees": [12, 13, 68],
+      "key_result_id": [3, 2, 1]
+    }
+  },
+  {
     "model": "pms.employeeobjective",
     "pk": 1,
     "fields": {
