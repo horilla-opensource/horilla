@@ -1,8 +1,10 @@
 import logging
 import sys
+
 from django.apps import AppConfig
-from django.db import connection
 from django.core.management import call_command
+from django.db import connection
+
 from dynamic_fields.methods import column_exists
 
 logger = logging.getLogger(__name__)
@@ -17,9 +19,10 @@ class DynamicFieldsConfig(AppConfig):
     name = "dynamic_fields"
 
     def ready(self):
-        from dynamic_fields.models import DynamicField
         from django.contrib.contenttypes.models import ContentType
         from simple_history.models import HistoricalRecords
+
+        from dynamic_fields.models import DynamicField
 
         try:
             dynamic_objects = DynamicField.objects.filter()
@@ -52,8 +55,9 @@ class DynamicFieldsConfig(AppConfig):
             logger.error(e)
             logger.info("ignore if it is fresh installation")
 
+        from django.urls import include, path
+
         from base.urls import urlpatterns
-        from django.urls import path, include
 
         urlpatterns.append(
             path("df/", include("dynamic_fields.urls")),

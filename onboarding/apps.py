@@ -8,8 +8,10 @@ class OnboardingConfig(AppConfig):
     def ready(self):
         from django.urls import include, path
 
+        from horilla.horilla_settings import APPS
         from horilla.urls import urlpatterns
 
+        APPS.append("onboarding")
         urlpatterns.append(
             path("onboarding/", include("onboarding.urls")),
         )

@@ -21,9 +21,11 @@ class AttendanceConfig(AppConfig):
     def ready(self):
         from django.urls import include, path
 
+        from horilla.horilla_settings import APPS
         from horilla.settings import MIDDLEWARE
         from horilla.urls import urlpatterns
 
+        APPS.append("attendance")
         urlpatterns.append(
             path("attendance/", include("attendance.urls")),
         )
