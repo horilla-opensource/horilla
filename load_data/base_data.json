@@ -2977,8 +2977,8 @@
       "modified_by": null,
       "is_active": true,
       "name": "New Year's Day",
-      "start_date": "2024-12-01",
-      "end_date": "2024-12-01",
+      "start_date": "2025-01-01",
+      "end_date": "2025-01-01",
       "recurring": false,
       "company_id": null
     }
@@ -2987,13 +2987,13 @@
     "model": "base.holidays",
     "pk": 2,
     "fields": {
-      "created_at": "2024-12-05T09:39:13.811Z",
+      "created_at": "2025-01-05T09:39:13.811Z",
       "created_by": null,
       "modified_by": null,
       "is_active": true,
       "name": "Republic Day",
-      "start_date": "2024-12-26",
-      "end_date": "2024-12-26",
+      "start_date": "2025-01-26",
+      "end_date": "2025-01-26",
       "recurring": false,
       "company_id": null
     }
@@ -3002,13 +3002,13 @@
     "model": "base.holidays",
     "pk": 3,
     "fields": {
-      "created_at": "2024-12-05T09:39:13.823Z",
+      "created_at": "2025-01-05T09:39:13.823Z",
       "created_by": null,
       "modified_by": null,
       "is_active": true,
       "name": "Holi",
-      "start_date": "2024-12-20",
-      "end_date": "2024-12-20",
+      "start_date": "2025-01-20",
+      "end_date": "2025-01-20",
       "recurring": false,
       "company_id": null
     }
@@ -3017,13 +3017,13 @@
     "model": "base.holidays",
     "pk": 4,
     "fields": {
-      "created_at": "2024-12-05T09:39:13.849Z",
+      "created_at": "2025-01-05T09:39:13.849Z",
       "created_by": null,
       "modified_by": null,
       "is_active": true,
       "name": "Vishu",
-      "start_date": "2024-12-14",
-      "end_date": "2024-12-14",
+      "start_date": "2025-01-14",
+      "end_date": "2025-01-14",
       "recurring": false,
       "company_id": null
     }
@@ -3032,13 +3032,13 @@
     "model": "base.holidays",
     "pk": 5,
     "fields": {
-      "created_at": "2024-12-05T09:39:13.867Z",
+      "created_at": "2025-01-05T09:39:13.867Z",
       "created_by": null,
       "modified_by": null,
       "is_active": true,
       "name": "Eid al-Fitr",
-      "start_date": "2024-12-10",
-      "end_date": "2024-12-10",
+      "start_date": "2025-01-10",
+      "end_date": "2025-01-10",
       "recurring": false,
       "company_id": null
     }
@@ -3047,13 +3047,13 @@
     "model": "base.holidays",
     "pk": 6,
     "fields": {
-      "created_at": "2024-12-05T09:39:13.883Z",
+      "created_at": "2025-01-05T09:39:13.883Z",
       "created_by": null,
       "modified_by": null,
       "is_active": true,
       "name": "Eid al-Adha ",
-      "start_date": "2024-12-19",
-      "end_date": "2024-12-19",
+      "start_date": "2025-01-19",
+      "end_date": "2025-01-19",
       "recurring": false,
       "company_id": null
     }
@@ -3062,13 +3062,13 @@
     "model": "base.holidays",
     "pk": 7,
     "fields": {
-      "created_at": "2024-12-05T09:39:13.904Z",
+      "created_at": "2025-01-05T09:39:13.904Z",
       "created_by": null,
       "modified_by": null,
       "is_active": true,
       "name": "Labor Day",
-      "start_date": "2024-12-01",
-      "end_date": "2024-12-01",
+      "start_date": "2025-01-01",
+      "end_date": "2025-01-01",
       "recurring": false,
       "company_id": null
     }
@@ -3077,13 +3077,13 @@
     "model": "base.holidays",
     "pk": 8,
     "fields": {
-      "created_at": "2024-12-05T09:39:13.921Z",
+      "created_at": "2025-01-05T09:39:13.921Z",
       "created_by": null,
       "modified_by": null,
       "is_active": true,
       "name": "Independence Day",
-      "start_date": "2024-12-15",
-      "end_date": "2024-12-15",
+      "start_date": "2025-01-15",
+      "end_date": "2025-01-15",
       "recurring": false,
       "company_id": null
     }
@@ -3092,13 +3092,13 @@
     "model": "base.holidays",
     "pk": 9,
     "fields": {
-      "created_at": "2024-12-05T09:39:13.939Z",
+      "created_at": "2025-01-05T09:39:13.939Z",
       "created_by": null,
       "modified_by": null,
       "is_active": true,
       "name": "Gandhi Jayanti ",
-      "start_date": "2024-10-02",
-      "end_date": "2024-10-02",
+      "start_date": "2025-10-02",
+      "end_date": "2025-10-02",
       "recurring": false,
       "company_id": null
     }
@@ -3107,13 +3107,13 @@
     "model": "base.holidays",
     "pk": 10,
     "fields": {
-      "created_at": "2024-12-05T09:39:13.959Z",
+      "created_at": "2025-01-05T09:39:13.959Z",
       "created_by": null,
       "modified_by": null,
       "is_active": true,
       "name": "Children's Day",
-      "start_date": "2024-12-14",
-      "end_date": "2024-12-14",
+      "start_date": "2025-01-14",
+      "end_date": "2025-01-14",
       "recurring": false,
       "company_id": null
     }
@@ -3122,13 +3122,13 @@
     "model": "base.holidays",
     "pk": 11,
     "fields": {
-      "created_at": "2024-12-05T09:39:13.976Z",
+      "created_at": "2025-01-05T09:39:13.976Z",
       "created_by": null,
       "modified_by": null,
       "is_active": true,
       "name": "Christmas",
-      "start_date": "2024-12-25",
-      "end_date": "2024-12-25",
+      "start_date": "2025-01-25",
+      "end_date": "2025-01-25",
       "recurring": false,
       "company_id": null
     }

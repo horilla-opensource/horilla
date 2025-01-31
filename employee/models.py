@@ -495,9 +495,6 @@ class Employee(models.Model):
             self.is_active = True
             super().save(*args, **kwargs)
         employee = self
-        if prev_employee and prev_employee.email != employee.email:
-            employee.employee_user_id.username = employee.email
-            employee.employee_user_id.save()
 
         if employee.employee_user_id is None:
             # Create user if no corresponding user exists

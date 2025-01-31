@@ -1886,6 +1886,56 @@ class ChangePasswordForm(forms.Form):
         return cleaned_data
 
 
+class ChangeUsernameForm(forms.Form):
+    old_username = forms.CharField(
+        label=_("Old Username"),
+        strip=False,
+        widget=forms.TextInput(
+            attrs={
+                "readonly": "readonly",
+                "class": "oh-input oh-input--text w-100 mb-2",
+            }
+        ),
+    )
+
+    username = forms.CharField(
+        label=_("Username"),
+        strip=False,
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": _("Enter New Username"),
+                "class": "oh-input oh-input--text w-100 mb-2",
+            }
+        ),
+        help_text=_("Enter your username."),
+    )
+
+    password = forms.CharField(
+        label=_("Password"),
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "placeholder": _("Enter Password"),
+                "class": "oh-input oh-input--password w-100 mb-2",
+            }
+        ),
+        help_text=_("Enter your password."),
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(ChangeUsernameForm, self).__init__(*args, **kwargs)
+
+    def clean_password(self):
+        username = self.cleaned_data.get("username")
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Username already exists.")
+        password = self.cleaned_data.get("password")
+        if not self.user.check_password(password):
+            raise forms.ValidationError("Incorrect password.")
+        return password
+
+
 class ResetPasswordForm(SetPasswordForm):
     """
     ResetPasswordForm

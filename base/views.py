@@ -62,6 +62,7 @@ from base.forms import (
     AssignUserGroup,
     AuditTagForm,
     ChangePasswordForm,
+    ChangeUsernameForm,
     CompanyForm,
     CompanyLeaveForm,
     DepartmentForm,
@@ -758,6 +759,38 @@ def change_password(request):
     return render(request, "base/auth/password_change.html", {"form": form})
 
 
+@login_required
+def change_username(request):
+    """
+    Handles the username change process for a logged-in user.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about
+                               the request and user.
+
+    Returns:
+        HttpResponse: Renders the username change form if the request method is GET or
+                      the form is invalid. If the form is valid and the password is changed
+                      successfully, the page reloads with a success message.
+    """
+    user = request.user
+    form = ChangeUsernameForm(user=user, initial={"old_username": user.username})
+    if request.method == "POST":
+        form = ChangeUsernameForm(user, request.POST)
+        if form.is_valid():
+            new_username = form.cleaned_data["username"]
+            user.username = new_username
+            user.save()
+            if hasattr(user, "is_new_employee"):
+                user.is_new_employee = False
+                user.save()
+            messages.success(request, _("Username changed successfully"))
+            return HttpResponse("<script>window.location.href='/';</script>")
+        return render(request, "base/auth/username_change_form.html", {"form": form})
+
+    return render(request, "base/auth/username_change.html", {"form": form})
+
+
 def logout_user(request):
     """
     This method used to logout the user
@@ -992,7 +1025,9 @@ def user_group(request):
                     "model_name": model._meta.model_name,
                 }
             )
-        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+        permissions.append(
+            {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
+        )
     groups = Group.objects.all()
     return render(
         request,
@@ -1233,7 +1268,9 @@ def object_duplicate(request, obj_id, **kwargs):
     template = kwargs["template"]
     original_object = model.objects.get(id=obj_id)
     form = form_class(instance=original_object)
-    searchWords = form.get_template_language()
+    search_words = (
+        form.get_template_language() if hasattr(form, "get_template_language") else None
+    )
     if request.method == "GET":
         for field_name, field in form.fields.items():
             if isinstance(field, forms.CharField):
@@ -1257,7 +1294,7 @@ def object_duplicate(request, obj_id, **kwargs):
         kwargs.get("form_name", "form"): form,
         "obj_id": obj_id,
         "duplicate": True,
-        "searchWords": searchWords,
+        "searchWords": search_words,
     }
     return render(request, template, context)
 
@@ -3078,25 +3115,8 @@ def employee_permission_assign(request):
         ).distinct()
         context["show_assign"] = True
     permissions = []
-    horilla_apps = [
-        "base",
-        "recruitment",
-        "employee",
-        "leave",
-        "pms",
-        "onboarding",
-        "asset",
-        "attendance",
-        "payroll",
-        "auth",
-        "offboarding",
-        "horilla_documents",
-        "helpdesk",
-    ]
-    installed_apps = [app for app in settings.INSTALLED_APPS if app in horilla_apps]
-
     no_permission_models = NO_PERMISSION_MODALS
-    for app_name in installed_apps:
+    for app_name in APPS:
         app_models = []
         for model in get_models_in_app(app_name):
             if model._meta.model_name not in no_permission_models:
@@ -3204,7 +3224,9 @@ def permission_table(request):
                         "model_name": model._meta.model_name,
                     }
                 )
-        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+        permissions.append(
+            {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
+        )
     if request.method == "POST":
         form = AssignPermission(request.POST)
         if form.is_valid():
@@ -4958,33 +4980,49 @@ def save_date_format(request):
         else:
             user = request.user
             employee = user.employee_get
-
-            # Taking the company_name of the user
-            info = EmployeeWorkInformation.objects.filter(employee_id=employee)
-            # Employee workinformation will not exists if he/she chnged the company, So can't save the date format.
-            if info.exists():
-                for data in info:
-                    employee_company = data.company_id
-
-                company_name = Company.objects.filter(company=employee_company)
-                emp_company = company_name.first()
-
-                if emp_company is None:
-                    messages.warning(
-                        request, _("Please update the company field for the user.")
-                    )
-                else:
-                    # Save the selected format to the backend
-                    emp_company.date_format = selected_format
-                    emp_company.save()
+            if request.user.is_superuser:
+                selected_company = request.session.get("selected_company")
+                if selected_company == "all":
+                    all_companies = Company.objects.all()
+                    for cmp in all_companies:
+                        cmp.date_format = selected_format
+                        cmp.save()
                     messages.success(request, _("Date format saved successfully."))
-            else:
-                messages.warning(
-                    request, _("Date format cannot saved. You are not in the company.")
-                )
+                else:
+                    company = Company.objects.get(id=selected_company)
+                    company.date_format = selected_format
+                    company.save()
+                    messages.success(request, _("Date format saved successfully."))
 
-            # Return a JSON response indicating success
-            return JsonResponse({"success": True})
+                # Return a JSON response indicating success
+                return JsonResponse({"success": True})
+            else:
+                # Taking the company_name of the user
+                info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+                # Employee workinformation will not exists if he/she chnged the company, So can't save the date format.
+                if info.exists():
+                    for data in info:
+                        employee_company = data.company_id
+
+                    company_name = Company.objects.filter(company=employee_company)
+                    emp_company = company_name.first()
+
+                    if emp_company is None:
+                        messages.warning(
+                            request, _("Please update the company field for the user.")
+                        )
+                    else:
+                        # Save the selected format to the backend
+                        emp_company.date_format = selected_format
+                        emp_company.save()
+                        messages.success(request, _("Date format saved successfully."))
+                else:
+                    messages.warning(
+                        request,
+                        _("Date format cannot saved. You are not in the company."),
+                    )
+                # Return a JSON response indicating success
+                return JsonResponse({"success": True})
 
     # Return a JSON response for unsupported methods
     return JsonResponse({"error": False, "error": "Unsupported method"}, status=405)
@@ -4994,6 +5032,16 @@ def save_date_format(request):
 def get_date_format(request):
     user = request.user
     employee = user.employee_get
+
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all" and request.user.is_superuser:
+        company = Company.objects.get(id=selected_company)
+        date_format = company.date_format
+        if date_format:
+            date_format = date_format
+        else:
+            date_format = "MMM. D, YYYY"
+        return JsonResponse({"selected_format": date_format})
 
     # Taking the company_name of the user
     info = EmployeeWorkInformation.objects.filter(employee_id=employee)
@@ -5025,33 +5073,50 @@ def save_time_format(request):
         else:
             user = request.user
             employee = user.employee_get
-
-            # Taking the company_name of the user
-            info = EmployeeWorkInformation.objects.filter(employee_id=employee)
-            # Employee workinformation will not exists if he/she chnged the company, So can't save the time format.
-            if info.exists():
-                for data in info:
-                    employee_company = data.company_id
-
-                company_name = Company.objects.filter(company=employee_company)
-                emp_company = company_name.first()
-
-                if emp_company is None:
-                    messages.warning(
-                        request, _("Please update the company field for the user.")
-                    )
+            if request.user.is_superuser:
+                selected_company = request.session.get("selected_company")
+                if selected_company == "all":
+                    all_companies = Company.objects.all()
+                    for cmp in all_companies:
+                        cmp.time_format = selected_format
+                        cmp.save()
+                    messages.success(request, _("Date format saved successfully."))
                 else:
-                    # Save the selected format to the backend
-                    emp_company.time_format = selected_format
-                    emp_company.save()
-                    messages.success(request, _("Time format saved successfully."))
-            else:
-                messages.warning(
-                    request, _("Time format cannot saved. You are not in the company.")
-                )
+                    company = Company.objects.get(id=selected_company)
+                    company.time_format = selected_format
+                    company.save()
+                    messages.success(request, _("Date format saved successfully."))
 
-            # Return a JSON response indicating success
-            return JsonResponse({"success": True})
+                # Return a JSON response indicating success
+                return JsonResponse({"success": True})
+            else:
+                # Taking the company_name of the user
+                info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+                # Employee workinformation will not exists if he/she chnged the company, So can't save the time format.
+                if info.exists():
+                    for data in info:
+                        employee_company = data.company_id
+
+                    company_name = Company.objects.filter(company=employee_company)
+                    emp_company = company_name.first()
+
+                    if emp_company is None:
+                        messages.warning(
+                            request, _("Please update the company field for the user.")
+                        )
+                    else:
+                        # Save the selected format to the backend
+                        emp_company.time_format = selected_format
+                        emp_company.save()
+                        messages.success(request, _("Time format saved successfully."))
+                else:
+                    messages.warning(
+                        request,
+                        _("Time format cannot saved. You are not in the company."),
+                    )
+
+                # Return a JSON response indicating success
+                return JsonResponse({"success": True})
 
     # Return a JSON response for unsupported methods
     return JsonResponse({"error": False, "error": "Unsupported method"}, status=405)
@@ -5061,6 +5126,16 @@ def save_time_format(request):
 def get_time_format(request):
     user = request.user
     employee = user.employee_get
+
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all" and request.user.is_superuser:
+        company = Company.objects.get(id=selected_company)
+        time_format = company.time_format
+        if time_format:
+            time_format = time_format
+        else:
+            time_format = "hh:mm A"
+        return JsonResponse({"selected_format": time_format})
 
     # Taking the company_name of the user
     info = EmployeeWorkInformation.objects.filter(employee_id=employee)
@@ -6453,8 +6528,7 @@ def activate_biometric_attendance(request):
 
 @login_required
 def get_horilla_installed_apps(request):
-    installed_apps = settings.INSTALLED_APPS
-    return JsonResponse({"installed_apps": installed_apps})
+    return JsonResponse({"installed_apps": APPS})
 
 
 def generate_error_report(error_list, error_data, file_name):

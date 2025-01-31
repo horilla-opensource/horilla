@@ -49,18 +49,8 @@ APP_URLS = [
 
 APPS = [
     "base",
-    "recruitment",
     "employee",
-    "leave",
-    "pms",
-    "onboarding",
-    "asset",
-    "attendance",
-    "payroll",
-    "auth",
-    "offboarding",
     "horilla_documents",
-    "helpdesk",
 ]
 
 NO_PERMISSION_MODALS = [

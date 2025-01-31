@@ -551,8 +551,15 @@ class HorillaDeleteConfirmationView(View):
 
         def delete_callback(instance, protected=False):
             try:
-                instance.delete()
-                messages.success(self.request, f"Deleted {instance}")
+                if self.request.user.has_perm(
+                    f"{instance._meta.app_label}.delete_{instance._meta.model.__name__.lower()}"
+                ):
+                    instance.delete()
+                    messages.success(self.request, f"Deleted {instance}")
+                else:
+                    messages.info(
+                        self.request, f"You don't have permission to delete {instance}"
+                    )
             except:
                 messages.error(self.request, f"Cannot delete : {instance}")
 

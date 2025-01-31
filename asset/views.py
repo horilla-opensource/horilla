@@ -1568,10 +1568,14 @@ def asset_dashboard(request):
     """
     assets = Asset.objects.all()
     asset_in_use = Asset.objects.filter(asset_status="In use")
+    asset_requests = AssetRequest.objects.filter(
+        asset_request_status="Requested", requested_employee_id__is_active=True
+    )
 
     context = {
         "assets": assets,
         "asset_in_use": asset_in_use,
+        "asset_requests": asset_requests,
     }
     return render(request, "asset/dashboard.html", context)
 

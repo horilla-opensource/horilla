@@ -4322,8 +4322,8 @@
       "return_condition": "good condition",
       "return_status": "Healthy",
       "return_request": false,
-      "return_images": [1],
-      "assign_images": [1]
+      "return_images": [],
+      "assign_images": []
     }
   },
   {
