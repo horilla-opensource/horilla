@@ -7,13 +7,6 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import redirect, render
 
-from asset.models import AssetAssignment, AssetRequest
-from attendance.models import (
-    Attendance,
-    AttendanceActivity,
-    AttendanceOverTime,
-    WorkRecords,
-)
 from base.context_processors import AllCompany
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, ShiftRequest, WorkTypeRequest
@@ -23,25 +16,9 @@ from employee.models import (
     EmployeeBankDetails,
     EmployeeWorkInformation,
 )
-from helpdesk.models import Ticket
+from horilla.horilla_settings import APPS
+from horilla.methods import get_horilla_model_class
 from horilla_documents.models import DocumentRequest
-from leave.models import (
-    AvailableLeave,
-    CompensatoryLeaveRequest,
-    LeaveAllocationRequest,
-    LeaveRequest,
-    RestrictLeave,
-)
-from offboarding.models import Offboarding
-from payroll.models.models import (
-    Contract,
-    LoanAccount,
-    Payslip,
-    Reimbursement,
-    WorkRecord,
-)
-from pms.models import EmployeeObjective
-from recruitment.models import Candidate, Recruitment
 
 
 class CompanyMiddleware:
@@ -88,95 +65,87 @@ class CompanyMiddleware:
                     "id": all_company.id,
                 }
 
-            # for testing here only get recruitment models
-            app_labels = [
-                "recruitment",
-                "employee",
-                "onboarding",
-                "attendance",
-                "leave",
-                "payroll",
-                "asset",
-                "pms",
-                "base",
-                "helpdesk",
-                "offboarding",
-                "horilla_documents",
-            ]
             app_models = [
-                model
-                for model in apps.get_models()
-                if model._meta.app_label in app_labels
+                model for model in apps.get_models() if model._meta.app_label in APPS
             ]
 
             company_models = [
+                Employee,
                 ShiftRequest,
                 WorkTypeRequest,
-                Employee,
-                EmployeeWorkInformation,
-                EmployeeBankDetails,
-                DisciplinaryAction,
-                Recruitment,
-                Candidate,
-                LeaveRequest,
-                LeaveAllocationRequest,
-                CompensatoryLeaveRequest,
-                AssetRequest,
-                AssetAssignment,
-                AttendanceActivity,
-                Attendance,
-                WorkRecords,
-                Contract,
-                WorkRecord,
-                LoanAccount,
-                Reimbursement,
                 DocumentRequest,
-                Ticket,
-                Offboarding,
-                Payslip,
-                AvailableLeave,
-                RestrictLeave,
-                AttendanceOverTime,
-                EmployeeObjective,
+                DisciplinaryAction,
+                EmployeeBankDetails,
+                EmployeeWorkInformation,
             ]
 
-            # Add company filter to every query
-            if company_id:
-                for (
-                    model
-                ) in app_models:  # Replace YourModels with the actual models you have
+            app_model_mappings = {
+                "recruitment": ["recruitment", "candidate"],
+                "leave": [
+                    "leaverequest",
+                    "restrictleave",
+                    "availableleave",
+                    "leaveallocationrequest",
+                    "compensatoryleaverequest",
+                ],
+                "asset": ["assetassignment", "assetrequest"],
+                "attendance": [
+                    "attendance",
+                    "attendanceactivity",
+                    "attendanceovertime",
+                    "workrecords",
+                ],
+                "payroll": [
+                    "contract",
+                    "loanaccount",
+                    "payslip",
+                    "reimbursement",
+                    "workrecord",
+                ],
+                "helpdesk": ["ticket"],
+                "offboarding": ["offboarding"],
+                "pms": ["employeeobjective"],
+            }
 
-                    if model in company_models:
-                        if getattr(model, "company_id", None):
+            # Dynamically add models if their respective apps are installed
+
+            for app_label, models in app_model_mappings.items():
+                if apps.is_installed(app_label):
+                    company_models.extend(
+                        [get_horilla_model_class(app_label, model) for model in models]
+                    )
+            if company_id:
+                for model in app_models:
+                    is_company_model = model in company_models
+                    company_field = getattr(model, "company_id", None)
+                    is_horilla_manager = isinstance(
+                        model.objects, HorillaCompanyManager
+                    )
+                    related_company_field = getattr(
+                        model.objects, "related_company_field", None
+                    )
+
+                    if is_company_model:
+                        if company_field:
                             model.add_to_class(
                                 "company_filter", Q(company_id=company_id)
                             )
-                        elif (
-                            isinstance(model.objects, HorillaCompanyManager)
-                            and model.objects.related_company_field
-                        ):
+                        elif is_horilla_manager and related_company_field:
                             model.add_to_class(
                                 "company_filter",
-                                Q(**{model.objects.related_company_field: company_id}),
+                                Q(**{related_company_field: company_id}),
                             )
                     else:
-                        if getattr(model, "company_id", None):
+                        if company_field:
                             model.add_to_class(
                                 "company_filter",
                                 Q(company_id=company_id) | Q(company_id__isnull=True),
                             )
-                        elif (
-                            isinstance(model.objects, HorillaCompanyManager)
-                            and model.objects.related_company_field
-                        ):
+                        elif is_horilla_manager and related_company_field:
                             model.add_to_class(
                                 "company_filter",
-                                Q(**{model.objects.related_company_field: company_id})
-                                | Q(
-                                    **{
-                                        f"{model.objects.related_company_field}__isnull": True
-                                    }
-                                ),
+                                Q(**{related_company_field: company_id})
+                                | Q(**{f"{related_company_field}__isnull": True}),
                             )
 
         response = self.get_response(request)
