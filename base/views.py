@@ -3111,25 +3111,8 @@ def employee_permission_assign(request):
         ).distinct()
         context["show_assign"] = True
     permissions = []
-    horilla_apps = [
-        "base",
-        "recruitment",
-        "employee",
-        "leave",
-        "pms",
-        "onboarding",
-        "asset",
-        "attendance",
-        "payroll",
-        "auth",
-        "offboarding",
-        "horilla_documents",
-        "helpdesk",
-    ]
-    installed_apps = [app for app in settings.INSTALLED_APPS if app in horilla_apps]
-
     no_permission_models = NO_PERMISSION_MODALS
-    for app_name in installed_apps:
+    for app_name in APPS:
         app_models = []
         for model in get_models_in_app(app_name):
             if model._meta.model_name not in no_permission_models:
@@ -3237,7 +3220,9 @@ def permission_table(request):
                         "model_name": model._meta.model_name,
                     }
                 )
-        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+        permissions.append(
+            {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
+        )
     if request.method == "POST":
         form = AssignPermission(request.POST)
         if form.is_valid():
@@ -6539,8 +6524,7 @@ def activate_biometric_attendance(request):
 
 @login_required
 def get_horilla_installed_apps(request):
-    installed_apps = settings.INSTALLED_APPS
-    return JsonResponse({"installed_apps": installed_apps})
+    return JsonResponse({"installed_apps": APPS})
 
 
 def generate_error_report(error_list, error_data, file_name):

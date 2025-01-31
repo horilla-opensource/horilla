@@ -48,19 +48,9 @@ APP_URLS = [
 ]
 
 APPS = [
-    "auth",
     "base",
     "employee",
-    "accessibility",
-    "dynamic_fields",
-    "horilla_audit",
-    "horilla_views",
-    "horilla_backup",
-    "horilla_crumbs",
-    "horilla_widgets",
     "horilla_documents",
-    "horilla_automations",
-    "notifications",
 ]
 
 NO_PERMISSION_MODALS = [
