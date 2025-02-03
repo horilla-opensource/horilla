@@ -306,7 +306,6 @@ class HorillaListView(ListView):
             context["keys_to_remove"] = keys_to_remove
 
         request = self.request
-        ordered_ids = list(queryset.values_list("id", flat=True))
         is_first_sort = False
         query_dict = self.request.GET
         if (
