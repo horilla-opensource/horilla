@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -30,6 +29,13 @@ from notifications.signals import notify
 @login_required
 @hx_request_required
 def announcement_list(request):
+    """
+    Renders a list of announcements for the authenticated user.
+
+    This view fetches all announcements and updates their expiration dates if not already set.
+    It filters announcements based on the user's permissions and whether the announcements
+    are still valid (not expired). Additionally, it checks if the user has viewed each announcement.
+    """
     general_expire_date = (
         AnnouncementExpire.objects.values_list("days", flat=True).first() or 30
     )
@@ -45,25 +51,26 @@ def announcement_list(request):
     if announcements_to_update:
         Announcement.objects.bulk_update(announcements_to_update, ["expire_date"])
 
+    has_view_permission = request.user.has_perm("base.view_announcement")
     announcements = announcements.filter(expire_date__gte=datetime.today().date())
-
-    if request.user.has_perm("base.view_announcement"):
-        announcement_list = announcements
-    else:
-        announcement_list = announcements.filter(
+    announcement_items = (
+        announcements
+        if has_view_permission
+        else announcements.filter(
             Q(employees=request.user.employee_get) | Q(employees__isnull=True)
         )
+    )
 
-    announcement_list = announcement_list.prefetch_related(
+    filtered_announcements = announcement_items.prefetch_related(
         "announcementview_set"
     ).order_by("-created_at")
-    for announcement in announcement_list:
+    for announcement in filtered_announcements:
         announcement.has_viewed = announcement.announcementview_set.filter(
             user=request.user, viewed=True
         ).exists()
-    instance_ids = json.dumps([instance.id for instance in announcement_list])
+    instance_ids = json.dumps([instance.id for instance in filtered_announcements])
     context = {
-        "announcements": announcement_list,
+        "announcements": filtered_announcements,
         "general_expire_date": general_expire_date,
         "instance_ids": instance_ids,
     }

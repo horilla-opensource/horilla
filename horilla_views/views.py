@@ -14,6 +14,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_protect
 
 from base.methods import eval_validate
+from horilla.signals import post_generic_delete, pre_generic_delete
 from horilla_views import models
 from horilla_views.cbv_methods import get_short_uuid, login_required, merge_dicts
 from horilla_views.forms import SavedFilterForm
@@ -554,7 +555,21 @@ class HorillaDeleteConfirmationView(View):
                 if self.request.user.has_perm(
                     f"{instance._meta.app_label}.delete_{instance._meta.model.__name__.lower()}"
                 ):
+                    pre_generic_delete.send(
+                        sender=instance._meta.model,
+                        instance=instance,
+                        args=args,
+                        view_instance=self,
+                        kwargs=kwargs,
+                    )
                     instance.delete()
+                    post_generic_delete.send(
+                        sender=instance._meta.model,
+                        instance=instance,
+                        args=args,
+                        view_instance=self,
+                        kwargs=kwargs,
+                    )
                     messages.success(self.request, f"Deleted {instance}")
                 else:
                     messages.info(

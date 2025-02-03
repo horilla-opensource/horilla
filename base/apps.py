@@ -14,12 +14,12 @@ class BaseConfig(AppConfig):
     name = "base"
 
     def ready(self) -> None:
-        ready = super().ready()
+        super().ready()
         try:
             from base.models import EmployeeShiftDay
 
-            if len(EmployeeShiftDay.objects.all()) == 0:
-                days = (
+            if not EmployeeShiftDay.objects.exists():
+                days = [
                     ("monday", "Monday"),
                     ("tuesday", "Tuesday"),
                     ("wednesday", "Wednesday"),
@@ -27,11 +27,10 @@ class BaseConfig(AppConfig):
                     ("friday", "Friday"),
                     ("saturday", "Saturday"),
                     ("sunday", "Sunday"),
+                ]
+
+                EmployeeShiftDay.objects.bulk_create(
+                    [EmployeeShiftDay(day=day[0]) for day in days]
                 )
-                for day in days:
-                    shift_day = EmployeeShiftDay()
-                    shift_day.day = day[0]
-                    shift_day.save()
         except Exception as e:
             pass
-        return ready

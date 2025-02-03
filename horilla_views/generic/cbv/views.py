@@ -306,7 +306,6 @@ class HorillaListView(ListView):
             context["keys_to_remove"] = keys_to_remove
 
         request = self.request
-        ordered_ids = list(queryset.values_list("id", flat=True))
         is_first_sort = False
         query_dict = self.request.GET
         if (
@@ -324,13 +323,12 @@ class HorillaListView(ListView):
                 query_dict, queryset, self.sortby_key, is_first_sort=is_first_sort
             )
 
-            ordered_ids = [instance.id for instance in queryset]
         ordered_ids = []
         if not self._saved_filters.get("field"):
             for instance in queryset:
-                instance.ordered_ids = ordered_ids
                 ordered_ids.append(instance.pk)
 
+        self.request.session[f"ordered_ids_{self.model.__name__.lower()}"] = ordered_ids
         context["queryset"] = paginator_qry(
             queryset, self._saved_filters.get("page"), self.records_per_page
         )
@@ -349,10 +347,11 @@ class HorillaListView(ListView):
                 groups, self._saved_filters.get("page"), 10
             )
 
-            for group in context["groups"]:
-                for instance in group["list"]:
-                    instance.ordered_ids = ordered_ids
-                    ordered_ids.append(instance.pk)
+            # for group in context["groups"]:
+            #     for instance in group["list"]:
+            #         instance.ordered_ids = ordered_ids
+            #         ordered_ids.append(instance.pk)
+
         CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
         from horilla.urls import path, urlpatterns
 
@@ -523,11 +522,13 @@ class HorillaDetailedView(DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
-        instance_ids = eval_validate(str(self.request.GET.get(self.ids_key)))
+        instance_ids = self.request.session.get(
+            f"ordered_ids_{self.model.__name__.lower()}", []
+        )
 
         pk = context["object"].pk
-        if instance_ids:
-            context["object"].ordered_ids = instance_ids
+        # if instance_ids:
+        #     context["object"].ordered_ids = instance_ids
         context["instance"] = context["object"]
 
         url = resolve(self.request.path)
@@ -712,10 +713,11 @@ class HorillaCardView(ListView):
             context["filter_dict"] = data_dict
 
         ordered_ids = list(queryset.values_list("id", flat=True))
+        ordered_ids = []
         if not self._saved_filters.get("field"):
             for instance in queryset:
-                instance.ordered_ids = ordered_ids
                 ordered_ids.append(instance.pk)
+        self.request.session[f"ordered_ids_{self.model.__name__.lower()}"] = ordered_ids
 
         CACHE.get(self.request.session.session_key + "cbv")[HorillaCardView] = context
         referrer = self.request.GET.get("referrer", "")
@@ -879,7 +881,9 @@ class HorillaFormView(FormView):
             pk = self.form.instance.pk
         # next/previous option in the forms
         if pk and self.request.GET.get(self.ids_key):
-            instance_ids = eval_validate(str(self.request.GET.get(self.ids_key)))
+            instance_ids = self.request.session.get(
+                f"ordered_ids_{self.model.__name__.lower()}", []
+            )
             url = resolve(self.request.path)
             key = list(url.kwargs.keys())[0]
             url_name = url.url_name
@@ -1190,10 +1194,11 @@ class HorillaProfileView(DetailView):
         ).first()
         if active_tab:
             context["active_target"] = active_tab.tab_target
-        instance_ids_str = self.request.GET.get("instance_ids")
-        if not instance_ids_str:
-            instance_ids_str = "[]"
-        instance_ids = eval_validate(instance_ids_str)
+
+        instance_ids = self.request.session.get(
+            f"ordered_ids_{self.model.__name__.lower()}", []
+        )
+
         if instance_ids:
             CACHE.set(
                 f"{self.request.session.session_key}hpv-instance-ids", instance_ids
