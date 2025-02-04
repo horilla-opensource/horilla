@@ -118,9 +118,12 @@ class TicketForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["attachment"] = MultipleFileField(
-            label="Attachements", required=False
-        )
+        if self.instance and self.instance.pk:
+            self.fields.pop("attachment", None)
+        else:
+            self.fields["attachment"] = MultipleFileField(
+                label="Attachements", required=False
+            )
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         instance = kwargs.get("instance")
         if instance:
