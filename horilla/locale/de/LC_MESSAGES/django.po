@@ -13434,7 +13434,7 @@ msgstr "Erfahrung"
 #: .\employee\templates\employee\update_form\personal_info.html:176
 #: .\employee\templates\personal-tab.html:88
 #: .\employee\templates\tabs\personal-tab.html:109
-msgid "Maritial Status"
+msgid "Marital Status"
 msgstr "Familienstand"
 
 #: .\employee\templates\employee\create_form\personal_info.html:187

@@ -6841,7 +6841,7 @@ msgstr "Expérience"
 #: employee/templates/employee/profile/personal_info.html:125
 #: employee/templates/employee/update_form/personal_info.html:148
 #: employee/templates/tabs/personal-tab.html:78
-msgid "Maritial Status"
+msgid "Marital Status"
 msgstr "Matrimonial État"
 
 #: employee/templates/employee/create_form/personal_info.html:174

@@ -14361,7 +14361,7 @@ msgstr ""
 #: .\employee\templates\employee\profile\personal_info.html:189
 #: .\employee\templates\personal-tab.html:88
 #: .\employee\templates\tabs\personal_tab.html:80
-msgid "Maritial Status"
+msgid "Marital Status"
 msgstr ""
 
 #: .\employee\templates\employee\profile\personal_info.html:197
