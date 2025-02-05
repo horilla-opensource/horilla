@@ -398,8 +398,8 @@ class HorillaListView(ListView):
         from import_export import fields, resources
 
         request = getattr(_thread_locals, "request", None)
-        ids = eval_validate(request.GET["ids"])
-        _columns = eval_validate(request.GET["columns"])
+        ids = eval_validate(request.POST["ids"])
+        _columns = eval_validate(request.POST["columns"])
         queryset = self.model.objects.filter(id__in=ids)
 
         _model = self.model
