@@ -1294,6 +1294,11 @@ class RotatingShiftForm(ModelForm):
                 initial=initial,
             )
 
+        for field in self.fields:
+            if field.startswith("shift"):
+                shift_counts += 1
+                create_shift_field(field, shift_counts <= 2)
+
         for key in self.data.keys():
             if key.startswith("shift") and self.data[key]:
                 shift_counts += 1
