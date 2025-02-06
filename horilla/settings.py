@@ -31,6 +31,7 @@ env = environ.Env(
     ),
     ALLOWED_HOSTS=(list, ["*"]),
     CSRF_TRUSTED_ORIGINS=(list, ["http://localhost:8000"]),
+    CDN=(bool, False),
 )
 
 env.read_env(os.path.join(BASE_DIR, ".env"), overwrite=True)
@@ -154,21 +155,47 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+if env("CDN"):
+    # DigitalOcean Spaces settings
+    AWS_ACCESS_KEY_ID = env("ACCESS_KEY_ID").strip()
+    AWS_SECRET_ACCESS_KEY = env("SECRET_ACCESS_KEY").strip()
+    AWS_STORAGE_BUCKET_NAME = env("STORAGE_BUCKET_NAME").strip()
+    AWS_S3_ENDPOINT_URL = env("ENDPOINT_URL").strip()
+    AWS_S3_CDN_ENDPOINT_URL = env("CDN_ENDPOINT_URL").strip()
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
+    # Static files (CSS, JavaScript, Images)
+    STATIC_URL = f"{AWS_S3_CDN_ENDPOINT_URL}/static/"
+    STATICFILES_STORAGE = 'horilla.storages.CustomS3Boto3Storage'
 
-STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+    # Media files
+    DEFAULT_FILE_STORAGE = 'horilla.storages.CustomS3Boto3Storage'
+    MEDIA_URL = f"{AWS_S3_CDN_ENDPOINT_URL}/media/"
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+    
+    # Remove WhiteNoise middleware
+    MIDDLEWARE = [
+        mw for mw in MIDDLEWARE
+        if mw != "whitenoise.middleware.WhiteNoiseMiddleware"
+    ]
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+if not env("CDN"):
+    # Settings for local development
+    STATIC_URL = "static/"
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+    STATICFILES_DIRS = [
+        BASE_DIR / "static",
+    ]
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+    # Include WhiteNoise middleware
+    if "whitenoise.middleware.WhiteNoiseMiddleware" not in MIDDLEWARE:
+        MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 

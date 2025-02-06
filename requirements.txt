@@ -71,3 +71,5 @@ XlsxWriter
 gunicorn
 psycopg2-binary
 whitenoise
+django-storages
+boto3
