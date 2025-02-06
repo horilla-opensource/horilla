@@ -2044,14 +2044,7 @@ def user_leave_request(request, id):
                 )
                 requested_days = requested_days - company_leave_count
 
-        overlapping_requests = LeaveRequest.objects.filter(
-            employee_id=employee, start_date__lte=end_date, end_date__gte=start_date
-        ).exclude(status__in=["cancelled", "rejected"])
-        if overlapping_requests.exists():
-            form.add_error(
-                None, _("There is already a leave request for this date range..")
-            )
-        elif not leave_type.limit_leave or requested_days <= available_total_leave:
+        if not leave_type.limit_leave or requested_days <= available_total_leave:
             if form.is_valid():
                 leave_request = form.save(commit=False)
                 save = True

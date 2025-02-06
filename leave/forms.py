@@ -299,6 +299,27 @@ def cal_effective_requested_days(start_date, end_date, leave_type_id, requested_
     return requested_days
 
 
+def leaveoverlaping(
+    employee_id, start_date, end_date, start_date_breakdown, end_date_breakdown
+):
+    overlapping_requests = LeaveRequest.objects.filter(
+        employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
+    )
+    if len(overlapping_requests) == 1:
+        existing_leave = overlapping_requests.first()
+        print("existing_leave =", existing_leave)
+
+        if (
+            existing_leave.start_date == start_date
+            and existing_leave.start_date_breakdown != "full_day"
+            and start_date_breakdown != "full_day"
+            and existing_leave.start_date_breakdown != start_date_breakdown
+            and existing_leave.end_date_breakdown != end_date_breakdown
+        ):
+            overlapping_requests = LeaveRequest.objects.none()
+    return overlapping_requests
+
+
 class LeaveRequestCreationForm(ModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
@@ -312,11 +333,9 @@ class LeaveRequestCreationForm(ModelForm):
         start_date_breakdown = cleaned_data.get("start_date_breakdown")
         end_date_breakdown = cleaned_data.get("end_date_breakdown")
         attachment = cleaned_data.get("attachment")
-        overlapping_requests = LeaveRequest.objects.filter(
-            employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
-        ).exclude(
-            id=self.instance.id,
-        )
+        overlapping_requests = leaveoverlaping(
+            employee_id, start_date, end_date, start_date_breakdown, end_date_breakdown
+        ).exclude(id=self.instance.id)
         if leave_type_id.require_attachment == "yes":
             if attachment is None:
                 raise forms.ValidationError(
@@ -344,7 +363,7 @@ class LeaveRequestCreationForm(ModelForm):
 
         if overlapping_requests.exclude(status__in=["cancelled", "rejected"]).exists():
             raise forms.ValidationError(
-                _("Employee has already a leave request for this date range..")
+                _("Employee has already a leave request for this date range.")
             )
 
         available_leave = AvailableLeave.objects.get(
@@ -473,7 +492,7 @@ class LeaveRequestUpdationForm(ModelForm):
             raise forms.ValidationError(_("Employee has no leave type.."))
         if overlapping_requests.exclude(status__in=["cancelled", "rejected"]).exists():
             raise forms.ValidationError(
-                _("Employee has already a leave request for this date range..")
+                _("Employee has already a leave request for this date range.")
             )
         available_leave = AvailableLeave.objects.get(
             employee_id=employee_id, leave_type_id=leave_type_id
@@ -693,8 +712,8 @@ class UserLeaveRequestForm(ModelForm):
         start_date_breakdown = cleaned_data.get("start_date_breakdown")
         end_date_breakdown = cleaned_data.get("end_date_breakdown")
         leave_type_id = cleaned_data.get("leave_type_id")
-        overlapping_requests = LeaveRequest.objects.filter(
-            employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
+        overlapping_requests = leaveoverlaping(
+            employee_id, start_date, end_date, start_date_breakdown, end_date_breakdown
         ).exclude(id=self.instance.id)
         assigned_leave_types = AvailableLeave.objects.filter(employee_id=employee_id)
         if not assigned_leave_types:
@@ -724,7 +743,7 @@ class UserLeaveRequestForm(ModelForm):
             )
         if overlapping_requests.exclude(status__in=["cancelled", "rejected"]).exists():
             raise forms.ValidationError(
-                _("Employee has already a leave request for this date range.....")
+                _("Employee has already a leave request for this date range.")
             )
         requested_days = calculate_requested_days(
             start_date, end_date, start_date_breakdown, end_date_breakdown
@@ -933,7 +952,7 @@ class UserLeaveRequestCreationForm(ModelForm):
 
         if overlapping_requests.exclude(status__in=["cancelled", "rejected"]).exists():
             raise forms.ValidationError(
-                _("Employee has already a leave request for this date range..")
+                _("Employee has already a leave request for this date range.")
             )
 
         available_leave = AvailableLeave.objects.get(
