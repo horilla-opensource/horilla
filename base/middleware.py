@@ -37,7 +37,7 @@ class CompanyMiddleware:
         """
         if getattr(request, "user", False) and not request.user.is_anonymous:
             try:
-                if com_id := request.session["selected_company"]:
+                if com_id := request.session.get("selected_company", None):
                     return (
                         Company.objects.filter(id=com_id).first()
                         if com_id != "all"
