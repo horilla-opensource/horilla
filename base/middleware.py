@@ -9,7 +9,7 @@ from django.shortcuts import redirect
 
 from base.context_processors import AllCompany
 from base.horilla_company_manager import HorillaCompanyManager
-from base.models import ShiftRequest, WorkTypeRequest
+from base.models import Company, ShiftRequest, WorkTypeRequest
 from employee.models import (
     DisciplinaryAction,
     Employee,
@@ -37,9 +37,16 @@ class CompanyMiddleware:
         """
         if getattr(request, "user", False) and not request.user.is_anonymous:
             try:
-                return getattr(
-                    request.user.employee_get.employee_work_info, "company_id", None
-                )
+                if com_id := request.session["selected_company"]:
+                    return (
+                        Company.objects.filter(id=com_id).first()
+                        if com_id != "all"
+                        else None
+                    )
+                else:
+                    return getattr(
+                        request.user.employee_get.employee_work_info, "company_id", None
+                    )
             except AttributeError:
                 pass
         return None
@@ -49,7 +56,7 @@ class CompanyMiddleware:
         Set the company session data based on the company ID.
         """
         if company_id and request.session.get("selected_company") != "all":
-            request.session["selected_company"] = company_id.id
+            request.session["selected_company"] = str(company_id.id)
             request.session["selected_company_instance"] = {
                 "company": company_id.company,
                 "icon": company_id.icon.url,
