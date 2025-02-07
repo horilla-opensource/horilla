@@ -265,7 +265,7 @@
                                     <ion-icon name="heart-circle-outline"></ion-icon>
                                 </button>
                             {% endif %}
-                            {% if onboarding|app_installed %}
+                            {% if "onboarding"|app_installed %}
                                 {% if perms.recruitment.add_rejectedcandidate or request.user.employee_get in stage.stage_managers.all %}
                                     <button type="button" hx-target="#rejectModalBody" hx-swap="innerHTML"
                                         class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" data-target="#rejectModal"
