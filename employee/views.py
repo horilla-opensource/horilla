@@ -175,9 +175,17 @@ filter_mapping = {
 }
 
 
-def _check_reporting_manager(request):
+def _check_reporting_manager(request, *args, **kwargs):
+    obj_id = kwargs["obj_id"]
+    emp = Employee.objects.get(id=obj_id)
+    re_manager = None
+    if emp.employee_work_info.reporting_manager_id != None:
+        re_manager = emp.employee_work_info.reporting_manager_id
     employee = request.user.employee_get
-    return employee.reporting_manager.exists()
+    if re_manager != None:
+        return re_manager == employee
+    else:
+        return False
 
 
 # Create your views here.
