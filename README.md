@@ -305,6 +305,8 @@ python manage.py runserver
 ### **Accessing Horilla**
 
 If everything is configured correctly, you should be able to access your Horilla app at **http://localhost:8000**.
+![Initialize Database in Horilla HRMS](https://www.horilla.com/wp-content/uploads/2024/12/how-to-initialize-the-database-in-horilla-hrms-step-by-step-1-1024x576.png)
+
 
 #### **Initial Setup**
 From the login page, you will have two options:
