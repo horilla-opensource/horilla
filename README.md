@@ -177,12 +177,6 @@ git remote add horilla https://horilla-opensource@github.com/horilla-opensource/
 git pull horilla master
 ```
 
----
-
-Here's the updated version with `pip install -r requirements.txt` included:
-
----
-
 ### **2. Set Up Python Virtual Environment**
 
 #### **Ubuntu**
@@ -221,10 +215,6 @@ Here's the updated version with `pip install -r requirements.txt` included:
    ```bash
    pip install -r requirements.txt
    ```
-
----
-
-Let me know if you need any other modifications! 🚀
 
 
 ### **3. Configure Environment Variables**
