@@ -229,7 +229,7 @@ function initializeSummernote(candId,searchWords,) {
           style="display: none"
           >
           <ul class="oh-sidebar__submenu-items">
-            {% if "leave"|app_installed and perms.Leave.view_leaverequest %}
+            {% if "leave"|app_installed and perms.base.view_multipleapprovalcondition %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'multiple-approval-condition' %}"
@@ -258,7 +258,7 @@ function initializeSummernote(candId,searchWords,) {
               >
             </li>
             {% endif %}
-            {% if perms.base.add_holiday %}
+            {% if perms.base.add_holidays %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'holiday-view' %}"
@@ -267,7 +267,7 @@ function initializeSummernote(candId,searchWords,) {
               >
             </li>
             {% endif %}
-            {% if perms.base.view_companyleave %}
+            {% if perms.base.view_companyleaves %}
             <li class="oh-sidebar__submenu-item">
               <a
               href="{% url 'company-leave-view' %}"
