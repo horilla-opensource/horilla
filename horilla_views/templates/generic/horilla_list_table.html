@@ -364,9 +364,14 @@
     </div>
   {% endif %}
   <script>
-    setInterval(() => {
+    setTimeout(() => {
       $("#{{view_id}} [type=checkbox].list-table-row:checked").first().change();
       $("#{{view_id}} [type=checkbox].list-table-row:checked").not().first().change();
+      var ids = JSON.parse($("#{{selected_instances_key_id}}").attr("data-ids"))
+      if (ids.length) {
+        $("#{{view_id}} .quick-bulk-action.d-none").removeClass("d-none");
+      }
     }, 200);
+
   </script>
 </div>

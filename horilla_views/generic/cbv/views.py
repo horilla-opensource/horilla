@@ -99,6 +99,12 @@ class HorillaListView(ListView):
 
     header_attrs: dict = {}
 
+    def post(self, *args, **kwargs):
+        """
+        POST method to handle post submissions
+        """
+        return self.get(self, *args, **kwargs)
+
     def __init__(self, **kwargs: Any) -> None:
         if not self.view_id:
             self.view_id = get_short_uuid(4)
@@ -203,6 +209,24 @@ class HorillaListView(ListView):
             self._saved_filters = QueryDict("", mutable=True)
             if self.filter_class:
                 query_dict = self.request.GET
+                selected_ids = eval_validate(
+                    self.request.POST.get("selected_ids", "[]")
+                )
+
+                if (
+                    self.request.session.get("prev_path")
+                    and self.request.session.get("prev_path") != self.request.path
+                ):
+                    selected_ids = []
+                    self.request.session["hlv_selected_ids"] = selected_ids
+                    self.request.session["prev_path"] = self.request.path
+
+                if selected_ids and selected_ids != self.request.session.get(
+                    "hlv_selected_ids", []
+                ):
+                    self.request.session["hlv_selected_ids"] = selected_ids
+                    self.request.session["prev_path"] = self.request.path
+
                 if "filter_applied" in query_dict.keys():
                     update_saved_filter_cache(self.request, CACHE)
                 elif CACHE.get(
@@ -231,6 +255,18 @@ class HorillaListView(ListView):
                 self.queryset = self.filter_class(
                     data=query_dict, queryset=self.queryset, request=self.request
                 ).qs
+
+                if self.request.GET.get(
+                    "show_all"
+                ) == "true" and self.request.session.get("hlv_selected_ids"):
+                    del self.request.session["hlv_selected_ids"]
+                if self.request.session.get("hlv_selected_ids"):
+                    self.request.actual_ids = list(
+                        self.queryset.values_list("id", flat=True)
+                    )
+                    self.queryset = self.queryset.filter(
+                        id__in=self.request.session["hlv_selected_ids"]
+                    )
         return self.queryset
 
     def get_context_data(self, **kwargs: Any):
