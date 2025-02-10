@@ -2777,6 +2777,7 @@ def birthday():
 
 
 @login_required
+@enter_if_accessible(feature="birthday_view", perm="employee.view_employee")
 def get_employees_birthday(request):
     """
     Render all upcoming birthday employee details for the dashboard.
