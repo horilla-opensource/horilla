@@ -429,7 +429,7 @@ def shift_tab(request, emp_id):
 
 
 @login_required
-@manager_can_enter("horilla_documents.view_documentrequests")
+@manager_can_enter("horilla_documents.view_documentrequest")
 def document_request_view(request):
     """
     This function is used to view documents requests of employees.
@@ -445,7 +445,7 @@ def document_request_view(request):
     documents = Document.objects.filter(document_request_id__isnull=False)
     documents = filtersubordinates(
         request=request,
-        perm="horilla_documents.view_documentrequests",
+        perm="horilla_documents.view_documentrequest",
         queryset=documents,
     )
     documents = group_by_queryset(
@@ -465,7 +465,7 @@ def document_request_view(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("horilla_documents.view_documentrequests")
+@manager_can_enter("horilla_documents.view_documentrequest")
 def document_filter_view(request):
     """
     This method is used to filter employee.
@@ -498,7 +498,7 @@ def document_filter_view(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("horilla_documents.add_documentrequests")
+@manager_can_enter("horilla_documents.add_documentrequest")
 def document_request_create(request):
     """
     This function is used to create document requests of an employee in employee requests view.
@@ -543,7 +543,7 @@ def document_request_create(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("horilla_documents.change_documentrequests")
+@manager_can_enter("horilla_documents.change_documentrequest")
 def document_request_update(request, id):
     """
     This function is used to update document requests of an employee in employee requests view.
