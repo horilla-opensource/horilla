@@ -27,6 +27,7 @@ from django.forms import DateInput, HiddenInput, TextInput
 from django.template import loader
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
+from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _trans
@@ -2321,10 +2322,19 @@ class AnnouncementForm(ModelForm):
             "expire_date": DateInput(attrs={"type": "date"}),
         }
 
+    def clean_description(self):
+        description = self.cleaned_data.get("description", "").strip()
+        # Remove HTML tags and check if there's meaningful content
+        text_content = strip_tags(description).strip()
+        if not text_content:  # Checks if the field is empty after stripping HTML
+            raise forms.ValidationError("Description is required.")
+        return description
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["attachments"] = MultipleFileField(label="Attachments ")
         self.fields["attachments"].required = False
+        self.fields["description"].required = False
 
     def save(self, commit: bool = ...) -> Any:
         attachement = []
