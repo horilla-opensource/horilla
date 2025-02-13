@@ -27,6 +27,7 @@ djangorestframework
 djangorestframework-simplejwt
 drf-yasg
 et-xmlfile
+google-api-python-client
 html5lib
 Jinja2
 idna
