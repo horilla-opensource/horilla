@@ -1,0 +1,104 @@
+{% load i18n %}
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">{{project}} {% trans ":Tasks" %} </h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+        <ion-icon
+            name="search-outline"
+            class="oh-main__titlebar-serach-icon md hydrated"
+            role="img"
+            aria-label="search outline"
+        ></ion-icon>
+    </a>
+  </div>
+ 
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    {% comment %} for search{% endcomment %} 
+    <div
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        type="text"
+        class="oh-input oh-input__icon"
+        aria-label="Search Input"
+        id="filter-task"
+        data-view = "{{request.GET.view}}"
+        name="search"
+        placeholder="{% trans 'Search' %}"
+        {% comment %} hx-get="{% url 'task-filter' project_id %}?view={{request.GET.view}}"  
+        hx-trigger="keyup changed delay:500ms, search"
+        hx-target="#view-container"  {% endcomment %}
+      />
+    </div>
+
+    
+    <div class="oh-dropdown" x-data="{open: false}">
+      <ul class="oh-view-types ml-2"> 
+        {% comment %} for list view {% endcomment %}
+        <li class="oh-view-type task-view-type" data-view="list">
+          <a href= "{% url 'task-view' project_id %}?view=list"
+            class="oh-btn oh-btn--view"
+          >
+            <ion-icon name="list-outline"></ion-icon> 
+          </a>
+        </li>
+        {% comment %} for card view {% endcomment %}
+        <li class="oh-view-type task-view-type" data-view="card">
+          <a
+             
+            href= "{% url 'task-view' project_id %}"
+            class="oh-btn oh-btn--view"
+            >
+            <ion-icon name="grid-outline"></ion-icon 
+           
+          ></a>
+        </li>
+      </ul>
+    </div>
+    {% comment %} for filtering {% endcomment %}
+    <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open">
+          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+          x-show="open"
+          @click.outside="open = false"
+          style="display: none;"
+          >
+          
+          {% include 'task/new/filter_task.html' %}
+        </div>
+    </div>
+    {% comment %} for create task {% endcomment %}
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-btn-group ml-2">
+        <div>
+          <a
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#TaskModal"
+            hx-get="{% url 'create-project-stage' project_id %}"
+            hx-target="#TaskFormTarget"
+            title="Create stage"
+          >
+            <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans "Create" %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+

@@ -1,0 +1,427 @@
+{% load static %}
+{% load i18n %} {% load yes_no %}
+  
+
+{% comment %} for showing messages {% endcomment %}
+<div class="oh-alert-container" id='ajaxMessages'>
+</div>
+{% if messages %}
+    <div class="oh-alert-container" id='ohMessages'>
+        {% for message in messages %}
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+                {{ message }}
+            </div> 
+        {% endfor %}
+    </div>
+{% endif %}
+{% include "filter_tags.html" %}
+{% if stages %}
+    <div class="oh-card" id="">
+    <div class="oh-accordion-meta">
+        <div class="">
+            {% for stage in stages %}
+            
+                <div
+                    class="oh-accordion-meta__header oh-accordion-meta__header--custom stage_header"
+                    data-target="#taskstage{{stage.id}}"              
+                > 
+                    <div class="d-flex">
+                    <span class="oh-accordion-meta__title" style="display:inherit;">
+                        <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1">
+                            {{ stage.tasks.all|length}}
+                        </span>
+                        {{stage.title}} 
+                    </span>
+                    </div>
+                    <div class="d-flex oh-tabs__input-badge-container">
+                        
+                    </div>
+                    <div class="oh-btn-group ml-3">
+                        <div>
+                        <a
+                            class="oh-btn oh-btn--secondary oh-btn--shadow"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#TaskModal"
+                            hx-get="{% url 'create-task' stage.id %}" 
+                            hx-target="#TaskFormTarget"
+                        >
+                            <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans "Add Task" %}
+                        </a>
+                        </div>
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button
+                        class="oh-btn oh-stop-prop oh-accordion-meta__btn"
+                        @click="open = !open"
+                        @click.outside="open = false"
+                        >
+                        {% trans "Actions" %}
+                        <ion-icon
+                            class="ms-2 oh-accordion-meta__btn-icon"
+                            name="caret-down-outline"
+                        ></ion-icon>
+                        </button>
+                        <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right"
+                        x-show="open"
+                        style="display: none"
+                        >
+                        <ul class="oh-dropdown__items">
+                            <li class="oh-dropdown__item">
+                            <a
+                                class="oh-dropdown__link oh-dropdown__link"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#TaskModal"
+                                hx-get="{% url 'update-project-stage' stage.id %}"
+                                onclick="event.stopPropagation()"
+                                hx-target="#TaskFormTarget"
+                            > 
+                                {% trans "Update" %}</a 
+                            >
+                            </li>
+                    
+                            <li class="oh-dropdown__item">
+                                <form action="{% url 'delete-project-stage' stage.id %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');" method="post">
+                                {% csrf_token %}
+                                <button class="oh-dropdown__link oh-dropdown__link--danger ">{% trans "Delete" %}</button>
+                                </form>
+                            </li>
+                        </ul> 
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div
+                    class="oh-accordion-meta__body d-none"
+                    id="taskstage{{stage.id}}"
+                >
+                    <!-- htmx task will loading here -->
+                    <div
+                        class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
+                        <div class="oh-sticky-table">
+                            <div class="oh-sticky-table__table oh-table--sortable" >
+                                <div class="oh-sticky-table__thead" >
+                                    <div class="oh-sticky-table__tr" id="task_view{{stage.id}}"  >
+                                        <div class="oh-sticky-table__th" >
+                                            <div class="d-flex" >
+                                                <div class="">
+                                                    <input
+                                                        type="checkbox"
+                                                        class="oh-input oh-input__checkbox mt-1 mr-2 all-candidate"
+                                                    />
+                                                </div>
+                                                <div
+                                                >
+                                                    {% trans "Tasks" %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="oh-sticky-table__th">{% trans "Task Manager" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Document" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Description" %}</div>  
+                                        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>               
+                                    </div>
+                                </div>
+                                {% for task in stage.tasks.all %}
+                                
+                                    {% comment %} {% if task in tasks %} {% endcomment %}
+                                        <div class="oh-sticky-table__tr ui-sortable-handle task_row" 
+                                            data-task = "{{task.title}}"
+                                            data-toggle="oh-modal-toggle"
+                                            data-target="#TaskModal"
+                                            hx-target="#TaskFormTarget"
+                                            hx-get="{% url 'task-details' task.id %}?view=list"
+                                            onclick="event.stopPropagation()"
+                                            >
+                                            <div class="oh-sticky-table__sd" >{{task.title}}</div>
+                                            <div class="oh-sticky-table__td">{{task.task_manager}}</div>
+                                            <div class="oh-sticky-table__td">{{task.end_date}}</div>
+                                            <div class="oh-sticky-table__td">{{task.get_status_display}}</div>
+                                            <div class="oh-sticky-table__td oh-table-config__td">
+                                                <select
+                                                    id="stageChange{{task.id}}"
+                                                    class="oh-select w-100 stage-change"
+                                                    data-task='{{task.id}}'
+                                                    onchange="stageChange(this)"
+                                                    >
+                                                
+                                                    {% for stage in stages %}
+                                                        {% if stage.id == task.stage.id %}
+                                                            <option value="{{stage.id}}" selected>{{stage}}</option>
+                                                        {% else %}
+                                                            <option value="{{stage.id}}">{{stage}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        
+                                            <div class="oh-sticky-table__td">{{task.document}}</div>
+                                            <div class="oh-sticky-table__td">{{task.description}}</div>
+                                            <div class="oh-sticky-table__td">
+                                                <div class="oh-btn-group">
+                                                    <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
+                                                        data-target="#TaskModal" hx-get="{% url 'update-task' task.id %}"
+                                                        hx-target="#TaskFormTarget"><ion-icon name="create-outline"></ion-icon></button>
+
+                                                    {% comment %} <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
+                                                        href="{% url 'delete-task' task.id %}?view=list" title="{% trans 'Delete' %}">
+                                                        <ion-icon name="trash-outline"></ion-icon>
+                                                    </a> {% endcomment %}
+                                                    <a
+                                                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                        href="{% url 'delete-task' task.id %}?view=list"
+                                                        onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this task?' %}`)"
+                                                    >
+                                                        <ion-icon
+                                                        name="trash-outline"
+                                                        role="img"
+                                                        class="md hydrated"
+                                                        aria-label="trash outline"
+                                                        ></ion-icon>
+                                                    </a>
+
+                                                </div>
+                                            </div>              
+                                        </div>
+                                    {% comment %} {% endif %} {% endcomment %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        
+        <script>
+            $(document).ready(function () {
+            $(".oh-accordion-meta__header").click(function () {
+                var target = $(this).data("target");
+                $(target).toggleClass("d-none");
+            });
+            });
+        </script>
+        </div>
+    </div>
+    </div>
+{% else %}
+    <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+        <div style="" class="">
+        <img style="display: block;width: 200px;margin: 10px auto ;" src="{% static 'images/ui/project/task.png' %}" class="" alt="Page not found. 404."/>
+        <h3 style="font-size:20px" class="oh-404__subtitle">{% trans "There are currently no available tasks; please create a new one." %}</h3>
+        </div>
+    </div>
+{% endif %}
+<script src="{% static '/project/task_pipeline.js' %}"></script>
+
+
+<script>
+    function stageChange(selectedElement){
+        var stage = selectedElement.value;
+        var task = selectedElement.getAttribute('data-task');
+        var task_row = $(selectedElement).parents('.task_row')
+        task_row.remove();
+        $(`#taskstage${stage} .oh-sticky-table__thead`).after(task_row) 
+        $.ajax({
+            type:'post',
+            url:'/project/task-stage-change',
+            data:{
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                stage:stage,
+                task:task,
+            },
+            success: function(response){
+                $("#ajaxMessages").append(`
+                    <div class="oh-alert-container">
+                        <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                            ${response.message}
+                        </div>
+                    </div>`); 
+            }  
+        })
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+            }
+        }
+        }
+        return cookieValue;
+    }
+
+</script>
+
+
+
+
+{% comment %} 
+<div class="oh-card">
+    <div class="oh-accordion-meta">
+        <div class="oh-accordion-meta__item">
+        {% for project_stage in project_stages %} {{project_stage.stage}} <br/>
+        {% endfor %}
+            {% for task in tasks %}
+                <div class="oh-accordion-meta__header">
+                    <span class="oh-accordion-meta__title"
+                        > {{ task.task_title }}</span
+                    >
+                    <div class="oh-accordion-meta__actions">
+                        <div class="oh-dropdown" x-data="{open: false}">
+                            <button
+                                class="oh-btn oh-stop-prop oh-accordion-meta__btn"
+                                @click="open = !open"
+                                @click.outside="open = false"
+                            >
+                                Actions
+                                <ion-icon
+                                class="ms-2 oh-accordion-meta__btn-icon"
+                                name="caret-down-outline"
+                                ></ion-icon>
+                            </button>
+                            <div
+                                class="oh-dropdown__menu oh-dropdown__menu--right"
+                                x-show="open"
+                            >
+                                <ul class="oh-dropdown__items">
+                                    <li class="oh-dropdown__item">
+                                        <a href="#" class="oh-dropdown__link">Arrange</a>
+                                    </li>
+                                    <li class="oh-dropdown__item">
+                                        <a href="#" class="oh-dropdown__link">Forward</a>
+                                    </li>
+                                    <li class="oh-dropdown__item">
+                                        <a href="#" class="oh-dropdown__link">Archive</a>
+                                    </li>
+                                    <li class="oh-dropdown__item">
+                                        <a
+                                        href="#"
+                                        class="oh-dropdown__link oh-dropdown__link--danger"
+                                        >Delete</a
+                                        >
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="oh-accordion-meta__body d-none">
+                    <div
+                        class="oh-sticky-table oh-sticky-table--no-overflow mb-5"
+                    >
+                        <div class="oh-sticky-table__table">
+                            <div class="oh-sticky-table__thead">
+                                <div class="oh-sticky-table__tr">
+                                        <div class="oh-sticky-table__th">Task Assigner</div>
+                                        <div class="oh-sticky-table__th">Task Members</div>
+                                        <div class="oh-sticky-table__th">End Date</div>
+                                        <div class="oh-sticky-table__th">Status</div>
+                                        <div class="oh-sticky-table__th">Documents</div>
+                                        <div class="oh-sticky-table__th">Description</div>
+                                        <div class="oh-dropdown" x-data="{open: false}">
+                                            <button
+                                                class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
+                                                @click="open = !open"
+                                                @click.outside="open = false"
+                                            >
+                                                <ion-icon
+                                                    name="ellipsis-vertical"
+                                                ></ion-icon>
+                                            </button>
+                                            <div
+                                                class="oh-dropdown__menu oh-dropdown__menu--right"
+                                                x-show="open"
+                                                >
+                                                <ul class="oh-dropdown__items">
+                                                    <li class="oh-dropdown__item">
+                                                    <a href="#" class="oh-dropdown__link"
+                                                        >Arrange</a
+                                                    >
+                                                    </li>
+                                                    <li class="oh-dropdown__item">
+                                                    <a href="#" class="oh-dropdown__link"
+                                                        >Forward</a
+                                                    >
+                                                    </li>
+                                                    <li class="oh-dropdown__item">
+                                                    <a href="#" class="oh-dropdown__link"
+                                                        >Archive</a
+                                                    >
+                                                    </li>
+                                                    <li class="oh-dropdown__item">
+                                                    <a
+                                                        href="#"
+                                                        class="oh-dropdown__link oh-dropdown__link--danger"
+                                                        >Delete</a
+                                                    >
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="oh-sticky-table__tbody">
+                                <div
+                                    class="oh-sticky-table__tr oh-multiple-table-sort__movable"
+                                >
+                                    <div class="oh-sticky-table__sd">
+                                        <div class="oh-profile oh-profile--md">
+                                            <div class="oh-profile__avatar mr-1">
+                                                <img
+                                                    src="https://ui-avatars.com/api/?name=Magdalene&background=random"
+                                                    class="oh-profile__image"
+                                                    alt="Mary Magdalene"
+                                                />
+                                            </div>
+                                            <span class="oh-profile__name oh-text--dark"
+                                            >{{task.task_assigner_id}}</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {% for employee in task.task_members_id.all %} {{employee}}<br />
+                                        {% endfor %}
+                                    </div>
+                                    <div class="oh-sticky-table__td">{{task.end_date}}</div>
+                                    <div class="oh-sticky-table__td">{{task.status}}</div>
+                                    <div class="oh-sticky-table__td">{{task.document}}</div>
+                                    <div class="oh-sticky-table__td">{{task.description}}</div>
+                                </div>
+                            </div>
+                        </div>
+                   
+                </div>
+                    
+                </div>
+            {% endfor %}
+            
+        </div>
+    </div>
+</div>
+
+
+<script src="./build/js/web.frontend.min.js"></script>
+
+<script
+    type="module"
+    src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+<script
+    nomodule
+    src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
+<script
+    type="module"
+    type="text/javascript"
+    src="./build/vendor/ionicons/ionicons/dist/ionicons/ionicons.esm.js"
+></script> {% endcomment %}
+
+{% comment %} js files {% endcomment %}

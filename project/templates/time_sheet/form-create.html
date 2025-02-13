@@ -1,0 +1,126 @@
+{% block content %} {% load static %} {% load i18n %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+    <h5>{% trans "Time Sheet" %}</h5>
+    <br />
+  </span>
+  <button
+    type="button"
+    class="oh-modal__close"
+    data-dismiss="oh-modal"
+    aria-label="Close"
+    data-toggle="oh-modal-toggle"
+    hx-target="#TimeSheetFormTarget"
+    onclick="location.reload()"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+  <form
+    hx-post="{% url 'create-time-sheet' %}"
+    hx-target="#TimeSheetFormTarget"
+    hx-encoding="multipart/form-data"
+  >
+    {% csrf_token %} {{form.as_p}}
+    <div class="oh-modal__dialog-footer">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
+    </div>
+  </form>
+</div>
+<div
+  class="oh-modal"
+  id="ProjectModal"
+  role="dialog"
+  aria-labelledby="ProjectModal"
+  aria-hidden="true"
+>
+  <div
+    class="oh-modal__dialog"
+    style="max-width: 550px"
+    id="ProjectFormTarget"
+  ></div>
+</div>
+<div
+  class="oh-modal"
+  id="TaskModal"
+  role="dialog"
+  aria-labelledby="TaskModal"
+  aria-hidden="true"
+>
+  <div
+    class="oh-modal__dialog"
+    style="max-width: 550px"
+    id="TaskFormTarget"
+  ></div>
+</div>
+<div
+  class="oh-modal"
+  id="ProjectStageModal"
+  role="dialog"
+  aria-labelledby="TaskModal"
+  aria-hidden="true"
+>
+  <div
+    class="oh-modal__dialog"
+    style="max-width: 550px"
+    id="ProjectStageFormTarget"
+  ></div>
+</div>
+<script>
+  $(document).ready(function () {
+    var project_id;
+    $("#id_task_id").html("<option>---------</option>");
+    $("#id_project").change(function (e) {
+      project_id = $(this).val(); // Set the project_id value here
+      var createProjectUrl = "{% url 'create-project-time-sheet' %}";
+      if (project_id === "create_new_project") {
+        $.ajax({
+          type: "GET",
+          url: createProjectUrl,
+          success: function (response) {
+            $("#ProjectModal").addClass("oh-modal--show");
+            $("#ProjectFormTarget").html(response);
+          },
+        });0
+      }
+      if (project_id != "create_new_project") {
+        $.ajax({
+          type: "GET",
+          url: "{% url 'time-sheet-initial' %}",
+          data: { project_id: project_id },
+          beforeSend: function () {
+            $(".errorlist").remove();
+          },
+          success: function (response) {
+            $("#id_task_id").html("<option>---------</option>");
+            for (let i = 0; i < response.data.length; i++) {
+              const element = response.data[i];
+              $("#id_task_id").append("<option value="+ element.id + ">"+element.title+"</option>");
+            }
+            $("#id_task_id").append( "<option value='create_new_task'>Create a new task</option>");
+          },
+        });
+      } else {
+        $("#id_task_id").html("<option>---------</option>");
+      }
+    });
+
+    $("#id_task_id").change(function (e) {
+      var task_id = $(this).val();
+      var createTaskUrl = "{% url 'create-task-time-sheet' %}";
+      if (task_id === "create_new_task") {
+        $.ajax({
+          type: "GET",
+          url: createTaskUrl,
+          data: { project_id: project_id },
+          success: function (response) {
+            $("#TaskModal").addClass("oh-modal--show");
+            $("#TaskFormTarget").html(response);
+          },
+        });
+      }
+    });
+  });
+</script>
+{% endblock content %}

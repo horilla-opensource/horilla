@@ -1,0 +1,144 @@
+{% extends 'index.html' %} 
+
+{% block content %}
+{% load i18n %} {% load yes_no %}{% load static %}
+    
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+        {% include 'task/new/task_navbar.html' %} 
+    </main>
+    <div id="ohMessages"></div>
+    <div id="view-container" class="oh-wrapper">
+        {% if view_type == 'list' %}
+            {% include 'task/new/task_list_view.html' %}
+        {% else %}
+            {% include 'task/new/task_kanban_view.html' %}
+        {% endif %} 
+    </div>
+
+    <div
+        class="oh-modal"
+        id="TaskModal"
+        role="dialog"
+        aria-labelledby="TaskModal"
+        aria-hidden="true"
+        >
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 550px"
+            id="TaskFormTarget"
+        ></div>
+    </div>
+
+    <div
+        class="oh-modal"
+        id="TaskUpdateModal"
+        role="dialog"
+        aria-labelledby="TaskUpdateModal"
+        aria-hidden="true"
+        >
+    
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 550px"
+            id="TaskUpdateTarget"
+        ></div>
+    </div>
+    <div
+        class="oh-modal"
+        id="ProjectStageModal"
+        role="dialog"
+        aria-labelledby="TaskTimesheetModal"
+        aria-hidden="true"
+        >
+        <div
+            class="oh-modal__dialog"
+            style="max-width:550px"
+            id="ProjectStageFormTarget"
+        ></div>
+ 
+    </div>
+
+    <div
+        class="oh-modal"
+        id="TaskTimesheetModal"
+        role="dialog"
+        aria-labelledby="TaskTimesheetModal"
+        aria-hidden="true"
+        >
+        <div
+            class="oh-modal__dialog"
+            style="max-width:1350px"
+            id="TaskTimesheetTarget"
+        ></div>
+ 
+    </div>
+    <div
+        class="oh-modal {{request.GET.active}}"
+        id="TimesheetUpdateModal"
+        role="dialog"
+        aria-labelledby="TaskUpdateModal"
+        aria-hidden="true"
+        >
+    
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 550px"
+            id="TimesheetUpdateTarget"
+        ></div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+{% comment %} function  cDelete(timeSheetId) {
+        console.log("Confirm Delete called"); // Add this line for debugging
+    if (chonfirm("{% trans 'Do you want to delete this time sheet?' %}")) {
+        // User confirmed, perform the delete operation here
+        deleteTimeSheet(timeSheetId);
+    }
+} {% endcomment %}
+
+function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+    }
+
+function deleteTimeSheet(element,timeSheetId) {
+    console.log($(element).parent().closest('ui-sortable-handle')); // Add this line for debugging
+    $.ajax({
+        url: "/project/delete-time-sheet-ajax/" + timeSheetId + "/", // Include the time_sheet.id in the URL
+        type: "post",
+        data:{
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+        },
+        success: function(response) {
+            // Time sheet deleted successfully, you can handle this case as needed
+            // For example, you can redirect the user or update the UI.
+            $("#ohMessages").append(`
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                        ${response.message}
+                    </div>
+                </div>`)
+            $(element).closest('.oh-sticky-table__tr.ui-sortable-handle').hide()
+        },
+        error: function() {
+            // Handle errors if the delete operation fails
+            alert("Failed to delete time sheet");
+        }
+    });
+}
+
+
+</script>
+    
+{% endblock content %}
