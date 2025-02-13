@@ -208,7 +208,7 @@ LANGUAGES = (
     ("es", "Español"),
     ("fr", "France"),
     ("ar", "عربى"),
-    ("pt-br", "Brazilian Portuguese"),
+    ("pt-br", "Português (Brasil)"),
 )
 
 LOCALE_PATHS = [
