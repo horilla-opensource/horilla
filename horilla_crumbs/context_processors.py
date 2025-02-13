@@ -150,6 +150,7 @@ sidebar_urls = [
     "check-in-check-out-setting",
     "user-accessibility",
     "asset-batch-view",
+    "task-all",
 ]
 remove_urls = [
     "feedback-detailed-view",
