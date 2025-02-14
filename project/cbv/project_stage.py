@@ -4,10 +4,12 @@ This page handles the cbv methods for project stages
 
 import logging
 from typing import Any
-from django.http import HttpResponse
-from django.utils.translation import gettext_lazy as _
-from django.utils.decorators import method_decorator
+
 from django.contrib import messages
+from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaFormView
 

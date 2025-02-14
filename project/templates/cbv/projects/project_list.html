@@ -14,9 +14,9 @@
     onclick = "event.stopPropagation();"
     class="oh-btn "
     title="{% trans 'View Project' %}"
-    hx-target="#genericModalBody" 
-    data-target="#genericModal" 
-    data-toggle="oh-modal-toggle" 
+    hx-target="#genericModalBody"
+    data-target="#genericModal"
+    data-toggle="oh-modal-toggle"
     hx-get="{% url 'project-detailed-view' project.id %}"
 
     ><ion-icon
@@ -31,8 +31,7 @@
   <div class="panel view-employees" id="panel{{ employee.id }}" data-user-id="{{ employee.id }}">
     <div class="oh-general__tab-target oh-profile-section">
             <div hx-get="{% url 'tasks-list-individual-view' %}?employee_id={{ employee.id }}&project_id={{ project.id }}" hx-trigger="load">
-            </div> 
+            </div>
     </div>
   </div>
 {% endfor %}
-

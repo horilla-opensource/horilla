@@ -4,14 +4,16 @@ This page handles the cbv methods for task page
 
 import logging
 from typing import Any
+
 from django import forms
+from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
-from django.contrib import messages
 from django.shortcuts import render
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from base.methods import get_subordinates
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -19,8 +21,8 @@ from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
     HorillaListView,
-    TemplateView,
     HorillaNavView,
+    TemplateView,
 )
 from project.cbv.project_stage import StageDynamicCreateForm
 from project.cbv.projects import DynamicProjectCreationFormView
@@ -118,7 +120,7 @@ class TaskListView(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('in_progress');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -129,7 +131,7 @@ class TaskListView(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('completed');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -140,7 +142,7 @@ class TaskListView(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('expired');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -455,7 +457,7 @@ class TaskCardView(HorillaCardView):
                 "attrs": """
                 href="{get_archive_url}"
                         onclick="return confirm('Do you want to {archive_status} this task?')"
-                        class="oh-dropdown__link" 
+                        class="oh-dropdown__link"
                         """,
             },
             {
@@ -465,7 +467,7 @@ class TaskCardView(HorillaCardView):
                     onclick="
                                 event.stopPropagation()
                                 deleteItem({get_delete_url});
-                                " 
+                                "
                     class="oh-dropdown__link oh-dropdown__link--danger"
                     """,
             },
@@ -525,7 +527,7 @@ class TaskCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('in_progress');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -536,7 +538,7 @@ class TaskCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('completed');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -547,7 +549,7 @@ class TaskCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('expired');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),

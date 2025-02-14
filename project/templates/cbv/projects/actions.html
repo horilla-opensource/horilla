@@ -34,7 +34,7 @@
   {% endif %}
   {% if perms.project.delete_project or request.user|is_project_manager:instance %}
     {% if instance.is_active %}
-      <a 
+      <a
         class="oh-btn oh-btn--light-bkg w-100"
         href="{{instance.get_archive_url}}"
         onclick="return confirm('Do you want to {{instance.archive_status}} this project?')"
@@ -43,7 +43,7 @@
         <ion-icon name="archive"></ion-icon>
       </a>
     {% else %}
-      <a 
+      <a
         class="oh-btn oh-btn--light-bkg w-100"
         href="{{instance.get_archive_url}}"
         onclick="return confirm('Do you want to {{instance.archive_status}} this project?')"

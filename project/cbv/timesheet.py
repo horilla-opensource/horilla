@@ -3,13 +3,16 @@ CBV of time sheet page
 """
 
 from typing import Any
+
 from django import forms
+from django.contrib import messages
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.translation import gettext_lazy as _
-from django.utils.decorators import method_decorator
 from django.urls import resolve, reverse
-from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -26,7 +29,6 @@ from project.cbv.tasks import DynamicTaskCreateFormView
 from project.filters import TimeSheetFilter
 from project.forms import TimeSheetForm
 from project.models import Project, Task, TimeSheet
-from django.db.models import Q
 
 
 @method_decorator(login_required, name="dispatch")
@@ -49,8 +51,9 @@ class TimeSheetNavView(HorillaNavView):
     """
     Nav bar
     """
+
     template_name = "cbv/timesheet/timesheet_nav.html"
-    
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("time-sheet-list")
@@ -93,7 +96,7 @@ class TimeSheetNavView(HorillaNavView):
                           """,
             },
         ]
-    
+
         self.create_attrs = f"""
                                 onclick = "event.stopPropagation();"
                                 data-toggle="oh-modal-toggle"
@@ -101,12 +104,16 @@ class TimeSheetNavView(HorillaNavView):
                                 hx-target="#genericModalBody"
                                 hx-get="{reverse('create-time-sheet')}"
                                 """
+
     group_by_fields = [
         ("employee_id", _("Employee")),
         ("project_id", _("Project")),
         ("date", _("Date")),
         ("status", _("Status")),
-        ("employee_id__employee_work_info__reporting_manager_id", _("Reporting Manager")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
         ("employee_id__employee_work_info__department_id", _("Department")),
         ("employee_id__employee_work_info__job_position_id", _("Job Position")),
         ("employee_id__employee_work_info__employee_type_id", _("Employement Type")),
@@ -175,7 +182,7 @@ class TimeSheetList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('in_Progress');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -186,7 +193,7 @@ class TimeSheetList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('completed');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -211,7 +218,6 @@ class TaskTimeSheet(TimeSheetList):
     row_status_indications = False
     bulk_select_option = False
 
-
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.view_id = "task-timesheet-container"
@@ -225,7 +231,7 @@ class TaskTimeSheet(TimeSheetList):
         context = super().get_context_data(**kwargs)
         task_id = self.kwargs.get("task_id")
         task = Task.objects.get(id=task_id)
-        project =  task.project
+        project = task.project
         context["task_id"] = task_id
         context["project"] = project
         context["task"] = task
@@ -236,18 +242,19 @@ class TaskTimeSheet(TimeSheetList):
     def get_queryset(self):
         queryset = HorillaListView.get_queryset(self)
         task_id = self.kwargs.get("task_id")
-        task = Task.objects.filter( id = task_id).first()
+        task = Task.objects.filter(id=task_id).first()
         queryset = TimeSheet.objects.filter(task_id=task_id)
         queryset = queryset.filter(task_id=task_id)
         employee_id = self.request.GET.get("employee_id")
         if employee_id:
-            employee = Employee.objects.filter(id = employee_id ).first()
-            if (not employee in task.task_managers.all()
+            employee = Employee.objects.filter(id=employee_id).first()
+            if (
+                not employee in task.task_managers.all()
                 and not employee in task.project.managers.all()
                 and not employee.employee_user_id.is_superuser
             ):
                 queryset = queryset.filter(employee_id=employee_id)
-            
+
         return queryset
 
 
@@ -294,7 +301,7 @@ class TimeSheetFormView(HorillaFormView):
             task = Task.objects.get(id=task_id)
             project = task.project
             employee = Employee.objects.filter(id=user_employee_id)
-            
+
         if self.form.instance.pk:
             task_id = self.form.instance.task_id.id
             project = self.form.instance.project_id
@@ -312,46 +319,54 @@ class TimeSheetFormView(HorillaFormView):
             self.form_class.verbose_name = _("Update Time Sheet")
         # If the timesheet create from task or project
         if project:
-            if (self.request.user.is_superuser or
-                self.request.user.has_perm("project.add_project") 
-                ):
-                members = ( project.managers.all() | 
-                            project.members.all() | 
-                            task.task_members.all() |task.task_managers.all()
-                    ).distinct()
-            elif ( employee.first() in project.managers.all()):
+            if self.request.user.is_superuser or self.request.user.has_perm(
+                "project.add_project"
+            ):
                 members = (
-                    employee | project.members.all() | 
-                    task.task_members.all() | task.task_managers.all()
+                    project.managers.all()
+                    | project.members.all()
+                    | task.task_members.all()
+                    | task.task_managers.all()
                 ).distinct()
-            elif( employee.first() in task.task_managers.all() ):
-                members = ( employee | task.task_members.all()).distinct()
-            else :
+            elif employee.first() in project.managers.all():
+                members = (
+                    employee
+                    | project.members.all()
+                    | task.task_members.all()
+                    | task.task_managers.all()
+                ).distinct()
+            elif employee.first() in task.task_managers.all():
+                members = (employee | task.task_members.all()).distinct()
+            else:
                 members = employee
             if task_id:
                 self.form.fields["project_id"].widget = forms.HiddenInput()
                 self.form.fields["task_id"].widget = forms.HiddenInput()
             self.form.fields["employee_id"].queryset = members
-        
+
         # If the timesheet create directly
-        else :
+        else:
             employee = self.request.user.employee_get
-            if self.request.user.has_perm('project.add_timesheet'):
+            if self.request.user.has_perm("project.add_timesheet"):
                 projects = Project.objects.all()
             else:
                 projects = (
-                    Project.objects.filter(managers = employee) |
-                    Project.objects.filter(members = employee) |
-                    Project.objects.filter(
-                        id__in=Task.objects.filter(task_managers=employee).values_list('project', flat=True)
-                    ) |
-                    Project.objects.filter(
-                        id__in=Task.objects.filter(task_members=employee).values_list('project', flat=True)
+                    Project.objects.filter(managers=employee)
+                    | Project.objects.filter(members=employee)
+                    | Project.objects.filter(
+                        id__in=Task.objects.filter(task_managers=employee).values_list(
+                            "project", flat=True
+                        )
+                    )
+                    | Project.objects.filter(
+                        id__in=Task.objects.filter(task_members=employee).values_list(
+                            "project", flat=True
+                        )
                     )
                 ).distinct()
-            self.form.fields['project_id'].queryset = projects   
+            self.form.fields["project_id"].queryset = projects
         return context
-    
+
     def form_valid(self, form: TimeSheetForm) -> HttpResponse:
         if form.is_valid():
             if form.instance.pk:
@@ -394,9 +409,9 @@ class TimeSheetCardView(HorillaCardView):
             {
                 "action": "Edit",
                 "attrs": """
-                         hx-get='{get_update_url}' 
+                         hx-get='{get_update_url}'
                          hx-target='#genericModalBody'
-                         data-toggle="oh-modal-toggle" 
+                         data-toggle="oh-modal-toggle"
                          data-target="#genericModal"
                          class="oh-dropdown__link"
                          """,
@@ -407,7 +422,7 @@ class TimeSheetCardView(HorillaCardView):
                 onclick="
                             event.stopPropagation()
                             deleteItem({get_delete_url});
-                            " 
+                            "
                             class="oh-dropdown__link oh-dropdown__link--danger"
                 """,
             },
@@ -429,7 +444,7 @@ class TimeSheetCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('in_Progress');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -440,7 +455,7 @@ class TimeSheetCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('completed');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),

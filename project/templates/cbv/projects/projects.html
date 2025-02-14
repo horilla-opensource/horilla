@@ -25,37 +25,37 @@
   .status-completed{
     border-left: 3.4px solid yellowgreen !important;
     border-radius: 4px 0 0 4px;
-  
+
   }
   .status-cancelled {
-  
+
     border-left: 3.4px solid red !important;
     border-radius: 4px 0 0 4px;
-  
+
   }
   .status-expired {
-  
+
     border-left: 3.4px solid gray !important;
     border-radius: 4px 0 0 4px;
-  
+
   }
   .status-on_hold {
-  
+
     border-left: 3.4px solid orange !important;
     border-radius: 4px 0 0 4px;
-  
+
   }
   .status-in_progress {
-  
+
     border-left: 3.4px solid rgb(103, 171, 238); !important;
     border-radius: 4px 0 0 4px;
-  
+
   }
   .status-new {
-  
+
     border-left: 3.4px solid cyan !important;
     border-radius: 4px 0 0 4px;
-  
+
   }
 </style>
 <meta name="csrf-token" content="{{ csrf_token }}">
@@ -77,9 +77,9 @@
     style="display: none"
   ></div>
 
-  
-  <div 
-  class="oh-wrapper" 
+
+  <div
+  class="oh-wrapper"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -102,7 +102,7 @@
       </button>
       <div class="oh-modal__dialog-body p-0 pt-2" id="projectImportModalBody">
         <form
-      
+
           id="projectImportForm"
           enctype="multipart/form-data"
         >
@@ -118,14 +118,14 @@
           <div class="modal-body">
 
             {% csrf_token %}
-            
+
             <div class="oh-dropdown__import-form">
               <label class="oh-dropdown__import-label" for="uploadFile">
                   <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon md hydrated" role="img" aria-label="cloud upload"></ion-icon>
                   <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
                   <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
               </label>
-              <input type="file" name="file" id="projectImportFile" /> 
+              <input type="file" name="file" id="projectImportFile" />
           </div>
           </div>
           <div class="modal-footer d-flex flex-row-reverse">
@@ -140,10 +140,10 @@
     </div>
   </div>
 </div>
-<script src="{% static 'cbv/deleteFunc.js' %}"></script>	
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
 <script src="{% static '/project/import.js' %}"></script>
 <script src="{% static '/project/project_action.js' %}"></script>
 
 
-    
+
 {% endblock %}

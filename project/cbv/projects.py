@@ -3,13 +3,17 @@ CBV of projects page
 """
 
 from typing import Any
-from django.http import HttpResponse
-from django.utils.translation import gettext_lazy as _
-from django.utils.decorators import method_decorator
-from django.urls import reverse
+
 from django.contrib import messages
+from django.db.models import Q
+from django.http import HttpResponse
+from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
+
 from employee.models import Employee
+from horilla.horilla_middlewares import _thread_locals
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
@@ -21,10 +25,13 @@ from horilla_views.generic.cbv.views import (
 from project.cbv.cbv_decorators import is_projectmanager_or_member_or_perms
 from project.filters import ProjectFilter
 from project.forms import ProjectForm
-from project.methods import any_project_manager, any_project_member, is_project_manager_or_super_user, you_dont_have_permission
+from project.methods import (
+    any_project_manager,
+    any_project_member,
+    is_project_manager_or_super_user,
+    you_dont_have_permission,
+)
 from project.models import Project
-from django.db.models import Q
-from horilla.horilla_middlewares import _thread_locals
 
 
 @method_decorator(login_required, name="dispatch")
@@ -49,6 +56,7 @@ class ProjectsNavView(HorillaNavView):
     """
 
     template_name = "cbv/projects/project_nav.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("project-list-view")
@@ -124,6 +132,7 @@ class ProjectsNavView(HorillaNavView):
                                 hx-target="#genericModalBody"
                                 hx-get="{reverse('create-project')}"
                                 """
+
     group_by_fields = [
         ("status", _("Status")),
         ("is_active", _("Is active")),
@@ -149,20 +158,16 @@ class ProjectsList(HorillaListView):
         if not self.request.user.has_perm("project.view_project"):
             employee = self.request.user.employee_get
             task_filter = queryset.filter(
-                Q(task__task_members=employee)
-                | Q(task__task_managers=employee)
+                Q(task__task_members=employee) | Q(task__task_managers=employee)
             )
-            project_filter = queryset.filter(
-                Q(managers=employee)
-                | Q(members=employee)
-            )
+            project_filter = queryset.filter(Q(managers=employee) | Q(members=employee))
             queryset = task_filter | project_filter
         return queryset.distinct()
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("project-list-view")
-        if (self.request.user.is_superuser ):
+        if self.request.user.is_superuser:
             self.action_method = "actions"
 
     model = Project
@@ -203,7 +208,7 @@ class ProjectsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('in_progress');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -214,7 +219,7 @@ class ProjectsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('completed');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -225,7 +230,7 @@ class ProjectsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('on_hold');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -236,7 +241,7 @@ class ProjectsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('cancelled');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -247,7 +252,7 @@ class ProjectsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('expired');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -270,15 +275,12 @@ class ProjectFormView(HorillaFormView):
     form_class = ProjectForm
     model = Project
     new_display_title = _("Create Project")
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         user = self.request.user
-              
-        if (not user.is_superuser and 
-            not user.has_perm("project.add_project") 
-            
-        ):
+
+        if not user.is_superuser and not user.has_perm("project.add_project"):
             self.template_name = "decorator_404.html"
 
     def get_context_data(self, **kwargs):
@@ -295,7 +297,9 @@ class ProjectFormView(HorillaFormView):
                 if HTTP_REFERER and "task-view/" in HTTP_REFERER:
                     form.save()
                     messages.success(self.request, message)
-                    return self.HttpResponse("<script>window.location.reload()</script>")
+                    return self.HttpResponse(
+                        "<script>window.location.reload()</script>"
+                    )
             else:
                 message = _("New project created")
             form.save()
@@ -326,32 +330,29 @@ class ProjectCardView(HorillaCardView):
         if not self.request.user.has_perm("project.view_project"):
             employee = self.request.user.employee_get
             task_filter = queryset.filter(
-                Q(task__task_members=employee)
-                | Q(task__task_managers=employee)
+                Q(task__task_members=employee) | Q(task__task_managers=employee)
             )
-            project_filter = queryset.filter(
-                Q(managers=employee)
-                | Q(members=employee)
-            )
+            project_filter = queryset.filter(Q(managers=employee) | Q(members=employee))
             queryset = task_filter | project_filter
         return queryset.distinct()
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("project-card-view")
-        if (self.request.user.has_perm("project.change_project")
+        if (
+            self.request.user.has_perm("project.change_project")
             or self.request.user.has_perm("project.delete_project")
             or any_project_manager(self.request.user)
             or any_project_member(self.request.user)
-            ):
+        ):
             self.actions = [
                 {
                     "action": "Edit",
                     "accessibility": "project.cbv.accessibility.project_manager_accessibility",
                     "attrs": """
-                            hx-get='{get_update_url}' 
+                            hx-get='{get_update_url}'
                             hx-target='#genericModalBody'
-                            data-toggle="oh-modal-toggle" 
+                            data-toggle="oh-modal-toggle"
                             data-target="#genericModal"
                             class="oh-dropdown__link"
                             """,
@@ -372,7 +373,7 @@ class ProjectCardView(HorillaCardView):
                     onclick="
                                 event.stopPropagation()
                                 deleteItem({get_delete_url});
-                                " 
+                                "
                     class="oh-dropdown__link oh-dropdown__link--danger"
                     """,
                 },
@@ -403,7 +404,7 @@ class ProjectCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('in_progress');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -414,7 +415,7 @@ class ProjectCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('completed');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -425,7 +426,7 @@ class ProjectCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('on_hold');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -436,7 +437,7 @@ class ProjectCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('cancelled');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -447,7 +448,7 @@ class ProjectCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('expired');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -480,13 +481,14 @@ class ProjectCardView(HorillaCardView):
 #         context,
 #     )
 
+
 class ProjectsTabView(ListView):
     model = Project
     template_name = "cbv/projects/project_tab.html"
     context_object_name = "projects"
 
     def get_queryset(self):
-        pk = self.kwargs.get('pk')
+        pk = self.kwargs.get("pk")
         queryset = Project.objects.filter(
             Q(manager=pk)
             | Q(members=pk)
@@ -497,12 +499,13 @@ class ProjectsTabView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        pk = self.kwargs.get('pk')
+        pk = self.kwargs.get("pk")
         if pk:
             employees = Employee.objects.filter(id=pk).distinct()
             employee = employees.first()
             context["employee"] = employee
         return context
+
 
 # Remove the command lines after horilla converted into CBV
 # from employee.cbv.employee_profile import EmployeeProfileView

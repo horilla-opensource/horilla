@@ -10,7 +10,7 @@
             <span class="helpdesk__card-value b" name="" id="">{{project}}</span>
           </li>
         </ul>
-        
+
         <span class="helpdesk__card-value me-3" style="display:flex">
           {% if perms.pms.change_project or request.user|is_project_manager_or_member:project %}
             <select id="status" class="oh-select oh-select--sm ms-3 mr-1 " name="status" title="Status"
@@ -43,7 +43,7 @@
                 title="{% trans 'Edit' %}"
                 ><ion-icon name="create-outline"></ion-icon
               ></a>
-              {% endif %} 
+              {% endif %}
             </div>
           {% endif %}
         </span>
@@ -88,14 +88,14 @@
           <span class="helpdesk__card-label">{% trans "Start date:" %}</span>
           <span class="helpdesk__card-value" name="" id=""
             >{{project.start_date}}
-            </span 
+            </span
           >
         </li>
         <li class="helpdesk__card-item">
           <span class="helpdesk__card-label">{% trans "End date:" %}</span>
           <span class="helpdesk__card-value" name="" id=""
             >{{project.end_date}}
-            </span 
+            </span
           >
               <span title = 'due  {% if project.end_date == today %} today {% else %}in {{project.end_date|sub:today}}{% endif %}'>
                   <ion-icon
@@ -117,7 +117,7 @@
                 {{project.description}}
                 </p>
              </details>
-            
+
           </div>
         </li>
       </ul>
