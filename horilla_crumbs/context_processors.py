@@ -325,3 +325,4 @@ urlpatterns.append(
 )
 urlpatterns.append(path("payroll/", lambda request: redirect("view-payroll-dashboard")))
 urlpatterns.append(path("pms/", lambda request: redirect("dashboard-view")))
+urlpatterns.append(path("project/", lambda request: redirect("project-dashboard-view")))

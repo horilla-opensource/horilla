@@ -6,7 +6,7 @@
             <ion-icon name="globe-outline" class="oh-navbar__icon"></ion-icon>
         </a>
         <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
-            @click.outside="open = false" style="display:none; margin-top:95%;">
+            @click.outside="open = false" style="display:none; margin-top:95%; min-width:210px;">
             <ul class="oh-dropdown__items">
                 {% get_available_languages as LANGUAGES %}
                 {% for language in LANGUAGES %}
