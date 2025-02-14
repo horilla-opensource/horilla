@@ -36,14 +36,14 @@
 {% if tasks %}
 <div class="oh-layout--grid-3">
   {% for task in tasks %}
-  <div  class="oh-kanban-card {% if task.status == 'to_do'%} to-do-task 
+  <div  class="oh-kanban-card {% if task.status == 'to_do'%} to-do-task
                               {% elif task.status == 'in_progress' %} in-progress-task
                               {% elif task.status == 'completed' %} completed-task
                               {% else %} expired-task
                               {% endif %} "
                               style="color: inherit;text-decoration: none;">
     <a hx-get="{% url 'task-details' task.id %}" hx-target="#TaskDetailsTarget" data-toggle='oh-modal-toggle' data-target = '#TaskModal' style="color: inherit;text-decoration: none; display: flex; width:550px">
-    
+
         <div class="oh-kanban-card__avatar">
             <div class="oh-kanban-card__profile-container">
               <img

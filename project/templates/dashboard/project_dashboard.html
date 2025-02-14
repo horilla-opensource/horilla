@@ -15,7 +15,7 @@
                                 <span class="oh-card-dashboard__title">{% trans "Total Projects" %}</span>
                             </div>
                             <div class="oh-card-dashboard__body">
-                                <a href="{% url 'objective-list-view' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                <a href="{% url 'project-view' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
                                     <span class="oh-card-dashboard__count">{{total_projects}}</span>
                                 </a>
                             </div>
@@ -28,7 +28,7 @@
                                 <span class="oh-card-dashboard__title">{% trans "New Projects" %}</span>
                             </div>
                             <div class="oh-card-dashboard__body">
-                                <a href="{% url 'objective-list-view' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                <a href="{% url 'project-view' %}?{{request.GET.urlencode}}&status=new" style="text-decoration: none;" class="oh-card-dashboard__counts">
                                     <span class="oh-card-dashboard__count">{{new_projects}}</span>
                                 </a>
                             </div>
@@ -41,12 +41,12 @@
                                 <span class="oh-card-dashboard__title">{% trans "Projects in progress" %}</span>
                             </div>
                             <div class="oh-card-dashboard__body">
-                                <a href="{% url 'objective-list-view' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                <a href="{% url 'project-view' %}?{{request.GET.urlencode}}&status=in_progress" style="text-decoration: none;" class="oh-card-dashboard__counts">
                                     <span class="oh-card-dashboard__count">{{projects_in_progress}}</span>
                                 </a>
                             </div>
                         </div>
-                    </div> 
+                    </div>
                 </div>
                 <!-- movable cards for charts -->
                 <div class="oh-dashboard__movable-cards row mt-4">
@@ -75,16 +75,16 @@
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
-            
+
             <!-- Right end column -->
             <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
                 <!-- Dashboard events -->
                 <div class="oh-dashboard__events">
                     <ul class="oh-dashboard__events-nav">
-                        <li class="oh-dashboard__events-nav-item oh-dashboard__events-nav-item--active" data-target="0">
+                        <li class="oh-dashboard__events-nav-item oh-dabdshboard__events-nav-item--active" data-target="0">
                         </li>
                         <li class="oh-dashboard__events-nav-item" data-target="1"></li>
                         <li class="oh-dashboard__events-nav-item" data-target="2"></li>
@@ -93,39 +93,10 @@
                 <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
                     <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                         <span class="oh-card-dashboard__title"> {% trans "Projects due in this month" %}</span>
-                        <span class="oh-card-dashboard__title float-end"><a href="{% url 'project-view' %}" style="text-decoration:none; color:orange;">{% trans "View all" %}</a></span>
                     </div>
                     <div class="oh-card-dashboard__body">
-                        <ul class="oh-card-dashboard__user-list">
-                            {% if unexpired_project %}
-                                {% for project in unexpired_project %}
-                                    <li class="oh-card-dashboard__user-item">
-                                        <a  
-                                            data-toggle="oh-modal-toggle"
-                                            data-target="#ProjectModal"
-                                            hx-get="{%url 'project-detailed-view' project.id %}"
-                                            hx-target="#ProjectFormTarget"
-                                        >
-                                            <div class="oh-profile oh-profile--md">
-                                                <div class="oh-profile__avatar mr-1">
-                                                    <img src="https://ui-avatars.com/api/?name=Beth+Gibbons&background=random"
-                                                    class="oh-profile__image" alt="Beth Gibbons" />
-                                                </div>
-                                                <span class="oh-profile__name oh-text--dark">{{project.title}}</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                            {% else %}
-                                <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
-                                    <div style="" class="">
-                                    <img style="display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/project/project.png' %}" class="" alt="Page not found. 404."/>
-                                    <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No projects due in this month." %}</h3>
-                                    </div>
-                                </div>
-                            {% endif %}
-                             
-                        </ul>
+                        <div class="oh-sticky-table h-100" hx-get="{% url 'projects-due-in-this-month' %}" hx-trigger="load" style="border: none;">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -140,9 +111,29 @@
         >
         <div
             class="oh-modal__dialog"
-            style="max-width: 550px"
             id="ProjectFormTarget"
         ></div>
+    </div>
+    <div
+        class="oh-modal"
+        id="ProjectModalShow"
+        role="dialog"
+        aria-labelledby="ProjectModalShow"
+        aria-hidden="true"
+    >
+        <div
+            class="oh-modal__dialog"
+
+        >
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title">{% trans 'Projects' %}</h2>
+            <button type="button" class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
+                <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+            </button>
+
+        </div>
+        <div class="oh-modal__dialog-body" id="ProjectModalShowTarget">
+        </div>
     </div>
 </main>
 <!-- Java script -->

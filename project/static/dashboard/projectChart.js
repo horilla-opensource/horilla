@@ -7,7 +7,7 @@ $(document).ready(function(){
         // Create chart using the Chart.js library
         window['projectChart'] = {}
         const ctx = document.getElementById("projectStatusCanvas").getContext("2d");
-        
+
         projectChart = new Chart(ctx, {
             type: 'bar',
             data: data,
@@ -27,7 +27,7 @@ $(document).ready(function(){
 
         },
         });
-        $('#projectStatusForward').click(function (e) { 
+        $('#projectStatusForward').click(function (e) {
         var chartType = projectChart.config.type
         if (chartType === 'line') {
             chartType = 'bar';
@@ -39,10 +39,10 @@ $(document).ready(function(){
             chartType = 'line'
         }
         projectChart.config.type = chartType;
-        projectChart.update();    
+        projectChart.update();
         });
 
-        // for creating task status chart 
+        // for creating task status chart
         function taskStatusChart(dataSet, labels) {
             const data = {
                 labels: labels,
@@ -51,7 +51,7 @@ $(document).ready(function(){
             // Create chart using the Chart.js library
             window['taskChart'] = {}
             const ctx = document.getElementById("taskStatusCanvas").getContext("2d");
-            
+
             taskChart = new Chart(ctx, {
                 type: 'bar',
                 data: data,
@@ -68,10 +68,10 @@ $(document).ready(function(){
                 dataSet = response.dataSet;
                 labels = response.labels;
                 taskStatusChart(dataSet, labels);
-    
+
             },
             });
-            $('#taskStatusForward').click(function (e) { 
+            $('#taskStatusForward').click(function (e) {
             var chartType = taskChart.config.type
             if (chartType === 'line') {
                 chartType = 'bar';
@@ -83,7 +83,7 @@ $(document).ready(function(){
                 chartType = 'line'
             }
             taskChart.config.type = chartType;
-            taskChart.update();    
+            taskChart.update();
             });
 
 });

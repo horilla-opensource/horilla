@@ -1,19 +1,19 @@
-{% extends 'index.html' %} 
+{% extends 'index.html' %}
 {% load static %}
 {% block content %}
-   
+
     <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-        {% include 'project/new/navbar.html' %}     
+        {% include 'project/new/navbar.html' %}
     </main>
 
     <div id="view-container" class="oh-wrapper">
-        
+
         {% if view_type == 'list' %}
             {% include 'project/new/project_list_view.html' %}
-            
+
         {% else %}
             {% include 'project/new/project_kanban_view.html' %}
-        {% endif %} 
+        {% endif %}
     </div>
 
     <div
@@ -31,4 +31,3 @@
     </div>
 
 {% endblock content %}
-

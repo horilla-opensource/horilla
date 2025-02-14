@@ -18,18 +18,18 @@
         ></ion-icon>
     </a>
   </div>
- 
+
   <div class="oh-main__titlebar oh-main__titlebar--right">
     {% if tasks %}
-    <form 
+    <form
       hx-get="{% url 'task-all-filter' %}?view={{view_type}}""
-      hx-target="#view-container" 
+      hx-target="#view-container"
       hx-swap="innerHTML"
       id="taskAllFilterForm"
       class="d-flex"
       onsubmit="event.preventDefault()"
       >
-    {% comment %} for search{% endcomment %} 
+    {% comment %} for search{% endcomment %}
 
     <div
       class="oh-input-group oh-input__search-group"
@@ -46,22 +46,22 @@
         id="filter-task-all"
         name="search"
         placeholder="{% trans 'Search' %}"
-        onkeyup="$('.filterButton')[0].click()"  
+        onkeyup="$('.filterButton')[0].click()"
       />
     </div>
 
-    
+
     <div class="oh-dropdown" x-data="{open: false}">
-      <ul class="oh-view-types ml-2"> 
+      <ul class="oh-view-types ml-2">
         {% comment %} for list view {% endcomment %}
         <li class="oh-view-type task-all-view-type" data-view="list">
-          <a 
+          <a
             data-view="list"
             class="oh-btn oh-btn--view"
             hx-get= "{% url 'task-all-filter' %}?view=list"
-            hx-target="#view-container"  
+            hx-target="#view-container"
           >
-            <ion-icon name="list-outline"></ion-icon> 
+            <ion-icon name="list-outline"></ion-icon>
           </a>
         </li>
         {% comment %} for card view {% endcomment %}
@@ -69,10 +69,10 @@
           <a
             class="oh-btn oh-btn--view"
             hx-get= "{% url 'task-all-filter' %}"
-            hx-target="#view-container" 
+            hx-target="#view-container"
             >
-            <ion-icon name="grid-outline"></ion-icon 
-           
+            <ion-icon name="grid-outline"></ion-icon
+
           ></a>
         </li>
       </ul>
@@ -93,7 +93,7 @@
           @click.outside="open = false"
           style="display: none;"
           >
-          
+
           {% include 'task_all/task_all_filter.html' %}
         </div>
     </div>
@@ -113,14 +113,14 @@
             <ul class="oh-dropdown__items">
               {% comment %} {% if perms.delete_employee %} {% endcomment %}
               <li class="oh-dropdown__item">
-                <a href="#" class="oh-dropdown__link " id="archiveTaskAll" 
+                <a href="#" class="oh-dropdown__link " id="archiveTaskAll"
                   >{% trans "Archive" %}</a
                 >
               </li>
               {% comment %} {% endif %}  {% endcomment %}
               {% comment %} {% if perms.delete_employee %} {% endcomment %}
               <li class="oh-dropdown__item">
-                <a href="#" class="oh-dropdown__link "  id="unArchiveTaskAll" 
+                <a href="#" class="oh-dropdown__link "  id="unArchiveTaskAll"
                   >{% trans "Un-Archive" %}</a
                 >
               </li>

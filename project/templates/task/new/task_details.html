@@ -1,4 +1,4 @@
-{% load i18n %} {% load yes_no %}
+{% load i18n %} {% load horillafilters %}
 
 <div class="oh-modal__dialog-header">
     <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
@@ -48,7 +48,7 @@
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "End Date" %}</span>
             <span class="oh-timeoff-modal__stat-count">{{task.end_date}}</span>
-            
+
         </div>
         <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
             <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
@@ -59,17 +59,17 @@
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Document" %}</span>
             <span class="oh-timeoff-modal__stat-count">{{task.document}}
-      
-    </span> 
+
+    </span>
         </div>
     </div>
     <div class="oh-modal__button-container text-center">
        <div class="oh-btn-group">
 
-            <a hx-get="{% url 'update-task' task.id %}" 
+            <a hx-get="{% url 'update-task' task.id %}"
                 hx-target='#TaskUpdateTarget'
-                
-                data-toggle="oh-modal-toggle" 
+
+                data-toggle="oh-modal-toggle"
                 data-target="#TaskUpdateModal"
                 data-key=".oh-kanban__section"
                 class="oh-btn oh-btn--info" style="width: 50%;">
@@ -81,7 +81,7 @@
                 >
                 </ion-icon>{% trans "Edit" %}
             </a>
-            <a hx-get="{% url 'task-timesheet' task.id %}" 
+            <a hx-get="{% url 'task-timesheet' task.id %}"
                 hx-target='#TaskTimesheetTarget'
                 data-target="#TaskTimesheetModal"
                 data-toggle="oh-modal-toggle"
@@ -95,17 +95,17 @@
                 >
                 </ion-icon>{% trans " Time sheet" %}
             </a>
-            <a href="{% url 'delete-task' task.id %}?view={{request.GET.view }}" class="oh-btn oh-btn--danger"style="width: 50%;" 
+            <a href="{% url 'delete-task' task.id %}?view={{request.GET.view }}" class="oh-btn oh-btn--danger"style="width: 50%;"
                 onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this task?' %}`)"
-                > 
-            {% comment %} <a hx-get="{% url 'delete-task' task.id %}" class="oh-btn oh-btn--danger"style="width: 50%;" 
+                >
+            {% comment %} <a hx-get="{% url 'delete-task' task.id %}" class="oh-btn oh-btn--danger"style="width: 50%;"
                 onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this task?' %}`)"
                 hx-target='#TaskUpdateTarget'
-                
-                data-toggle="oh-modal-toggle" 
+
+                data-toggle="oh-modal-toggle"
                 data-target="#TaskUpdateModal"
                 data-key=".oh-kanban__section"
-                class="oh-btn oh-btn--info" style="width: 50%;"> 
+                class="oh-btn oh-btn--info" style="width: 50%;">
                  {% endcomment %}
                 <ion-icon
                     name="trash-outline"
@@ -131,4 +131,3 @@
         });
 
     </script> {% endcomment %}
-

@@ -1,7 +1,7 @@
 
 {% load static %}
-{% load i18n %} 
-  
+{% load i18n %} {% load horillafilters %}
+
 
 {% comment %} for showing messages {% endcomment %}
 {% if messages %}
@@ -9,7 +9,7 @@
         {% for message in messages %}
             <div class="oh-alert oh-alert--animated {{message.tags}}">
                 {{ message }}
-            </div> 
+            </div>
         {% endfor %}
     </div>
 {% endif %}
@@ -76,18 +76,18 @@
             <div class="oh-sticky-table__th"></div>
           </div>
         </div>
-     
+
          {% for project in projects %}
-          <div class="oh-sticky-table__tr ui-sortable-handle" data-url="{% url 'task-view' project.id %}?view=list">       
-              <div class="oh-sticky-table__sd {% if project.status == 'new'%} row-status--cyan 
-                                              {% elif project.status == 'in_progress' %} row-status--blue 
+          <div class="oh-sticky-table__tr ui-sortable-handle" data-url="{% url 'task-view' project.id %}?view=list">
+              <div class="oh-sticky-table__sd {% if project.status == 'new'%} row-status--cyan
+                                              {% elif project.status == 'in_progress' %} row-status--blue
                                               {% elif project.status == 'completed' %} row-status--yellow
                                               {% elif project.status == 'on_hold' %} row-status--orange
                                               {% elif project.status == 'cancelled' %} row-status--red
                                               {% else %} row-status--gray
-                                              {% endif %}" >  
-                  <div onclick="event.stopPropagation();">  
-                    <input 
+                                              {% endif %}" >
+                  <div onclick="event.stopPropagation();">
+                    <input
                         type="checkbox"
                         id="{{project.id}}"
                         class="oh-input oh-input__checkbox mt-1 mr-2 all-project-row"
@@ -95,7 +95,7 @@
                     {{project.title}}
                   </div>
               </div>
-          
+
             <div class="oh-sticky-table__td">{{project.manager}}</div>
             <div class="oh-sticky-table__td">
               {% for employee in project.members.all %} {{employee}}<br />
@@ -106,7 +106,7 @@
             <div class="oh-sticky-table__td">{% if project.end_date %}{{project.end_date}}{% endif %}</div>
             <div class="oh-sticky-table__td">{% if project.document %}<a href="{{ project.document.url }}" target="_blank" onclick="event.stopPropagation();"><img style="width: 25px;margin: 5px auto ;" src="{% static 'images/ui/project/document.png' %}" class="" alt="document"/>{% endif %}</a></div>
             <div class="oh-sticky-table__td">{{project.description}}</div>
-          
+
             <div class="oh-sticky-table__td">
               <div class="oh-btn-group">
                 <a
@@ -150,7 +150,7 @@
         </div>
 
   {% endif %}
-     
+
     </div>
   </div>
 </div>

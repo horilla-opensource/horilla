@@ -56,7 +56,7 @@
         success:function(data){
           if (data.errors){
             var errors = JSON.parse(data.errors)
-            for (const key in errors) {    
+            for (const key in errors) {
               // Create a new error list element
               var errorElement = $("<ul class='errorlist'></ul>");
               for (const error of errors[key]) {
@@ -65,7 +65,7 @@
                 var errorListItem = $(`<li>${errorMessage}</li>`);
                 errorElement.append(errorListItem);
               }
-    
+
               // Insert the error list before the corresponding field label
               $(`#PojectStageModal [for=id_${key}]`).before(errorElement);
             }

@@ -1,0 +1,29 @@
+{% load i18n %}
+<label class="oh-label required-star" for="id_{{ form.employee_id.name }}"
+    title="{{ form.employee_id.help_text|safe }}">{% trans form.employee_id.label %}</label>
+{{form.employee_id}}
+<script>
+    $(document).ready(function () {
+
+        $("select").on("select2:select", function (e) {
+            $(this).closest("select")[0].dispatchEvent(new Event("change"));
+        });
+
+
+    });
+    var task_id = "{{ task_id }}"
+    if (task_id === "dynamic_create") {
+        var project_id = "{{ project_id }}"
+        var buttonId = "#modalButtontask_id"
+        var formId = "#modalButtontask_idForm"
+        var hxVals = {
+            project_id: project_id
+        };
+        // $(buttonId).attr('hx-vals', JSON.stringify(hxVals));
+        $(formId).attr('hx-vals', JSON.stringify(hxVals));
+        $(formId).attr('hx-target', "#dynamicModaltask_idBody");
+
+        $(buttonId).click();
+    }
+
+</script>

@@ -16,7 +16,7 @@ $(document).ready(function(){
             var separator = currentURL.includes('?') ? '&' : '?';
             newURL = currentURL + separator + "view="+view;
           }
-  
+
           history.pushState({}, "", newURL);
         $("#filter-project").attr("hx-vals", `{"view":"${view}"}`);
         $('#timesheetForm').attr("hx-vals", `{"view":"${view}"}`);

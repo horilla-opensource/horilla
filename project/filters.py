@@ -1,27 +1,28 @@
 import django_filters
 from django import forms
 from django.db.models import Q
-import django_filters
-from attendance.filters import FilterSet
-from horilla.filters import filter_by_name
-from .models import TimeSheet, Project, Task,Employee
+
+from horilla.filters import FilterSet, HorillaFilterSet, filter_by_name
+
+from .models import Employee, Project, Task, TimeSheet
 
 
-class ProjectFilter(FilterSet):
+class ProjectFilter(HorillaFilterSet):
     search = django_filters.CharFilter(method="filter_by_project")
+    search_field = django_filters.CharFilter(method="search_in")
 
     class Meta:
         model = Project
-        fields = ["title",
-                  "manager",
-                  "status",
-                  "end_date",
-                  "start_date",
-                  ]
-        
-    manager = django_filters.ModelChoiceFilter(
-         field_name = 'manager',queryset=Employee.objects.all() 
-    )
+        fields = [
+            "title",
+            "managers",
+            "members",
+            "status",
+            "end_date",
+            "start_date",
+            "is_active",
+        ]
+
     start_from = django_filters.DateFilter(
         field_name="start_date",
         lookup_expr="gte",
@@ -32,16 +33,18 @@ class ProjectFilter(FilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
-     
+
     def filter_by_project(self, queryset, _, value):
+        if self.data.get("search_field"):
+            return queryset
         queryset = queryset.filter(title__icontains=value)
         return queryset
 
 
 class TaskFilter(FilterSet):
     search = django_filters.CharFilter(method="filter_by_task")
-    task_manager = django_filters.ModelChoiceFilter(
-         field_name = 'task_manager',queryset=Employee.objects.all() 
+    task_managers = django_filters.ModelChoiceFilter(
+        field_name="task_managers", queryset=Employee.objects.all()
     )
     end_till = django_filters.DateFilter(
         field_name="end_date",
@@ -51,23 +54,22 @@ class TaskFilter(FilterSet):
 
     class Meta:
         model = Task
-        fields = ["title",
-                  "stage",
-                  "task_manager",
-                  "end_date",
-                  "status",
-                  "project",
-                  ]
+        fields = [
+            "title",
+            "stage",
+            "task_managers",
+            "end_date",
+            "status",
+            "project",
+        ]
 
     def filter_by_task(self, queryset, _, value):
         queryset = queryset.filter(title__icontains=value)
         return queryset
-    
-class TaskAllFilter(FilterSet):
+
+
+class TaskAllFilter(HorillaFilterSet):
     search = django_filters.CharFilter(method="filter_by_task")
-    manager = django_filters.ModelChoiceFilter(
-         field_name = 'task_manager',queryset=Employee.objects.all() 
-    )
     end_till = django_filters.DateFilter(
         field_name="end_date",
         lookup_expr="lte",
@@ -76,21 +78,22 @@ class TaskAllFilter(FilterSet):
 
     class Meta:
         model = Task
-        fields = ["title",
-                  'project',
-                  "stage",
-                  "task_manager",
-                  "end_date",
-                  "status",
-                  ]
+        fields = [
+            "title",
+            "project",
+            "stage",
+            "task_managers",
+            "task_members",
+            "end_date",
+            "status",
+        ]
 
     def filter_by_task(self, queryset, _, value):
         queryset = queryset.filter(title__icontains=value)
         return queryset
-    
 
 
-class TimeSheetFilter(FilterSet):
+class TimeSheetFilter(HorillaFilterSet):
     """
     Filter set class for Timesheet model
     """
@@ -109,9 +112,11 @@ class TimeSheetFilter(FilterSet):
         widget=forms.DateInput(attrs={"type": "date"}),
     )
 
-    project = django_filters.ModelChoiceFilter(
-        field_name="project_id", queryset=Project.objects.all()
-    ),
+    project = (
+        django_filters.ModelChoiceFilter(
+            field_name="project_id", queryset=Project.objects.all()
+        ),
+    )
 
     task = django_filters.ModelChoiceFilter(
         field_name="task_id", queryset=Task.objects.all()
@@ -131,7 +136,7 @@ class TimeSheetFilter(FilterSet):
             "date",
             "status",
         ]
-        
+
     def filter_by_employee(self, queryset, _, value):
         """
         Filter queryset by first name or last name.
@@ -159,4 +164,3 @@ class TimeSheetFilter(FilterSet):
                 employee_id__employee_last_name__icontains=last_name
             )
         return queryset
-    

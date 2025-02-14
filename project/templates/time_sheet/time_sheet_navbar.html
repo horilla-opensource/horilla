@@ -62,7 +62,7 @@
           <li class="oh-view-type time-sheet-view-type">
             <a
               href="{% url 'personal-time-sheet-view' request.user.employee_get.id %}"
-              
+
               class="oh-btn oh-btn--view"
               ><ion-icon name="bar-chart"></ion-icon
             ></a>
@@ -81,7 +81,7 @@
               @click.outside="open = false"
               style="display: none;"
               >
-              
+
               {% include 'time_sheet/filters.html' %}
             </div>
         </div>
@@ -99,14 +99,14 @@
                 <ul class="oh-dropdown__items">
                   {% comment %} {% if perms.delete_employee %} {% endcomment %}
                   {% comment %} <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link " id="archiveEmployees" 
+                    <a href="#" class="oh-dropdown__link " id="archiveEmployees"
                       >{% trans "Archive" %}</a
                     >
                   </li> {% endcomment %}
                   {% comment %} {% endif %}  {% endcomment %}
                   {% comment %} {% if perms.delete_employee %} {% endcomment %}
                   {% comment %} <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link "  id="unArchiveEmployees" 
+                    <a href="#" class="oh-dropdown__link "  id="unArchiveEmployees"
                       >{% trans "Un-Archive" %}</a
                     >
                   </li> {% endcomment %}
@@ -125,7 +125,7 @@
               </div>
             </div>
         </div>
-  
+
         <div class="oh-btn-group ml-2">
           <div>
             <a

@@ -1,4 +1,4 @@
-{% load i18n %} {% load yes_no %} {% load static %}
+{% load i18n %} {% load horillafilters %} {% load static %}
 
 <div class="oh-modal__dialog-header">
     <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
@@ -34,7 +34,7 @@
           -webkit-transition: all 0.3s ease-in-out;
           transition: all 0.3s ease-in-out;"
         onclick="event.stopPropagation(); $(this).parents().find('.oh-modal--show:last').toggleClass('oh-modal--show')"
-        id="close"  
+        id="close"
       >
         <ion-icon name="close-outline"></ion-icon>
       </button>
@@ -60,13 +60,13 @@
                 <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
             </div>
             </div>
-            
+
             {% for time_sheet in time_sheets %}
-            <div class="oh-sticky-table__tr ui-sortable-handle" 
+            <div class="oh-sticky-table__tr ui-sortable-handle"
             data-toggle="oh-modal-toggle"
             data-target="#TimeSheetModal"
             hx-get="{% url 'view-single-time-sheet' time_sheet.id %}"
-            hx-target="#TimeSheetFormTarget" 
+            hx-target="#TimeSheetFormTarget"
             >
             <div class="oh-sticky-table__sd">
                 <div class="oh-profile oh-profile--md">
@@ -98,7 +98,7 @@
                     data-target="#TimesheetUpdateModal"
                     hx-get="{% url 'update-timesheet-task' time_sheet.id %}"
                     hx-target="#TimesheetUpdateTarget"
-                    
+
                 >
                     <ion-icon
                     name="create-outline"
@@ -121,7 +121,7 @@
                     ></ion-icon>
                 </button>
                 </div>
-            </div> 
+            </div>
             </div>
             {% endfor %}
         </div>
@@ -135,6 +135,3 @@
       </div>
     {% endif %}
 </div>
-
-
-

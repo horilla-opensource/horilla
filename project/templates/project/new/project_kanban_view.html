@@ -1,9 +1,9 @@
 
 {% load static %}
 
-{% load i18n %} 
+{% load i18n %}{% load horillafilters %}
 {% load basefilters %}
-  
+
 
 {% comment %} for showing messages {% endcomment %}
 {% if messages %}
@@ -11,7 +11,7 @@
         {% for message in messages %}
             <div class="oh-alert oh-alert--animated {{message.tags}}">
                 {{ message }}
-            </div> 
+            </div>
         {% endfor %}
     </div>
 {% endif %}
@@ -48,18 +48,18 @@
     {% if projects %}
     <div class="oh-layout--grid-3">
         {% for project in projects %}
-            <div  class="oh-kanban-card {% if project.status == 'new'%} row-status--cyan 
-                                        {% elif project.status == 'in_progress' %} row-status--blue 
+            <div  class="oh-kanban-card {% if project.status == 'new'%} row-status--cyan
+                                        {% elif project.status == 'in_progress' %} row-status--blue
                                         {% elif project.status == 'completed' %} row-status--yellow
                                         {% elif project.status == 'on_hold' %} row-status--orange
                                         {% elif project.status == 'cancelled' %} row-status--red
                                         {% else %} row-status--gray
-                                        {% endif %}" 
+                                        {% endif %}"
                                         style="color: inherit;text-decoration: none;">
-                
+
                 {% comment %} url link {% endcomment %}
                 <a href="{% url 'task-view' project.id %}?view=card" style="color: inherit;text-decoration: none; display: flex;width:600px;">
-                    
+
                     {% comment %} placing image {% endcomment %}
                     <div class="oh-kanban-card__avatar">
                         <div class="oh-kanban-card__profile-container">
@@ -78,7 +78,7 @@
                             {% endif %}
                         </div>
                     </div>
-            
+
                     <div class="oh-kanban-card__details">
                         <span class="oh-kanban-card__title">{{project.title}}</span>
                         <span class="oh-kanban-card__subtitle">{% trans "Project manager" %} : {{project.manager}}</span><br>
@@ -92,26 +92,26 @@
                 </span>
                 </div>
                 <div class="oh-kanban-card__dots">
-                
+
                     {% comment %} dropdown {% endcomment %}
                     <div class="oh-dropdown" x-data="{show: false}">
                         <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show">
                             <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
                         </button>
                         {% comment %} dropdown menu {% endcomment %}
-                        
+
                         <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" @click.outside="show = false" style="display: none;">
                             <ul class="oh-dropdown__items">
                                 {% comment %} {% if perms.project.change_project %} {% endcomment %}
                                     <li class="oh-dropdown__item">
-                                        <a 
-                                            hx-get='{% url "update-project" project.id %}' 
-                                            hx-target='#ProjectFormTarget' class="oh-dropdown__link" 
-                                            data-toggle="oh-modal-toggle" 
+                                        <a
+                                            hx-get='{% url "update-project" project.id %}'
+                                            hx-target='#ProjectFormTarget' class="oh-dropdown__link"
+                                            data-toggle="oh-modal-toggle"
                                             data-target="#ProjectModal"
                                             data-key=".oh-kanban__section"
                                             >{% trans "Edit" %}
-                                        </a>                                 
+                                        </a>
                                     </li>
                                 {% comment %} {% endif %}  {% endcomment %}
                                  {% comment %} {% if perms.employee.delete_employee %} {% endcomment %}
@@ -137,7 +137,7 @@
                                     </li>
                                 {% comment %} {% endif %} {% endcomment %}
                             </ul>
-                        </div> 
+                        </div>
                     </div>
                 </div>
             </div>

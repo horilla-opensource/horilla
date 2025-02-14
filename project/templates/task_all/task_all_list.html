@@ -61,7 +61,7 @@
         {% for task in tasks %}
         <div class="oh-sticky-table__tbody ui-sortable" hx-get="{% url 'task-details' task.id %}" hx-target="#TaskDetailsTarget" data-toggle='oh-modal-toggle' data-target = '#TaskModal'>
           <div class="oh-sticky-table__tr ui-sortable-handle">
-            <div class="oh-sticky-table__sd {% if task.status == 'to_do'%} to-do-task 
+            <div class="oh-sticky-table__sd {% if task.status == 'to_do'%} to-do-task
                                             {% elif task.status == 'in_progress' %} in-progress-task
                                             {% elif task.status == 'completed' %} completed-task
                                             {% else %} expired-task
@@ -82,7 +82,7 @@
 
             <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{task.project}}</a>
             <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{task.stage}}</a>
-            
+
               <a href="#" style="color: inherit;text-decoration: none;"
               class="oh-sticky-table__td">{{task.task_manager}} </a>
               <a href="#" style="color: inherit;text-decoration: none;"
@@ -91,7 +91,7 @@
                   {{member}},
                 {% endfor %}
               </a>
-            
+
             <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{task.end_date}}</a>
             <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{task.get_status_display}}</a>
             <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{task.description}}</a>
@@ -117,7 +117,7 @@
                 </form>
                 {% comment %} {% endif %} {% endcomment %}
               </div>
-            </div> 
+            </div>
 
             </a>
           </div>

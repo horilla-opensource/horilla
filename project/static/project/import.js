@@ -1,3 +1,4 @@
+
 var downloadMessages = {
     ar: "هل ترغب في تنزيل القالب؟",
     de: "Möchten Sie die Vorlage herunterladen?",
@@ -5,7 +6,7 @@ var downloadMessages = {
     en: "Do you want to download the template?",
     fr: "Voulez-vous télécharger le modèle ?",
   };
-  
+
   var importsuccess = {
     ar: "نجح الاستيراد", // Arabic
     de: "Import erfolgreich", // German
@@ -13,7 +14,7 @@ var downloadMessages = {
     en: "Imported Successfully!", // English
     fr: "Importation réussie" // French
   };
-  
+
   var uploadsuccess = {
     ar: "تحميل كامل", // Arabic
     de: "Upload abgeschlossen", // German
@@ -21,7 +22,7 @@ var downloadMessages = {
     en: "Upload Complete!", // English
     fr: "Téléchargement terminé" // French
   };
-  
+
   var uploadingmessage = {
     ar: "جارٍ الرفع",
     de: "Hochladen...",
@@ -29,7 +30,7 @@ var downloadMessages = {
     en: "Uploading...",
     fr: "Téléchargement en cours...",
   };
-  
+
   var validationmessage = {
     ar: "يرجى تحميل ملف بامتداد .xlsx فقط.",
     de: "Bitte laden Sie nur eine Datei mit der Erweiterung .xlsx hoch.",
@@ -37,7 +38,7 @@ var downloadMessages = {
     en: "Please upload a file with the .xlsx extension only.",
     fr: "Veuillez télécharger uniquement un fichier avec l'extension .xlsx.",
   };
-  
+
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -53,7 +54,7 @@ var downloadMessages = {
     }
     return cookieValue;
   }
-  
+
   function getCurrentLanguageCode(callback) {
     $.ajax({
       type: "GET",
@@ -64,19 +65,19 @@ var downloadMessages = {
       },
     });
   }
-  
-  
+
+
   // Get the form element
   var form = document.getElementById("projectImportForm");
-  
+
   // Add an event listener to the form submission
   form.addEventListener("submit", function (event) {
     // Prevent the default form submission
     event.preventDefault();
-  
+
     // Create a new form data object
     var formData = new FormData();
-  
+
     // Append the file to the form data object
     var fileInput = document.querySelector("#projectImportFile");
     formData.append("file", fileInput.files[0]);
@@ -109,8 +110,8 @@ var downloadMessages = {
       },
     });
   });
-  
-  
+
+
   $("#importProject").click(function (e) {
     e.preventDefault();
     var languageCode = null;
@@ -119,7 +120,7 @@ var downloadMessages = {
         var confirmMessage = downloadMessages[languageCode];
         // Use SweetAlert for the confirmation dialog
         Swal.fire({
-            
+
             text: confirmMessage,
             icon: 'question',
             showCancelButton: true,
@@ -132,7 +133,7 @@ var downloadMessages = {
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', "/project/project-import", true);
                 xhr.responseType = 'arraybuffer';
-  
+
                 xhr.upload.onprogress = function (e) {
                     if (e.lengthComputable) {
                         var percent = (e.loaded / e.total) * 100;
@@ -140,7 +141,7 @@ var downloadMessages = {
                         $("#progress-text").text("Uploading... " + percent.toFixed(2) + "%");
                     }
                 };
-  
+
                 xhr.onload = function (e) {
                     if (this.status == 200) {
                         const file = new Blob([this.response], {
@@ -154,25 +155,82 @@ var downloadMessages = {
                         link.click();
                     }
                 };
-  
+
                 xhr.onerror = function (e) {
                     console.error("Error downloading file:", e);
                 };
-  
+
                 xhr.send();
             }
         });
     });
   });
-  
+
+  $(document).on('click', '#importProject', function (e) {
+    e.preventDefault();
+    var languageCode = null;
+    getCurrentLanguageCode(function (code) {
+        languageCode = code;
+        var confirmMessage = downloadMessages[languageCode];
+        // Use SweetAlert for the confirmation dialog
+        Swal.fire({
+            text: confirmMessage,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#008000',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Confirm'
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                $("#loading").show();
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', "/project/project-import", true);
+                xhr.responseType = 'arraybuffer';
+
+                xhr.upload.onprogress = function (e) {
+                    if (e.lengthComputable) {
+                        var percent = (e.loaded / e.total) * 100;
+                        $(".progress-bar").width(percent + "%").attr("aria-valuenow", percent);
+                        $("#progress-text").text("Uploading... " + percent.toFixed(2) + "%");
+                    }
+                };
+
+                xhr.onload = function (e) {
+                    if (this.status == 200) {
+                        const file = new Blob([this.response], {
+                            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        });
+                        const url = URL.createObjectURL(file);
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = "project_template.xlsx";
+                        document.body.appendChild(link);
+                        link.click();
+                        // Clean up by removing the link element
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                    }
+                };
+
+                xhr.onerror = function (e) {
+                    console.error("Error downloading file:", e);
+                };
+
+                xhr.send();
+            }
+        });
+    });
+});
+
+
   $(document).ajaxStart(function () {
     $("#loading").show();
   });
-  
+
   $(document).ajaxStop(function () {
     $("#loading").hide();
   });
-  
+
   function simulateProgress() {
     var languageCode = null;
     getCurrentLanguageCode(function(code){
@@ -182,7 +240,7 @@ var downloadMessages = {
     var uploadingMessage = uploadingmessage[languageCode];
     let progressBar = document.querySelector('.progress-bar');
     let progressText = document.getElementById('progress-text');
-  
+
     let width = 0;
     let interval = setInterval(function() {
       if (width >= 100) {
@@ -211,42 +269,41 @@ var downloadMessages = {
     }, 20);
   }
   )}
-  
+
   document.getElementById('projectImportForm').addEventListener('submit', function(event) {
-    event.preventDefault(); 
+    event.preventDefault();
     var languageCode = null;
     getCurrentLanguageCode(function(code){
     languageCode = code;
     var erroMessage = validationmessage[languageCode];
-  
+
     var fileInput = $('#projectImportFile').val();
     var allowedExtensions = /(\.xlsx)$/i;
-  
+
     if (!allowedExtensions.exec(fileInput)) {
-  
+
       var errorMessage = document.createElement('div');
       errorMessage.classList.add('error-message');
-      
+
       errorMessage.textContent = erroMessage;
-  
+
       document.getElementById('error-container').appendChild(errorMessage);
-  
+
       fileInput.value = '';
-      
+
       setTimeout(function() {
         errorMessage.remove();
       }, 2000);
-  
+
       return false;
     }
     else{
-  
+
             document.getElementById('loading').style.display = 'block';
-  
-  
+
+
             simulateProgress();
     }
-  
+
   });
   })
-  

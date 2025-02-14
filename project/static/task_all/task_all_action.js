@@ -1,28 +1,28 @@
-var archiveMessages = {
+var archiveMessage = {
     // ar: "هل ترغب حقًا في أرشفة جميع الموظفين المحددين؟",
     // de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter archivieren?",
     // es: "¿Realmente quieres archivar a todos los empleados seleccionados?",
     en: "Do you really want to archive all the selected tasks?",
     // fr: "Voulez-vous vraiment archiver tous les employés sélectionnés ?",
   };
-  
-  var unarchiveMessages = {
+
+  var unarchiveMessage = {
     // ar: "هل ترغب حقًا في إلغاء أرشفة جميع الموظفين المحددين؟",
     // de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter aus der Archivierung zurückholen?",
     // es: "¿Realmente quieres desarchivar a todos los empleados seleccionados?",
     en: "Do you really want to unarchive all the selected tasks?",
     // fr: "Voulez-vous vraiment désarchiver tous les employés sélectionnés?",
   };
-  
-  var deleteMessages = {
+
+  var deleteMessage = {
     // ar: "هل ترغب حقًا في حذف جميع الموظفين المحددين؟",
     // de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter löschen?",
     // es: "¿Realmente quieres eliminar a todos los empleados seleccionados?",
     en: "Do you really want to delete all the selected tasks?",
     // fr: "Voulez-vous vraiment supprimer tous les employés sélectionnés?",
   };
-  
-  var norowMessages = {
+
+  var norowMessage = {
     // ar: "لم يتم تحديد أي صفوف.",
     // de: "Es wurden keine Zeilen ausgewählt.",
     // es: "No se han seleccionado filas.",
@@ -70,8 +70,8 @@ var archiveMessages = {
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
       languageCode = code;
-      var confirmMessage = archiveMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
+      var confirmMessage = archiveMessage[languageCode];
+      var textMessage = norowMessage[languageCode];
       var checkedRows = $(".all-task-all-row").filter(":checked");
       if (checkedRows.length === 0) {
         Swal.fire({
@@ -94,7 +94,7 @@ var archiveMessages = {
             checkedRows.each(function () {
               ids.push($(this).attr("id"));
             });
-            
+
             $.ajax({
               type: "POST",
               url: "/project/task-all-bulk-archive?is_active=False",
@@ -116,14 +116,65 @@ var archiveMessages = {
     });
   });
 
+//Bulk archive
+
+$(document).on('click', '#archiveTask', function (e) {
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = archiveMessage[languageCode];
+    var textMessage = norowMessage[languageCode];
+    ids = [];
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+
+          $.ajax({
+            type: "POST",
+            url: "/project/task-all-bulk-archive?is_active=False",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload();
+              } else {
+
+              }
+            },
+          });
+        }
+      });
+    }
+  });
+});
+
+
 
 $("#unArchiveTaskAll").click(function (e) {
     e.preventDefault();
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
       languageCode = code;
-      var confirmMessage = unarchiveMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
+      var confirmMessage = unarchiveMessage[languageCode];
+      var textMessage = norowMessage[languageCode];
       var checkedRows = $(".all-task-all-row").filter(":checked");
       if (checkedRows.length === 0) {
         Swal.fire({
@@ -146,7 +197,7 @@ $("#unArchiveTaskAll").click(function (e) {
             checkedRows.each(function () {
               ids.push($(this).attr("id"));
             });
-            
+
             $.ajax({
               type: "POST",
               url: "/project/task-all-bulk-archive?is_active=True",
@@ -167,14 +218,64 @@ $("#unArchiveTaskAll").click(function (e) {
       }
     });
   });
-  
+
+//Bulk unarchive
+
+$(document).on('click', '#unArchiveTask', function (e) {
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = unarchiveMessage[languageCode];
+    var textMessage = norowMessage[languageCode];
+    ids = [];
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+
+          $.ajax({
+            type: "POST",
+            url: "/project/task-all-bulk-archive?is_active=True",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload();
+              } else {
+
+              }
+            },
+          });
+        }
+      });
+    }
+  });
+});
+
 $("#deleteTaskAll").click(function (e) {
     e.preventDefault();
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
       languageCode = code;
-      var confirmMessage = deleteMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
+      var confirmMessage = deleteMessage[languageCode];
+      var textMessage = norowMessage[languageCode];
       var checkedRows = $(".all-task-all-row").filter(":checked");
       if (checkedRows.length === 0) {
         Swal.fire({
@@ -197,7 +298,7 @@ $("#deleteTaskAll").click(function (e) {
             checkedRows.each(function () {
               ids.push($(this).attr("id"));
             });
-            
+
             $.ajax({
               type: "POST",
               url: "/project/task-all-bulk-delete",
@@ -218,3 +319,53 @@ $("#deleteTaskAll").click(function (e) {
       }
     });
   });
+
+//Bulk delete
+
+$(document).on('click', '#deleteTask', function (e) {
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = deleteMessage[languageCode];
+    var textMessage = norowMessage[languageCode];
+    ids = [];
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+
+          $.ajax({
+            type: "POST",
+            url: "/project/task-all-bulk-delete",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload();
+              } else {
+
+              }
+            },
+          });
+        }
+      });
+    }
+  });
+});

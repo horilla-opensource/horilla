@@ -1,6 +1,6 @@
-{% extends 'index.html' %} 
-{% block content %} 
-  {% load i18n %} 
+{% extends 'index.html' %}
+{% block content %}
+  {% load i18n %}
   {% load basefilters %}
   <style>
     .in-progress-time-sheet{
@@ -13,7 +13,7 @@
         }
   </style>
   <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-    {% include 'time_sheet/time_sheet_navbar.html' %}  
+    {% include 'time_sheet/time_sheet_navbar.html' %}
 
     <div id="TimeSheetList" class="oh-wrapper">
       {% if view_type == "card" %}

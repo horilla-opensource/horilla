@@ -18,11 +18,11 @@
     -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;"
     onclick="event.stopPropagation(); $(this).parents().find('.oh-modal--show:last').toggleClass('oh-modal--show')"
-    id="close1" 
+    id="close1"
   >
     <ion-icon name="close-outline"></ion-icon>
   </button>
-  <form 
+  <form
     hx-post="{% url 'update-timesheet-task' timesheet_id %}"
     hx-target="#TimesheetUpdateTarget"
     hx-encoding="multipart/form-data"

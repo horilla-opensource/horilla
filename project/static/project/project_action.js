@@ -1,20 +1,20 @@
-var archiveMessages = {
+var archiveMessagesSelected = {
     // ar: "هل ترغب حقًا في أرشفة جميع الموظفين المحددين؟",
     // de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter archivieren?",
     // es: "¿Realmente quieres archivar a todos los empleados seleccionados?",
     en: "Do you really want to archive all the selected projects?",
     // fr: "Voulez-vous vraiment archiver tous les employés sélectionnés ?",
   };
-  
-  var unarchiveMessages = {
+
+  var unarchiveMessagesSelected = {
     // ar: "هل ترغب حقًا في إلغاء أرشفة جميع الموظفين المحددين؟",
     // de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter aus der Archivierung zurückholen?",
     // es: "¿Realmente quieres desarchivar a todos los empleados seleccionados?",
     en: "Do you really want to unarchive all the selected projects?",
     // fr: "Voulez-vous vraiment désarchiver tous les employés sélectionnés?",
   };
-  
-  var deleteMessages = {
+
+  var deleteMessage = {
     // ar: "هل ترغب حقًا في حذف جميع الموظفين المحددين؟",
     // de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter löschen?",
     // es: "¿Realmente quieres eliminar a todos los empleados seleccionados?",
@@ -38,7 +38,7 @@ var archiveMessages = {
     fr: "Voulez-vous télécharger le modèle ?",
   };
 
-  var norowMessages = {
+  var norowMessagesSelected = {
     // ar: "لم يتم تحديد أي صفوف.",
     // de: "Es wurden keine Zeilen ausgewählt.",
     // es: "No se han seleccionado filas.",
@@ -161,7 +161,7 @@ var archiveMessages = {
   //   });
   // });
 
-  // $('#importProject').click(function (e) { 
+  // $('#importProject').click(function (e) {
   //   $.ajax({
   //     type: 'POST',
   //     url: '/project/project-import',
@@ -200,7 +200,7 @@ var archiveMessages = {
     getCurrentLanguageCode(function (code) {
       languageCode = code;
       var confirmMessage = exportMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
+      var textMessage = norowMessagesSelected[languageCode];
       var checkedRows = $(".all-project-row").filter(":checked");
       if (checkedRows.length === 0) {
         Swal.fire({
@@ -223,7 +223,7 @@ var archiveMessages = {
             checkedRows.each(function () {
               ids.push($(this).attr("id"));
             });
-            
+
             $.ajax({
               type: "POST",
               url: "/project/project-bulk-export",
@@ -253,13 +253,75 @@ var archiveMessages = {
     });
   });
 
+  $(document).on('click', '#exportProject', function (e) {
+    e.preventDefault();
+    var languageCode = null;
+    getCurrentLanguageCode(function (code) {
+      languageCode = code;
+      var confirmMessage = exportMessages[languageCode];
+      var textMessage = norowMessagesSelected[languageCode];
+      ids = [];
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+      if (ids.length === 0) {
+        Swal.fire({
+          text: textMessage,
+          icon: "warning",
+          confirmButtonText: "Close",
+        });
+      } else {
+        Swal.fire({
+          text: confirmMessage,
+          icon: "info",
+          showCancelButton: true,
+          confirmButtonColor: "#008000",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirm",
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            // var checkedRows = $(".all-project-row").filter(":checked");
+            // ids = [];
+            // checkedRows.each(function () {
+            //   ids.push($(this).attr("id"));
+            // });
+
+            $.ajax({
+              type: "POST",
+              url: "/project/project-bulk-export",
+              dataType: "binary",
+              xhrFields: {
+              responseType: "blob",
+              },
+              data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                ids: JSON.stringify(ids),
+              },
+              success: function (response, textStatus, jqXHR) {
+                const file = new Blob([response], {
+                  type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                });
+                const url = URL.createObjectURL(file);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "project details.xlsx";
+                document.body.appendChild(link);
+                link.click();
+              },
+            });
+          }
+        });
+      }
+    });
+  });
+
+
   $("#archiveProject").click(function (e) {
     e.preventDefault();
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
       languageCode = code;
-      var confirmMessage = archiveMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
+      var confirmMessage = archiveMessagesSelected[languageCode];
+      var textMessage = norowMessagesSelected[languageCode];
       var checkedRows = $(".all-project-row").filter(":checked");
       if (checkedRows.length === 0) {
         Swal.fire({
@@ -282,7 +344,61 @@ var archiveMessages = {
             checkedRows.each(function () {
               ids.push($(this).attr("id"));
             });
-            
+
+            $.ajax({
+              type: "POST",
+              url: "/project/project-bulk-archive?is_active=False",
+              data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                ids: JSON.stringify(ids),
+              },
+              success: function (response, textStatus, jqXHR) {
+                if (jqXHR.status === 200) {
+                  location.reload(); // Reload the current page
+                } else {
+                  // console.log("Unexpected HTTP status:", jqXHR.status);
+                }
+              },
+            });
+          }
+        });
+      }
+    });
+  });
+
+
+  $(document).on('click', '#archiveProject', function (e) {
+    e.preventDefault();
+    var languageCode = null;
+    getCurrentLanguageCode(function (code) {
+      languageCode = code;
+      var confirmMessage = archiveMessagesSelected[languageCode];
+      var textMessage = norowMessagesSelected[languageCode];
+      ids = [];
+      ids.push($("#selectedInstances").attr("data-ids"));
+      ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+      if (ids.length === 0) {
+        Swal.fire({
+          text: textMessage,
+          icon: "warning",
+          confirmButtonText: "Close",
+        });
+      } else {
+        Swal.fire({
+          text: confirmMessage,
+          icon: "info",
+          showCancelButton: true,
+          confirmButtonColor: "#008000",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirm",
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            // e.preventDefault();
+            // ids = [];
+            // checkedRows.each(function () {
+            //   ids.push($(this).attr("id"));
+            // });
+
             $.ajax({
               type: "POST",
               url: "/project/project-bulk-archive?is_active=False",
@@ -310,8 +426,8 @@ $("#unArchiveProject").click(function (e) {
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
       languageCode = code;
-      var confirmMessage = unarchiveMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
+      var confirmMessage = unarchiveMessagesSelected[languageCode];
+      var textMessage = norowMessagesSelected[languageCode];
       var checkedRows = $(".all-project-row").filter(":checked");
       if (checkedRows.length === 0) {
         Swal.fire({
@@ -334,7 +450,7 @@ $("#unArchiveProject").click(function (e) {
             checkedRows.each(function () {
               ids.push($(this).attr("id"));
             });
-            
+
             $.ajax({
               type: "POST",
               url: "/project/project-bulk-archive?is_active=True",
@@ -355,14 +471,67 @@ $("#unArchiveProject").click(function (e) {
       }
     });
   });
-  
+
+  $(document).on('click', '#unArchiveProject', function (e) {
+    e.preventDefault();
+    var languageCode = null;
+    getCurrentLanguageCode(function (code) {
+      languageCode = code;
+      var confirmMessage = unarchiveMessagesSelected[languageCode];
+      var textMessage = norowMessagesSelected[languageCode];
+      ids = [];
+      ids.push($("#selectedInstances").attr("data-ids"));
+      ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+      if (ids.length === 0) {
+        Swal.fire({
+          text: textMessage,
+          icon: "warning",
+          confirmButtonText: "Close",
+        });
+      } else {
+        Swal.fire({
+          text: confirmMessage,
+          icon: "info",
+          showCancelButton: true,
+          confirmButtonColor: "#008000",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirm",
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            // var checkedRows = $(".all-project-row").filter(":checked");
+            // ids = [];
+            // checkedRows.each(function () {
+            //   ids.push($(this).attr("id"));
+            // });
+
+            $.ajax({
+              type: "POST",
+              url: "/project/project-bulk-archive?is_active=True",
+              data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                ids: JSON.stringify(ids),
+              },
+              success: function (response, textStatus, jqXHR) {
+                if (jqXHR.status === 200) {
+                  location.reload(); // Reload the current page
+                } else {
+                  // console.log("Unexpected HTTP status:", jqXHR.status);
+                }
+              },
+            });
+          }
+        });
+      }
+    });
+  });
+
 $("#deleteProject").click(function (e) {
     e.preventDefault();
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
       languageCode = code;
-      var confirmMessage = deleteMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
+      var confirmMessage = deleteMessage[languageCode];
+      var textMessage = norowMessagesSelected[languageCode];
       var checkedRows = $(".all-project-row").filter(":checked");
       if (checkedRows.length === 0) {
         Swal.fire({
@@ -385,7 +554,61 @@ $("#deleteProject").click(function (e) {
             checkedRows.each(function () {
               ids.push($(this).attr("id"));
             });
-            
+
+            $.ajax({
+              type: "POST",
+              url: "/project/project-bulk-delete",
+              data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                ids: JSON.stringify(ids),
+              },
+              success: function (response, textStatus, jqXHR) {
+                if (jqXHR.status === 200) {
+                  location.reload(); // Reload the current page
+                } else {
+                  // console.log("Unexpected HTTP status:", jqXHR.status);
+                }
+              },
+            });
+          }
+        });
+      }
+    });
+  });
+
+
+  $(document).on('click', '#deleteProject', function (e) {
+    e.preventDefault();
+    var languageCode = null;
+    getCurrentLanguageCode(function (code) {
+      languageCode = code;
+      var confirmMessage = deleteMessage[languageCode];
+      var textMessage = norowMessagesSelected[languageCode];
+      ids = [];
+      ids.push($("#selectedInstances").attr("data-ids"));
+      ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+      if (ids.length === 0) {
+        Swal.fire({
+          text: textMessage,
+          icon: "warning",
+          confirmButtonText: "Close",
+        });
+      } else {
+        Swal.fire({
+          text: confirmMessage,
+          icon: "error",
+          showCancelButton: true,
+          confirmButtonColor: "#008000",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirm",
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            // var checkedRows = $(".all-project-row").filter(":checked");
+            // ids = [];
+            // checkedRows.each(function () {
+            //   ids.push($(this).attr("id"));
+            // });
+
             $.ajax({
               type: "POST",
               url: "/project/project-bulk-delete",

@@ -6,7 +6,7 @@
       {% for message in messages %}
       <div class="oh-alert oh-alert--animated {{message.tags}}">
             {{ message }}
-      </div> 
+      </div>
       {% endfor %}
   </div>
 {% endif %}
@@ -25,15 +25,15 @@
 {% if time_sheets %}
   <div class="oh-layout--grid-3">
     {% for time_sheet in time_sheets %}
-    <div  class="oh-kanban-card 
-                {% if time_sheet.status == 'in_Progress' %} in-progress-time-sheet 
+    <div  class="oh-kanban-card
+                {% if time_sheet.status == 'in_Progress' %} in-progress-time-sheet
                 {% else %} completed-time-sheet
-                {% endif %}" 
+                {% endif %}"
                 style="color: inherit;text-decoration: none;">
       <a data-toggle="oh-modal-toggle"
       data-target="#TimeSheetModal"
       hx-get="{% url 'view-single-time-sheet' time_sheet.id %}"
-      hx-target="#TimeSheetFormTarget" 
+      hx-target="#TimeSheetFormTarget"
       style="color: inherit;text-decoration: none; display: flex;">
       <div class="oh-kanban-card__avatar">
         <div class="oh-kanban-card__profile-container">
@@ -44,7 +44,7 @@
           />
         </div>
       </div>
-      
+
       <div class="oh-kanban-card__details">
         <span class="oh-kanban-card__title">{{time_sheet.employee_id}}</span>
         <span class="oh-kanban-card__subtitle">{{time_sheet.date}}</span><br>
@@ -139,7 +139,7 @@
       </ul>
     </nav>
   </div>
- {% else %} 
+ {% else %}
   <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
     <div style="" class="">
       <img style="display: block;width: 200px;margin: 10px auto ;" src="{% static 'images/ui/project/timesheet.png' %}" class="" alt="Page not found. 404."/>

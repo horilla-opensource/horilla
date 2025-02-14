@@ -32,15 +32,15 @@ $(document).ready(function(){
     $.each(data, function(index, stage) {
         $("#project_stage").append("<option value=" + stage.pk + ">" + stage.fields.title + "</option>");
     });
-    $("#project_stage").append( "<option value='create_new_stage'>Create a new Stage</option>"); 
-    $("#project_stage").append( "<option value='old_stage'>Old Stage</option>"); 
+    $("#project_stage").append( "<option value='create_new_stage'>Create a new Stage</option>");
+    $("#project_stage").append( "<option value='old_stage'>Old Stage</option>");
 
 });
 $("#project_stage").change(function(e){
   stage_id = $(this).val()
-   
+
     if (stage_id === "create_new_stage") {
-   
+
       $.ajax({
         type: "GET",
         url: '/project/create-stage-taskall',

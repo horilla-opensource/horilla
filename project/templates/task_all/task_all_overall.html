@@ -1,6 +1,6 @@
-{% extends 'index.html' %} 
+{% extends 'index.html' %}
 {% load static %}
-{% block content %}  
+{% block content %}
     <style>
         .to-do-task{
             border-left: solid 5px yellowgreen !important;
@@ -21,7 +21,7 @@
     </style>
     <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
         {% include 'task_all/task_all_navbar.html' %}
-        
+
     </main>
 
     <div id="view-container" class="oh-wrapper">
@@ -29,7 +29,7 @@
         {% include 'task_all/task_all_list.html' %}
         {% else %}
         {% include 'task_all/task_all_card.html' %}
-        {% endif %} 
+        {% endif %}
     </div>
 
     <div
@@ -53,7 +53,7 @@
         aria-labelledby="TaskUpdateModal"
         aria-hidden="true"
         >
-    
+
         <div
             class="oh-modal__dialog"
             style="max-width: 550px"
@@ -73,7 +73,7 @@
             style="max-width:1350px"
             id="TaskTimesheetTarget"
         ></div>
- 
+
     </div>
     <div
         class="oh-modal"
@@ -82,7 +82,7 @@
         aria-labelledby="TaskUpdateModal"
         aria-hidden="true"
         >
-    
+
         <div
             class="oh-modal__dialog"
             style="max-width: 550px"
@@ -120,4 +120,3 @@
         });
     </script>
 {% endblock content %}
-

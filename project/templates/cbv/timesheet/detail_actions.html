@@ -1,0 +1,23 @@
+{% load i18n %}
+{% load basefilters %}
+<div class="oh-btn-group w-100">
+    <a hx-get="{% url 'update-time-sheet' instance.id %}" hx-target="#genericModalBody" data-toggle="oh-modal-toggle"
+        data-target="#genericModal" class="oh-btn oh-btn--warning"
+        style="{% if perms.project.view_timesheet or request.user|is_reportingmanager %} width: 25%;{% else %}width: 50%;{% endif %}">
+        <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+        {% trans "Edit" %}
+    </a>
+    {% if perms.project.view_timesheet or request.user|is_reportingmanager %}
+        <a href="{% url 'personal-time-sheet-view' instance.employee_id.id %}" class="oh-btn oh-btn--info me-1 ms-1"
+            style="width: 48%;">
+            <ion-icon name="bar-chart" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+            {% trans "View Timesheet Chart" %}
+        </a>
+    {% endif %}
+    <a href="{% url 'delete-time-sheet' instance.id %}" class="oh-btn oh-btn--danger"
+        style="{% if perms.project.view_timesheet or request.user|is_reportingmanager %} width: 25%;{% else %}width: 50%;{% endif %}"
+        onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this project?' %}`)">
+        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+        {% trans "Delete" %}
+    </a>
+</div>

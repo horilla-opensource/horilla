@@ -17,7 +17,7 @@
       </button>
       <div class="oh-modal__dialog-body p-0 pt-2" id="projectImportModalBody">
         <form
-      
+
           id="projectImportForm"
           enctype="multipart/form-data"
         >
@@ -40,7 +40,7 @@
                   <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
                   <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
               </label>
-              <input type="file" name="file" id="projectImportFile" /> 
+              <input type="file" name="file" id="projectImportFile" />
           </div>
           </div>
           <div class="modal-footer d-flex flex-row-reverse">
@@ -79,13 +79,13 @@
 		{% if projects %}
         {% comment %} for search{% endcomment %}
         <form
-            hx-get='{% url "project-filter" %}?view={{request.GET.view }}' 
-            hx-target="#view-container" 
+            hx-get='{% url "project-filter" %}?view={{request.GET.view }}'
+            hx-target="#view-container"
             hx-swap="innerHTML"
             id="projectFilterForm"
             class="d-flex"
             onsubmit="event.preventDefault()"
-        > 
+        >
         <div
           class="oh-input-group oh-input__search-group"
           :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -141,7 +141,7 @@
               x-show="open"
               @click.outside="open = false"
               style="display: none;"
-              >         
+              >
               {% include 'project/new/filter_project.html' %}
             </div>
         </div>
@@ -160,41 +160,41 @@
                 <ul class="oh-dropdown__items">
                   {% comment %} {% if perms.delete_employee %} {% endcomment %}
                   <li class="oh-dropdown__item">
-                    <a  href="#" 
-                        class="oh-dropdown__link " 
+                    <a  href="#"
+                        class="oh-dropdown__link "
                         id="importProject"
                         data-toggle="oh-modal-toggle"
-                        data-target="#projectImport" 
+                        data-target="#projectImport"
                       >{% trans "Import" %}</a
                     >
                   </li>
                   {% comment %} {% endif %}  {% endcomment %}
                   {% comment %} {% if perms.delete_employee %} {% endcomment %}
                   <li class="oh-dropdown__item">
-                    <a href="#" 
-                      class="oh-dropdown__link " 
-                      id="exportProject" 
+                    <a href="#"
+                      class="oh-dropdown__link "
+                      id="exportProject"
                       >{% trans "Export" %}</a
                     >
                   </li>
                   {% comment %} {% endif %}  {% endcomment %}
                   {% comment %} {% if perms.delete_employee %} {% endcomment %}
                   <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link " id="duplicateProject" 
+                    <a href="#" class="oh-dropdown__link " id="duplicateProject"
                       >{% trans "Duplicate" %}</a
                     >
                   </li>
                   {% comment %} {% endif %}  {% endcomment %}
                   {% comment %} {% if perms.delete_employee %} {% endcomment %}
                   <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link " id="archiveProject" 
+                    <a href="#" class="oh-dropdown__link " id="archiveProject"
                       >{% trans "Archive" %}</a
                     >
                   </li>
                   {% comment %} {% endif %}  {% endcomment %}
                   {% comment %} {% if perms.delete_employee %} {% endcomment %}
                   <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link "  id="unArchiveProject" 
+                    <a href="#" class="oh-dropdown__link "  id="unArchiveProject"
                       >{% trans "Un-Archive" %}</a
                     >
                   </li>
@@ -232,4 +232,3 @@
     </div>
   </div>
 </section>
-

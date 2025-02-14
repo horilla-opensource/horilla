@@ -1,4 +1,4 @@
-{% load i18n %} {% load yes_no %} {% load static %}
+{% load i18n %} {% load horillafilters %} {% load static %}
 {% include "filter_tags.html" %}
 
 {% if time_sheets %}
@@ -41,13 +41,13 @@
         </div>
 
         {% for time_sheet in time_sheets %}
-        <div class="oh-sticky-table__tr ui-sortable-handle" 
+        <div class="oh-sticky-table__tr ui-sortable-handle"
         data-toggle="oh-modal-toggle"
         data-target="#TimeSheetModal"
         hx-get="{% url 'view-single-time-sheet' time_sheet.id %}"
-        hx-target="#TimeSheetFormTarget" 
+        hx-target="#TimeSheetFormTarget"
         >
-          <div class="oh-sticky-table__sd {% if time_sheet.status == 'in_Progress' %} in-progress-time-sheet 
+          <div class="oh-sticky-table__sd {% if time_sheet.status == 'in_Progress' %} in-progress-time-sheet
                                           {% else %} completed-time-sheet
                                           {% endif %} ">
             <div class="d-flex">
@@ -87,7 +87,7 @@
                 data-target="#TimeSheetModal"
                 hx-get="{% url 'update-time-sheet' time_sheet.id %}"
                 hx-target="#TimeSheetFormTarget"
-                
+
               >
                 <ion-icon
                   name="create-outline"
