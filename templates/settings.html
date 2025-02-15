@@ -124,7 +124,7 @@
 												{% if perms.horilla_backup.view_googledrivebackup %}
 													<a
 														id="date"
-														href="{% url 'gdrive' %}"
+														{% comment %} href="{% url 'gdrive' %}" {% endcomment %}
 														class="oh-inner-sidebar__link oh-dropdown__link"
 														>{% trans "Gdrive Backup" %}</a
 													>
