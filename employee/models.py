@@ -690,6 +690,25 @@ class EmployeeWorkInformation(models.Model):
         self.save()
         return self
 
+    def clean(self):
+        super().clean()
+        if self.anniversary_date:
+            # Ensure anniversary date isn't in the future
+            if self.anniversary_date > timezone.now().date():
+                raise ValidationError({
+                    'anniversary_date': _('Anniversary date cannot be in the future')
+                })
+            
+            # Check if employee has anniversary-based leave types
+            has_anniversary_leaves = self.employee_id.available_leave.filter(
+                leave_type_id__reset_based='anniversary'
+            ).exists()
+            
+            if has_anniversary_leaves and not self.anniversary_date:
+                raise ValidationError({
+                    'anniversary_date': _('Anniversary date is required for employees with anniversary-based leave types')
+                })
+
 
 class EmployeeBankDetails(HorillaModel):
     """
