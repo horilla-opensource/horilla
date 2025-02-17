@@ -221,7 +221,7 @@ LOCALE_PATHS = [
 LANGUAGE_CODE = "en-us"
 
 # Timezone settings
-TIME_ZONE = 'America/New_York'
+TIME_ZONE = env("TIME_ZONE", default="Asia/Kolkata")
 USE_TZ = True
 
 USE_I18N = True
