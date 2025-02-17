@@ -37,3 +37,4 @@ services:
 
 volumes:
   horilla-data:
+  
