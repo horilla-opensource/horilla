@@ -546,8 +546,35 @@
                 <!-- End of Responsibility Card -->
                 <!-- Document Card -->
                 <div class="oh-helpdesk__card">
-                  <div class="oh-helpdesk__card-header">
+                  <div class="oh-helpdesk__card-header" style="display: flex; align-items: center; justify-content: space-between;">
                     <span class="oh-helpdesk__card-title">{% trans "Documents" %}</span>
+
+                    {% if perms.helpdesk.add_comment or request.user.employee_get == ticket.employee_id or request.user.employee_get in ticket.assigned_to.all %}
+                      <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST" enctype="multipart/form-data" class="oh-chat oh-chat__input-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                        {% csrf_token %}
+
+                        <input name="file" multiple="True" type="file" id="fileUpload" class="d-none" />
+
+                        <!-- Attachment Button -->
+                        <label for="fileUpload" aria-label="Attach Files" class="oh-btn oh-btn--chat oh-btn--chat-attachments" style="position: relative; cursor: pointer;">
+                          <!-- File count badge -->
+                          <span id="fileCount1" style="
+                            position: absolute;
+                            top: -6px;
+                            right: -6px;
+                            background-color: red;
+                            color: white;
+                            font-size: 12px;
+                            border-radius: 50%;
+                            padding: 2px 6px;
+                            min-width: 16px;
+                            text-align: center;
+                            display: none;
+                          "></span>
+                        </label>
+
+                      </form>
+                    {% endif %}
                   </div>
                   <div class="oh-helpdesk__card-body oh-scrollable-container">
                     <div class="oh-layout--grid-3 mt-2 mb-2 horizontal-scroll"
@@ -686,6 +713,17 @@
           countSpan.style.display = 'inline-block'; // Show the badge
         } else {
           countSpan.style.display = 'none'; // Hide if no files are selected
+        }
+      });
+      document.getElementById('fileUpload').addEventListener('change', function() {
+        const fileCount = this.files.length;
+        const countSpandoc = document.getElementById('fileCount1');
+
+        if (fileCount > 0) {
+          countSpandoc.textContent = fileCount;
+          countSpandoc.style.display = 'inline-block'; // Show the badge
+        } else {
+          countSpandoc.style.display = 'none'; // Hide if no files are selected
         }
       });
     </script>

@@ -858,6 +858,17 @@ def get_next_month_same_date(date_obj):
     return date(day=day, month=month, year=year)
 
 
+def get_subordinates(request):
+    """
+    This method is used to filter out subordinates queryset element.
+    """
+    user = request.user.employee_get
+    subordinates = Employee.objects.filter(
+        employee_work_info__reporting_manager_id=user
+    )
+    return subordinates
+
+
 def format_date(date_str):
     # List of possible date formats to try
 

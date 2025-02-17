@@ -649,12 +649,16 @@ class RotatingShift(HorillaModel):
         related_name="shift1",
         on_delete=models.PROTECT,
         verbose_name=_("Shift 1"),
+        blank=True,
+        null=True,
     )
     shift2 = models.ForeignKey(
         EmployeeShift,
         related_name="shift2",
         on_delete=models.PROTECT,
         verbose_name=_("Shift 2"),
+        blank=True,
+        null=True,
     )
     additional_data = models.JSONField(
         default=dict,
@@ -675,8 +679,6 @@ class RotatingShift(HorillaModel):
         return str(self.name)
 
     def clean(self):
-        if self.shift1 == self.shift2:
-            raise ValidationError(_("Select different shift continuously"))
 
         additional_shifts = (
             self.additional_data.get("additional_shifts", [])
@@ -684,31 +686,51 @@ class RotatingShift(HorillaModel):
             else []
         )
 
-        if additional_shifts and str(self.shift2.id) == additional_shifts[0]:
+        if additional_shifts and self.shift1 == self.shift2:
             raise ValidationError(_("Select different shift continuously"))
 
-        if additional_shifts and str(self.shift1.id) == additional_shifts[-1]:
-            raise ValidationError(_("Select different shift continuously"))
+        #  ---------------- Removed the validation for same shifts to be continously added ----------------
 
-        for i in range(len(additional_shifts) - 1):
-            if additional_shifts[i] and additional_shifts[i + 1]:
-                if additional_shifts[i] == additional_shifts[i + 1]:
-                    raise ValidationError(_("Select different shift continuously"))
+        # if additional_shifts and str(self.shift2.id) == additional_shifts[0]:
+        #     raise ValidationError(_("Select different shift continuously"))
+
+        # if additional_shifts and str(self.shift1.id) == additional_shifts[-1]:
+        #     raise ValidationError(_("Select different shift continuously"))
+
+        # for i in range(len(additional_shifts) - 1):
+        #     if additional_shifts[i] and additional_shifts[i + 1]:
+        #         if additional_shifts[i] == additional_shifts[i + 1]:
+        #             raise ValidationError(_("Select different shift continuously"))
 
     def additional_shifts(self):
-        rotating_shift = RotatingShift.objects.get(id=self.pk)
-        additional_data = rotating_shift.additional_data
+        additional_data = self.additional_data
         if additional_data:
             additional_shift_ids = additional_data.get("additional_shifts")
             if additional_shift_ids:
-                additional_shifts = EmployeeShift.objects.filter(
-                    id__in=additional_shift_ids
-                )
+                unique_ids = set(additional_shift_ids)
+                shifts_dict = {
+                    shift.id: shift
+                    for shift in EmployeeShift.objects.filter(id__in=unique_ids)
+                }
+                additional_shifts = []
+                for shift_id in additional_shift_ids:
+                    if shift_id:
+                        additional_shifts.append(shifts_dict[int(shift_id)])
+                    else:
+                        additional_shifts.append(None)
             else:
                 additional_shifts = None
         else:
             additional_shifts = None
         return additional_shifts
+
+    def total_shifts(self):
+        total_shifts = []
+        total_shifts += [self.shift1, self.shift2]
+        if self.additional_shifts():
+            total_shifts += list(self.additional_shifts())
+
+        return total_shifts
 
 
 class RotatingShiftAssign(HorillaModel):

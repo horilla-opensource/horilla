@@ -3,12 +3,13 @@ middleware.py
 """
 
 from django.apps import apps
+from django.core.cache import cache
 from django.db.models import Q
 from django.shortcuts import redirect
 
 from base.context_processors import AllCompany
 from base.horilla_company_manager import HorillaCompanyManager
-from base.models import ShiftRequest, WorkTypeRequest
+from base.models import Company, ShiftRequest, WorkTypeRequest
 from employee.models import (
     DisciplinaryAction,
     Employee,
@@ -18,6 +19,8 @@ from employee.models import (
 from horilla.horilla_settings import APPS
 from horilla.methods import get_horilla_model_class
 from horilla_documents.models import DocumentRequest
+
+CACHE_KEY = "horilla_company_models_cache_key"
 
 
 class CompanyMiddleware:
@@ -34,9 +37,16 @@ class CompanyMiddleware:
         """
         if getattr(request, "user", False) and not request.user.is_anonymous:
             try:
-                return getattr(
-                    request.user.employee_get.employee_work_info, "company_id", None
-                )
+                if com_id := request.session.get("selected_company", None):
+                    return (
+                        Company.objects.filter(id=com_id).first()
+                        if com_id != "all"
+                        else None
+                    )
+                else:
+                    return getattr(
+                        request.user.employee_get.employee_work_info, "company_id", None
+                    )
             except AttributeError:
                 pass
         return None
@@ -46,7 +56,7 @@ class CompanyMiddleware:
         Set the company session data based on the company ID.
         """
         if company_id and request.session.get("selected_company") != "all":
-            request.session["selected_company"] = company_id.id
+            request.session["selected_company"] = str(company_id.id)
             request.session["selected_company_instance"] = {
                 "company": company_id.company,
                 "icon": company_id.icon.url,
@@ -96,49 +106,54 @@ class CompanyMiddleware:
         """
         Retrieve the list of models that are company-specific.
         """
-        company_models = [
-            Employee,
-            ShiftRequest,
-            WorkTypeRequest,
-            DocumentRequest,
-            DisciplinaryAction,
-            EmployeeBankDetails,
-            EmployeeWorkInformation,
-        ]
+        company_models = cache.get(CACHE_KEY)
 
-        app_model_mappings = {
-            "recruitment": ["recruitment", "candidate"],
-            "leave": [
-                "leaverequest",
-                "restrictleave",
-                "availableleave",
-                "leaveallocationrequest",
-                "compensatoryleaverequest",
-            ],
-            "asset": ["assetassignment", "assetrequest"],
-            "attendance": [
-                "attendance",
-                "attendanceactivity",
-                "attendanceovertime",
-                "workrecords",
-            ],
-            "payroll": [
-                "contract",
-                "loanaccount",
-                "payslip",
-                "reimbursement",
-                "workrecord",
-            ],
-            "helpdesk": ["ticket"],
-            "offboarding": ["offboarding"],
-            "pms": ["employeeobjective"],
-        }
+        if company_models is None:
+            company_models = [
+                Employee,
+                ShiftRequest,
+                WorkTypeRequest,
+                DocumentRequest,
+                DisciplinaryAction,
+                EmployeeBankDetails,
+                EmployeeWorkInformation,
+            ]
 
-        for app_label, models in app_model_mappings.items():
-            if apps.is_installed(app_label):
-                company_models.extend(
-                    [get_horilla_model_class(app_label, model) for model in models]
-                )
+            app_model_mappings = {
+                "recruitment": ["recruitment", "candidate"],
+                "leave": [
+                    "leaverequest",
+                    "restrictleave",
+                    "availableleave",
+                    "leaveallocationrequest",
+                    "compensatoryleaverequest",
+                ],
+                "asset": ["assetassignment", "assetrequest"],
+                "attendance": [
+                    "attendance",
+                    "attendanceactivity",
+                    "attendanceovertime",
+                    "workrecords",
+                ],
+                "payroll": [
+                    "contract",
+                    "loanaccount",
+                    "payslip",
+                    "reimbursement",
+                    "workrecord",
+                ],
+                "helpdesk": ["ticket"],
+                "offboarding": ["offboarding"],
+                "pms": ["employeeobjective"],
+            }
+
+            for app_label, models in app_model_mappings.items():
+                if apps.is_installed(app_label):
+                    company_models.extend(
+                        [get_horilla_model_class(app_label, model) for model in models]
+                    )
+
+            cache.set(CACHE_KEY, company_models)
 
         return company_models
 

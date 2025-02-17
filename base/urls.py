@@ -511,6 +511,11 @@ urlpatterns = [
         name="rotating-shift-assign-info-export",
     ),
     path(
+        "rotating-shift-assign-info-import",
+        views.rotating_shift_assign_import,
+        name="rotating-shift-assign-info-import",
+    ),
+    path(
         "settings/rotating-shift-assign-update/<int:id>/",
         views.rotating_shift_assign_update,
         name="rotating-shift-assign-update",

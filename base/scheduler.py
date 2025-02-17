@@ -1,5 +1,4 @@
 import calendar
-import datetime as dt
 import sys
 from datetime import date, datetime, timedelta
 
@@ -66,7 +65,6 @@ def work_type_rotate_after(rotating_work_work_type):
     date_today = datetime.now()
     switch_date = rotating_work_work_type.next_change_date
     if switch_date.strftime("%Y-%m-%d") == date_today.strftime("%Y-%m-%d"):
-        # calculate the next work type switch date
         new_date = date_today + timedelta(days=rotating_work_work_type.rotate_after_day)
         update_rotating_work_type_assign(rotating_work_work_type, new_date)
     return
@@ -79,7 +77,6 @@ def work_type_rotate_weekend(rotating_work_type):
     date_today = datetime.now()
     switch_date = rotating_work_type.next_change_date
     if switch_date.strftime("%Y-%m-%d") == date_today.strftime("%Y-%m-%d"):
-        # calculate the next work type switch date
         day = datetime.now().strftime("%A").lower()
         switch_day = rotating_work_type.rotate_every_weekend
         if day == switch_day:
@@ -96,7 +93,6 @@ def work_type_rotate_every(rotating_work_type):
     switch_date = rotating_work_type.next_change_date
     day_date = rotating_work_type.rotate_every
     if switch_date.strftime("%Y-%m-%d") == date_today.strftime("%Y-%m-%d"):
-        # calculate the next work type switch date
         if day_date == switch_date.strftime("%d").lstrip("0"):
             new_date = date_today.replace(month=date_today.month + 1)
             update_rotating_work_type_assign(rotating_work_type, new_date)
@@ -134,6 +130,7 @@ def update_rotating_shift_assign(rotating_shift, new_date):
     """
     from django.contrib.auth.models import User
 
+    next_shift_index = 0
     employee = rotating_shift.employee_id
     employee_work_info = employee.employee_work_info
     rotating_shift_id = rotating_shift.rotating_shift_id
@@ -174,25 +171,23 @@ def update_rotating_shift_assign(rotating_shift, new_date):
     return
 
 
-def shift_rotate_after_day(rotating_shift, today=datetime.now()):
+def shift_rotate_after_day(rotating_shift, today):
     """
     This method for rotate shift based on after day
     """
     switch_date = rotating_shift.next_change_date
-    if switch_date.strftime("%Y-%m-%d") == today.strftime("%Y-%m-%d"):
-        # calculate the next work type switch date
+    if switch_date == today:
         new_date = today + timedelta(days=rotating_shift.rotate_after_day)
         update_rotating_shift_assign(rotating_shift, new_date)
     return
 
 
-def shift_rotate_weekend(rotating_shift, today=datetime.now()):
+def shift_rotate_weekend(rotating_shift, today):
     """
     This method for rotate shift based on weekend
     """
     switch_date = rotating_shift.next_change_date
-    if switch_date.strftime("%Y-%m-%d") == today.strftime("%Y-%m-%d"):
-        # calculate the next work type switch date
+    if switch_date == today:
         day = today.strftime("%A").lower()
         switch_day = rotating_shift.rotate_every_weekend
         if day == switch_day:
@@ -201,20 +196,19 @@ def shift_rotate_weekend(rotating_shift, today=datetime.now()):
     return
 
 
-def shift_rotate_every(rotating_shift, today=datetime.now()):
+def shift_rotate_every(rotating_shift, today):
     """
     This method for rotate shift based on every month
     """
     switch_date = rotating_shift.next_change_date
     day_date = rotating_shift.rotate_every
-    if switch_date.strftime("%Y-%m-%d") == today.strftime("%Y-%m-%d"):
-        # calculate the next work type switch date
+    if switch_date == today:
         if day_date == switch_date.strftime("%d").lstrip("0"):
             new_date = today.replace(month=today.month + 1)
             update_rotating_shift_assign(rotating_shift, new_date)
         elif day_date == "last":
-            year = today.strftime("%Y")
-            month = today.strftime("%m")
+            year = today.year
+            month = today.month
             last_day = calendar.monthrange(int(year), int(month) + 1)[1]
             new_date = datetime(int(year), int(month) + 1, last_day)
             update_rotating_shift_assign(rotating_shift, new_date)
@@ -229,18 +223,29 @@ def rotate_shift():
     from base.models import RotatingShiftAssign
 
     rotating_shifts = RotatingShiftAssign.objects.filter(is_active=True)
-    today = datetime.date
-    for rotating_shift in rotating_shifts:
+    today = datetime.now().date()
+    r_shifts = rotating_shifts.filter(start_date=today)
+    rotating_shifts_modified = None
+    for r_shift in r_shifts:
+        emp_shift = rotating_shifts.filter(
+            employee_id=r_shift.employee_id, start_date__lte=today
+        ).exclude(id=r_shift.id)
+        rotating_shifts_modified = rotating_shifts.exclude(
+            id__in=emp_shift.values_list("id", flat=True)
+        )
+        emp_shift.update(is_active=False)
+
+    for rotating_shift in rotating_shifts_modified:
         based_on = rotating_shift.based_on
         # after day condition
         if based_on == "after":
-            shift_rotate_after_day(rotating_shift)
+            shift_rotate_after_day(rotating_shift, today)
         # weekly condition
         elif based_on == "weekly":
-            shift_rotate_weekend(rotating_shift)
+            shift_rotate_weekend(rotating_shift, today)
         # monthly condition
         elif based_on == "monthly":
-            shift_rotate_every(rotating_shift)
+            shift_rotate_every(rotating_shift, today)
 
     return
 
@@ -417,8 +422,8 @@ def recurring_holiday():
     for recurring_holiday in recurring_holidays:
         start_date = recurring_holiday.start_date
         end_date = recurring_holiday.end_date
-        new_start_date = dt.date(start_date.year + 1, start_date.month, start_date.day)
-        new_end_date = dt.date(end_date.year + 1, end_date.month, end_date.day)
+        new_start_date = date(start_date.year + 1, start_date.month, start_date.day)
+        new_end_date = date(end_date.year + 1, end_date.month, end_date.day)
         # Checking that end date is not none
         if end_date is None:
             # checking if that start date is day before today
@@ -438,7 +443,7 @@ if not any(
 
     # Add jobs with next_run_time set to the end of the previous job
     try:
-        scheduler.add_job(rotate_shift, "interval", minutes=5, id="job1")
+        scheduler.add_job(rotate_shift, "interval", hours=4, id="job1")
     except:
         pass
 
@@ -446,7 +451,7 @@ if not any(
         scheduler.add_job(
             rotate_work_type,
             "interval",
-            minutes=5,
+            hours=4,
             id="job2",
         )
     except:
@@ -456,7 +461,7 @@ if not any(
         scheduler.add_job(
             undo_shift,
             "interval",
-            minutes=5,
+            hours=4,
             id="job3",
         )
     except:
@@ -466,7 +471,7 @@ if not any(
         scheduler.add_job(
             switch_shift,
             "interval",
-            minutes=5,
+            hours=4,
             id="job4",
         )
     except:
@@ -476,7 +481,7 @@ if not any(
         scheduler.add_job(
             undo_work_type,
             "interval",
-            minutes=5,
+            hours=4,
             id="job6",
         )
     except:
@@ -486,7 +491,7 @@ if not any(
         scheduler.add_job(
             switch_work_type,
             "interval",
-            minutes=5,
+            hours=4,
             id="job5",
         )
     except:

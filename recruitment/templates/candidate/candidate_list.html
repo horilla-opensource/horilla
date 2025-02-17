@@ -223,7 +223,7 @@
                     <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
                       <ion-icon name="thumbs-down-outline"></ion-icon></button>
                   {% else %}
-                    {% if onboarding|app_installed %}
+                    {% if "onboarding"|app_installed %}
                       {% if perms.recruitment.add_rejectedcandidate or perms.recruitment.change_candidate %}
                         <button
                           type="button"

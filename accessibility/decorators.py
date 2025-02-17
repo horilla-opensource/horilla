@@ -34,7 +34,7 @@ def enter_if_accessible(function, feature, perm=None, method=None):
         if perm:
             has_perm = request.user.has_perm(perm)
 
-        if accessible or has_perm or (method and method(request)):
+        if accessible or has_perm or (method and method(request, *args, **kwargs)):
             return function(request, *args, **kwargs)
         key = "HTTP_HX_REQUEST"
         keys = request.META.keys()
