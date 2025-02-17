@@ -12,6 +12,6 @@ RUN chmod +x /app/entrypoint.sh
 
 RUN pip install -r requirements.txt
 
-EXPOSE 8080
+EXPOSE 8000
 
 CMD ["python3", "manage.py", "runserver"]
