@@ -285,6 +285,7 @@ class EmployeeWorkInformationForm(ModelForm):
             "email",
             "mobile",
             "date_joining",
+            "anniversary_date",
             "contract_end_date",
             "tags",
             "basic_salary",
@@ -295,6 +296,7 @@ class EmployeeWorkInformationForm(ModelForm):
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),
             "contract_end_date": DateInput(attrs={"type": "date"}),
+            "anniversary_date": DateInput(attrs={"type": "date", "class": "oh-input w-100", "placeholder": _("Select Anniversary Date"),}),
         }
 
     def __init__(self, *args, disable=False, **kwargs):
