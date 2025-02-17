@@ -22,8 +22,6 @@ services:
       POSTGRES_DB: horilla
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
-      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - 5432:5432
     restart: unless-stopped
@@ -34,6 +32,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
 
 volumes:
   horilla-data:
