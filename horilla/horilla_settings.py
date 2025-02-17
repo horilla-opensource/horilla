@@ -52,6 +52,7 @@ APPS = [
     "employee",
     "horilla_documents",
     "horilla_automations",
+    "project",
 ]
 
 NO_PERMISSION_MODALS = [
